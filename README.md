@@ -1,2 +1,2 @@
-# -n-t-t-nghi-p
+# Capstone project
 The Capstone project of Software Engineer major, FPT University
