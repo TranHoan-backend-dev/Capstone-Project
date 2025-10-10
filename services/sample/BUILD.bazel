@@ -1,0 +1,15 @@
+java_binary(
+	name = "sample",
+	srcs = ["src/main/java/com/sample/Sample.java"],
+	main_class = "com.sample.Sample",
+)
+
+java_test(
+	name = "sample_test",
+	srcs = ["src/test/java/com/sample/SampleTest.java"],
+	test_class = "com.sample.SampleTest",
+	deps = [
+		":sample",
+		"@maven//:junit_junit"]
+	,
+)
