@@ -1,0 +1,54 @@
+name: Capstone Project
+
+on:
+  push:
+    branches: [
+      "main", "dev",
+      "feat/**", "refactor/**",
+      "style/**", "fix/**"
+    ]
+  pull_request:
+    branches: 
+      - dev
+jobs:
+  detect-services:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{steps.set-matrix.outputs.matrix}}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Services List
+        id: set-matrix
+        run: |
+          services=$(ls -d be/services/*/ | xargs -n 1 basename | jq -R -s -c 'split("\n")[:-1]')
+          echo "matrix=$services" >> $GITHUB_OUTPUT
+  spring-boot-build:
+    runs-on: ubuntu-latest
+    needs: [detect-services]
+    strategy:
+      fail-fast: false
+      matrix:
+        service: ${{fromJson(needs.detect-services.outputs.matrix)}}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with: 
+          distribution: "temurin"
+          java-version: '21'
+          cache: maven
+
+      - name: Grant execute permission for mnvw
+        run: chmod +x mnvw
+        working-directory: be/services/${{matrix.service}}
+
+      - name: Build spring boot
+        run: ./mvnw clean package -DskipTests
+        working-directory: be/services/${{matrix.service}}
+
+      - name: Run spring boot tests
+        run: ./mvnw test
+        working-directory: be/services/${{matrix.service}}
