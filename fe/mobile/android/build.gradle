@@ -17,8 +17,10 @@ buildscript {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${project.ext.kotlinVersion}")
     }
 }
+
 allprojects {
     repositories {
+        mavenCentral()
         google()
     }
 }
