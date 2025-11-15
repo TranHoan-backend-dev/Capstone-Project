@@ -12,3 +12,8 @@ py_binary(
     srcs = ["main.py"],
     visibility = ["//:__subpackages__"],
 )
+
+py_test(
+    name = "sample_python_test",
+    srcs = ["test.py"],
+)
