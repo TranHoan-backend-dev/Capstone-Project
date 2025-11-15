@@ -45,10 +45,10 @@ jobs:
         run: bazel build //be/services/${{matrix.service}}:all
 
       - name: Run tests with Bazel
-        run: bazel test //be/services/${{matrix.service}}/**
+        run: bazel test //be/services/${{matrix.service}}/...
 
       - name: Upload Bazel outputs
         uses: actions/upload-artifact@v4
         with:
           name: ${{matrix.service}}-bazel-bin
-          path: bazel-bin/be/services/${{matrix.service}}/**/*
+          path: bazel-bin/be/services/${{matrix.service}}/...
