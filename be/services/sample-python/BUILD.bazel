@@ -16,4 +16,6 @@ py_binary(
 py_test(
     name = "sample_python_test",
     srcs = ["test.py"],
+    main = "test.py",
+    deps = [":lib"],
 )
