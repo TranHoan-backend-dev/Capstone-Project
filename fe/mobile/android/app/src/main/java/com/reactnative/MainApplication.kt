@@ -1,4 +1,4 @@
-package com.mymedicalapp
+package com.reactnative
 
 import android.app.Application
 import com.facebook.react.PackageList
