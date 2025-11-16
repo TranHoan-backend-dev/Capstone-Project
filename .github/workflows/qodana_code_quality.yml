@@ -1,0 +1,31 @@
+name: Qodana
+on:
+    workflow_dispatch:
+    pull_request:
+    push:
+        branches:
+            - dev
+jobs:
+    qodana:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+            pull-requests: write
+            checks: write
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  ref: ${{ github.event.pull_request.head.sha}}
+                  fetch-depth: 0
+            - name: "Qodana Scan"
+              uses: Jetbrains/qodana-action@v2025.2
+              env:
+                  QODANA_TOKEN: ${{ secrets.QODANA_TOKEN}}
+              with:
+                  pr-mode: false
+                  use-caches: true
+                  post-pr-comment: true
+                  use-annotations: true
+                  upload-result: false
+                  push-fixes: "none"
