@@ -2,11 +2,7 @@ name: Capstone Project
 
 on:
   push:
-    branches: [
-      "main", "dev",
-      "feat/**", "refactor/**",
-      "style/**", "fix/**"
-    ]
+    branches: ["main"]
   pull_request:
     branches: ["dev"]
 
@@ -108,9 +104,16 @@ jobs:
           name: debug-apk
           path: ./fe/mobile/android/app/build/outputs/apk/debug/app-debug.apk
 
-  next-build:
-    name: Next.js Build
+  next-build-and-deploy:
+    name: Next.js Build & Deploy
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    needs: next-build
+    environment:
+      name: production
+    permissions:
+      contents: read
+      deployments: write
     strategy:
       fail-fast: false
       matrix:
@@ -147,6 +150,26 @@ jobs:
         with:
           name: dist
           path: ./fe/web/dist
+
+      - name: Deploy to vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./fe/web
+          vercel-args: '--prod'
+
+      - name: Update deployment status
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: ${{ steps.vercel.outputs.deploymentId }},
+              state: 'success',
+              environment_url: ${{ steps.vercel.outputs.preview-url }}
+            });
 
   # qodana-analysis:
   #   runs-on: ubuntu-latest
