@@ -28,7 +28,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: gitleaks-results-sarif
-          path: results.sarif
+          path: results.sarif.txt
 
   detect-services:
     runs-on: ubuntu-latest
@@ -108,6 +108,7 @@ jobs:
       
       - name: Install dependencies
         run: npm install
+        working-directory: ./fe/mobile/android
 
       - name: Grant execute permission
         run: chmod +x gradlew
