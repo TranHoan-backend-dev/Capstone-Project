@@ -14,6 +14,24 @@ permissions:
   contents: read
 
 jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Run Gitleaks
+        uses: zricethezav/gitleaks-action@v2.3.2
+        with:
+          config-path: .gitleaks.toml
+
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: gitleaks_results_sarif
+          path: results.sarif
+
   detect-services:
     runs-on: ubuntu-latest
     outputs:
@@ -22,12 +40,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run Gitleaks
-        uses: zricethezav/gitleaks-action@v2.3.2
-        with:
-          # config_path: .gitleaks.toml
-          verbose: true
-          redacted: true
+      # - name: Run Gitleaks
+      #   uses: zricethezav/gitleaks-action@v2.3.2
+
       - name: Services List
         id: set-matrix
         run: |
@@ -94,7 +109,7 @@ jobs:
         uses: android-actions/setup-android@v2
       
       - name: Install required build-tools
-        run: sdkmanager "platform-tools" "build-tools;34.0.0" "platform;android-34"
+        run: sdkmanager "platform-tools" "build-tools;33.0.2" "platform;android-33"
 
       - name: Install dependencies
         run: npm install
