@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Gitleaks
-        uses: zricethezav/gitleaks-action@v8
+        uses: zricethezav/gitleaks-action@v2.3.2
         with:
           # config_path: .gitleaks.toml
           verbose: true
@@ -94,7 +94,7 @@ jobs:
         uses: android-actions/setup-android@v2
       
       - name: Install required build-tools
-        run: sdkmanager "platform-tools" "build-tools;36.0.0" "platform;android-36"
+        run: sdkmanager "platform-tools" "build-tools;34.0.0" "platform;android-34"
 
       - name: Install dependencies
         run: npm install
@@ -124,12 +124,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Use Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
           cache-dependency-path: ./fe/web/package-lock.json
+
+      - name: Install deps
+        run: npm ci
 
       - name: Run typescheck
         run: npm run typescheck
