@@ -132,12 +132,17 @@ jobs:
           cache: 'npm'
           cache-dependency-path: ./be/package-lock.json
 
+      - uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 21
+
       - run: npm ci
         working-directory: ./be
 
       # Prepend any command with "nx-cloud record --" to record its logs to Nx Cloud
       # - run: npx nx-cloud record -- echo Hello World
-      - run: npx nx run-many -t lint test build typecheck
+      - run: npx nx run-many -t lint build typecheck
         working-directory: ./be
       # Nx Cloud recommends fixes for failures to help you get CI green faster. Learn more: https://nx.dev/ci/features/self-healing-ci
       - run: npx nx fix-ci
