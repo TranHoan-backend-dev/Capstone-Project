@@ -1,0 +1,14 @@
+{
+  "name": "user-service",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "/services/user-service/src",
+  "tags": [],
+  "targets": {
+    "run": {
+      "executor": "@nxrocks/nx-spring-boot:run"
+    },
+    "build": {
+      "executor": "@nxrocks/nx-spring-boot:build"
+    }
+  }
+}

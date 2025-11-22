@@ -1,0 +1,75 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "defaultBase": "master",
+  "namedInputs": {
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals"
+    ],
+    "production": [
+      "default",
+      "!{projectRoot}/.eslintrc.json",
+      "!{projectRoot}/eslint.config.mjs"
+    ],
+    "sharedGlobals": [
+      "{workspaceRoot}/.github/workflows/ci.yml"
+    ]
+  },
+  "nxCloudId": "692127ac7b3e9577e4f1c5b3",
+  "plugins": [
+    {
+      "plugin": "@nx/js/typescript",
+      "options": {
+        "typecheck": {
+          "targetName": "typecheck"
+        },
+        "build": {
+          "targetName": "build",
+          "configName": "tsconfig.lib.json",
+          "buildDepsName": "build-deps",
+          "watchDepsName": "watch-deps"
+        }
+      }
+    },
+    {
+      "plugin": "@nx/webpack/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "serveTargetName": "serve",
+        "previewTargetName": "preview",
+        "buildDepsTargetName": "build-deps",
+        "watchDepsTargetName": "watch-deps",
+        "serveStaticTargetName": "serve-static"
+      }
+    },
+    {
+      "plugin": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "lint"
+      }
+    },
+    {
+      "plugin": "@nxrocks/nx-spring-boot",
+      "options": {
+        "buildTargetName": "build",
+        "installTargetName": "install",
+        "testTargetName": "test",
+        "cleanTargetName": "clean",
+        "formatTargetName": "format",
+        "applyFormatTargetName": "apply-format",
+        "checkFormatTargetName": "check-format",
+        "runTargetName": "run",
+        "serveTargetName": "serve",
+        "buildImageTargetName": "build-image",
+        "buildInfoTargetName": "build-info"
+      }
+    }
+  ],
+  "targetDefaults": {},
+  "projectGlobPatterns": [
+    "services/**/project.json",
+    "apps/**/project.json",
+    "libs/**/project.json",
+    "**/project.json"
+  ]
+}
