@@ -137,6 +137,10 @@ jobs:
           distribution: temurin
           java-version: 21
 
+      - name: Grant execute permission
+        run: chmod +x gradlew
+        working-directory: ./be
+
       - run: npm ci
         working-directory: ./be
 
