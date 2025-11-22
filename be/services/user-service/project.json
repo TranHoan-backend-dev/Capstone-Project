@@ -15,6 +15,13 @@
     },
     "lint": {
       "executor": "nx:noop"
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "./gradlew test",
+        "cwd": "/services/user-service"
+      }
     }
   }
 }
