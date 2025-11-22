@@ -139,7 +139,7 @@ jobs:
 
       - name: Grant execute permission
         run: chmod +x gradlew
-        working-directory: ./be
+        working-directory: ./be/services
 
       - run: npm ci
         working-directory: ./be
