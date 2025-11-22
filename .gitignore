@@ -1,4 +1,2 @@
-bazel-bin/
-bazel-capstone-project/
-bazel-out/
-bazel-testlogs/
+be/.nx
+be/node_modules/
