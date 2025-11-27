@@ -5,18 +5,18 @@
 Đối với spring boot
 
 ```bash
-nx generate @nxrocks/nx-spring-boot:project user-service
+nx generate @nxrocks/nx-spring-boot:project tên_service
 ```
 
 ---
 
 ## Khi tạo project mới thì kiểm tra 2 file sau:
-services/settings.gradle
+apps/settings.gradle
 &lt;tên service vừa tạo&gt;/project.json
 
 Kiểm tra 2 trường sau, chúng phải trùng khớp tên với nhau thì mới build được:
 
-services/settings.gradle:
+apps/settings.gradle:
 
 ```bash
 include 'tên service'
