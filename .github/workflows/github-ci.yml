@@ -2,7 +2,11 @@ name: Capstone Project
 
 on:
   push:
-    branches: ["main"]
+    branches: [
+      "main", "dev",
+      "feat/**", "refactor/**",
+      "style/**", "fix/**"
+    ]
   pull_request:
     branches: ["dev"]
 
