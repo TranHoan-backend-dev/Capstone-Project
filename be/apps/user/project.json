@@ -1,7 +1,7 @@
 {
-  "name": "user-service",
+  "name": "user",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "/services/user-service/src",
+  "sourceRoot": "/apps/user/src",
   "tags": [],
   "targets": {
     "run": {
@@ -20,7 +20,7 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "./gradlew test",
-        "cwd": "/services/user-service"
+        "cwd": "/apps/user"
       }
     }
   }
