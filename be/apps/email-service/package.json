@@ -78,10 +78,20 @@
     }
   },
   "dependencies": {
+    "@golevelup/nestjs-rabbitmq": "^6.1.0",
+    "@nestjs-modules/mailer": "^2.0.2",
     "@nestjs/common": "^11.0.0",
+    "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.0",
+    "@nestjs/microservices": "^11.1.9",
     "@nestjs/platform-express": "^11.0.0",
-    "reflect-metadata": "^0.1.13",
+    "amqplib": "^0.10.9",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.3",
+    "dotenv": "^17.2.3",
+    "handlebars": "^4.7.8",
+    "kafkajs": "^2.2.4",
+    "reflect-metadata": "latest",
     "rxjs": "^7.8.0",
     "tslib": "^2.3.0"
   },

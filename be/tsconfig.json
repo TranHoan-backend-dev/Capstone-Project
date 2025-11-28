@@ -4,9 +4,6 @@
   "files": [],
   "references": [
     {
-      "path": "./apps/new_folder"
-    },
-    {
       "path": "./apps/email-service"
     }
   ]
