@@ -45,3 +45,4 @@ Thumbs.db
 build/
 .gradle/
 /apps/**/application-dev.*
+.env
