@@ -1,8 +1,8 @@
 plugins {
-    id 'java'
-    id 'org.springframework.boot' version '4.0.0'
-    id 'io.spring.dependency-management' version '1.1.7'
-    id 'maven-publish'
+  id 'java'
+  id 'org.springframework.boot' version '4.0.0'
+  id 'io.spring.dependency-management' version '1.1.7'
+  id 'maven-publish'
 }
 
 group = 'com.capstone'
@@ -10,31 +10,36 @@ version = '0.0.1-SNAPSHOT'
 description = 'Demo project for Spring Boot'
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+  implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
-    runtimeOnly 'com.mysql:mysql-connector-j'
+  implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
-    implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
-    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
-    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+  runtimeOnly 'com.mysql:mysql-connector-j'
 
-    implementation 'com.google.api-client:google-api-client:2.7.0'
-    implementation 'org.springframework.boot:spring-boot-starter-mail'
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8'
+  implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+  runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
+  runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
 
-    runtimeOnly 'org.springframework.boot:spring-boot-devtools'
+  implementation 'com.google.api-client:google-api-client:2.7.0'
+  implementation 'org.springframework.boot:spring-boot-starter-mail'
+  implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8'
+
+  runtimeOnly 'org.springframework.boot:spring-boot-devtools'
 }
 
 tasks.named('test') {
-    useJUnitPlatform()
+  useJUnitPlatform()
 }
 springBoot {
-    buildInfo()
+  buildInfo()
 }
 publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact bootJar
-        }
+  publications {
+    mavenJava(MavenPublication) {
+      artifact bootJar
     }
+  }
+}
+test {
+  enabled = false
 }

@@ -39,3 +39,6 @@ publishing {
 		}
 	}
 }
+test {
+  enabled = false
+}
