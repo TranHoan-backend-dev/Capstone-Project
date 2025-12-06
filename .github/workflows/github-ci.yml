@@ -31,47 +31,6 @@ jobs:
           services=$(ls -d be/services/*/ | xargs -n 1 basename | jq -R -s -c 'split("\n")[:-1]')
           echo "matrix=$services" >> $GITHUB_OUTPUT
 
-  android-build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          filter: tree:0
-          fetch-depth: 0
-
-      - name: Install Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-        
-      - name: Install JDK 17
-        uses: actions/setup-java@v3
-        with:
-          distribution: temurin
-          java-version: 17
-        
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v2
-      
-      - name: Install dependencies
-        run: npm install
-        working-directory: ./fe/mobile/android
-
-      - name: Grant execute permission
-        run: chmod +x gradlew
-        working-directory: ./fe/mobile/android
-
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug
-        working-directory: ./fe/mobile/android
-
-      - name: Upload Debug APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: debug-apk
-          path: ./fe/mobile/android/app/build/outputs/apk/debug/app-debug.apk
-
   next-build-and-deploy:
     name: Next.js Build & Deploy
     runs-on: ubuntu-latest
@@ -91,29 +50,29 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-          cache-dependency-path: ./fe/web/package-lock.json
+          cache-dependency-path: ./fe/package-lock.json
       
       - name: Install
         run: npm install
-        working-directory: ./fe/web
+        working-directory: ./fe
 
       - name: Install deps
         run: npm ci
-        working-directory: ./fe/web
+        working-directory: ./fe
 
       - name: Run typescheck
         run: npm run typescheck
-        working-directory: ./fe/web
+        working-directory: ./fe
       
       - name: Build
         run: npm run build
-        working-directory: ./fe/web
+        working-directory: ./fe
 
       - name: Upload production build artifact
         uses: actions/upload-artifact@v4
         with:
           name: dist
-          path: ./fe/web/dist
+          path: ./fe/dist
 
   nx-build:
     runs-on: ubuntu-latest
