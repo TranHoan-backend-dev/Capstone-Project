@@ -4,7 +4,3 @@ rootProject.name = 'apps'
 
 include 'notification'
 include 'auth'
-include 'patient'
-include 'healthrecord'
-include 'insuranceandbilling'
-include 'workflow'
