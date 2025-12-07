@@ -22,7 +22,7 @@ export class SendMailDto {
   @IsString()
   @ApiProperty({
     description: 'Template of the email. It must be one of the following: account-creation, password-reset',
-    example: 'account-creation',
+    example: 'account-creation or password-reset',
   })
   template?: string;
 
@@ -56,5 +56,5 @@ export class SendMailDto {
     description: 'Optional otp used for verify user before resetting password. Otp must contain 6 digits',
     example: '000123',
   })
-  opt?: string;
+  otp?: string;
 }

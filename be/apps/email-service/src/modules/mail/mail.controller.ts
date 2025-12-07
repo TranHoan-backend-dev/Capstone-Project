@@ -1,19 +1,18 @@
 import { Body, Controller, HttpStatus, Logger, Post } from "@nestjs/common";
 import { MailServiceImpl } from "./mail.service";
 import { SendMailDto } from "../../common/dtos/request/send-mail.dto";
-import { AccountCreationContext, MailInformation } from "../../infrastructure/model/mail.entity";
+import { AccountCreationContext, MailInformation, PasswordResetContext } from "../../infrastructure/model/mail.entity";
 import { WrapperApiDto } from "../../common/dtos/response/wrapper-api.dto";
 import { ApiBody, ApiOperation, ApiResponse } from "@nestjs/swagger";
 
 @Controller('mail')
 export class MailController {
-  private readonly logger = new Logger(MailController.name)
   constructor(
     private readonly mailService: MailServiceImpl,
   ) {
   }
 
-  @Post()
+  @Post('create-account')
   //#region openapi description
   @ApiOperation({
     summary: 'Send mail',
@@ -34,8 +33,8 @@ export class MailController {
     type: WrapperApiDto,
   })
   //#endregion
-  async sendMail(@Body() sendMailDto: SendMailDto): Promise<any> {
-    this.logger.log('Send mail request received');
+  async sendAccountCreationMail(@Body() sendMailDto: SendMailDto): Promise<any> {
+    Logger.log('Send account creation mail request received');
     const response: WrapperApiDto = {
       status: 200,
       message: 'Success',
@@ -43,7 +42,7 @@ export class MailController {
     }
 
     if (!sendMailDto.username || !sendMailDto.password) {
-      this.logger.log('Username or password must not be null');
+      Logger.log('Username or password must not be null');
       response.message = 'Username or password must not be null';
       response.status = HttpStatus.BAD_REQUEST;
       return response;
@@ -68,7 +67,45 @@ export class MailController {
       response.status = HttpStatus.INTERNAL_SERVER_ERROR;
       return response;
     }
-    this.logger.log('Email sent successfully');
+    Logger.log('Email sent successfully');
+    return response;
+  }
+
+  @Post('reset-password')
+  async sendPasswordResetMail(@Body() sendMailDto: SendMailDto): Promise<any> {
+    Logger.log('Send password reset mail request received');
+    const response: WrapperApiDto = {
+      status: 200,
+      message: 'Success',
+      timestamp: new Date(),
+    }
+
+    if (!sendMailDto.otp) {
+      Logger.log('Otp must not be null');
+      response.message = 'Otp must not be null';
+      response.status = HttpStatus.BAD_REQUEST;
+      return response;
+    }
+
+    const info: MailInformation = {
+      to: sendMailDto.to,
+      subject: sendMailDto.subject,
+      template: sendMailDto.template ?? 'password-reset',
+    }
+
+    const context: PasswordResetContext = {
+      name: sendMailDto.name,
+      otp: sendMailDto.otp,
+    }
+
+    const status: boolean = await this.mailService.sendNormalEmail(info, context);
+
+    if (!status) {
+      response.message = 'Failed to send email';
+      response.status = HttpStatus.INTERNAL_SERVER_ERROR;
+      return response;
+    }
+    Logger.log('Email sent successfully');
     return response;
   }
 }
