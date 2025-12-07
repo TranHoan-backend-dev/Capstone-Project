@@ -27,6 +27,9 @@ dependencies {
 tasks.named('test') {
   useJUnitPlatform()
 }
+tasks.named('bootJar') {
+    mainClass = 'com.capstone.auth.AuthApplication'
+}
 springBoot {
   buildInfo()
 }
