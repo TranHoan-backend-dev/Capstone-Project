@@ -14,8 +14,8 @@ async function bootstrap() {
   // app.setGlobalPrefix(globalPrefix);
 
   const config = new DocumentBuilder()
-    .setTitle('My API')
-    .setDescription('API documentation')
+    .setTitle('Email Service')
+    .setDescription('Service for sending emails business')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
