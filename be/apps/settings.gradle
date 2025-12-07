@@ -3,4 +3,6 @@
 rootProject.name = 'apps'
 
 include 'notification'
+
+include 'chat'
 include 'auth'
