@@ -1,9 +1,10 @@
 const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
-const { join } = require('path');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const path = require('path');
 
 module.exports = {
   output: {
-    path: join(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'dist'),
     clean: true,
     ...(process.env.NODE_ENV !== 'production' && {
       devtoolModuleFilenameTemplate: '[absolute-resource-path]',
@@ -20,6 +21,14 @@ module.exports = {
       outputHashing: 'none',
       generatePackageJson: true,
       sourceMaps: true,
-    })
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, 'templates'),
+          to: path.resolve(__dirname, 'dist/templates'),
+        },
+      ],
+    }),
   ],
 };

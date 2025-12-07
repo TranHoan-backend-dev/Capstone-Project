@@ -1,16 +1,16 @@
 require('dotenv').config();
-import {Module} from "@nestjs/common";
-import {MailerModule} from "@nestjs-modules/mailer"
-import {HandlebarsAdapter} from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
-import {MailService} from "./mail.service";
-import {MailController} from "./mail.controller";
+import { Module } from "@nestjs/common";
+import { MailerModule } from "@nestjs-modules/mailer"
+import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
+import { MailServiceImpl } from "./mail.service";
+import { MailController } from "./mail.controller";
 
 @Module({
   imports: [
     MailerModule.forRoot({
       transport: {
-        host: process.env.MAIL_HOST,
-        port: process.env.MAIL_PORT,
+        host: process.env.EMAIL_HOST,
+        port: Number(process.env.EMAIL_PORT),
         secure: false,
         auth: {
           user: process.env.EMAIL_ID,
@@ -18,19 +18,19 @@ import {MailController} from "./mail.controller";
         },
       },
       defaults: {
-        from: '"nest-modules" <hoana5k44nknd@gmail.com>'
+        from: process.env.ORGANIZATION_MAIL_NAME + ' <' + process.env.EMAIL_ID + '>'
       },
       template: {
-        dir: process.cwd() + '/template/',
-        adapter: new HandlebarsAdapter(),
+        dir: __dirname + '/templates',
+        adapter: new EjsAdapter(),
         options: {
-          strict: true,
+          strict: false,
         }
       }
     })
   ],
   controllers: [MailController],
-  providers: [MailService]
+  providers: [MailServiceImpl]
 })
 export class MailModule {
 }

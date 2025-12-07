@@ -1,1 +1,35 @@
 GET http://localhost:3000/health
+
+### Create account, happy case
+POST http://localhost:3000/mail/
+Content-Type: application/json
+
+{
+    "to": "tranxuanhoan04@gmail.com",
+    "subject": "Ehehe",
+    "name": "Tran Xuan Hoan",
+    "username": "Tran Xuan Hoan",
+    "password": "Tran Xuan Hoan"
+}
+
+### Create account, unhappy case (missing username)
+POST http://localhost:3000/mail/
+Content-Type: application/json
+
+{
+    "to": "tranxuanhoan04@gmail.com",
+    "subject": "Ehehe",
+    "name": "Tran Xuan Hoan",
+    "password": "Tran Xuan Hoan"
+}
+
+### Create account, unhappy case (missing to property)
+POST http://localhost:3000/mail/
+Content-Type: application/json
+
+{
+    "subject": "Ehehe",
+    "name": "Tran Xuan Hoan",
+    "username": "Tran Xuan Hoan",
+    "password": "Tran Xuan Hoan"
+}
