@@ -2,6 +2,7 @@ package com.capstone.auth.exception;
 
 import com.capstone.auth.dto.response.WrapperApiResponse;
 import org.apache.coyote.BadRequestException;
+import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -17,7 +18,31 @@ import java.util.HashMap;
 public class GlobalExceptionHandler {
 
   @ExceptionHandler(BadRequestException.class)
-  public ResponseEntity<WrapperApiResponse> handleBadRequestException(BadRequestException ex) {
+  public ResponseEntity<WrapperApiResponse> handleBadRequestException(@NonNull BadRequestException ex) {
+    return ResponseEntity
+      .status(HttpStatus.BAD_REQUEST)
+      .body(new WrapperApiResponse(
+        HttpStatus.BAD_REQUEST.value(),
+        ex.getMessage(),
+        null,
+        LocalDateTime.now()
+      ));
+  }
+
+  @ExceptionHandler(NotExistingException.class)
+  public ResponseEntity<WrapperApiResponse> handleUserNotFoundException(@NonNull NotExistingException ex) {
+    return ResponseEntity
+      .status(HttpStatus.BAD_REQUEST)
+      .body(new WrapperApiResponse(
+        HttpStatus.BAD_REQUEST.value(),
+        ex.getMessage(),
+        null,
+        LocalDateTime.now()
+      ));
+  }
+
+  @ExceptionHandler(ExistingException.class)
+  public ResponseEntity<WrapperApiResponse> handleExistingException(@NonNull ExistingException ex) {
     return ResponseEntity
       .status(HttpStatus.BAD_REQUEST)
       .body(new WrapperApiResponse(
@@ -41,7 +66,7 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<WrapperApiResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
+  public ResponseEntity<WrapperApiResponse> handleValidationExceptions(@NonNull MethodArgumentNotValidException ex) {
     var errors = new HashMap<>();
     ex.getBindingResult().getAllErrors().forEach((error) -> {
       String fieldName = ((FieldError) error).getField();
@@ -60,7 +85,7 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(Exception.class)
-  public ResponseEntity<WrapperApiResponse> handleGlobalException(Exception ex) {
+  public ResponseEntity<WrapperApiResponse> handleGlobalException(@NonNull Exception ex) {
     return ResponseEntity
       .status(HttpStatus.UNAUTHORIZED)
       .body(new WrapperApiResponse(
