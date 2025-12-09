@@ -1,5 +1,5 @@
-import LeftSide from "@/components/logo/LeftSide";
-import LoginForm from "@/components/forms/LoginForm";
+import LeftSide from "@/app/(auth)/login/component/LeftSide";
+import LoginForm from "@/app/(auth)/login/component/LoginForm";
 
 export default function Page() {
   return (
