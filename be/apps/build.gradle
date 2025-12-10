@@ -26,8 +26,9 @@ subprojects {
   dependencies {
     // Common for all microservices
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
+//    implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    runtimeOnly 'org.springframework.boot:spring-boot-devtools'
 
     // Lombok
     compileOnly 'org.projectlombok:lombok'
@@ -35,6 +36,9 @@ subprojects {
 
     // Testing
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.security:spring-security-test'
+//    testImplementation 'org.springframework.security:spring-security-test'
+
+    // swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8'
   }
 }
