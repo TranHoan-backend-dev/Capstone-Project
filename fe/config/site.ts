@@ -1,28 +1,33 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "Next.js + HeroUI",
+  name: "CRM",
   description: "Make beautiful websites regardless of your design experience.",
   navItems: [
     {
-      label: "Home",
+      icon: null,
+      label: "Trang chủ",
       href: "/",
     },
     {
-      label: "Docs",
-      href: "/docs",
+      icon: null,
+      label: "Khách hàng",
+      href: "/customer",
     },
     {
-      label: "Pricing",
-      href: "/pricing",
+      icon: null,
+      label: "Khảo sát thiết kế",
+      href: "/design-survey",
     },
     {
-      label: "Blog",
-      href: "/blog",
+      icon: null,
+      label: "Thi công",
+      href: "/construction",
     },
     {
-      label: "About",
-      href: "/about",
+      icon: null,
+      label: "Ghi chỉ số & Hóa đơn",
+      href: "/record-invoice",
     },
   ],
   navMenuItems: [
