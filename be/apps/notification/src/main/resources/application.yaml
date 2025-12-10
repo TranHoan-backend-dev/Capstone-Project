@@ -1,3 +1,11 @@
 spring:
   application:
     name: notification
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+      base-path: /

@@ -1,4 +1,4 @@
-package com.capstone.notification.infrastructure.service;
+package com.capstone.notification.service;
 
 import org.springframework.stereotype.Service;
 

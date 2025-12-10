@@ -27,6 +27,7 @@ public class Users implements UserDetails, Serializable {
   @Column(name = "user_id")
   String id;
 
+  @Column(name = "employee_code", unique = true)
   String username;
 
   @Column(nullable = false)
@@ -38,6 +39,9 @@ public class Users implements UserDetails, Serializable {
   String email;
 
   String avatarUrl;
+
+  @Column(unique = true)
+  String phoneNumber;
 
   @Column(name = "created_date", nullable = false)
   LocalDateTime createdAt;

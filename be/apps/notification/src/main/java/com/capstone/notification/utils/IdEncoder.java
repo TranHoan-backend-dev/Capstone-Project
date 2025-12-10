@@ -1,4 +1,4 @@
-package com.capstone.auth.infrastructure.utils;
+package com.capstone.notification.utils;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -19,11 +19,3 @@ public class IdEncoder {
     }
   }
 }
-
-
-
-
-
-
-
-

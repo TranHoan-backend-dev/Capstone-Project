@@ -1,5 +1,6 @@
-package com.capstone.notification.application.business;
+package com.capstone.notification.service.impl;
 
+import com.capstone.notification.service.boundary.NotificationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
