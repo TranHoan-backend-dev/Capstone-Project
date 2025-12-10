@@ -9,9 +9,9 @@ export class ConsumerController {
   constructor(private readonly service: MailServiceImpl) { }
 
   @EventPattern('user-created')
-  sendAccountCreationMail(@Payload() data: any) {
-    Logger.log(data);
+  async sendAccountCreationMail(@Payload() data: any) {
     Logger.log('Send account creation mail request received');
+    Logger.log(data);
 
     if (!data.username || !data.password) {
       Logger.log('Username or password must not be null');
@@ -33,8 +33,8 @@ export class ConsumerController {
     Logger.log('Info: ', info);
     Logger.log('Context: ', context);
 
-    // await this.service.sendNormalEmail(info, context);
+    await this.service.sendNormalEmail(info, context);
 
-    Logger.log('Email sent successfully');;
+    Logger.log('Email sent successfully');
   }
 }

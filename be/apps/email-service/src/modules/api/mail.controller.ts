@@ -47,7 +47,7 @@ export class MailController {
     const info: MailInformation = {
       to: sendMailDto.to,
       subject: sendMailDto.subject,
-      template: sendMailDto.template ?? 'account-creation',
+      template: sendMailDto.template || 'account-creation',
     }
 
     const context: AccountCreationContext = {

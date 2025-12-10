@@ -1,4 +1,4 @@
-package com.capstone.notification.adapter;
+package com.capstone.notification.controller;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

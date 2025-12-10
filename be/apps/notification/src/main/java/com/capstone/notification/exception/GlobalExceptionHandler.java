@@ -1,4 +1,4 @@
-package com.capstone.notification.application.exception;
+package com.capstone.notification.exception;
 
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
