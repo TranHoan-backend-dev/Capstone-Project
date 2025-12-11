@@ -1,0 +1,27 @@
+{
+  "name": "alert",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/alert/src",
+  "tags": [],
+  "targets": {
+    "run": {
+      "executor": "@nxrocks/nx-spring-boot:run"
+    },
+    "build": {
+      "executor": "@nxrocks/nx-spring-boot:build"
+    },
+    "typecheck": {
+      "executor": "nx:noop"
+    },
+    "lint": {
+      "executor": "nx:noop"
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "./gradlew test",
+        "cwd": "/apps/alert"
+      }
+    }
+  }
+}
