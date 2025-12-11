@@ -1,0 +1,50 @@
+@uri = http://localhost:3000
+@create_account_uri = {{uri}}/mail/create-account
+@reset_password_uri = {{uri}}/mail/reset-password
+
+GET {{uri}}/health
+
+### Create account, happy case
+POST {{create_account_uri}}
+Content-Type: application/json
+
+{
+    "to": "tranxuanhoan04@gmail.com",
+    "subject": "Ehehe",
+    "name": "Tran Xuan Hoan",
+    "username": "Tran Xuan Hoan",
+    "password": "Tran Xuan Hoan"
+}
+
+### Create account, unhappy case (missing username)
+POST {{create_account_uri}}
+Content-Type: application/json
+
+{
+    "to": "tranxuanhoan04@gmail.com",
+    "subject": "Ehehe",
+    "name": "Tran Xuan Hoan",
+    "password": "Tran Xuan Hoan"
+}
+
+### Create account, unhappy case (missing to property)
+POST {{create_account_uri}}
+Content-Type: application/json
+
+{
+    "subject": "Ehehe",
+    "name": "Tran Xuan Hoan",
+    "username": "Tran Xuan Hoan",
+    "password": "Tran Xuan Hoan"
+}
+
+### Reset password, happy case
+POST {{reset_password_uri}}
+Content-Type: application/json
+
+{
+    "to": "tranxuanhoan04@gmail.com",
+    "subject": "Ehehe",
+    "name": "Tran Xuan Hoan",
+    "otp": "123456"
+}
