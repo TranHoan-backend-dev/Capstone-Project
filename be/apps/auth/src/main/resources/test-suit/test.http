@@ -9,7 +9,7 @@ Accept: application/json
   "username": "hoantxhe",
   "email": "hoana5k44nknd@gmail.com",
   "fullName": "Tran Xuan Hoan",
-  "password": "Hoan2709@",
+  "password": "Hoan1234@",
   "status": false
 }
 
@@ -22,6 +22,6 @@ Accept: application/json
   "username": "hoantxhe",
   "email": "hoana5k44nkndgmail.com",
   "fullName": "Tran Xuan Hoan",
-  "password": "Hoan2709@",
+  "password": "Hoan1234@",
   "status": false
 }
