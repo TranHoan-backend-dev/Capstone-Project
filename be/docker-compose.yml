@@ -16,6 +16,26 @@ services:
       - "15672:15672"
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq/mnesia
+    networks:
+      - app-network
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
 volumes:
   rabbitmq_data:
-
+  postgres_data:
+networks:
+  app-network:
+    driver: bridge
