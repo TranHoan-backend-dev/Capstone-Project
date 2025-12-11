@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -69,8 +70,8 @@ public class GlobalExceptionHandler {
   public ResponseEntity<WrapperApiResponse> handleValidationExceptions(@NonNull MethodArgumentNotValidException ex) {
     var errors = new HashMap<>();
     ex.getBindingResult().getAllErrors().forEach((error) -> {
-      String fieldName = ((FieldError) error).getField();
-      String errorMessage = error.getDefaultMessage();
+      var fieldName = ((FieldError) error).getField();
+      var errorMessage = error.getDefaultMessage();
       errors.put(fieldName, errorMessage);
     });
 
@@ -87,7 +88,19 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(Exception.class)
   public ResponseEntity<WrapperApiResponse> handleGlobalException(@NonNull Exception ex) {
     return ResponseEntity
-      .status(HttpStatus.UNAUTHORIZED)
+      .status(HttpStatus.INTERNAL_SERVER_ERROR)
+      .body(new WrapperApiResponse(
+        HttpStatus.INTERNAL_SERVER_ERROR.value(),
+        ex.getMessage(),
+        null,
+        LocalDateTime.now()
+      ));
+  }
+
+  @ExceptionHandler({InterruptedException.class, ExecutionException.class})
+  public ResponseEntity<WrapperApiResponse> handleInterruptedAndExecutionException(@NonNull Exception ex) {
+    return ResponseEntity
+      .status(HttpStatus.INTERNAL_SERVER_ERROR)
       .body(new WrapperApiResponse(
         HttpStatus.INTERNAL_SERVER_ERROR.value(),
         ex.getMessage(),

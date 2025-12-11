@@ -29,6 +29,14 @@ management:
           - health
           - info
       base-path: /
+rabbitmqconfig:
+  exchange_name: auth_event_exchange
+  queue_name: user_registered_queue
+  routing_key: user-created
+sending_mail:
+  account_creation:
+    subject: ehehe
+    template: huhu
 #  datasource:
 #    driver-class-name: com.mysql.cj.jdbc.Driver
 #    url: jdbc:mysql://localhost:3306/microservice

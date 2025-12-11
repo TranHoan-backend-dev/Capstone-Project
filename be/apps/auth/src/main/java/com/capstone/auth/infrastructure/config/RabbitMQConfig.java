@@ -1,19 +1,26 @@
 package com.capstone.auth.infrastructure.config;
 
+import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@FieldDefaults(makeFinal = true)
+@FieldDefaults(level = AccessLevel.PUBLIC)
 public class RabbitMQConfig {
-  public static String EXCHANGE_NAME = "auth_event_exchange";
-  public static String QUEUE_NAME = "user_registered_queue";
-  public static String ROUTING_KEY = "user-created"; // chu ky gan vao tin nhan khi gui den Exchange
+  @Value("${rabbitmqconfig.exchange_name}")
+  String EXCHANGE_NAME;
+
+  @Value("${rabbitmqconfig.queue_name}")
+  String QUEUE_NAME;
+
+  @Value("${rabbitmqconfig.routing_key}")
+  String ROUTING_KEY; // chu ky gan vao tin nhan khi gui den Exchange
 
   // Luu tru tin nhan cho den khi co consumer su dung
   @Bean
@@ -33,8 +40,8 @@ public class RabbitMQConfig {
   @Bean
   public Binding binding(Queue queue, TopicExchange exchange) {
     return BindingBuilder.bind(queue)
-        .to(exchange)
-        .with(ROUTING_KEY);
+      .to(exchange)
+      .with(ROUTING_KEY);
   }
 
   @Bean

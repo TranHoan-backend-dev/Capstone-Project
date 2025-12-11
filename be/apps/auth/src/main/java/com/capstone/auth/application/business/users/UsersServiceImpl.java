@@ -11,10 +11,13 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Slf4j
 @Service
@@ -29,7 +32,7 @@ public class UsersServiceImpl implements UsersService {
   public void createEmployee(
     String fullName, String username, String password,
     String email, RoleName roleName
-  ) {
+  ) throws ExecutionException, InterruptedException {
     log.info("UsersService is handling the request");
     var obj = repo.findByEmail(email);
     if (obj.isPresent()) {
@@ -42,6 +45,11 @@ public class UsersServiceImpl implements UsersService {
     log.info("New account's information: {}", user);
 
     repo.save(user);
+  }
+
+  @Async("passwordEncoderExecutor")
+  public CompletableFuture<String> hashPassword(String password) {
+    return CompletableFuture.completedFuture(encoder.encode(password));
   }
 
   @Override
@@ -58,10 +66,13 @@ public class UsersServiceImpl implements UsersService {
 
   }
 
-  private Users buildUsers(String fullName, String username, String password, String email, Roles role) {
+  private Users buildUsers(
+    String fullName, String username, String password,
+    String email, Roles role
+  ) throws ExecutionException, InterruptedException {
     return Users.builder()
       .username(username)
-      .password(encoder.encode(password))
+      .password(hashPassword(password).get())
       .fullName(fullName)
       .email(email)
       .createdAt(LocalDateTime.now())

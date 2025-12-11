@@ -14,6 +14,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.ExecutionException;
 
 @Slf4j
 @RestController
@@ -25,7 +26,7 @@ public class AuthController {
   // TODO: custom error code
 
   @PostMapping("/signup")
-  public ResponseEntity<?> signup(@RequestBody @Valid SignupRequest request) {
+  public ResponseEntity<?> signup(@RequestBody @Valid SignupRequest request) throws ExecutionException, InterruptedException {
     log.info("Signup request comes to endpoint: {}", request);
 
     authUC.register(
