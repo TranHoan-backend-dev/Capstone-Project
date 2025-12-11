@@ -21,6 +21,10 @@ dependencies {
 	implementation "com.netflix.graphql.dgs:graphql-dgs-extended-scalars"
 }
 
+configurations.configureEach {
+  exclude group: "org.springdoc"
+}
+
 generateJava {
 	schemaPaths = ["${projectDir}/src/main/resources/graphql-client"]
 	packageName = 'com.capstone.customer.codegen'
