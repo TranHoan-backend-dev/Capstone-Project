@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chào mừng bạn mới</title>
+    <style>
+        /* Reset styles */
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333333;
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        /* Container */
+        .email-container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Header */
+        .email-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .email-header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        /* Body */
+        .email-body {
+            padding: 40px 30px;
+        }
+
+        .greeting {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #2d3748;
+        }
+
+        .message {
+            margin-bottom: 25px;
+            color: #4a5568;
+        }
+
+        /* Credentials Box */
+        .credentials-box {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .credential-item {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+
+        .credential-label {
+            font-weight: 600;
+            color: #718096;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .credential-value {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 18px;
+            color: #2d3748;
+            font-weight: 700;
+            background: #edf2f7;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-left: 10px;
+        }
+
+        /* CTA Button */
+        .cta-button {
+            display: block;
+            width: fit-content;
+            margin: 30px auto 0;
+            padding: 14px 35px;
+            background-color: #667eea;
+            color: #ffffff !important;
+            font-weight: 600;
+            border-radius: 50px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(102, 126, 234, 0.25);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Footer */
+        .email-footer {
+            background-color: #f8fafc;
+            padding: 20px;
+            text-align: center;
+            font-size: 13px;
+            color: #a0aec0;
+            border-top: 1px solid #edf2f7;
+        }
+
+        .security-note {
+            font-size: 14px;
+            color: #e53e3e;
+            margin-top: 20px;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <h1>Chào Mừng Bạn!</h1>
+        </div>
+        <div class="email-body">
+            <div class="greeting">Xin chào <%= name %>,</div>
+            <p class="message">
+                Chúc mừng bạn đã trở thành thành viên mới của hệ thống chúng tôi! Tài khoản của bạn đã được khởi tạo
+                thành công.
+                <br><br>
+                Dưới đây là thông tin đăng nhập cá nhân của bạn. Vì lý do bảo mật, vui lòng <strong>đổi mật khẩu
+                    ngay</strong> sau lần đăng nhập đầu tiên.
+            </p>
+
+            <div class="credentials-box">
+                <div class="credential-item">
+                    <span class="credential-label">Tên đăng nhập</span>
+                    <span class="credential-value">
+                        <%= username %>
+                    </span>
+                </div>
+                <div class="credential-item">
+                    <span class="credential-label">Mật khẩu tạm thời</span>
+                    <span class="credential-value">
+                        <%= password %>
+                    </span>
+                </div>
+            </div>
+
+            <!-- TODO: Add login link -->
+            <a href="#" class="cta-button">Đăng Nhập Ngay</a>
+
+            <p class="security-note">
+                * Lưu ý: Đừng chia sẻ thông tin này với bất kỳ ai. Chúng tôi sẽ không bao giờ hỏi mật khẩu của bạn qua
+                email.
+            </p>
+        </div>
+        <%- include('components/footer.html') %>
+    </div>
+</body>
+
+</html>

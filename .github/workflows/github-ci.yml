@@ -95,6 +95,9 @@ jobs:
           cache: 'npm'
           cache-dependency-path: ./be/package-lock.json
 
+      - name: Check disk
+        run: df -h
+
       - uses: actions/setup-java@v3
         with:
           distribution: temurin
@@ -106,6 +109,10 @@ jobs:
 
       - run: npm ci
         working-directory: ./be
+
+      - name: Force clean Gradle builds
+        run: |
+          rm -rf be/apps/*/build || true
 
       # Prepend any command with "nx-cloud record --" to record its logs to Nx Cloud
       # - run: npx nx-cloud record -- echo Hello World
