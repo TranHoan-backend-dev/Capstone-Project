@@ -31,7 +31,12 @@ public class MessageProducer {
     payload.put("pattern", ROUTING_KEY);
     payload.put("data", message);
 
-    template.convertAndSend(EXCHANGE_NAME, ROUTING_KEY, payload);
+    // tai su dung context, tranh viec dong-mo context lien tuc moi khi co 1 request duoc gui toi
+    template.invoke(t -> {
+      template.convertAndSend(EXCHANGE_NAME, ROUTING_KEY, payload);
+      return null;
+    });
+//    template.convertAndSend(EXCHANGE_NAME, ROUTING_KEY, payload);
     log.info("Message sent successfully: {}", message);
   }
 }
