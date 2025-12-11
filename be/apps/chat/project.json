@@ -20,7 +20,7 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "./gradlew test",
-        "cwd": "/apps/auth"
+        "cwd": "/apps/chat"
       }
     }
   }
