@@ -21,6 +21,13 @@ spring:
     port: 5672
     username: guest
     password: guest
+  datasource:
+    hikari:
+      maximum-pool-size: 5 # nang core khi co nhieu truy van song song
+      minimum-idle: 3 # So ket noi idle luon co san
+      connection-timeout: 2000 # Cho ket noi toi da 3s
+      max-lifetime: 600000 # Ket noi song toi da 30p
+      idle-timeout: 30000 # Dong idle sau 30s neu khong su dung
 management:
   endpoints:
     web:
@@ -28,6 +35,8 @@ management:
         include:
           - health
           - info
+          - metrics
+          - prometheus
       base-path: /
 rabbitmqconfig:
   exchange_name: auth_event_exchange
