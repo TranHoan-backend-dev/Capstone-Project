@@ -7,8 +7,8 @@ services:
     hostname: rabbitmq_host
     restart: always
     environment:
-      RABBIT_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      RABBIT_DEFAULT_USER: ${RABBIT_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
     ports:
       # For AMQP protocol connected from spring boot
       - "5672:5672"
@@ -24,9 +24,9 @@ services:
     container_name: postgres
     restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
     volumes:
