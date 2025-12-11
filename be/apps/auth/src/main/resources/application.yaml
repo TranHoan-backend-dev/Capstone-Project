@@ -9,7 +9,7 @@ spring:
     show-sql: false
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
+        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
   security:
     oauth2:
@@ -47,8 +47,8 @@ sending_mail:
     subject: ehehe
     template: huhu
 #  datasource:
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://localhost:3306/microservice
+#    driver-class-name: org.postgresql.Driver
+#    url: jdbc:postgresql://localhost:5432/microservice
 #    username:
 #    password:
 #  security:
