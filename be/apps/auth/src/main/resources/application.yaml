@@ -46,6 +46,8 @@ sending_mail:
   account_creation:
     subject: ehehe
     template: huhu
+server:
+  port: 8001
 #  datasource:
 #    driver-class-name: com.mysql.cj.jdbc.Driver
 #    url: jdbc:mysql://localhost:3306/microservice
