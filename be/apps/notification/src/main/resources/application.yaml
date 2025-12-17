@@ -9,3 +9,5 @@ management:
           - health
           - info
       base-path: /
+server:
+  port: 9004
