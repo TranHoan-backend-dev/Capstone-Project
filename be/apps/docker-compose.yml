@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   rabbitmq:
     image: rabbitmq:4-management
@@ -30,6 +28,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - app-network
+  # Chay bootstrap cho kong gateway truoc docker compose run --rm kong-gateway kong migrations bootstrap
   kong-gateway:
     image: kong/kong-gateway:3.10.0.1
     container_name: kong-gateway
@@ -37,9 +36,10 @@ services:
       # - auth-service
     environment:
       KONG_DATABASE: postgres
-      KONG_PG_HOST: kong-database
+      KONG_PG_HOST: postgres
       KONG_PG_USER: ${POSTGRES_USER}
       KONG_PG_PASSWORD: ${POSTGRES_PASSWORD}
+      KONG_PG_DATABASE: ${POSTGRES_DB}
       KONG_PROXY_ACCESS_LOG: /dev/stdout
       KONG_PROXY_ADMIN_ACCESS_LOG: /dev/stdout
       KONG_PROXY_ERROR_LOG: /dev/stderr
@@ -59,6 +59,50 @@ services:
       - "8004:8004"
     networks:
       - app-network
+  auth-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: build-auth
+    image: auth-service
+    ports:
+      - "9001:9001"
+    environment:
+      - SERVER_PORT=9001
+      - SERVER_ADDRESS=0.0.0.0
+    networks:
+      - app-network
+#  chat-service:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#      target: build-chat
+#    image: chat-service
+#    ports:
+#      - "9002:9002"
+#    environment:
+#      - SERVER_PORT=9002
+#      - SERVER_ADDRESS=0.0.0.0
+#    networks:
+#      - app-network
+#  notification-service:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#      target: build-notification
+#    image: notification-service
+#    ports:
+#      - "9004:9004"
+#    environment:
+#      - SERVER_PORT=9004
+#      - SERVER_ADDRESS=0.0.0.0
+#    networks:
+#      - app-network
+
 volumes:
   rabbitmq_data:
-
+  postgres_data:
+networks:
+  app-network:
+    driver: bridge
+# Admin workspace: http://localhost:8002/workspaces
