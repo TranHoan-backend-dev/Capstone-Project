@@ -15,7 +15,7 @@ COPY auth ./auth
 RUN gradle :auth:bootJar -x test --no-daemon
 
 # RUNTIME
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:21-jre-alpine AS runtime-auth
 WORKDIR /app
 COPY --from=build-auth /workspace/auth/build/libs/*.jar app.jar
 EXPOSE 9001
@@ -24,16 +24,16 @@ ENTRYPOINT ["java","-jar","app.jar"]
 # =======================
 # CHAT SERVICE
 # =======================
-#FROM base-builder AS build-chat
-#COPY chat ./chat
-#RUN gradle :chat:bootJar -x test --no-daemon
+FROM base-builder AS build-chat
+COPY chat ./chat
+RUN gradle :chat:bootJar -x test --no-daemon
 
 # RUNTIME
-#FROM eclipse-temurin:21-jre-alpine
-#WORKDIR /app
-#COPY --from=build-chat /workspace/chat/build/libs/*.jar app.jar
-#EXPOSE 9002
-#ENTRYPOINT ["java","-jar","app.jar"]
+FROM eclipse-temurin:21-jre-alpine AS runtime-chat
+WORKDIR /app
+COPY --from=build-chat /workspace/chat/build/libs/*.jar app1.jar
+EXPOSE 9002
+ENTRYPOINT ["java","-jar","app1.jar"]
 
 # =======================
 # CUSTOMER SERVICE
@@ -43,11 +43,11 @@ ENTRYPOINT ["java","-jar","app.jar"]
 #RUN gradle :customer:bootJar -x test --no-daemon
 
 # RUNTIME
-#FROM eclipse-temurin:21-jre-alpine
+#FROM eclipse-temurin:21-jre-alpine AS runtime-customer
 #WORKDIR /app
-#COPY --from=build-auth /workspace/auth/build/libs/*.jar app.jar
+#COPY --from=build-customer /workspace/customer/build/libs/*.jar app2.jar
 #EXPOSE 9003
-#ENTRYPOINT ["java","-jar","app.jar"]
+#ENTRYPOINT ["java","-jar","app2.jar"]
 
 # =======================
 # NOTIFICATION SERVICE
@@ -57,8 +57,8 @@ ENTRYPOINT ["java","-jar","app.jar"]
 #RUN gradle :notification:bootJar -x test --no-daemon
 
 # RUNTIME
-#FROM eclipse-temurin:21-jre-alpine
+#FROM eclipse-temurin:21-jre-alpine AS runtime-notification
 #WORKDIR /app
-#COPY --from=build-notification /workspace/notification/build/libs/*.jar app.jar
+#COPY --from=build-notification /workspace/notification/build/libs/*.jar app3.jar
 #EXPOSE 9004
-#ENTRYPOINT ["java","-jar","app.jar"]
+#ENTRYPOINT ["java","-jar","app3.jar"]

@@ -17,7 +17,8 @@ spring:
         jwt:
           issuer-uri: http://localhost:8080/realms/master
   rabbitmq:
-    host: localhost
+    # host: localhost # cua may local
+    host: rabbitmq # cua docker
     port: 5672
     username: guest
     password: guest
