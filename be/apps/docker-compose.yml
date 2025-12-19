@@ -28,7 +28,6 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - app-network
-  # Chay bootstrap cho kong gateway truoc docker compose run --rm kong-gateway kong migrations bootstrap
   kong-migrations:
     image: kong:3.6
     command: kong migrations bootstrap
@@ -77,20 +76,21 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: build-auth
+      target: runtime-auth
     image: auth-service
     ports:
       - "9001:9001"
     environment:
       - SERVER_PORT=9001
       - SERVER_ADDRESS=0.0.0.0
+      - SPRING_PROFILES_ACTIVE=dev
     networks:
       - app-network
   chat-service:
     build:
       context: .
       dockerfile: Dockerfile
-      target: build-chat
+      target: runtime-chat
     image: chat-service
     ports:
       - "9002:9002"
