@@ -29,11 +29,22 @@ services:
     networks:
       - app-network
   # Chay bootstrap cho kong gateway truoc docker compose run --rm kong-gateway kong migrations bootstrap
+  kong-migrations:
+    image: kong:3.6
+    command: kong migrations bootstrap
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: postgres
+      KONG_PG_DATABASE: ${POSTGRES_DB}
+      KONG_PG_USER: ${POSTGRES_USER}
+      KONG_PG_PASSWORD: ${POSTGRES_PASSWORD}
+    depends_on:
+      - postgres
+    networks:
+      - app-network
   kong-gateway:
-    image: kong/kong-gateway:3.10.0.1
+    image: kong:3.6
     container_name: kong-gateway
-    # depends_on:
-      # - auth-service
     environment:
       KONG_DATABASE: postgres
       KONG_PG_HOST: postgres
@@ -57,6 +68,9 @@ services:
       - "8445:8445"
       - "8003:8003"
       - "8004:8004"
+    depends_on:
+      - kong-migrations
+      - postgres
     networks:
       - app-network
   auth-service:
@@ -72,33 +86,32 @@ services:
       - SERVER_ADDRESS=0.0.0.0
     networks:
       - app-network
-#  chat-service:
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#      target: build-chat
-#    image: chat-service
-#    ports:
-#      - "9002:9002"
-#    environment:
-#      - SERVER_PORT=9002
-#      - SERVER_ADDRESS=0.0.0.0
-#    networks:
-#      - app-network
-#  notification-service:
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#      target: build-notification
-#    image: notification-service
-#    ports:
-#      - "9004:9004"
-#    environment:
-#      - SERVER_PORT=9004
-#      - SERVER_ADDRESS=0.0.0.0
-#    networks:
-#      - app-network
-
+  chat-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: build-chat
+    image: chat-service
+    ports:
+      - "9002:9002"
+    environment:
+      - SERVER_PORT=9002
+      - SERVER_ADDRESS=0.0.0.0
+    networks:
+      - app-network
+  #  notification-service:
+  #    build:
+  #      context: .
+  #      dockerfile: Dockerfile
+  #      target: build-notification
+  #    image: notification-service
+  #    ports:
+  #      - "9004:9004"
+  #    environment:
+  #      - SERVER_PORT=9004
+  #      - SERVER_ADDRESS=0.0.0.0
+  #    networks:
+  #      - app-network
 volumes:
   rabbitmq_data:
   postgres_data:
