@@ -15,9 +15,16 @@ spec:
     spec:
       containers:
         - name: chat-service
-          image: chat-service:latest
+          image: chat-service:1.0.0
           ports:
             - containerPort: 9002
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
           env:
             - name: SERVER_PORT
               value: "9002"

@@ -32,6 +32,25 @@ spec:
               containerPort: 8000
             - name: admin
               containerPort: 8001
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+          livenessProbe:
+            httpGet:
+              path: /status
+              port: 8001
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /status
+              port: 8001
+            initialDelaySeconds: 5
+            periodSeconds: 5
           volumeMounts:
             - name: kong-config-volume
               mountPath: /kong
@@ -55,4 +74,4 @@ spec:
     - name: admin
       port: 8001
       targetPort: 8001
-  type: LoadBalancer # Or NodePort if locally
+  type: LoadBalancer

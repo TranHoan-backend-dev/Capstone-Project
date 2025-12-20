@@ -15,9 +15,29 @@ spec:
     spec:
       containers:
         - name: email-service
-          image: email-service:latest
+          image: email-service:1.0.0
           ports:
             - containerPort: 9005
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          # Giả định email-service (NestJS) có endpoint health
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 9005
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 9005
+            initialDelaySeconds: 5
+            periodSeconds: 5
           env:
             - name: RABBITMQ_URL
               value: "amqp://guest:guest@rabbitmq:5672"

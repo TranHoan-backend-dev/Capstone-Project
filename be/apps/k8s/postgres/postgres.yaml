@@ -16,6 +16,21 @@ spec:
       containers:
         - name: postgres
           image: postgres:15-alpine
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postgres
+            initialDelaySeconds: 10
+            periodSeconds: 10
           env:
             - name: POSTGRES_USER
               value: "postgres"
