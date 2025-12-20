@@ -62,3 +62,25 @@ WORKDIR /app
 COPY --from=build-notification /workspace/notification/build/libs/*.jar app3.jar
 EXPOSE 9004
 ENTRYPOINT ["java","-jar","app3.jar"]
+
+# =======================
+# EMAIL SERVICE
+# =======================
+# Note: This build stage requires the build context to be the 'be' folder
+FROM node:22-alpine AS build-email
+WORKDIR /workspace
+COPY package*.json ./
+COPY apps/email-service/package.json ./apps/email-service/package.json
+RUN npm install
+COPY apps/email-service ./apps/email-service
+COPY nx.json tsconfig.base.json tsconfig.json eslint.config.mjs .prettierrc ./
+RUN npx nx build email-service --prod
+
+# RUNTIME
+FROM node:22-alpine AS runner
+WORKDIR /app
+COPY --from=build-email /workspace/apps/email-service/dist ./
+# GeneratePackageJson is true, so package.json is in dist
+RUN npm install --omit=dev
+EXPOSE 9005
+ENTRYPOINT ["node", "main.js"]
