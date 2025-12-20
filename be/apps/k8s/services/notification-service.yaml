@@ -15,9 +15,28 @@ spec:
     spec:
       containers:
         - name: notification-service
-          image: notification-service:latest
+          image: notification-service:1.0.0
           ports:
             - containerPort: 9004
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 9004
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 9004
+            initialDelaySeconds: 15
+            periodSeconds: 5
           env:
             - name: SERVER_PORT
               value: "9004"
