@@ -30,6 +30,9 @@ spring:
       max-lifetime: 600000 # Ket noi song toi da 30p
       idle-timeout: 30000 # Dong idle sau 30s neu khong su dung
 management:
+  health:
+    rabbit:
+      enabled: false
   endpoints:
     web:
       exposure:
@@ -38,7 +41,7 @@ management:
           - info
           - metrics
           - prometheus
-      base-path: /
+      base-path: /actuator
 rabbitmqconfig:
   exchange_name: auth_event_exchange
   queue_name: user_registered_queue

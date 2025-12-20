@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,32 +25,33 @@ import java.util.Set;
 @EnableWebSecurity
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SecurityConfig {
+  final String[] PUBLIC_URLS = {
+      "/api/auth/**",
+      "/login/oauth2/code/google",
+      "/oauth2/authorization/google",
+      "/actuator/**"
+  };
+
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) {
     return http
-      .csrf(AbstractHttpConfigurer::disable)
-      .authorizeHttpRequests(auth -> auth
-        .requestMatchers("/api/auth/**", "/login/oauth2/code/google", "/oauth2/authorization/google").permitAll()
-        .anyRequest().permitAll()
-      )
-      .oauth2Login(oauth2 -> oauth2
-        .userInfoEndpoint(info -> info.userService(oauth2UserService()))
-        .defaultSuccessUrl("http://localhost:5173/catalog", true)
-      )
-      .exceptionHandling(ex -> ex
-        .authenticationEntryPoint((request, response, authException) -> {
-          response.setContentType("application/json");
-          response.setStatus(HttpStatus.UNAUTHORIZED.value());
-          response.getWriter().write("{\"error\": \"Authentication required\"}");
-        })
-        .accessDeniedHandler((request, response, exception) -> {
-          response.setContentType("application/json");
-          response.setStatus(HttpStatus.FORBIDDEN.value());
-          response.getWriter().write("{\"error\": \"Access denied\"}");
-        })
-      )
-      .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
-      .build();
+        .csrf(AbstractHttpConfigurer::disable)
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers(PUBLIC_URLS).permitAll()
+            .anyRequest().authenticated())
+        .exceptionHandling(ex -> ex
+            .authenticationEntryPoint((request, response, authException) -> {
+              response.setContentType("application/json");
+              response.setStatus(HttpStatus.UNAUTHORIZED.value());
+              response.getWriter().write("{\"error\": \"Authentication required\"}");
+            })
+            .accessDeniedHandler((request, response, exception) -> {
+              response.setContentType("application/json");
+              response.setStatus(HttpStatus.FORBIDDEN.value());
+              response.getWriter().write("{\"error\": \"Access denied\"}");
+            }))
+        .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+        .build();
   }
 
   @Bean
@@ -67,10 +67,9 @@ public class SecurityConfig {
       }
 
       return new DefaultOAuth2User(
-        authorities,
-        user.getAttributes(),
-        "email"
-      );
+          authorities,
+          user.getAttributes(),
+          "email");
     };
   }
 }
