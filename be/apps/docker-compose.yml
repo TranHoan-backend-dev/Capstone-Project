@@ -28,6 +28,17 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - app-network
+  mongodb:
+    image: mongo:6.0
+    container_name: mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+    ports:
+      - "27017:27017"
+    networks:
+      - app-network
   kong-migrations:
     image: kong:3.6
     command: kong migrations bootstrap
@@ -99,19 +110,20 @@ services:
       - SERVER_ADDRESS=0.0.0.0
     networks:
       - app-network
-  #  notification-service:
-  #    build:
-  #      context: .
-  #      dockerfile: Dockerfile
-  #      target: build-notification
-  #    image: notification-service
-  #    ports:
-  #      - "9004:9004"
-  #    environment:
-  #      - SERVER_PORT=9004
-  #      - SERVER_ADDRESS=0.0.0.0
-  #    networks:
-  #      - app-network
+  notification-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime-notification
+    image: notification-service
+    ports:
+      - "9004:9004"
+    environment:
+      - SERVER_PORT=9004
+      - SERVER_ADDRESS=0.0.0.0
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - app-network
 volumes:
   rabbitmq_data:
   postgres_data:

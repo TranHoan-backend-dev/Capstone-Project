@@ -52,13 +52,13 @@ ENTRYPOINT ["java","-jar","app1.jar"]
 # =======================
 # NOTIFICATION SERVICE
 # =======================
-#FROM base-builder AS build-notification
-#COPY notification ./notification
-#RUN gradle :notification:bootJar -x test --no-daemon
+FROM base-builder AS build-notification
+COPY notification ./notification
+RUN gradle :notification:bootJar -x test --no-daemon
 
 # RUNTIME
-#FROM eclipse-temurin:21-jre-alpine AS runtime-notification
-#WORKDIR /app
-#COPY --from=build-notification /workspace/notification/build/libs/*.jar app3.jar
-#EXPOSE 9004
-#ENTRYPOINT ["java","-jar","app3.jar"]
+FROM eclipse-temurin:21-jre-alpine AS runtime-notification
+WORKDIR /app
+COPY --from=build-notification /workspace/notification/build/libs/*.jar app3.jar
+EXPOSE 9004
+ENTRYPOINT ["java","-jar","app3.jar"]
