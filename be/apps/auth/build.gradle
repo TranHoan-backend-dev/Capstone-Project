@@ -16,13 +16,12 @@ dependencies {
 
   implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
-  runtimeOnly 'com.mysql:mysql-connector-j'
-
   runtimeOnly 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 
   implementation 'com.google.api-client:google-api-client:2.7.0'
 
   implementation 'org.springframework.boot:spring-boot-starter-amqp'
+  runtimeOnly 'org.postgresql:postgresql'
 }
 
 tasks.named('test') {

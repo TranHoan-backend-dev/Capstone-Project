@@ -1,0 +1,56 @@
+_format_version: "3.0"
+_transform: true
+
+services:
+  - name: auth-services
+    url: http://auth-service:9001
+    routes:
+      - name: auth-route
+        paths:
+          - /auth
+        strip_path: true
+        methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - PATCH
+  - name: chat-services
+    url: http://chat-service:9002
+    routes:
+      - name: chat-route
+        paths:
+          - /c
+        strip_path: true
+        methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - PATCH
+  - name: notification-services
+    url: http://notification-service:9004
+    routes:
+      - name: notification-route
+        paths:
+          - /noti
+        strip_path: true
+        methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - PATCH
+  - name: email-services
+    url: http://email-service:9005
+    routes:
+      - name: email-route
+        paths:
+          - /e
+        strip_path: true
+        methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - PATCH
