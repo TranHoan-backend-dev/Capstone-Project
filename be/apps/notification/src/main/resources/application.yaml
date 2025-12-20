@@ -1,6 +1,8 @@
 spring:
   application:
     name: notification
+  profiles:
+    active: dev
 management:
   endpoints:
     web:
@@ -11,3 +13,6 @@ management:
       base-path: /
 server:
   port: 9004
+# spring:
+  # mongodb:
+    # uri: mongodb://guest:guest@mongodb:27017/microservice_db?authSource=admin
