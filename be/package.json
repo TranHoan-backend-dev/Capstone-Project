@@ -9,7 +9,7 @@
     "@nestjs/core": "^11.0.0",
     "@nestjs/platform-express": "^11.0.0",
     "axios": "^1.6.0",
-    "reflect-metadata": "^0.1.13",
+    "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.0"
   },
   "devDependencies": {
@@ -40,7 +40,6 @@
     "webpack-cli": "^5.1.4"
   },
   "workspaces": [
-    "apps/*",
-    "services"
+    "apps/*"
   ]
 }

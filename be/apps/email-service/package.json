@@ -1,0 +1,104 @@
+{
+  "name": "@new-folder/email-service",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "targets": {
+      "build": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "webpack-cli build",
+          "args": [
+            "--node-env=production"
+          ],
+          "cwd": "apps/email-service"
+        },
+        "configurations": {
+          "development": {
+            "args": [
+              "--node-env=development"
+            ]
+          }
+        }
+      },
+      "prune-lockfile": {
+        "dependsOn": [
+          "build"
+        ],
+        "cache": true,
+        "executor": "@nx/js:prune-lockfile",
+        "outputs": [
+          "{workspaceRoot}/apps/email-service/dist/package.json",
+          "{workspaceRoot}/apps/email-service/dist/package-lock.json"
+        ],
+        "options": {
+          "buildTarget": "build"
+        }
+      },
+      "copy-workspace-modules": {
+        "dependsOn": [
+          "build"
+        ],
+        "cache": true,
+        "outputs": [
+          "{workspaceRoot}/apps/email-service/dist/workspace_modules"
+        ],
+        "executor": "@nx/js:copy-workspace-modules",
+        "options": {
+          "buildTarget": "build"
+        }
+      },
+      "prune": {
+        "dependsOn": [
+          "prune-lockfile",
+          "copy-workspace-modules"
+        ],
+        "executor": "nx:noop"
+      },
+      "serve": {
+        "continuous": true,
+        "executor": "@nx/js:node",
+        "defaultConfiguration": "development",
+        "dependsOn": [
+          "build"
+        ],
+        "options": {
+          "buildTarget": "@new-folder/email-service:build",
+          "runBuildTargetDependencies": false
+        },
+        "configurations": {
+          "development": {
+            "buildTarget": "@new-folder/email-service:build:development"
+          },
+          "production": {
+            "buildTarget": "@new-folder/email-service:build:production"
+          }
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "@golevelup/nestjs-rabbitmq": "^6.1.0",
+    "@nestjs-modules/mailer": "^2.0.2",
+    "@nestjs/common": "^11.0.0",
+    "@nestjs/config": "^4.0.2",
+    "@nestjs/core": "^11.0.0",
+    "@nestjs/microservices": "^11.1.9",
+    "@nestjs/platform-express": "^11.0.0",
+    "@nestjs/swagger": "^11.2.3",
+    "amqplib": "^0.10.9",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.3",
+    "dotenv": "^17.2.3",
+    "ejs": "^3.1.10",
+    "handlebars": "^4.7.8",
+    "kafkajs": "^2.2.4",
+    "reflect-metadata": "latest",
+    "rxjs": "^7.8.0",
+    "swagger-ui-express": "^5.0.1",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "^11.0.0"
+  }
+}
