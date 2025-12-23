@@ -1,0 +1,67 @@
+spring:
+  application:
+    name: auth
+  profiles:
+    active: dev
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/master
+  rabbitmq:
+    # host: localhost # cua may local
+    host: rabbitmq # cua docker
+    port: 5672
+    username: guest
+    password: guest
+  datasource:
+    hikari:
+      maximum-pool-size: 5 # nang core khi co nhieu truy van song song
+      minimum-idle: 3 # So ket noi idle luon co san
+      connection-timeout: 2000 # Cho ket noi toi da 3s
+      max-lifetime: 600000 # Ket noi song toi da 30p
+      idle-timeout: 30000 # Dong idle sau 30s neu khong su dung
+management:
+  health:
+    rabbit:
+      enabled: false
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+          - metrics
+          - prometheus
+      base-path: /actuator
+rabbitmqconfig:
+  exchange_name: auth_event_exchange
+  queue_name: user_registered_queue
+  routing_key: user-created
+sending_mail:
+  account_creation:
+    subject: ehehe
+    template: huhu
+server:
+  port: 9001
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/microservice
+#    username:
+#    password:
+#  security:
+#    oauth2:
+#      client:
+#        registration:
+#          google:
+#            client-id:
+#            client-secret:
+#            scope:
