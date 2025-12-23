@@ -29,7 +29,7 @@ export const HomePage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
               type="text"
-              label="Client ID"
+              label="Địa chỉ IP máy khách"
               value="117.6.63.110"
               isReadOnly
               variant="bordered"
@@ -40,7 +40,7 @@ export const HomePage = () => {
 
             <Input
               type="text"
-              label="Client machine name"
+              label="Tên máy khách"
               placeholder="Nhập tên máy..."
               value={clientMachineName}
               onValueChange={setClientMachineName}
@@ -67,7 +67,6 @@ export const HomePage = () => {
           <div className="flex gap-2 mt-2">
             <Button
               color="primary"
-              // startContent={<SearchIcon className="w-4 h-4" />}
             >
               Tìm kiếm
             </Button>
@@ -79,7 +78,6 @@ export const HomePage = () => {
       <Card>
         <CardBody>
           <div className="text-center text-gray-500 py-12">
-            {/* <UsersIcon className="w-12 h-12 mx-auto mb-4 text-gray-300" /> */}
             <p className="text-base">Không có dữ liệu để hiển thị</p>
             <p className="text-sm mt-2">Vui lòng chọn bộ lọc và tìm kiếm</p>
           </div>

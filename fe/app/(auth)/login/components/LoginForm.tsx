@@ -1,45 +1,81 @@
 "use client";
 
-import { Form, Input, Button } from "@heroui/react";
+import { Form, Input, Link } from "@heroui/react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import PasswordInput from '@/components/ui/PasswordInput'
+import {
+  UserIcon,
+  ArrowRightStartOnRectangleIcon,
+} from "@heroicons/react/24/solid";
+
+import PasswordInput from "@/components/ui/PasswordInput";
+import CustomButton from "@/components/ui/CustomButton";
 
 export default function LoginForm() {
   const router = useRouter();
-  const t = useTranslations("LoginPage");
 
   return (
-    <div className="w-1/2 pl-6 flex flex-col justify-center">
-      <h2 className="text-2xl font-semibold text-blue-600 mb-4">
-        {t("login")}
-      </h2>
-      <Form className="flex flex-col gap-4">
-        <Input
-          isRequired
-          label={t("form.username")}
-          placeholder={t("form.usernamePlaceholder")}
-          labelPlacement="outside"
-        />
+    <div className="w-full md:w-1/2 h-full bg-white flex items-center justify-center p-4 md:p-8">
+      <div className="w-full max-w-sm md:max-w-md">
+        <h2 className="text-2xl md:text-3xl font-bold text-black-900 mb-6 md:mb-8 text-center">
+          Đăng nhập
+        </h2>
+        <Form className="space-y-4 md:space-y-3">
+          <h3 className="text-sm font-medium text-gray-900 mb-0">Tên đăng nhập</h3>
+          <Input
+            isRequired
+            label="Nhập tên đăng nhập"
+            labelPlacement="inside"
+            endContent={
+              <div className="flex items-center h-full">
+                <UserIcon className="w-5 h-5 text-gray-400" />
+              </div>
+            }
+            classNames={{
+              label: "text-sm font-medium text-gray-700",
+              input: "text-gray-900",
+              inputWrapper:
+                "border border-gray-300 bg-white hover:border-gray-400",
+            }}
+          />
+          <h3 className="text-sm font-medium text-gray-900 mb-0">Mật khẩu</h3>
+          <PasswordInput
+            isRequired
+            label="Nhập mật khẩu"
+            labelPlacement="inside"
+            classNames={{
+              label: "text-sm font-medium text-gray-700",
+              input: "text-gray-900",
+              inputWrapper:
+                "border border-gray-300 bg-white hover:border-gray-400",
+            }}
+          />
 
-        <PasswordInput
-          isRequired
-          label={t("form.password")}
-          placeholder={t("form.passwordPlaceholder")}
-          type="password"
-          labelPlacement="outside"
-        />
+          <div className="w-full pt-2">
+            <div className="grid grid-cols-2 sm:grid-cols-1 gap-3 sm:gap-4">
+              <CustomButton
+                color="primary"
+                type="submit"
+                className="w-full bg-blue-600 text-white md:h-10"
+                startContent={
+                  <ArrowRightStartOnRectangleIcon className="w-5 h-5" />
+                }
+              >
+                Đăng nhập
+              </CustomButton>
 
-        <div className="flex gap-3 mt-1">
-          <Button color="primary" type="submit">
-            {t("form.loginButton")}
-          </Button>
+            </div>
+          </div>
 
-          <Button color="default" variant="bordered">
-            {t("form.cancelButton")}
-          </Button>
-        </div>
-      </Form>
+          <div className="w-full flex justify-center pt-2">
+            <Link
+              href="#"
+              className="text-sm text-blue-600 hover:text-blue-700"
+            >
+              Quên mật khẩu?
+            </Link>
+          </div>
+        </Form>
+      </div>
     </div>
   );
 }

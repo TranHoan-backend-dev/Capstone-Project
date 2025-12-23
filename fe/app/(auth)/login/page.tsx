@@ -3,8 +3,8 @@ import LoginForm from "./components/LoginForm";
 
 export default function Page() {
   return (
-    <div className="min-h-screen bg-[#eaf4ff] flex items-center justify-center">
-      <div className="bg-white w-[700px] rounded-xl shadow-lg flex p-8 border border-blue-100">
+    <div className="min-h-screen bg-[#FFFFFF] flex items-center justify-center p-4">
+      <div className="bg-white w-full max-w-[1100px] h-[550px] flex flex-col md:flex-row rounded-xl shadow-xl overflow-hidden border border-blue-100">
         <LeftSide />
         <LoginForm />
       </div>
