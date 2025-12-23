@@ -148,18 +148,18 @@ jobs:
       
       - name: Install dependencies
         run: npm install
-        working-directory: ./fe/mobile/
+        working-directory: ./fe/mobile/android
 
       - name: Grant execute permission
         run: chmod +x gradlew
-        working-directory: ./fe/mobile/
+        working-directory: ./fe/mobile/android
 
       - name: Build Debug APK
         run: ./gradlew assembleDebug
-        working-directory: ./fe/mobile/
+        working-directory: ./fe/mobile/android
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
           name: debug-apk
-          path: ./fe/mobile/app/build/outputs/apk/debug/app-debug.apk
+          path: ./fe/mobile/android/app/build/outputs/apk/debug/app-debug.apk
