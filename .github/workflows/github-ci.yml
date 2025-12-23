@@ -42,7 +42,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          filter: tree:0
           fetch-depth: 0
 
       - name: Setup Node.js
@@ -50,28 +49,24 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-          cache-dependency-path: ./fe/webapp/package-lock.json
+          cache-dependency-path: fe/webapp/package-lock.json
       
-      - name: Install
-        run: npm install
-        working-directory: ./fe/webapp
       - name: Install deps
         run: npm ci
-        working-directory: ./fe/webapp
+        working-directory: fe/webapp
 
       - name: Run typescheck
         run: npm run typescheck
-        working-directory: ./fe/webapp
+        working-directory: fe/webapp
       
       - name: Build
         run: npm run build
-        working-directory: ./fe/webapp
-
+        working-directory: fe/webapp
       - name: Upload production build artifact
         uses: actions/upload-artifact@v4
         with:
           name: dist
-          path: ./fe/webapp/dist
+          path: fe/webapp/dist
   nx-build:
     runs-on: ubuntu-latest
     steps:
