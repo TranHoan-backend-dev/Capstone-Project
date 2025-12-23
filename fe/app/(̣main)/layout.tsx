@@ -1,7 +1,6 @@
-import Footer from "@/components/layout/Footer";
-import { Header } from "@/components/layout/Header";
-import Sidebar from "@/components/layout/Sidebar";
 import React from "react";
+import Header  from "@/components/layout/Header";
+import { siteConfig } from "@/config/site"
 
 export default function MainLayout({
   children,
@@ -9,12 +8,9 @@ export default function MainLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <Header />
+    <div className="min-h-screen flex flex-col bg-black-50">
+      <Header menuItems={siteConfig.navItems} userName="Dung"/>
       <div className="flex flex-1">
-        <div className="hidden md:block">
-          <Sidebar />
-        </div>
         <main className="flex-1 overflow-y-auto">
           <div className="max-w-7xl mx-auto">
             {children}

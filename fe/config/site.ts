@@ -5,31 +5,130 @@ export const siteConfig = {
   description: "Make beautiful websites regardless of your design experience.",
   navItems: [
     {
-      icon: null,
+      key: "home",
       label: "Trang chủ",
-      href: "/",
+      href: "/home",
     },
     {
-      icon: null,
+      key: "customer",
       label: "Khách hàng",
-      href: "/customer",
+      items: [
+        {
+          key: "customer-list",
+          label: "Danh sách khách hàng",
+          href: "/customers",
+          children: [],
+        },
+      ],
     },
     {
-      icon: null,
+      key: "report",
       label: "Khảo sát thiết kế",
-      href: "/design-survey",
+      items: [
+        {
+          key: "report-list",
+          label: "Báo cáo",
+          children: [
+            {
+              key: "report-contract",
+              label: "Danh sách đơn chuyển lập hợp đồng",
+              href: "/",
+            },
+            {
+              key: "report-budget-wait",
+              label: "Danh sách đơn chờ dự toán",
+              href: "/",
+            },
+            {
+              key: "report-design-reject",
+              label: "Danh sách đơn từ chối thiết kế",
+              href: "/",
+            },
+            {
+              key: "report-budget-approve-wait",
+              label: "Danh sách đơn chờ duyệt dự toán",
+              href: "/report/waiting",
+            },
+            {
+              key: "report-budget-reject",
+              label: "Danh sách đơn từ chối duyệt dự toán",
+              href: "/report/rejecting",
+            },
+            {
+              key: "report-survey-unassigned",
+              label: "Danh sách đơn chưa phân công khảo sát",
+              href: "/",
+            },
+            {
+              key: "report-survey-assigned",
+              label: "Danh sách đơn đã phân công khảo sát",
+              href: "/",
+            },
+            {
+              key: "report-customer-call",
+              label: "Danh sách khách hàng gọi điện",
+              href: "/",
+            },
+          ],
+        },
+        {
+          key: "survey-new",
+          label: "Tạo phiếu khảo sát",
+          href: "/report/surveys/new",
+          children: [],
+        },
+        {
+          key: "survey-pending",
+          label: "Khảo sát chờ duyệt",
+          href: "/report/surveys/pending",
+          children: [],
+        },
+      ],
     },
     {
-      icon: null,
+      key: "construction",
       label: "Thi công",
-      href: "/construction",
+      items: [
+        {
+          key: "construction-list",
+          label: "Danh sách thi công",
+          href: "/dashboard/construction",
+        },
+        {
+          key: "construction-schedule",
+          label: "Lịch thi công",
+          href: "/dashboard/construction/schedule",
+        },
+        {
+          key: "construction-report",
+          label: "Báo cáo thi công",
+          href: "/dashboard/construction/report",
+        },
+      ],
     },
     {
-      icon: null,
+      key: "billing",
       label: "Ghi chỉ số & Hóa đơn",
-      href: "/record-invoice",
+      items: [
+        {
+          key: "billing-meter",
+          label: "Ghi chỉ số",
+          href: "/dashboard/billing/meter",
+        },
+        {
+          key: "billing-invoice",
+          label: "Hóa đơn",
+          href: "/dashboard/billing/invoice",
+        },
+        {
+          key: "billing-payment",
+          label: "Thanh toán",
+          href: "/dashboard/billing/payment",
+        },
+      ],
     },
   ],
+
   navMenuItems: [
     {
       label: "Profile",
@@ -64,11 +163,28 @@ export const siteConfig = {
       href: "/logout",
     },
   ],
-  links: {
-    github: "https://github.com/heroui-inc/heroui",
-    twitter: "https://twitter.com/hero_ui",
-    docs: "https://heroui.com",
-    discord: "https://discord.gg/9b6yyZKmH4",
-    sponsor: "https://patreon.com/jrgarciadev",
-  },
+
+  columnsReportWaiting: [
+    { key: "stt", label: "STT", width: "60px" },
+    { key: "soDon", label: "Số đơn", width: "120px" },
+    { key: "tenKhachHang", label: "Tên khách hàng", width: "200px" },
+    { key: "diaChi", label: "Địa chỉ", width: "200px" },
+    { key: "dienThoai", label: "Điện thoại", width: "120px" },
+    { key: "ngayDK", label: "Ngày Đ/K", width: "120px" },
+    { key: "ngayLap", label: "Ngày lập", width: "120px" },
+    { key: "tongTien", label: "Tổng tiền", width: "150px" },
+    { key: "nvLap", label: "NV lập", width: "150px" },
+  ],
+
+  columnsReportRejecting: [
+    { key: "stt", label: "STT", width: "60px" },
+    { key: "soDon", label: "Số đơn", width: "120px" },
+    { key: "tenKhachHang", label: "Tên khách hàng", width: "200px" },
+    { key: "diaChi", label: "Địa chỉ", width: "200px" },
+    { key: "dienThoai", label: "Điện thoại", width: "120px" },
+    { key: "ngayDK", label: "Ngày Đ/K", width: "120px" },
+    { key: "ngayLap", label: "Ngày lập chiết tính", width: "120px" },
+    { key: "nvLapChietTinh", label: "N/V lập chiết tính", width: "120px" },
+    { key: "ghiChu", label: "Ghi chú", width: "150px" },
+  ],
 };
