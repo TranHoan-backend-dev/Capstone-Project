@@ -1,0 +1,37 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '4.0.0'
+	id 'io.spring.dependency-management' version '1.1.7'
+	id 'maven-publish'
+}
+
+group = 'com.capstone.chat'
+version = '0.0.1-SNAPSHOT'
+description = 'Demo project for Spring Boot'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+tasks.named('bootJar') {
+  mainClass = 'com.capstone.chat.ChatApplication'
+}
+springBoot {
+	buildInfo()
+}
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			artifact bootJar
+		}
+	}
+}
+test {
+  enabled = false
+}

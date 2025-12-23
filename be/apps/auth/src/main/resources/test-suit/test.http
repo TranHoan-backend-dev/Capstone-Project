@@ -1,0 +1,27 @@
+@uri = http://localhost:8080
+
+### Register new account for customer, happy case
+POST {{uri}}/auth/signup
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "hoantxhe",
+  "email": "hoana5k44nknd@gmail.com",
+  "fullName": "Tran Xuan Hoan",
+  "password": "Hoan1234@",
+  "status": false
+}
+
+### Register new account for customer, unhappy case (wrong email format)
+POST {{uri}}/auth/signup
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "hoantxhe",
+  "email": "hoana5k44nkndgmail.com",
+  "fullName": "Tran Xuan Hoan",
+  "password": "Hoan1234@",
+  "status": false
+}
