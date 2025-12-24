@@ -24,6 +24,8 @@ services:
       - "27017:27017"
     networks:
       - app-network
+volumes:
+  postgres_data:
 networks:
   app-network:
     driver: bridge
