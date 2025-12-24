@@ -89,7 +89,6 @@ services:
       - app-network
 volumes:
   rabbitmq_data:
-  # postgres_data:
 networks:
   app-network:
     driver: bridge
