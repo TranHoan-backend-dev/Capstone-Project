@@ -1,5 +1,5 @@
 // components/filters/SingleDatePicker.tsx
-import { DatePicker } from "@heroui/date-picker";
+import { DatePicker } from "@heroui/react";
 import { DateValue } from "@heroui/react";
 import Label from "@/components/ui/Label";
 
