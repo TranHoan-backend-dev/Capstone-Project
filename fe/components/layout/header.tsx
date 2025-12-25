@@ -74,7 +74,7 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
             <span className="text-xl font-bold text-gray-900 ml-2">CRM</span>
           </NavbarBrand>
 
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-6 cursor-pointer">
             {menuItems.map((item) =>
               item.items && item.items.length > 0 ? (
                 <NestedDropdown key={item.key} item={item} />
