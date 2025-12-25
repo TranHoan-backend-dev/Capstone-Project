@@ -82,7 +82,7 @@ export default function Header({ menuItems, userName }: NavigationProps) {
                 <Link
                   key={item.key}
                   href={item.href || "#"}
-                  className="text-sm text-gray-700 hover:text-gray-900 px-2 py-1 whitespace-nowrap hover:bg-gray-100 rounded transition-colors"
+                  className="text-sm text-gray-700 hover:text-gray-900 px-2 py-2 whitespace-nowrap hover:bg-gray-100 rounded transition-colors"
                 >
                   {item.label}
                 </Link>

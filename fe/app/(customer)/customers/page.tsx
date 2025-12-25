@@ -5,6 +5,8 @@ import { Breadcrumbs, BreadcrumbItem } from "@heroui/react";
 import { CustomerHeader } from "./components/CustomerHeader";
 import { FilterSection } from "./components/FilterSection";
 import { ResultsTable } from "./components/ResultsTable";
+import { siteConfig } from "@/config/site";
+import Header from "@/components/layout/navbar";
 
 export default function CustomersPage() {
   const branches = [{ label: "Tất cả", value: "all" }];
@@ -35,12 +37,17 @@ export default function CustomersPage() {
 
   return (
     <div className="min-h-screen bg-[#f8f9fa]">
-      <CustomerHeader />
+      <Header menuItems={siteConfig.navItems} userName="Dung" />
 
       <main className="p-8 max-w-[1440px] mx-auto space-y-6">
         <Breadcrumbs variant="light" size="sm" className="text-gray-400">
           <BreadcrumbItem href="/">Trang chủ</BreadcrumbItem>
-          <BreadcrumbItem href="/customers" className="font-bold text-[#2563eb]">Khách hàng</BreadcrumbItem>
+          <BreadcrumbItem
+            href="/customers"
+            className="font-bold text-[#2563eb]"
+          >
+            Khách hàng
+          </BreadcrumbItem>
         </Breadcrumbs>
 
         <div className="space-y-6">
