@@ -12,6 +12,7 @@ export const siteConfig = {
     {
       key: "customer",
       label: "Khách hàng",
+      href: "/customers",
       items: [
         {
           key: "new-installation-form",
@@ -20,7 +21,7 @@ export const siteConfig = {
           children: [],
         },
         {
-          key: "new-installation-form",
+          key: "installation-form",
           label: "Tra cứu đơn lắp đặt mới",
           href: "/installation-form",
           children: [],
