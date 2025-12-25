@@ -5,7 +5,6 @@ import { CustomBreadcrumb } from "@/components/ui/custom-breadcrumb";
 import { FilterSection } from "./components/FilterSection";
 import { ResultsTable } from "./components/ResultsTable";
 import { siteConfig } from "@/config/site";
-import Header from "@/components/layout/Header";
 import { BreadcrumbItem, Breadcrumbs } from "@heroui/react";
 
 const CustomersPage = () => {
