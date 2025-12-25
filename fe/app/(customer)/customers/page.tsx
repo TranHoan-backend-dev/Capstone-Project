@@ -6,7 +6,7 @@ import { CustomerHeader } from "@/components/layout/CustomerHeader";
 import { FilterSection } from "./components/FilterSection";
 import { ResultsTable } from "./components/ResultsTable";
 
-export default function CustomersPage() {
+const CustomersPage = () => {
   const branches = [{ label: "Tất cả", value: "all" }];
   const areas = [{ label: "Tất cả", value: "all" }];
   const districts = [{ label: "Tất cả", value: "all" }];
@@ -58,4 +58,6 @@ export default function CustomersPage() {
       </main>
     </div>
   );
-}
+};
+
+export default CustomersPage;

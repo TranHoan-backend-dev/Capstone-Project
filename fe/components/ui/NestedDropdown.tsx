@@ -23,7 +23,7 @@ export interface MenuItem {
   items?: SubMenuItem[];
 }
 
-export default function NestedDropdown({ item }: { item: MenuItem }) {
+const NestedDropdown = ({ item }: { item: MenuItem }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [nestedOpen, setNestedOpen] = useState<string | null>(null);
 
@@ -88,4 +88,6 @@ export default function NestedDropdown({ item }: { item: MenuItem }) {
       )}
     </div>
   );
-}
+};
+
+export default NestedDropdown;

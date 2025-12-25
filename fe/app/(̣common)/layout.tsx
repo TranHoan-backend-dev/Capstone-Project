@@ -1,12 +1,12 @@
 import React from "react";
-import Header from "@/components/layout/navbar";
+import Header from "@/components/layout/header";
 import { siteConfig } from "@/config/site"
 
-export default function MainLayout({
+const MainLayout = ({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) {
+}>) => {
   return (
     <div className="min-h-screen flex flex-col bg-black-50">
       <Header menuItems={siteConfig.navItems} userName="Dung" />
@@ -19,4 +19,6 @@ export default function MainLayout({
       </div>
     </div>
   );
-}
+};
+
+export default MainLayout;

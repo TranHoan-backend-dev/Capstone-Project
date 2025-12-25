@@ -10,7 +10,7 @@ import {
 import PasswordInput from "@/components/ui/PasswordInput";
 import CustomButton from "@/components/ui/CustomButton";
 
-export default function LoginForm() {
+const LoginForm = () => {
   const router = useRouter();
 
   return (
@@ -78,4 +78,6 @@ export default function LoginForm() {
       </div>
     </div>
   );
-}
+};
+
+export default LoginForm;

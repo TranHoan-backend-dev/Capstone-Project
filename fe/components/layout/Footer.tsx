@@ -1,7 +1,11 @@
-export default function Footer() {
+"use client";
+
+const Footer = () => {
   return (
-      <div className="p-4 border-t border-blue-100 text-xs text-blue-500 text-center">
-        <p>© 2025 Business CRM</p>
-      </div>
+    <div className="p-4 border-t border-blue-100 text-xs text-blue-500 text-center">
+      <p>© 2025 Business CRM</p>
+    </div>
   );
-}
+};
+
+export default Footer;
