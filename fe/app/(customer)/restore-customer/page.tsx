@@ -6,7 +6,7 @@ import { CustomerHeader } from "@/components/layout/CustomerHeader";
 import { RestoreFilter } from "./components/RestoreFilter";
 import { RestoreTable } from "./components/RestoreTable";
 
-export default function RestoreCustomerPage() {
+const RestoreCustomerPage = () => {
     const periodData = [
         { label: "T8/2025", value: "T8/2025" },
         { label: "T7/2025", value: "T7/2025" },
@@ -62,4 +62,6 @@ export default function RestoreCustomerPage() {
             </main>
         </div>
     );
-}
+};
+
+export default RestoreCustomerPage;

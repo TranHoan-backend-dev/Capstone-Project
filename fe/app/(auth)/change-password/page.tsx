@@ -1,5 +1,7 @@
 import ChangePasswordForm from "./components/ChangePasswordForm";
 
-export default function ChangePasswordPage() {
+const ChangePasswordPage = () => {
   return <ChangePasswordForm />
-}
+};
+
+export default ChangePasswordPage;

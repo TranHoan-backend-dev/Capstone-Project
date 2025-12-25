@@ -1,4 +1,4 @@
-export default function LeftSide() {
+const LeftSide = () => {
   return (
     <div className="w-full md:w-1/2 h-full bg-gradient-to-br from-blue-600 to-orange-500 flex flex-col items-center justify-center text-white p-6">
       <div className="mb-6 md:mb-8">
@@ -10,4 +10,6 @@ export default function LeftSide() {
       <p className="text-base md:text-lg text-white/90">Phiên bản 1.0.0</p>
     </div>
   );
-}
+};
+
+export default LeftSide;

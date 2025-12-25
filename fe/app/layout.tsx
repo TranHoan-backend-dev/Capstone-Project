@@ -16,11 +16,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
+const RootLayout = async ({
   children,
 }: {
   children: React.ReactNode;
-}) {
+}) => {
   return (
     <html suppressHydrationWarning>
       <body
@@ -33,4 +33,6 @@ export default async function RootLayout({
       </body>
     </html>
   );
-}
+};
+
+export default RootLayout;
