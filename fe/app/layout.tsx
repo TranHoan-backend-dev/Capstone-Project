@@ -4,6 +4,7 @@ import { Providers } from "./providers";
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import "@/styles/globals.css";
+import Header from "@/components/layout/Header";
 
 export const metadata: Metadata = {
   title: {
@@ -16,11 +17,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
+const RootLayout = async ({
   children,
 }: {
   children: React.ReactNode;
-}) {
+}) => {
   return (
     <html suppressHydrationWarning>
       <body
@@ -29,8 +30,17 @@ export default async function RootLayout({
           fontSans.variable
         )}
       >
-        <Providers>{children}</Providers>
+        <Providers>
+          <div className="min-h-screen flex flex-col bg-black-50">
+            <Header menuItems={siteConfig.navItems} userName="Dung" />
+            <main className="flex-1 overflow-y-auto">
+              {children}
+            </main>
+          </div>
+        </Providers>
       </body>
     </html>
   );
-}
+};
+
+export default RootLayout;

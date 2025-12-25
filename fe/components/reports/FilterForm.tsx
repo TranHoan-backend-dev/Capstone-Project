@@ -1,9 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import Label from "../ui/Label";
-import { Select, SelectItem } from "@heroui/react";
-import { Button, DateValue } from "@heroui/react";
+import { Select, SelectItem, Button, DateValue } from "@heroui/react";
 import { DocumentChartBarIcon } from "@heroicons/react/24/solid";
 import { SingleDatePicker } from "./component/SingleDatePicker";
 import { DateRangePicker } from "./component/DateRangePicker";
@@ -21,11 +19,11 @@ export interface FilterValues {
   toDate: DateValue | null;
 }
 
-export function FilterForm({
+export const FilterForm = ({
   title,
   onFilterChange,
   onSubmit,
-}: FilterFormProps) {
+}: FilterFormProps) => {
   const [filters, setFilters] = useState<FilterValues>({
     branch: "",
     createDate: null,
@@ -49,19 +47,19 @@ export function FilterForm({
       <div className="grid gap-4 md:gap-6 md:grid-cols-2">
         <div className="space-y-4 md:space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="branch">Chi nhánh</Label>
             <Select
+              label="Chi nhánh"
               labelPlacement="outside"
               size="sm"
               placeholder="Chọn thành phố"
-              className="w-full md:w-[500px] text-sm rounded-md border border-gray-300"
+              className="w-full md:w-[500px] text-sm rounded-md"
               selectedKeys={filters.branch ? [filters.branch] : []}
               onSelectionChange={(keys) => {
                 const selected = Array.from(keys)[0] as string;
                 handleFilterChange("branch", selected);
               }}
             >
-              <SelectItem key="nam-dinh">Thành phố Nam Định</SelectItem>
+              <SelectItem key="nam-dinh" textValue="Thành phố Nam Định">Thành phố Nam Định</SelectItem>
             </Select>
           </div>
           <SingleDatePicker
@@ -93,4 +91,4 @@ export function FilterForm({
       </div>
     </div>
   );
-}
+};

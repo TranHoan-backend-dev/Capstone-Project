@@ -8,7 +8,7 @@ import PasswordRequirements from "./PasswordRequirements";
 import ChangePasswordHeader from "./ChangePasswordHeader";
 import { XMarkIcon, DocumentArrowDownIcon } from "@heroicons/react/24/solid";
 
-export default function ChangePasswordForm() {
+const ChangePasswordForm = () => {
   const router = useRouter();
 
   const [formData, setFormData] = useState({
@@ -214,4 +214,6 @@ export default function ChangePasswordForm() {
       </div>
     </div>
   );
-}
+};
+
+export default ChangePasswordForm;

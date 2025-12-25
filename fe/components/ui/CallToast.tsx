@@ -1,17 +1,18 @@
-import { CircularProgress } from "@heroui/progress";
-import { addToast } from "@heroui/toast";
+"use client";
+
+import { CircularProgress, addToast } from "@heroui/react";
 
 interface ToastProps {
   title?: string;
   message: string;
   color:
-    | "success"
-    | "danger"
-    | "warning"
-    | "default"
-    | "primary"
-    | "secondary"
-    | "foreground";
+  | "success"
+  | "danger"
+  | "warning"
+  | "default"
+  | "primary"
+  | "secondary"
+  | "foreground";
   isCircularProgress?: true;
 }
 

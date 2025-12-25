@@ -7,10 +7,10 @@ interface ChangePasswordHeaderProps {
   title?: string;
 }
 
-export default function ChangePasswordHeader({
+const ChangePasswordHeader = ({
   onBack,
   title = "Quay lại",
-}: ChangePasswordHeaderProps) {
+}: ChangePasswordHeaderProps) => {
   return (
     <div className="bg-white-500 text-blue p-4">
       <button
@@ -22,4 +22,6 @@ export default function ChangePasswordHeader({
       </button>
     </div>
   );
-}
+};
+
+export default ChangePasswordHeader;

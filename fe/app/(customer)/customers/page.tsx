@@ -1,14 +1,14 @@
 "use client";
 
 import React from "react";
-import { Breadcrumbs, BreadcrumbItem } from "@heroui/react";
-import { CustomerHeader } from "./components/CustomerHeader";
+import { CustomBreadcrumb } from "@/components/ui/custom-breadcrumb";
 import { FilterSection } from "./components/FilterSection";
 import { ResultsTable } from "./components/ResultsTable";
 import { siteConfig } from "@/config/site";
-import Header from "@/components/layout/navbar";
+import Header from "@/components/layout/Header";
+import { BreadcrumbItem, Breadcrumbs } from "@heroui/react";
 
-export default function CustomersPage() {
+const CustomersPage = () => {
   const branches = [{ label: "Tất cả", value: "all" }];
   const areas = [{ label: "Tất cả", value: "all" }];
   const districts = [{ label: "Tất cả", value: "all" }];
@@ -37,7 +37,6 @@ export default function CustomersPage() {
 
   return (
     <div className="min-h-screen bg-[#f8f9fa]">
-      <Header menuItems={siteConfig.navItems} userName="Dung" />
 
       <main className="p-8 max-w-[1440px] mx-auto space-y-6">
         <Breadcrumbs variant="light" size="sm" className="text-gray-400">
@@ -63,4 +62,6 @@ export default function CustomersPage() {
       </main>
     </div>
   );
-}
+};
+
+export default CustomersPage;

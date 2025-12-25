@@ -4,7 +4,7 @@ interface PasswordRequirementsProps {
   password: string;
 }
 
-export default function PasswordRequirements({ password }: PasswordRequirementsProps) {
+const PasswordRequirements = ({ password }: PasswordRequirementsProps) => {
   const requirements = [
     {
       label: "Ít nhất 6 ký tự",
@@ -32,9 +32,8 @@ export default function PasswordRequirements({ password }: PasswordRequirementsP
         {requirements.map((req, index) => (
           <li key={index} className="flex items-center">
             <span
-              className={`w-2 h-2 rounded-full mr-2 ${
-                req.met ? "bg-green-500" : req.optional ? "bg-yellow-300" : "bg-gray-300"
-              }`}
+              className={`w-2 h-2 rounded-full mr-2 ${req.met ? "bg-green-500" : req.optional ? "bg-yellow-300" : "bg-gray-300"
+                }`}
             ></span>
             {req.label}
             {req.optional && <span className="text-gray-400 ml-1">(khuyến khích)</span>}
@@ -43,4 +42,6 @@ export default function PasswordRequirements({ password }: PasswordRequirementsP
       </ul>
     </div>
   );
-}
+};
+
+export default PasswordRequirements;

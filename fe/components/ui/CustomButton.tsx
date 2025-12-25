@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Button } from "@heroui/button";
+import { Button } from "@heroui/react";
 import { cn } from "@/utils/cn";
 
 interface Props extends Omit<React.ComponentProps<typeof Button>, "children"> {
@@ -10,23 +10,23 @@ interface Props extends Omit<React.ComponentProps<typeof Button>, "children"> {
   children?: React.ReactNode;
   className?: string;
   variant?:
-    | "solid"
-    | "bordered"
-    | "light"
-    | "flat"
-    | "faded"
-    | "shadow"
-    | "ghost";
+  | "solid"
+  | "bordered"
+  | "light"
+  | "flat"
+  | "faded"
+  | "shadow"
+  | "ghost";
 }
 
-export default function CustomButton({
+const CustomButton = ({
   type = "button",
   label,
   children,
   className,
   variant = "solid",
   ...props
-}: Props) {
+}: Props) => {
   return (
     <Button
       type={type}
@@ -41,4 +41,6 @@ export default function CustomButton({
       {children ?? label}
     </Button>
   );
-}
+};
+
+export default CustomButton;

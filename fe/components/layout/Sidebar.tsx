@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { ChevronDownIcon, XMarkIcon } from "@heroicons/react/24/solid";
-import { MenuItem } from "./navbar";
+import { MenuItem } from "./Header";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -12,11 +12,11 @@ interface SidebarProps {
   menuItems: MenuItem[];
 }
 
-export default function Sidebar({
+const Sidebar = ({
   isOpen,
   onClose,
   menuItems,
-}: SidebarProps) {
+}: SidebarProps) => {
   const pathname = usePathname();
   const [openSubmenus, setOpenSubmenus] = useState<Set<string>>(new Set());
 
@@ -74,8 +74,8 @@ export default function Sidebar({
                     <button
                       onClick={() => toggleSubmenu(item.key)}
                       className={`w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 transition-colors ${pathname === item.href
-                          ? "bg-blue-50 text-blue-600"
-                          : "text-gray-700"
+                        ? "bg-blue-50 text-blue-600"
+                        : "text-gray-700"
                         }`}
                     >
                       <span className="font-medium">{item.label}</span>
@@ -94,15 +94,15 @@ export default function Sidebar({
                                 <button
                                   onClick={() => toggleSubmenu(subItem.key)}
                                   className={`w-full flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 text-sm ${pathname === subItem.href
-                                      ? "bg-blue-50 text-blue-600"
-                                      : "text-gray-600"
+                                    ? "bg-blue-50 text-blue-600"
+                                    : "text-gray-600"
                                     }`}
                                 >
                                   <span>{subItem.label}</span>
                                   <ChevronDownIcon
                                     className={`w-3 h-3 transition-transform ${openSubmenus.has(subItem.key)
-                                        ? "rotate-180"
-                                        : ""
+                                      ? "rotate-180"
+                                      : ""
                                       }`}
                                   />
                                 </button>
@@ -115,8 +115,8 @@ export default function Sidebar({
                                         href={child.href || "#"}
                                         onClick={onClose}
                                         className={`block p-2 rounded-lg hover:bg-gray-100 text-sm ${pathname === child.href
-                                            ? "bg-blue-50 text-blue-600"
-                                            : "text-gray-600"
+                                          ? "bg-blue-50 text-blue-600"
+                                          : "text-gray-600"
                                           }`}
                                       >
                                         {child.label}
@@ -130,8 +130,8 @@ export default function Sidebar({
                                 href={subItem.href || "#"}
                                 onClick={onClose}
                                 className={`block p-2 rounded-lg hover:bg-gray-100 text-sm ${pathname === subItem.href
-                                    ? "bg-blue-50 text-blue-600"
-                                    : "text-gray-600"
+                                  ? "bg-blue-50 text-blue-600"
+                                  : "text-gray-600"
                                   }`}
                               >
                                 {subItem.label}
@@ -147,8 +147,8 @@ export default function Sidebar({
                     href={item.href || "#"}
                     onClick={onClose}
                     className={`block p-3 rounded-lg hover:bg-gray-100 font-medium ${pathname === item.href
-                        ? "bg-blue-50 text-blue-600"
-                        : "text-gray-700"
+                      ? "bg-blue-50 text-blue-600"
+                      : "text-gray-700"
                       }`}
                   >
                     {item.label}
@@ -161,4 +161,6 @@ export default function Sidebar({
       </div>
     </>
   );
-}
+};
+
+export default Sidebar;
