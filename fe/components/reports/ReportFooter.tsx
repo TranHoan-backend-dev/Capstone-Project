@@ -2,7 +2,7 @@
 
 import React from "react";
 
-export function ReportFooter() {
+export const ReportFooter = () => {
   const today = new Date();
   const formattedDate = `, Ngày ${today.getDate().toString().padStart(2, "0")} tháng ${(today.getMonth() + 1).toString().padStart(2, "0")} năm ${today.getFullYear()}`;
 
@@ -20,4 +20,4 @@ export function ReportFooter() {
       </div>
     </div>
   );
-}
+};

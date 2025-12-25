@@ -7,7 +7,7 @@ interface ReportHeaderProps {
   dateRange: string;
 }
 
-export function ReportHeader({ title, dateRange }: ReportHeaderProps) {
+export const ReportHeader = ({ title, dateRange }: ReportHeaderProps) => {
   return (
     <div className="space-y-6 text-center">
       <h2 className="text-sm font-semibold">
@@ -17,4 +17,4 @@ export function ReportHeader({ title, dateRange }: ReportHeaderProps) {
       <p className="text-xs text-gray-600">{dateRange}</p>
     </div>
   );
-}
+};

@@ -1,9 +1,6 @@
 'use client'
 
-import { Button } from "@heroui/button";
-import { Card, CardBody } from "@heroui/card";
-import { Input } from "@heroui/input";
-import { Select, SelectItem } from "@heroui/select";
+import { Button, Card, CardBody, Input, Select, SelectItem } from "@heroui/react";
 import { useState } from "react";
 
 export const HomePage = () => {
@@ -22,7 +19,7 @@ export const HomePage = () => {
         <CardBody className="gap-4">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-lg font-semibold text-gray-800">
-            Phân mềm Quản lý Khách hàng Dùng chung
+              Phân mềm Quản lý Khách hàng Dùng chung
             </span>
           </div>
 

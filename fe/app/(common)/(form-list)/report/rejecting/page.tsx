@@ -5,7 +5,7 @@ import { ReportHeader } from "@/components/reports/ReportHeader";
 import { SearchToolbar } from "@/components/reports/SearchToolbar";
 import { siteConfig } from "@/config/site";
 
-export default function ReportRejectingList() {
+const ReportRejectingList = () => {
   return (
     <main className="mx-auto max-w-7xl space-y-6 p-6">
       <FilterForm title="Danh sách đơn từ chối duyệt dự toán" />
@@ -24,4 +24,6 @@ export default function ReportRejectingList() {
       </div>
     </main>
   );
-}
+};
+
+export default ReportRejectingList;

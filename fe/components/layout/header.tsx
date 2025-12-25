@@ -5,7 +5,7 @@ import {
   Dropdown,
   DropdownItem,
   DropdownMenu,
-  DropdownTrigger,
+  DropdownTrigger, 
   Navbar as HeroUINavbar,
   NavbarBrand,
   NavbarContent,
@@ -43,7 +43,7 @@ interface NavigationProps {
   onUserMenuAction?: (key: string) => void;
 }
 
-export default function Header({ menuItems, userName }: NavigationProps) {
+const Header = ({ menuItems, userName }: NavigationProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -176,4 +176,6 @@ export default function Header({ menuItems, userName }: NavigationProps) {
       />
     </>
   );
-}
+};
+
+export default Header;

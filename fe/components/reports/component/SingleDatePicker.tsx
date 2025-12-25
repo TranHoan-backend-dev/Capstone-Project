@@ -1,7 +1,7 @@
-// components/filters/SingleDatePicker.tsx
-import { DatePicker } from "@heroui/date-picker";
+"use client";
+
+import { DatePicker } from "@heroui/react";
 import { DateValue } from "@heroui/react";
-import Label from "@/components/ui/Label";
 
 interface SingleDatePickerProps {
   value: DateValue | null;
@@ -10,22 +10,23 @@ interface SingleDatePickerProps {
   className?: string;
 }
 
-export function SingleDatePicker({
+export const SingleDatePicker = ({
   value,
   onChange,
   label = "Ngày lập",
   className = "",
-}: SingleDatePickerProps) {
+}: SingleDatePickerProps) => {
   return (
-    <div className={`space-y-2 ${className}`}>
-      <Label>{label}</Label>
+    <div className={`${className}`}>
       <DatePicker
+        label={label}
+        labelPlacement="outside"
         value={value}
         onChange={onChange}
         granularity="day"
         size="sm"
-        className="w-full md:w-[200px] rounded-md border border-gray-300 bg-white"
+        className="w-full md:w-[200px] rounded-md bg-white"
       />
     </div>
   );
-}
+};

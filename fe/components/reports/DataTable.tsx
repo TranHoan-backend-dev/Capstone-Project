@@ -13,7 +13,7 @@ interface DataTableProps {
   data?: any[];
 }
 
-export function DataTable({ columns, data = [] }: DataTableProps) {
+export const DataTable = ({ columns, data = [] }: DataTableProps) => {
   return (
     <div className="overflow-x-auto border">
       <table className="w-full min-w-[640px] md:min-w-0">
@@ -58,4 +58,4 @@ export function DataTable({ columns, data = [] }: DataTableProps) {
       </table>
     </div>
   );
-}
+};

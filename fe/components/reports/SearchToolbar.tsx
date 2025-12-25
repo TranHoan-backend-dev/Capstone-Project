@@ -6,10 +6,9 @@ import {
   ArrowDownTrayIcon,
   BookmarkIcon,
 } from "@heroicons/react/24/outline";
-import { Input } from "@heroui/react";
-import { Button } from "@heroui/react";
+import { Input, Button } from "@heroui/react";
 
-export function SearchToolbar() {
+export const SearchToolbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   return (
@@ -37,4 +36,4 @@ export function SearchToolbar() {
       </Button>
     </div>
   );
-}
+};
