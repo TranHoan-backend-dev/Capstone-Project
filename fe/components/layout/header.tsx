@@ -5,7 +5,7 @@ import {
   Dropdown,
   DropdownItem,
   DropdownMenu,
-  DropdownTrigger, 
+  DropdownTrigger,
   Navbar as HeroUINavbar,
   NavbarBrand,
   NavbarContent,
