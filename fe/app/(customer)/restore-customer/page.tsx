@@ -2,7 +2,6 @@
 
 import React from "react";
 import { CustomBreadcrumb } from "@/components/ui/custom-breadcrumb";
-import { CustomerHeader } from "@/components/layout/CustomerHeader";
 import { RestoreFilter } from "./components/RestoreFilter";
 import { RestoreTable } from "./components/RestoreTable";
 
@@ -44,9 +43,7 @@ const RestoreCustomerPage = () => {
 
     return (
         <div className="min-h-screen bg-[#f8f9fa]">
-            <CustomerHeader />
-
-            <main className="p-8 max-w-[1440px] mx-auto space-y-6">
+            <div className="p-8 max-w-[1440px] mx-auto space-y-6">
                 <CustomBreadcrumb
                     items={[
                         { label: "Trang chủ", href: "/" },
@@ -59,7 +56,7 @@ const RestoreCustomerPage = () => {
                     <RestoreFilter periodData={periodData} />
                     <RestoreTable data={mockData} />
                 </div>
-            </main>
+            </div>
         </div>
     );
 };
