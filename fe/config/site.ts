@@ -12,11 +12,60 @@ export const siteConfig = {
     {
       key: "customer",
       label: "Khách hàng",
+      href: "/customers",
       items: [
         {
-          key: "customer-list",
-          label: "Danh sách khách hàng",
+          key: "new-installation-form",
+          label: "Đơn lắp đặt mới",
+          href: "/new-installation-form",
+          children: [],
+        },
+        {
+          key: "installation-form",
+          label: "Tra cứu đơn lắp đặt mới",
+          href: "/installation-form",
+          children: [],
+        },
+        {
+          key: "enter-customer",
+          label: "Nhập khách hàng",
+          href: "/enter-customer",
+          children: [],
+        },
+        {
+          key: "find-customer",
+          label: "Tra cứu khách hàng",
           href: "/customers",
+          children: [],
+        },
+        {
+          key: "customer-assignment",
+          label: "Phân tuyến khách hàng",
+          href: "/customer-assignment",
+          children: [],
+        },
+        {
+          key: "split-account",
+          label: "Tách sổ ghi",
+          href: "/split-account",
+          children: [],
+        },
+        {
+          key: "change-payment",
+          label: "Thay đổi hình thức thanh toán",
+          href: "/change-payment",
+          children: [],
+        },
+        {
+          key: "cancel-customer",
+          label: "Hủy khách hàng",
+          href: "/cancel-customer",
+          children: [],
+        },
+        {
+          key: "restore-customer",
+          label: "Khôi phục khách hàng hủy",
+          href: "/restore-customer",
           children: [],
         },
       ],

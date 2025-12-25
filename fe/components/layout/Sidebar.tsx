@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { ChevronDownIcon, XMarkIcon } from "@heroicons/react/24/solid";
-import { MenuItem } from "./Header";
+import { MenuItem } from "./navbar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -50,9 +50,8 @@ export default function Sidebar({
         />
       )}
       <div
-        className={`fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-50 transform transition-transform duration-300 ease-in-out md:hidden ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-50 transform transition-transform duration-300 ease-in-out md:hidden ${isOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center">
@@ -74,17 +73,15 @@ export default function Sidebar({
                   <>
                     <button
                       onClick={() => toggleSubmenu(item.key)}
-                      className={`w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 transition-colors ${
-                        pathname === item.href
+                      className={`w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 transition-colors ${pathname === item.href
                           ? "bg-blue-50 text-blue-600"
                           : "text-gray-700"
-                      }`}
+                        }`}
                     >
                       <span className="font-medium">{item.label}</span>
                       <ChevronDownIcon
-                        className={`w-4 h-4 transition-transform ${
-                          openSubmenus.has(item.key) ? "rotate-180" : ""
-                        }`}
+                        className={`w-4 h-4 transition-transform ${openSubmenus.has(item.key) ? "rotate-180" : ""
+                          }`}
                       />
                     </button>
 
@@ -96,19 +93,17 @@ export default function Sidebar({
                               <>
                                 <button
                                   onClick={() => toggleSubmenu(subItem.key)}
-                                  className={`w-full flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 text-sm ${
-                                    pathname === subItem.href
+                                  className={`w-full flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 text-sm ${pathname === subItem.href
                                       ? "bg-blue-50 text-blue-600"
                                       : "text-gray-600"
-                                  }`}
+                                    }`}
                                 >
                                   <span>{subItem.label}</span>
                                   <ChevronDownIcon
-                                    className={`w-3 h-3 transition-transform ${
-                                      openSubmenus.has(subItem.key)
+                                    className={`w-3 h-3 transition-transform ${openSubmenus.has(subItem.key)
                                         ? "rotate-180"
                                         : ""
-                                    }`}
+                                      }`}
                                   />
                                 </button>
 
@@ -119,11 +114,10 @@ export default function Sidebar({
                                         key={child.key}
                                         href={child.href || "#"}
                                         onClick={onClose}
-                                        className={`block p-2 rounded-lg hover:bg-gray-100 text-sm ${
-                                          pathname === child.href
+                                        className={`block p-2 rounded-lg hover:bg-gray-100 text-sm ${pathname === child.href
                                             ? "bg-blue-50 text-blue-600"
                                             : "text-gray-600"
-                                        }`}
+                                          }`}
                                       >
                                         {child.label}
                                       </Link>
@@ -135,11 +129,10 @@ export default function Sidebar({
                               <Link
                                 href={subItem.href || "#"}
                                 onClick={onClose}
-                                className={`block p-2 rounded-lg hover:bg-gray-100 text-sm ${
-                                  pathname === subItem.href
+                                className={`block p-2 rounded-lg hover:bg-gray-100 text-sm ${pathname === subItem.href
                                     ? "bg-blue-50 text-blue-600"
                                     : "text-gray-600"
-                                }`}
+                                  }`}
                               >
                                 {subItem.label}
                               </Link>
@@ -153,11 +146,10 @@ export default function Sidebar({
                   <Link
                     href={item.href || "#"}
                     onClick={onClose}
-                    className={`block p-3 rounded-lg hover:bg-gray-100 font-medium ${
-                      pathname === item.href
+                    className={`block p-3 rounded-lg hover:bg-gray-100 font-medium ${pathname === item.href
                         ? "bg-blue-50 text-blue-600"
                         : "text-gray-700"
-                    }`}
+                      }`}
                   >
                     {item.label}
                   </Link>

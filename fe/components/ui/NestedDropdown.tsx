@@ -2,6 +2,7 @@
 
 import { Button, Link } from "@heroui/react";
 import { useState } from "react";
+import NextLink from "next/link";
 
 export interface SubMenuItemChild {
   key: string;
@@ -36,13 +37,19 @@ export default function NestedDropdown({ item }: { item: MenuItem }) {
         setNestedOpen(null);
       }}
     >
-      <Button
-        disableRipple
-        variant="light"
-        className="text-sm text-gray-700 hover:text-gray-900 p-0 bg-transparent data-[hover=true]:bg-transparent h-auto min-w-0 px-2"
-      >
-        {item.label}
-      </Button>
+      <div className="flex items-center whitespace-nowrap">
+        {item.href ? (
+          <Link
+            as={NextLink}
+            href={item.href}
+            className="text-sm text-gray-700 hover:text-gray-900 px-2 py-1 rounded hover:bg-gray-100"
+          >
+            {item.label}
+          </Link>
+        ) : (
+          <span className="text-sm px-2 py-1">{item.label}</span>
+        )}
+      </div>
 
       {isOpen && (
         <div className="absolute top-full left-0 mt-1 z-50 min-w-[220px] bg-white shadow-lg rounded-lg border border-gray-200 py-1">
