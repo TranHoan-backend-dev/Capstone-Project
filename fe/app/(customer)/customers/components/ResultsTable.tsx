@@ -88,7 +88,7 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
                                         </Chip>
                                     </TableCell>
                                     <TableCell>
-                                        <div className="flex items-center justify-center gap-2.5 text-[12px] font-bold whitespace-nowrap">
+                                        <div className="flex items-center justify-center gap-2.5 text-[9px] font-bold whitespace-nowrap">
                                             <Link as={NextLink} href="#" className="text-[#2563eb] hover:text-blue-800 underline-offset-4 hover:underline">
                                                 Bảng giá
                                             </Link>

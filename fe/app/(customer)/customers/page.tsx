@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { Breadcrumbs, BreadcrumbItem } from "@heroui/react";
-import { CustomerHeader } from "./components/CustomerHeader";
+import { CustomBreadcrumb } from "@/components/ui/custom-breadcrumb";
+import { CustomerHeader } from "@/components/layout/CustomerHeader";
 import { FilterSection } from "./components/FilterSection";
 import { ResultsTable } from "./components/ResultsTable";
 
@@ -38,10 +38,12 @@ export default function CustomersPage() {
       <CustomerHeader />
 
       <main className="p-8 max-w-[1440px] mx-auto space-y-6">
-        <Breadcrumbs variant="light" size="sm" className="text-gray-400">
-          <BreadcrumbItem href="/">Trang chủ</BreadcrumbItem>
-          <BreadcrumbItem href="/customers" className="font-bold text-[#2563eb]">Khách hàng</BreadcrumbItem>
-        </Breadcrumbs>
+        <CustomBreadcrumb
+          items={[
+            { label: "Trang chủ", href: "/" },
+            { label: "Khách hàng", isCurrent: true },
+          ]}
+        />
 
         <div className="space-y-6">
           <FilterSection
