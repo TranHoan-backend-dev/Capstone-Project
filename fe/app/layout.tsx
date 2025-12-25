@@ -4,7 +4,7 @@ import { Providers } from "./providers";
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import "@/styles/globals.css";
-import Header from "@/components/layout/Header";
+import Header from "@/components/layout/header";
 
 export const metadata: Metadata = {
   title: {
