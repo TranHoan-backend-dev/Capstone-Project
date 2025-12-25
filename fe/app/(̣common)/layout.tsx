@@ -1,5 +1,5 @@
 import React from "react";
-import Header  from "@/components/layout/Header";
+import Header from "@/components/layout/navbar";
 import { siteConfig } from "@/config/site"
 
 export default function MainLayout({
@@ -9,7 +9,7 @@ export default function MainLayout({
 }>) {
   return (
     <div className="min-h-screen flex flex-col bg-black-50">
-      <Header menuItems={siteConfig.navItems} userName="Dung"/>
+      <Header menuItems={siteConfig.navItems} userName="Dung" />
       <div className="flex flex-1">
         <main className="flex-1 overflow-y-auto">
           <div className="max-w-7xl mx-auto">
