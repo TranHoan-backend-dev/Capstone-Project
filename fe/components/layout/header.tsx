@@ -16,6 +16,7 @@ import { Bars3Icon, ChevronDownIcon } from "@heroicons/react/24/solid";
 import NestedDropdown from "../ui/NestedDropdown";
 import { useState } from "react";
 import Sidebar from "./Sidebar";
+import { usePathname } from "next/navigation";
 
 export interface SubMenuItemChild {
   key: string;
@@ -44,7 +45,41 @@ interface NavigationProps {
 }
 
 const Header = ({ menuItems, userName }: NavigationProps) => {
+  const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+  const isMenuItemActive = (item: MenuItem) => {
+    if (item.href && pathname === item.href) {
+      return true;
+    }
+
+    if (item.items) {
+      for (const subItem of item.items) {
+        if (subItem.href && pathname === subItem.href) {
+          return true;
+        }
+
+        if (subItem.children) {
+          for (const child of subItem.children) {
+            if (child.href && pathname === child.href) {
+              return true;
+            }
+          }
+        }
+      }
+    }
+
+    return false;
+  };
+
+  const isLinkActive = (href?: string) => {
+    return href && pathname === href;
+  };
+
+  const handleMenuClick = (key: string) => {
+    setActiveMenu(key);
+  };
 
   return (
     <>
@@ -59,7 +94,7 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
         <NavbarContent className="md:hidden" justify="start">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="p-2 hover:bg-gray-100 rounded-lg"
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
           >
             <Bars3Icon className="w-6 h-6 text-blue-600" />
           </button>
@@ -75,83 +110,73 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
           </NavbarBrand>
 
           <div className="hidden md:flex items-center gap-6">
-            {menuItems.map((item) =>
-              item.items && item.items.length > 0 ? (
-                <NestedDropdown key={item.key} item={item} />
-              ) : (
-                <Link
-                  key={item.key}
-                  href={item.href || "#"}
-                  className="text-sm text-gray-700 hover:text-gray-900 px-2 py-2 whitespace-nowrap hover:bg-gray-100 rounded transition-colors"
-                >
-                  {item.label}
-                </Link>
-              )
-            )}
+            {menuItems.map((item) => {
+              const isActive = isMenuItemActive(item);
+
+              if (item.items && item.items.length > 0) {
+                return (
+                  <div key={item.key} onClick={() => handleMenuClick(item.key)}>
+                    <NestedDropdown item={item} />
+                  </div>
+                );
+              } else {
+                return (
+                  <Link
+                    key={item.key}
+                    href={item.href || "#"}
+                    onClick={() => handleMenuClick(item.key)}
+                    className={`text-sm px-3 py-2 whitespace-nowrap rounded transition-colors ${
+                      isActive
+                        ? "bg-blue-200 text-blue-800 font-medium"
+                        : "text-gray-700 hover:text-gray-900 hover:bg-blue-100"
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              }
+            })}
           </div>
         </NavbarContent>
 
         <NavbarContent as="div" justify="end" className="flex-none">
           {userName && (
-            <Dropdown placement="bottom-end">
-              <DropdownTrigger>
-                <Button
-                  variant="light"
-                  endContent={<ChevronDownIcon className="w-5 h-5" />}
-                  className="hidden md:flex"
-                >
-                  <Tooltip
-                    content={userName}
-                    placement="bottom"
-                    delay={500}
-                    className="max-w-xs"
-                  >
-                    <div className="flex flex-col items-center max-w-[120px]">
-                      <span className="text-black text-sm mt-1 truncate w-full text-right">
-                        {userName}
-                      </span>
-                    </div>
-                  </Tooltip>
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu aria-label="User menu" variant="flat">
-                <DropdownItem key="profile">Thông tin cá nhân</DropdownItem>
-                <DropdownItem
-                  key="change-password"
-                  as={Link}
-                  href="/change-password"
-                >
-                  Đổi mật khẩu
-                </DropdownItem>
-                <DropdownItem
-                  key="logout"
-                  className="text-danger"
-                  color="danger"
-                >
-                  Đăng xuất
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-          )}
-
-          {userName && (
-            <div className="md:hidden flex items-center">
-              <Dropdown placement="bottom-end">
+            <>
+              {/* Desktop version */}
+              <Dropdown placement="bottom-end" className="hidden md:block">
                 <DropdownTrigger>
-                  <Button variant="light" isIconOnly className="min-w-10">
-                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                      <span className="text-blue-600 font-semibold text-sm">
-                        {userName.charAt(0).toUpperCase()}
-                      </span>
-                    </div>
-                  </Button>
+                  <div className="flex items-center gap-1 px-3 py-2 cursor-pointer rounded-lg transition-colors">
+                    <Tooltip
+                      content={userName}
+                      placement="bottom"
+                      delay={500}
+                      className="max-w-xs"
+                    >
+                      <div className="flex flex-col items-center max-w-[120px]">
+                        <span className="text-black text-sm truncate w-full">
+                          {userName}
+                        </span>
+                      </div>
+                    </Tooltip>
+                    <ChevronDownIcon className="w-4 h-4 text-gray-500 flex-shrink-0" />
+                  </div>
                 </DropdownTrigger>
                 <DropdownMenu aria-label="User menu" variant="flat">
-                  <DropdownItem key="profile">Thông tin cá nhân</DropdownItem>
+                  <DropdownItem
+                    key="profile"
+                    className={`${
+                      pathname === "/profile" ? "bg-blue-100" : ""
+                    }`}
+                  >
+                    Thông tin cá nhân
+                  </DropdownItem>
                   <DropdownItem
                     key="change-password"
                     as={Link}
                     href="/change-password"
+                    className={`${
+                      pathname === "/change-password" ? "bg-blue-100" : ""
+                    }`}
                   >
                     Đổi mật khẩu
                   </DropdownItem>
@@ -164,7 +189,49 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
                   </DropdownItem>
                 </DropdownMenu>
               </Dropdown>
-            </div>
+
+              {/* Mobile version */}
+              <div className="md:hidden flex items-center">
+                <Dropdown placement="bottom-end">
+                  <DropdownTrigger>
+                    <div className="min-w-10 p-1 cursor-pointer rounded-full hover:bg-blue-50 transition-colors">
+                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                        <span className="text-blue-600 font-semibold text-sm">
+                          {userName.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                    </div>
+                  </DropdownTrigger>
+                  <DropdownMenu aria-label="User menu" variant="flat">
+                    <DropdownItem
+                      key="profile"
+                      className={`${
+                        pathname === "/profile" ? "bg-blue-100" : ""
+                      }`}
+                    >
+                      Thông tin cá nhân
+                    </DropdownItem>
+                    <DropdownItem
+                      key="change-password"
+                      as={Link}
+                      href="/change-password"
+                      className={`${
+                        pathname === "/change-password" ? "bg-blue-100" : ""
+                      }`}
+                    >
+                      Đổi mật khẩu
+                    </DropdownItem>
+                    <DropdownItem
+                      key="logout"
+                      className="text-danger"
+                      color="danger"
+                    >
+                      Đăng xuất
+                    </DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+              </div>
+            </>
           )}
         </NavbarContent>
       </HeroUINavbar>
