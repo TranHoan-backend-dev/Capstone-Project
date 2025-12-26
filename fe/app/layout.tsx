@@ -30,14 +30,7 @@ const RootLayout = async ({
           fontSans.variable
         )}
       >
-        <Providers>
-          <div className="min-h-screen flex flex-col bg-black-50">
-            <Header menuItems={siteConfig.navItems} userName="Dung" />
-            <main className="flex-1 overflow-y-auto">
-              {children}
-            </main>
-          </div>
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
