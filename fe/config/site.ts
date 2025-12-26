@@ -81,7 +81,7 @@ export const siteConfig = {
             {
               key: "report-contract",
               label: "Danh sách đơn chuyển lập hợp đồng",
-              href: "/",
+              href: "/report/contract",
             },
             {
               key: "report-budget-wait",
@@ -235,5 +235,16 @@ export const siteConfig = {
     { key: "ngayLap", label: "Ngày lập chiết tính", width: "120px" },
     { key: "nvLapChietTinh", label: "N/V lập chiết tính", width: "120px" },
     { key: "ghiChu", label: "Ghi chú", width: "150px" },
+  ],
+
+  columnsReportContract: [
+    { key: "stt", label: "STT", width: "60px" },
+    { key: "soDon", label: "Số đơn", width: "120px" },
+    { key: "tenKhachHang", label: "Tên khách hàng", width: "200px" },
+    { key: "diaChi", label: "Địa chỉ", width: "200px" },
+    { key: "dienThoai", label: "Điện thoại", width: "120px" },
+    { key: "ngayDK", label: "Ngày Đ/K", width: "120px" },
+    { key: "ngayLap", label: "Ngày lập", width: "120px" },
+    { key: "nvLap", label: "NV lập", width: "150px" },
   ],
 };
