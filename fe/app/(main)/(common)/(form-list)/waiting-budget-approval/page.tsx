@@ -18,7 +18,7 @@ const ReportWaitingList = () => {
           dateRange="Từ ngày 07/12/2025 đến ngày 07/12/2025"
         />
 
-        <DataTable columns={siteConfig.columnsReportWaiting} data={[]} />
+        <DataTable columns={siteConfig.columnsWaitingBudgetApproval} data={[]} />
 
         <ReportFooter />
       </div>

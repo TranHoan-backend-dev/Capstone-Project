@@ -5,20 +5,20 @@ import { ReportHeader } from "@/components/reports/ReportHeader";
 import { SearchToolbar } from "@/components/reports/SearchToolbar";
 import { siteConfig } from "@/config/site";
 
-const ReportRejectingList = () => {
+const AssignedSurveyList = () => {
   return (
     <main className="mx-auto max-w-7xl space-y-6 p-6">
-      <FilterForm title="Danh sách đơn từ chối duyệt dự toán" />
+      <FilterForm title="Danh sách đơn đã phân công khảo sát" showSurveyStaff />
 
       <div className="space-y-6 rounded-lg bg-white p-6 shadow-sm">
         <SearchToolbar />
 
         <ReportHeader
-          title="DANH SÁCH ĐƠN TỪ CHỐI DUYỆT CHIẾT TÍNH KHU VỰC THÀNH PHỐ NAM ĐỊNH"
+          title="DANH SÁCH ĐÃ PHÂN CÔNG KHẢO SÁT CHI NHÁNH THÀNH PHỐ NAM ĐỊNH"
           dateRange="Từ ngày 07/12/2025 đến ngày 07/12/2025"
         />
 
-        <DataTable columns={siteConfig.columnsReportRejecting} data={[]} />
+        <DataTable columns={siteConfig.columnsAssignedSurvay} data={[]} />
 
         <ReportFooter />
       </div>
@@ -26,4 +26,4 @@ const ReportRejectingList = () => {
   );
 };
 
-export default ReportRejectingList;
+export default AssignedSurveyList;

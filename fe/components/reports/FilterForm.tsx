@@ -1,19 +1,21 @@
 "use client";
 
 import React, { useState } from "react";
-import { Select, SelectItem, Button, DateValue } from "@heroui/react";
+import { Select, SelectItem, Button, DateValue, Input } from "@heroui/react";
 import { DocumentChartBarIcon } from "@heroicons/react/24/solid";
 import { SingleDatePicker } from "./component/SingleDatePicker";
 import { DateRangePicker } from "./component/DateRangePicker";
 
 interface FilterFormProps {
   title: string;
+  showSurveyStaff?: boolean;
   onFilterChange?: (filters: FilterValues) => void;
   onSubmit?: (filters: FilterValues) => void;
 }
 
 export interface FilterValues {
   branch: string;
+  surveyStaff?: string;
   createDate: DateValue | null;
   fromDate: DateValue | null;
   toDate: DateValue | null;
@@ -21,11 +23,13 @@ export interface FilterValues {
 
 export const FilterForm = ({
   title,
+  showSurveyStaff = false,
   onFilterChange,
   onSubmit,
 }: FilterFormProps) => {
   const [filters, setFilters] = useState<FilterValues>({
     branch: "",
+    surveyStaff: "",
     createDate: null,
     fromDate: null,
     toDate: null,
@@ -59,7 +63,9 @@ export const FilterForm = ({
                 handleFilterChange("branch", selected);
               }}
             >
-              <SelectItem key="nam-dinh" textValue="Thành phố Nam Định">Thành phố Nam Định</SelectItem>
+              <SelectItem key="nam-dinh" textValue="Thành phố Nam Định">
+                Thành phố Nam Định
+              </SelectItem>
             </Select>
           </div>
           <SingleDatePicker
@@ -68,8 +74,8 @@ export const FilterForm = ({
             label="Ngày lập"
           />
         </div>
-        <div className="grid gap-4 md:gap-6 md:grid-cols-[1fr_auto]">
-          <div className="flex justify-end">
+        <div className="grid gap-4 md:gap-6">
+          <div className="flex justify-between items-center gap-4">
             <div className="w-full md:w-auto">
               <DateRangePicker
                 fromDate={filters.fromDate}
@@ -81,6 +87,22 @@ export const FilterForm = ({
               />
             </div>
           </div>
+
+          {showSurveyStaff ? (
+            <Input
+              label="Nhân viên KS"
+              labelPlacement="outside"
+              size="sm"
+              placeholder="Nhập tên nhân viên KS"
+              value={filters.surveyStaff || ""}
+              onValueChange={(value) =>
+                handleFilterChange("surveyStaff", value)
+              }
+              className="w-full md:w-[575px]"
+            />
+          ) : (
+            <div className="invisible h-[56px]" />
+          )}
         </div>
       </div>
       <div className="mt-6 flex justify-end">

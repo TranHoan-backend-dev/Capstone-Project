@@ -25,7 +25,7 @@ export const SingleDatePicker = ({
         onChange={onChange}
         granularity="day"
         size="sm"
-        className="w-full md:w-[200px] rounded-md bg-white"
+        className="w-full md:w-[280px] rounded-md bg-white"
       />
     </div>
   );
