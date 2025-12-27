@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { TrashIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outline";
+import { TrashIcon } from "@heroicons/react/24/outline";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import { Checkbox, Link } from "@heroui/react";
 import NextLink from "next/link";
@@ -14,7 +14,7 @@ interface ProcessedDesignsTableProps {
 export const ProcessedDesignsTable = ({ data }: ProcessedDesignsTableProps) => {
     const columns: any[] = [
         { key: "selection", label: <Checkbox size="sm" radius="sm" className="ml-1" />, width: "40px" },
-        { key: "stt", label: "STT", align: "center", width: "60px" },
+        { key: "stt", label: "#", align: "center", width: "60px" },
         { key: "code", label: "Mã đơn" },
         { key: "customerName", label: "Tên khách hàng" },
         { key: "phone", label: "Điện thoại" },

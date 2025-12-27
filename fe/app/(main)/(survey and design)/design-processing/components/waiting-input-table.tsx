@@ -12,7 +12,7 @@ interface WaitingInputTableProps {
 export const WaitingInputTable = ({ data }: WaitingInputTableProps) => {
     const columns: any[] = [
         { key: "selection", label: <Checkbox size="sm" radius="sm" className="ml-1" />, width: "40px" },
-        { key: "stt", label: "STT", align: "center", width: "60px" },
+        { key: "stt", label: "#", align: "center", width: "60px" },
         { key: "code", label: "Mã đơn" },
         { key: "customerName", label: "Tên khách hàng" },
         { key: "phone", label: "Điện thoại" },
