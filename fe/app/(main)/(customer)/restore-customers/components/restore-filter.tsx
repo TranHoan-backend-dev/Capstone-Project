@@ -37,6 +37,7 @@ export const RestoreFilter = ({ periodData }: RestoreFilterProps) => {
             title="Khôi Phục Khách Hàng Hủy"
             icon={<SearchIcon size={18} />}
             gridClassName="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-3"
+            isCollapsible
             actions={
                 <>
                     <ActionButton
