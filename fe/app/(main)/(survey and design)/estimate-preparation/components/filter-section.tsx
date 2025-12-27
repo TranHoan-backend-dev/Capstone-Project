@@ -24,7 +24,7 @@ export const FilterSection = () => {
 
     return (
         <GenericSearchFilter
-            title="Lập dự toán"
+            title="Xử lí đơn chờ thiết kế & Thiết kế"
             icon={<SearchIcon size={18} />}
             gridClassName="grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-4"
             isCollapsible
@@ -45,8 +45,11 @@ export const FilterSection = () => {
                     size="md"
                     className="max-w-full"
                     classNames={{
-                        base: "h-11",
+                        base: "h-9 min-h-9",
                         calendarContent: "bg-white",
+                        selectorButton: "h-9 w-9",
+                        inputWrapper: "h-9 min-h-9 bg-gray-50/30 border-gray-100 hover:border-blue-200 focus-within:!border-blue-500 transition-all shadow-sm",
+                        input: "text-[13px]",
                     }}
                 />
             </div>
@@ -75,51 +78,11 @@ export const FilterSection = () => {
                 </div>
             </div>
 
-            {/* Row 2 */}
-            <div className="md:col-span-6 space-y-1">
-                <FilterLabel>Chi nhánh</FilterLabel>
-                <Select
-                    placeholder="Thành phố Nam Định"
-                    variant="faded"
-                    radius="md"
-                    size="md"
-                    classNames={{
-                        trigger: "h-11 bg-gray-50/50 border-gray-100 hover:border-blue-200 transition-all shadow-sm",
-                    }}
-                >
-                    <SelectItem key="nam-dinh">Thành phố Nam Định</SelectItem>
-                </Select>
-            </div>
+            <SelectField label="Chi nhánh" options={[{ "value": "nam_dinh", "label": "Thành phố Nam Định" }]} />
+            <SelectField label="Nhánh tổng" options={[{ "value": "all", "label": "Tất cả" }]} />
 
-            <div className="md:col-span-6 space-y-1">
-                <FilterLabel>Nhánh tổng</FilterLabel>
-                <Select
-                    placeholder="Tất cả"
-                    variant="faded"
-                    radius="md"
-                    size="md"
-                    classNames={{
-                        trigger: "h-11 bg-gray-50/50 border-gray-100 hover:border-blue-200 transition-all shadow-sm",
-                    }}
-                >
-                    <SelectItem key="all">Tất cả</SelectItem>
-                </Select>
-            </div>
-
-            {/* Row 3 */}
-            <div className="md:col-span-6 space-y-1">
-                <FilterLabel>Đồng hồ tổng</FilterLabel>
-                <SearchInputWithButton
-                    placeholder="Nhập mã đồng hồ"
-                />
-            </div>
-
-            <div className="md:col-span-6 space-y-1">
-                <FilterLabel>Mã lộ trình</FilterLabel>
-                <SearchInputWithButton
-                    placeholder="Nhập mã lộ trình"
-                />
-            </div>
+            <SearchInputField label="Đồng hồ tổng" placeholder="Nhập mã đồng hồ" />
+            <SearchInputField label="Mã lộ trình" placeholder="Nhập mã lộ trình" />
 
             {/* Row 4 */}
             <div className="md:col-span-12 space-y-1">
@@ -130,10 +93,44 @@ export const FilterSection = () => {
                     radius="md"
                     size="md"
                     classNames={{
-                        inputWrapper: "h-11 bg-gray-50/50 border-gray-100 focus-within:!border-blue-500 transition-all",
+                        inputWrapper: "h-9 min-h-9 bg-gray-50/30 border-gray-100 focus-within:!border-blue-500 transition-all shadow-sm",
+                        input: "text-[13px]",
                     }}
                 />
             </div>
         </GenericSearchFilter>
     );
 };
+
+export const SearchInputField = ({ label, placeholder }: { label: string; placeholder: string }) => {
+    return (
+        <div className="md:col-span-6 space-y-1">
+            <FilterLabel>{label}</FilterLabel>
+            <SearchInputWithButton
+                placeholder={placeholder}
+            />
+        </div>
+    );
+}
+
+export const SelectField = ({ label, options }: { label: string; options: { value: string; label: string }[] }) => {
+    return (
+        <div className="md:col-span-6 space-y-1">
+            <FilterLabel>{label}</FilterLabel>
+            <Select
+                defaultSelectedKeys={["all"]}
+                variant="faded"
+                radius="md"
+                size="md"
+                classNames={{
+                    trigger: "h-9 min-h-9 bg-gray-50/30 border-gray-100 hover:border-blue-200 transition-all shadow-sm",
+                    value: "text-[13px]",
+                }}
+            >
+                {options.map((item) => (
+                    <SelectItem key={item.value} textValue={item.label}>{item.label}</SelectItem>
+                ))}
+            </Select>
+        </div>
+    );
+}

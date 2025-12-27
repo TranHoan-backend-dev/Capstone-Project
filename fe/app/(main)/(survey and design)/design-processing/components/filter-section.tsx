@@ -42,8 +42,11 @@ export const FilterSection = () => {
                     size="md"
                     className="max-w-full"
                     classNames={{
-                        base: "h-11",
+                        base: "h-9 min-h-9",
                         calendarContent: "bg-white",
+                        selectorButton: "h-9 w-9",
+                        inputWrapper: "h-9 min-h-9 bg-gray-50/30 border-gray-100 hover:border-blue-200 focus-within:!border-blue-500 transition-all shadow-sm",
+                        input: "text-[13px]",
                     }}
                 />
             </div>
@@ -72,55 +75,11 @@ export const FilterSection = () => {
                 </div>
             </div>
 
-            {/* Row 2 */}
-            <div className="md:col-span-6 space-y-1">
-                <FilterLabel>Chi nhánh</FilterLabel>
-                <Select
-                    defaultSelectedKeys={["nam_dinh"]}
-                    variant="faded"
-                    radius="md"
-                    size="md"
-                    classNames={{
-                        trigger: "h-11 bg-gray-50/50 border-gray-100 hover:border-blue-200 transition-all shadow-sm",
-                    }}
-                >
-                    {branches.map((item) => (
-                        <SelectItem key={item.value} textValue={item.label}>{item.label}</SelectItem>
-                    ))}
-                </Select>
-            </div>
+            <SelectField label="Chi nhánh" options={branches} />
+            <SelectField label="Nhánh tổng" options={totalBranches} />
 
-            <div className="md:col-span-6 space-y-1">
-                <FilterLabel>Nhánh tổng</FilterLabel>
-                <Select
-                    defaultSelectedKeys={["all"]}
-                    variant="faded"
-                    radius="md"
-                    size="md"
-                    classNames={{
-                        trigger: "h-11 bg-gray-50/50 border-gray-100 hover:border-blue-200 transition-all shadow-sm",
-                    }}
-                >
-                    {totalBranches.map((item) => (
-                        <SelectItem key={item.value} textValue={item.label}>{item.label}</SelectItem>
-                    ))}
-                </Select>
-            </div>
-
-            {/* Row 3 */}
-            <div className="md:col-span-6 space-y-1">
-                <FilterLabel>Đồng hồ tổng</FilterLabel>
-                <SearchInputWithButton
-                    placeholder="Nhập mã đồng hồ"
-                />
-            </div>
-
-            <div className="md:col-span-6 space-y-1">
-                <FilterLabel>Mã lộ trình</FilterLabel>
-                <SearchInputWithButton
-                    placeholder="Nhập mã lộ trình"
-                />
-            </div>
+            <SearchInputField label="Đồng hồ tổng" placeholder="Nhập mã đồng hồ" />
+            <SearchInputField label="Mã lộ trình" placeholder="Nhập mã lộ trình" />
 
             {/* Row 4 */}
             <div className="md:col-span-12 space-y-1">
@@ -131,10 +90,44 @@ export const FilterSection = () => {
                     radius="md"
                     size="md"
                     classNames={{
-                        inputWrapper: "h-11 bg-gray-50/50 border-gray-100 focus-within:!border-blue-500 transition-all",
+                        inputWrapper: "h-9 min-h-9 bg-gray-50/30 border-gray-100 focus-within:!border-blue-500 transition-all shadow-sm",
+                        input: "text-[13px]",
                     }}
                 />
             </div>
         </GenericSearchFilter>
     );
 };
+
+export const SearchInputField = ({ label, placeholder }: { label: string; placeholder: string }) => {
+    return (
+        <div className="md:col-span-6 space-y-1">
+            <FilterLabel>{label}</FilterLabel>
+            <SearchInputWithButton
+                placeholder={placeholder}
+            />
+        </div>
+    );
+}
+
+export const SelectField = ({ label, options }: { label: string; options: { value: string; label: string }[] }) => {
+    return (
+        <div className="md:col-span-6 space-y-1">
+            <FilterLabel>{label}</FilterLabel>
+            <Select
+                defaultSelectedKeys={["all"]}
+                variant="faded"
+                radius="md"
+                size="md"
+                classNames={{
+                    trigger: "h-9 min-h-9 bg-gray-50/30 border-gray-100 hover:border-blue-200 transition-all shadow-sm",
+                    value: "text-[13px]",
+                }}
+            >
+                {options.map((item) => (
+                    <SelectItem key={item.value} textValue={item.label}>{item.label}</SelectItem>
+                ))}
+            </Select>
+        </div>
+    );
+}
