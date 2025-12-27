@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Input, DatePicker } from "@heroui/react";
+import { DatePicker, Input } from "@heroui/react";
 import { SearchIcon } from "@/components/ui/Icons";
 import { GenericSearchFilter, FilterLabel } from "@/components/ui/GenericSearchFilter";
 
@@ -13,70 +13,46 @@ export const FilterSection = () => {
             gridClassName="grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-6"
             isCollapsible
         >
-            <div className="md:col-span-4 space-y-1">
-                <FilterLabel>Từ khóa tìm kiếm</FilterLabel>
-                <Input
-                    placeholder="Nhập mã đơn, tên khách hàng, số điện thoại..."
-                    variant="faded"
-                    radius="md"
-                    size="md"
-                    classNames={{
-                        inputWrapper: "h-11 bg-gray-50/50 border-gray-100 focus-within:!border-blue-500 transition-all",
-                    }}
-                />
-            </div>
+            <InputField label="Từ khóa tìm kiếm" placeholder="Nhập mã đơn, tên khách hàng, số điện thoại..." />
+            <InputField label="Mã vật tư" placeholder="Nhập mã vật tư" />
+            <InputField label="Tên đường" placeholder="Nhập tên đường" />
 
-            <div className="md:col-span-4 space-y-1">
-                <FilterLabel>Mã vật tư</FilterLabel>
-                <Input
-                    placeholder="Nhập mã vật tư"
-                    variant="faded"
-                    radius="md"
-                    size="md"
-                    classNames={{
-                        inputWrapper: "h-11 bg-gray-50/50 border-gray-100 focus-within:!border-blue-500 transition-all",
-                    }}
-                />
-            </div>
-
-            <div className="md:col-span-4 space-y-1">
-                <FilterLabel>Tên đường</FilterLabel>
-                <Input
-                    placeholder="Nhập tên đường"
-                    variant="faded"
-                    radius="md"
-                    size="md"
-                    classNames={{
-                        inputWrapper: "h-11 bg-gray-50/50 border-gray-100 focus-within:!border-blue-500 transition-all",
-                    }}
-                />
-            </div>
-
-            <div className="md:col-span-4 space-y-1">
-                <FilterLabel>Từ ngày đăng ký</FilterLabel>
-                <DatePicker
-                    variant="faded"
-                    radius="md"
-                    size="md"
-                    classNames={{
-                        base: "h-11",
-                        calendarContent: "bg-white",
-                    }}
-                />
-            </div>
-
-            <div className="md:col-span-4 space-y-1">
-                <FilterLabel>Đến ngày đăng ký</FilterLabel>
-                <DatePicker
-                    variant="faded"
-                    radius="md"
-                    size="md"
-                    classNames={{
-                        base: "h-11",
-                        calendarContent: "bg-white",
-                    }}
-                />
-            </div>
+            <DatePickerField label="Từ ngày đăng ký" />
+            <DatePickerField label="Đến ngày đăng ký" />
         </GenericSearchFilter>
     );
 };
+
+export const DatePickerField = ({ label }: { label: string }) => {
+    return (
+        <div className="md:col-span-4 space-y-1">
+            <FilterLabel>{label}</FilterLabel>
+            <DatePicker
+                variant="faded"
+                radius="md"
+                size="md"
+                classNames={{
+                    base: "h-9 min-h-9",
+                    calendarContent: "bg-white",
+                }}
+            />
+        </div>
+    );
+}
+
+export const InputField = ({ label, placeholder }: { label: string; placeholder: string }) => {
+    return (
+        <div className="md:col-span-4 space-y-1">
+            <FilterLabel>{label}</FilterLabel>
+            <Input
+                placeholder={placeholder}
+                variant="faded"
+                radius="md"
+                size="md"
+                classNames={{
+                    inputWrapper: "h-9 min-h-9 bg-gray-50/50 border-gray-100 focus-within:!border-blue-500 transition-all",
+                }}
+            />
+        </div>
+    );
+}

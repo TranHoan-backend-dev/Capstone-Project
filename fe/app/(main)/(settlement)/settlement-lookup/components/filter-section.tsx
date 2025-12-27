@@ -10,10 +10,10 @@ export const FilterSection = () => {
         <GenericSearchFilter
             title="Tra cứu quyết toán"
             icon={<SearchIcon size={18} />}
-            gridClassName="grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-4"
+            gridClassName="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-3"
             isCollapsible
         >
-            <div className="md:col-span-6 space-y-1">
+            <div className="lg:col-span-2 space-y-1">
                 <FilterLabel>Từ khóa</FilterLabel>
                 <div className="flex gap-2">
                     <Input
@@ -22,39 +22,35 @@ export const FilterSection = () => {
                         radius="md"
                         size="md"
                         classNames={{
-                            inputWrapper: "h-11 bg-gray-50/50 border-gray-100 focus-within:!border-blue-500 transition-all",
+                            inputWrapper: "h-9 min-h-9 bg-gray-50/30 border-gray-100 hover:border-blue-200 focus-within:!border-blue-500 transition-all shadow-sm",
+                            input: "text-[13px]",
                         }}
                     />
                 </div>
             </div>
 
-            <div className="md:col-span-3 space-y-1">
-                <FilterLabel>Từ ngày</FilterLabel>
-                <DatePicker
-                    variant="faded"
-                    radius="md"
-                    size="md"
-                    className="max-w-full"
-                    classNames={{
-                        base: "h-11",
-                        calendarContent: "bg-white",
-                    }}
-                />
-            </div>
-
-            <div className="md:col-span-3 space-y-1">
-                <FilterLabel>Đến ngày</FilterLabel>
-                <DatePicker
-                    variant="faded"
-                    radius="md"
-                    size="md"
-                    className="max-w-full"
-                    classNames={{
-                        base: "h-11",
-                        calendarContent: "bg-white",
-                    }}
-                />
-            </div>
+            <DatePickerField label="Từ ngày" />
+            <DatePickerField label="Đến ngày" />
         </GenericSearchFilter>
     );
 };
+
+export const DatePickerField = ({ label }: { label: string }) => {
+    return (
+        <div className="lg:col-span-1 space-y-1">
+            <FilterLabel>{label}</FilterLabel>
+            <DatePicker
+                variant="faded"
+                radius="md"
+                size="md"
+                classNames={{
+                    base: "h-9 min-h-9",
+                    calendarContent: "bg-white",
+                    selectorButton: "h-9 w-9",
+                    inputWrapper: "h-9 min-h-9 bg-gray-50/30 border-gray-100 hover:border-blue-200 focus-within:!border-blue-500 transition-all shadow-sm",
+                    input: "text-[13px]",
+                }}
+            />
+        </div>
+    );
+}

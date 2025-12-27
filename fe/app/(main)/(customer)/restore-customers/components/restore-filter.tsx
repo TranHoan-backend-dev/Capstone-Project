@@ -45,72 +45,11 @@ export const RestoreFilter = ({ periodData }: RestoreFilterProps) => {
                 </>
             }
         >
-            <div className="space-y-1">
-                <FilterLabel>Mã KH</FilterLabel>
-                <Input
-                    placeholder="Nhập mã khách hàng"
-                    variant="faded"
-                    radius="md"
-                    size="md"
-                    endContent={<SearchIcon size={14} className="text-gray-400" />}
-                    classNames={{
-                        inputWrapper: "h-9 min-h-9 bg-gray-50/30 border-gray-100 hover:border-blue-200 focus-within:!border-blue-500 transition-all shadow-sm",
-                        input: "text-[13px]",
-                    }}
-                />
-            </div>
-            <div className="space-y-1">
-                <FilterLabel>Tên khách hàng</FilterLabel>
-                <Input
-                    placeholder="Nhập tên khách hàng"
-                    variant="faded"
-                    radius="md"
-                    size="md"
-                    classNames={{
-                        inputWrapper: "h-9 min-h-9 bg-gray-50/30 border-gray-100 hover:border-blue-200 focus-within:!border-blue-500 transition-all shadow-sm",
-                        input: "text-[13px]",
-                    }}
-                />
-            </div>
-            <div className="space-y-1">
-                <FilterLabel>Số Điện Thoại</FilterLabel>
-                <Input
-                    placeholder="Nhập sđt"
-                    variant="faded"
-                    radius="md"
-                    size="md"
-                    classNames={{
-                        inputWrapper: "h-9 min-h-9 bg-gray-50/30 border-gray-100 hover:border-blue-200 focus-within:!border-blue-500 transition-all shadow-sm",
-                        input: "text-[13px]",
-                    }}
-                />
-            </div>
-            <div className="space-y-1">
-                <FilterLabel>Địa Chỉ</FilterLabel>
-                <Input
-                    placeholder="Nhập địa chỉ"
-                    variant="faded"
-                    radius="md"
-                    size="md"
-                    classNames={{
-                        inputWrapper: "h-9 min-h-9 bg-gray-50/30 border-gray-100 hover:border-blue-200 focus-within:!border-blue-500 transition-all shadow-sm",
-                        input: "text-[13px]",
-                    }}
-                />
-            </div>
-            <div className="space-y-1 lg:col-span-2">
-                <FilterLabel>Lý Do Khôi Phục</FilterLabel>
-                <Input
-                    placeholder="Nhập lý do"
-                    variant="faded"
-                    radius="md"
-                    size="md"
-                    classNames={{
-                        inputWrapper: "h-9 min-h-9 bg-gray-50/30 border-gray-100 hover:border-blue-200 focus-within:!border-blue-500 transition-all shadow-sm",
-                        input: "text-[13px]",
-                    }}
-                />
-            </div>
+            <InputField label="Mã KH" placeholder="Nhập mã khách hàng" />
+            <InputField label="Tên khách hàng" placeholder="Nhập tên khách hàng" />
+            <InputField label="Số Điện Thoại" placeholder="Nhập sđt" />
+            <InputField label="Địa Chỉ" placeholder="Nhập địa chỉ" />
+            <InputField label="Lý Do Khôi Phục" placeholder="Nhập lý do" />
             <div className="space-y-1">
                 <FilterLabel>Kỳ Khôi Phục</FilterLabel>
                 <Select
@@ -131,3 +70,21 @@ export const RestoreFilter = ({ periodData }: RestoreFilterProps) => {
         </GenericSearchFilter>
     );
 };
+
+export const InputField = ({ label, placeholder }: { label: string, placeholder: string }) => {
+    return (
+        <div className="space-y-1 lg:col-span-2">
+            <FilterLabel>{label}</FilterLabel>
+            <Input
+                placeholder={placeholder}
+                variant="faded"
+                radius="md"
+                size="md"
+                classNames={{
+                    inputWrapper: "h-9 min-h-9 bg-gray-50/30 border-gray-100 hover:border-blue-200 focus-within:!border-blue-500 transition-all shadow-sm",
+                    input: "text-[13px]",
+                }}
+            />
+        </div>
+    );
+}
