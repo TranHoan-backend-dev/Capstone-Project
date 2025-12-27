@@ -68,7 +68,7 @@ const LoginForm = () => {
 
           <div className="w-full flex justify-center pt-2">
             <Link
-              href="#"
+              href="/forgot-password"
               className="text-sm text-blue-600 hover:text-blue-700"
             >
               Quên mật khẩu?
