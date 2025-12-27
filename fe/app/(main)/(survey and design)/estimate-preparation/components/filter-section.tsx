@@ -1,26 +1,29 @@
 "use client";
 
 import React, { useState } from "react";
-import { Input, Select, SelectItem, Button, DatePicker } from "@heroui/react";
-import { SearchIcon } from "@/components/ui/Icons";
-import { TrashIcon, CheckCircleIcon, XCircleIcon, ClockIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
+import {
+    Input,
+    Button,
+    DatePicker,
+    Select,
+    SelectItem
+} from "@heroui/react";
+import {
+    CheckCircleIcon,
+    XCircleIcon,
+    ClockIcon,
+    TrashIcon
+} from "@heroicons/react/24/outline";
 import { GenericSearchFilter, FilterLabel } from "@/components/ui/GenericSearchFilter";
 import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
+import { SearchIcon } from "@/components/ui/Icons";
 
 export const FilterSection = () => {
     const [status, setStatus] = useState<"approved" | "rejected" | "pending">("approved");
 
-    const branches = [
-        { label: "Thành phố Nam Định", value: "nam_dinh" },
-    ];
-
-    const totalBranches = [
-        { label: "Tất cả", value: "all" },
-    ];
-
     return (
         <GenericSearchFilter
-            title="Xử lí đơn chờ thiết kế & Thiết kế"
+            title="Lập dự toán"
             icon={<SearchIcon size={18} />}
             gridClassName="grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-4"
             isCollapsible
@@ -28,8 +31,8 @@ export const FilterSection = () => {
                 <Button
                     variant="flat"
                     color="default"
-                    startContent={<TrashIcon className="w-4 h-4" />}
                     className="bg-gray-100 text-gray-600 font-bold px-6"
+                    startContent={<TrashIcon className="w-4 h-4" />}
                 >
                     Xóa toàn bộ lựa chọn
                 </Button>
@@ -55,9 +58,9 @@ export const FilterSection = () => {
                 <div className="flex gap-2">
                     <Button
                         size="sm"
-                        variant={status === "approved" ? "solid" : "flat"}
-                        color={status === "approved" ? "success" : "default"}
-                        className={status === "approved" ? "text-white font-bold" : "bg-gray-100 text-gray-500 font-medium"}
+                        variant={"solid"}
+                        color={"success"}
+                        className={"text-white font-bold"}
                         startContent={<CheckCircleIcon className="w-4 h-4" />}
                         onPress={() => setStatus("approved")}
                     >
@@ -65,9 +68,9 @@ export const FilterSection = () => {
                     </Button>
                     <Button
                         size="sm"
-                        variant={status === "rejected" ? "solid" : "flat"}
-                        color={status === "rejected" ? "danger" : "default"}
-                        className={status === "rejected" ? "text-white font-bold" : "bg-gray-100 text-gray-500 font-medium"}
+                        variant={"solid"}
+                        color={"danger"}
+                        className={"text-white font-bold"}
                         startContent={<XCircleIcon className="w-4 h-4" />}
                         onPress={() => setStatus("rejected")}
                     >
@@ -75,9 +78,9 @@ export const FilterSection = () => {
                     </Button>
                     <Button
                         size="sm"
-                        variant={status === "pending" ? "solid" : "flat"}
-                        color={status === "pending" ? "default" : "default"}
-                        className={status === "pending" ? "bg-gray-200 text-gray-700 font-bold" : "bg-gray-100 text-gray-500 font-medium"}
+                        variant={"solid"}
+                        color={"default"}
+                        className={"text-white font-bold"}
                         startContent={<ClockIcon className="w-4 h-4" />}
                         onPress={() => setStatus("pending")}
                     >
@@ -90,7 +93,7 @@ export const FilterSection = () => {
             <div className="md:col-span-6 space-y-1">
                 <FilterLabel>Chi nhánh</FilterLabel>
                 <Select
-                    defaultSelectedKeys={["nam_dinh"]}
+                    placeholder="Thành phố Nam Định"
                     variant="faded"
                     radius="md"
                     size="md"
@@ -98,16 +101,14 @@ export const FilterSection = () => {
                         trigger: "h-11 bg-gray-50/50 border-gray-100 hover:border-blue-200 transition-all shadow-sm",
                     }}
                 >
-                    {branches.map((item) => (
-                        <SelectItem key={item.value} textValue={item.label}>{item.label}</SelectItem>
-                    ))}
+                    <SelectItem key="nam-dinh">Thành phố Nam Định</SelectItem>
                 </Select>
             </div>
 
             <div className="md:col-span-6 space-y-1">
                 <FilterLabel>Nhánh tổng</FilterLabel>
                 <Select
-                    defaultSelectedKeys={["all"]}
+                    placeholder="Tất cả"
                     variant="faded"
                     radius="md"
                     size="md"
@@ -115,9 +116,7 @@ export const FilterSection = () => {
                         trigger: "h-11 bg-gray-50/50 border-gray-100 hover:border-blue-200 transition-all shadow-sm",
                     }}
                 >
-                    {totalBranches.map((item) => (
-                        <SelectItem key={item.value} textValue={item.label}>{item.label}</SelectItem>
-                    ))}
+                    <SelectItem key="all">Tất cả</SelectItem>
                 </Select>
             </div>
 
