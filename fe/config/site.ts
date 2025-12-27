@@ -186,6 +186,17 @@ export const siteConfig = {
         },
       ],
     },
+    {
+      key: "settlement",
+      label: "Quyết toán",
+      items: [
+        {
+          key: "settlement-lookup",
+          label: "Tra cứu quyết toán",
+          href: "/settlement-lookup",
+        }
+      ],
+    },
   ],
 
   navMenuItems: [
