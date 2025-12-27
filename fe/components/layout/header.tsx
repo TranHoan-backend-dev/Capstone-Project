@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Button,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -13,10 +12,10 @@ import {
 } from "@heroui/react";
 import Link from "next/link";
 import { Bars3Icon, ChevronDownIcon } from "@heroicons/react/24/solid";
-import NestedDropdown from "../ui/NestedDropdown";
+import NestedDropdown from "../ui/nested-dropdown";
 import { useState } from "react";
-import Sidebar from "./Sidebar";
 import { usePathname } from "next/navigation";
+import Sidebar from "./sidebar";
 
 export interface SubMenuItemChild {
   key: string;
@@ -125,11 +124,10 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
                     key={item.key}
                     href={item.href || "#"}
                     onClick={() => handleMenuClick(item.key)}
-                    className={`text-sm px-3 py-2 whitespace-nowrap rounded transition-colors ${
-                      isActive
-                        ? "bg-blue-200 text-blue-800 font-medium"
-                        : "text-gray-700 hover:text-gray-900 hover:bg-blue-100"
-                    }`}
+                    className={`text-sm px-3 py-2 whitespace-nowrap rounded transition-colors cursor-pointer ${isActive
+                      ? "bg-blue-200 text-blue-800 font-medium"
+                      : "text-gray-700 hover:text-gray-900 hover:bg-blue-100"
+                      }`}
                   >
                     {item.label}
                   </Link>
@@ -164,9 +162,8 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
                 <DropdownMenu aria-label="User menu" variant="flat">
                   <DropdownItem
                     key="profile"
-                    className={`${
-                      pathname === "/profile" ? "bg-blue-100" : ""
-                    }`}
+                    className={`${pathname === "/profile" ? "bg-blue-100" : ""
+                      }`}
                   >
                     Thông tin cá nhân
                   </DropdownItem>
@@ -174,9 +171,8 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
                     key="change-password"
                     as={Link}
                     href="/change-password"
-                    className={`${
-                      pathname === "/change-password" ? "bg-blue-100" : ""
-                    }`}
+                    className={`${pathname === "/change-password" ? "bg-blue-100" : ""
+                      }`}
                   >
                     Đổi mật khẩu
                   </DropdownItem>
@@ -205,9 +201,8 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
                   <DropdownMenu aria-label="User menu" variant="flat">
                     <DropdownItem
                       key="profile"
-                      className={`${
-                        pathname === "/profile" ? "bg-blue-100" : ""
-                      }`}
+                      className={`${pathname === "/profile" ? "bg-blue-100" : ""
+                        }`}
                     >
                       Thông tin cá nhân
                     </DropdownItem>
@@ -215,9 +210,8 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
                       key="change-password"
                       as={Link}
                       href="/change-password"
-                      className={`${
-                        pathname === "/change-password" ? "bg-blue-100" : ""
-                      }`}
+                      className={`${pathname === "/change-password" ? "bg-blue-100" : ""
+                        }`}
                     >
                       Đổi mật khẩu
                     </DropdownItem>

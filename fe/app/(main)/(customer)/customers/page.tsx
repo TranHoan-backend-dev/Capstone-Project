@@ -1,11 +1,7 @@
-"use client";
-
 import React from "react";
-import { CustomBreadcrumb } from "@/components/ui/custom-breadcrumb";
-import { FilterSection } from "./components/FilterSection";
-import { ResultsTable } from "./components/ResultsTable";
-import { siteConfig } from "@/config/site";
-import { BreadcrumbItem, Breadcrumbs } from "@heroui/react";
+import { FilterSection } from "./components/filter-section";
+import { ResultsTable } from "./components/results-table";
+import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
 
 const CustomersPage = () => {
   const branches = [{ label: "Tất cả", value: "all" }];
@@ -38,15 +34,10 @@ const CustomersPage = () => {
     <div className="min-h-screen bg-[#f8f9fa]">
 
       <main className="p-8 max-w-[1440px] mx-auto space-y-6">
-        <Breadcrumbs variant="light" size="sm" className="text-gray-400">
-          <BreadcrumbItem href="/">Trang chủ</BreadcrumbItem>
-          <BreadcrumbItem
-            href="/customers"
-            className="font-bold text-[#2563eb]"
-          >
-            Khách hàng
-          </BreadcrumbItem>
-        </Breadcrumbs>
+        <CustomBreadcrumb items={[
+          { label: "Trang chủ", href: "/home" },
+          { label: "Khách hàng", href: "/customers" },
+        ]} />
 
         <div className="space-y-6">
           <FilterSection

@@ -1,5 +1,5 @@
-import LeftSide from "./components/LeftSide";
-import LoginForm from "./components/LoginForm";
+import LeftSide from "./components/left-side";
+import LoginForm from "./components/login-form";
 
 const Page = () => {
   return (

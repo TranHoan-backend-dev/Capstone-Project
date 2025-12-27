@@ -1,9 +1,7 @@
-"use client";
-
 import React from "react";
-import { CustomBreadcrumb } from "@/components/ui/custom-breadcrumb";
-import { RestoreFilter } from "./components/RestoreFilter";
-import { RestoreTable } from "./components/RestoreTable";
+import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
+import { RestoreFilter } from "./components/restore-filter";
+import { RestoreTable } from "./components/restore-table";
 
 const RestoreCustomerPage = () => {
     const periodData = [

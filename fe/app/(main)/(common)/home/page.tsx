@@ -3,8 +3,11 @@ import { HomePage } from './HomePage'
 
 const Home = () => {
   return (
-    <div className="flex-1 h-full">
-      <HomePage />
+    <div className="flex-1 flex flex-col">
+      <div className="flex-grow">
+        <HomePage />
+      </div>
+      <Footer />
     </div>
   )
 }
