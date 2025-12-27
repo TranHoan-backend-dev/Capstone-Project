@@ -12,7 +12,7 @@ export const CustomPagination = ({ summary, ...props }: CustomPaginationProps) =
 
         <div className="p-6 flex flex-col md:flex-row justify-between items-center gap-4 border-t border-gray-50 bg-white">
             <div className="text-sm text-gray-500">
-                {summary || "Hiển thị 1-5 của 25 kết quả"}
+                Hiển thị {summary || "1-5 của 25"} kết quả
             </div>
             <Pagination
                 {...props}

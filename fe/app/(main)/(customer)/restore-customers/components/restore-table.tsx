@@ -68,13 +68,9 @@ export const RestoreTable = ({ data }: RestoreTableProps) => {
             paginationProps={{
                 total: 1,
                 initialPage: 1,
-                summary: `Hiển thị ${data.length} bản ghi`
+                summary: `${data.length}`
             }}
-            headerRight={
-                <div className="ml-auto px-2 py-0.5 bg-gray-100 rounded text-[10px] font-bold text-gray-400 uppercase">
-                    {data.length} Bản ghi
-                </div>
-            }
+            headerSummary={`${data.length}`}
             tableProps={{
                 classNames: {
                     th: "bg-[#fcfdfe] text-gray-400 font-bold py-3 px-4 border-b border-gray-100 text-[10px] uppercase tracking-widest text-left",

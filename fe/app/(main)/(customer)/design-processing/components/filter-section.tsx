@@ -22,6 +22,7 @@ export const FilterSection = () => {
             title="Xử lí đơn chờ thiết kế & Thiết kế"
             icon={<div className="bg-blue-600 rounded-full p-1"><InformationCircleIcon className="w-4 h-4 text-white" /></div>}
             gridClassName="grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-4"
+            isCollapsible
             actions={
                 <Button
                     variant="flat"
