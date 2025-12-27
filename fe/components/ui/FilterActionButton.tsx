@@ -14,7 +14,6 @@ export const FilterActionButton = ({
     className = "",
     ...props
 }: FilterActionButtonProps) => {
-    // Standard styles for action buttons in filters
     const baseStyles = "px-5 h-9 text-[13px] font-bold border-none transition-all rounded-lg shadow-sm text-white";
 
     return (

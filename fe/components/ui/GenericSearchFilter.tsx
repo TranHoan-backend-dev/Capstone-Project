@@ -63,8 +63,10 @@ export const GenericSearchFilter = ({
                         {children}
                     </div>
 
-                    <div className="flex justify-end mt-8 gap-2">
-                        {actions ? actions : (
+                    {actions ? (
+                        <div className="mt-8">{actions}</div>
+                    ) : (
+                        <div className="flex justify-end mt-8 gap-2">
                             <Button
                                 color="primary"
                                 startContent={<FunnelIcon className="w-4 h-4" />}
@@ -74,8 +76,8 @@ export const GenericSearchFilter = ({
                             >
                                 {filterButtonLabel}
                             </Button>
-                        )}
-                    </div>
+                        </div>
+                    )}
                 </div>
             </CardBody>
         </Card>

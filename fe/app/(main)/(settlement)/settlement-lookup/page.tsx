@@ -2,6 +2,12 @@ import React from "react";
 import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
 import { FilterSection } from "./components/filter-section";
 import { ResultsTable } from "./components/results-table";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Tra cứu quyết toán",
+    description: "Tra cứu quyết toán",
+}
 
 const mockData = [
     {
