@@ -40,22 +40,20 @@ const RestoreCustomerPage = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-[#f8f9fa]">
-            <div className="p-8 max-w-[1440px] mx-auto space-y-6">
-                <CustomBreadcrumb
-                    items={[
-                        { label: "Trang chủ", href: "/" },
-                        { label: "Khách hàng", href: "/customers" },
-                        { label: "Khôi phục khách hàng", isCurrent: true },
-                    ]}
-                />
+        <>
+            <CustomBreadcrumb
+                items={[
+                    { label: "Trang chủ", href: "/" },
+                    { label: "Khách hàng", href: "/customers" },
+                    { label: "Khôi phục khách hàng", isCurrent: true },
+                ]}
+            />
 
-                <div className="space-y-6">
-                    <RestoreFilter periodData={periodData} />
-                    <RestoreTable data={mockData} />
-                </div>
+            <div className="space-y-6">
+                <RestoreFilter periodData={periodData} />
+                <RestoreTable data={mockData} />
             </div>
-        </div>
+        </>
     );
 };
 

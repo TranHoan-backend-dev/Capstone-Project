@@ -118,6 +118,11 @@ export const siteConfig = {
               label: "Danh sách khách hàng gọi điện",
               href: "/customer-calls",
             },
+            {
+              key: "estimate-lookup",
+              label: "Tra cứu dự toán",
+              href: "/estimate-lookup",
+            },
           ],
         },
         {
@@ -272,7 +277,7 @@ export const siteConfig = {
     { key: "noidungKS", label: "Nội dung khảo sát", width: "150px" },
   ],
 
-    columnsAssignedSurvay: [
+  columnsAssignedSurvay: [
     { key: "stt", label: "STT", width: "60px" },
     { key: "soDon", label: "Số đơn", width: "120px" },
     { key: "tenKhachHang", label: "Tên khách hàng", width: "200px" },
