@@ -63,9 +63,13 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
             case "no":
                 return <span className="font-medium text-gray-400">{data.indexOf(item) + 1}</span>;
             case "code":
-                return <span className="font-bold text-blue-600">{item.code}</span>;
+                return (
+                    <Link as={NextLink} href="#" className="font-bold text-blue-600 hover:underline hover:text-blue-800">
+                        {item.code}
+                    </Link>
+                );
             case "name":
-                return <span className="font-medium text-gray-800">{item.name}</span>;
+                return <span className="font-bold text-gray-900">{item.name}</span>;
             case "status":
                 const config = statusMap[item.status];
                 return (

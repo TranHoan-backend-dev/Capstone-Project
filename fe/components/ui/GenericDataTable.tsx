@@ -12,7 +12,6 @@ import {
     TableCell,
     TableProps,
 } from "@heroui/react";
-import { Button } from "@heroui/react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { CustomPagination } from "./CustomPagination";
 
@@ -39,6 +38,7 @@ interface GenericDataTableProps<T> {
     isCollapsible?: boolean;
     defaultOpen?: boolean;
     headerSummary?: string;
+    actions?: React.ReactNode;
 }
 
 export const GenericDataTable = <T extends { id: string | number }>({
@@ -52,6 +52,7 @@ export const GenericDataTable = <T extends { id: string | number }>({
     isCollapsible = false,
     defaultOpen = true,
     headerSummary,
+    actions,
 }: GenericDataTableProps<T>) => {
     const [isOpen, setIsOpen] = React.useState(defaultOpen);
 
@@ -78,6 +79,7 @@ export const GenericDataTable = <T extends { id: string | number }>({
                                     Tìm thấy {headerSummary} bản ghi
                                 </div>
                             )}
+                            {actions && <div>{actions}</div>}
                             {isCollapsible && (
                                 <div className="text-gray-400">
                                     <ChevronDownIcon className={`w-5 h-5 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
@@ -99,23 +101,29 @@ export const GenericDataTable = <T extends { id: string | number }>({
                             }}
                             {...tableProps}
                         >
-                            <TableHeader columns={columns}>
-                                {(column) => (
+                            <TableHeader>
+                                {columns.map((column, index) => (
                                     <TableColumn
                                         key={column.key}
                                         align={column.align || "start"}
                                         style={column.width ? { width: column.width } : {}}
+                                        className={index === 0 && column.key !== "selection" ? "!pl-8" : ""}
                                     >
                                         {column.label}
                                     </TableColumn>
-                                )}
+                                ))}
                             </TableHeader>
                             <TableBody items={data}>
                                 {(item) => (
                                     <TableRow key={item.id} className="hover:bg-gray-50/50 transition-colors">
-                                        {(columnKey) => (
-                                            <TableCell>{renderCell(item, columnKey as string)}</TableCell>
-                                        )}
+                                        {columns.map((column, index) => (
+                                            <TableCell
+                                                key={column.key}
+                                                className={index === 0 && column.key !== "selection" ? "!pl-8" : ""}
+                                            >
+                                                {renderCell(item, column.key)}
+                                            </TableCell>
+                                        ))}
                                     </TableRow>
                                 )}
                             </TableBody>
