@@ -154,7 +154,7 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
                       className="max-w-xs"
                     >
                       <div className="flex flex-col items-center max-w-[120px]">
-                        <span className="text-black text-sm truncate w-full">
+                        <span className="text-black text-sm truncate w-full font-bold">
                           {userName}
                         </span>
                       </div>

@@ -16,6 +16,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { GenericSearchFilter, FilterLabel } from "@/components/ui/GenericSearchFilter";
 import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
+import { FilterActionButton } from "@/components/ui/FilterActionButton";
 import { SearchIcon } from "@/components/ui/Icons";
 
 export const FilterSection = () => {
@@ -28,14 +29,11 @@ export const FilterSection = () => {
             gridClassName="grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-4"
             isCollapsible
             actions={
-                <Button
-                    variant="flat"
-                    color="default"
-                    className="bg-gray-100 text-gray-600 font-bold px-6"
-                    startContent={<TrashIcon className="w-4 h-4" />}
-                >
-                    Xóa toàn bộ lựa chọn
-                </Button>
+                <FilterActionButton
+                    label="Xóa toàn bộ lựa chọn"
+                    icon={<TrashIcon className="w-4 h-4" />}
+                    className="bg-gray-100 text-gray-700 font-bold px-6 shadow-none border border-gray-200"
+                />
             }
         >
             {/* Row 1 */}
@@ -56,36 +54,24 @@ export const FilterSection = () => {
             <div className="md:col-span-6 space-y-1">
                 <FilterLabel>Trạng thái</FilterLabel>
                 <div className="flex gap-2">
-                    <Button
-                        size="sm"
-                        variant={"solid"}
-                        color={"success"}
-                        className={"text-white font-bold"}
-                        startContent={<CheckCircleIcon className="w-4 h-4" />}
+                    <FilterActionButton
+                        label="Duyệt đơn"
+                        icon={<CheckCircleIcon className="w-4 h-4" />}
+                        className="bg-[#10a345] hover:bg-[#0e8f3c]"
                         onPress={() => setStatus("approved")}
-                    >
-                        Duyệt đơn
-                    </Button>
-                    <Button
-                        size="sm"
-                        variant={"solid"}
-                        color={"danger"}
-                        className={"text-white font-bold"}
-                        startContent={<XCircleIcon className="w-4 h-4" />}
+                    />
+                    <FilterActionButton
+                        label="Từ chối"
+                        icon={<XCircleIcon className="w-4 h-4" />}
+                        className="bg-[#ff0000] hover:bg-[#e60000]"
                         onPress={() => setStatus("rejected")}
-                    >
-                        Từ chối
-                    </Button>
-                    <Button
-                        size="sm"
-                        variant={"solid"}
-                        color={"default"}
-                        className={"text-white font-bold"}
-                        startContent={<ClockIcon className="w-4 h-4" />}
+                    />
+                    <FilterActionButton
+                        label="Chờ"
+                        icon={<ClockIcon className="w-4 h-4" />}
+                        className="bg-[#e2f2ea] text-[#10a345] hover:bg-[#d5ebe1]"
                         onPress={() => setStatus("pending")}
-                    >
-                        Chờ
-                    </Button>
+                    />
                 </div>
             </div>
 
