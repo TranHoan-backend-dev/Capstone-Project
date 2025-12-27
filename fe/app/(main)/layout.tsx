@@ -4,15 +4,11 @@ import React from 'react'
 
 const layout = ({ children }: { children: React.ReactNode }) => {
     return (
-        <div className="min-h-screen flex flex-col bg-black-50">
+        <div className="min-h-screen flex flex-col bg-[#f8f9fa]">
             <Header menuItems={siteConfig.navItems} userName="Dung" />
-            <div className="flex-1 overflow-y-auto flex flex-col">
-                <div className="min-h-screen bg-[#f8f9fa]">
-                    <main className="p-4 md:p-8 max-w-[1600px] mx-auto space-y-8">
-                        {children}
-                    </main>
-                </div>
-            </div>
+            <main className="flex-1 p-4 md:p-8 max-w-[1600px] w-full mx-auto flex flex-col">
+                {children}
+            </main>
         </div>
     )
 }

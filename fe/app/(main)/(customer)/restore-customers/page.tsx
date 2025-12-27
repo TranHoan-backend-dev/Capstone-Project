@@ -49,7 +49,7 @@ const RestoreCustomerPage = () => {
                 ]}
             />
 
-            <div className="space-y-6">
+            <div className="space-y-6 pt-2">
                 <RestoreFilter periodData={periodData} />
                 <RestoreTable data={mockData} />
             </div>

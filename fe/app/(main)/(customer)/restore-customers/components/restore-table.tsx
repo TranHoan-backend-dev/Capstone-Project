@@ -1,9 +1,8 @@
 "use client";
 
 import React from "react";
-import { Card, CardBody, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@heroui/react";
 import { TableCellsIcon } from "@heroicons/react/24/outline";
-import { CustomPagination } from "@/components/ui/CustomPagination";
+import { GenericDataTable } from "@/components/ui/GenericDataTable";
 
 interface RestoreItem {
     id: number;
@@ -20,61 +19,68 @@ interface RestoreTableProps {
 }
 
 export const RestoreTable = ({ data }: RestoreTableProps) => {
+    const columns = [
+        { key: "no", label: "#", width: "40px" },
+        { key: "customerCode", label: "Mã KH" },
+        { key: "customerName", label: "Tên khách hàng" },
+        { key: "address", label: "Địa chỉ" },
+        { key: "restoreDate", label: "Ngày Khôi Phục" },
+        { key: "period", label: "Kỳ Khôi Phục" },
+        { key: "reason", label: "Lý Do Khôi Phục" },
+    ];
+
+    const renderCell = (item: RestoreItem, columnKey: string) => {
+        switch (columnKey) {
+            case "no":
+                return <span className="font-medium text-gray-400">{data.indexOf(item) + 1}</span>;
+            case "customerCode":
+                return <span className="font-bold text-blue-600">{item.customerCode}</span>;
+            case "customerName":
+                return <span className="font-semibold text-gray-800">{item.customerName}</span>;
+            case "address":
+                return <div className="max-w-[200px] truncate">{item.address}</div>;
+            case "restoreDate":
+                return <span className="text-gray-400 text-[12px]">{item.restoreDate}</span>;
+            case "period":
+                return (
+                    <span className="font-bold text-[#2563eb] bg-blue-50 px-2 py-0.5 rounded text-[11px] border border-blue-100/50">
+                        {item.period}
+                    </span>
+                );
+            case "reason":
+                return <div className="text-gray-500 italic max-w-[250px] truncate">{item.reason}</div>;
+            default:
+                return (item as any)[columnKey];
+        }
+    };
+
     return (
-        <Card shadow="sm" className="border-none rounded-xl overflow-hidden">
-            <CardBody className="p-0">
-                <div className="p-4 flex items-center gap-3 border-b border-gray-50 bg-[#fcfdfe]">
-                    <div className="p-2 bg-blue-50 rounded-lg text-[#2563eb]">
-                        <TableCellsIcon className="w-4 h-4" />
-                    </div>
-                    <h2 className="text-sm font-bold tracking-tight text-gray-800">Danh Sách KH Khôi Phục</h2>
-                    <div className="ml-auto px-2 py-0.5 bg-gray-100 rounded text-[10px] font-bold text-gray-400 uppercase">
-                        {data.length} Bản ghi
-                    </div>
+        <GenericDataTable
+            title="Danh Sách KH Khôi Phục"
+            icon={
+                <div className="p-2 bg-blue-50 rounded-lg text-[#2563eb]">
+                    <TableCellsIcon className="w-4 h-4" />
                 </div>
-
-                <div className="overflow-x-auto [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-gray-50/50 [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-gray-300 transition-all">
-                    <Table
-                        aria-label="Restore customer list"
-                        removeWrapper
-                        classNames={{
-                            th: "bg-[#fcfdfe] text-gray-400 font-bold py-3 px-4 border-b border-gray-100 text-[10px] uppercase tracking-widest text-left",
-                            td: "py-2.5 px-4 text-[13px] text-gray-600 border-b border-gray-50 last:border-none",
-                        }}
-                    >
-                        <TableHeader>
-                            <TableColumn key="no" width={40}>#</TableColumn>
-                            <TableColumn key="customerCode">Mã KH</TableColumn>
-                            <TableColumn key="customerName">Tên khách hàng</TableColumn>
-                            <TableColumn key="address">Địa chỉ</TableColumn>
-                            <TableColumn key="restoreDate">Ngày Khôi Phục</TableColumn>
-                            <TableColumn key="period">Kỳ Khôi Phục</TableColumn>
-                            <TableColumn key="reason">Lý Do Khôi Phục</TableColumn>
-                        </TableHeader>
-                        <TableBody>
-                            {data.map((item, index) => (
-                                <TableRow key={item.id} className="hover:bg-gray-50/50 transition-colors">
-                                    <TableCell className="font-medium text-gray-400">{index + 1}</TableCell>
-                                    <TableCell className="font-bold text-blue-600">{item.customerCode}</TableCell>
-                                    <TableCell className="font-semibold text-gray-800">{item.customerName}</TableCell>
-                                    <TableCell className="max-w-[200px] truncate">{item.address}</TableCell>
-                                    <TableCell className="text-gray-400 text-[12px]">{item.restoreDate}</TableCell>
-                                    <TableCell>
-                                        <span className="font-bold text-[#2563eb] bg-blue-50 px-2 py-0.5 rounded text-[11px] border border-blue-100/50">
-                                            {item.period}
-                                        </span>
-                                    </TableCell>
-                                    <TableCell className="text-gray-500 italic max-w-[250px] truncate">
-                                        {item.reason}
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
+            }
+            columns={columns}
+            data={data}
+            renderCell={renderCell}
+            paginationProps={{
+                total: 1,
+                initialPage: 1,
+                summary: `Hiển thị ${data.length} bản ghi`
+            }}
+            headerRight={
+                <div className="ml-auto px-2 py-0.5 bg-gray-100 rounded text-[10px] font-bold text-gray-400 uppercase">
+                    {data.length} Bản ghi
                 </div>
-
-                <CustomPagination total={1} initialPage={1} />
-            </CardBody>
-        </Card>
+            }
+            tableProps={{
+                classNames: {
+                    th: "bg-[#fcfdfe] text-gray-400 font-bold py-3 px-4 border-b border-gray-100 text-[10px] uppercase tracking-widest text-left",
+                    td: "py-2.5 px-4 text-[13px] text-gray-600 border-b border-gray-50 last:border-none",
+                }
+            }}
+        />
     );
 };

@@ -14,8 +14,8 @@ export const HomePage = () => {
   ];
 
   return (
-    <main className="container mx-auto px-6 py-6">
-      <Card className="mb-6">
+    <div className="w-full space-y-6">
+      <Card>
         <CardBody className="gap-4">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-lg font-semibold text-gray-800">
@@ -80,6 +80,6 @@ export const HomePage = () => {
           </div>
         </CardBody>
       </Card>
-    </main>
+    </div>
   );
 };

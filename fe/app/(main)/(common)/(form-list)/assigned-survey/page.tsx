@@ -7,7 +7,7 @@ import { siteConfig } from "@/config/site";
 
 const AssignedSurveyList = () => {
   return (
-    <main className="mx-auto max-w-7xl space-y-6 p-6">
+    <>
       <FilterForm title="Danh sách đơn đã phân công khảo sát" showSurveyStaff />
 
       <div className="space-y-6 rounded-lg bg-white p-6 shadow-sm">
@@ -22,7 +22,7 @@ const AssignedSurveyList = () => {
 
         <ReportFooter />
       </div>
-    </main>
+    </>
   );
 };
 
