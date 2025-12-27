@@ -33,7 +33,7 @@ const CustomersPage = () => {
   return (
     <div className="min-h-screen bg-[#f8f9fa]">
 
-      <main className="p-8 max-w-[1440px] mx-auto space-y-6">
+      <main className="p-4 md:p-8 max-w-[1600px] mx-auto space-y-8">
         <CustomBreadcrumb items={[
           { label: "Trang chủ", href: "/home" },
           { label: "Khách hàng", href: "/customers" },

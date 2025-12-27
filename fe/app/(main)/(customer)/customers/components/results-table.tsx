@@ -116,12 +116,10 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
                     </Table>
                 </div>
 
-                <div className="p-5 flex justify-end border-t border-gray-50 bg-[#fcfdfe]">
-                    <CustomPagination
-                        total={1}
-                        initialPage={1}
-                    />
-                </div>
+                <CustomPagination
+                    total={1}
+                    initialPage={1}
+                />
             </CardBody>
         </Card>
     );
