@@ -16,6 +16,7 @@ import NestedDropdown from "../ui/nested-dropdown";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Sidebar from "./sidebar";
+import NotificationDropdown from "./NotificationDropdown";
 
 export interface SubMenuItemChild {
   key: string;
@@ -137,13 +138,15 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
           </div>
         </NavbarContent>
 
-        <NavbarContent as="div" justify="end" className="flex-none">
+        <NavbarContent as="div" justify="end" className="flex-none gap-2">
           {userName && (
             <>
+              <NotificationDropdown />
+
               {/* Desktop version */}
               <Dropdown placement="bottom-end" className="hidden md:block">
                 <DropdownTrigger>
-                  <div className="flex items-center gap-1 px-3 py-2 cursor-pointer rounded-lg transition-colors">
+                  <div className="flex items-center gap-1 px-3 py-2 cursor-pointer rounded-lg transition-colors hover:bg-gray-100">
                     <Tooltip
                       content={userName}
                       placement="bottom"
