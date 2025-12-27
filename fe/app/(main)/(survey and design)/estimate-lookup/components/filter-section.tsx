@@ -8,24 +8,25 @@ import { GenericSearchFilter, FilterLabel } from "@/components/ui/GenericSearchF
 export const FilterSection = () => {
     return (
         <GenericSearchFilter
-            title="Bộ lọc tìm kiếm"
+            title="Tra cứu dự toán"
             icon={<SearchIcon size={18} />}
             gridClassName="grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-6"
             isCollapsible
         >
-            <InputField label="Từ khóa tìm kiếm" placeholder="Nhập mã đơn, tên khách hàng, số điện thoại..." />
-            <InputField label="Mã vật tư" placeholder="Nhập mã vật tư" />
-            <InputField label="Tên đường" placeholder="Nhập tên đường" />
+            <InputField label="Từ khóa" placeholder="Nhập từ khóa tìm kiếm" colSpan="md:col-span-6" />
+            <DatePickerField label="Từ ngày" colSpan="md:col-span-3" />
+            <DatePickerField label="Đến ngày" colSpan="md:col-span-3" />
 
-            <DatePickerField label="Từ ngày đăng ký" />
-            <DatePickerField label="Đến ngày đăng ký" />
+            <InputField label="Mã vật tư" placeholder="Nhập mã vật tư" colSpan="md:col-span-6" />
+            <InputField label="Tên đường" placeholder="Nhập tên đường" colSpan="md:col-span-6" />
         </GenericSearchFilter>
+
     );
 };
 
-export const DatePickerField = ({ label }: { label: string }) => {
+export const DatePickerField = ({ label, colSpan = "md:col-span-4" }: { label: string; colSpan?: string }) => {
     return (
-        <div className="md:col-span-4 space-y-1">
+        <div className={`${colSpan} space-y-1`}>
             <FilterLabel>{label}</FilterLabel>
             <DatePicker
                 variant="faded"
@@ -40,9 +41,9 @@ export const DatePickerField = ({ label }: { label: string }) => {
     );
 }
 
-export const InputField = ({ label, placeholder }: { label: string; placeholder: string }) => {
+export const InputField = ({ label, placeholder, colSpan = "md:col-span-4" }: { label: string; placeholder: string; colSpan?: string }) => {
     return (
-        <div className="md:col-span-4 space-y-1">
+        <div className={`${colSpan} space-y-1`}>
             <FilterLabel>{label}</FilterLabel>
             <Input
                 placeholder={placeholder}
@@ -56,3 +57,4 @@ export const InputField = ({ label, placeholder }: { label: string; placeholder:
         </div>
     );
 }
+
