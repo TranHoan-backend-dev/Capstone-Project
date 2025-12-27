@@ -3,7 +3,7 @@
 import React from "react";
 import { Card, CardBody, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@heroui/react";
 import { TableCellsIcon } from "@heroicons/react/24/outline";
-import { CustomPagination } from "@/components/ui/custom-pagination";
+import { CustomPagination } from "@/components/ui/CustomPagination";
 
 interface RestoreItem {
     id: number;

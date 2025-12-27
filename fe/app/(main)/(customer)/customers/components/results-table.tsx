@@ -14,7 +14,7 @@ import {
     Link,
 } from "@heroui/react";
 import NextLink from "next/link";
-import { CustomPagination } from "@/components/ui/custom-pagination";
+import { CustomPagination } from "@/components/ui/CustomPagination";
 
 interface Customer {
     id: number;

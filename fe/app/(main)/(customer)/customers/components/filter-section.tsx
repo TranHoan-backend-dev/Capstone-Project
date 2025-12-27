@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Card, CardBody, Input, Select, SelectItem, Button, InputProps } from "@heroui/react";
-import { SearchIcon } from "@/components/ui/icons";
+import { SearchIcon } from "@/components/ui/Icons";
 
 interface FormFieldProps extends Partial<InputProps> {
     label: string;
