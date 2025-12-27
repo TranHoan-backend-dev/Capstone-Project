@@ -49,9 +49,8 @@ const RestoreCustomerPage = () => {
         <>
             <CustomBreadcrumb
                 items={[
-                    { label: "Trang chủ", href: "/" },
-                    { label: "Khách hàng", href: "/customers" },
-                    { label: "Khôi phục khách hàng", isCurrent: true },
+                    { label: "Trang chủ", href: "/home" },
+                    { label: "Khôi phục khách hàng hủy", isCurrent: true },
                 ]}
             />
 

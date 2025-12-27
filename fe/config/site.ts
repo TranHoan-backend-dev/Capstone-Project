@@ -20,18 +20,18 @@ export const siteConfig = {
           href: "/new-installation-form",
           children: [],
         },
-        {
-          key: "installation-form",
-          label: "Tra cứu đơn lắp đặt mới",
-          href: "/installation-form",
-          children: [],
-        },
-        {
-          key: "enter-customer",
-          label: "Nhập khách hàng",
-          href: "/enter-customer",
-          children: [],
-        },
+        // {
+        //   key: "installation-forms",
+        //   label: "Tra cứu đơn lắp đặt mới",
+        //   href: "/installation-forms",
+        //   children: [],
+        // },
+        // {
+        //   key: "enter-customer",
+        //   label: "Nhập khách hàng",
+        //   href: "/enter-customer",
+        //   children: [],
+        // },
         {
           key: "find-customer",
           label: "Tra cứu khách hàng",
@@ -39,33 +39,9 @@ export const siteConfig = {
           children: [],
         },
         {
-          key: "customer-assignment",
-          label: "Phân tuyến khách hàng",
-          href: "/customer-assignment",
-          children: [],
-        },
-        {
-          key: "split-account",
-          label: "Tách sổ ghi",
-          href: "/split-account",
-          children: [],
-        },
-        {
-          key: "change-payment",
-          label: "Thay đổi hình thức thanh toán",
-          href: "/change-payment",
-          children: [],
-        },
-        {
-          key: "cancel-customer",
-          label: "Hủy khách hàng",
-          href: "/cancel-customer",
-          children: [],
-        },
-        {
-          key: "restore-customer",
+          key: "restores-customer",
           label: "Khôi phục khách hàng hủy",
-          href: "/restore-customer",
+          href: "/restore-customers",
           children: [],
         },
       ],
@@ -146,21 +122,26 @@ export const siteConfig = {
       key: "construction",
       label: "Thi công",
       items: [
+        // {
+        //   key: "construction-list",
+        //   label: "Danh sách thi công",
+        //   href: "/dashboard/construction",
+        // },
+        // {
+        //   key: "construction-schedule",
+        //   label: "Lịch thi công",
+        //   href: "/dashboard/construction/schedule",
+        // },
+        // {
+        //   key: "construction-report",
+        //   label: "Báo cáo thi công",
+        //   href: "/dashboard/construction/report",
+        // },
         {
-          key: "construction-list",
-          label: "Danh sách thi công",
-          href: "/dashboard/construction",
-        },
-        {
-          key: "construction-schedule",
-          label: "Lịch thi công",
-          href: "/dashboard/construction/schedule",
-        },
-        {
-          key: "construction-report",
-          label: "Báo cáo thi công",
-          href: "/dashboard/construction/report",
-        },
+          key: "settlement-lookup",
+          label: "Tra cứu quyết toán",
+          href: "/settlement-lookup",
+        }
       ],
     },
     {
@@ -182,17 +163,6 @@ export const siteConfig = {
           label: "Thanh toán",
           href: "/dashboard/billing/payment",
         },
-      ],
-    },
-    {
-      key: "settlement",
-      label: "Quyết toán",
-      items: [
-        {
-          key: "settlement-lookup",
-          label: "Tra cứu quyết toán",
-          href: "/settlement-lookup",
-        }
       ],
     },
   ],
