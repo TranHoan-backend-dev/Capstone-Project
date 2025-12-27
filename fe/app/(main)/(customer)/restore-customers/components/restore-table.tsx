@@ -2,6 +2,8 @@
 
 import React from "react";
 import { TableCellsIcon } from "@heroicons/react/24/outline";
+import { Link } from "@heroui/react";
+import NextLink from "next/link";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 
 interface RestoreItem {
@@ -34,9 +36,13 @@ export const RestoreTable = ({ data }: RestoreTableProps) => {
             case "no":
                 return <span className="font-medium text-gray-400">{data.indexOf(item) + 1}</span>;
             case "customerCode":
-                return <span className="font-bold text-blue-600">{item.customerCode}</span>;
+                return (
+                    <Link as={NextLink} href="#" className="font-bold text-blue-600 hover:underline hover:text-blue-800">
+                        {item.customerCode}
+                    </Link>
+                );
             case "customerName":
-                return <span className="font-semibold text-gray-800">{item.customerName}</span>;
+                return <span className="font-bold text-gray-900">{item.customerName}</span>;
             case "address":
                 return <div className="max-w-[200px] truncate">{item.address}</div>;
             case "restoreDate":

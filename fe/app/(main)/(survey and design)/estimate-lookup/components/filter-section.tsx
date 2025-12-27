@@ -1,82 +1,60 @@
 "use client";
 
 import React from "react";
-import { Input, DatePicker } from "@heroui/react";
+import { DatePicker, Input } from "@heroui/react";
 import { SearchIcon } from "@/components/ui/Icons";
 import { GenericSearchFilter, FilterLabel } from "@/components/ui/GenericSearchFilter";
 
 export const FilterSection = () => {
     return (
         <GenericSearchFilter
-            title="Bộ lọc tìm kiếm"
+            title="Tra cứu dự toán"
             icon={<SearchIcon size={18} />}
             gridClassName="grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-6"
             isCollapsible
         >
-            <div className="md:col-span-4 space-y-1">
-                <FilterLabel>Từ khóa tìm kiếm</FilterLabel>
-                <Input
-                    placeholder="Nhập mã đơn, tên khách hàng, số điện thoại..."
-                    variant="faded"
-                    radius="md"
-                    size="md"
-                    classNames={{
-                        inputWrapper: "h-11 bg-gray-50/50 border-gray-100 focus-within:!border-blue-500 transition-all",
-                    }}
-                />
-            </div>
+            <InputField label="Từ khóa" placeholder="Nhập từ khóa tìm kiếm" colSpan="md:col-span-6" />
+            <DatePickerField label="Từ ngày" colSpan="md:col-span-3" />
+            <DatePickerField label="Đến ngày" colSpan="md:col-span-3" />
 
-            <div className="md:col-span-4 space-y-1">
-                <FilterLabel>Mã vật tư</FilterLabel>
-                <Input
-                    placeholder="Nhập mã vật tư"
-                    variant="faded"
-                    radius="md"
-                    size="md"
-                    classNames={{
-                        inputWrapper: "h-11 bg-gray-50/50 border-gray-100 focus-within:!border-blue-500 transition-all",
-                    }}
-                />
-            </div>
-
-            <div className="md:col-span-4 space-y-1">
-                <FilterLabel>Tên đường</FilterLabel>
-                <Input
-                    placeholder="Nhập tên đường"
-                    variant="faded"
-                    radius="md"
-                    size="md"
-                    classNames={{
-                        inputWrapper: "h-11 bg-gray-50/50 border-gray-100 focus-within:!border-blue-500 transition-all",
-                    }}
-                />
-            </div>
-
-            <div className="md:col-span-4 space-y-1">
-                <FilterLabel>Từ ngày đăng ký</FilterLabel>
-                <DatePicker
-                    variant="faded"
-                    radius="md"
-                    size="md"
-                    classNames={{
-                        base: "h-11",
-                        calendarContent: "bg-white",
-                    }}
-                />
-            </div>
-
-            <div className="md:col-span-4 space-y-1">
-                <FilterLabel>Đến ngày đăng ký</FilterLabel>
-                <DatePicker
-                    variant="faded"
-                    radius="md"
-                    size="md"
-                    classNames={{
-                        base: "h-11",
-                        calendarContent: "bg-white",
-                    }}
-                />
-            </div>
+            <InputField label="Mã vật tư" placeholder="Nhập mã vật tư" colSpan="md:col-span-6" />
+            <InputField label="Tên đường" placeholder="Nhập tên đường" colSpan="md:col-span-6" />
         </GenericSearchFilter>
+
     );
 };
+
+export const DatePickerField = ({ label, colSpan = "md:col-span-4" }: { label: string; colSpan?: string }) => {
+    return (
+        <div className={`${colSpan} space-y-1`}>
+            <FilterLabel>{label}</FilterLabel>
+            <DatePicker
+                variant="faded"
+                radius="md"
+                size="md"
+                classNames={{
+                    base: "h-9 min-h-9",
+                    calendarContent: "bg-white",
+                }}
+            />
+        </div>
+    );
+}
+
+export const InputField = ({ label, placeholder, colSpan = "md:col-span-4" }: { label: string; placeholder: string; colSpan?: string }) => {
+    return (
+        <div className={`${colSpan} space-y-1`}>
+            <FilterLabel>{label}</FilterLabel>
+            <Input
+                placeholder={placeholder}
+                variant="faded"
+                radius="md"
+                size="md"
+                classNames={{
+                    inputWrapper: "h-9 min-h-9 bg-gray-50/50 border-gray-100 focus-within:!border-blue-500 transition-all",
+                }}
+            />
+        </div>
+    );
+}
+

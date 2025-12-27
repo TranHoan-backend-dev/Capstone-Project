@@ -109,7 +109,7 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
             <span className="text-xl font-bold text-gray-900 ml-2">CRM</span>
           </NavbarBrand>
 
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-6 font-bold">
             {menuItems.map((item) => {
               const isActive = isMenuItemActive(item);
 
@@ -154,7 +154,7 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
                       className="max-w-xs"
                     >
                       <div className="flex flex-col items-center max-w-[120px]">
-                        <span className="text-black text-sm truncate w-full">
+                        <span className="text-black text-sm truncate w-full font-bold">
                           {userName}
                         </span>
                       </div>

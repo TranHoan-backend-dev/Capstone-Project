@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { Chip, Link } from "@heroui/react";
+import { Checkbox, Chip, Link } from "@heroui/react";
+import NextLink from "next/link";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 
 interface WaitingInputTableProps {
@@ -10,7 +11,8 @@ interface WaitingInputTableProps {
 
 export const WaitingInputTable = ({ data }: WaitingInputTableProps) => {
     const columns: any[] = [
-        { key: "stt", label: "STT", align: "center", width: "60px" },
+        { key: "selection", label: <Checkbox size="sm" radius="sm" className="ml-1" />, width: "40px" },
+        { key: "stt", label: "#", align: "center", width: "60px" },
         { key: "code", label: "Mã đơn" },
         { key: "customerName", label: "Tên khách hàng" },
         { key: "phone", label: "Điện thoại" },
@@ -25,8 +27,16 @@ export const WaitingInputTable = ({ data }: WaitingInputTableProps) => {
         const cellValue = item[columnKey];
 
         switch (columnKey) {
+            case "selection":
+                return <Checkbox size="sm" radius="sm" className="ml-1" />;
             case "code":
-                return <span className="text-blue-600 font-bold">{cellValue}</span>;
+                return (
+                    <Link as={NextLink} href="#" className="font-bold text-blue-600 hover:underline hover:text-blue-800">
+                        {cellValue}
+                    </Link>
+                );
+            case "customerName":
+                return <span className="font-bold text-gray-900">{cellValue}</span>;
             case "status":
                 if (cellValue === "pending_restore") {
                     return (
