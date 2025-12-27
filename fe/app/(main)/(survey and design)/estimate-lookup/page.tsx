@@ -107,7 +107,7 @@ const EstimateLookupPage = () => {
                 { label: "Tra cứu dự toán", href: "/estimate-lookup" },
             ]} />
 
-            <div className="space-y-8">
+            <div className="space-y-6 pt-2">
                 <FilterSection />
                 <ResultsTable data={mockData} />
             </div>

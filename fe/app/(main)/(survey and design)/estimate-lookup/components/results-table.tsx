@@ -1,20 +1,9 @@
 "use client";
 
 import React from "react";
-import {
-    Card,
-    CardBody,
-    Table,
-    TableHeader,
-    TableColumn,
-    TableBody,
-    TableRow,
-    TableCell,
-    Chip,
-    Link,
-} from "@heroui/react";
+import { Chip, Link } from "@heroui/react";
 import NextLink from "next/link";
-import { CustomPagination } from "@/components/ui/CustomPagination";
+import { GenericDataTable } from "@/components/ui/GenericDataTable";
 
 interface EstimateItem {
     id: number;
@@ -58,77 +47,68 @@ const statusMap = {
 };
 
 export const ResultsTable = ({ data }: ResultsTableProps) => {
-    const renderStatus = (status: EstimateItem["status"]) => {
-        const config = statusMap[status];
-        return (
-            <Chip
-                size="sm"
-                variant="flat"
-                className={`${config.bg} ${config.text} border-none font-medium px-2`}
-            >
-                {config.label}
-            </Chip>
-        );
+    const columns = [
+        { key: "code", label: "Mã đơn" },
+        { key: "name", label: "Tên thiết kế" },
+        { key: "phone", label: "Điện thoại" },
+        { key: "address", label: "Địa chỉ lắp đặt" },
+        { key: "date", label: "Ngày đăng ký" },
+        { key: "status", label: "Trạng thái đơn" },
+        { key: "actions", label: "Hoạt động", align: "center" as const },
+    ];
+
+    const renderCell = (item: EstimateItem, columnKey: string) => {
+        switch (columnKey) {
+            case "code":
+                return <span className="font-bold text-blue-600">{item.code}</span>;
+            case "name":
+                return <span className="font-medium text-gray-800">{item.name}</span>;
+            case "status":
+                const config = statusMap[item.status];
+                return (
+                    <Chip
+                        size="sm"
+                        variant="flat"
+                        className={`${config.bg} ${config.text} border-none font-medium px-2`}
+                    >
+                        {config.label}
+                    </Chip>
+                );
+            case "actions":
+                return (
+                    <div className="flex items-center justify-center gap-3 text-xs font-semibold">
+                        <Link as={NextLink} href="#" className="text-blue-600 hover:text-blue-800 underline-offset-4 hover:underline">
+                            Dự toán
+                        </Link>
+                        <Link as={NextLink} href="#" className="text-blue-600 hover:text-blue-800 underline-offset-4 hover:underline">
+                            Chỉnh sửa
+                        </Link>
+                        <Link as={NextLink} href="#" className="text-blue-600 hover:text-blue-800 underline-offset-4 hover:underline">
+                            Hồ sơ
+                        </Link>
+                    </div>
+                );
+            default:
+                return (item as any)[columnKey];
+        }
     };
 
     return (
-        <Card shadow="sm" className="border-none rounded-xl overflow-hidden bg-white">
-            <CardBody className="p-0">
-                <div className="p-6 border-b border-gray-100">
-                    <h2 className="text-lg font-bold text-gray-800">Danh sách đơn thiết kế</h2>
+        <GenericDataTable
+            title="Danh sách đơn thiết kế"
+            columns={columns}
+            data={data}
+            renderCell={renderCell}
+            paginationProps={{
+                total: 5,
+                initialPage: 1,
+                summary: "Hiển thị 1-5 của 25 kết quả"
+            }}
+            headerRight={
+                <div className="px-3 py-1.5 bg-gray-50 rounded-full text-xs font-medium text-gray-500">
+                    Hiển thị 1-5 của 25 kết quả
                 </div>
-
-                <div className="overflow-x-auto">
-                    <Table
-                        aria-label="Estimate search results"
-                        removeWrapper
-                        classNames={{
-                            th: "bg-gray-50/50 text-gray-500 font-bold py-4 px-4 border-b border-gray-100 text-xs",
-                            td: "py-4 px-4 text-sm text-gray-600 border-b border-gray-50 last:border-none",
-                        }}
-                    >
-                        <TableHeader>
-                            <TableColumn key="code">Mã đơn</TableColumn>
-                            <TableColumn key="name">Tên thiết kế</TableColumn>
-                            <TableColumn key="phone">Điện thoại</TableColumn>
-                            <TableColumn key="address">Địa chỉ lắp đặt</TableColumn>
-                            <TableColumn key="date">Ngày đăng ký</TableColumn>
-                            <TableColumn key="status">Trạng thái đơn</TableColumn>
-                            <TableColumn key="actions" align="center">Hoạt động</TableColumn>
-                        </TableHeader>
-                        <TableBody>
-                            {data.map((item) => (
-                                <TableRow key={item.id} className="hover:bg-gray-50/50 transition-colors">
-                                    <TableCell className="font-bold text-blue-600">{item.code}</TableCell>
-                                    <TableCell className="font-medium text-gray-800">{item.name}</TableCell>
-                                    <TableCell>{item.phone}</TableCell>
-                                    <TableCell>{item.address}</TableCell>
-                                    <TableCell>{item.date}</TableCell>
-                                    <TableCell>{renderStatus(item.status)}</TableCell>
-                                    <TableCell>
-                                        <div className="flex items-center justify-center gap-3 text-xs font-semibold">
-                                            <Link as={NextLink} href="#" className="text-blue-600 hover:text-blue-800 underline-offset-4 hover:underline">
-                                                Dự toán
-                                            </Link>
-                                            <Link as={NextLink} href="#" className="text-blue-600 hover:text-blue-800 underline-offset-4 hover:underline">
-                                                Chỉnh sửa
-                                            </Link>
-                                            <Link as={NextLink} href="#" className="text-blue-600 hover:text-blue-800 underline-offset-4 hover:underline">
-                                                Hồ sơ
-                                            </Link>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
-
-                <CustomPagination
-                    total={5}
-                    initialPage={1}
-                />
-            </CardBody>
-        </Card>
+            }
+        />
     );
 };

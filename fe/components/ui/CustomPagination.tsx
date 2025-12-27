@@ -4,14 +4,15 @@ import React from "react";
 import { Pagination, PaginationProps } from "@heroui/react";
 
 interface CustomPaginationProps extends PaginationProps {
+    summary?: string;
 }
 
-export const CustomPagination = (props: CustomPaginationProps) => {
+export const CustomPagination = ({ summary, ...props }: CustomPaginationProps) => {
     return (
 
         <div className="p-6 flex flex-col md:flex-row justify-between items-center gap-4 border-t border-gray-50 bg-white">
             <div className="text-sm text-gray-500">
-                Hiển thị 1-5 của 25 kết quả
+                {summary || "Hiển thị 1-5 của 25 kết quả"}
             </div>
             <Pagination
                 {...props}

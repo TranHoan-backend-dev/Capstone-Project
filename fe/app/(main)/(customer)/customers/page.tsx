@@ -31,26 +31,23 @@ const CustomersPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa]">
+    <>
+      <CustomBreadcrumb items={[
+        { label: "Trang chủ", href: "/home" },
+        { label: "Khách hàng", href: "/customers" },
+      ]} />
 
-      <main className="p-4 md:p-8 max-w-[1600px] mx-auto space-y-8">
-        <CustomBreadcrumb items={[
-          { label: "Trang chủ", href: "/home" },
-          { label: "Khách hàng", href: "/customers" },
-        ]} />
+      <div className="space-y-6 pt-2">
+        <FilterSection
+          branches={branches}
+          areas={areas}
+          districts={districts}
+          wards={wards}
+        />
 
-        <div className="space-y-6">
-          <FilterSection
-            branches={branches}
-            areas={areas}
-            districts={districts}
-            wards={wards}
-          />
-
-          <ResultsTable data={mockData} />
-        </div>
-      </main>
-    </div>
+        <ResultsTable data={mockData} />
+      </div>
+    </>
   );
 };
 
