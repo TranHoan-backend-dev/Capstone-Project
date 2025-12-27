@@ -1,5 +1,11 @@
 import Footer from '@/components/layout/Footer'
 import { HomePage } from './HomePage'
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: 'Trang chủ',
+  description: 'Trang chủ',
+}
 
 const Home = () => {
   return (

@@ -2,6 +2,12 @@ import React from "react";
 import { FilterSection } from "./components/filter-section";
 import { ResultsTable } from "./components/results-table";
 import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: 'Tra cứu Khách hàng',
+  description: 'Tra cứu khách hàng',
+}
 
 const CustomersPage = () => {
   const branches = [{ label: "Tất cả", value: "all" }];
@@ -31,23 +37,21 @@ const CustomersPage = () => {
   ];
 
   return (
-    <>
+    <div className="flex flex-col gap-6">
       <CustomBreadcrumb items={[
         { label: "Trang chủ", href: "/home" },
         { label: "Khách hàng", href: "/customers" },
       ]} />
 
-      <div className="space-y-6 pt-2">
-        <FilterSection
-          branches={branches}
-          areas={areas}
-          districts={districts}
-          wards={wards}
-        />
+      <FilterSection
+        branches={branches}
+        areas={areas}
+        districts={districts}
+        wards={wards}
+      />
 
-        <ResultsTable data={mockData} />
-      </div>
-    </>
+      <ResultsTable data={mockData} />
+    </div>
   );
 };
 

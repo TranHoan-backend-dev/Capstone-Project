@@ -1,5 +1,10 @@
-import OTPForm from "@/components/layout/otp-form";
-import ChangePasswordForm from "./components/change-password-form";
+import OTPForm from "@/components/layout/OTPForm";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: 'Đổi mật khẩu',
+  description: 'Đổi mật khẩu',
+}
 
 const ChangePasswordPage = () => {
   return <OTPForm />
