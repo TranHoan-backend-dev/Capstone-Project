@@ -10,7 +10,7 @@ interface OrdersToDesignTableProps {
 
 export const OrdersToDesignTable = ({ data }: OrdersToDesignTableProps) => {
     const columns: any[] = [
-        { key: "stt", label: "STT", align: "center", width: "60px" },
+        { key: "no", label: "#", align: "center", width: "60px" },
         { key: "code", label: "Mã đơn" },
         { key: "customerName", label: "Tên khách hàng" },
         { key: "phone", label: "Điện thoại" },
@@ -24,6 +24,8 @@ export const OrdersToDesignTable = ({ data }: OrdersToDesignTableProps) => {
         const cellValue = item[columnKey];
 
         switch (columnKey) {
+            case "no":
+                return <span className="font-medium text-gray-400">{data.indexOf(item) + 1}</span>;
             case "code":
                 return <span className="text-blue-600 font-bold">{cellValue}</span>;
             case "status":
@@ -42,8 +44,6 @@ export const OrdersToDesignTable = ({ data }: OrdersToDesignTableProps) => {
                     );
                 }
                 return cellValue;
-            case "stt":
-                return <span className="text-gray-400">{cellValue}</span>;
             default:
                 return cellValue;
         }
@@ -61,6 +61,7 @@ export const OrdersToDesignTable = ({ data }: OrdersToDesignTableProps) => {
                 initialPage: 1,
                 summary: `${data.length}`
             }}
+            headerSummary={`${data.length}`}
         />
     );
 };

@@ -93,7 +93,7 @@ export const GenericDataTable = <T extends { id: string | number }>({
                             aria-label={title}
                             removeWrapper
                             classNames={{
-                                th: "bg-gray-50/50 text-gray-500 font-bold py-4 px-4 border-b border-gray-100 text-xs",
+                                th: "bg-[#fcfdfe] text-gray-400 font-bold py-4 px-4 border-b border-gray-100 text-[11px] uppercase tracking-widest",
                                 td: "py-4 px-4 text-sm text-gray-600 border-b border-gray-50 last:border-none",
                                 ...tableProps?.classNames,
                             }}

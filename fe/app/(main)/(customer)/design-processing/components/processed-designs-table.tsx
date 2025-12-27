@@ -58,6 +58,7 @@ export const ProcessedDesignsTable = ({ data }: ProcessedDesignsTableProps) => {
                 initialPage: 1,
                 summary: `${data.length}`
             }}
+            headerSummary={`${data.length}`}
         />
     );
 };

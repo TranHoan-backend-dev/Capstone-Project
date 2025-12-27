@@ -56,27 +56,22 @@ export const RestoreTable = ({ data }: RestoreTableProps) => {
 
     return (
         <GenericDataTable
-            title="Danh Sách KH Khôi Phục"
+            title="Danh sách KH khôi phục"
             icon={
-                <div className="p-2 bg-blue-50 rounded-lg text-[#2563eb]">
+                <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
                     <TableCellsIcon className="w-4 h-4" />
                 </div>
             }
             columns={columns}
             data={data}
             renderCell={renderCell}
+            isCollapsible
             paginationProps={{
                 total: 1,
                 initialPage: 1,
-                summary: `${data.length}`
+                summary: `${data.length}`,
             }}
             headerSummary={`${data.length}`}
-            tableProps={{
-                classNames: {
-                    th: "bg-[#fcfdfe] text-gray-400 font-bold py-3 px-4 border-b border-gray-100 text-[10px] uppercase tracking-widest text-left",
-                    td: "py-2.5 px-4 text-[13px] text-gray-600 border-b border-gray-50 last:border-none",
-                }
-            }}
         />
     );
 };

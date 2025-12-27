@@ -75,6 +75,7 @@ export const WaitingInputTable = ({ data }: WaitingInputTableProps) => {
                 initialPage: 1,
                 summary: `${data.length}`
             }}
+            headerSummary={`${data.length}`}
         />
     );
 };

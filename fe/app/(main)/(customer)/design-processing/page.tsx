@@ -6,6 +6,11 @@ import { ProcessedDesignsTable } from "./components/processed-designs-table";
 import { WaitingInputTable } from "./components/waiting-input-table";
 import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
 
+export const metadata: Metadata = {
+    title: "Xử lý đơn chờ thiết kế & Thiết kế",
+    description: "Xử lý đơn chờ thiết kế & Thiết kế",
+}
+
 const DesignProcessingPage = () => {
     // Mock data for table 1
     const ordersToDesignData = [

@@ -36,7 +36,7 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
             case "no":
                 return <span className="font-medium text-gray-400">{data.indexOf(item) + 1}</span>;
             case "customerCode":
-                return <span className="font-bold text-gray-900">{item.customerCode}</span>;
+                return <span className="font-bold text-blue-600">{item.customerCode}</span>;
             case "oldCustomerCode":
                 return <span className="font-medium text-gray-500">{item.oldCustomerCode}</span>;
             case "customerName":
@@ -84,8 +84,8 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
         <GenericDataTable
             title="Kết quả tìm kiếm"
             icon={
-                <div className="p-2 bg-blue-50 rounded-lg text-[#2563eb]">
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z" />
                     </svg>
                 </div>
@@ -93,17 +93,13 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
             columns={columns}
             data={data}
             renderCell={renderCell}
+            isCollapsible
             paginationProps={{
                 total: 1,
                 initialPage: 1,
-                summary: `${data.length}`
+                summary: `${data.length}`,
             }}
             headerSummary={`${data.length}`}
-            tableProps={{
-                classNames: {
-                    th: "bg-[#fcfdfe] text-gray-400 font-bold py-4 px-4 border-b border-gray-100 text-[11px] uppercase tracking-widest",
-                }
-            }}
         />
     );
 };
