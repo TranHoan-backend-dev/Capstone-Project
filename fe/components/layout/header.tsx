@@ -162,6 +162,8 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
                 <DropdownMenu aria-label="User menu" variant="flat">
                   <DropdownItem
                     key="profile"
+                    as={Link}
+                    href="/profile"
                     className={`${pathname === "/profile" ? "bg-blue-100" : ""
                       }`}
                   >
@@ -201,6 +203,8 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
                   <DropdownMenu aria-label="User menu" variant="flat">
                     <DropdownItem
                       key="profile"
+                      as={Link}
+                      href="/profile"
                       className={`${pathname === "/profile" ? "bg-blue-100" : ""
                         }`}
                     >
