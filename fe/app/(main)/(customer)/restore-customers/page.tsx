@@ -2,6 +2,12 @@ import React from "react";
 import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
 import { RestoreFilter } from "./components/restore-filter";
 import { RestoreTable } from "./components/restore-table";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: 'Khôi phục khách hàng hủy',
+    description: 'Khôi phục khách hàng hủy',
+}
 
 const RestoreCustomerPage = () => {
     const periodData = [

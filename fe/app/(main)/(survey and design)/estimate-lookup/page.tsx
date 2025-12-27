@@ -1,9 +1,13 @@
-"use client";
-
 import React from "react";
 import { FilterSection } from "./components/filter-section";
 import { ResultsTable } from "./components/results-table";
 import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: 'Tra cứu dự toán',
+    description: 'Tra cứu dự toán',
+}
 
 const EstimateLookupPage = () => {
     const mockData: any[] = [
