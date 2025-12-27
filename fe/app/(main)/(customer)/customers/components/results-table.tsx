@@ -36,11 +36,15 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
             case "no":
                 return <span className="font-medium text-gray-400">{data.indexOf(item) + 1}</span>;
             case "customerCode":
-                return <span className="font-bold text-blue-600">{item.customerCode}</span>;
+                return (
+                    <Link as={NextLink} href="#" className="font-bold text-blue-600 hover:underline hover:text-blue-800">
+                        {item.customerCode}
+                    </Link>
+                );
             case "oldCustomerCode":
                 return <span className="font-medium text-gray-500">{item.oldCustomerCode}</span>;
             case "customerName":
-                return <span className="font-semibold text-gray-800">{item.customerName}</span>;
+                return <span className="font-bold text-gray-900">{item.customerName}</span>;
             case "status":
                 return (
                     <Chip

@@ -3,7 +3,8 @@
 import React from "react";
 import { TrashIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outline";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import { Checkbox } from "@heroui/react";
+import { Checkbox, Link } from "@heroui/react";
+import NextLink from "next/link";
 import { FolderIcon } from "@heroicons/react/24/solid";
 
 interface ProcessedDesignsTableProps {
@@ -31,7 +32,13 @@ export const ProcessedDesignsTable = ({ data }: ProcessedDesignsTableProps) => {
             case "selection":
                 return <Checkbox size="sm" radius="sm" className="ml-1" />;
             case "code":
-                return <span className="text-blue-600 font-bold">{cellValue}</span>;
+                return (
+                    <Link as={NextLink} href="#" className="font-bold text-blue-600 hover:underline hover:text-blue-800">
+                        {cellValue}
+                    </Link>
+                );
+            case "customerName":
+                return <span className="font-bold text-gray-900">{cellValue}</span>;
             case "activities":
                 return (
                     <div className="flex justify-center">

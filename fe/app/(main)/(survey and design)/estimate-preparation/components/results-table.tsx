@@ -52,9 +52,13 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
             case "stt":
                 return <span className="text-gray-400 font-medium ml-1">{data.indexOf(item) + 1}</span>;
             case "code":
-                return <span className="font-bold text-[#2a66e4] underline underline-offset-4 cursor-pointer">{item.code}</span>;
+                return (
+                    <Link as={NextLink} href="#" className="font-bold text-[#2a66e4] underline underline-offset-4 hover:text-blue-800">
+                        {item.code}
+                    </Link>
+                );
             case "customerName":
-                return <span className="font-medium text-gray-800">{item.customerName}</span>;
+                return <span className="font-bold text-gray-900">{item.customerName}</span>;
             case "phone":
                 return <span className="text-gray-500">{item.phone}</span>;
             case "address":

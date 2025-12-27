@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { Checkbox, Chip } from "@heroui/react";
+import { Checkbox, Chip, Link } from "@heroui/react";
+import NextLink from "next/link";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 
 interface OrdersToDesignTableProps {
@@ -30,7 +31,13 @@ export const OrdersToDesignTable = ({ data }: OrdersToDesignTableProps) => {
             case "no":
                 return <span className="font-medium text-gray-400">{data.indexOf(item) + 1}</span>;
             case "code":
-                return <span className="text-blue-600 font-bold">{cellValue}</span>;
+                return (
+                    <Link as={NextLink} href="#" className="font-bold text-blue-600 hover:underline hover:text-blue-800">
+                        {cellValue}
+                    </Link>
+                );
+            case "customerName":
+                return <span className="font-bold text-gray-900">{cellValue}</span>;
             case "status":
                 if (cellValue === "paid") {
                     return (
