@@ -30,7 +30,6 @@ const NestedDropdown = ({ item }: { item: MenuItem }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [nestedOpen, setNestedOpen] = useState<string | null>(null);
   const [activeItem, setActiveItem] = useState<string | null>(null);
-  const hasItems = item.items && item.items.length > 0;
 
   useEffect(() => {
     if (item.href && pathname === item.href) {
@@ -40,6 +39,7 @@ const NestedDropdown = ({ item }: { item: MenuItem }) => {
 
     if (item.items) {
       for (const subItem of item.items) {
+
         if (subItem.href && pathname === subItem.href) {
           setActiveItem(subItem.key);
           return;
@@ -73,7 +73,7 @@ const NestedDropdown = ({ item }: { item: MenuItem }) => {
     if (isItemActive(subItem.key)) return true;
 
     if (subItem.children) {
-      return subItem.children.some((child) => isItemActive(child.key));
+      return subItem.children.some(child => isItemActive(child.key));
     }
 
     return false;
@@ -82,7 +82,7 @@ const NestedDropdown = ({ item }: { item: MenuItem }) => {
   return (
     <div
       className="relative"
-      onMouseEnter={() => hasItems && setIsOpen(true)}
+      onMouseEnter={() => setIsOpen(true)}
       onMouseLeave={() => {
         setIsOpen(false);
         setNestedOpen(null);
@@ -94,28 +94,26 @@ const NestedDropdown = ({ item }: { item: MenuItem }) => {
             as={NextLink}
             href={item.href}
             onClick={() => handleItemClick(item.key)}
-            className={`text-sm px-3 py-2 rounded transition-colors ${
-              isItemActive(item.key)
-                ? "bg-blue-200 text-blue-800 font-medium"
-                : "text-gray-700 hover:text-gray-900 hover:bg-blue-100"
-            }`}
+            className={`text-sm px-3 py-2 rounded transition-colors ${isItemActive(item.key)
+              ? "bg-blue-200 text-blue-800 font-medium"
+              : "text-gray-700 hover:text-gray-900 hover:bg-blue-100"
+              }`}
           >
             {item.label}
           </Link>
         ) : (
           <span
-            className={`text-sm px-3 py-2 rounded cursor-pointer ${
-              isItemActive(item.key)
-                ? "bg-blue-200 text-blue-800 font-medium"
-                : "text-gray-700"
-            }`}
+            className={`text-sm px-3 py-2 rounded cursor-pointer ${isItemActive(item.key)
+              ? "bg-blue-200 text-blue-800 font-medium"
+              : "text-gray-700"
+              }`}
           >
             {item.label}
           </span>
         )}
       </div>
 
-      {isOpen && hasItems && (
+      {isOpen && (
         <div className="absolute top-full left-0 mt-1 z-50 min-w-[220px] bg-white shadow-lg rounded-lg border border-gray-200 py-1">
           {item.items?.map((subItem) => {
             const isSubItemActive = isAnyChildActive(subItem);
@@ -125,9 +123,7 @@ const NestedDropdown = ({ item }: { item: MenuItem }) => {
                 key={subItem.key}
                 className="relative"
                 onMouseEnter={() =>
-                  subItem.children &&
-                  subItem.children.length > 0 &&
-                  setNestedOpen(subItem.key)
+                  subItem.children && setNestedOpen(subItem.key)
                 }
                 onMouseLeave={() => !subItem.children && setNestedOpen(null)}
               >
@@ -135,49 +131,40 @@ const NestedDropdown = ({ item }: { item: MenuItem }) => {
                   <Link
                     href={subItem.href}
                     onClick={() => handleItemClick(subItem.key)}
-                    className={`flex items-center justify-between px-3 py-2 text-sm transition-colors whitespace-nowrap ${
-                      isItemActive(subItem.key)
-                        ? "bg-blue-200 text-blue-800 font-medium"
-                        : "text-gray-700 hover:text-gray-900 hover:bg-blue-100"
-                    }`}
+                    className={`flex items-center justify-between px-3 py-2 text-sm transition-colors whitespace-nowrap ${isItemActive(subItem.key)
+                      ? "bg-blue-200 text-blue-800 font-medium"
+                      : "text-gray-700 hover:text-gray-900 hover:bg-blue-100"
+                      }`}
                   >
                     {subItem.label}
                   </Link>
                 ) : (
-                  <div
-                    className={`flex items-center justify-between px-3 py-2 text-sm transition-colors cursor-pointer whitespace-nowrap ${
-                      isSubItemActive
-                        ? "bg-blue-50 text-blue-700"
-                        : "text-gray-700 hover:text-gray-900 hover:bg-blue-50"
-                    }`}
-                  >
+                  <div className={`flex items-center justify-between px-3 py-2 text-sm transition-colors cursor-pointer whitespace-nowrap ${isSubItemActive
+                    ? "bg-blue-50 text-blue-700"
+                    : "text-gray-700 hover:text-gray-900 hover:bg-blue-50"
+                    }`}>
                     <span>{subItem.label}</span>
-                    {subItem.children && subItem.children.length > 0 && (
-                      <span className="text-sm ml-2">›</span>
-                    )}
+                    {subItem.children && <span className="text-sm ml-2">›</span>}
                   </div>
                 )}
 
-                {subItem.children &&
-                  subItem.children.length > 0 &&
-                  nestedOpen === subItem.key && (
-                    <div className="absolute left-full top-0 ml-1 z-50 min-w-[280px] bg-white shadow-lg rounded-lg border border-gray-200 py-1">
-                      {subItem.children.map((child) => (
-                        <Link
-                          key={child.key}
-                          href={child.href || "#"}
-                          onClick={() => handleItemClick(child.key)}
-                          className={`block px-3 py-2 text-sm transition-colors whitespace-nowrap ${
-                            isItemActive(child.key)
-                              ? "bg-blue-200 text-blue-800 font-medium"
-                              : "text-gray-700 hover:text-gray-900 hover:bg-blue-100"
+                {subItem.children && nestedOpen === subItem.key && (
+                  <div className="absolute left-full top-0 ml-1 z-50 min-w-[280px] bg-white shadow-lg rounded-lg border border-gray-200 py-1">
+                    {subItem.children.map((child) => (
+                      <Link
+                        key={child.key}
+                        href={child.href || "#"}
+                        onClick={() => handleItemClick(child.key)}
+                        className={`block px-3 py-2 text-sm transition-colors whitespace-nowrap ${isItemActive(child.key)
+                          ? "bg-blue-200 text-blue-800 font-medium"
+                          : "text-gray-700 hover:text-gray-900 hover:bg-blue-100"
                           }`}
-                        >
-                          {child.label}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
+                      >
+                        {child.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </div>
             );
           })}
