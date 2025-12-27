@@ -15,7 +15,7 @@ const Actions = () => {
                 className="h-12 px-8 bg-blue-600 text-white font-bold rounded-xl shadow-lg shadow-blue-100"
                 startContent={<DocumentTextIcon className="w-5 h-5" />}
             >
-                Tạo hồ sơ mới
+                Tạo hóa đơn
             </Button>
             <Button
                 href="#"
