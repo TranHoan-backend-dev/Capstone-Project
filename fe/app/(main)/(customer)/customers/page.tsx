@@ -38,10 +38,11 @@ const CustomersPage = () => {
 
   return (
     <>
-      <CustomBreadcrumb items={[
-        { label: "Trang chủ", href: "/home" },
-        { label: "Khách hàng", href: "/customers" },
-      ]} />
+      <CustomBreadcrumb
+        items={[
+          { label: "Trang chủ", href: "/home" },
+          { label: "Khách hàng", href: "/customers" },
+        ]} />
 
       <div className="space-y-6 pt-2">
         <FilterSection

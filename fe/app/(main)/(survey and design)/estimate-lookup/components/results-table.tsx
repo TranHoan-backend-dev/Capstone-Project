@@ -48,6 +48,7 @@ const statusMap = {
 
 export const ResultsTable = ({ data }: ResultsTableProps) => {
     const columns = [
+        { key: "no", label: "#" },
         { key: "code", label: "Mã đơn" },
         { key: "name", label: "Tên thiết kế" },
         { key: "phone", label: "Điện thoại" },
@@ -59,6 +60,8 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
 
     const renderCell = (item: EstimateItem, columnKey: string) => {
         switch (columnKey) {
+            case "no":
+                return <span className="font-medium text-gray-400">{data.indexOf(item) + 1}</span>;
             case "code":
                 return <span className="font-bold text-blue-600">{item.code}</span>;
             case "name":
@@ -99,6 +102,7 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
             columns={columns}
             data={data}
             renderCell={renderCell}
+            isCollapsible
             paginationProps={{
                 total: 5,
                 initialPage: 1,
