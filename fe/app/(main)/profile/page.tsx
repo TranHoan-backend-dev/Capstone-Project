@@ -21,7 +21,7 @@ const ProfilePage = () => {
                 { label: "Thông tin khách hàng", isCurrent: true },
             ]} />
 
-            <div className="space-y-6">
+            <div className="space-y-6 pt-2">
                 <CustomerInformation />
 
                 <WaterIndexMetrics />

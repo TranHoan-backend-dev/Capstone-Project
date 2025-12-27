@@ -42,13 +42,6 @@ const CustomerInformation = () => {
 
                     <div className="flex flex-row md:flex-col gap-3 shrink-0">
                         <Button
-                            variant="flat"
-                            className="bg-gray-50 text-gray-600 font-bold px-6 h-11 rounded-xl hover:bg-gray-100"
-                            startContent={<ArrowLeftIcon className="w-4 h-4" />}
-                        >
-                            Trở về
-                        </Button>
-                        <Button
                             color="primary"
                             className="bg-gray-100 text-gray-700 font-bold px-6 h-11 rounded-xl hover:bg-gray-200 border-none"
                             startContent={<PencilSquareIcon className="w-4 h-4" />}

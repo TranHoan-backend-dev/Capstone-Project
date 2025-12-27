@@ -33,13 +33,21 @@ const PaymentHistory = () => {
     };
 
     return (
-        <GenericDataTable
-            title="Lịch Sử Thanh Toán"
-            columns={columns}
-            data={paymentHistoryData}
-            renderCell={renderCell}
-            headerSummary={`${paymentHistoryData.length}`}
-        />
+        <div className="pb-8">
+            <GenericDataTable
+                title="Lịch Sử Thanh Toán"
+                columns={columns}
+                data={paymentHistoryData}
+                renderCell={renderCell}
+                headerSummary={`${paymentHistoryData.length}`}
+                isCollapsible
+                paginationProps={{
+                    total: 1,
+                    initialPage: 1,
+                    summary: `${paymentHistoryData.length}`
+                }}
+            />
+        </div>
     )
 }
 
