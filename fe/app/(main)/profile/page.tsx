@@ -23,16 +23,9 @@ const ProfilePage = () => {
 
             <div className="space-y-6 pt-2">
                 <CustomerInformation />
-
                 <WaterIndexMetrics />
-
-                {/* Section 3: Payment Details (This Month) */}
                 <PaymentDetails />
-
-                {/* Section 4: Payment History */}
                 <PaymentHistory />
-
-                {/* Section 5: Bottom Buttons */}
                 <Actions />
             </div>
         </>

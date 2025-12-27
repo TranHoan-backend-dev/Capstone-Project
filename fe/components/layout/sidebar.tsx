@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { ChevronDownIcon, XMarkIcon } from "@heroicons/react/24/solid";
-import { MenuItem } from "./header";
+import { MenuItem } from "./Header";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
