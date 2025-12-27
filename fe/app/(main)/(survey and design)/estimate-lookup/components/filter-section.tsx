@@ -11,6 +11,7 @@ export const FilterSection = () => {
             title="Bộ lọc tìm kiếm"
             icon={<SearchIcon size={18} />}
             gridClassName="grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-6"
+            isCollapsible
         >
             <div className="md:col-span-4 space-y-1">
                 <FilterLabel>Từ khóa tìm kiếm</FilterLabel>

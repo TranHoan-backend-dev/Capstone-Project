@@ -41,8 +41,9 @@ export const GenericSearchFilter = ({
         <Card shadow="sm" className="border-none rounded-xl bg-white overflow-hidden transition-all duration-300">
             <CardBody className="p-0">
                 <div
-                    className={`p-6 flex items-center justify-between text-blue-600 ${isCollapsible ? "cursor-pointer select-none" : ""}`}
+                    role={isCollapsible ? "button" : undefined}
                     onClick={() => isCollapsible && setIsOpen(!isOpen)}
+                    className={`p-6 flex items-center justify-between transition-colors ${isCollapsible ? "cursor-pointer select-none hover:bg-gray-50/50" : ""}`}
                 >
                     <div className="flex items-center gap-3">
                         <div className="text-blue-600">
@@ -51,18 +52,13 @@ export const GenericSearchFilter = ({
                         <h2 className="text-lg font-bold tracking-tight text-gray-800">{title}</h2>
                     </div>
                     {isCollapsible && (
-                        <Button
-                            isIconOnly
-                            variant="light"
-                            size="sm"
-                            className="text-gray-400 min-w-unit-8 h-8 w-8"
-                        >
+                        <div className="text-gray-400">
                             <ChevronDownIcon className={`w-5 h-5 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
-                        </Button>
+                        </div>
                     )}
                 </div>
 
-                <div className={`px-6 pb-6 transition-all duration-300 ease-in-out origin-top overflow-hidden ${isOpen ? "opacity-100 max-h-[2000px] visible" : "opacity-0 max-h-0 invisible"}`}>
+                <div className={`px-6 pb-6 transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? "opacity-100 max-h-[2000px] visible" : "opacity-0 max-h-0 invisible"}`}>
                     <div className={gridClassName}>
                         {children}
                     </div>
