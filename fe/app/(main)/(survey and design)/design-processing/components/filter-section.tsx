@@ -6,6 +6,7 @@ import { SearchIcon } from "@/components/ui/Icons";
 import { TrashIcon, CheckCircleIcon, XCircleIcon, ClockIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
 import { GenericSearchFilter, FilterLabel } from "@/components/ui/GenericSearchFilter";
 import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
+import { FilterActionButton } from "@/components/ui/FilterActionButton";
 
 export const FilterSection = () => {
     const [status, setStatus] = useState<"approved" | "rejected" | "pending">("approved");
@@ -25,14 +26,11 @@ export const FilterSection = () => {
             gridClassName="grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-4"
             isCollapsible
             actions={
-                <Button
-                    variant="flat"
-                    color="default"
-                    startContent={<TrashIcon className="w-4 h-4" />}
-                    className="bg-gray-100 text-gray-600 font-bold px-6"
-                >
-                    Xóa toàn bộ lựa chọn
-                </Button>
+                <FilterActionButton
+                    label="Xóa toàn bộ lựa chọn"
+                    icon={<TrashIcon className="w-4 h-4" />}
+                    className="bg-gray-100 text-gray-700 font-bold px-6 shadow-none border border-gray-200"
+                />
             }
         >
             {/* Row 1 */}
@@ -53,36 +51,24 @@ export const FilterSection = () => {
             <div className="md:col-span-6 space-y-1">
                 <FilterLabel>Trạng thái</FilterLabel>
                 <div className="flex gap-2">
-                    <Button
-                        size="sm"
-                        variant={status === "approved" ? "solid" : "flat"}
-                        color={status === "approved" ? "success" : "default"}
-                        className={status === "approved" ? "text-white font-bold" : "bg-gray-100 text-gray-500 font-medium"}
-                        startContent={<CheckCircleIcon className="w-4 h-4" />}
+                    <FilterActionButton
+                        label="Duyệt đơn"
+                        icon={<CheckCircleIcon className="w-4 h-4" />}
+                        className="bg-[#10a345] hover:bg-[#0e8f3c]"
                         onPress={() => setStatus("approved")}
-                    >
-                        Duyệt đơn
-                    </Button>
-                    <Button
-                        size="sm"
-                        variant={status === "rejected" ? "solid" : "flat"}
-                        color={status === "rejected" ? "danger" : "default"}
-                        className={status === "rejected" ? "text-white font-bold" : "bg-gray-100 text-gray-500 font-medium"}
-                        startContent={<XCircleIcon className="w-4 h-4" />}
+                    />
+                    <FilterActionButton
+                        label="Từ chối"
+                        icon={<XCircleIcon className="w-4 h-4" />}
+                        className="bg-[#ff0000] hover:bg-[#e60000]"
                         onPress={() => setStatus("rejected")}
-                    >
-                        Từ chối
-                    </Button>
-                    <Button
-                        size="sm"
-                        variant={status === "pending" ? "solid" : "flat"}
-                        color={status === "pending" ? "default" : "default"}
-                        className={status === "pending" ? "bg-gray-200 text-gray-700 font-bold" : "bg-gray-100 text-gray-500 font-medium"}
-                        startContent={<ClockIcon className="w-4 h-4" />}
+                    />
+                    <FilterActionButton
+                        label="Chờ"
+                        icon={<ClockIcon className="w-4 h-4" />}
+                        className="bg-[#e2f2ea] text-[#10a345] hover:bg-[#d5ebe1]"
                         onPress={() => setStatus("pending")}
-                    >
-                        Chờ
-                    </Button>
+                    />
                 </div>
             </div>
 

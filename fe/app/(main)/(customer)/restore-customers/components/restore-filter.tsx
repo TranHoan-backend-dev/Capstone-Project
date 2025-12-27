@@ -6,26 +6,7 @@ import { SearchIcon } from "@/components/ui/Icons";
 import { CheckIcon, XMarkIcon, FunnelIcon } from "@heroicons/react/24/outline";
 import { GenericSearchFilter, FilterLabel } from "@/components/ui/GenericSearchFilter";
 
-const ActionButton = ({
-    text,
-    icon,
-    className,
-    onClick,
-}: {
-    text: string;
-    icon: React.ReactNode;
-    className: string;
-    onClick: () => void;
-}) => (
-    <Button
-        size="sm"
-        className={`px-5 h-9 text-[13px] font-bold text-white transition-all rounded-lg shadow-sm ${className}`}
-        startContent={icon}
-        onPress={onClick}
-    >
-        {text}
-    </Button>
-);
+import { FilterActionButton } from "@/components/ui/FilterActionButton";
 
 interface RestoreFilterProps {
     periodData: { label: string; value: string }[];
@@ -40,23 +21,26 @@ export const RestoreFilter = ({ periodData }: RestoreFilterProps) => {
             isCollapsible
             actions={
                 <>
-                    <ActionButton
-                        text="Lưu"
+                    <FilterActionButton
+                        label="Lưu"
                         icon={<CheckIcon className="w-4 h-4" />}
+                        color="success"
                         className="bg-green-500 hover:bg-green-600"
-                        onClick={() => { }}
+                        onPress={() => { }}
                     />
-                    <ActionButton
-                        text="Hủy"
+                    <FilterActionButton
+                        label="Hủy"
                         icon={<XMarkIcon className="w-4 h-4" />}
+                        color="danger"
                         className="bg-red-500 hover:bg-red-600"
-                        onClick={() => { }}
+                        onPress={() => { }}
                     />
-                    <ActionButton
-                        text="Lọc"
+                    <FilterActionButton
+                        label="Lọc"
                         icon={<FunnelIcon className="w-4 h-4" />}
+                        color="primary"
                         className="bg-blue-600 hover:bg-blue-700"
-                        onClick={() => { }}
+                        onPress={() => { }}
                     />
                 </>
             }
