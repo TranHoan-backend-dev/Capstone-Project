@@ -123,6 +123,11 @@ export const siteConfig = {
               label: "Tra cứu dự toán",
               href: "/estimate-lookup",
             },
+            {
+              key: "estimate-preparation",
+              label: "Lập dự toán",
+              href: "/estimate-preparation",
+            },
           ],
         },
         {

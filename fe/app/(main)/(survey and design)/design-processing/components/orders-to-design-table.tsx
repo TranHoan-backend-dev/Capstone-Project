@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Chip } from "@heroui/react";
+import { Checkbox, Chip } from "@heroui/react";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 
 interface OrdersToDesignTableProps {
@@ -10,6 +10,7 @@ interface OrdersToDesignTableProps {
 
 export const OrdersToDesignTable = ({ data }: OrdersToDesignTableProps) => {
     const columns: any[] = [
+        { key: "selection", label: <Checkbox size="sm" radius="sm" className="ml-1" />, width: "40px" },
         { key: "no", label: "#", align: "center", width: "60px" },
         { key: "code", label: "Mã đơn" },
         { key: "customerName", label: "Tên khách hàng" },
@@ -24,6 +25,8 @@ export const OrdersToDesignTable = ({ data }: OrdersToDesignTableProps) => {
         const cellValue = item[columnKey];
 
         switch (columnKey) {
+            case "selection":
+                return <Checkbox size="sm" radius="sm" className="ml-1" />;
             case "no":
                 return <span className="font-medium text-gray-400">{data.indexOf(item) + 1}</span>;
             case "code":
