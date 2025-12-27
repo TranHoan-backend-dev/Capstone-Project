@@ -102,13 +102,9 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
             paginationProps={{
                 total: 5,
                 initialPage: 1,
-                summary: "Hiển thị 1-5 của 25 kết quả"
+                summary: `${data.length}`
             }}
-            headerRight={
-                <div className="px-3 py-1.5 bg-gray-50 rounded-full text-xs font-medium text-gray-500">
-                    Hiển thị 1-5 của 25 kết quả
-                </div>
-            }
+            headerSummary={`${data.length}`}
         />
     );
 };

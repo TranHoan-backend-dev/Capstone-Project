@@ -96,13 +96,9 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
             paginationProps={{
                 total: 1,
                 initialPage: 1,
-                summary: `Tìm thấy ${data.length} kết quả`
+                summary: `${data.length}`
             }}
-            headerRight={
-                <div className="px-3 py-1.5 bg-gray-50 rounded-full text-xs font-medium text-gray-500">
-                    Tìm thấy <span className="text-[#2563eb] font-bold">{data.length}</span> kết quả
-                </div>
-            }
+            headerSummary={`${data.length}`}
             tableProps={{
                 classNames: {
                     th: "bg-[#fcfdfe] text-gray-400 font-bold py-4 px-4 border-b border-gray-100 text-[11px] uppercase tracking-widest",

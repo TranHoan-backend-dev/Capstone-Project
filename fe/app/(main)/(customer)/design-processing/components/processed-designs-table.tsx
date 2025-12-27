@@ -52,10 +52,11 @@ export const ProcessedDesignsTable = ({ data }: ProcessedDesignsTableProps) => {
             columns={columns}
             data={data}
             renderCell={renderCell}
+            isCollapsible
             paginationProps={{
                 total: 5,
                 initialPage: 1,
-                summary: "Hiển thị 1-5 của 25 kết quả"
+                summary: `${data.length}`
             }}
         />
     );
