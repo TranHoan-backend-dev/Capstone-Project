@@ -37,21 +37,23 @@ const CustomersPage = () => {
   ];
 
   return (
-    <div className="flex flex-col gap-6">
+    <>
       <CustomBreadcrumb items={[
         { label: "Trang chủ", href: "/home" },
         { label: "Khách hàng", href: "/customers" },
       ]} />
 
-      <FilterSection
-        branches={branches}
-        areas={areas}
-        districts={districts}
-        wards={wards}
-      />
+      <div className="space-y-6 pt-2">
+        <FilterSection
+          branches={branches}
+          areas={areas}
+          districts={districts}
+          wards={wards}
+        />
 
-      <ResultsTable data={mockData} />
-    </div>
+        <ResultsTable data={mockData} />
+      </div>
+    </>
   );
 };
 
