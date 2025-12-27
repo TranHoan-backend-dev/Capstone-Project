@@ -41,7 +41,7 @@ const CustomersPage = () => {
       <CustomBreadcrumb
         items={[
           { label: "Trang chủ", href: "/home" },
-          { label: "Khách hàng", href: "/customers" },
+          { label: "Tra cứu khách hàng", href: "/customers" },
         ]} />
 
       <div className="space-y-6 pt-2">
