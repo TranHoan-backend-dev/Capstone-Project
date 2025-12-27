@@ -105,7 +105,7 @@ export const GenericDataTable = <T extends { id: string | number }>({
                                         key={column.key}
                                         align={column.align || "start"}
                                         style={column.width ? { width: column.width } : {}}
-                                        className={index === 0 && column.key !== "selection" ? "pl-8" : ""}
+                                        className={index === 0 && column.key !== "selection" ? "!pl-8" : ""}
                                     >
                                         {column.label}
                                     </TableColumn>
@@ -117,7 +117,7 @@ export const GenericDataTable = <T extends { id: string | number }>({
                                         {columns.map((column, index) => (
                                             <TableCell
                                                 key={column.key}
-                                                className={index === 0 && column.key !== "selection" ? "pl-8" : ""}
+                                                className={index === 0 && column.key !== "selection" ? "!pl-8" : ""}
                                             >
                                                 {renderCell(item, column.key)}
                                             </TableCell>
