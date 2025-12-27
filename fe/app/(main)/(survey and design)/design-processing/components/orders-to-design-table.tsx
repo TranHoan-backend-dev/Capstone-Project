@@ -20,6 +20,7 @@ export const OrdersToDesignTable = ({ data }: OrdersToDesignTableProps) => {
         { key: "registrationDate", label: "Ngày đăng ký" },
         { key: "surveyAppointment", label: "Ngày hẹn khảo sát" },
         { key: "status", label: "Trạng thái đơn", align: "center" },
+        { key: "activities", label: "Hoạt động", align: "center" },
     ];
 
     const renderCell = (item: any, columnKey: string) => {
@@ -54,10 +55,22 @@ export const OrdersToDesignTable = ({ data }: OrdersToDesignTableProps) => {
                     );
                 }
                 return cellValue;
+            case "activities":
+                return (
+                    <div className="flex justify-center">
+                        <Link
+                            href="#"
+                            className="text-[#10a345] font-bold text-[13px] hover:underline"
+                        >
+                            Duyệt
+                        </Link>
+                    </div>
+                );
             default:
                 return cellValue;
         }
     };
+
 
     return (
         <GenericDataTable
