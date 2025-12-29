@@ -50,7 +50,7 @@ export const RestoreFilter = ({ periodData }: RestoreFilterProps) => {
                     label="Kỳ Khôi Phục"
                     labelPlacement="inside"
                     defaultSelectedKeys={["T8/2025"]}
-                    variant="faded"
+                    variant="bordered"
                     radius="md"
                     size="md"
                     className="font-bold"
