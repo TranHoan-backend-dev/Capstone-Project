@@ -1,17 +1,18 @@
 "use client";
 
 import React from "react";
-import { Checkbox, Chip, Link } from "@heroui/react";
+import { Chip, Link, Tooltip } from "@heroui/react";
 import NextLink from "next/link";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
+import { ArrowPathIcon } from "@heroicons/react/24/solid";
 
 interface WaitingInputTableProps {
     data: any[];
+    onRestore?: (item: any) => void;
 }
 
-export const WaitingInputTable = ({ data }: WaitingInputTableProps) => {
+export const WaitingInputTable = ({ data, onRestore }: WaitingInputTableProps) => {
     const columns: any[] = [
-        { key: "selection", label: <Checkbox size="sm" radius="sm" className="ml-1" />, width: "40px" },
         { key: "stt", label: "#", align: "center", width: "60px" },
         { key: "code", label: "Mã đơn" },
         { key: "customerName", label: "Tên khách hàng" },
@@ -27,8 +28,6 @@ export const WaitingInputTable = ({ data }: WaitingInputTableProps) => {
         const cellValue = item[columnKey];
 
         switch (columnKey) {
-            case "selection":
-                return <Checkbox size="sm" radius="sm" className="ml-1" />;
             case "code":
                 return (
                     <Link as={NextLink} href="#" className="font-bold text-blue-600 hover:underline hover:text-blue-800">
@@ -62,9 +61,14 @@ export const WaitingInputTable = ({ data }: WaitingInputTableProps) => {
                 return cellValue;
             case "action":
                 return (
-                    <Link href="#" className="text-blue-600 font-bold text-sm hover:underline">
-                        Khôi phục
-                    </Link>
+                    <div className="flex justify-center">
+                        <Tooltip content="Khôi phục" color="primary">
+                            <ArrowPathIcon
+                                className="w-6 h-6 text-blue-600 cursor-pointer hover:rotate-180 transition-transform duration-500"
+                                onClick={() => onRestore?.(item)}
+                            />
+                        </Tooltip>
+                    </div>
                 );
             case "stt":
                 return <span className="text-gray-400">{cellValue}</span>;

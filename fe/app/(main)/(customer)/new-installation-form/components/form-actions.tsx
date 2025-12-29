@@ -17,7 +17,7 @@ export const FormActions = () => {
                     className="bg-blue-600 h-10 px-6 font-bold text-[13px]"
                     startContent={<DocumentCheckIcon className="w-5 h-5" />}
                 >
-                    Lưu đơn
+                    Tìm đơn
                 </Button>
                 <Button
                     color="success"
@@ -29,17 +29,12 @@ export const FormActions = () => {
             </div>
             <div className="flex gap-3">
                 <Button
-                    variant="flat"
-                    className="bg-white border border-gray-200 text-gray-600 h-10 px-8 font-bold text-[13px]"
-                >
-                    Hủy
-                </Button>
-                <Button
-                    color="danger"
-                    className="bg-[#ff0000] h-10 px-8 font-bold text-[13px]"
+                    className="bg-gray-100 text-gray-700 font-bold px-6 shadow-none border border-gray-200 h-9 shrink-0"
                     startContent={<TrashIcon className="w-5 h-5" />}
+                    size="md"
+                    radius="md"
                 >
-                    Xóa
+                    Xóa các lựa chọn
                 </Button>
             </div>
         </div>

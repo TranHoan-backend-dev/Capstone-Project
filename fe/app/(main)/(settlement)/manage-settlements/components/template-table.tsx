@@ -1,9 +1,13 @@
 "use client";
 
 import React from "react";
-import { Checkbox, Link, Button } from "@heroui/react";
+import { Tooltip, Button } from "@heroui/react";
 import NextLink from "next/link";
-import { PlusIcon } from "@heroicons/react/24/outline";
+import {
+    PencilSquareIcon,
+    TrashIcon,
+    ClipboardDocumentListIcon,
+} from "@heroicons/react/24/outline";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 
 interface MaterialTemplate {
@@ -19,7 +23,6 @@ interface TemplateTableProps {
 
 export const TemplateTable = ({ data }: TemplateTableProps) => {
     const columns = [
-        { key: "selection", label: <Checkbox size="sm" radius="sm" className="ml-1" />, width: "40px" },
         { key: "no", label: "STT", align: "center" as const, width: "60px" },
         { key: "code", label: "Mã mẫu" },
         { key: "name", label: "Tên mẫu bốc vật tư" },
@@ -29,8 +32,6 @@ export const TemplateTable = ({ data }: TemplateTableProps) => {
 
     const renderCell = (item: MaterialTemplate, columnKey: string) => {
         switch (columnKey) {
-            case "selection":
-                return <Checkbox size="sm" radius="sm" className="ml-1" />;
             case "no":
                 return <span className="font-medium text-gray-400">{data.indexOf(item) + 1}</span>;
             case "code":
@@ -40,29 +41,27 @@ export const TemplateTable = ({ data }: TemplateTableProps) => {
             case "createdAt":
                 return <span className="text-gray-500">{item.createdAt}</span>;
             case "activities":
+                const actions = [
+                    { content: "Bốc vật tư", icon: ClipboardDocumentListIcon, className: "text-blue-600 hover:bg-blue-50", href: "#" },
+                    { content: "Sửa", icon: PencilSquareIcon, className: "text-amber-500 hover:bg-amber-50", href: "#" },
+                    { content: "Xóa", icon: TrashIcon, className: "text-danger hover:bg-danger-50", color: "danger" as const, href: "#" },
+                ];
                 return (
-                    <div className="flex justify-center items-center gap-3">
-                        <Link
-                            as={NextLink}
-                            href="#"
-                            className="text-[#2a66e4] font-bold text-[13px] hover:underline"
-                        >
-                            Bốc vật tư
-                        </Link>
-                        <Link
-                            as={NextLink}
-                            href="#"
-                            className="text-[#2a66e4] font-bold text-[13px] hover:underline"
-                        >
-                            Sửa
-                        </Link>
-                        <Link
-                            as={NextLink}
-                            href="#"
-                            className="text-[#2a66e4] font-bold text-[13px] hover:underline"
-                        >
-                            Xóa
-                        </Link>
+                    <div className="flex justify-center items-center gap-2">
+                        {actions.map((action, idx) => (
+                            <Tooltip key={idx} content={action.content} color={action.color} closeDelay={0}>
+                                <Button
+                                    isIconOnly
+                                    as={NextLink}
+                                    href={action.href}
+                                    variant="light"
+                                    size="sm"
+                                    className={action.className}
+                                >
+                                    <action.icon className="w-5 h-5" />
+                                </Button>
+                            </Tooltip>
+                        ))}
                     </div>
                 );
             default:

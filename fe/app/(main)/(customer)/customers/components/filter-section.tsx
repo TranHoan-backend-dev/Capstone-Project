@@ -3,7 +3,7 @@
 import React from "react";
 import { Input, Select, SelectItem } from "@heroui/react";
 import { SearchIcon } from "@/components/ui/Icons";
-import { GenericSearchFilter, FilterLabel } from "@/components/ui/GenericSearchFilter";
+import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 
 interface FilterSectionProps {
     branches: { label: string; value: string }[];
@@ -40,33 +40,28 @@ export const FilterSection = ({ branches, areas, districts, wards }: FilterSecti
         >
             {inputFields.map((field) => (
                 <div key={field.label} className="space-y-1">
-                    <FilterLabel>{field.label}</FilterLabel>
                     <Input
-                        placeholder={field.placeholder}
-                        variant="faded"
+                        label={field.label}
+                        labelPlacement="inside"
+                        variant="bordered"
                         radius="md"
                         size="md"
-                        classNames={{
-                            inputWrapper: "h-9 min-h-9 bg-gray-50/30 border-gray-100 hover:border-blue-200 focus-within:!border-blue-500 transition-all shadow-sm",
-                            input: "text-[13px]",
-                        }}
+                        className="font-bold"
                     />
                 </div>
             ))}
 
             {selectFields.map((field) => (
                 <div key={field.label} className="space-y-1">
-                    <FilterLabel>{field.label}</FilterLabel>
                     <Select
                         aria-label={field.label}
+                        label={field.label}
+                        labelPlacement="inside"
                         defaultSelectedKeys={new Set(["all"])}
-                        variant="faded"
+                        variant="bordered"
                         radius="md"
                         size="md"
-                        classNames={{
-                            trigger: "h-9 min-h-9 bg-gray-50/30 border-gray-100 hover:border-blue-200 transition-all shadow-sm",
-                            value: "text-[13px]",
-                        }}
+                        className="font-bold"
                     >
                         {field.data.map((item) => (
                             <SelectItem key={item.value} textValue={item.label}>{item.label}</SelectItem>

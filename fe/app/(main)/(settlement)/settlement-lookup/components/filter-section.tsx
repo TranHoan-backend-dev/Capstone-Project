@@ -14,17 +14,14 @@ export const FilterSection = () => {
             isCollapsible
         >
             <div className="lg:col-span-2 space-y-1">
-                <FilterLabel>Từ khóa</FilterLabel>
                 <div className="flex gap-2">
                     <Input
-                        placeholder="Nhập từ khóa tìm kiếm"
-                        variant="faded"
+                        label="Từ khóa"
+                        labelPlacement="inside"
+                        variant="bordered"
                         radius="md"
                         size="md"
-                        classNames={{
-                            inputWrapper: "h-9 min-h-9 bg-gray-50/30 border-gray-100 hover:border-blue-200 focus-within:!border-blue-500 transition-all shadow-sm",
-                            input: "text-[13px]",
-                        }}
+                        className="font-bold"
                     />
                 </div>
             </div>
@@ -38,18 +35,13 @@ export const FilterSection = () => {
 export const DatePickerField = ({ label }: { label: string }) => {
     return (
         <div className="lg:col-span-1 space-y-1">
-            <FilterLabel>{label}</FilterLabel>
             <DatePicker
-                variant="faded"
+                label={label}
+                labelPlacement="inside"
+                variant="bordered"
                 radius="md"
                 size="md"
-                classNames={{
-                    base: "h-9 min-h-9",
-                    calendarContent: "bg-white",
-                    selectorButton: "h-9 w-9",
-                    inputWrapper: "h-9 min-h-9 bg-gray-50/30 border-gray-100 hover:border-blue-200 focus-within:!border-blue-500 transition-all shadow-sm",
-                    input: "text-[13px]",
-                }}
+                className="font-bold"
             />
         </div>
     );

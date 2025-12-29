@@ -1,8 +1,9 @@
 "use client";
 
 import React from "react";
-import { Link, Chip } from "@heroui/react";
+import { Link, Chip, Tooltip, Button } from "@heroui/react";
 import NextLink from "next/link";
+import { PrinterIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 
 interface RelatedOrdersTableProps {
@@ -44,10 +45,24 @@ export const RelatedOrdersTable = ({ data }: RelatedOrdersTableProps) => {
                     </Chip>
                 );
             case "actions":
+                const actionButtons = [
+                    { content: "In biên nhận", icon: PrinterIcon, className: "text-blue-600 hover:bg-blue-50" },
+                    { content: "Xóa", icon: TrashIcon, className: "text-danger hover:bg-danger-50", color: "danger" as const },
+                ];
                 return (
-                    <div className="flex items-center gap-3 justify-center text-xs font-semibold">
-                        <span className="text-sm text-blue-600 cursor-pointer hover:underline">Xem chi tiết</span>
-                        <span className="text-sm text-blue-600 cursor-pointer hover:underline">Chỉnh sửa</span>
+                    <div className="flex items-center gap-2 justify-center">
+                        {actionButtons.map((action, idx) => (
+                            <Tooltip key={idx} content={action.content} color={action.color} closeDelay={0}>
+                                <Button
+                                    isIconOnly
+                                    variant="light"
+                                    size="sm"
+                                    className={action.className}
+                                >
+                                    <action.icon className="w-5 h-5" />
+                                </Button>
+                            </Tooltip>
+                        ))}
                     </div>
                 );
             default:

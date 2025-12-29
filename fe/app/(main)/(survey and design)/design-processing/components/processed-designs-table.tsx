@@ -2,17 +2,17 @@
 
 import React from "react";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import { Checkbox, Link } from "@heroui/react";
+import { Link, Tooltip } from "@heroui/react";
 import NextLink from "next/link";
-import { FolderIcon } from "@heroicons/react/24/solid";
+import { FolderIcon, XCircleIcon, TrashIcon } from "@heroicons/react/24/solid";
 
 interface ProcessedDesignsTableProps {
     data: any[];
+    onReject?: (item: any) => void;
 }
 
-export const ProcessedDesignsTable = ({ data }: ProcessedDesignsTableProps) => {
+export const ProcessedDesignsTable = ({ data, onReject }: ProcessedDesignsTableProps) => {
     const columns: any[] = [
-        { key: "selection", label: <Checkbox size="sm" radius="sm" className="ml-1" />, width: "40px" },
         { key: "no", label: "#", align: "center", width: "60px" },
         { key: "code", label: "Mã đơn" },
         { key: "customerName", label: "Tên khách hàng" },
@@ -28,8 +28,6 @@ export const ProcessedDesignsTable = ({ data }: ProcessedDesignsTableProps) => {
         const cellValue = item[columnKey];
 
         switch (columnKey) {
-            case "selection":
-                return <Checkbox size="sm" radius="sm" className="ml-1" />;
             case "code":
                 return (
                     <Link as={NextLink} href="#" className="font-bold text-blue-600 hover:underline hover:text-blue-800">
@@ -40,13 +38,16 @@ export const ProcessedDesignsTable = ({ data }: ProcessedDesignsTableProps) => {
                 return <span className="font-bold text-gray-900">{cellValue}</span>;
             case "activities":
                 return (
-                    <div className="flex justify-center items-center gap-4">
-                        <div className="text-[#ff4d4f] font-bold group p-1 hover:underline cursor-pointer">
-                            Từ chối
-                        </div>
-                        <div className="text-[#ff4d4f] font-bold group p-1 hover:underline cursor-pointer">
-                            Xóa
-                        </div>
+                    <div className="flex justify-center items-center gap-5">
+                        <Tooltip content="Từ chối" color="danger">
+                            <XCircleIcon
+                                className="w-6 h-6 text-red-500 cursor-pointer hover:text-red-600 transition-colors"
+                                onClick={() => onReject?.(item)}
+                            />
+                        </Tooltip>
+                        <Tooltip content="Xóa" color="danger">
+                            <TrashIcon className="w-5 h-5 text-red-500 cursor-pointer hover:text-red-600 transition-colors" />
+                        </Tooltip>
                     </div>
                 );
             case "docs":

@@ -1,8 +1,15 @@
 "use client";
 
 import React from "react";
-import { Chip, Link } from "@heroui/react";
+import { Chip, Link, Tooltip, Button } from "@heroui/react";
 import NextLink from "next/link";
+import {
+    BanknotesIcon,
+    ChartBarIcon,
+    ArrowPathRoundedSquareIcon,
+    ClockIcon,
+    UserCircleIcon
+} from "@heroicons/react/24/outline";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 
 interface Customer {
@@ -56,27 +63,29 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
                     </Chip>
                 );
             case "actions":
+                const actionsItems = [
+                    { content: "Áp giá", icon: BanknotesIcon, className: "text-blue-600 hover:bg-blue-50", href: "#" },
+                    { content: "Tiêu thụ", icon: ChartBarIcon, className: "text-green-600 hover:bg-green-50", href: "#" },
+                    { content: "Thay ĐH", icon: ArrowPathRoundedSquareIcon, className: "text-amber-500 hover:bg-amber-50", href: "#" },
+                    { content: "Lịch sử", icon: ClockIcon, className: "text-gray-600 hover:bg-gray-100", href: "#" },
+                    { content: "Hồ sơ", icon: UserCircleIcon, className: "text-indigo-600 hover:bg-indigo-50", href: "#" },
+                ];
                 return (
-                    <div className="flex items-center justify-center gap-2.5 text-[5px] whitespace-nowrap">
-                        <Link as={NextLink} href="#" className="text-[#2563eb] hover:text-blue-800 underline-offset-4 hover:underline">
-                            Bảng giá
-                        </Link>
-                        <span className="text-gray-200 font-normal">|</span>
-                        <Link as={NextLink} href="#" className="text-[#2563eb] hover:text-blue-800 underline-offset-4 hover:underline">
-                            Tiêu thụ
-                        </Link>
-                        <span className="text-gray-200 font-normal">|</span>
-                        <Link as={NextLink} href="#" className="text-[#2563eb] hover:text-blue-800 underline-offset-4 hover:underline">
-                            Thay ĐH
-                        </Link>
-                        <span className="text-gray-200 font-normal">|</span>
-                        <Link as={NextLink} href="#" className="text-[#2563eb] hover:text-blue-800 underline-offset-4 hover:underline">
-                            Lịch sử
-                        </Link>
-                        <span className="text-gray-200 font-normal">|</span>
-                        <Link as={NextLink} href="#" className="text-[#2563eb] hover:text-blue-800 underline-offset-4 hover:underline">
-                            Hồ sơ
-                        </Link>
+                    <div className="flex items-center justify-center gap-1">
+                        {actionsItems.map((action, idx) => (
+                            <Tooltip key={idx} content={action.content} closeDelay={0}>
+                                <Button
+                                    isIconOnly
+                                    as={NextLink}
+                                    href={action.href}
+                                    variant="light"
+                                    size="sm"
+                                    className={action.className}
+                                >
+                                    <action.icon className="w-5 h-5" />
+                                </Button>
+                            </Tooltip>
+                        ))}
                     </div>
                 );
             default:

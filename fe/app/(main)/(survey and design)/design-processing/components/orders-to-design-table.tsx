@@ -1,17 +1,19 @@
 "use client";
 
 import React from "react";
-import { Checkbox, Chip, Link } from "@heroui/react";
+import { Chip, Link, Tooltip } from "@heroui/react";
 import NextLink from "next/link";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 
+import { CheckCircleIcon } from "@heroicons/react/24/solid";
+
 interface OrdersToDesignTableProps {
     data: any[];
+    onApprove?: (item: any) => void;
 }
 
-export const OrdersToDesignTable = ({ data }: OrdersToDesignTableProps) => {
+export const OrdersToDesignTable = ({ data, onApprove }: OrdersToDesignTableProps) => {
     const columns: any[] = [
-        { key: "selection", label: <Checkbox size="sm" radius="sm" className="ml-1" />, width: "40px" },
         { key: "no", label: "#", align: "center", width: "60px" },
         { key: "code", label: "Mã đơn" },
         { key: "customerName", label: "Tên khách hàng" },
@@ -27,8 +29,6 @@ export const OrdersToDesignTable = ({ data }: OrdersToDesignTableProps) => {
         const cellValue = item[columnKey];
 
         switch (columnKey) {
-            case "selection":
-                return <Checkbox size="sm" radius="sm" className="ml-1" />;
             case "no":
                 return <span className="font-medium text-gray-400">{data.indexOf(item) + 1}</span>;
             case "code":
@@ -58,12 +58,12 @@ export const OrdersToDesignTable = ({ data }: OrdersToDesignTableProps) => {
             case "activities":
                 return (
                     <div className="flex justify-center">
-                        <Link
-                            href="#"
-                            className="text-[#10a345] font-bold text-[13px] hover:underline"
-                        >
-                            Duyệt
-                        </Link>
+                        <Tooltip content="Duyệt" color="success">
+                            <CheckCircleIcon
+                                className="w-6 h-6 cursor-pointer text-green-500 hover:text-green-600 transition-colors"
+                                onClick={() => onApprove?.(item)}
+                            />
+                        </Tooltip>
                     </div>
                 );
             default:
