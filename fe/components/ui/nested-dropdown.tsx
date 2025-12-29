@@ -1,7 +1,7 @@
 "use client";
 
-import { Button, Link } from "@heroui/react";
-import { useState, useEffect } from "react";
+import { Link } from "@heroui/react";
+import { useState, useEffect, useRef } from "react";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -30,6 +30,12 @@ const NestedDropdown = ({ item }: { item: MenuItem }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [nestedOpen, setNestedOpen] = useState<string | null>(null);
   const [activeItem, setActiveItem] = useState<string | null>(null);
+  const [closing, setClosing] = useState(false);
+  
+  const mainMenuRef = useRef<HTMLDivElement>(null);
+  const subMenuRef = useRef<HTMLDivElement>(null);
+  const closeTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const nestedCloseTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (item.href && pathname === item.href) {
@@ -39,7 +45,6 @@ const NestedDropdown = ({ item }: { item: MenuItem }) => {
 
     if (item.items) {
       for (const subItem of item.items) {
-
         if (subItem.href && pathname === subItem.href) {
           setActiveItem(subItem.key);
           return;
@@ -79,14 +84,73 @@ const NestedDropdown = ({ item }: { item: MenuItem }) => {
     return false;
   };
 
+  const handleMouseEnterMain = () => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+    if (closing) {
+      setClosing(false);
+    }
+    setIsOpen(true);
+  };
+
+  const handleMouseLeaveMain = () => {
+    closeTimerRef.current = setTimeout(() => {
+      const isMouseInSubMenu = subMenuRef.current?.contains(
+        document.activeElement || document.elementFromPoint(
+          ...getMousePosition()
+        )
+      );
+
+      if (!isMouseInSubMenu) {
+        setClosing(true);
+        setTimeout(() => {
+          setIsOpen(false);
+          setNestedOpen(null);
+        }, 100);
+      }
+    }, 150);
+  };
+
+  const handleMouseEnterSub = () => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+  };
+
+  const handleMouseLeaveSub = () => {
+    nestedCloseTimerRef.current = setTimeout(() => {
+      setNestedOpen(null);
+    }, 100);
+  };
+
+  const handleSubMenuMouseEnter = (key: string) => {
+    if (nestedCloseTimerRef.current) {
+      clearTimeout(nestedCloseTimerRef.current);
+      nestedCloseTimerRef.current = null;
+    }
+    setNestedOpen(key);
+  };
+
+  const getMousePosition = (): [number, number] => {
+    return [0, 0];
+  };
+
+  useEffect(() => {
+    return () => {
+      if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+      if (nestedCloseTimerRef.current) clearTimeout(nestedCloseTimerRef.current);
+    };
+  }, []);
+
   return (
     <div
       className="relative"
-      onMouseEnter={() => setIsOpen(true)}
-      onMouseLeave={() => {
-        setIsOpen(false);
-        setNestedOpen(null);
-      }}
+      ref={mainMenuRef}
+      onMouseEnter={handleMouseEnterMain}
+      onMouseLeave={handleMouseLeaveMain}
     >
       <div className="flex items-center whitespace-nowrap">
         {item.href ? (
@@ -94,19 +158,21 @@ const NestedDropdown = ({ item }: { item: MenuItem }) => {
             as={NextLink}
             href={item.href}
             onClick={() => handleItemClick(item.key)}
-            className={`text-sm px-3 py-2 rounded transition-colors ${isItemActive(item.key)
-              ? "bg-blue-200 text-blue-800 font-medium"
-              : "text-gray-700 hover:text-gray-900 hover:bg-blue-100"
-              }`}
+            className={`text-sm px-3 py-2 rounded transition-colors ${
+              isItemActive(item.key)
+                ? "bg-blue-200 text-blue-800 font-medium"
+                : "text-gray-700 hover:text-gray-900 hover:bg-blue-100"
+            }`}
           >
             {item.label}
           </Link>
         ) : (
           <span
-            className={`text-sm px-3 py-2 rounded cursor-pointer ${isItemActive(item.key)
-              ? "bg-blue-200 text-blue-800 font-medium"
-              : "text-gray-700"
-              }`}
+            className={`text-sm px-3 py-2 rounded cursor-pointer ${
+              isItemActive(item.key)
+                ? "bg-blue-200 text-blue-800 font-medium"
+                : "text-gray-700 hover:text-gray-900 hover:bg-blue-100"
+            }`}
           >
             {item.label}
           </span>
@@ -114,7 +180,14 @@ const NestedDropdown = ({ item }: { item: MenuItem }) => {
       </div>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 z-50 min-w-[220px] bg-white shadow-lg rounded-lg border border-gray-200 py-1">
+        <div
+          ref={subMenuRef}
+          className={`absolute top-full left-0 mt-1 z-50 min-w-[220px] bg-white shadow-lg rounded-lg border border-gray-200 py-1 transition-opacity duration-100 ${
+            closing ? "opacity-0" : "opacity-100"
+          }`}
+          onMouseEnter={handleMouseEnterSub}
+          onMouseLeave={handleMouseLeaveSub}
+        >
           {item.items?.map((subItem) => {
             const isSubItemActive = isAnyChildActive(subItem);
 
@@ -122,43 +195,50 @@ const NestedDropdown = ({ item }: { item: MenuItem }) => {
               <div
                 key={subItem.key}
                 className="relative"
-                onMouseEnter={() =>
-                  subItem.children && setNestedOpen(subItem.key)
-                }
+                onMouseEnter={() => handleSubMenuMouseEnter(subItem.key)}
                 onMouseLeave={() => !subItem.children && setNestedOpen(null)}
               >
                 {subItem.href ? (
                   <Link
                     href={subItem.href}
                     onClick={() => handleItemClick(subItem.key)}
-                    className={`flex items-center justify-between px-3 py-2 text-sm transition-colors whitespace-nowrap ${isItemActive(subItem.key)
-                      ? "bg-blue-200 text-blue-800 font-medium"
-                      : "text-gray-700 hover:text-gray-900 hover:bg-blue-100"
-                      }`}
+                    className={`flex items-center justify-between px-3 py-2 text-sm transition-colors whitespace-nowrap ${
+                      isItemActive(subItem.key)
+                        ? "bg-blue-200 text-blue-800 font-medium"
+                        : "text-gray-700 hover:text-gray-900 hover:bg-blue-100"
+                    }`}
                   >
                     {subItem.label}
                   </Link>
                 ) : (
-                  <div className={`flex items-center justify-between px-3 py-2 text-sm transition-colors cursor-pointer whitespace-nowrap ${isSubItemActive
-                    ? "bg-blue-50 text-blue-700"
-                    : "text-gray-700 hover:text-gray-900 hover:bg-blue-50"
-                    }`}>
+                  <div
+                    className={`flex items-center justify-between px-3 py-2 text-sm transition-colors cursor-pointer whitespace-nowrap ${
+                      isSubItemActive
+                        ? "bg-blue-50 text-blue-700"
+                        : "text-gray-700 hover:text-gray-900 hover:bg-blue-50"
+                    }`}
+                  >
                     <span>{subItem.label}</span>
                     {subItem.children && <span className="text-sm ml-2">›</span>}
                   </div>
                 )}
 
                 {subItem.children && nestedOpen === subItem.key && (
-                  <div className="absolute left-full top-0 ml-1 z-50 min-w-[280px] bg-white shadow-lg rounded-lg border border-gray-200 py-1">
+                  <div
+                    className="absolute left-full top-0 ml-1 z-50 min-w-[280px] bg-white shadow-lg rounded-lg border border-gray-200 py-1"
+                    onMouseEnter={handleMouseEnterSub}
+                    onMouseLeave={handleMouseLeaveSub}
+                  >
                     {subItem.children.map((child) => (
                       <Link
                         key={child.key}
                         href={child.href || "#"}
                         onClick={() => handleItemClick(child.key)}
-                        className={`block px-3 py-2 text-sm transition-colors whitespace-nowrap ${isItemActive(child.key)
-                          ? "bg-blue-200 text-blue-800 font-medium"
-                          : "text-gray-700 hover:text-gray-900 hover:bg-blue-100"
-                          }`}
+                        className={`block px-3 py-2 text-sm transition-colors whitespace-nowrap ${
+                          isItemActive(child.key)
+                            ? "bg-blue-200 text-blue-800 font-medium"
+                            : "text-gray-700 hover:text-gray-900 hover:bg-blue-100"
+                        }`}
                       >
                         {child.label}
                       </Link>
