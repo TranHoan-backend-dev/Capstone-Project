@@ -20,18 +20,6 @@ export const siteConfig = {
           href: "/new-installation-form",
           children: [],
         },
-        // {
-        //   key: "installation-forms",
-        //   label: "Tra cứu đơn lắp đặt mới",
-        //   href: "/installation-forms",
-        //   children: [],
-        // },
-        // {
-        //   key: "enter-customer",
-        //   label: "Nhập khách hàng",
-        //   href: "/enter-customer",
-        //   children: [],
-        // },
         {
           key: "find-customer",
           label: "Tra cứu khách hàng",
@@ -97,6 +85,11 @@ export const siteConfig = {
           ],
         },
         {
+          key: "manage-supplies",
+          label: "Quản lý mẫu bốc vật tư",
+          href: "/manage-supplies",
+        },
+        {
           key: "survey-new",
           label: "Tạo phiếu khảo sát",
           href: "/report/surveys/new",
@@ -122,21 +115,6 @@ export const siteConfig = {
       key: "construction",
       label: "Thi công",
       items: [
-        // {
-        //   key: "construction-list",
-        //   label: "Danh sách thi công",
-        //   href: "/dashboard/construction",
-        // },
-        // {
-        //   key: "construction-schedule",
-        //   label: "Lịch thi công",
-        //   href: "/dashboard/construction/schedule",
-        // },
-        // {
-        //   key: "construction-report",
-        //   label: "Báo cáo thi công",
-        //   href: "/dashboard/construction/report",
-        // },
         {
           key: "settlement-lookup",
           label: "Tra cứu quyết toán",

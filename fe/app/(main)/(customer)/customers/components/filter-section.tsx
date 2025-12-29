@@ -27,8 +27,7 @@ export const FilterSection = ({ branches, areas, districts, wards }: FilterSecti
     const selectFields = [
         { label: "Chi nhánh", data: branches },
         { label: "Khu vực", data: areas },
-        { label: "Quận/Huyện", data: districts },
-        { label: "Phường", data: wards },
+        { label: "Phường/Xã", data: wards },
     ];
 
     return (
