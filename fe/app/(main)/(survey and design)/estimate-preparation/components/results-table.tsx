@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Chip, Link, Checkbox } from "@heroui/react";
+import { Chip, Link } from "@heroui/react";
 import NextLink from "next/link";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 
@@ -34,7 +34,6 @@ const statusMap = {
 
 export const ResultsTable = ({ data }: ResultsTableProps) => {
     const columns = [
-        { key: "selection", label: <Checkbox size="sm" radius="sm" className="ml-1" />, width: "40px" },
         { key: "stt", label: "STT", width: "60px" },
         { key: "code", label: "Mã đơn" },
         { key: "customerName", label: "Tên khách hàng" },
@@ -47,8 +46,6 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
 
     const renderCell = (item: EstimateItem, columnKey: string) => {
         switch (columnKey) {
-            case "selection":
-                return <Checkbox size="sm" radius="sm" className="ml-1" />;
             case "stt":
                 return <span className="text-gray-400 font-medium ml-1">{data.indexOf(item) + 1}</span>;
             case "code":
@@ -81,8 +78,8 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
                 return (
                     <Link
                         as={NextLink}
-                        href="#"
-                        className="text-[#2a66e4] font-bold text-xs underline underline-offset-4"
+                        href="/estimate-preparation"
+                        className="text-[#2a66e4] text-xs underline underline-offset-4"
                     >
                         Chạy dự toán
                     </Link>

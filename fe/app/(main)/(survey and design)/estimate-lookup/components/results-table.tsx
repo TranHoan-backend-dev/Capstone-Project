@@ -1,9 +1,10 @@
 "use client";
 
 import React from "react";
-import { Chip, Link } from "@heroui/react";
+import { Chip, Link, Tooltip } from "@heroui/react";
 import NextLink from "next/link";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
+import { CalculatorIcon, PencilSquareIcon, FolderIcon } from "@heroicons/react/24/solid";
 
 interface EstimateItem {
     id: number;
@@ -82,17 +83,21 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
                     </Chip>
                 );
             case "actions":
+                const actionButtons = [
+                    { content: "Dự toán", color: "success" as const, icon: CalculatorIcon, href: "#", className: "text-green-600 hover:text-green-700" },
+                    { content: "Chỉnh sửa", color: "warning" as const, icon: PencilSquareIcon, href: "#", className: "text-amber-500 hover:text-amber-600" },
+                    { content: "Hồ sơ", color: "primary" as const, icon: FolderIcon, href: "#", className: "text-blue-600 hover:text-blue-800" },
+                ];
+
                 return (
-                    <div className="flex items-center justify-center gap-3 text-xs font-semibold">
-                        <Link as={NextLink} href="#" className="text-blue-600 hover:text-blue-800 underline-offset-4 hover:underline">
-                            Dự toán
-                        </Link>
-                        <Link as={NextLink} href="#" className="text-blue-600 hover:text-blue-800 underline-offset-4 hover:underline">
-                            Chỉnh sửa
-                        </Link>
-                        <Link as={NextLink} href="#" className="text-blue-600 hover:text-blue-800 underline-offset-4 hover:underline">
-                            Hồ sơ
-                        </Link>
+                    <div className="flex items-center justify-center gap-5">
+                        {actionButtons.map((btn, idx) => (
+                            <Tooltip key={idx} content={btn.content} color={btn.color}>
+                                <Link as={NextLink} href={btn.href} className={`${btn.className} transition-transform hover:scale-110`}>
+                                    <btn.icon className="w-6 h-6" />
+                                </Link>
+                            </Tooltip>
+                        ))}
                     </div>
                 );
             default:

@@ -60,9 +60,9 @@ export const SubMasterMeterModal = ({ isOpen, onOpenChange }: SubMasterMeterModa
                         </ModalHeader>
                         <ModalBody>
                             <div className="flex items-center gap-4 mb-4 justify-center">
-                                <label className="text-[14px] font-bold text-[#333]">Từ khóa</label>
                                 <Input
                                     variant="bordered"
+                                    placeholder="Tìm kiếm"
                                     radius="sm"
                                     size="sm"
                                     className="max-w-[400px]"
@@ -70,14 +70,6 @@ export const SubMasterMeterModal = ({ isOpen, onOpenChange }: SubMasterMeterModa
                                         inputWrapper: "h-8 border-[#ccc] min-h-unit-8",
                                     }}
                                 />
-                                <Button
-                                    size="sm"
-                                    radius="sm"
-                                    startContent={<FunnelIcon className="w-5 h-5" />}
-                                    className="bg-white border-[1px] border-[#ccc] text-[#333] font-medium h-8"
-                                >
-                                    Lọc
-                                </Button>
                             </div>
 
                             <div className="overflow-hidden">

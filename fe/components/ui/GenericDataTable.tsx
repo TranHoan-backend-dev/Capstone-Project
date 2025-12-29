@@ -11,6 +11,7 @@ import {
     TableRow,
     TableCell,
     TableProps,
+    Spinner,
 } from "@heroui/react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { CustomPagination } from "./CustomPagination";
@@ -57,7 +58,7 @@ export const GenericDataTable = <T extends { id: string | number }>({
     const [isOpen, setIsOpen] = React.useState(defaultOpen);
 
     return (
-        <Card shadow="sm" className="border-none rounded-xl overflow-hidden bg-white transition-all duration-300">
+        <Card shadow="sm" className="overflow-hidden bg-white transition-all duration-300">
             <CardBody className="p-0">
                 <div
                     className={`border-b border-gray-100 transition-colors ${isCollapsible ? "hover:bg-gray-50/50" : ""}`}
@@ -92,11 +93,11 @@ export const GenericDataTable = <T extends { id: string | number }>({
                 <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? "opacity-100 max-h-[5000px] visible" : "opacity-0 max-h-0 invisible"}`}>
                     <div className="overflow-x-auto">
                         <Table
-                            aria-label={title}
                             removeWrapper
+                            aria-label={title}
                             classNames={{
-                                th: "bg-[#fcfdfe] text-gray-400 font-bold py-4 px-4 border-b border-gray-100 text-[11px] uppercase tracking-widest",
-                                td: "py-4 px-4 text-sm text-gray-600 border-b border-gray-50 last:border-none",
+                                th: "bg-[#fcfdfe] text-gray-400 font-bold py-4 px-4 text-[11px] uppercase tracking-widest",
+                                td: "py-4 px-4 text-sm text-gray-600 last:border-none",
                                 ...tableProps?.classNames,
                             }}
                             {...tableProps}
@@ -107,13 +108,17 @@ export const GenericDataTable = <T extends { id: string | number }>({
                                         key={column.key}
                                         align={column.align || "start"}
                                         style={column.width ? { width: column.width } : {}}
-                                        className={index === 0 && column.key !== "selection" ? "!pl-8" : ""}
+                                        className={`${index === 0 && column.key !== "selection" ? "!pl-8" : ""} bg-gray-100 text-black`}
                                     >
                                         {column.label}
                                     </TableColumn>
                                 ))}
                             </TableHeader>
-                            <TableBody items={data}>
+                            <TableBody
+                                items={data}
+                                emptyContent={"Không có dữ liệu để hiển thị."}
+                                loadingContent={<Spinner label="Loading..." />}
+                            >
                                 {(item) => (
                                     <TableRow key={item.id} className="hover:bg-gray-50/50 transition-colors">
                                         {columns.map((column, index) => (

@@ -40,22 +40,20 @@ export const RestoreFilter = ({ periodData }: RestoreFilterProps) => {
                 </>
             }
         >
-            <InputField label="Mã KH" placeholder="Nhập mã khách hàng" />
-            <InputField label="Tên khách hàng" placeholder="Nhập tên khách hàng" />
-            <InputField label="Số Điện Thoại" placeholder="Nhập sđt" />
-            <InputField label="Địa Chỉ" placeholder="Nhập địa chỉ" />
-            <InputField label="Lý Do Khôi Phục" placeholder="Nhập lý do" />
-            <div className="space-y-1">
-                <FilterLabel>Kỳ Khôi Phục</FilterLabel>
+            <InputField label="Mã KH" />
+            <InputField label="Tên khách hàng" />
+            <InputField label="Số Điện Thoại" />
+            <InputField label="Địa Chỉ" />
+            <InputField label="Lý Do Khôi Phục" />
+            <div className="space-y-1 lg:col-span-2">
                 <Select
+                    label="Kỳ Khôi Phục"
+                    labelPlacement="inside"
                     defaultSelectedKeys={["T8/2025"]}
                     variant="faded"
                     radius="md"
                     size="md"
-                    classNames={{
-                        trigger: "h-9 min-h-9 bg-gray-50/30 border-gray-100 hover:border-blue-200 transition-all shadow-sm",
-                        value: "text-[13px]",
-                    }}
+                    className="font-bold"
                 >
                     {periodData.map((item) => (
                         <SelectItem key={item.value} textValue={item.label}>{item.label}</SelectItem>
@@ -66,19 +64,16 @@ export const RestoreFilter = ({ periodData }: RestoreFilterProps) => {
     );
 };
 
-export const InputField = ({ label, placeholder }: { label: string, placeholder: string }) => {
+export const InputField = ({ label }: { label: string }) => {
     return (
         <div className="space-y-1 lg:col-span-2">
-            <FilterLabel>{label}</FilterLabel>
             <Input
-                placeholder={placeholder}
-                variant="faded"
+                label={label}
+                labelPlacement="inside"
+                variant="bordered"
                 radius="md"
                 size="md"
-                classNames={{
-                    inputWrapper: "h-9 min-h-9 bg-gray-50/30 border-gray-100 hover:border-blue-200 focus-within:!border-blue-500 transition-all shadow-sm",
-                    input: "text-[13px]",
-                }}
+                className="font-bold"
             />
         </div>
     );
