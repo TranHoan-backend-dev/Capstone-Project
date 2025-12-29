@@ -13,8 +13,7 @@ interface SearchInputWithButtonProps extends Omit<InputProps, "endContent"> {
 export const SearchInputWithButton = ({
     placeholder = "Tìm kiếm...",
     onSearch,
-    buttonLabel = "Tìm",
-    buttonClassName = "bg-[#2a66e4] h-8 px-4 text-white font-bold",
+    buttonClassName = "text-blue-600 hover:bg-blue-50",
     ...props
 }: SearchInputWithButtonProps) => {
     return (
@@ -26,14 +25,13 @@ export const SearchInputWithButton = ({
             {...props}
             endContent={
                 <Button
+                    isIconOnly
                     size="sm"
-                    color="primary"
-                    className={buttonClassName}
-                    startContent={<SearchIcon size={18} />}
+                    variant="light"
+                    className={`min-w-8 w-8 h-8 ${buttonClassName}`}
                     onPress={onSearch}
-                >
-                    {buttonLabel}
-                </Button>
+                    endContent={<SearchIcon size={18} />}
+                />
             }
 
             classNames={{
