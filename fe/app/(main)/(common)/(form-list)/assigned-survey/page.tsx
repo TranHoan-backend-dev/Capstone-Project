@@ -10,7 +10,7 @@ const AssignedSurveyList = () => {
     <>
       <FilterForm title="Danh sách đơn đã phân công khảo sát" showSurveyStaff />
 
-      <div className="space-y-6 rounded-lg bg-white p-6 shadow-sm">
+      <div className="mt-4 space-y-6 border border-gray-200 rounded-lg bg-white p-6 shadow-sm dark:border-none dark:bg-zinc-900 dark:shadow-2xl">
         <SearchToolbar />
 
         <ReportHeader

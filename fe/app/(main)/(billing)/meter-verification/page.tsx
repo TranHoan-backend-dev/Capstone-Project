@@ -30,11 +30,11 @@ export default function MeterVerificationPage() {
 
             <div className="pt-2 space-y-6">
                 <FilterSection />
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    <div className="lg:col-span-8">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                    <div className="lg:col-span-9">
                         <CustomerListTable data={mockData} />
                     </div>
-                    <div className="lg:col-span-4">
+                    <div className="lg:col-span-3">
                         <MeterPreviewCard />
                     </div>
                 </div>
