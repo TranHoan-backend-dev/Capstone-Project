@@ -12,7 +12,7 @@ const Actions = () => {
                 href="#"
                 as={Link}
                 color="primary"
-                className="h-12 px-8 bg-blue-600 text-white font-bold rounded-xl shadow-lg shadow-blue-100"
+                className="h-12 px-8 bg-blue-600 dark:bg-primary text-white font-bold rounded-xl shadow-lg shadow-blue-100 dark:shadow-none"
                 startContent={<DocumentTextIcon className="w-5 h-5" />}
             >
                 Tạo hóa đơn
@@ -21,7 +21,7 @@ const Actions = () => {
                 href="#"
                 as={Link}
                 variant="flat"
-                className="h-12 px-8 bg-gray-100 text-gray-600 font-bold rounded-xl hover:bg-gray-200"
+                className="h-12 px-8 bg-gray-100 text-gray-600 dark:bg-zinc-800 dark:text-zinc-300 font-bold rounded-xl hover:bg-gray-200 dark:hover:bg-zinc-700"
                 startContent={<PrinterIcon className="w-5 h-5" />}
             >
                 In hóa đơn
@@ -30,7 +30,7 @@ const Actions = () => {
                 href="#"
                 as={Link}
                 variant="flat"
-                className="h-12 px-8 bg-gray-100 text-gray-600 font-bold rounded-xl hover:bg-gray-200"
+                className="h-12 px-8 bg-gray-100 text-gray-600 dark:bg-zinc-800 dark:text-zinc-300 font-bold rounded-xl hover:bg-gray-200 dark:hover:bg-zinc-700"
                 startContent={<BellIcon className="w-5 h-5" />}
             >
                 Gửi thông báo

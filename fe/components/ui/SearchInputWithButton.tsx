@@ -13,7 +13,7 @@ interface SearchInputWithButtonProps extends Omit<InputProps, "endContent"> {
 export const SearchInputWithButton = ({
     placeholder = "Tìm kiếm...",
     onSearch,
-    buttonClassName = "text-blue-600",
+    buttonClassName = "text-primary",
     ...props
 }: SearchInputWithButtonProps) => {
     return (

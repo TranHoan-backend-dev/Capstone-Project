@@ -34,27 +34,27 @@ export const RestoreTable = ({ data }: RestoreTableProps) => {
     const renderCell = (item: RestoreItem, columnKey: string) => {
         switch (columnKey) {
             case "no":
-                return <span className="font-medium text-gray-400">{data.indexOf(item) + 1}</span>;
+                return <span className="font-medium text-black dark:text-white">{data.indexOf(item) + 1}</span>;
             case "customerCode":
                 return (
-                    <Link as={NextLink} href="#" className="font-bold text-blue-600 hover:underline hover:text-blue-800">
+                    <Link as={NextLink} href="#" className="font-bold text-blue-600 hover:underline hover:text-blue-800 dark:text-primary">
                         {item.customerCode}
                     </Link>
                 );
             case "customerName":
-                return <span className="font-bold text-gray-900">{item.customerName}</span>;
+                return <span className="font-bold text-gray-900 dark:text-foreground">{item.customerName}</span>;
             case "address":
                 return <div className="max-w-[200px] truncate">{item.address}</div>;
             case "restoreDate":
-                return <span className="text-gray-400 text-[12px]">{item.restoreDate}</span>;
+                return <span className="text-gray-400 dark:text-white">{item.restoreDate}</span>;
             case "period":
                 return (
-                    <span className="font-bold text-[#2563eb] bg-blue-50 px-2 py-0.5 rounded text-[11px] border border-blue-100/50">
+                    <span className="font-bold text-[#2563eb] dark:text-primary-400 bg-blue-50 dark:bg-white px-2 py-0.5 rounded text-[11px] border border-blue-100/50 dark:border-primary-500/30">
                         {item.period}
                     </span>
                 );
             case "reason":
-                return <div className="text-gray-500 italic max-w-[250px] truncate">{item.reason}</div>;
+                return <div className="text-gray-500 dark:text-white italic max-w-[250px] truncate">{item.reason}</div>;
             default:
                 return (item as any)[columnKey];
         }
@@ -64,7 +64,7 @@ export const RestoreTable = ({ data }: RestoreTableProps) => {
         <GenericDataTable
             title="Danh sách KH khôi phục"
             icon={
-                <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
+                <div className="p-2 bg-blue-50 dark:bg-primary-900/10 rounded-lg text-blue-600 dark:text-primary">
                     <TableCellsIcon className="w-4 h-4" />
                 </div>
             }

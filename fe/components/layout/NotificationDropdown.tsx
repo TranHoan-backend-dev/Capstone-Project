@@ -116,21 +116,26 @@ const NotificationDropdown = () => {
     return (
         <Dropdown placement="bottom-end" className="p-0">
             <DropdownTrigger>
-                <div className="relative p-2 cursor-pointer rounded-full hover:bg-gray-100 transition-colors">
+                <Button
+                    isIconOnly
+                    variant="light"
+                    radius="full"
+                    className="relative text-default-600 hover:bg-default-100"
+                >
                     <Badge
                         content={unreadCount > 0 ? unreadCount : null}
                         color="danger"
                         shape="circle"
                         size="sm"
-                        className={unreadCount === 0 ? "hidden" : "border-2 border-white"}
+                        className={unreadCount === 0 ? "hidden" : "border-2 border-background"}
                     >
-                        <BellIcon className="w-6 h-6 text-gray-600" />
+                        <BellIcon className="w-6 h-6 text-default-600" />
                     </Badge>
-                </div>
+                </Button>
             </DropdownTrigger>
             <DropdownMenu
                 aria-label="Notifications"
-                className="w-[360px] md:w-[400px] p-0 overflow-visible rounded-2xl shadow-2xl border border-gray-100 bg-white"
+                className="w-[360px] md:w-[400px] p-0 overflow-visible rounded-2xl shadow-2xl border border-divider bg-content1"
                 variant="light"
             >
                 <DropdownSection
@@ -141,18 +146,18 @@ const NotificationDropdown = () => {
                     }}
                 >
                     <DropdownItem key="header" isReadOnly className="p-0 opacity-100 cursor-default focus:bg-transparent">
-                        <div className="flex flex-col gap-4 px-4 pt-4 pb-2 border-b border-gray-50 bg-white rounded-t-2xl pointer-events-auto">
+                        <div className="flex flex-col gap-4 px-4 pt-4 pb-2 border-b border-divider bg-content1 rounded-t-2xl pointer-events-auto">
                             <div className="flex justify-between items-center">
-                                <span className="text-2xl font-black text-gray-900 tracking-tight">Thông báo</span>
-                                <Button isIconOnly variant="light" size="sm" radius="full" className="hover:bg-gray-100">
-                                    <EllipsisHorizontalIcon className="w-6 h-6 text-gray-600" />
+                                <span className="text-2xl font-black text-foreground tracking-tight">Thông báo</span>
+                                <Button isIconOnly variant="light" size="sm" radius="full" className="hover:bg-default-100">
+                                    <EllipsisHorizontalIcon className="w-6 h-6 text-default-600" />
                                 </Button>
                             </div>
                             <div className="flex gap-2">
                                 <Button
                                     size="sm"
                                     radius="full"
-                                    className={`font-bold px-4 ${filter === 'all' ? 'bg-blue-50 text-blue-600' : 'bg-transparent text-gray-600 hover:bg-gray-100'}`}
+                                    className={`font-bold px-4 ${filter === 'all' ? 'bg-primary-50 text-primary' : 'bg-transparent text-default-600 hover:bg-default-100'}`}
                                     onClick={(e) => { e.stopPropagation(); setFilter('all'); }}
                                 >
                                     Tất cả
@@ -160,7 +165,7 @@ const NotificationDropdown = () => {
                                 <Button
                                     size="sm"
                                     radius="full"
-                                    className={`font-bold px-4 ${filter === 'unread' ? 'bg-blue-50 text-blue-600' : 'bg-transparent text-gray-600 hover:bg-gray-100'}`}
+                                    className={`font-bold px-4 ${filter === 'unread' ? 'bg-primary-50 text-primary' : 'bg-transparent text-default-600 hover:bg-default-100'}`}
                                     onClick={(e) => { e.stopPropagation(); setFilter('unread'); }}
                                 >
                                     Chưa đọc
@@ -187,16 +192,16 @@ const NotificationDropdown = () => {
                                 {filteredNotifications.map((n) => (
                                     <div
                                         key={n.id}
-                                        className={`flex items-center gap-3 px-3 py-3 cursor-pointer transition-all rounded-xl relative group hover:bg-gray-50/80 mb-1`}
+                                        className={`flex items-center gap-3 px-3 py-3 cursor-pointer transition-all rounded-xl relative group hover:bg-default-50 mb-1`}
                                     >
                                         <div className="relative shrink-0">
                                             <Avatar
                                                 src={n.avatar}
                                                 name={n.sender}
                                                 size="lg"
-                                                className={!n.avatar ? "bg-blue-100 text-blue-600 font-bold" : "border border-gray-100"}
+                                                className={!n.avatar ? "bg-primary-50 text-primary font-bold" : "border border-divider"}
                                             />
-                                            <div className={`absolute -bottom-1 -right-1 rounded-full p-1 border-2 border-white ${n.type === 'system' ? 'bg-blue-600' : n.type === 'billing' ? 'bg-green-600' : 'bg-orange-600'}`}>
+                                            <div className={`absolute -bottom-1 -right-1 rounded-full p-1 border-2 border-background ${n.type === 'system' ? 'bg-blue-600' : n.type === 'billing' ? 'bg-green-600' : 'bg-orange-600'}`}>
                                                 {n.type === 'message' ? (
                                                     <div className="w-2.5 h-2.5 bg-white rounded-full"></div>
                                                 ) : (
@@ -205,30 +210,30 @@ const NotificationDropdown = () => {
                                             </div>
                                         </div>
                                         <div className="flex-1 min-w-0 pr-4">
-                                            <p className={`text-[14px] leading-[1.3] ${!n.isRead ? 'font-bold text-gray-900' : 'text-gray-600 font-medium'}`}>
-                                                <span className="text-gray-900">{n.sender}</span> {n.message}
+                                            <p className={`text-[14px] leading-[1.3] ${!n.isRead ? 'font-bold text-foreground' : 'text-default-600 font-medium'}`}>
+                                                <span className="text-foreground">{n.sender}</span> {n.message}
                                             </p>
-                                            <p className={`text-[12px] mt-1 ${!n.isRead ? 'text-blue-600 font-bold' : 'text-gray-400 font-medium'}`}>
+                                            <p className={`text-[12px] mt-1 ${!n.isRead ? 'text-primary font-bold' : 'text-default-400 font-medium'}`}>
                                                 {n.time}
                                             </p>
                                         </div>
                                         {!n.isRead && (
                                             <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                                                <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
+                                                <div className="w-3 h-3 bg-primary rounded-full"></div>
                                             </div>
                                         )}
                                     </div>
                                 ))}
                                 {filteredNotifications.length === 0 && (
-                                    <div className="py-20 text-center text-gray-400 px-4">
+                                    <div className="py-20 text-center text-default-400 px-4">
                                         <BellIcon className="w-12 h-12 mx-auto opacity-20 mb-3" />
-                                        <p className="font-bold text-gray-500">Không có thông báo mới</p>
+                                        <p className="font-bold text-default-500">Không có thông báo mới</p>
                                         <p className="text-sm">Khi có bình luận hoặc tin nhắn, bạn sẽ thấy ở đây.</p>
                                     </div>
                                 )}
                                 {isLoading && (
                                     <div className="p-6 text-center">
-                                        <div className="inline-block w-6 h-6 border-[3px] border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                                        <div className="inline-block w-6 h-6 border-[3px] border-primary border-t-transparent rounded-full animate-spin"></div>
                                     </div>
                                 )}
                             </div>
@@ -239,11 +244,11 @@ const NotificationDropdown = () => {
                 <DropdownSection
                     aria-label="Footer"
                     classNames={{
-                        base: "p-2 border-t border-gray-50 bg-white rounded-b-2xl",
+                        base: "p-2 border-t border-divider bg-content1 rounded-b-2xl",
                         group: "p-0"
                     }}
                 >
-                    <DropdownItem key="view-all" className="p-0 text-center text-sm font-bold text-blue-600 hover:text-blue-700 hover:bg-blue-50/50 rounded-xl transition-colors">
+                    <DropdownItem key="view-all" className="p-0 text-center text-sm font-bold text-primary hover:text-primary-600 hover:bg-primary-50/50 rounded-xl transition-colors">
                         <span className="block py-2.5">Xem tất cả</span>
                     </DropdownItem>
                 </DropdownSection>

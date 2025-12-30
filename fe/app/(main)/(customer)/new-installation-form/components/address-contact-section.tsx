@@ -20,11 +20,11 @@ export const AddressContactSection = () => {
 
     return (
         <div className="space-y-6">
-            <div className="space-y-6 pb-6 border-b border-gray-100">
-                <h2 className="text-sm font-bold text-blue-600 uppercase tracking-wider">Địa chỉ lắp đặt & Liên hệ</h2>
+            <div className="space-y-6 pb-6 border-b border-gray-100 dark:border-divider">
+                <h2 className="text-sm font-bold text-blue-600 dark:text-primary-400 uppercase tracking-wider">Địa chỉ lắp đặt & Liên hệ</h2>
                 <div className="space-y-4">
-                    {aboveInputFieldContent.map((item, _) => (
-                        <div className="space-y-1">
+                    {aboveInputFieldContent.map((item, index) => (
+                        <div className="space-y-1" key={index}>
                             <Input
                                 variant="bordered"
                                 radius="md"
@@ -34,8 +34,8 @@ export const AddressContactSection = () => {
                             />
                         </div>
                     ))}
-                    {selectFieldContent.map((item, _) => (
-                        <div className="space-y-1">
+                    {selectFieldContent.map((item, index) => (
+                        <div className="space-y-1" key={index}>
                             <Select
                                 label={item}
                                 isRequired
@@ -47,8 +47,8 @@ export const AddressContactSection = () => {
                             </Select>
                         </div>
                     ))}
-                    {belowInputFieldContent.map((item, _) => (
-                        <div className="space-y-1">
+                    {belowInputFieldContent.map((item, index) => (
+                        <div className="space-y-1" key={index}>
                             <Input
                                 variant="bordered"
                                 radius="md"
@@ -61,8 +61,8 @@ export const AddressContactSection = () => {
                 </div>
             </div>
 
-            <div className="space-y-4 py-2 border-b border-gray-100">
-                <h2 className="text-[13px] font-bold text-gray-800">Thông tin ngân hàng</h2>
+            <div className="space-y-4 py-2 border-b border-gray-100 dark:border-divider">
+                <h2 className="text-[13px] font-bold text-gray-800 dark:text-foreground">Thông tin ngân hàng</h2>
                 <div className="space-y-1 pt-0.5">
                     <Select
                         label="Thanh toán qua ngân hàng"
@@ -77,7 +77,7 @@ export const AddressContactSection = () => {
             </div>
 
             <div className="space-y-4 py-2">
-                <h2 className="text-[13px] font-bold text-gray-800">Thông tin xuất hóa đơn</h2>
+                <h2 className="text-[13px] font-bold text-gray-800 dark:text-foreground">Thông tin xuất hóa đơn</h2>
                 <Checkbox size="sm" classNames={{ label: "text-[13px]" }}>Xuất hóa đơn</Checkbox>
             </div>
         </div>

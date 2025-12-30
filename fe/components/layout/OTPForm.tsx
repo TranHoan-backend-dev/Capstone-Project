@@ -127,13 +127,13 @@ export default function OTPForm() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-25 space-y-6 p-6 bg-white rounded-lg shadow-sm">
+    <div className="max-w-md mx-auto mt-25 space-y-6 p-6 bg-content1 rounded-lg shadow-sm border border-divider">
       <div className="text-center space-y-2">
-        <h2 className="text-2xl font-semibold text-gray-800">Xác thực Email</h2>
-        <p className="text-gray-600">
+        <h2 className="text-2xl font-semibold text-foreground">Xác thực Email</h2>
+        <p className="text-default-600">
           Vui lòng nhập mã xác thực 6 số đã gửi đến
         </p>
-        <p className="text-blue-600 font-medium">raviweb@example.com</p>
+        <p className="text-primary font-medium">raviweb@example.com</p>
         <div className="text-xs text-red-400">
           <p>Mã OTP sẽ hết hạn sau 60s</p>
         </div>
@@ -141,7 +141,7 @@ export default function OTPForm() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700 block text-center">
+          <label className="text-sm font-medium text-default-700 block text-center">
             Mã xác thực (6 số)
           </label>
           <div
@@ -164,10 +164,10 @@ export default function OTPForm() {
                   input: "text-center text-xl font-semibold",
                   inputWrapper: `
                     h-14 w-14 border-2
-                    ${otp[index] ? "border-blue-500" : "border-blue-300"}
-                    data-[hover=true]:border-blue-500
-                    data-[focus=true]:border-blue-600
-                    bg-blue-50
+                    ${otp[index] ? "border-primary" : "border-primary-100"}
+                    data-[hover=true]:border-primary
+                    data-[focus=true]:border-primary-600
+                    bg-primary-50 dark:bg-primary-900/10
                   `,
                 }}
                 maxLength={1}
@@ -177,7 +177,7 @@ export default function OTPForm() {
               />
             ))}
           </div>
-          <p className="text-xs text-gray-500 text-center mt-2">
+          <p className="text-xs text-default-500 text-center mt-2">
             Nhập 6 số bạn nhận được qua email
           </p>
         </div>
@@ -199,11 +199,11 @@ export default function OTPForm() {
 
 
       <div className="text-center space-y-3">
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-default-500">
           Không nhận được mã?{" "}
           <button
             type="button"
-            className="text-blue-600 hover:underline font-medium"
+            className="text-primary hover:underline font-medium"
             onClick={handleResendOTP}
             disabled={loading}
           >

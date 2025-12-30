@@ -16,7 +16,6 @@ const DesignProcessing = () => {
   const [ordersToDesign, setOrdersToDesign] = useState([
     {
       id: 1,
-      stt: 1,
       code: "01025120007",
       customerName: "Trần Thị Nguyệt",
       phone: "0355909536",
@@ -27,7 +26,6 @@ const DesignProcessing = () => {
     },
     {
       id: 2,
-      stt: 2,
       code: "01025120124",
       customerName: "Hoàng Thế Quý",
       phone: "0915705720",
@@ -41,7 +39,6 @@ const DesignProcessing = () => {
   const [processedDesigns, setProcessedDesigns] = useState([
     {
       id: 3,
-      stt: 1,
       code: "0102580016",
       customerName: "Nguyễn Văn Vũ",
       phone: "0913090736",
@@ -51,7 +48,6 @@ const DesignProcessing = () => {
     },
     {
       id: 4,
-      stt: 2,
       code: "0102580015",
       customerName: "Nguyễn Văn Vũ",
       phone: "0913090736",
@@ -64,7 +60,6 @@ const DesignProcessing = () => {
   const [waitingInput, setWaitingInput] = useState([
     {
       id: 5,
-      stt: 1,
       code: "0102404119",
       customerName: "Trần Liên Hương",
       phone: "0944808979",
@@ -75,7 +70,6 @@ const DesignProcessing = () => {
     },
     {
       id: 6,
-      stt: 2,
       code: "0102590069",
       customerName: "Công ty CP Đầu tư và Thương mại Mạnh Hải",
       phone: "0906519568",
@@ -83,6 +77,16 @@ const DesignProcessing = () => {
       registrationDate: "26/09/2022",
       surveyAppointment: "26/09/2022",
       status: "rejected",
+    },
+    {
+      id: 7,
+      code: "0102590069",
+      customerName: "Công ty CP Đầu tư và Thương mại Mạnh Hải",
+      phone: "0906519568",
+      address: "Số 96, Đông A, P.Lộc Vượng, TP. Nam Định",
+      registrationDate: "26/09/2022",
+      surveyAppointment: "26/09/2022",
+      status: "none",
     },
   ]);
 

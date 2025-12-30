@@ -40,6 +40,7 @@ interface GenericDataTableProps<T> {
     defaultOpen?: boolean;
     headerSummary?: string;
     actions?: React.ReactNode;
+    topContent?: React.ReactNode;
 }
 
 export const GenericDataTable = <T extends { id: string | number }>({
@@ -54,14 +55,15 @@ export const GenericDataTable = <T extends { id: string | number }>({
     defaultOpen = true,
     headerSummary,
     actions,
+    topContent,
 }: GenericDataTableProps<T>) => {
     const [isOpen, setIsOpen] = React.useState(defaultOpen);
 
     return (
-        <Card shadow="sm" className="overflow-hidden bg-white transition-all duration-300">
+        <Card shadow="sm" className="overflow-hidden bg-content1 transition-all duration-300">
             <CardBody className="p-0">
                 <div
-                    className={`border-b border-gray-100 transition-colors ${isCollapsible ? "hover:bg-gray-50/50" : ""}`}
+                    className={`border-b border-divider transition-colors ${isCollapsible ? "hover:bg-default-100" : ""}`}
                 >
                     <div
                         role={isCollapsible ? "button" : undefined}
@@ -69,20 +71,20 @@ export const GenericDataTable = <T extends { id: string | number }>({
                         className={`p-6 flex justify-between items-center ${isCollapsible ? "cursor-pointer select-none" : ""}`}
                     >
                         <div className="flex items-center gap-3">
-                            <div className="text-blue-600">
+                            <div className="text-primary">
                                 {icon}
                             </div>
-                            <h2 className="text-lg font-bold text-gray-800">{title}</h2>
+                            <h2 className="text-lg font-bold text-foreground">{title}</h2>
                         </div>
                         <div className="flex items-center gap-4">
                             {headerSummary && (
-                                <div className="hidden md:block px-3 py-1.5 bg-gray-50 rounded-full text-xs font-medium text-gray-500 whitespace-nowrap">
+                                <div className="hidden md:block px-3 py-1.5 bg-default-100 rounded-full text-xs font-medium text-default-500 whitespace-nowrap">
                                     Tìm thấy {headerSummary} bản ghi
                                 </div>
                             )}
                             {actions && <div>{actions}</div>}
                             {isCollapsible && (
-                                <div className="text-gray-400">
+                                <div className="text-default-400">
                                     <ChevronDownIcon className={`w-5 h-5 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
                                 </div>
                             )}
@@ -91,13 +93,18 @@ export const GenericDataTable = <T extends { id: string | number }>({
                 </div>
 
                 <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? "opacity-100 max-h-[5000px] visible" : "opacity-0 max-h-0 invisible"}`}>
+                    {topContent && (
+                        <div className="p-6 pt-2 border-b border-divider">
+                            {topContent}
+                        </div>
+                    )}
                     <div className="overflow-x-auto">
                         <Table
                             removeWrapper
                             aria-label={title}
                             classNames={{
-                                th: "bg-[#fcfdfe] text-gray-400 font-bold py-4 px-4 text-[11px] uppercase tracking-widest",
-                                td: "py-4 px-4 text-sm text-gray-600 last:border-none",
+                                th: "bg-default-50 text-default-400 font-bold py-4 px-4 text-[11px] uppercase tracking-widest",
+                                td: "py-4 px-4 text-sm text-foreground last:border-none",
                                 ...tableProps?.classNames,
                             }}
                             {...tableProps}
@@ -108,7 +115,7 @@ export const GenericDataTable = <T extends { id: string | number }>({
                                         key={column.key}
                                         align={column.align || "start"}
                                         style={column.width ? { width: column.width } : {}}
-                                        className={`${index === 0 && column.key !== "selection" ? "!pl-8" : ""} bg-gray-100 text-black`}
+                                        className={`${index === 0 && column.key !== "selection" ? "!pl-8" : ""} bg-default-100 text-foreground`}
                                     >
                                         {column.label}
                                     </TableColumn>
@@ -120,7 +127,7 @@ export const GenericDataTable = <T extends { id: string | number }>({
                                 loadingContent={<Spinner label="Loading..." />}
                             >
                                 {(item) => (
-                                    <TableRow key={item.id} className="hover:bg-gray-50/50 transition-colors">
+                                    <TableRow key={item.id} className="hover:bg-default-50 transition-colors border-divider">
                                         {columns.map((column, index) => (
                                             <TableCell
                                                 key={column.key}

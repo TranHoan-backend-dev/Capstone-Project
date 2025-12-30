@@ -33,18 +33,18 @@ export const TemplateTable = ({ data }: TemplateTableProps) => {
     const renderCell = (item: MaterialTemplate, columnKey: string) => {
         switch (columnKey) {
             case "no":
-                return <span className="font-medium text-gray-400">{data.indexOf(item) + 1}</span>;
+                return <span className="font-medium text-black dark:text-white">{data.indexOf(item) + 1}</span>;
             case "code":
-                return <span className="text-gray-600">{item.code}</span>;
+                return <span className="text-gray-600 dark:text-white">{item.code}</span>;
             case "name":
-                return <span className="text-gray-900">{item.name}</span>;
+                return <span className="text-gray-900 dark:text-white">{item.name}</span>;
             case "createdAt":
-                return <span className="text-gray-500">{item.createdAt}</span>;
+                return <span className="text-gray-500 dark:text-white">{item.createdAt}</span>;
             case "activities":
                 const actions = [
-                    { content: "Bốc vật tư", icon: ClipboardDocumentListIcon, className: "text-blue-600 hover:bg-blue-50", href: "#" },
-                    { content: "Sửa", icon: PencilSquareIcon, className: "text-amber-500 hover:bg-amber-50", href: "#" },
-                    { content: "Xóa", icon: TrashIcon, className: "text-danger hover:bg-danger-50", color: "danger" as const, href: "#" },
+                    { content: "Bốc vật tư", icon: ClipboardDocumentListIcon, className: "text-blue-600 dark:text-primary hover:bg-blue-50 dark:hover:bg-blue-900/10", color: "primary" as const, href: "#" },
+                    { content: "Sửa", icon: PencilSquareIcon, className: "text-amber-500 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/10", color: "warning" as const, href: "#" },
+                    { content: "Xóa", icon: TrashIcon, className: "text-danger hover:bg-danger-50 dark:hover:bg-danger-900/10", color: "danger" as const, href: "#" },
                 ];
                 return (
                     <div className="flex justify-center items-center gap-2">

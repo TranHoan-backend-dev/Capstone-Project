@@ -50,16 +50,16 @@ const Sidebar = ({
         />
       )}
       <div
-        className={`fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-50 transform transition-transform duration-300 ease-in-out md:hidden ${isOpen ? "translate-x-0" : "-translate-x-full"
+        className={`fixed top-0 left-0 h-full w-64 bg-content1 shadow-lg z-50 transform transition-transform duration-300 ease-in-out md:hidden ${isOpen ? "translate-x-0" : "-translate-x-full"
           }`}
       >
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center">
-            <span className="text-lg font-bold text-gray-900">CRM</span>
+            <span className="text-lg font-bold">CRM</span>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg"
+            className="p-2 hover:bg-default-100 rounded-lg"
           >
             <XMarkIcon className="w-6 h-6" />
           </button>
@@ -73,9 +73,9 @@ const Sidebar = ({
                   <>
                     <button
                       onClick={() => toggleSubmenu(item.key)}
-                      className={`w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 transition-colors ${pathname === item.href
-                        ? "bg-blue-50 text-blue-600"
-                        : "text-gray-700"
+                      className={`w-full flex items-center justify-between p-3 rounded-lg hover:bg-default-100 transition-colors ${pathname === item.href
+                        ? "bg-primary-50 text-primary"
+                        : "text-foreground-700"
                         }`}
                     >
                       <span className="font-medium">{item.label}</span>
@@ -93,9 +93,9 @@ const Sidebar = ({
                               <>
                                 <button
                                   onClick={() => toggleSubmenu(subItem.key)}
-                                  className={`w-full flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 text-sm ${pathname === subItem.href
-                                    ? "bg-blue-50 text-blue-600"
-                                    : "text-gray-600"
+                                  className={`w-full flex items-center justify-between p-2 rounded-lg hover:bg-default-100 text-sm ${pathname === subItem.href
+                                    ? "bg-primary-50 text-primary"
+                                    : "text-foreground-600"
                                     }`}
                                 >
                                   <span>{subItem.label}</span>
@@ -114,9 +114,9 @@ const Sidebar = ({
                                         key={child.key}
                                         href={child.href || "#"}
                                         onClick={onClose}
-                                        className={`block p-2 rounded-lg hover:bg-gray-100 text-sm ${pathname === child.href
-                                          ? "bg-blue-50 text-blue-600"
-                                          : "text-gray-600"
+                                        className={`block p-2 rounded-lg hover:bg-default-100 text-sm ${pathname === child.href
+                                          ? "bg-primary-50 text-primary"
+                                          : "text-foreground-600"
                                           }`}
                                       >
                                         {child.label}
@@ -129,9 +129,9 @@ const Sidebar = ({
                               <Link
                                 href={subItem.href || "#"}
                                 onClick={onClose}
-                                className={`block p-2 rounded-lg hover:bg-gray-100 text-sm ${pathname === subItem.href
-                                  ? "bg-blue-50 text-blue-600"
-                                  : "text-gray-600"
+                                className={`block p-2 rounded-lg hover:bg-default-100 text-sm ${pathname === subItem.href
+                                  ? "bg-primary-50 text-primary"
+                                  : "text-foreground-600"
                                   }`}
                               >
                                 {subItem.label}
@@ -146,9 +146,9 @@ const Sidebar = ({
                   <Link
                     href={item.href || "#"}
                     onClick={onClose}
-                    className={`block p-3 rounded-lg hover:bg-gray-100 font-medium ${pathname === item.href
-                      ? "bg-blue-50 text-blue-600"
-                      : "text-gray-700"
+                    className={`block p-3 rounded-lg hover:bg-default-100 font-medium ${pathname === item.href
+                      ? "bg-primary-50 text-primary"
+                      : "text-foreground-700"
                       }`}
                   >
                     {item.label}

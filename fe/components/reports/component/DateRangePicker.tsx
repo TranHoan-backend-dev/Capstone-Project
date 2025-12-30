@@ -24,12 +24,17 @@ export const DateRangePicker = ({
         <div className="space-y-1">
           <DatePicker
             label="Từ ngày"
-            labelPlacement="outside"
+            labelPlacement="inside"
             value={fromDate}
             onChange={onFromDateChange}
             granularity="day"
-            size="sm"
-            className="w-full md:w-[280px] rounded-md bg-white"
+            size="md"
+            variant="bordered"
+            className="w-full md:w-[280px]"
+          // classNames={{
+          //   inputWrapper: "bg-white dark:bg-zinc-800 border-gray-200 dark:border-zinc-700 h-10",
+          //   label: "text-sm font-bold text-gray-700 dark:text-zinc-300"
+          // }}
           />
         </div>
 
@@ -40,8 +45,13 @@ export const DateRangePicker = ({
             value={toDate}
             onChange={onToDateChange}
             granularity="day"
-            size="sm"
-            className="w-full md:w-[280px] rounded-md bg-white"
+            size="md"
+            variant="bordered"
+            className="w-full md:w-[280px]"
+            classNames={{
+              inputWrapper: "bg-white dark:bg-zinc-800 border-gray-200 dark:border-zinc-700 h-10",
+              label: "text-sm font-bold text-gray-700 dark:text-zinc-300"
+            }}
           />
         </div>
       </div>

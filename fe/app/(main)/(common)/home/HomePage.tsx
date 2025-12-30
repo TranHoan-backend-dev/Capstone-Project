@@ -1,5 +1,6 @@
 'use client'
 
+import CustomInput from "@/components/ui/CustomInput";
 import { Button, Card, CardBody, Input, Select, SelectItem } from "@heroui/react";
 import { useState } from "react";
 
@@ -15,39 +16,33 @@ export const HomePage = () => {
 
   return (
     <div className="w-full space-y-6">
-      <Card>
+      <Card className="dark:bg-zinc-900 border-none">
         <CardBody className="gap-4">
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-lg font-semibold text-gray-800">
-              Phân mềm Quản lý Khách hàng Dùng chung
+            <span className="text-lg font-semibold text-gray-800 dark:text-white">
+              Phần mềm Quản lý Khách hàng Dùng chung
             </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input
+            <CustomInput
               type="text"
               label="Địa chỉ IP máy khách"
               value="117.6.63.110"
               isReadOnly
-              variant="bordered"
-              classNames={{
-                input: "bg-gray-50",
-              }}
             />
 
-            <Input
+            <CustomInput
               type="text"
               label="Tên máy khách"
-              placeholder="Nhập tên máy..."
               value={clientMachineName}
               onValueChange={setClientMachineName}
-              variant="bordered"
             />
 
             <div className="md:col-span-2">
               <Select
                 label="Chương trình"
-                placeholder="Chọn chương trình"
+                labelPlacement="inside"
                 selectedKeys={[selectedProgram]}
                 onSelectionChange={(keys) =>
                   setSelectedProgram(Array.from(keys)[0] as string)
@@ -55,7 +50,7 @@ export const HomePage = () => {
                 variant="bordered"
               >
                 {programOptions.map((option) => (
-                  <SelectItem key={option.key}>{option.label}</SelectItem>
+                  <SelectItem key={option.key} className="dark:text-white">{option.label}</SelectItem>
                 ))}
               </Select>
             </div>
@@ -67,15 +62,15 @@ export const HomePage = () => {
             >
               Tìm kiếm
             </Button>
-            <Button variant="bordered">Đặt lại</Button>
+            <Button variant="bordered" className="dark:border-zinc-700 dark:text-zinc-300">Đặt lại</Button>
           </div>
         </CardBody>
       </Card>
 
-      <Card>
+      <Card className="dark:bg-zinc-900 border-none">
         <CardBody>
-          <div className="text-center text-gray-500 py-12">
-            <p className="text-base">Không có dữ liệu để hiển thị</p>
+          <div className="text-center text-gray-500 dark:text-zinc-400 py-12">
+            <p className="text-base font-medium">Không có dữ liệu để hiển thị</p>
             <p className="text-sm mt-2">Vui lòng chọn bộ lọc và tìm kiếm</p>
           </div>
         </CardBody>

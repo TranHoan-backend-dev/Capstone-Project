@@ -1,10 +1,11 @@
 "use client";
 
 import React from "react";
-import { Chip, Link, Tooltip } from "@heroui/react";
+import { Button, Chip, Link, Tooltip } from "@heroui/react";
 import NextLink from "next/link";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import { CalculatorIcon, PencilSquareIcon, FolderIcon } from "@heroicons/react/24/solid";
+import { DarkBlueChip, DarkGreenChip, DarkRedChip, DarkYellowChip } from "@/config/chip.cl";
 
 interface EstimateItem {
     id: number;
@@ -24,26 +25,22 @@ const statusMap = {
     approved: {
         label: "Đã duyệt dự toán",
         color: "success" as const,
-        bg: "bg-green-100",
-        text: "text-green-700",
+        bg: `bg-green-100 text-green-700 ${DarkGreenChip}`,
     },
     pending_approval: {
         label: "Chờ duyệt dự toán",
         color: "primary" as const,
-        bg: "bg-blue-100",
-        text: "text-blue-700",
+        bg: `bg-blue-100 text-blue-700 ${DarkBlueChip}`,
     },
     pending_estimate: {
         label: "Chờ lập dự toán",
         color: "default" as const,
-        bg: "bg-gray-100",
-        text: "text-gray-700",
+        bg: `bg-gray-100 text-gray-700 ${DarkYellowChip}`,
     },
     redo: {
         label: "Lập lại dự toán",
         color: "danger" as const,
-        bg: "bg-red-100",
-        text: "text-red-700",
+        bg: `bg-red-100 text-red-700 ${DarkRedChip}`,
     },
 };
 
@@ -62,40 +59,44 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
     const renderCell = (item: EstimateItem, columnKey: string) => {
         switch (columnKey) {
             case "no":
-                return <span className="font-medium text-gray-400">{data.indexOf(item) + 1}</span>;
+                return <span className="font-medium text-black dark:text-white">{data.indexOf(item) + 1}</span>;
             case "code":
                 return (
-                    <Link as={NextLink} href="#" className="font-bold text-blue-600 hover:underline hover:text-blue-800">
+                    <Link as={NextLink} href="#" className="font-bold text-blue-600 hover:underline hover:text-blue-800 dark:text-primary dark:hover:text-primary-600">
                         {item.code}
                     </Link>
                 );
             case "name":
-                return <span className="font-bold text-gray-900">{item.name}</span>;
+                return <span className="font-bold text-gray-900 dark:text-foreground">{item.name}</span>;
             case "status":
                 const config = statusMap[item.status];
                 return (
                     <Chip
                         size="sm"
                         variant="flat"
-                        className={`${config.bg} ${config.text} border-none font-medium px-2`}
+                        className={`${config.bg} border-none font-medium px-2`}
                     >
                         {config.label}
                     </Chip>
                 );
             case "actions":
                 const actionButtons = [
-                    { content: "Dự toán", color: "success" as const, icon: CalculatorIcon, href: "#", className: "text-green-600 hover:text-green-700" },
-                    { content: "Chỉnh sửa", color: "warning" as const, icon: PencilSquareIcon, href: "#", className: "text-amber-500 hover:text-amber-600" },
-                    { content: "Hồ sơ", color: "primary" as const, icon: FolderIcon, href: "#", className: "text-blue-600 hover:text-blue-800" },
+                    { content: "Dự toán", color: "success" as const, icon: CalculatorIcon, className: "text-green-600 dark:text-success hover:text-green-700 dark:hover:text-success-600" },
+                    { content: "Chỉnh sửa", color: "warning" as const, icon: PencilSquareIcon, className: "text-amber-500 dark:text-amber-400 hover:text-amber-600 dark:hover:text-amber-300" },
+                    { content: "Hồ sơ", color: "primary" as const, icon: FolderIcon, className: "text-blue-600 dark:text-primary hover:text-blue-800 dark:hover:text-primary-600" },
                 ];
 
                 return (
                     <div className="flex items-center justify-center gap-5">
                         {actionButtons.map((btn, idx) => (
                             <Tooltip key={idx} content={btn.content} color={btn.color}>
-                                <Link as={NextLink} href={btn.href} className={`${btn.className} transition-transform hover:scale-110`}>
-                                    <btn.icon className="w-6 h-6" />
-                                </Link>
+                                <Button
+                                    isIconOnly
+                                    variant="light"
+                                    size="sm"
+                                >
+                                    <btn.icon className={`w-5 h-5 ${btn.className}`} />
+                                </Button>
                             </Tooltip>
                         ))}
                     </div>

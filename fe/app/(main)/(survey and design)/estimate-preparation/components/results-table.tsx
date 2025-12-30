@@ -1,19 +1,12 @@
 "use client";
 
 import React from "react";
-import { Chip, Link } from "@heroui/react";
+import { Chip, Link, Tooltip, Button } from "@heroui/react";
 import NextLink from "next/link";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-
-interface EstimateItem {
-    id: number;
-    code: string;
-    customerName: string;
-    phone: string;
-    address: string;
-    registerDate: string;
-    status: "pending_estimate" | "rejected";
-}
+import { DarkGreenChip, DarkRedChip } from "@/config/chip.cl";
+import { CalculatorIcon } from "@heroicons/react/24/outline";
+import { EstimateItem } from "@/types";
 
 interface ResultsTableProps {
     data: EstimateItem[];
@@ -22,13 +15,13 @@ interface ResultsTableProps {
 const statusMap = {
     pending_estimate: {
         label: "Chờ lập dự toán",
-        bg: "bg-[#e2f2ea]",
-        text: "text-[#10a345]",
+        color: "success" as const,
+        bg: DarkGreenChip,
     },
     rejected: {
         label: "Chưa được phê duyệt",
-        bg: "bg-[#ffe4e4]",
-        text: "text-[#ff0000]",
+        color: "danger" as const,
+        bg: DarkRedChip,
     },
 };
 
@@ -47,42 +40,46 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
     const renderCell = (item: EstimateItem, columnKey: string) => {
         switch (columnKey) {
             case "stt":
-                return <span className="text-gray-400 font-medium ml-1">{data.indexOf(item) + 1}</span>;
+                return <span className="text-black dark:text-white">{data.indexOf(item) + 1}</span>;
             case "code":
                 return (
-                    <Link as={NextLink} href="#" className="font-bold text-[#2a66e4] underline underline-offset-4 hover:text-blue-800">
+                    <Link as={NextLink} href="#" className="font-bold text-[#2a66e4] dark:text-primary underline underline-offset-4 hover:text-blue-800 dark:hover:text-primary-600">
                         {item.code}
                     </Link>
                 );
             case "customerName":
-                return <span className="font-bold text-gray-900">{item.customerName}</span>;
+                return <span className="font-bold text-gray-900 dark:text-foreground">{item.customerName}</span>;
             case "phone":
-                return <span className="text-gray-500">{item.phone}</span>;
+                return <span className="text-gray-500 dark:text-default-500">{item.phone}</span>;
             case "address":
-                return <span className="text-gray-500 text-xs leading-relaxed inline-block max-w-[280px]">{item.address}</span>;
+                return <span className="text-gray-500 dark:text-default-500">{item.address}</span>;
             case "registerDate":
-                return <span className="text-gray-500">{item.registerDate}</span>;
+                return <span className="text-gray-500 dark:text-default-500">{item.registerDate}</span>;
             case "status":
                 const config = statusMap[item.status];
                 return (
                     <Chip
                         size="sm"
                         variant="flat"
-                        className={`${config.bg} ${config.text} border-none font-bold px-4 py-3 h-auto`}
-                        radius="md"
+                        className={`${config.bg}`}
+                        color={config.color}
                     >
                         {config.label}
                     </Chip>
                 );
             case "actions":
                 return (
-                    <Link
-                        as={NextLink}
-                        href="/estimate-preparation"
-                        className="text-[#2a66e4] text-xs underline underline-offset-4"
-                    >
-                        Chạy dự toán
-                    </Link>
+                    <Tooltip content="Chạy dự toán" color="success" closeDelay={0}>
+                        <Button
+                            isIconOnly
+                            as={NextLink}
+                            href="/estimate-preparation"
+                            variant="light"
+                            size="sm"
+                        >
+                            <CalculatorIcon className="w-5 h-5 text-green-600 dark:text-success hover:text-green-700 dark:hover:text-success-600" />
+                        </Button>
+                    </Tooltip>
                 );
             default:
                 return (item as any)[columnKey];

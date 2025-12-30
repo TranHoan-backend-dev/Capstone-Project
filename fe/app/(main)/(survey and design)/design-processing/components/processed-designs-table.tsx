@@ -30,34 +30,34 @@ export const ProcessedDesignsTable = ({ data, onReject }: ProcessedDesignsTableP
         switch (columnKey) {
             case "code":
                 return (
-                    <Link as={NextLink} href="#" className="font-bold text-blue-600 hover:underline hover:text-blue-800">
+                    <Link as={NextLink} href="#" className="font-bold text-blue-600 hover:underline hover:text-blue-800 dark:text-primary dark:hover:text-primary-600">
                         {cellValue}
                     </Link>
                 );
             case "customerName":
-                return <span className="font-bold text-gray-900">{cellValue}</span>;
+                return <span className="font-bold text-gray-900 dark:text-foreground">{cellValue}</span>;
             case "activities":
                 return (
                     <div className="flex justify-center items-center gap-5">
                         <Tooltip content="Từ chối" color="danger">
                             <XCircleIcon
-                                className="w-6 h-6 text-red-500 cursor-pointer hover:text-red-600 transition-colors"
+                                className="w-6 h-6 text-red-500 dark:text-danger cursor-pointer hover:text-red-600 dark:hover:text-danger-400 transition-colors"
                                 onClick={() => onReject?.(item)}
                             />
                         </Tooltip>
                         <Tooltip content="Xóa" color="danger">
-                            <TrashIcon className="w-5 h-5 text-red-500 cursor-pointer hover:text-red-600 transition-colors" />
+                            <TrashIcon className="w-5 h-5 text-red-500 dark:text-danger cursor-pointer hover:text-red-600 dark:hover:text-danger-400 transition-colors" />
                         </Tooltip>
                     </div>
                 );
             case "docs":
                 return (
                     <div className="flex justify-center">
-                        <FolderIcon className="w-5 h-5 text-blue-500 cursor-pointer hover:text-blue-700 transition-colors" />
+                        <FolderIcon className="w-5 h-5 text-blue-500 dark:text-primary-400 cursor-pointer hover:text-blue-700 dark:hover:text-primary-600 transition-colors" />
                     </div>
                 );
             case "no":
-                return <span className="font-medium text-gray-400">{data.indexOf(item) + 1}</span>;
+                return <span className="font-medium text-black dark:text-white">{data.indexOf(item) + 1}</span>;
             default:
                 return cellValue;
         }

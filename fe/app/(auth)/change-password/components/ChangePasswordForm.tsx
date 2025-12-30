@@ -98,33 +98,30 @@ const ChangePasswordForm = () => {
     <div className="min-h-full mb-6">
       <ChangePasswordHeader onBack={handleCancel} />
 
-      <div className="max-w-4xl mx-auto p-0">
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold text-gray-800">Đổi mật khẩu</h2>
-          <p className="text-gray-600 mt-1">
+      <div className="max-w-4xl mx-auto p-0 px-4 md:px-0">
+        <div className="mb-6">
+          <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-white">Đổi mật khẩu</h2>
+          <p className="text-gray-600 dark:text-zinc-400 mt-1">
             Cập nhật mật khẩu của bạn để đảm bảo tính bảo mật cho tài khoản
           </p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <div className="px-8 py-8">
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-gray-200 dark:border-zinc-800 overflow-hidden">
+          <div className="px-6 py-8 md:px-10 md:py-10">
             {error && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-red-600 font-medium">{error}</p>
+              <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/30 rounded-xl">
+                <p className="text-red-600 dark:text-red-400 font-medium">{error}</p>
               </div>
             )}
 
             {success && (
-              <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                <p className="text-green-600 font-medium">{success}</p>
+              <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-900/30 rounded-xl">
+                <p className="text-green-600 dark:text-green-400 font-medium">{success}</p>
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <h3 className="text-sm font-medium text-gray-900 mb-2">
-                  Mật khẩu hiện tại
-                </h3>
                 <PasswordInput
                   label="Nhập mật khẩu hiện tại"
                   value={formData.currentPassword}
@@ -135,17 +132,15 @@ const ChangePasswordForm = () => {
                     })
                   }
                   classNames={{
-                    inputWrapper: "bg-white border-gray-300",
-                    label: "text-gray-700 font-normal",
+                    inputWrapper: "bg-white dark:bg-zinc-800/50 border-gray-300 dark:border-zinc-700 h-11",
+                    label: "text-gray-700 dark:text-zinc-400 font-normal",
+                    input: "dark:text-white"
                   }}
                   required
                 />
               </div>
 
               <div>
-                <h3 className="text-sm font-medium text-gray-900 mb-2">
-                  Mật khẩu mới
-                </h3>
                 <PasswordInput
                   label="Nhập mật khẩu mới"
                   value={formData.newPassword}
@@ -156,15 +151,16 @@ const ChangePasswordForm = () => {
                     })
                   }
                   classNames={{
-                    inputWrapper: "bg-white border-gray-300",
-                    label: "text-gray-700 font-normal",
+                    inputWrapper: "bg-white dark:bg-zinc-800/50 border-gray-300 dark:border-zinc-700 h-11",
+                    label: "text-gray-700 dark:text-zinc-400 font-normal",
+                    input: "dark:text-white"
                   }}
                   required
                 />
               </div>
 
               <div>
-                <h3 className="text-sm font-medium text-gray-900 mb-2">
+                <h3 className="text-sm font-bold text-gray-900 dark:text-zinc-300 mb-2">
                   Xác nhận mật khẩu mới
                 </h3>
                 <PasswordInput
@@ -177,8 +173,9 @@ const ChangePasswordForm = () => {
                     })
                   }
                   classNames={{
-                    inputWrapper: "bg-white border-gray-300",
-                    label: "text-gray-700 font-normal",
+                    inputWrapper: "bg-white dark:bg-zinc-800/50 border-gray-300 dark:border-zinc-700 h-11",
+                    label: "text-gray-700 dark:text-zinc-400 font-normal",
+                    input: "dark:text-white"
                   }}
                   required
                 />
@@ -186,11 +183,11 @@ const ChangePasswordForm = () => {
 
               <PasswordRequirements password={formData.newPassword} />
 
-              <div className="flex justify-end space-x-4 pt-2">
+              <div className="flex justify-end space-x-4 pt-4 border-t border-gray-100 dark:border-zinc-800 mt-8">
                 <Button
                   type="button"
                   variant="bordered"
-                  className="px-2 py-2.5 border-gray-300 text-gray-700 hover:bg-gray-50"
+                  className="px-6 h-11 border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 hover:bg-gray-50 dark:hover:bg-zinc-800 font-bold"
                   onClick={handleCancel}
                   disabled={isLoading}
                   startContent={<XMarkIcon className="w-5 h-5" />}
@@ -200,7 +197,7 @@ const ChangePasswordForm = () => {
                 <Button
                   type="submit"
                   color="primary"
-                  className="px-2 py-2.5 bg-blue-600 hover:bg-blue-700 text-white"
+                  className="px-6 h-11 bg-blue-600 dark:bg-primary hover:bg-blue-700 dark:hover:bg-primary-600 text-white font-bold"
                   isLoading={isLoading}
                   disabled={isLoading}
                   startContent={<DocumentArrowDownIcon className="w-5 h-5" />}

@@ -31,7 +31,7 @@ const NestedDropdown = ({ item }: { item: MenuItem }) => {
   const [nestedOpen, setNestedOpen] = useState<string | null>(null);
   const [activeItem, setActiveItem] = useState<string | null>(null);
   const [closing, setClosing] = useState(false);
-  
+
   const mainMenuRef = useRef<HTMLDivElement>(null);
   const subMenuRef = useRef<HTMLDivElement>(null);
   const closeTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -158,21 +158,19 @@ const NestedDropdown = ({ item }: { item: MenuItem }) => {
             as={NextLink}
             href={item.href}
             onClick={() => handleItemClick(item.key)}
-            className={`text-sm px-3 py-2 rounded transition-colors ${
-              isItemActive(item.key)
-                ? "bg-blue-200 text-blue-800 font-medium"
-                : "text-gray-700 hover:text-gray-900 hover:bg-blue-100"
-            }`}
+            className={`text-sm px-3 py-2 rounded transition-colors ${isItemActive(item.key)
+              ? "bg-primary-100 text-primary-800 dark:text-white font-medium"
+              : "text-foreground-700 hover:bg-default-100"
+              }`}
           >
             {item.label}
           </Link>
         ) : (
           <span
-            className={`text-sm px-3 py-2 rounded cursor-pointer ${
-              isItemActive(item.key)
-                ? "bg-blue-200 text-blue-800 font-medium"
-                : "text-gray-700 hover:text-gray-900 hover:bg-blue-100"
-            }`}
+            className={`text-sm px-3 py-2 rounded cursor-pointer ${isItemActive(item.key)
+              ? "bg-primary-100 text-primary-800 dark:text-white font-medium"
+              : "text-foreground-700 hover:bg-default-100"
+              }`}
           >
             {item.label}
           </span>
@@ -182,9 +180,8 @@ const NestedDropdown = ({ item }: { item: MenuItem }) => {
       {isOpen && (
         <div
           ref={subMenuRef}
-          className={`absolute top-full left-0 mt-1 z-50 min-w-[220px] bg-white shadow-lg rounded-lg border border-gray-200 py-1 transition-opacity duration-100 ${
-            closing ? "opacity-0" : "opacity-100"
-          }`}
+          className={`absolute top-full left-0 mt-1 z-50 min-w-[220px] bg-content1 shadow-lg rounded-lg border border-divider py-1 transition-opacity duration-100 ${closing ? "opacity-0" : "opacity-100"
+            }`}
           onMouseEnter={handleMouseEnterSub}
           onMouseLeave={handleMouseLeaveSub}
         >
@@ -202,21 +199,19 @@ const NestedDropdown = ({ item }: { item: MenuItem }) => {
                   <Link
                     href={subItem.href}
                     onClick={() => handleItemClick(subItem.key)}
-                    className={`flex items-center justify-between px-3 py-2 text-sm transition-colors whitespace-nowrap ${
-                      isItemActive(subItem.key)
-                        ? "bg-blue-200 text-blue-800 font-medium"
-                        : "text-gray-700 hover:text-gray-900 hover:bg-blue-100"
-                    }`}
+                    className={`flex items-center justify-between px-3 py-2 text-sm transition-colors whitespace-nowrap ${isItemActive(subItem.key)
+                      ? "bg-primary-100 text-primary-800 dark:text-white font-medium"
+                      : "text-foreground-700 hover:bg-default-100"
+                      }`}
                   >
                     {subItem.label}
                   </Link>
                 ) : (
                   <div
-                    className={`flex items-center justify-between px-3 py-2 text-sm transition-colors cursor-pointer whitespace-nowrap ${
-                      isSubItemActive
-                        ? "bg-blue-50 text-blue-700"
-                        : "text-gray-700 hover:text-gray-900 hover:bg-blue-50"
-                    }`}
+                    className={`flex items-center justify-between px-3 py-2 text-sm transition-colors cursor-pointer whitespace-nowrap ${isSubItemActive
+                      ? "bg-primary-50 text-primary"
+                      : "text-foreground-700 hover:bg-default-50"
+                      }`}
                   >
                     <span>{subItem.label}</span>
                     {subItem.children && <span className="text-sm ml-2">›</span>}
@@ -225,7 +220,7 @@ const NestedDropdown = ({ item }: { item: MenuItem }) => {
 
                 {subItem.children && nestedOpen === subItem.key && (
                   <div
-                    className="absolute left-full top-0 ml-1 z-50 min-w-[280px] bg-white shadow-lg rounded-lg border border-gray-200 py-1"
+                    className="absolute left-full top-0 ml-1 z-50 min-w-[280px] bg-content1 shadow-lg rounded-lg border border-divider py-1"
                     onMouseEnter={handleMouseEnterSub}
                     onMouseLeave={handleMouseLeaveSub}
                   >
@@ -234,11 +229,10 @@ const NestedDropdown = ({ item }: { item: MenuItem }) => {
                         key={child.key}
                         href={child.href || "#"}
                         onClick={() => handleItemClick(child.key)}
-                        className={`block px-3 py-2 text-sm transition-colors whitespace-nowrap ${
-                          isItemActive(child.key)
-                            ? "bg-blue-200 text-blue-800 font-medium"
-                            : "text-gray-700 hover:text-gray-900 hover:bg-blue-100"
-                        }`}
+                        className={`block px-3 py-2 text-sm transition-colors whitespace-nowrap ${isItemActive(child.key)
+                          ? "bg-primary-100 text-primary-800 dark:text-white font-medium"
+                          : "text-foreground-700 hover:bg-default-100"
+                          }`}
                       >
                         {child.label}
                       </Link>

@@ -16,7 +16,7 @@ export const OrderInfoSection = () => {
 
     return (
         <div className="space-y-6">
-            <h2 className="text-sm font-bold text-blue-600 uppercase tracking-wider">Thông tin đơn</h2>
+            <h2 className="text-sm font-bold text-blue-600 dark:text-primary-400 uppercase tracking-wider">Thông tin đơn</h2>
             <div className="space-y-4">
                 {inputFields.map((item, index) => (
                     <div key={index} className="space-y-1">
