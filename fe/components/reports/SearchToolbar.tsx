@@ -2,44 +2,70 @@
 
 import { useState } from "react";
 import {
-  MagnifyingGlassIcon,
   ArrowDownTrayIcon,
-  BookmarkIcon,
+  PrinterIcon
 } from "@heroicons/react/24/outline";
-import { Input, Button } from "@heroui/react";
+import {
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  Button,
+  Tooltip
+} from "@heroui/react";
+import { SearchInputWithButton } from "../ui/SearchInputWithButton";
 
 export const SearchToolbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   return (
-    <div className="flex flex-col md:flex-row items-center gap-4 py-2">
+    <div className="flex flex-col md:flex-row items-center justify-between gap-4 py-4 px-1">
       <div className="relative flex-1 w-full md:max-w-xs">
-        <Input
+        <SearchInputWithButton
           type="text"
-          placeholder="Nhập từ khóa tìm kiếm..."
+          label="Nhập từ khóa tìm kiếm"
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          variant="bordered"
-          classNames={{
-            inputWrapper: "bg-white dark:bg-zinc-800 border-gray-200 dark:border-zinc-700 h-10",
-            input: "text-sm dark:text-white"
-          }}
-          startContent={
-            <MagnifyingGlassIcon className="h-5 w-5 text-gray-400 dark:text-zinc-500" />
-          }
+          onChange={(e: any) => setSearchQuery(e.target.value)}
         />
       </div>
 
-      <div className="flex gap-2 w-full md:w-auto">
-        <Button className="flex-1 md:flex-none bg-blue-600 dark:bg-primary text-white hover:bg-blue-700 h-10 px-6 font-bold">
-          <ArrowDownTrayIcon className="mr-2 h-5 w-5" />
-          Xuất file
-        </Button>
+      <div className="flex items-center gap-3 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+        <Dropdown>
+          <DropdownTrigger>
+            <Button
+              isIconOnly
+              color="success"
+              variant="flat"
+              className="h-10 w-10 min-w-0 font-bold"
+            >
+              <Tooltip content="Xuất file" color="success">
+                <ArrowDownTrayIcon className="h-5 w-5" />
+              </Tooltip>
+            </Button>
+          </DropdownTrigger>
+          <DropdownMenu aria-label="Export actions">
+            <DropdownItem key="excel" startContent={<span className="text-green-600 font-bold w-8">XLS</span>}>
+              Xuất Excel
+            </DropdownItem>
+            <DropdownItem key="pdf" startContent={<span className="text-red-600 font-bold w-8">PDF</span>}>
+              Xuất PDF
+            </DropdownItem>
+            <DropdownItem key="word" startContent={<span className="text-blue-600 font-bold w-8">DOC</span>}>
+              Xuất Word
+            </DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
 
-        <Button className="flex-1 md:flex-none bg-blue-600 dark:bg-primary text-white hover:bg-blue-700 h-10 px-6 font-bold">
-          <BookmarkIcon className="mr-2 h-5 w-5" />
-          Lưu
-        </Button>
+        <Tooltip content="In danh sách này" color="secondary">
+          <Button
+            isIconOnly
+            color="secondary"
+            variant="flat"
+            className="h-10 w-10 min-w-0 font-bold"
+          >
+            <PrinterIcon className="h-5 w-5" />
+          </Button>
+        </Tooltip>
       </div>
     </div>
   );
