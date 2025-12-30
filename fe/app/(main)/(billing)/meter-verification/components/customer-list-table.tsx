@@ -38,30 +38,30 @@ export const CustomerListTable = ({ data }: CustomerListTableProps) => {
     const renderCell = (item: CustomerRecord, columnKey: string) => {
         switch (columnKey) {
             case "#":
-                return <span className="text-gray-500">{data.indexOf(item) + 1}</span>;
+                return <span className="text-gray-500 dark:text-white">{data.indexOf(item) + 1}</span>;
             case "code":
-                return <span className="font-bold text-gray-800">{item.code}</span>;
+                return <span className="font-bold text-gray-800 dark:text-white">{item.code}</span>;
             case "name":
-                return <span className="text-gray-900">{item.name}</span>;
+                return <span className="text-gray-900 dark:text-white">{item.name}</span>;
             case "oldReadDate":
-                return <span className="text-gray-500">{item.oldReadDate}</span>;
+                return <span className="text-gray-500 dark:text-white">{item.oldReadDate}</span>;
             case "readDate":
-                return <span className="text-gray-500">{item.readDate}</span>;
+                return <span className="text-gray-500 dark:text-white">{item.readDate}</span>;
             case "oldIndex":
-                return <span className="text-gray-600">{item.oldIndex}</span>;
+                return <span className="text-gray-600 dark:text-white">{item.oldIndex}</span>;
             case "newIndex":
-                return <span className="text-gray-600">{item.newIndex}</span>;
+                return <span className="text-gray-600 dark:text-white">{item.newIndex}</span>;
             case "volume":
-                return <span className="text-gray-600 font-medium">{item.volume}</span>;
+                return <span className="text-gray-600 dark:text-white font-medium">{item.volume}</span>;
             case "isCut":
-                return <Checkbox size="sm" radius="sm" isSelected={item.isCut} isDisabled />;
+                return <Checkbox size="sm" radius="sm" isSelected={item.isCut} isDisabled className="dark:opacity-70" />;
             case "image":
                 return (
                     <Button
                         isIconOnly
                         size="sm"
                         variant="light"
-                        className="text-blue-500"
+                        className="text-blue-500 dark:text-primary"
                     >
                         <CameraIcon className="w-5 h-5" />
                     </Button>

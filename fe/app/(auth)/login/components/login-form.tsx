@@ -9,44 +9,35 @@ import {
 
 import PasswordInput from "@/components/ui/PasswordInput";
 import CustomButton from "@/components/ui/CustomButton";
+import CustomInput from "@/components/ui/CustomInput";
 
 const LoginForm = () => {
   const router = useRouter();
 
   return (
-    <div className="w-full md:w-1/2 h-full bg-white flex items-center justify-center p-4 md:p-8">
+    <div className="w-full md:w-1/2 h-full bg-white dark:bg-zinc-900 flex items-center justify-center p-4 md:p-8">
       <div className="w-full max-w-sm md:max-w-md">
-        <h2 className="text-2xl md:text-3xl font-bold text-black-900 mb-6 md:mb-8 text-center">
+        <h2 className="text-2xl md:text-3xl font-bold text-black-900 dark:text-white mb-6 md:mb-8 text-center">
           Đăng nhập
         </h2>
         <Form className="space-y-4 md:space-y-3">
-          <h3 className="text-sm font-medium text-gray-900 mb-0">Tên đăng nhập</h3>
-          <Input
+          <CustomInput
             isRequired
             label="Nhập tên đăng nhập"
-            labelPlacement="inside"
             endContent={
               <div className="flex items-center h-full">
-                <UserIcon className="w-5 h-5 text-gray-400" />
+                <UserIcon className="w-5 h-5 text-gray-400 dark:text-zinc-500" />
               </div>
             }
-            classNames={{
-              label: "text-sm font-medium text-gray-700",
-              input: "text-gray-900",
-              inputWrapper:
-                "border border-gray-300 bg-white hover:border-gray-400",
-            }}
           />
-          <h3 className="text-sm font-medium text-gray-900 mb-0">Mật khẩu</h3>
           <PasswordInput
             isRequired
             label="Nhập mật khẩu"
-            labelPlacement="inside"
             classNames={{
-              label: "text-sm font-medium text-gray-700",
-              input: "text-gray-900",
+              label: "text-sm font-medium text-gray-700 dark:text-zinc-400 font-bold",
+              input: "text-gray-900 dark:text-white",
               inputWrapper:
-                "border border-gray-300 bg-white hover:border-gray-400",
+                "border border-gray-300 dark:border-zinc-800 bg-white dark:bg-zinc-800/50 hover:border-gray-400 dark:hover:border-zinc-700 h-12",
             }}
           />
 
@@ -55,21 +46,20 @@ const LoginForm = () => {
               <CustomButton
                 color="primary"
                 type="submit"
-                className="w-full bg-blue-600 text-white md:h-10"
+                className="w-full bg-blue-600 dark:bg-primary text-white md:h-12 font-bold"
                 startContent={
                   <ArrowRightStartOnRectangleIcon className="w-5 h-5" />
                 }
               >
                 Đăng nhập
               </CustomButton>
-
             </div>
           </div>
 
           <div className="w-full flex justify-center pt-2">
             <Link
               href="/forgot-password"
-              className="text-sm text-blue-600 hover:text-blue-700"
+              className="text-sm text-blue-600 dark:text-primary hover:text-blue-700 dark:hover:text-primary-400 font-medium"
             >
               Quên mật khẩu?
             </Link>

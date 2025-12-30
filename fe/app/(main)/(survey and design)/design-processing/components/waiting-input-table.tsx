@@ -5,6 +5,7 @@ import { Chip, Link, Tooltip } from "@heroui/react";
 import NextLink from "next/link";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import { ArrowPathIcon } from "@heroicons/react/24/solid";
+import { DarkGreenChip, DarkRedChip, DarkWhiteChip } from "@/config/chip.cl";
 
 interface WaitingInputTableProps {
     data: any[];
@@ -30,30 +31,30 @@ export const WaitingInputTable = ({ data, onRestore }: WaitingInputTableProps) =
         switch (columnKey) {
             case "code":
                 return (
-                    <Link as={NextLink} href="#" className="font-bold text-blue-600 hover:underline hover:text-blue-800">
+                    <Link as={NextLink} href="#" className="font-bold text-blue-600 hover:underline hover:text-blue-800 dark:text-primary dark:hover:text-primary-600">
                         {cellValue}
                     </Link>
                 );
             case "customerName":
-                return <span className="font-bold text-gray-900">{cellValue}</span>;
+                return <span className="font-bold text-gray-900 dark:text-foreground">{cellValue}</span>;
             case "status":
                 if (cellValue === "pending_restore") {
                     return (
-                        <Chip variant="flat" color="success" size="sm" className="font-bold">
+                        <Chip variant="flat" color="success" size="sm" className={`font-bold ${DarkGreenChip}`}>
                             Chờ khôi phục
                         </Chip>
                     );
                 }
                 if (cellValue === "rejected") {
                     return (
-                        <Chip variant="flat" color="danger" size="sm" className="font-bold">
+                        <Chip variant="flat" color="danger" size="sm" className={`font-bold ${DarkRedChip}`}>
                             Từ chối
                         </Chip>
                     );
                 }
                 if (cellValue === "none") {
                     return (
-                        <Chip variant="flat" color="default" size="sm" className="font-bold bg-gray-100 text-gray-400">
+                        <Chip variant="flat" color="default" size="sm" className={`font-bold ${DarkWhiteChip}`}>
                             Không có
                         </Chip>
                     );
@@ -64,14 +65,14 @@ export const WaitingInputTable = ({ data, onRestore }: WaitingInputTableProps) =
                     <div className="flex justify-center">
                         <Tooltip content="Khôi phục" color="primary">
                             <ArrowPathIcon
-                                className="w-6 h-6 text-blue-600 cursor-pointer hover:rotate-180 transition-transform duration-500"
+                                className="w-6 h-6 text-blue-600 dark:text-primary cursor-pointer hover:rotate-180 transition-transform duration-500"
                                 onClick={() => onRestore?.(item)}
                             />
                         </Tooltip>
                     </div>
                 );
             case "stt":
-                return <span className="text-gray-400">{cellValue}</span>;
+                return <span className="text-black dark:text-white">{data.indexOf(item) + 1}</span>;
             default:
                 return cellValue;
         }

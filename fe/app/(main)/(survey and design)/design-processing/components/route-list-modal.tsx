@@ -44,16 +44,16 @@ export const RouteListModal = ({ isOpen, onOpenChange }: RouteListModalProps) =>
             size="3xl"
             radius="sm"
             classNames={{
-                header: "bg-gradient-to-b from-[#f9f9f9] to-[#ececec] py-2 px-4 min-h-[40px]",
+                header: "bg-gradient-to-b from-[#f9f9f9] to-[#ececec] dark:from-default-100 dark:to-default-50 py-2 px-4 min-h-[40px] border-b border-divider",
                 body: "p-4",
-                closeButton: "top-2 right-2 text-black hover:bg-gray-200 p-1 rounded-sm",
+                closeButton: "top-2 right-2 text-black dark:text-foreground hover:bg-gray-200 dark:hover:bg-default-200 p-1 rounded-sm",
             }}
         >
             <ModalContent>
                 {(onClose) => (
                     <>
                         <ModalHeader className="flex flex-col gap-1">
-                            <span className="text-[14px] font-bold text-[#333]">Chọn từ danh sách lộ trình</span>
+                            <span className="text-[14px] font-bold text-[#333] dark:text-foreground">Chọn từ danh sách lộ trình</span>
                         </ModalHeader>
                         <ModalBody>
                             <div className="flex items-center gap-4 mb-4 justify-center">
@@ -64,7 +64,7 @@ export const RouteListModal = ({ isOpen, onOpenChange }: RouteListModalProps) =>
                                     size="sm"
                                     className="max-w-[400px]"
                                     classNames={{
-                                        inputWrapper: "h-8 border-[#ccc] min-h-unit-8",
+                                        inputWrapper: "h-8 border-[#ccc] dark:border-divider min-h-unit-8",
                                     }}
                                 />
                             </div>
@@ -74,9 +74,9 @@ export const RouteListModal = ({ isOpen, onOpenChange }: RouteListModalProps) =>
                                     aria-label="Route list table"
                                     removeWrapper
                                     classNames={{
-                                        th: "bg-[#eef2f8] text-[#555] font-bold text-[13px] h-9 py-0",
-                                        td: "py-2 text-[13px] group-hover:bg-[#f5f8ff] cursor-pointer",
-                                        tr: "hover:bg-[#f5f8ff] transition-colors",
+                                        th: "bg-[#eef2f8] dark:bg-default-100 text-[#555] dark:text-default-600 font-bold text-[13px] h-9 py-0",
+                                        td: "py-2 text-[13px] group-hover:bg-[#f5f8ff] dark:group-hover:bg-default-50/50 cursor-pointer",
+                                        tr: "hover:bg-[#f5f8ff] dark:hover:bg-default-50 transition-colors",
                                     }}
                                 >
                                     <TableHeader>
@@ -87,9 +87,9 @@ export const RouteListModal = ({ isOpen, onOpenChange }: RouteListModalProps) =>
                                     <TableBody>
                                         {data.map((item) => (
                                             <TableRow key={item.id}>
-                                                <TableCell className="font-bold text-blue-700">{item.code}</TableCell>
-                                                <TableCell>{item.name}</TableCell>
-                                                <TableCell>{item.branch}</TableCell>
+                                                <TableCell className="font-bold text-blue-700 dark:text-primary">{item.code}</TableCell>
+                                                <TableCell className="text-foreground">{item.name}</TableCell>
+                                                <TableCell className="text-default-600">{item.branch}</TableCell>
                                             </TableRow>
                                         ))}
                                     </TableBody>

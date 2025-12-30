@@ -3,6 +3,7 @@
 import { GenericDataTable } from '@/components/ui/GenericDataTable'
 import { Chip } from '@heroui/react';
 import React from 'react'
+import { DarkGreenChip } from '@/config/chip.cl';
 
 const PaymentHistory = () => {
     const paymentHistoryData = [
@@ -20,15 +21,15 @@ const PaymentHistory = () => {
     const renderCell = (item: any, columnKey: string) => {
         switch (columnKey) {
             case "amount":
-                return <span className="font-bold text-gray-800">{item.amount}</span>;
+                return <span className="font-bold text-gray-800 dark:text-white">{item.amount}</span>;
             case "status":
                 return (
-                    <Chip size="sm" variant="flat" color="success" className="font-medium bg-green-50 text-green-600 border-none">
+                    <Chip size="sm" variant="flat" color="success" className={`font-medium border-none ${DarkGreenChip}`}>
                         {item.status}
                     </Chip>
                 );
             default:
-                return <span className="text-gray-600">{item[columnKey]}</span>;
+                return <span className="text-gray-600 dark:text-white">{item[columnKey]}</span>;
         }
     };
 

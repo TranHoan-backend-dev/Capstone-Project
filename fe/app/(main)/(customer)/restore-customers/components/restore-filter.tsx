@@ -26,14 +26,14 @@ export const RestoreFilter = ({ periodData }: RestoreFilterProps) => {
                         label="Lưu"
                         icon={<CheckIcon className="w-4 h-4" />}
                         color="success"
-                        className="bg-green-500 hover:bg-green-600 mr-2"
+                        className="bg-green-500 hover:bg-green-600 dark:shadow-md dark:shadow-success/40 mr-2"
                         onPress={() => { }}
                     />
                     <FilterActionButton
                         label="Hủy"
                         icon={<XMarkIcon className="w-4 h-4" />}
                         color="danger"
-                        className="bg-red-500 hover:bg-red-600 mr-2"
+                        className="bg-red-500 hover:bg-red-600 dark:shadow-md dark:shadow-danger/40 mr-2"
                         onPress={() => { }}
                     />
                     <FilterButton />

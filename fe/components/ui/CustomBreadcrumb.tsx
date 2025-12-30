@@ -15,12 +15,12 @@ interface CustomBreadcrumbProps {
 
 export const CustomBreadcrumb = ({ items }: CustomBreadcrumbProps) => {
     return (
-        <Breadcrumbs variant="light" size="sm" className="text-gray-400">
+        <Breadcrumbs variant="light" size="sm" className="text-default-400">
             {items.map((item, index) => (
                 <BreadcrumbItem
                     key={index}
                     href={item.href}
-                    className={`${item.isCurrent ? "font-bold text-[#2563eb]" : ""}`}
+                    className={`${item.isCurrent ? "font-bold text-primary" : ""}`}
                 >
                     {item.label}
                 </BreadcrumbItem>

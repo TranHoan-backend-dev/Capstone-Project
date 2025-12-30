@@ -29,7 +29,7 @@ const RootLayout = async ({
           fontSans.variable
         )}
       >
-        <Providers>{children}</Providers>
+        <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>{children}</Providers>
       </body>
     </html>
   );

@@ -5,7 +5,7 @@ import { Card, CardBody, Button, ButtonProps } from "@heroui/react";
 import { FunnelIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 
 export const FilterLabel = ({ children }: { children: React.ReactNode }) => (
-    <label className="text-[11px] font-semibold ml-1 uppercase tracking-wider block mb-1">
+    <label className="text-[11px] font-semibold text-default-500 ml-1 uppercase tracking-wider block mb-1">
         {children}
     </label>
 );
@@ -38,21 +38,21 @@ export const GenericSearchFilter = ({
     const [isOpen, setIsOpen] = React.useState(defaultOpen);
 
     return (
-        <Card shadow="sm" className="border-none rounded-xl bg-white overflow-hidden transition-all duration-300">
+        <Card shadow="sm" className="border-none rounded-xl bg-content1 overflow-hidden transition-all duration-300">
             <CardBody className="p-0">
                 <div
                     role={isCollapsible ? "button" : undefined}
                     onClick={() => isCollapsible && setIsOpen(!isOpen)}
-                    className={`p-6 flex items-center justify-between transition-colors ${isCollapsible ? "cursor-pointer select-none hover:bg-gray-50/50" : ""}`}
+                    className={`p-6 flex items-center justify-between transition-colors ${isCollapsible ? "cursor-pointer select-none" : ""}`}
                 >
                     <div className="flex items-center gap-3">
-                        <div className="text-blue-600">
+                        <div className="text-primary">
                             {icon}
                         </div>
-                        <h2 className="text-lg font-bold tracking-tight text-gray-800">{title}</h2>
+                        <h2 className="text-lg font-bold tracking-tight text-foreground">{title}</h2>
                     </div>
                     {isCollapsible && (
-                        <div className="text-gray-400">
+                        <div className="text-default-400">
                             <ChevronDownIcon className={`w-5 h-5 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
                         </div>
                     )}
@@ -70,7 +70,7 @@ export const GenericSearchFilter = ({
                             <Button
                                 color="primary"
                                 startContent={<FunnelIcon className="w-4 h-4" />}
-                                className="px-8 h-11 text-sm font-bold bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-100 rounded-lg"
+                                className="px-8 h-11 text-sm font-bold shadow-md shadow-primary/20 rounded-lg"
                                 onPress={onFilter}
                                 {...filterButtonProps}
                             >

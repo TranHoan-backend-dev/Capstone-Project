@@ -27,6 +27,7 @@ const PasswordInput = ({
       placeholder={placeholder}
       type={showPassword ? "text" : "password"}
       label={label}
+      labelPlacement="inside"
       endContent={
         <div className="flex items-center h-full">
           <button
@@ -36,10 +37,10 @@ const PasswordInput = ({
             onClick={togglePasswordVisibility}
           >
             {showPassword ? (
-            <EyeSlashIcon className="w-5 h-5 text-gray-400" />
-          ) : (
-            <EyeIcon className="w-5 h-5 text-gray-400" />
-          )}
+              <EyeSlashIcon className="w-5 h-5 text-default-400" />
+            ) : (
+              <EyeIcon className="w-5 h-5 text-default-400" />
+            )}
           </button>
         </div>
       }

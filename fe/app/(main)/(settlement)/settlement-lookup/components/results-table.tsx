@@ -1,9 +1,11 @@
 "use client";
 
 import React from "react";
-import { Chip, Link } from "@heroui/react";
+import { Chip, Link, Tooltip, Button } from "@heroui/react";
 import NextLink from "next/link";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
+import { DarkGreenChip, DarkRedChip } from "@/config/chip.cl";
+import { CalculatorIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
 
 interface SettlementTableProps {
     data: any[];
@@ -26,42 +28,57 @@ export const ResultsTable = ({ data }: SettlementTableProps) => {
 
         switch (columnKey) {
             case "no":
-                return <span className="font-medium text-gray-400">{data.indexOf(item) + 1}</span>;
+                return <span className="font-medium text-black dark:text-white">{data.indexOf(item) + 1}</span>;
             case "code":
                 return (
-                    <Link as={NextLink} href="#" className="font-bold text-blue-600 hover:underline hover:text-blue-800">
+                    <Link as={NextLink} href="#" className="font-bold text-blue-600 hover:underline hover:text-blue-800 dark:text-primary dark:hover:text-primary-600">
                         {cellValue}
                     </Link>
                 );
             case "customerName":
-                return <span className="font-bold text-gray-900">{cellValue}</span>;
+                return <span className="font-bold text-gray-900 dark:text-foreground">{cellValue}</span>;
             case "status":
                 return (
                     <Chip
                         variant="flat"
                         size="sm"
+                        color={
+                            cellValue === "Đã duyệt dự toán"
+                                ? "success"
+                                : "danger"
+                        }
                         className={
                             cellValue === "Đã duyệt dự toán"
-                                ? "bg-[#e2f2ea] text-[#10a345] border-none font-medium px-2"
-                                : "bg-[#ffeceb] text-[#ff4d4f] border-none font-medium px-2"
+                                ? `border-none font-medium px-2 ${DarkGreenChip}`
+                                : `border-none font-medium px-2 ${DarkRedChip}`
                         }
                     >
                         {cellValue}
                     </Chip>
                 );
             case "actions":
+                const actions = [
+                    { content: "Quyết toán", icon: CalculatorIcon, className: "text-blue-600 dark:text-primary hover:bg-blue-50 dark:hover:bg-blue-900/30" },
+                    { content: "Chỉnh sửa", icon: PencilSquareIcon, className: "text-amber-500 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/30" },
+                ];
                 return (
-                    <div className="flex justify-center gap-3">
-                        <Link href="#" className="text-blue-600 text-sm hover:underline">
-                            Quyết toán
-                        </Link>
-                        <Link href="#" className="text-blue-600 text-sm hover:underline">
-                            Chỉnh sửa
-                        </Link>
+                    <div className="flex justify-center items-center gap-1">
+                        {actions.map((action, idx) => (
+                            <Tooltip key={idx} content={action.content} closeDelay={0} color={idx % 2 == 0 ? "primary" : "warning"}>
+                                <Button
+                                    isIconOnly
+                                    variant="light"
+                                    size="sm"
+                                    className={action.className}
+                                >
+                                    <action.icon className="w-5 h-5" />
+                                </Button>
+                            </Tooltip>
+                        ))}
                     </div>
                 );
             default:
-                return <span className="text-gray-600">{cellValue}</span>;
+                return <span className="text-gray-600 dark:text-default-600">{cellValue}</span>;
         }
     };
 

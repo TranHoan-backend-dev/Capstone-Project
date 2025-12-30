@@ -17,6 +17,7 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Sidebar from "./sidebar";
 import NotificationDropdown from "./NotificationDropdown";
+import { ThemeSwitch } from "../ui/theme-switch";
 
 export interface SubMenuItemChild {
   key: string;
@@ -86,7 +87,7 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
       <HeroUINavbar
         isBordered
         maxWidth="full"
-        className="bg-white px-4 md:px-6"
+        className="px-4 md:px-6"
         classNames={{
           wrapper: "max-w-full px-0",
         }}
@@ -94,19 +95,19 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
         <NavbarContent className="md:hidden" justify="start">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-default-100 rounded-lg transition-colors"
           >
-            <Bars3Icon className="w-6 h-6 text-blue-600" />
+            <Bars3Icon className="w-6 h-6 text-primary" />
           </button>
           <NavbarBrand className="ml-2">
-            <span className="text-lg font-bold text-gray-900">CRM</span>
+            <span className="text-lg font-bold">CRM</span>
           </NavbarBrand>
         </NavbarContent>
 
         <NavbarContent className="hidden md:flex flex-1 gap-8" justify="start">
           <NavbarBrand className="px-4">
-            <Bars3Icon className="w-8 h-8 text-blue-600" />
-            <span className="text-xl font-bold text-gray-900 ml-2">CRM</span>
+            <Bars3Icon className="w-8 h-8 text-primary" />
+            <span className="text-xl font-bold ml-2">CRM</span>
           </NavbarBrand>
 
           <div className="hidden md:flex items-center gap-6 font-bold">
@@ -126,8 +127,8 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
                     href={item.href || "#"}
                     onClick={() => handleMenuClick(item.key)}
                     className={`text-sm px-3 py-2 whitespace-nowrap rounded transition-colors cursor-pointer ${isActive
-                      ? "bg-blue-200 text-blue-800 font-medium"
-                      : "text-gray-700 hover:text-gray-900 hover:bg-blue-100"
+                      ? "bg-primary-100 text-primary-800 dark:text-white font-medium"
+                      : "text-foreground-700 hover:bg-default-100"
                       }`}
                   >
                     {item.label}
@@ -138,15 +139,16 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
           </div>
         </NavbarContent>
 
-        <NavbarContent as="div" justify="end" className="flex-none gap-2">
+        <NavbarContent as="div" justify="end" className="flex-none gap-4">
           {userName && (
             <>
+              <ThemeSwitch />
               <NotificationDropdown />
 
               {/* Desktop version */}
               <Dropdown placement="bottom-end" className="hidden md:block">
                 <DropdownTrigger>
-                  <div className="flex items-center gap-1 px-3 py-2 cursor-pointer rounded-lg transition-colors hover:bg-gray-100">
+                  <div className="flex items-center gap-1 px-3 py-2 cursor-pointer rounded-lg transition-colors hover:bg-default-100">
                     <Tooltip
                       content={userName}
                       placement="bottom"
@@ -154,12 +156,12 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
                       className="max-w-xs"
                     >
                       <div className="flex flex-col items-center max-w-[120px]">
-                        <span className="text-black text-sm truncate w-full font-bold">
+                        <span className="text-foreground text-sm truncate w-full font-bold">
                           {userName}
                         </span>
                       </div>
                     </Tooltip>
-                    <ChevronDownIcon className="w-4 h-4 text-gray-500 flex-shrink-0" />
+                    <ChevronDownIcon className="w-4 h-4 text-default-500 flex-shrink-0" />
                   </div>
                 </DropdownTrigger>
                 <DropdownMenu aria-label="User menu" variant="flat">
@@ -167,7 +169,7 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
                     key="profile"
                     as={Link}
                     href="/profile"
-                    className={`${pathname === "/profile" ? "bg-blue-100" : ""
+                    className={`${pathname === "/profile" ? "bg-primary-100 text-primary-800 dark:text-primary-200" : ""
                       }`}
                   >
                     Thông tin cá nhân
@@ -176,7 +178,7 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
                     key="change-password"
                     as={Link}
                     href="/change-password"
-                    className={`${pathname === "/change-password" ? "bg-blue-100" : ""
+                    className={`${pathname === "/change-password" ? "bg-primary-100 text-primary-800 dark:text-primary-200" : ""
                       }`}
                   >
                     Đổi mật khẩu
@@ -195,9 +197,9 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
               <div className="md:hidden flex items-center">
                 <Dropdown placement="bottom-end">
                   <DropdownTrigger>
-                    <div className="min-w-10 p-1 cursor-pointer rounded-full hover:bg-blue-50 transition-colors">
-                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                        <span className="text-blue-600 font-semibold text-sm">
+                    <div className="min-w-10 p-1 cursor-pointer rounded-full hover:bg-primary-50 transition-colors">
+                      <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+                        <span className="text-primary-600 font-semibold text-sm">
                           {userName.charAt(0).toUpperCase()}
                         </span>
                       </div>
@@ -208,7 +210,7 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
                       key="profile"
                       as={Link}
                       href="/profile"
-                      className={`${pathname === "/profile" ? "bg-blue-100" : ""
+                      className={`${pathname === "/profile" ? "bg-primary-100 text-primary-800 dark:text-primary-200" : ""
                         }`}
                     >
                       Thông tin cá nhân
@@ -217,7 +219,7 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
                       key="change-password"
                       as={Link}
                       href="/change-password"
-                      className={`${pathname === "/change-password" ? "bg-blue-100" : ""
+                      className={`${pathname === "/change-password" ? "bg-primary-100 text-primary-800 dark:text-primary-200" : ""
                         }`}
                     >
                       Đổi mật khẩu

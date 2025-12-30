@@ -46,24 +46,30 @@ export const FilterForm = ({
   };
 
   return (
-    <div className="rounded-lg bg-white p-4 md:p-6 shadow-sm">
-      <h1 className="mb-4 md:mb-6 text-lg md:text-xl font-semibold">{title}</h1>
-      <div className="grid gap-4 md:gap-6 md:grid-cols-2">
-        <div className="space-y-4 md:space-y-6">
+    <div className="rounded-xl bg-white dark:bg-zinc-900 p-4 md:p-8 shadow-sm border border-gray-100 dark:border-zinc-800">
+      <h1 className="mb-6 md:mb-8 text-xl md:text-2xl font-bold dark:text-white">{title}</h1>
+      <div className="grid gap-6 md:gap-8 md:grid-cols-2">
+        <div className="space-y-6 md:space-y-8">
           <div className="space-y-2">
             <Select
               label="Chi nhánh"
               labelPlacement="outside"
-              size="sm"
+              size="md"
+              variant="bordered"
               placeholder="Chọn thành phố"
-              className="w-full md:w-[500px] text-sm rounded-md"
+              className="w-full md:w-[500px]"
+              classNames={{
+                trigger: "bg-white dark:bg-zinc-800 border-gray-200 dark:border-zinc-700 h-10",
+                label: "text-sm font-bold text-gray-700 dark:text-zinc-300",
+                value: "dark:text-white"
+              }}
               selectedKeys={filters.branch ? [filters.branch] : []}
               onSelectionChange={(keys) => {
                 const selected = Array.from(keys)[0] as string;
                 handleFilterChange("branch", selected);
               }}
             >
-              <SelectItem key="nam-dinh" textValue="Thành phố Nam Định">
+              <SelectItem key="nam-dinh" textValue="Thành phố Nam Định" className="dark:text-white">
                 Thành phố Nam Định
               </SelectItem>
             </Select>
@@ -74,7 +80,7 @@ export const FilterForm = ({
             label="Ngày lập"
           />
         </div>
-        <div className="grid gap-4 md:gap-6">
+        <div className="grid gap-6 md:gap-8">
           <div className="flex justify-between items-center gap-4">
             <div className="w-full md:w-auto">
               <DateRangePicker
@@ -92,22 +98,28 @@ export const FilterForm = ({
             <Input
               label="Nhân viên KS"
               labelPlacement="outside"
-              size="sm"
+              size="md"
+              variant="bordered"
               placeholder="Nhập tên nhân viên KS"
               value={filters.surveyStaff || ""}
               onValueChange={(value) =>
                 handleFilterChange("surveyStaff", value)
               }
               className="w-full md:w-[575px]"
+              classNames={{
+                inputWrapper: "bg-white dark:bg-zinc-800 border-gray-200 dark:border-zinc-700 h-10",
+                label: "text-sm font-bold text-gray-700 dark:text-zinc-300",
+                input: "dark:text-white"
+              }}
             />
           ) : (
             <div className="invisible h-[56px]" />
           )}
         </div>
       </div>
-      <div className="mt-6 flex justify-end">
-        <Button className="bg-blue-600 text-white hover:bg-blue-700">
-          <DocumentChartBarIcon className="mr-2 h-4 w-4" />
+      <div className="mt-8 flex justify-end">
+        <Button className="bg-blue-600 dark:bg-primary text-white hover:bg-blue-700 h-11 px-8 font-bold">
+          <DocumentChartBarIcon className="mr-2 h-5 w-5" />
           Báo cáo
         </Button>
       </div>

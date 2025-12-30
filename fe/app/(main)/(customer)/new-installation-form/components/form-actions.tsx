@@ -10,7 +10,7 @@ import {
 
 export const FormActions = () => {
     return (
-        <div className="flex justify-between items-center pt-8 border-t border-gray-100">
+        <div className="flex justify-between items-center pt-8 border-t border-gray-100 dark:border-divider">
             <div className="flex gap-3">
                 <Button
                     color="primary"
@@ -29,7 +29,7 @@ export const FormActions = () => {
             </div>
             <div className="flex gap-3">
                 <Button
-                    className="bg-gray-100 text-gray-700 font-bold px-6 shadow-none border border-gray-200 h-9 shrink-0"
+                    className="bg-gray-100 dark:bg-default-100 text-gray-700 dark:text-foreground font-bold px-6 shadow-none border border-gray-200 dark:border-divider h-9 shrink-0"
                     startContent={<TrashIcon className="w-5 h-5" />}
                     size="md"
                     radius="md"

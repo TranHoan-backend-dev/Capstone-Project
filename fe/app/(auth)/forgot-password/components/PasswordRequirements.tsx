@@ -26,17 +26,19 @@ const PasswordRequirements = ({ password }: PasswordRequirementsProps) => {
   ];
 
   return (
-    <div className="text-xs text-gray-500 bg-blue-50 p-3 rounded border border-blue-100">
-      <p className="font-medium mb-1">Yêu cầu mật khẩu mới:</p>
-      <ul className="space-y-1">
+    <div className="text-xs text-gray-500 dark:text-zinc-400 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-900/30">
+      <p className="font-bold mb-2 text-gray-700 dark:text-zinc-300">Yêu cầu mật khẩu mới:</p>
+      <ul className="space-y-2">
         {requirements.map((req, index) => (
           <li key={index} className="flex items-center">
             <span
-              className={`w-2 h-2 rounded-full mr-2 ${req.met ? "bg-green-500" : req.optional ? "bg-yellow-300" : "bg-gray-300"
+              className={`w-1.5 h-1.5 rounded-full mr-2 ${req.met ? "bg-green-500" : req.optional ? "bg-amber-400" : "bg-gray-300 dark:bg-zinc-600"
                 }`}
             ></span>
-            {req.label}
-            {req.optional && <span className="text-gray-400 ml-1">(khuyến khích)</span>}
+            <span className={req.met ? "text-green-600 dark:text-green-400 font-medium" : ""}>
+              {req.label}
+            </span>
+            {req.optional && <span className="text-gray-400 dark:text-zinc-500 ml-1 italic">(khuyến khích)</span>}
           </li>
         ))}
       </ul>

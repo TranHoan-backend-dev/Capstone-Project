@@ -33,7 +33,7 @@ export const CustomerInfoSection = () => {
 
     return (
         <div className="space-y-6">
-            <h2 className="text-sm font-bold text-blue-600 uppercase tracking-wider">Thông tin khách hàng</h2>
+            <h2 className="text-sm font-bold text-blue-600 dark:text-primary-400 uppercase tracking-wider">Thông tin khách hàng</h2>
             <div className="space-y-4">
                 {mainInputContent.slice(0, 2).map((item, index) => (
                     <div key={index} className="space-y-1">

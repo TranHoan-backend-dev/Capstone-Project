@@ -6,6 +6,7 @@ import NextLink from "next/link";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
+import { DarkBlueChip, DarkGreenChip } from "@/config/chip.cl";
 
 interface OrdersToDesignTableProps {
     data: any[];
@@ -30,26 +31,26 @@ export const OrdersToDesignTable = ({ data, onApprove }: OrdersToDesignTableProp
 
         switch (columnKey) {
             case "no":
-                return <span className="font-medium text-gray-400">{data.indexOf(item) + 1}</span>;
+                return <span className="font-medium text-black dark:text-white">{data.indexOf(item) + 1}</span>;
             case "code":
                 return (
-                    <Link as={NextLink} href="#" className="font-bold text-blue-600 hover:underline hover:text-blue-800">
+                    <Link as={NextLink} href="#" className="font-bold text-blue-600 hover:underline hover:text-blue-800 dark:text-primary dark:hover:text-primary-600">
                         {cellValue}
                     </Link>
                 );
             case "customerName":
-                return <span className="font-bold text-gray-900">{cellValue}</span>;
+                return <span className="font-bold text-gray-900 dark:text-foreground">{cellValue}</span>;
             case "status":
                 if (cellValue === "paid") {
                     return (
-                        <Chip variant="flat" color="success" size="sm" className="font-bold">
+                        <Chip variant="flat" color="success" size="sm" className={`font-bold ${DarkGreenChip}`}>
                             Đã thu tiền
                         </Chip>
                     );
                 }
                 if (cellValue === "processing") {
                     return (
-                        <Chip variant="flat" color="secondary" size="sm" className="bg-blue-100 text-blue-700 font-bold">
+                        <Chip variant="flat" color="secondary" size="sm" className={`font-bold ${DarkBlueChip}`}>
                             Đang xử lý
                         </Chip>
                     );
@@ -60,7 +61,7 @@ export const OrdersToDesignTable = ({ data, onApprove }: OrdersToDesignTableProp
                     <div className="flex justify-center">
                         <Tooltip content="Duyệt" color="success">
                             <CheckCircleIcon
-                                className="w-6 h-6 cursor-pointer text-green-500 hover:text-green-600 transition-colors"
+                                className="w-6 h-6 cursor-pointer text-green-500 dark:text-success hover:text-green-600 transition-colors"
                                 onClick={() => onApprove?.(item)}
                             />
                         </Tooltip>

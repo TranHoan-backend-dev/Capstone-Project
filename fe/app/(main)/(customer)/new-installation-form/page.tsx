@@ -43,7 +43,7 @@ const NewInstallationForm = () => {
     ];
 
     return (
-        <div className="space-y-4 bg-gray-50/50 min-h-screen">
+        <div className="space-y-4 bg-gray-50/50 dark:bg-background min-h-screen">
             <CustomBreadcrumb items={breadcrumbItems} />
 
             <GenericSearchFilter

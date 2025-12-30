@@ -108,14 +108,14 @@ export const ActionsSection = () => {
                             value={content}
                             onValueChange={setContent}
                             classNames={{
-                                inputWrapper: "h-full min-h-[100px] bg-gray-50/30 border-gray-100 focus-within:!border-blue-500 transition-all shadow-sm items-start py-2",
+                                inputWrapper: "h-full min-h-[100px] bg-gray-50/30 dark:bg-default-50/50 border-gray-100 dark:border-divider focus-within:!border-blue-500 dark:focus-within:!border-primary-500 transition-all shadow-sm items-start py-2",
                                 input: "text-[13px] h-full",
                             }}
                         />
                     </div>
                     <div className="flex justify-end">
                         <Button
-                            className="bg-gray-100 text-gray-700 font-bold px-6 shadow-none border border-gray-200 h-9 shrink-0"
+                            className="bg-gray-100 dark:bg-default-100 text-gray-700 dark:text-foreground font-bold px-6 shadow-none border border-gray-200 dark:border-divider h-9 shrink-0 hover:bg-gray-200 dark:hover:bg-default-200"
                             startContent={<TrashIcon className="w-5 h-5" />}
                             size="md"
                             radius="md"
