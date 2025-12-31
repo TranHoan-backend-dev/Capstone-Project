@@ -14,6 +14,20 @@ export interface EstimateItem {
   status: "pending_estimate" | "rejected";
 }
 
+export interface EstimateDetailData {
+  code: string;
+  address: string;
+  registerDate: string;
+  status: string;
+  creator: string;
+  createDate: string;
+  approver: string;
+  approveDate: string;
+  totalPrice: string;
+  note: string;
+}
+
+
 export interface SurveyAssignmentItem {
   id: number;
   code: string;
