@@ -1,9 +1,10 @@
 "use client";
 
 import React from "react";
-import { Input, Select, SelectItem } from "@heroui/react";
+import { Select, SelectItem } from "@heroui/react";
 import { SearchIcon } from "@/components/ui/Icons";
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
+import CustomInput from "@/components/ui/CustomInput";
 
 interface FilterSectionProps {
     branches: { label: string; value: string }[];
@@ -39,12 +40,8 @@ export const FilterSection = ({ branches, areas, districts, wards }: FilterSecti
         >
             {inputFields.map((field) => (
                 <div key={field.label} className="space-y-1">
-                    <Input
+                    <CustomInput
                         label={field.label}
-                        labelPlacement="inside"
-                        variant="bordered"
-                        radius="md"
-                        size="md"
                         className="font-bold"
                     />
                 </div>
@@ -56,7 +53,6 @@ export const FilterSection = ({ branches, areas, districts, wards }: FilterSecti
                         aria-label={field.label}
                         label={field.label}
                         labelPlacement="inside"
-                        defaultSelectedKeys={new Set(["all"])}
                         variant="bordered"
                         radius="md"
                         size="md"

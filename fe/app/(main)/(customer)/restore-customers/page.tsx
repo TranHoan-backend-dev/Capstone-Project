@@ -1,7 +1,7 @@
 import React from "react";
 import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
 import { Metadata } from "next";
-import RestoreCustomers from "./components/restore-customers";
+import RestoreCustomersPage from "./restore-customers";
 
 export const metadata: Metadata = {
     title: 'Khôi phục khách hàng hủy',
@@ -19,7 +19,7 @@ const RestoreCustomerPage = () => {
             />
 
             <div className="space-y-6 pt-2">
-                <RestoreCustomers />
+                <RestoreCustomersPage />
             </div>
         </>
     );

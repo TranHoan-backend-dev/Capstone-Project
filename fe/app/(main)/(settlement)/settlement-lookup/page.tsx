@@ -1,14 +1,14 @@
 import React from "react";
 import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
 import { Metadata } from "next";
-import SettlementLookup from "./components/settlement-lookup";
+import SettlementLookupPage from "./settlement-lookup";
 
 export const metadata: Metadata = {
     title: "Tra cứu quyết toán",
     description: "Tra cứu quyết toán",
 }
 
-const SettlementLookupPage = () => {
+const SettlementLookup = () => {
     return (
         <>
             <CustomBreadcrumb
@@ -18,11 +18,9 @@ const SettlementLookupPage = () => {
                 ]}
             />
 
-            <div className="space-y-6 pt-2">
-                <SettlementLookup />
-            </div>
+            <div className="space-y-6 pt-2"><SettlementLookupPage /></div>
         </>
     );
 };
 
-export default SettlementLookupPage;
+export default SettlementLookup;

@@ -1,14 +1,14 @@
 "use client"
 
 import React, { useMemo, useState } from 'react'
-import { ActionsSection } from './actions-section'
+import { ActionsSection } from './components/actions-section'
 import { FilterSection } from '@/components/ui/FilterSection'
-import { OrdersToDesignTable } from './orders-to-design-table'
-import { ProcessedDesignsTable } from './processed-designs-table'
-import { WaitingInputTable } from './waiting-input-table'
+import { OrdersToDesignTable } from './components/orders-to-design-table'
+import { ProcessedDesignsTable } from './components/processed-designs-table'
+import { WaitingInputTable } from './components/waiting-input-table'
 import { DateValue } from '@heroui/react'
 
-const DesignProcessing = () => {
+const DesignProcessingPage = () => {
   const [keyword, setKeyword] = useState("");
   const [from, setFrom] = useState<DateValue | null | undefined>(null);
   const [to, setTo] = useState<DateValue | null | undefined>(null);
@@ -150,4 +150,4 @@ const DesignProcessing = () => {
   )
 }
 
-export default DesignProcessing
+export default DesignProcessingPage

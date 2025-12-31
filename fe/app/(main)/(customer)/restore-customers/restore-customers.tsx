@@ -1,10 +1,10 @@
 "use client"
 
 import React from 'react'
-import { RestoreFilter } from './restore-filter'
-import { RestoreTable } from './restore-table'
+import { RestoreFilter } from './components/restore-filter'
+import { RestoreTable } from './components/restore-table'
 
-const RestoreCustomers = () => {
+const RestoreCustomersPage = () => {
     const periodData = [
         { label: "T8/2025", value: "T8/2025" },
         { label: "T7/2025", value: "T7/2025" },
@@ -48,4 +48,4 @@ const RestoreCustomers = () => {
     )
 }
 
-export default RestoreCustomers
+export default RestoreCustomersPage
