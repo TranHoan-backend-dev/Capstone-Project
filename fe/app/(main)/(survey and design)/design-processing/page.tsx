@@ -1,13 +1,14 @@
 import React from "react";
 import { Metadata } from "next";
 import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
+import DesignProcessingPage from "./design-processing-page";
 
 export const metadata: Metadata = {
     title: "Xử lý đơn chờ thiết kế & Thiết kế",
     description: "Xử lý đơn chờ thiết kế & Thiết kế",
 }
 
-const DesignProcessingPage = () => {
+const DesignProcessing = () => {
     return (
         <>
             <CustomBreadcrumb items={[
@@ -23,4 +24,4 @@ const DesignProcessingPage = () => {
     );
 };
 
-export default DesignProcessingPage;
+export default DesignProcessing;
