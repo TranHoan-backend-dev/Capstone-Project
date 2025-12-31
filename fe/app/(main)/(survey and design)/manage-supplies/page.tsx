@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     description: "Trang quản lý và tra cứu các mẫu bốc vật tư vật liệu trong hệ thống CRM.",
 };
 
-export const ManageSupplies = () => {
+const ManageSupplies = () => {
     return (
         <>
             <CustomBreadcrumb items={[
@@ -22,3 +22,6 @@ export const ManageSupplies = () => {
         </>
     );
 }
+
+export default ManageSupplies;
+
