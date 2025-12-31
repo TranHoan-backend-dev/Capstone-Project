@@ -7,6 +7,7 @@ import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import { Chip, Tooltip, Button } from "@heroui/react";
 import { EyeIcon, DocumentTextIcon, ChartBarIcon } from "@heroicons/react/24/outline";
 import { DarkGreenChip } from "@/config/chip.cl";
+import Link from "next/link";
 
 const ConsumptionHistoryPage = () => {
     const params = useParams();
@@ -77,7 +78,7 @@ const ConsumptionHistoryPage = () => {
                 return (
                     <div className="w-full flex justify-center">
                         <Tooltip content="Xem hồ sơ" color="secondary" closeDelay={0}>
-                            <Button isIconOnly variant="light" size="sm" className="text-indigo-600 dark:text-indigo-400">
+                            <Button as={Link} href={`/customers/${id}`} isIconOnly variant="light" size="sm" className="text-indigo-600 dark:text-indigo-400">
                                 <EyeIcon className="w-5 h-5" />
                             </Button>
                         </Tooltip>

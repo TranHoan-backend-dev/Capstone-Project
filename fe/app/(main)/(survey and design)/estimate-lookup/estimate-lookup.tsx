@@ -1,8 +1,10 @@
-import React from 'react'
-import { FilterSection } from './filter-section'
-import { ResultsTable } from './results-table'
+"use client"
 
-const EstimateLookup = () => {
+import React from 'react'
+import { FilterSection } from './components/filter-section'
+import { ResultsTable } from './components/results-table'
+
+const EstimateLookupPage = () => {
     const mockData: any[] = [
         {
             id: 1,
@@ -104,4 +106,4 @@ const EstimateLookup = () => {
     )
 }
 
-export default EstimateLookup
+export default EstimateLookupPage

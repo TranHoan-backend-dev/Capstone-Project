@@ -2,10 +2,10 @@
 
 import { FilterSection } from '@/components/ui/FilterSection'
 import React, { useState } from 'react'
-import { TemplateTable } from './template-table'
+import { TemplateTable } from './components/template-table'
 import { DateValue } from '@heroui/react';
 
-const ManageSettlements = () => {
+const ManageSuppliesPage = () => {
     const [keyword, setKeyword] = useState("");
     const [from, setFrom] = useState<DateValue | null | undefined>(null);
     const [to, setTo] = useState<DateValue | null | undefined>(null);
@@ -25,4 +25,4 @@ const ManageSettlements = () => {
     )
 }
 
-export default ManageSettlements
+export default ManageSuppliesPage
