@@ -86,12 +86,17 @@ export const siteConfig = {
           label: "Xử lý đơn chờ thiết kế & Thiết kế",
           href: "/design-processing",
         },
-                {
+        {
+          key: "assigning-survey",
+          label: "Phân công khảo sát thiết kế",
+          href: "/assigning-survey",
+        },
+        {
           key: "estimate-preparation",
           label: "Lập dự toán",
           href: "/estimate-preparation",
         },
-                {
+        {
           key: "estimate-lookup",
           label: "Tra cứu dự toán",
           href: "/estimate-lookup",
@@ -116,7 +121,7 @@ export const siteConfig = {
           key: "settlement-lookup",
           label: "Tra cứu quyết toán",
           href: "/settlement-lookup",
-        }
+        },
       ],
     },
     {

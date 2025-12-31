@@ -13,3 +13,16 @@ export interface EstimateItem {
   registerDate: string;
   status: "pending_estimate" | "rejected";
 }
+
+export interface SurveyAssignmentItem {
+  id: number;
+  code: string;
+  customerName: string;
+  phone: string;
+  address: string;
+  registrationDate: string;
+  surveyDate: string;
+  surveyorId?: string; 
+  surveyorName?: string;
+  status: "pending" | "assigned";
+}
