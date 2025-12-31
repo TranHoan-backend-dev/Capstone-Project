@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Chip, Link, Tooltip, Button } from "@heroui/react";
+import { Chip, Link, Tooltip, Button, useDisclosure } from "@heroui/react";
 import NextLink from "next/link";
 import {
     BanknotesIcon,
@@ -12,6 +12,9 @@ import {
 } from "@heroicons/react/24/outline";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import { DarkBlueChip, DarkGreenChip, DarkRedChip, DarkYellowChip } from "@/config/chip.cl";
+import { PriceApplicationModal } from "./price-application-modal";
+
+import { MeterChangeHistoryModal } from "./meter-change-history-modal";
 
 interface Customer {
     id: number;
@@ -43,6 +46,9 @@ const statusConfig: Record<string, { className: string }> = {
 };
 
 export const ResultsTable = ({ data }: ResultsTableProps) => {
+    const { isOpen: isPriceOpen, onOpen: onPriceOpen, onOpenChange: onPriceOpenChange } = useDisclosure();
+    const { isOpen: isMeterOpen, onOpen: onMeterOpen, onOpenChange: onMeterOpenChange } = useDisclosure();
+
     const columns = [
         { key: "no", label: "#" },
         { key: "customerCode", label: "Mã KH" },
@@ -53,12 +59,14 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
         { key: "status", label: "Tình trạng" },
         { key: "actions", label: "Thao tác", align: "center" as const },
     ];
-    const actionsItems = [
-        { content: "Áp giá", icon: BanknotesIcon, className: "text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30", href: "#" },
+
+    const actionsItems = (id: number) => [
+        { content: "Áp giá", icon: BanknotesIcon, className: "text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30", onPress: onPriceOpen },
+        // Nút tiêu thụ ở đây là trình bày báo cáo dạng word
         { content: "Tiêu thụ", icon: ChartBarIcon, className: "text-green-600 hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-900/30", href: "#" },
-        { content: "Thay ĐH", icon: ArrowPathRoundedSquareIcon, className: "text-amber-500 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-900/30", href: "#" },
-        { content: "Lịch sử", icon: ClockIcon, className: "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800", href: "#" },
-        { content: "Hồ sơ", icon: UserCircleIcon, className: "text-indigo-600 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-900/30", href: "#" },
+        { content: "Thay ĐH", icon: ArrowPathRoundedSquareIcon, className: "text-amber-500 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-900/30", onPress: onMeterOpen },
+        { content: "Lịch sử", icon: ClockIcon, className: "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800", href: `/customers/${id}/history` },
+        { content: "Hồ sơ", icon: UserCircleIcon, className: "text-indigo-600 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-900/30", href: `/customers/${id}` },
     ];
 
     const renderCell = (item: Customer, columnKey: string) => {
@@ -88,12 +96,13 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
             case "actions":
                 return (
                     <div className="flex items-center justify-center gap-1">
-                        {actionsItems.map((action, idx) => (
+                        {actionsItems(item.id).map((action, idx) => (
                             <Tooltip key={idx} content={action.content} closeDelay={0}>
                                 <Button
                                     isIconOnly
-                                    as={NextLink}
+                                    as={action.href ? NextLink : "button"}
                                     href={action.href}
+                                    onPress={action.onPress}
                                     variant="light"
                                     size="sm"
                                     className={action.className}
@@ -110,25 +119,29 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
     };
 
     return (
-        <GenericDataTable
-            title="Kết quả tìm kiếm"
-            icon={
-                <div className="p-2 bg-blue-50 dark:bg-primary-500/10 rounded-lg text-blue-600 dark:text-primary">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z" />
-                    </svg>
-                </div>
-            }
-            columns={columns}
-            data={data}
-            renderCell={renderCell}
-            isCollapsible
-            paginationProps={{
-                total: 1,
-                initialPage: 1,
-                summary: `${data.length}`,
-            }}
-            headerSummary={`${data.length}`}
-        />
+        <>
+            <GenericDataTable
+                title="Kết quả tìm kiếm"
+                icon={
+                    <div className="p-2 bg-blue-50 dark:bg-primary-500/10 rounded-lg text-blue-600 dark:text-primary">
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z" />
+                        </svg>
+                    </div>
+                }
+                columns={columns}
+                data={data}
+                renderCell={renderCell}
+                isCollapsible
+                paginationProps={{
+                    total: 1,
+                    initialPage: 1,
+                    summary: `${data.length}`,
+                }}
+                headerSummary={`${data.length}`}
+            />
+            <PriceApplicationModal isOpen={isPriceOpen} onOpenChange={onPriceOpenChange} />
+            <MeterChangeHistoryModal isOpen={isMeterOpen} onOpenChange={onMeterOpenChange} />
+        </>
     );
 };

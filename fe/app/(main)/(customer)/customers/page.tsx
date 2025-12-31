@@ -1,7 +1,7 @@
 import React from "react";
 import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
 import { Metadata } from "next";
-import Customers from "./components/customers";
+import Customers from "./customers";
 
 export const metadata: Metadata = {
   title: 'Tra cứu Khách hàng',

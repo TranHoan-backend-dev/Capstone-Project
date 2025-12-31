@@ -1,10 +1,10 @@
 "use client"
 
 import React from 'react'
-import { FilterSection } from './filter-section';
-import { ResultsTable } from './results-table';
+import { FilterSection } from './components/filter-section';
+import { ResultsTable } from './components/results-table';
 
-const SettlementLookup = () => {
+const SettlementLookupPage = () => {
     const mockData = [
         {
             id: "1",
@@ -61,4 +61,4 @@ const SettlementLookup = () => {
     )
 }
 
-export default SettlementLookup
+export default SettlementLookupPage

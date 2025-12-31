@@ -1,14 +1,14 @@
 import React from "react";
 import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
 import { Metadata } from "next";
-import EstimatePreparation from "./components/estimate-preparation-page";
+import EstimatePreparationPage from "./estimate-preparation-page";
 
 export const metadata: Metadata = {
     title: 'Lập dự toán',
     description: 'Trang lập dự toán thiết kế',
 }
 
-const EstimatePreparationPage = () => {
+const EstimatePreparation = () => {
 
     return (
         <>
@@ -18,10 +18,10 @@ const EstimatePreparationPage = () => {
             ]} />
 
             <div className="space-y-6 pt-2">
-                <EstimatePreparation />
+                <EstimatePreparationPage />
             </div>
         </>
     );
 };
 
-export default EstimatePreparationPage;
+export default EstimatePreparation;
