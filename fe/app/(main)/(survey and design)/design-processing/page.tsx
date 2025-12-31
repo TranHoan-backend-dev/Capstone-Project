@@ -1,7 +1,6 @@
 import React from "react";
 import { Metadata } from "next";
 import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
-import DesignProcessing from "./components/design-processing-page";
 
 export const metadata: Metadata = {
     title: "Xử lý đơn chờ thiết kế & Thiết kế",
@@ -18,7 +17,7 @@ const DesignProcessingPage = () => {
             ]} />
 
             <div className="space-y-6 pt-2">
-                <DesignProcessing />
+                <DesignProcessingPage />
             </div>
         </>
     );

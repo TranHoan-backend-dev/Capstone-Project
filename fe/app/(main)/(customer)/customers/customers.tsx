@@ -1,8 +1,8 @@
 "use client"
 
 import React from 'react'
-import { FilterSection } from './filter-section'
-import { ResultsTable } from './results-table'
+import { FilterSection } from './components/filter-section'
+import { ResultsTable } from './components/results-table'
 
 const Customers = () => {
     const branches = [{ label: "Tất cả", value: "all" }];

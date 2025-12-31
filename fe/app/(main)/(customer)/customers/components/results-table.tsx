@@ -62,6 +62,7 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
 
     const actionsItems = (id: number) => [
         { content: "Áp giá", icon: BanknotesIcon, className: "text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30", onPress: onPriceOpen },
+        // Nút tiêu thụ ở đây là trình bày báo cáo dạng word
         { content: "Tiêu thụ", icon: ChartBarIcon, className: "text-green-600 hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-900/30", href: "#" },
         { content: "Thay ĐH", icon: ArrowPathRoundedSquareIcon, className: "text-amber-500 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-900/30", onPress: onMeterOpen },
         { content: "Lịch sử", icon: ClockIcon, className: "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800", href: `/customers/${id}/history` },

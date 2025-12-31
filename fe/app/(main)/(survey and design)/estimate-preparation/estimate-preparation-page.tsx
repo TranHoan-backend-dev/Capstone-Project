@@ -2,10 +2,10 @@
 
 import { FilterSection } from '@/components/ui/FilterSection'
 import React, { useState } from 'react'
-import { ResultsTable } from './results-table'
+import { ResultsTable } from './components/results-table'
 import { DateValue } from '@heroui/react';
 
-const EstimatePreparation = () => {
+const EstimatePreparationPage = () => {
     const mockData: any[] = [
         {
             id: 1,
@@ -64,4 +64,4 @@ const EstimatePreparation = () => {
     )
 }
 
-export default EstimatePreparation
+export default EstimatePreparationPage
