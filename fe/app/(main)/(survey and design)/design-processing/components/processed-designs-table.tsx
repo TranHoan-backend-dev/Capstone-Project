@@ -4,7 +4,7 @@ import React from "react";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import { Link, Tooltip } from "@heroui/react";
 import NextLink from "next/link";
-import { FolderIcon, XCircleIcon, TrashIcon } from "@heroicons/react/24/solid";
+import { DeleteIcon, ProfileIcon, RejectIcon, RedIconColor, BlueYellowIconColor } from "@/config/chip-and-icon";
 
 interface ProcessedDesignsTableProps {
     data: any[];
@@ -40,20 +40,17 @@ export const ProcessedDesignsTable = ({ data, onReject }: ProcessedDesignsTableP
                 return (
                     <div className="flex justify-center items-center gap-5">
                         <Tooltip content="Từ chối" color="danger">
-                            <XCircleIcon
-                                className="w-6 h-6 text-red-500 dark:text-danger cursor-pointer hover:text-red-600 dark:hover:text-danger-400 transition-colors"
-                                onClick={() => onReject?.(item)}
-                            />
+                            <RejectIcon className={RedIconColor} onClick={() => onReject?.(item)} />
                         </Tooltip>
                         <Tooltip content="Xóa" color="danger">
-                            <TrashIcon className="w-5 h-5 text-red-500 dark:text-danger cursor-pointer hover:text-red-600 dark:hover:text-danger-400 transition-colors" />
+                            <DeleteIcon className={RedIconColor} />
                         </Tooltip>
                     </div>
                 );
             case "docs":
                 return (
                     <div className="flex justify-center">
-                        <FolderIcon className="w-5 h-5 text-blue-500 dark:text-primary-400 cursor-pointer hover:text-blue-700 dark:hover:text-primary-600 transition-colors" />
+                        <ProfileIcon className={BlueYellowIconColor} />
                     </div>
                 );
             case "no":

@@ -4,8 +4,7 @@ import React from "react";
 import { Chip, Link, Tooltip, Button } from "@heroui/react";
 import NextLink from "next/link";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import { DarkGreenChip, DarkRedChip } from "@/config/chip.cl";
-import { CalculatorIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
+import { AmberIconColor, BlueYellowIconColor, DarkGreenChip, DarkRedChip, EditIcon, SettlementIcon } from "@/config/chip-and-icon";
 
 interface SettlementTableProps {
     data: any[];
@@ -58,8 +57,8 @@ export const ResultsTable = ({ data }: SettlementTableProps) => {
                 );
             case "actions":
                 const actions = [
-                    { content: "Quyết toán", icon: CalculatorIcon, className: "text-blue-600 dark:text-primary hover:bg-blue-50 dark:hover:bg-blue-900/30" },
-                    { content: "Chỉnh sửa", icon: PencilSquareIcon, className: "text-amber-500 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/30" },
+                    { content: "Quyết toán", icon: SettlementIcon, className: BlueYellowIconColor },
+                    { content: "Chỉnh sửa", icon: EditIcon, className: AmberIconColor },
                 ];
                 return (
                     <div className="flex justify-center items-center gap-1">
