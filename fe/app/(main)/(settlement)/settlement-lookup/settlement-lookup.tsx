@@ -5,7 +5,7 @@ import { FilterSection } from './components/filter-section';
 import { ResultsTable } from './components/results-table';
 
 const SettlementLookupPage = () => {
-    const mockData = [
+    const mockData: any[] = [
         {
             id: "1",
             code: "01025120007",
@@ -13,7 +13,7 @@ const SettlementLookupPage = () => {
             phone: "0355909536",
             address: "Thửa 133, Nghiệp 92/2, Khu CN Hòa Xá, Nam Định",
             registerDate: "01/12/2025",
-            status: "Đã duyệt dự toán",
+            status: "approved_budget",
         },
         {
             id: "2",
@@ -22,7 +22,7 @@ const SettlementLookupPage = () => {
             phone: "0355909536",
             address: "Thửa 132, Nghiệp 92/2, Khu CN Hòa Xá, Nam Định",
             registerDate: "01/12/2025",
-            status: "Đã duyệt dự toán",
+            status: "approved_budget",
         },
         {
             id: "3",
@@ -31,7 +31,7 @@ const SettlementLookupPage = () => {
             phone: "0913575994",
             address: "Xã Nghĩa Phú, Huyện Nam Trực, Nam Định",
             registerDate: "01/12/2025",
-            status: "Đã duyệt dự toán",
+            status: "approved_budget",
         },
         {
             id: "4",
@@ -40,7 +40,7 @@ const SettlementLookupPage = () => {
             phone: "0987654321",
             address: "64/5, Vĩnh Khê, Phường Nam Định, TP. Nam Định",
             registerDate: "27/11/2025",
-            status: "Đã duyệt dự toán",
+            status: "approved_budget",
         },
         {
             id: "5",
@@ -49,7 +49,7 @@ const SettlementLookupPage = () => {
             phone: "0915705720",
             address: "29B, Trần Huy Liệu, P. Thành Nam, TP. Nam Định",
             registerDate: "26/11/2025",
-            status: "Lập lại dự toán",
+            status: "rejected_budget",
         },
     ];
 

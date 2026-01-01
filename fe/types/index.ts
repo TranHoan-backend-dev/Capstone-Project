@@ -14,7 +14,17 @@ export interface EstimateItem {
   status: "pending_estimate" | "rejected";
 }
 
-export interface EstimateDetailData {
+export interface SettlementItem {
+  id: string;
+  code: string;
+  customerName: string;
+  phone: string;
+  address: string;
+  registerDate: string;
+  status: "approved_budget" | "rejected_budget";
+}
+
+export interface StatusDetailData {
   code: string;
   address: string;
   registerDate: string;

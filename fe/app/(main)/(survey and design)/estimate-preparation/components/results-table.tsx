@@ -6,7 +6,7 @@ import NextLink from "next/link";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import { DarkGreenChip, DarkRedChip } from "@/config/chip.cl";
 import { CalculatorIcon } from "@heroicons/react/24/outline";
-import { EstimateDetailData, EstimateItem } from "@/types";
+import { StatusDetailData, EstimateItem } from "@/types";
 import { EstimateDetailModal } from "./estimate-detail-modal";
 
 interface ResultsTableProps {
@@ -30,7 +30,7 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
   const [selectedEstimate, setSelectedEstimate] = useState<EstimateItem | null>(
     null
   );
-  const mapEstimateToModalData = (item: EstimateItem): EstimateDetailData => ({
+  const mapEstimateToModalData = (item: EstimateItem): StatusDetailData => ({
     code: item.code,
     address: item.address,
     registerDate: item.registerDate,
