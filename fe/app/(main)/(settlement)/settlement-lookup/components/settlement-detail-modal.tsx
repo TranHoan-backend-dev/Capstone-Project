@@ -2,10 +2,10 @@
 
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import React from "react";
-import { ModalHeader } from "./modal-header";
-import { InfoRow } from "./info-row";
-import { PriceBox } from "./price-box";
-import { NoteField } from "./note-field";
+import { ModalHeader } from "@/components/popup-status/modal-header";
+import { InfoRow } from "@/components/popup-status/info-row";
+import { PriceBox } from "@/components/popup-status/price-box";
+import { NoteField } from "@/components/popup-status/note-field";
 
 export const SettlementDetailModal = ({ isOpen, onClose, data }: any) => {
   if (!isOpen) return null;
