@@ -3,18 +3,11 @@
 import React from "react";
 import { Chip, Link, Tooltip, Button, useDisclosure } from "@heroui/react";
 import NextLink from "next/link";
-import {
-    BanknotesIcon,
-    ChartBarIcon,
-    ArrowPathRoundedSquareIcon,
-    ClockIcon,
-    UserCircleIcon
-} from "@heroicons/react/24/outline";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import { DarkBlueChip, DarkGreenChip, DarkRedChip, DarkYellowChip } from "@/config/chip.cl";
 import { PriceApplicationModal } from "./price-application-modal";
 
 import { MeterChangeHistoryModal } from "./meter-change-history-modal";
+import { AmberIconColor, BlueYellowIconColor, DarkBlueChip, DarkGreenChip, DarkRedChip, DarkYellowChip, GreenIconColor, HistoryIcon, ProfileIcon, ReplaceWaterMeter, SetPriceIcon, UsageIcon, WhiteIconColor } from "@/config/chip-and-icon";
 
 interface Customer {
     id: number;
@@ -61,12 +54,12 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
     ];
 
     const actionsItems = (id: number) => [
-        { content: "Áp giá", icon: BanknotesIcon, className: "text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30", onPress: onPriceOpen },
+        { content: "Áp giá", icon: SetPriceIcon, className: BlueYellowIconColor, onPress: onPriceOpen },
         // Nút tiêu thụ ở đây là trình bày báo cáo dạng word
-        { content: "Tiêu thụ", icon: ChartBarIcon, className: "text-green-600 hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-900/30", href: "#" },
-        { content: "Thay ĐH", icon: ArrowPathRoundedSquareIcon, className: "text-amber-500 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-900/30", onPress: onMeterOpen },
-        { content: "Lịch sử", icon: ClockIcon, className: "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800", href: `/customers/${id}/history` },
-        { content: "Hồ sơ", icon: UserCircleIcon, className: "text-indigo-600 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-900/30", href: `/customers/${id}` },
+        { content: "Tiêu thụ", icon: UsageIcon, className: GreenIconColor, href: "#" },
+        { content: "Thay ĐH", icon: ReplaceWaterMeter, className: AmberIconColor, onPress: onMeterOpen },
+        { content: "Lịch sử", icon: HistoryIcon, className: WhiteIconColor, href: `/customers/${id}/history` },
+        { content: "Hồ sơ", icon: ProfileIcon, className: BlueYellowIconColor, href: `/customers/${id}` },
     ];
 
     const renderCell = (item: Customer, columnKey: string) => {

@@ -5,12 +5,11 @@ import { Button, Input, Tooltip } from "@heroui/react";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import CustomInput from "@/components/ui/CustomInput";
 import {
-    TrashIcon,
-    PlusIcon,
     DocumentChartBarIcon,
     CheckCircleIcon
 } from "@heroicons/react/24/outline";
 import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
+import { DeleteIcon } from "@/config/chip-and-icon";
 
 export const MaterialCostCard = () => {
     const materials = [
@@ -88,7 +87,7 @@ export const MaterialCostCard = () => {
                             size="sm"
                             className="text-danger hover:bg-danger-50 dark:hover:bg-danger-900/10"
                         >
-                            <TrashIcon className="w-5 h-5" />
+                            <DeleteIcon className="w-5 h-5" />
                         </Button>
                     </Tooltip>
                 );
@@ -116,14 +115,11 @@ export const MaterialCostCard = () => {
             />
 
             <div className="flex flex-wrap gap-3 p-4">
-                <Button color="primary" className="font-bold shadow-md shadow-primary/20" startContent={<PlusIcon className="w-4 h-4" />}>
-                    Thêm dòng mới
+                <Button color="success" className="text-white font-bold ml-auto shadow-md shadow-success/20" startContent={<CheckCircleIcon className="w-4 h-4" />}>
+                    Hoàn tất dự toán
                 </Button>
                 <Button color="primary" className="font-bold shadow-md shadow-primary/20" startContent={<DocumentChartBarIcon className="w-4 h-4" />}>
                     Báo cáo
-                </Button>
-                <Button color="success" className="text-white font-bold ml-auto shadow-md shadow-success/20" startContent={<CheckCircleIcon className="w-4 h-4" />}>
-                    Hoàn tất dự toán
                 </Button>
             </div>
         </div>
