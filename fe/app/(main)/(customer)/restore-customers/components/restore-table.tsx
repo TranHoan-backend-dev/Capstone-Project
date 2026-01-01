@@ -49,7 +49,7 @@ export const RestoreTable = ({ data }: RestoreTableProps) => {
                 return <span className="text-gray-400 dark:text-white">{item.restoreDate}</span>;
             case "period":
                 return (
-                    <span className="font-bold text-[#2563eb] dark:text-primary-400 bg-blue-50 dark:bg-white px-2 py-0.5 rounded text-[11px] border border-blue-100/50 dark:border-primary-500/30">
+                    <span className="font-bold text-blue-600 dark:text-primary-400 bg-blue-50 dark:bg-white px-2 py-0.5 rounded text-[11px] border border-blue-100/50 dark:border-primary-500/30">
                         {item.period}
                     </span>
                 );

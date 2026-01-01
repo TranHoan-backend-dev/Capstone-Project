@@ -62,50 +62,50 @@ export const GenericDataTable = <T extends { id: string | number }>({
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
 
   return (
-    <Card
-      shadow="sm"
-      className="overflow-hidden bg-content1 transition-all duration-300 rounded-t-none rounded-b-lg"
-    >
+    <Card shadow="sm" className="overflow-hidden bg-content1 transition-all duration-300">
       <CardBody className="p-0">
-        {!hideHeader && (
-          <div
-            className={`border-b border-divider transition-colors ${isCollapsible ? "hover:bg-default-100" : ""}`}
-          >
+        <div
+          className={`border-b border-divider transition-colors ${isCollapsible ? "hover:bg-default-100" : ""}`}
+        >
+          {title && (
             <div
               role={isCollapsible ? "button" : undefined}
               onClick={() => isCollapsible && setIsOpen(!isOpen)}
               className={`p-6 flex justify-between items-center ${isCollapsible ? "cursor-pointer select-none" : ""}`}
             >
-              <div className="flex items-center gap-3">
-                <div className="text-primary">{icon}</div>
-                <h2 className="text-lg font-bold text-foreground">{title}</h2>
-              </div>
-              <div className="flex items-center gap-4">
-                {headerSummary && (
-                  <div className="hidden md:block px-3 py-1.5 bg-default-100 rounded-full text-xs font-medium text-default-500 whitespace-nowrap">
-                    Tìm thấy {headerSummary} bản ghi
+              <>
+                <div className="flex items-center gap-3">
+                  <div className="text-primary">
+                    {icon}
                   </div>
-                )}
-                {actions && <div>{actions}</div>}
-                {isCollapsible && (
-                  <div className="text-default-400">
-                    <ChevronDownIcon
-                      className={`w-5 h-5 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
-                    />
-                  </div>
-                )}
-              </div>
+                  <h2 className="text-lg font-bold text-foreground">{title}</h2>
+                </div>
+                <div className="flex items-center gap-4">
+                  {headerSummary && (
+                    <div className="hidden md:block px-3 py-1.5 bg-default-100 rounded-full text-xs font-medium text-default-500 whitespace-nowrap">
+                      Tìm thấy {headerSummary} bản ghi
+                    </div>
+                  )}
+                  {actions && <div>{actions}</div>}
+                  {isCollapsible && (
+                    <div className="text-default-400">
+                      <ChevronDownIcon className={`w-5 h-5 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+                    </div>
+                  )}
+                </div>
+              </>
             </div>
-          </div>
-        )}
-        <div
-          className={`transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? "opacity-100 max-h-[5000px] visible" : "opacity-0 max-h-0 invisible"}`}
-        >
+          )}
+        </div>
+
+        <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? "opacity-100 max-h-[5000px] visible" : "opacity-0 max-h-0 invisible"}`}>
           {topContent && (
-            <div className="p-6 pt-2 border-b border-divider">{topContent}</div>
+            <div className="p-6 pt-2 border-b border-divider">
+              {topContent}
+            </div>
           )}
           <div className="overflow-x-auto">
-            <Table radius="none"
+            <Table
               removeWrapper
               aria-label={title}
               classNames={{
@@ -133,18 +133,11 @@ export const GenericDataTable = <T extends { id: string | number }>({
                 loadingContent={<Spinner label="Loading..." />}
               >
                 {(item) => (
-                  <TableRow
-                    key={item.id}
-                    className="hover:bg-default-50 transition-colors border-divider"
-                  >
+                  <TableRow key={item.id} className="hover:bg-default-50 transition-colors border-divider">
                     {columns.map((column, index) => (
                       <TableCell
                         key={column.key}
-                        className={
-                          index === 0 && column.key !== "selection"
-                            ? "!pl-8"
-                            : ""
-                        }
+                        className={index === 0 && column.key !== "selection" ? "!pl-8" : ""}
                       >
                         {renderCell(item, column.key)}
                       </TableCell>

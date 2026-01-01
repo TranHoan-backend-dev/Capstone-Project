@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Chip, Link, Tooltip, Button } from "@heroui/react";
 import NextLink from "next/link";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import { DarkGreenChip, DarkRedChip } from "@/config/chip.cl";
+import { DarkGreenChip, DarkRedChip } from "@/config/chip-and-icon";
 import { CalculatorIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
 import { SettlementItem, StatusDetailData } from "@/types";
 import { SettlementDetailModal } from "./settlement-detail-modal";

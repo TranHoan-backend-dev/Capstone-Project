@@ -1,9 +1,9 @@
 'use client'
 
-import { ArrowLeftIcon, PencilSquareIcon } from '@heroicons/react/24/solid';
+import { PencilSquareIcon } from '@heroicons/react/24/solid';
 import { Button, Card, CardBody, Chip } from '@heroui/react';
 import React from 'react'
-import { DarkGreenChip } from '@/config/chip.cl';
+import { DarkGreenChip } from '@/config/chip-and-icon';
 
 const CustomerInformation = () => {
     return (

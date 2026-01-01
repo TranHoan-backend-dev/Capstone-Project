@@ -51,6 +51,7 @@ const EstimatePreparationPage = () => {
     return (
         <>
             <FilterSection
+                actions={<></>}
                 title="Bộ lọc"
                 keyword={keyword}
                 from={from}
