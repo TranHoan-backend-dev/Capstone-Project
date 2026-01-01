@@ -69,7 +69,7 @@ export const SurveyAssignmentTable = ({ data }: Props) => {
             onChange={(e) => handleSurveyorChange(item.id, e.target.value)}
           >
             {surveyors.map((surveyor) => (
-              <SelectItem key={surveyor.id} value={surveyor.id}>
+              <SelectItem key={surveyor.id}>
                 {surveyor.name}
               </SelectItem>
             ))}
