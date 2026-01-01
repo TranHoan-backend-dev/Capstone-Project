@@ -4,8 +4,7 @@ import React from "react";
 import { Button, Chip, Link, Tooltip } from "@heroui/react";
 import NextLink from "next/link";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import { CalculatorIcon, PencilSquareIcon, FolderIcon } from "@heroicons/react/24/solid";
-import { DarkBlueChip, DarkGreenChip, DarkRedChip, DarkYellowChip } from "@/config/chip.cl";
+import { DarkBlueChip, DarkGreenChip, DarkRedChip, DarkYellowChip, EditIcon, AmberIconColor, EstimationIcon, ProfileIcon, BlueYellowIconColor, GreenIconColor } from "@/config/chip-and-icon";
 
 interface EstimateItem {
     id: number;
@@ -81,9 +80,9 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
                 );
             case "actions":
                 const actionButtons = [
-                    { content: "Dự toán", color: "success" as const, icon: CalculatorIcon, className: "text-green-600 dark:text-success hover:text-green-700 dark:hover:text-success-600" },
-                    { content: "Chỉnh sửa", color: "warning" as const, icon: PencilSquareIcon, className: "text-amber-500 dark:text-amber-400 hover:text-amber-600 dark:hover:text-amber-300" },
-                    { content: "Hồ sơ", color: "primary" as const, icon: FolderIcon, className: "text-blue-600 dark:text-primary hover:text-blue-800 dark:hover:text-primary-600" },
+                    { content: "Dự toán", color: "success" as const, icon: EstimationIcon, className: GreenIconColor },
+                    { content: "Chỉnh sửa", color: "warning" as const, icon: EditIcon, className: AmberIconColor },
+                    { content: "Hồ sơ", color: "primary" as const, icon: ProfileIcon, className: BlueYellowIconColor },
                 ];
 
                 return (
@@ -95,7 +94,7 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
                                     variant="light"
                                     size="sm"
                                 >
-                                    <btn.icon className={`w-5 h-5 ${btn.className}`} />
+                                    <btn.icon className={btn.className} />
                                 </Button>
                             </Tooltip>
                         ))}

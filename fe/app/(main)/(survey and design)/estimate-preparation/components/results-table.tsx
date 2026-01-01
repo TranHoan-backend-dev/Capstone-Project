@@ -4,8 +4,7 @@ import React from "react";
 import { Chip, Link, Tooltip, Button } from "@heroui/react";
 import NextLink from "next/link";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import { DarkGreenChip, DarkRedChip } from "@/config/chip.cl";
-import { CalculatorIcon } from "@heroicons/react/24/outline";
+import { DarkGreenChip, DarkRedChip, EstimationIcon, GreenIconColor } from "@/config/chip-and-icon";
 import { EstimateItem } from "@/types";
 
 interface ResultsTableProps {
@@ -37,6 +36,8 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
         { key: "actions", label: "Hoạt động", align: "center" as const },
     ];
 
+    const baseStyle = "text-gray-500 dark:text-default-500"
+
     const renderCell = (item: EstimateItem, columnKey: string) => {
         switch (columnKey) {
             case "stt":
@@ -50,11 +51,11 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
             case "customerName":
                 return <span className="font-bold text-gray-900 dark:text-foreground">{item.customerName}</span>;
             case "phone":
-                return <span className="text-gray-500 dark:text-default-500">{item.phone}</span>;
+                return <span className={`${baseStyle}`}>{item.phone}</span>;
             case "address":
-                return <span className="text-gray-500 dark:text-default-500">{item.address}</span>;
+                return <span className={`${baseStyle}`}>{item.address}</span>;
             case "registerDate":
-                return <span className="text-gray-500 dark:text-default-500">{item.registerDate}</span>;
+                return <span className={`${baseStyle}`}>{item.registerDate}</span>;
             case "status":
                 const config = statusMap[item.status];
                 return (
@@ -77,7 +78,7 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
                             variant="light"
                             size="sm"
                         >
-                            <CalculatorIcon className="w-5 h-5 text-green-600 dark:text-success hover:text-green-700 dark:hover:text-success-600" />
+                            <EstimationIcon className={GreenIconColor} />
                         </Button>
                     </Tooltip>
                 );

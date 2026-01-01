@@ -5,7 +5,7 @@ import { Link, Chip, Tooltip, Button } from "@heroui/react";
 import NextLink from "next/link";
 import { PrinterIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import { DarkGreenChip, DarkYellowChip } from "@/config/chip.cl";
+import { BlueYellowIconColor, DarkGreenChip, DarkYellowChip, DeleteIcon, PrintReceiptIcon, RedIconColor } from "@/config/chip-and-icon";
 
 interface RelatedOrdersTableProps {
     data: any[];
@@ -50,8 +50,8 @@ export const RelatedOrdersTable = ({ data }: RelatedOrdersTableProps) => {
                 );
             case "actions":
                 const actionButtons = [
-                    { content: "In biên nhận", icon: PrinterIcon, className: "text-blue-600 hover:bg-blue-50 dark:text-primary dark:hover:bg-primary-900/10" },
-                    { content: "Xóa", icon: TrashIcon, className: "text-danger hover:bg-danger-50 dark:hover:bg-danger-900/10", color: "danger" as const },
+                    { content: "In biên nhận", icon: PrintReceiptIcon, className: BlueYellowIconColor },
+                    { content: "Xóa", icon: DeleteIcon, className: RedIconColor, color: "danger" as const },
                 ];
                 return (
                     <div className="flex items-center gap-2 justify-center">

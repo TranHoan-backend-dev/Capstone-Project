@@ -1,5 +1,0 @@
-export const DarkGreenChip = "dark:bg-green-900 dark:text-white"
-export const DarkBlueChip = "dark:bg-blue-900 dark:text-white"
-export const DarkYellowChip = "dark:bg-amber-400 dark:text-zinc-900"
-export const DarkRedChip = "dark:bg-red-900 dark:text-white"
-export const DarkWhiteChip = "dark:bg-white dark:text-black"

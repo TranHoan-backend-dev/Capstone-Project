@@ -3,12 +3,8 @@
 import React from "react";
 import { Tooltip, Button } from "@heroui/react";
 import NextLink from "next/link";
-import {
-    PencilSquareIcon,
-    TrashIcon,
-    ClipboardDocumentListIcon,
-} from "@heroicons/react/24/outline";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
+import { AmberIconColor, BlueYellowIconColor, DeleteIcon, EditIcon, LoadingMaterialsIcon, RedIconColor } from "@/config/chip-and-icon";
 
 interface MaterialTemplate {
     id: number;
@@ -30,21 +26,23 @@ export const TemplateTable = ({ data }: TemplateTableProps) => {
         { key: "activities", label: "Thao tác", align: "center" as const },
     ];
 
+    const baseStyle = "text-gray-600 dark:text-white"
+
     const renderCell = (item: MaterialTemplate, columnKey: string) => {
         switch (columnKey) {
             case "no":
                 return <span className="font-medium text-black dark:text-white">{data.indexOf(item) + 1}</span>;
             case "code":
-                return <span className="text-gray-600 dark:text-white">{item.code}</span>;
+                return <span className={baseStyle}>{item.code}</span>;
             case "name":
-                return <span className="text-gray-900 dark:text-white">{item.name}</span>;
+                return <span className={baseStyle}>{item.name}</span>;
             case "createdAt":
-                return <span className="text-gray-500 dark:text-white">{item.createdAt}</span>;
+                return <span className={baseStyle}>{item.createdAt}</span>;
             case "activities":
                 const actions = [
-                    { content: "Bốc vật tư", icon: ClipboardDocumentListIcon, className: "text-blue-600 dark:text-primary hover:bg-blue-50 dark:hover:bg-blue-900/10", color: "primary" as const, href: "#" },
-                    { content: "Sửa", icon: PencilSquareIcon, className: "text-amber-500 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/10", color: "warning" as const, href: "#" },
-                    { content: "Xóa", icon: TrashIcon, className: "text-danger hover:bg-danger-50 dark:hover:bg-danger-900/10", color: "danger" as const, href: "#" },
+                    { content: "Bốc vật tư", icon: LoadingMaterialsIcon, className: BlueYellowIconColor, color: "primary" as const, href: "#" },
+                    { content: "Sửa", icon: EditIcon, className: AmberIconColor, color: "warning" as const, href: "#" },
+                    { content: "Xóa", icon: DeleteIcon, className: RedIconColor, color: "danger" as const, href: "#" },
                 ];
                 return (
                     <div className="flex justify-center items-center gap-2">

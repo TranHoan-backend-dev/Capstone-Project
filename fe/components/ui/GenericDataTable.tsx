@@ -65,31 +65,35 @@ export const GenericDataTable = <T extends { id: string | number }>({
                 <div
                     className={`border-b border-divider transition-colors ${isCollapsible ? "hover:bg-default-100" : ""}`}
                 >
-                    <div
-                        role={isCollapsible ? "button" : undefined}
-                        onClick={() => isCollapsible && setIsOpen(!isOpen)}
-                        className={`p-6 flex justify-between items-center ${isCollapsible ? "cursor-pointer select-none" : ""}`}
-                    >
-                        <div className="flex items-center gap-3">
-                            <div className="text-primary">
-                                {icon}
-                            </div>
-                            <h2 className="text-lg font-bold text-foreground">{title}</h2>
-                        </div>
-                        <div className="flex items-center gap-4">
-                            {headerSummary && (
-                                <div className="hidden md:block px-3 py-1.5 bg-default-100 rounded-full text-xs font-medium text-default-500 whitespace-nowrap">
-                                    Tìm thấy {headerSummary} bản ghi
+                    {title && (
+                        <div
+                            role={isCollapsible ? "button" : undefined}
+                            onClick={() => isCollapsible && setIsOpen(!isOpen)}
+                            className={`p-6 flex justify-between items-center ${isCollapsible ? "cursor-pointer select-none" : ""}`}
+                        >
+                            <>
+                                <div className="flex items-center gap-3">
+                                    <div className="text-primary">
+                                        {icon}
+                                    </div>
+                                    <h2 className="text-lg font-bold text-foreground">{title}</h2>
                                 </div>
-                            )}
-                            {actions && <div>{actions}</div>}
-                            {isCollapsible && (
-                                <div className="text-default-400">
-                                    <ChevronDownIcon className={`w-5 h-5 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+                                <div className="flex items-center gap-4">
+                                    {headerSummary && (
+                                        <div className="hidden md:block px-3 py-1.5 bg-default-100 rounded-full text-xs font-medium text-default-500 whitespace-nowrap">
+                                            Tìm thấy {headerSummary} bản ghi
+                                        </div>
+                                    )}
+                                    {actions && <div>{actions}</div>}
+                                    {isCollapsible && (
+                                        <div className="text-default-400">
+                                            <ChevronDownIcon className={`w-5 h-5 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+                                        </div>
+                                    )}
                                 </div>
-                            )}
+                            </>
                         </div>
-                    </div>
+                    )}
                 </div>
 
                 <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? "opacity-100 max-h-[5000px] visible" : "opacity-0 max-h-0 invisible"}`}>

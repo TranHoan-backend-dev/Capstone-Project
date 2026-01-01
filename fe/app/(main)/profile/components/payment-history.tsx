@@ -3,7 +3,7 @@
 import { GenericDataTable } from '@/components/ui/GenericDataTable'
 import { Chip } from '@heroui/react';
 import React from 'react'
-import { DarkGreenChip } from '@/config/chip.cl';
+import { DarkGreenChip } from '@/config/chip-and-icon';
 
 const PaymentHistory = () => {
     const paymentHistoryData = [

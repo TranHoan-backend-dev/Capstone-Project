@@ -5,8 +5,7 @@ import { useParams } from "next/navigation";
 import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import { Chip, Tooltip, Button } from "@heroui/react";
-import { EyeIcon, DocumentTextIcon, ChartBarIcon } from "@heroicons/react/24/outline";
-import { DarkGreenChip } from "@/config/chip.cl";
+import { BlueYellowIconColor, DarkGreenChip, GreenIconColor, ProfileIcon, SetPriceIcon, UsageIcon } from "@/config/chip-and-icon";
 import Link from "next/link";
 
 const ConsumptionHistoryPage = () => {
@@ -56,30 +55,30 @@ const ConsumptionHistoryPage = () => {
                 );
             case "priceInfo":
                 return (
-                    <div className="w-full flex justify-center">
+                    <div className="flex justify-center">
                         <Tooltip content="Thông tin áp giá" color="primary" closeDelay={0}>
-                            <Button isIconOnly variant="light" size="sm" className="text-blue-600 dark:text-blue-400">
-                                <DocumentTextIcon className="w-5 h-5" />
+                            <Button isIconOnly variant="light" size="sm">
+                                <SetPriceIcon className={BlueYellowIconColor} />
                             </Button>
                         </Tooltip>
                     </div>
                 );
             case "consumption":
                 return (
-                    <div className="w-full flex justify-center">
+                    <div className="flex justify-center">
                         <Tooltip content="Tiêu thụ" color="success" closeDelay={0}>
-                            <Button isIconOnly variant="light" size="sm" className="text-green-600 dark:text-green-400">
-                                <ChartBarIcon className="w-5 h-5" />
+                            <Button isIconOnly variant="light" size="sm">
+                                <UsageIcon className={GreenIconColor} />
                             </Button>
                         </Tooltip>
                     </div>
                 );
             case "profile":
                 return (
-                    <div className="w-full flex justify-center">
+                    <div className="flex justify-center">
                         <Tooltip content="Xem hồ sơ" color="secondary" closeDelay={0}>
-                            <Button as={Link} href={`/customers/${id}`} isIconOnly variant="light" size="sm" className="text-indigo-600 dark:text-indigo-400">
-                                <EyeIcon className="w-5 h-5" />
+                            <Button as={Link} href={`/customers/${id}`} isIconOnly variant="light" size="sm" >
+                                <ProfileIcon className={BlueYellowIconColor} />
                             </Button>
                         </Tooltip>
                     </div>
