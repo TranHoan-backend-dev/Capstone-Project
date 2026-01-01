@@ -1,3 +1,4 @@
 be/.nx
 be/node_modules/
 .vscode/
+.idea/
