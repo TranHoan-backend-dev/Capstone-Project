@@ -5,25 +5,25 @@ import { ReportHeader } from "@/components/reports/ReportHeader";
 import { SearchToolbar } from "@/components/reports/SearchToolbar";
 import { siteConfig } from "@/config/site";
 
-const CustomerCallList = () => {
+const ReportContractList = () => {
   return (
-    <main className="mx-auto max-w-7xl space-y-6 p-6">
-      <FilterForm title="Danh sách khách hàng gọi điện" />
+    <>
+      <FilterForm title="Danh sách đơn từ chối thiết kế" />
 
-      <div className="space-y-6 rounded-lg bg-white p-6 shadow-sm">
+      <div className="mt-4 space-y-6 border border-gray-200 rounded-lg bg-white p-6 shadow-sm dark:border-none dark:bg-zinc-900 dark:shadow-2xl">
         <SearchToolbar />
 
         <ReportHeader
-          title="DANH SÁCH KHÁCH HÀNG ĐÃ GỌI ĐIỆN KHU VỰC THÀNH PHỐ NAM ĐỊNH"
+          title="DANH SÁCH ĐƠN TỪ CHỐI THIẾT KẾ KHU VỰC THÀNH PHỐ NAM ĐỊNH"
           dateRange="Từ ngày 07/12/2025 đến ngày 07/12/2025"
         />
 
-        <DataTable columns={siteConfig.columnsCustomerCall} data={[]} />
+        <DataTable columns={siteConfig.columnsRejectedDesign} data={[]} />
 
         <ReportFooter />
       </div>
-    </main>
+    </>
   );
 };
 
-export default CustomerCallList;
+export default ReportContractList;

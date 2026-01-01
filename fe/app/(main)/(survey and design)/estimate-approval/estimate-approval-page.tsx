@@ -149,6 +149,7 @@ const EstimateApprovalPage = () => {
     return (
         <>
             <FilterSection
+                actions={<></>}
                 title="Bộ lọc tìm kiếm"
                 onSearch={handleSearch}
                 keyword={keyword}

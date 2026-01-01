@@ -19,7 +19,16 @@ const ManageSuppliesPage = () => {
 
     return (
         <>
-            <FilterSection keyword={keyword} from={from} to={to} setKeyword={setKeyword} setFrom={setFrom} setTo={setTo} />
+            <FilterSection
+                actions={<></>}
+                title="Bộ lọc tìm kiếm"
+                keyword={keyword}
+                from={from}
+                to={to}
+                setKeyword={setKeyword}
+                setFrom={setFrom}
+                setTo={setTo}
+            />
             <TemplateTable data={mockData} />
         </>
     )

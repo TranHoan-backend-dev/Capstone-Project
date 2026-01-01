@@ -5,7 +5,6 @@ import { Button, Input, Tooltip } from "@heroui/react";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import CustomInput from "@/components/ui/CustomInput";
 import {
-    PlusIcon,
     DocumentChartBarIcon,
     CheckCircleIcon
 } from "@heroicons/react/24/outline";
@@ -116,14 +115,11 @@ export const MaterialCostCard = () => {
             />
 
             <div className="flex flex-wrap gap-3 p-4">
-                <Button color="primary" className="font-bold shadow-md shadow-primary/20" startContent={<PlusIcon className="w-4 h-4" />}>
-                    Thêm dòng mới
+                <Button color="success" className="text-white font-bold ml-auto shadow-md shadow-success/20" startContent={<CheckCircleIcon className="w-4 h-4" />}>
+                    Hoàn tất dự toán
                 </Button>
                 <Button color="primary" className="font-bold shadow-md shadow-primary/20" startContent={<DocumentChartBarIcon className="w-4 h-4" />}>
                     Báo cáo
-                </Button>
-                <Button color="success" className="text-white font-bold ml-auto shadow-md shadow-success/20" startContent={<CheckCircleIcon className="w-4 h-4" />}>
-                    Hoàn tất dự toán
                 </Button>
             </div>
         </div>
