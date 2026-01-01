@@ -8,6 +8,7 @@ import { DarkGreenChip, DarkRedChip } from "@/config/chip.cl";
 import { CalculatorIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
 import { SettlementItem, StatusDetailData } from "@/types";
 import { SettlementDetailModal } from "./settlement-detail-modal";
+import { SettlementDocumentModal } from "./settlement-document-modal";
 
 interface SettlementTableProps {
   data: SettlementItem[];
@@ -57,6 +58,7 @@ export const ResultsTable = ({ data }: SettlementTableProps) => {
   ];
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEstimateOpen, setIsEstimateOpen] = useState(false);
 
   const handleStatusClick = (item: SettlementItem) => {
     setSelectedSettlement(item);
@@ -133,6 +135,11 @@ export const ResultsTable = ({ data }: SettlementTableProps) => {
                   variant="light"
                   size="sm"
                   className={action.className}
+                  onClick={() => {
+                    if (action.content === "Quyết toán") {
+                      setIsEstimateOpen(true);
+                    }
+                  }}
                 >
                   <action.icon className="w-5 h-5" />
                 </Button>
@@ -172,6 +179,11 @@ export const ResultsTable = ({ data }: SettlementTableProps) => {
             ? mapSettlementToModalData(selectedSettlement)
             : undefined
         }
+      />
+      <SettlementDocumentModal
+        isOpen={isEstimateOpen}
+        onClose={() => setIsEstimateOpen(false)}
+        data={data}
       />
     </>
   );

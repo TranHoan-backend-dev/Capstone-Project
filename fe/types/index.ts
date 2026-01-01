@@ -24,6 +24,19 @@ export interface SettlementItem {
   status: "approved_budget" | "rejected_budget";
 }
 
+export interface SettlementDocumentRow {
+  id:string
+  stt: number;
+  code: string;
+  name: string;
+  unit: string;
+  quantity: string;
+  priceVL: string;
+  priceNC: string;
+  totalVL: string;
+  totalNC: string;
+}
+
 export interface StatusDetailData {
   code: string;
   address: string;
@@ -36,7 +49,6 @@ export interface StatusDetailData {
   totalPrice: string;
   note: string;
 }
-
 
 export interface SurveyAssignmentItem {
   id: number;
