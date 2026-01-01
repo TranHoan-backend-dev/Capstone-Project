@@ -30,7 +30,7 @@ export const ApprovalInputSection = ({
                             value={approvalDate}
                             onChange={setApprovalDate}
                             className="font-bold"
-                            labelPlacement="outside"
+                            labelPlacement="inside"
                         />
                     </div>
                     <div className="w-full">
@@ -44,11 +44,7 @@ export const ApprovalInputSection = ({
                             minRows={3}
                             value={approvalNote}
                             onValueChange={setApprovalNote}
-                            labelPlacement="outside"
-                            classNames={{
-                                label: "font-medium text-foreground",
-                                input: "text-sm",
-                            }}
+                            labelPlacement="inside"
                         />
                     </div>
                 </div>

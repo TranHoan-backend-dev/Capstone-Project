@@ -7,10 +7,10 @@ import { siteConfig } from "@/config/site";
 
 const ReportContractList = () => {
   return (
-    <main className="mx-auto max-w-7xl space-y-6 p-6">
+    <>
       <FilterForm title="Danh sách đơn chuyển lập hợp đồng" />
 
-      <div className="space-y-6 rounded-lg bg-white p-6 shadow-sm">
+      <div className="mt-4 space-y-6 border border-gray-200 rounded-lg bg-white p-6 shadow-sm dark:border-none dark:bg-zinc-900 dark:shadow-2xl">
         <SearchToolbar />
 
         <ReportHeader
@@ -22,7 +22,7 @@ const ReportContractList = () => {
 
         <ReportFooter />
       </div>
-    </main>
+    </>
   );
 };
 

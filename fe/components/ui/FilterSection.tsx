@@ -1,9 +1,10 @@
 "use client";
 
 import React from "react";
-import { Input, DatePicker, DateValue } from "@heroui/react";
+import { DatePicker, DateValue } from "@heroui/react";
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { SearchIcon } from "@/components/ui/Icons";
+import CustomInput from "./CustomInput";
 
 interface FilterSectionProps {
     title?: string;
@@ -14,11 +15,13 @@ interface FilterSectionProps {
     setKeyword: (keyword: string) => void;
     setFrom: (date: DateValue | null | undefined) => void;
     setTo: (date: DateValue | null | undefined) => void;
+    actions?: React.ReactNode;
 }
 
-export const FilterSection = ({ title, onSearch, keyword, from, to, setKeyword, setFrom, setTo }: FilterSectionProps) => {
+export const FilterSection = ({ title, onSearch, keyword, from, to, setKeyword, setFrom, setTo, actions }: FilterSectionProps) => {
     return (
         <GenericSearchFilter
+            actions={actions}
             title={title || "Tra cứu đơn"}
             icon={<SearchIcon size={18} />}
             gridClassName="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-3"
@@ -28,13 +31,9 @@ export const FilterSection = ({ title, onSearch, keyword, from, to, setKeyword, 
         >
             <div className="lg:col-span-2 space-y-1">
                 <div className="flex gap-2">
-                    <Input
+                    <CustomInput
                         value={keyword}
                         label="Nhập từ khóa tìm kiếm"
-                        labelPlacement="inside"
-                        variant="bordered"
-                        radius="md"
-                        size="md"
                         className="font-bold"
                         onChange={(e) => { onSearch?.(e.target.value); setKeyword?.(e.target.value) }}
                     />
