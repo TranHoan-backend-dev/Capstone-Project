@@ -4,14 +4,32 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@heroui/react";
 import { Input } from "@heroui/input";
 import { useRouter } from "next/navigation";
+import { ArrowPathIcon } from "@heroicons/react/24/solid";
 
-export default function OTPForm() {
+interface VerifyOTPFormProps {
+  email: string;
+  onSuccess: () => void;
+  onBack: () => void;
+}
+
+export default function OTPForm({
+  email,
+  onSuccess,
+  onBack,
+}: VerifyOTPFormProps) {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [countdown, setCountdown] = useState(60);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const router = useRouter();
 
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [countdown]);
   useEffect(() => {
     if (inputRefs.current[0]) {
       inputRefs.current[0]?.focus();
@@ -38,7 +56,6 @@ export default function OTPForm() {
     }
   };
 
-
   const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
@@ -54,7 +71,6 @@ export default function OTPForm() {
       inputRefs.current[index + 1]?.focus();
     }
   };
-
 
   const handlePaste = (e: React.ClipboardEvent) => {
     e.preventDefault();
@@ -96,7 +112,7 @@ export default function OTPForm() {
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       if (otpString === "450123") {
-        router.push("/change-password");
+        onSuccess();
         console.log("OTP hợp lệ!");
       } else {
         throw new Error("Mã OTP không đúng");
@@ -126,17 +142,23 @@ export default function OTPForm() {
     }
   };
 
+  const handleResend = async () => {
+    setCountdown(60);
+    setOtp(["", "", "", "", "", ""]);
+    setError("");
+    console.log("Resending OTP to:", email);
+  };
+
   return (
-    <div className="max-w-md mx-auto mt-25 space-y-6 p-6 bg-content1 rounded-lg shadow-sm border border-divider">
+    <div className="max-w-md mx-auto space-y-4 bg-content1">
       <div className="text-center space-y-2">
-        <h2 className="text-2xl font-semibold text-foreground">Xác thực Email</h2>
+        <h2 className="text-2xl font-semibold text-foreground">
+          Xác thực Email
+        </h2>
         <p className="text-default-600">
           Vui lòng nhập mã xác thực 6 số đã gửi đến
         </p>
         <p className="text-primary font-medium">raviweb@example.com</p>
-        <div className="text-xs text-red-400">
-          <p>Mã OTP sẽ hết hạn sau 60s</p>
-        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -182,9 +204,7 @@ export default function OTPForm() {
           </p>
         </div>
 
-
         {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-
 
         <Button
           type="submit"
@@ -197,19 +217,24 @@ export default function OTPForm() {
         </Button>
       </form>
 
-
-      <div className="text-center space-y-3">
-        <p className="text-sm text-default-500">
-          Không nhận được mã?{" "}
+      <div className="flex flex-col items-center space-y-3">
+        {countdown > 0 ? (
+          <p className="text-sm text-slate-500">
+            Gửi lại sau{" "}
+            <span className="font-semibold text-slate-700">{countdown}s</span>
+          </p>
+        ) : (
           <button
             type="button"
-            className="text-primary hover:underline font-medium"
-            onClick={handleResendOTP}
+            onClick={handleResend}
             disabled={loading}
+            className="text-sm text-blue-600 hover:text-blue-700 font-medium 
+                 flex items-center gap-1 transition-colors disabled:opacity-50"
           >
-            Gửi lại
+            <ArrowPathIcon className="w-3 h-3" />
+            Gửi lại mã
           </button>
-        </p>
+        )}
       </div>
     </div>
   );
