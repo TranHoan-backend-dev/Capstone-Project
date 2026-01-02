@@ -6,7 +6,7 @@ import { Input } from "@heroui/input";
 import { useRouter } from "next/navigation";
 import { ArrowPathIcon } from "@heroicons/react/24/solid";
 
-interface VerifyOTPFormProps {
+interface OTPFormProps {
   email: string;
   onSuccess: () => void;
   onBack: () => void;
@@ -16,7 +16,7 @@ export default function OTPForm({
   email,
   onSuccess,
   onBack,
-}: VerifyOTPFormProps) {
+}: OTPFormProps) {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
