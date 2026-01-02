@@ -3,19 +3,44 @@
   "systemOverview": "",
   "designConstraints": "",
   "architecturalRepresentation": "",
+  "processViewImage": null,
+  "packageDiagramImage": null,
+  "componentDiagramImage": null,
+  "deploymentViewImage": null,
+  "architecture": {
+    "packages": [
+      {
+        "col1": "",
+        "col2": ""
+      }
+    ],
+    "components": [
+      {
+        "col1": "",
+        "col2": ""
+      }
+    ],
+    "deployments": [
+      {
+        "col1": "",
+        "col2": ""
+      }
+    ]
+  },
   "components": [
     {
       "id": "comp-1",
       "ucId": "UC01",
       "name": "Login",
-      "screenImageUrl": null,
+      "screenImage": null,
+      "screenCaption": "Figure 4.2.1: Login Screen",
       "screenDefinitions": [
         {
-          "objectName": "",
-          "type": "",
-          "required": "",
-          "length": "",
-          "description": ""
+          "objectName": "txtUsername",
+          "type": "Textbox",
+          "required": "Y",
+          "length": "50",
+          "description": "Input username"
         }
       ],
       "diagramImageUrl": null,
@@ -44,36 +69,7 @@
             }
           ]
         }
-      ],
-      "screenCaption": "Figure: Login Screen"
-    },
-    {
-      "id": "comp-1767331562190",
-      "ucId": "UC...",
-      "name": "New Component",
-      "screenImageUrl": null,
-      "screenDefinitions": [],
-      "diagramImageUrl": null,
-      "classes": [],
-      "screenCaption": "Figure: New Component Screen"
-    },
-    {
-      "id": "comp-1767332121117",
-      "ucId": "UC...",
-      "name": "New Component",
-      "screenImage": null,
-      "screenCaption": "Figure x.x: Screen",
-      "screenDefinitions": [
-        {
-          "objectName": "",
-          "type": "",
-          "required": "",
-          "length": "",
-          "description": ""
-        }
-      ],
-      "diagramImageUrl": null,
-      "classes": []
+      ]
     }
   ],
   "databaseTables": [
@@ -97,38 +93,6 @@
           "notNull": "Y",
           "pkFk": "",
           "notes": ""
-        },
-        {
-          "fieldName": "",
-          "type": "",
-          "size": "",
-          "unique": "",
-          "notNull": "",
-          "pkFk": "",
-          "notes": ""
-        }
-      ]
-    },
-    {
-      "tableName": "New Table",
-      "fields": [
-        {
-          "fieldName": "",
-          "type": "",
-          "size": "",
-          "unique": "",
-          "notNull": "",
-          "pkFk": "",
-          "notes": ""
-        },
-        {
-          "fieldName": "",
-          "type": "",
-          "size": "",
-          "unique": "",
-          "notNull": "",
-          "pkFk": "",
-          "notes": ""
         }
       ]
     }
@@ -139,25 +103,5 @@
       "type": "JSON",
       "notes": "App configuration"
     }
-  ],
-  "architecture": {
-    "packages": [
-      {
-        "col1": "",
-        "col2": ""
-      }
-    ],
-    "components": [
-      {
-        "col1": "",
-        "col2": ""
-      }
-    ],
-    "deployments": [
-      {
-        "col1": "",
-        "col2": ""
-      }
-    ]
-  }
+  ]
 }
