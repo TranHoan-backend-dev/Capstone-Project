@@ -1,0 +1,2 @@
+1. pandoc srs.md -o srs.html --standalone
+2.  wkhtmltopdf --enable-local-file-access --page-size A4 --margin-left 10mm --margin-right 10mm --margin-top 20mm --margin-bottom 20mm srs.html srs.pdf
