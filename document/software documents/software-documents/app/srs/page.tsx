@@ -2,17 +2,15 @@
 'use client';
 
 import React from 'react';
-
-import { CoverPage } from '../../components/srs/CoverPage';
+import { DocumentCoverPage } from '../../components/common/DocumentCoverPage';
+import { RecordOfChanges } from '../../components/common/RecordOfChanges';
 import { TableOfContents } from '../../components/srs/TableOfContents';
-import { RecordOfChanges } from '../../components/srs/RecordOfChanges';
 import { ProductOverview } from '../../components/srs/ProductOverview';
 import { UserRequirements } from '../../components/srs/UserRequirements';
 import { SoftwareFeatures } from '../../components/srs/SoftwareFeatures';
 import { Appendices } from '../../components/srs/Appendices';
 import { PrintButton } from '../../components/srs/PrintButton';
 import { SRSProvider } from '../../components/srs/SRSContext';
-
 import { srsPrimitives } from '../../components/primitives';
 
 export default function SRSPage() {
@@ -25,8 +23,13 @@ export default function SRSPage() {
                 <div className={`min-h-screen print:bg-white print:text-black`}>
                     <div className="mx-auto max-w-[48em] p-8 hyphens-auto break-words text-rendering-optimizeLegibility font-kerning-normal max-sm:text-[0.9em] max-sm:p-3 print:bg-transparent print:max-w-none print:p-0 print:m-0">
                         <div>
-                            {/* Page 1: Cover */}
-                            <CoverPage />
+                            {/* Page 1: Cover (Unified Template) */}
+                            <DocumentCoverPage
+                                title="Software Requirement Specification (SRS)"
+                                subtitle="Project Name"
+                                showSubtitle={true}
+                                projectCodeDefault="1.0"
+                            />
                             <div className={srsPrimitives.pageBreak} />
 
                             {/* Page 2: Table of Contents */}
@@ -34,7 +37,9 @@ export default function SRSPage() {
                             <div className={srsPrimitives.pageBreak} />
 
                             {/* Page 3+: Main Content */}
+                            {/* Unified Record of Changes */}
                             <RecordOfChanges />
+
                             <div className="my-8" />
 
                             <div id="srs">
