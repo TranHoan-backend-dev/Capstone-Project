@@ -1,10 +1,9 @@
 "use client";
 
-import React from "react";
-import { TableCellsIcon } from "@heroicons/react/24/outline";
-import { Link } from "@heroui/react";
-import NextLink from "next/link";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
+import { ArrowPathIcon, TableCellsIcon } from "@heroicons/react/24/outline";
+import { Button, Link, Tooltip } from "@heroui/react";
+import NextLink from "next/link";
 
 interface RestoreItem {
     id: number;
@@ -22,13 +21,14 @@ interface RestoreTableProps {
 
 export const RestoreTable = ({ data }: RestoreTableProps) => {
     const columns = [
-        { key: "no", label: "#", width: "40px" },
+        { key: "no", label: "STT", width: "60px" },
         { key: "customerCode", label: "Mã KH" },
         { key: "customerName", label: "Tên khách hàng" },
         { key: "address", label: "Địa chỉ" },
         { key: "restoreDate", label: "Ngày Khôi Phục" },
         { key: "period", label: "Kỳ Khôi Phục" },
         { key: "reason", label: "Lý Do Khôi Phục" },
+        { key: "action", label: "Hoạt động", align: "center" as const },
     ];
 
     const renderCell = (item: RestoreItem, columnKey: string) => {
@@ -37,14 +37,14 @@ export const RestoreTable = ({ data }: RestoreTableProps) => {
                 return <span className="font-medium text-black dark:text-white">{data.indexOf(item) + 1}</span>;
             case "customerCode":
                 return (
-                    <Link as={NextLink} href="#" className="font-bold text-blue-600 hover:underline hover:text-blue-800 dark:text-primary">
+                    <Link as={NextLink} href="#" className="font-bold text-blue-600 hover:underline">
                         {item.customerCode}
                     </Link>
                 );
             case "customerName":
                 return <span className="font-bold text-gray-900 dark:text-foreground">{item.customerName}</span>;
             case "address":
-                return <div className="max-w-[200px] truncate">{item.address}</div>;
+                return <div className="max-w-[200px] truncate text-gray-600">{item.address}</div>;
             case "restoreDate":
                 return <span className="text-gray-400 dark:text-white">{item.restoreDate}</span>;
             case "period":
@@ -54,7 +54,33 @@ export const RestoreTable = ({ data }: RestoreTableProps) => {
                     </span>
                 );
             case "reason":
-                return <div className="text-gray-500 dark:text-white italic max-w-[250px] truncate">{item.reason}</div>;
+                return <div className="text-gray-500 italic max-w-[250px] truncate">{item.reason}</div>;
+            case "action":
+                return (
+                    <div className="flex justify-center items-center">
+                        <Tooltip
+                            content="Khôi phục"
+                            placement="top"
+                            delay={0}
+                            closeDelay={0}
+                            offset={10}
+                            classNames={{
+                                content: "py-1.5 px-3 shadow-xl text-black bg-white font-medium rounded-lg border border-gray-100",
+                            }}
+                        >
+                            <Button
+                                isIconOnly
+                                size="sm"
+                                variant="light"
+                                radius="md"
+                                className="data-[hover=true]:bg-gray-100 min-w-10 w-10 h-10 transition-colors"
+                                onPress={() => console.log("Khôi phục:", item.customerCode)}
+                            >
+                                <ArrowPathIcon className="w-5 h-5 text-orange-400" />
+                            </Button>
+                        </Tooltip>
+                    </div>
+                );
             default:
                 return (item as any)[columnKey];
         }
@@ -75,7 +101,7 @@ export const RestoreTable = ({ data }: RestoreTableProps) => {
             paginationProps={{
                 total: 1,
                 initialPage: 1,
-                summary: `${data.length}`,
+                summary: `Hiển thị 1-${data.length} của ${data.length} kết quả`,
             }}
             headerSummary={`${data.length}`}
         />

@@ -1,0 +1,76 @@
+"use client";
+import CustomButton from "@/components/ui/CustomButton";
+import CustomInput from "@/components/ui/CustomInput";
+import { CalendarIcon, CancelIcon, SaveIcon, SearchIcon } from "@/components/ui/Icons";
+import { Checkbox, Select, SelectItem } from "@heroui/react";
+
+export const FeeForm = () => {
+    return (
+        <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {/* Nhóm 1: Thông tin khách hàng */}
+                <div className="space-y-4">
+                    <h3 className="font-bold text-gray-700">Thông tin khách hàng</h3>
+                    <CustomInput
+                        label="Mã đơn"
+                        placeholder="Nhập mã đơn"
+                        endContent={<SearchIcon size={18} className="text-blue-500" />}
+                        isRequired
+                    />
+                    <CustomInput label="Tên khách hàng" placeholder="Nhập tên khách hàng" isRequired />
+                </div>
+
+                {/* Nhóm 2: Thông tin địa chỉ */}
+                <div className="space-y-4">
+                    <h3 className="font-bold text-gray-700">Thông tin địa chỉ</h3>
+                    <CustomInput label="Số nhà" placeholder="Nhập số nhà" />
+                    <CustomInput label="Thôn/Làng" placeholder="Nhập đường phố" />
+                    <CustomInput label="Đường phố" placeholder="Nhập đường phố" />
+                    <div className="grid grid-cols-2 gap-2">
+                        <Select label="Phường" variant="bordered" size="sm">
+                            <SelectItem key="p1">Chọn phường</SelectItem>
+                        </Select>
+                        <Select label="Tổ / Khu / Xóm" variant="bordered" size="sm">
+                            <SelectItem key="t1">Chọn tổ/khu</SelectItem>
+                        </Select>
+                    </div>
+                </div>
+
+                {/* Nhóm 3: Thông tin thu tiền */}
+                <div className="space-y-4">
+                    <h3 className="font-bold text-gray-700">Thông tin thu tiền</h3>
+                    <CustomInput
+                        label="Ngày thu"
+                        type="date"
+                        endContent={<CalendarIcon size={18} />}
+                        isRequired
+                    />
+                    <CustomInput label="Số phiếu thu" placeholder="Nhập số phiếu thu" />
+                    <Select label="Hình thức thanh toán" variant="bordered" isRequired>
+                        <SelectItem key="ck">Chuyển khoản</SelectItem>
+                        <SelectItem key="tm">Tiền mặt</SelectItem>
+                    </Select>
+                    <Checkbox size="sm" color="primary">Đã thu tiền</Checkbox>
+                </div>
+            </div>
+
+            {/* Cụm nút bấm sát phải */}
+            {/* Cụm nút bấm sát phải trong fee-form.tsx */}
+            <div className="flex justify-end gap-3 pt-4">
+                <CustomButton
+                    className="w-[120px] h-9 rounded-md bg-[#00a651] text-white text-sm font-medium"
+                    startContent={<SaveIcon size={16} />}
+                >
+                    Lưu
+                </CustomButton>
+
+                <CustomButton
+                    className="w-[120px] h-9 rounded-md bg-[#ee0000] text-white text-sm font-medium"
+                    startContent={<CancelIcon size={16} />} // Hoặc dùng XMarkIcon từ HeroIcons
+                >
+                    Hủy
+                </CustomButton>
+            </div>
+        </div>
+    );
+};
