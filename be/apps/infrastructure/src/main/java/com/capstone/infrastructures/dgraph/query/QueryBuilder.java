@@ -1,8 +1,10 @@
-package com.capstone.customer.dgraph.query;
+package com.capstone.infrastructures.dgraph.query;
 
-import dev.huyhoangg.midia.dgraph.annotation.DgraphNode;
-import dev.huyhoangg.midia.dgraph.annotation.DgraphPredicate;
-import dev.huyhoangg.midia.dgraph.annotation.Relationship;
+import com.capstone.infrastructures.dgraph.annotation.DgraphNode;
+import com.capstone.infrastructures.dgraph.annotation.DgraphPredicate;
+import com.capstone.infrastructures.dgraph.annotation.Relationship;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -27,6 +29,8 @@ public class QueryBuilder {
         this.maxDepth = 1;
     }
 
+    @NotNull
+    @Contract(value = " -> new", pure = true)
     public static QueryBuilder builder() {
         return new QueryBuilder();
     }
@@ -154,7 +158,7 @@ public class QueryBuilder {
         }
     }
 
-    private void appendRootQueryBlock(StringBuilder sb) {
+    private void appendRootQueryBlock(@NotNull StringBuilder sb) {
         sb.append("q(");
 
         if (rootUids != null && rootUids.length > 0) {
@@ -195,7 +199,7 @@ public class QueryBuilder {
             throw new IllegalStateException(
                     "Query must specify either a root type with 'forType()' or UIDs with 'withUids()'.");
         }
-        if (type != null && !isDgraphNode(type)) {
+        if (type != null && isDgraphNode(type)) {
             throw new IllegalArgumentException(
                     "Root class for 'forType()' must be annotated with @DgraphNode: " + type.getName());
         }
@@ -255,7 +259,7 @@ public class QueryBuilder {
                     relationshipTargetType = field.getType();
                 }
 
-                if (relationshipTargetType != null && !isDgraphNode(relationshipTargetType)) {
+                if (isDgraphNode(relationshipTargetType)) {
                     throw new IllegalArgumentException(
                             "Relationship target class " + relationshipTargetType.getName() + " for field "
                                     + field.getName() + " in " + currentType.getName()
@@ -308,19 +312,20 @@ public class QueryBuilder {
         return value.toString();
     }
 
-    private boolean isRelationship(Field field) {
+    private boolean isRelationship(@NotNull Field field) {
         return field.isAnnotationPresent(Relationship.class) && field.isAnnotationPresent(DgraphPredicate.class);
     }
 
-    private boolean isEagerFetch(Field field) {
+    private boolean isEagerFetch(@NotNull Field field) {
         return field.getAnnotation(Relationship.class).eagerFetch();
     }
 
-    private boolean isDgraphNode(Class<?> clazz) {
-        return clazz.isAnnotationPresent(DgraphNode.class);
+    @Contract(pure = true)
+    private boolean isDgraphNode(@NotNull Class<?> clazz) {
+        return !clazz.isAnnotationPresent(DgraphNode.class);
     }
 
-    private boolean isCollection(Field field) {
+    private boolean isCollection(@NotNull Field field) {
         var fieldType = field.getType();
         boolean isCollectionType = Collection.class.isAssignableFrom(fieldType);
         boolean isMapType = Map.class.isAssignableFrom(fieldType);

@@ -1,4 +1,4 @@
-package com.capstone.customer.dgraph.query;
+package com.capstone.infrastructures.dgraph.query;
 
 import org.springframework.util.Assert;
 

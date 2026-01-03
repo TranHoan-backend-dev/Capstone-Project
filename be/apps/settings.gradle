@@ -6,5 +6,5 @@ include 'notification'
 include 'chat'
 include 'customer'
 
-include 'infras'
+include 'infrastructure'
 include 'auth'

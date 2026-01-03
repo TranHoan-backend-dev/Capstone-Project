@@ -1,4 +1,4 @@
-package com.capstone.customer.application.business;
+package com.capstone.infrastructures.application.business;
 
 public class Sample {
 }
