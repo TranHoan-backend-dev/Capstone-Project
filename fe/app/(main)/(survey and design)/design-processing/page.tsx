@@ -1,14 +1,14 @@
 import React from "react";
 import { Metadata } from "next";
 import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
-import DesignProcessing from "./components/design-processing-page";
+import DesignProcessingPage from "./design-processing-page";
 
 export const metadata: Metadata = {
     title: "Xử lý đơn chờ thiết kế & Thiết kế",
     description: "Xử lý đơn chờ thiết kế & Thiết kế",
 }
 
-const DesignProcessingPage = () => {
+const DesignProcessing = () => {
     return (
         <>
             <CustomBreadcrumb items={[
@@ -18,10 +18,10 @@ const DesignProcessingPage = () => {
             ]} />
 
             <div className="space-y-6 pt-2">
-                <DesignProcessing />
+                <DesignProcessingPage />
             </div>
         </>
     );
 };
 
-export default DesignProcessingPage;
+export default DesignProcessing;

@@ -13,6 +13,7 @@ import {
     ArrowPathIcon,
     InformationCircleIcon
 } from "@heroicons/react/24/outline";
+import { DeleteIcon } from "@/config/chip-and-icon";
 
 export const TechnicalInfoCard = () => {
     const customerInfoFields = [
@@ -206,7 +207,7 @@ export const TechnicalInfoCard = () => {
                                             className="bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white h-8 w-8 min-w-8 shrink-0 transition-colors"
                                             onPress={() => removeRepresentative(rep.id)}
                                         >
-                                            <TrashIcon className="w-4 h-4" />
+                                            <DeleteIcon className="w-4 h-4" />
                                         </Button>
                                     )}
                                     {index === representatives.length - 1 && (

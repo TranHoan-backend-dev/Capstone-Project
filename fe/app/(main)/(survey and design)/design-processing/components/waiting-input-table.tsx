@@ -4,8 +4,7 @@ import React from "react";
 import { Chip, Link, Tooltip } from "@heroui/react";
 import NextLink from "next/link";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import { ArrowPathIcon } from "@heroicons/react/24/solid";
-import { DarkGreenChip, DarkRedChip, DarkWhiteChip } from "@/config/chip.cl";
+import { BlueYellowIconColor, DarkGreenChip, DarkRedChip, DarkWhiteChip, RestoreIcon } from "@/config/chip-and-icon";
 
 interface WaitingInputTableProps {
     data: any[];
@@ -64,10 +63,7 @@ export const WaitingInputTable = ({ data, onRestore }: WaitingInputTableProps) =
                 return (
                     <div className="flex justify-center">
                         <Tooltip content="Khôi phục" color="primary">
-                            <ArrowPathIcon
-                                className="w-6 h-6 text-blue-600 dark:text-primary cursor-pointer hover:rotate-180 transition-transform duration-500"
-                                onClick={() => onRestore?.(item)}
-                            />
+                            <RestoreIcon className={BlueYellowIconColor} onClick={() => onRestore?.(item)} />
                         </Tooltip>
                     </div>
                 );

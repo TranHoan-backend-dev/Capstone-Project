@@ -1,5 +1,6 @@
-import OTPForm from "@/components/layout/OTPForm";
+
 import { Metadata } from "next";
+import ChangePasswordForm from "./components/ChangePasswordForm";
 
 export const metadata: Metadata = {
   title: 'Đổi mật khẩu',
@@ -7,7 +8,7 @@ export const metadata: Metadata = {
 }
 
 const ChangePasswordPage = () => {
-  return <OTPForm />
+  return <ChangePasswordForm />
 };
 
 export default ChangePasswordPage;

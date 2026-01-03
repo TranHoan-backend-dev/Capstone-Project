@@ -4,6 +4,7 @@ import React from "react";
 import { Checkbox, Button } from "@heroui/react";
 import { CameraIcon } from "@heroicons/react/24/solid";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
+import { BlueYellowIconColor } from "@/config/chip-and-icon";
 
 interface CustomerRecord {
     id: number;
@@ -35,35 +36,32 @@ export const CustomerListTable = ({ data }: CustomerListTableProps) => {
         { key: "image", label: "Ảnh", align: "center" as const },
     ];
 
+    const baseStyle = "dark:text-white text-gray-"
+
     const renderCell = (item: CustomerRecord, columnKey: string) => {
         switch (columnKey) {
             case "#":
-                return <span className="text-gray-500 dark:text-white">{data.indexOf(item) + 1}</span>;
+                return <span className={baseStyle + "500"}>{data.indexOf(item) + 1}</span>;
             case "code":
-                return <span className="font-bold text-gray-800 dark:text-white">{item.code}</span>;
+                return <span className={`font-bold ${baseStyle + "800"}`}>{item.code}</span>;
             case "name":
-                return <span className="text-gray-900 dark:text-white">{item.name}</span>;
+                return <span className={baseStyle + "900"}>{item.name}</span>;
             case "oldReadDate":
-                return <span className="text-gray-500 dark:text-white">{item.oldReadDate}</span>;
+                return <span className={baseStyle + "500"}>{item.oldReadDate}</span>;
             case "readDate":
-                return <span className="text-gray-500 dark:text-white">{item.readDate}</span>;
+                return <span className={baseStyle + "500"}>{item.readDate}</span>;
             case "oldIndex":
-                return <span className="text-gray-600 dark:text-white">{item.oldIndex}</span>;
+                return <span className={baseStyle + "600"}>{item.oldIndex}</span>;
             case "newIndex":
-                return <span className="text-gray-600 dark:text-white">{item.newIndex}</span>;
+                return <span className={baseStyle + "600"}>{item.newIndex}</span>;
             case "volume":
-                return <span className="text-gray-600 dark:text-white font-medium">{item.volume}</span>;
+                return <span className={baseStyle + "600 font-medium"}> {item.volume}</span>;
             case "isCut":
                 return <Checkbox size="sm" radius="sm" isSelected={item.isCut} isDisabled className="dark:opacity-70" />;
             case "image":
                 return (
-                    <Button
-                        isIconOnly
-                        size="sm"
-                        variant="light"
-                        className="text-blue-500 dark:text-primary"
-                    >
-                        <CameraIcon className="w-5 h-5" />
+                    <Button isIconOnly size="sm" variant="light">
+                        <CameraIcon className={BlueYellowIconColor} />
                     </Button>
                 );
             default:
@@ -80,7 +78,7 @@ export const CustomerListTable = ({ data }: CustomerListTableProps) => {
             paginationProps={{
                 total: 5,
                 initialPage: 1,
-                summary: "Hiển thị 1-5 của 25 kết quả",
+                summary: "1-5 của 25",
             }}
         />
     );

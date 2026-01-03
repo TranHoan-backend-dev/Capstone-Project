@@ -5,8 +5,7 @@ import { Chip, Link, Tooltip } from "@heroui/react";
 import NextLink from "next/link";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 
-import { CheckCircleIcon } from "@heroicons/react/24/solid";
-import { DarkBlueChip, DarkGreenChip } from "@/config/chip.cl";
+import { ApprovalIcon, GreenIconColor, DarkBlueChip, DarkGreenChip } from "@/config/chip-and-icon";
 
 interface OrdersToDesignTableProps {
     data: any[];
@@ -60,10 +59,7 @@ export const OrdersToDesignTable = ({ data, onApprove }: OrdersToDesignTableProp
                 return (
                     <div className="flex justify-center">
                         <Tooltip content="Duyệt" color="success">
-                            <CheckCircleIcon
-                                className="w-6 h-6 cursor-pointer text-green-500 dark:text-success hover:text-green-600 transition-colors"
-                                onClick={() => onApprove?.(item)}
-                            />
+                            <ApprovalIcon className={GreenIconColor} onClick={() => onApprove?.(item)} />
                         </Tooltip>
                     </div>
                 );

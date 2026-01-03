@@ -1,8 +1,7 @@
 "use client";
 
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import { DarkGreenChip, DarkYellowChip } from "@/config/chip.cl";
-import { PrinterIcon } from "@heroicons/react/24/outline";
+import { BlueYellowIconColor, DarkGreenChip, DarkYellowChip, PrintReceiptIcon } from "@/config/chip-and-icon";
 import { Button, Chip, Link, Tooltip } from "@heroui/react";
 import NextLink from "next/link";
 
@@ -49,7 +48,7 @@ export const RelatedOrdersTable = ({ data }: RelatedOrdersTableProps) => {
                 );
             case "actions":
                 const actionButtons = [
-                    { content: "In biên nhận", icon: PrinterIcon, color: "primary" as const, className: "text-blue-600 hover:bg-blue-50 dark:text-primary dark:hover:bg-primary-900/10" },
+                    { content: "In biên nhận", icon: PrintReceiptIcon, className: BlueYellowIconColor },
                 ];
                 return (
                     <div className="flex items-center gap-2 justify-center">
