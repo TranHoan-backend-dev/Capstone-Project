@@ -10,8 +10,8 @@ export const FilterSection = () => {
     const selectFields = [
         { label: "Chi nhánh", options: [{ key: "1", label: "Chi nhánh 1" }] },
         { label: "Trạng thái cúp", options: [{ key: "1", label: "Tất cả" }] },
-        { label: "Thông tin đồng hồ", options: [{ key: "1", label: "Tất cả" }] },
-        { label: "Thông tin ghi chỉ số", options: [{ key: "1", label: "Tất cả" }] },
+        { label: "Tình trạng đồng hồ", options: [{ key: "1", label: "Tất cả" }] },
+        { label: "Trạng thái ghi chỉ số", options: [{ key: "1", label: "Tất cả" }] },
     ];
 
     return (

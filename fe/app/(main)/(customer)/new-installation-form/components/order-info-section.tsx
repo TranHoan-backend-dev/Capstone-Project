@@ -5,8 +5,10 @@ import { Input, DatePicker, Select, SelectItem } from "@heroui/react";
 
 export const OrderInfoSection = () => {
     const inputFields = [
-        { label: "Mã đơn", defaultValue: "DH001234" },
+        { label: "Mã đơn đăng ký", defaultValue: "DH001234" },
         { label: "Số đơn", defaultValue: "SO-2024-001" },
+        { label: "Số hộ sử dụng", defaultValue: "1" },
+        { label: "Số người sử dụng", defaultValue: "5" },
     ];
 
     const dateFields = [
