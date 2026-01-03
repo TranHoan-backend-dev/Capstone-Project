@@ -20,6 +20,11 @@ export const siteConfig = {
           href: "/new-installation-form",
         },
         {
+          key: "new-installation-lookup",
+          label: "Tra cứu đơn lắp đặt mới",
+          href: "/new-installation-lookup",
+        },
+        {
           key: "find-customer",
           label: "Tra cứu khách hàng",
           href: "/customers",
