@@ -1,6 +1,6 @@
-package com.capstone.customer.dgraph.processor;
+package com.capstone.infrastructures.dgraph.processor;
 
-import com.capstone.customer.dgraph.annotation.DgraphPredicate;
+import com.capstone.infrastructures.dgraph.annotation.DgraphPredicate;
 import com.google.auto.service.AutoService;
 import org.jetbrains.annotations.NotNull;
 

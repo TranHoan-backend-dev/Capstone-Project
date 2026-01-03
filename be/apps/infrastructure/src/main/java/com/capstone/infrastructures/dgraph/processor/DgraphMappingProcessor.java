@@ -1,10 +1,11 @@
-package com.capstone.customer.dgraph.processor;
+package com.capstone.infrastructures.dgraph.processor;
 
-import com.capstone.customer.dgraph.annotation.DgraphNode;
+import com.capstone.infrastructures.dgraph.annotation.DgraphNode;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ import java.util.List;
 public class DgraphMappingProcessor {
     private final ObjectMapper objectMapper;
 
-    public <T> String toDgraphNode(T entity) throws JsonProcessingException {
+    public <T> String toDgraphNode(@NotNull T entity) throws JsonProcessingException {
         if (!entity.getClass().isAnnotationPresent(DgraphNode.class)) {
             throw new IllegalArgumentException("Class is not annotated with @DgraphNode");
         }
@@ -25,7 +26,7 @@ public class DgraphMappingProcessor {
         return objectMapper.writeValueAsString(entity);
     }
 
-    public <T> T fromDgraphNode(String json, Class<T> clazz) throws JsonProcessingException {
+    public <T> T fromDgraphNode(String json, @NotNull Class<T> clazz) throws JsonProcessingException {
         var type = clazz.getSimpleName();
         var jsonNode = objectMapper.readTree(json);
         var dgraphType = jsonNode.get("dgraph.type").isArray() ? jsonNode.get("dgraph.type").get(0).asText() : null;

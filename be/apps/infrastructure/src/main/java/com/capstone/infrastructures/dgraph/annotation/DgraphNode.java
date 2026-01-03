@@ -1,4 +1,4 @@
-package com.capstone.customer.dgraph.annotation;
+package com.capstone.infrastructures.dgraph.annotation;
 
 import java.lang.annotation.*;
 
