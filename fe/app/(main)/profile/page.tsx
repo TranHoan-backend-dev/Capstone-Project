@@ -1,18 +1,14 @@
 import React from "react";
 import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
 import { Metadata } from "next";
-import CustomerInformation from "./components/customer-information";
-import WaterIndexMetrics from "./components/water-index-metrics";
-import PaymentDetails from "./components/payment-details";
-import Actions from "./components/actions";
-import PaymentHistory from "./components/payment-history";
+import ProfilePage from "./profile-page";
 
 export const metadata: Metadata = {
     title: "Hồ sơ cá nhân",
     description: "Thông tin chi tiết và lịch sử thanh toán của khách hàng",
 };
 
-const ProfilePage = () => {
+const Profile = () => {
 
     return (
         <>
@@ -22,14 +18,10 @@ const ProfilePage = () => {
             ]} />
 
             <div className="space-y-6 pt-2">
-                <CustomerInformation />
-                <WaterIndexMetrics />
-                <PaymentDetails />
-                <PaymentHistory />
-                <Actions />
+                <ProfilePage />
             </div>
         </>
     );
 };
 
-export default ProfilePage;
+export default Profile;

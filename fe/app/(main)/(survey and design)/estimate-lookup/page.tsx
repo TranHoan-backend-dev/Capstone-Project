@@ -1,14 +1,14 @@
 import React from "react";
 import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
 import { Metadata } from "next";
-import EstimateLookup from "./components/estimate-lookup";
+import EstimateLookupPage from "./estimate-lookup";
 
 export const metadata: Metadata = {
     title: 'Tra cứu dự toán',
     description: 'Tra cứu dự toán',
 }
 
-const EstimateLookupPage = () => {
+const EstimateLookup = () => {
     return (
         <>
             <CustomBreadcrumb items={[
@@ -18,10 +18,10 @@ const EstimateLookupPage = () => {
             ]} />
 
             <div className="space-y-6 pt-2">
-                <EstimateLookup />
+                <EstimateLookupPage />
             </div>
         </>
     );
 };
 
-export default EstimateLookupPage;
+export default EstimateLookup;

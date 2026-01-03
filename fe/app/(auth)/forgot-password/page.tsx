@@ -1,13 +1,13 @@
 import { Metadata } from "next";
-import ForgotPasswordForm from "./components/ForgotPasswordForm";
+import ForgotPasswordPage from "./forgot-password-page";
 
 export const metadata: Metadata = {
   title: 'Đổi mật khẩu',
   description: 'Đổi mật khẩu',
 }
 
-const ChangePasswordPage = () => {
-  return <ForgotPasswordForm />
+const ForgotPassword = () => {
+  return <ForgotPasswordPage />
 };
 
-export default ChangePasswordPage;
+export default ForgotPassword;

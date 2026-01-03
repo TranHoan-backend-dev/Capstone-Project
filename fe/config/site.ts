@@ -82,19 +82,19 @@ export const siteConfig = {
           ],
         },
         {
-          key: "manage-supplies",
-          label: "Quản lý mẫu bốc vật tư",
-          href: "/manage-supplies",
+          key: "design-processing",
+          label: "Xử lý đơn chờ thiết kế & Thiết kế",
+          href: "/design-processing",
         },
         {
-          key: "survey-new",
-          label: "Tạo phiếu khảo sát",
-          href: "/report/surveys/new",
+          key: "assigning-survey",
+          label: "Phân công khảo sát thiết kế",
+          href: "/assigning-survey",
         },
         {
-          key: "survey-pending",
-          label: "Khảo sát chờ duyệt",
-          href: "/report/surveys/pending",
+          key: "estimate-preparation",
+          label: "Lập dự toán",
+          href: "/estimate-preparation",
         },
         {
           key: "estimate-lookup",
@@ -102,9 +102,14 @@ export const siteConfig = {
           href: "/estimate-lookup",
         },
         {
-          key: "estimate-preparation",
-          label: "Lập dự toán",
-          href: "/estimate-preparation",
+          key: "manage-supplies",
+          label: "Quản lý mẫu bốc vật tư",
+          href: "/manage-supplies",
+        },
+        {
+          key: "survey-pending",
+          label: "Nhập đơn dự toán ống trục",
+          href: "/#",
         },
       ],
     },
@@ -116,7 +121,7 @@ export const siteConfig = {
           key: "settlement-lookup",
           label: "Tra cứu quyết toán",
           href: "/settlement-lookup",
-        }
+        },
       ],
     },
     {
@@ -124,19 +129,9 @@ export const siteConfig = {
       label: "Ghi chỉ số & Hóa đơn",
       items: [
         {
-          key: "billing-meter",
-          label: "Ghi chỉ số",
-          href: "/dashboard/billing/meter",
-        },
-        {
-          key: "billing-invoice",
-          label: "Hóa đơn",
-          href: "/dashboard/billing/invoice",
-        },
-        {
-          key: "billing-payment",
-          label: "Thanh toán",
-          href: "/dashboard/billing/payment",
+          key: "meter-verification",
+          label: "Kiểm tra chỉ số bằng hình ảnh",
+          href: "/meter-verification",
         },
       ],
     },
