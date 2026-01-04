@@ -1,6 +1,6 @@
 import React from "react";
 import { Metadata } from "next";
-import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
+import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
 import { FilterSection } from "./components/filter-section";
 import { CustomerListTable } from "./components/customer-list-table";
 import { MeterPreviewCard } from "./components/meter-preview-card";

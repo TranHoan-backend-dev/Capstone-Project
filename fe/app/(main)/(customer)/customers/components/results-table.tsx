@@ -54,12 +54,12 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
     ];
 
     const actionsItems = (id: number) => [
-        { content: "Áp giá", icon: SetPriceIcon, className: BlueYellowIconColor, onPress: onPriceOpen },
+        { content: "Áp giá", color: "primary" as const, icon: SetPriceIcon, className: BlueYellowIconColor, onPress: onPriceOpen },
         // Nút tiêu thụ ở đây là trình bày báo cáo dạng word
-        { content: "Tiêu thụ", icon: UsageIcon, className: GreenIconColor, href: "#" },
-        { content: "Thay ĐH", icon: ReplaceWaterMeter, className: AmberIconColor, onPress: onMeterOpen },
+        { content: "Tiêu thụ", color: "success" as const, icon: UsageIcon, className: GreenIconColor, href: "#" },
+        { content: "Thay ĐH", color: "warning" as const, icon: ReplaceWaterMeter, className: AmberIconColor, onPress: onMeterOpen },
         { content: "Lịch sử", icon: HistoryIcon, className: WhiteIconColor, href: `/customers/${id}/history` },
-        { content: "Hồ sơ", icon: ProfileIcon, className: BlueYellowIconColor, href: `/customers/${id}` },
+        { content: "Hồ sơ", color: "primary" as const, icon: ProfileIcon, className: BlueYellowIconColor, href: `/customers/${id}` },
     ];
 
     const renderCell = (item: Customer, columnKey: string) => {
@@ -90,7 +90,7 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
                 return (
                     <div className="flex items-center justify-center gap-1">
                         {actionsItems(item.id).map((action, idx) => (
-                            <Tooltip key={idx} content={action.content} closeDelay={0}>
+                            <Tooltip key={idx} content={action.content} closeDelay={0} color={action.color ?? "default"}>
                                 <Button
                                     isIconOnly
                                     as={action.href ? NextLink : "button"}

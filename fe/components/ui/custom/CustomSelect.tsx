@@ -35,7 +35,7 @@ const CustomSelect = ({
       variant="bordered"
       radius="md"
       size="md"
-      className={`font-bold ${className ?? ""}`}
+      className={className}
       selectedKeys={selectedKeys}
       defaultSelectedKeys={defaultSelectedKeys}
       onSelectionChange={(keys) =>

@@ -18,7 +18,7 @@ import {
 } from "@heroui/react";
 import { FunnelIcon, ChevronDoubleLeftIcon, ChevronLeftIcon, ChevronRightIcon, ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 
-import { CustomPagination } from "@/components/ui/CustomPagination";
+import { CustomPagination } from "@/components/ui/custom/CustomPagination";
 
 interface SubMasterMeterModalProps {
     isOpen: boolean;

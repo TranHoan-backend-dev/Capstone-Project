@@ -14,7 +14,7 @@ import {
   Spinner,
 } from "@heroui/react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
-import { CustomPagination } from "./CustomPagination";
+import { CustomPagination } from "./custom/CustomPagination";
 
 interface Column {
   key: string;

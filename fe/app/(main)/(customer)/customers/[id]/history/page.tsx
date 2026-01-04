@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useParams } from "next/navigation";
-import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
+import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import { Chip, Tooltip, Button } from "@heroui/react";
 import { BlueYellowIconColor, DarkGreenChip, GreenIconColor, ProfileIcon, SetPriceIcon, UsageIcon } from "@/config/chip-and-icon";

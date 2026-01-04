@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useParams, useRouter } from "next/navigation";
-import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
+import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
 import { Card, CardBody, Button, CardHeader } from "@heroui/react";
 import {
     ArrowLeftIcon,
@@ -12,6 +12,7 @@ import {
     InformationCircleIcon,
     DocumentIcon
 } from "@heroicons/react/24/outline";
+import { DarkYellowChip, TitleDarkColor } from "@/config/chip-and-icon";
 
 const CustomerProfile = () => {
     const params = useParams();
@@ -22,6 +23,8 @@ const CustomerProfile = () => {
         name: "Nguyễn Song Hoàn",
         address: "2f9b TTĐ, Hoàng Diệu, , , Phường Nam Định,",
     };
+
+    const customerInfomationStyle = "text-sm font-semibold text-gray-800 dark:text-gray-100"
 
     return (
         <div className="space-y-6 pt-2 pb-8">
@@ -35,24 +38,24 @@ const CustomerProfile = () => {
 
             <div className="grid gap-6 w-full">
                 <Card className="w-full shadow-md border border-divider dark:border-gray-800 bg-background">
-                    <CardHeader className="flex gap-3 px-6 py-4 bg-gradient-to-r from-blue-100 to-blue-50 dark:from-blue-900/40 dark:to-blue-800/20 text-blue-700 dark:text-blue-300 rounded-t-lg">
+                    <CardHeader className={`flex gap-3 px-6 py-4 from-blue-100 to-blue-50 dark:from-yellow-900/40 dark:to-yellow-800/20 text-blue-700 ${TitleDarkColor} rounded-t-lg`}>
                         <div className="p-2 bg-blue-200/50 rounded-full">
-                            <UserCircleIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                            <UserCircleIcon className="w-6 h-6 text-blue-600 dark:text-white" />
                         </div>
                         <div className="flex flex-col">
                             <p className="text-md font-bold uppercase tracking-wide">Thông tin hồ sơ</p>
-                            <p className="text-small text-blue-600/80 dark:text-blue-300/80">Chi tiết thông tin khách hàng</p>
+                            <p className="text-small text-blue-600/80 dark:text-yellow-300/80">Chi tiết thông tin khách hàng</p>
                         </div>
                     </CardHeader>
                     <CardBody className="p-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                             <div className="flex flex-col gap-1 p-3 bg-gray-50 dark:bg-default-50 rounded-lg border border-transparent hover:border-blue-200 transition-colors">
                                 <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Tên khách hàng</span>
-                                <span className="text-sm font-semibold text-gray-800 dark:text-gray-100">{customer.name}</span>
+                                <span className={customerInfomationStyle}>{customer.name}</span>
                             </div>
                             <div className="flex flex-col gap-1 p-3 bg-gray-50 dark:bg-default-50 rounded-lg border border-transparent hover:border-blue-200 transition-colors">
                                 <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Địa chỉ</span>
-                                <span className="text-sm font-semibold text-gray-800 dark:text-gray-100 break-words">{customer.address}</span>
+                                <span className={`${customerInfomationStyle} break-words`}>{customer.address}</span>
                             </div>
                         </div>
                         <div className="flex justify-end mt-6">
@@ -62,7 +65,7 @@ const CustomerProfile = () => {
                                 color="primary"
                                 startContent={<ArrowLeftIcon className="w-4 h-4" />}
                                 onPress={() => router.back()}
-                                className="font-medium"
+                                className={`${DarkYellowChip} font-bold`}
                             >
                                 Quay lại danh sách
                             </Button>
@@ -88,7 +91,7 @@ const CustomerProfile = () => {
                                 <ArrowDownTrayIcon className="w-8 h-8 rotate-180" />
                             </div>
                             <div className="text-center z-10">
-                                <span className="text-sm font-semibold text-blue-600 hover:text-blue-700">Chọn tệp tin</span>
+                                <span className="text-sm font-semibold text-blue-600 hover:text-blue-700 dark:text-yellow-100">Chọn tệp tin</span>
                                 <span className="text-sm text-gray-500"> hoặc kéo thả vào đây</span>
                                 <p className="text-xs text-gray-400 mt-1">Hỗ trợ PDF, PNG, JPG (Tối đa 5MB)</p>
                             </div>
@@ -104,7 +107,7 @@ const CustomerProfile = () => {
                             <Button
                                 size="sm"
                                 color="primary"
-                                className="font-medium shadow-sm"
+                                className={`${DarkYellowChip} font-bold shadow-sm`}
                                 startContent={<ArrowDownTrayIcon className="w-4 h-4" />}
                             >
                                 Lưu tài liệu

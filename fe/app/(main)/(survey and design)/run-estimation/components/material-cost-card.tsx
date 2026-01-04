@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, Input, Tooltip } from "@heroui/react";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import CustomInput from "@/components/ui/CustomInput";
+import CustomInput from "@/components/ui/custom/CustomInput";
 import {
     DocumentChartBarIcon,
     CheckCircleIcon

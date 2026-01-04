@@ -13,7 +13,7 @@ import { ArrowPathIcon, CheckCircleIcon, MagnifyingGlassIcon, EyeIcon, FolderIco
 
 export const DarkGreenChip = "dark:bg-green-900 dark:text-white"
 export const DarkBlueChip = "dark:bg-blue-900 dark:text-white"
-export const DarkYellowChip = "dark:bg-amber-400 dark:text-zinc-900"
+export const DarkYellowChip = "dark:bg-amber-200 dark:text-zinc-900"
 export const DarkRedChip = "dark:bg-red-900 dark:text-white"
 export const DarkWhiteChip = "dark:bg-white dark:text-black"
 export const DarkGrayChip = "dark:bg-gray-900 dark:text-white"
@@ -43,3 +43,5 @@ export const BlueYellowIconColor = `${BaseColor} text-blue-500 dark:text-yellow-
 export const GreenIconColor = `${BaseColor} text-green-500 dark:text-success hover:text-green-600`
 export const AmberIconColor = `${BaseColor} text-amber-500 dark:text-amber-400 hover:text-amber-600 dark:hover:text-amber-300`
 export const WhiteIconColor = `${BaseColor} text-white-500 dark:text-white-400 hover:text-white-600 dark:hover:text-white-300`
+
+export const TitleDarkColor = "dark:text-yellow-300"

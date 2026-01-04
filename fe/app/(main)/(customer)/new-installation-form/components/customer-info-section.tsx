@@ -1,7 +1,9 @@
 "use client";
 
 import React from "react";
-import { Input, Select, SelectItem, Checkbox } from "@heroui/react";
+import { TitleDarkColor } from "@/config/chip-and-icon";
+import CustomInput from "@/components/ui/custom/CustomInput";
+import CustomSelect from "@/components/ui/custom/CustomSelect";
 
 export const CustomerInfoSection = () => {
     const mainInputContent = [
@@ -33,71 +35,56 @@ export const CustomerInfoSection = () => {
 
     return (
         <div className="space-y-6">
-            <h2 className="text-sm font-bold text-blue-600 dark:text-primary-400 uppercase tracking-wider">Thông tin khách hàng</h2>
+            <h2 className={`text-sm font-bold text-blue-600 ${TitleDarkColor} uppercase tracking-wider`}>Thông tin khách hàng</h2>
             <div className="space-y-4">
                 {mainInputContent.slice(0, 2).map((item, index) => (
                     <div key={index} className="space-y-1">
-                        <Input
-                            variant="bordered"
-                            radius="md"
+                        <CustomInput
                             label={item.label}
                             isRequired={item.isRequired}
-                            placeholder={item.placeholder}
+                            value={item.placeholder}
                             type={item.type}
-                            labelPlacement="inside"
                         />
                     </div>
                 ))}
 
                 {selectFieldContent.map((item, index) => (
                     <div key={index} className="space-y-1">
-                        <Select
+                        <CustomSelect
                             label={item.label}
-                            variant="bordered"
-                            radius="md"
-                            labelPlacement="inside"
-                            defaultSelectedKeys={item.defaultKey ? [item.defaultKey] : undefined}
-                        >
-                            {item.options.map((opt) => (
-                                <SelectItem key={opt.key} textValue={opt.label}>
-                                    {opt.label}
-                                </SelectItem>
-                            ))}
-                        </Select>
+                            options={item.options.map((opt) => ({
+                                label: opt.label,
+                                value: opt.key,
+                            }))}
+                            defaultSelectedKeys={
+                                item.defaultKey
+                                    ? new Set([item.defaultKey])
+                                    : undefined
+                            }
+                        />
                     </div>
                 ))}
 
                 {mainInputContent.slice(2).map((item, index) => (
                     <div key={index} className="space-y-1">
-                        <Input
-                            variant="bordered"
-                            radius="md"
+                        <CustomInput
                             label={item.label}
                             isRequired={item.isRequired}
-                            placeholder={item.placeholder}
+                            value={item.placeholder}
                             type={item.type}
-                            labelPlacement="inside"
                         />
                     </div>
                 ))}
 
                 <div className="space-y-2 pt-2">
-                    <Select
+                    <CustomSelect
                         label="Mục đích sử dụng"
-                        variant="bordered"
-                        radius="md"
-                        labelPlacement="inside"
-                    >
-                        <SelectItem key="sinh-hoat" textValue="Sinh hoạt">
-                            Sinh hoạt
-                        </SelectItem>
-                        <SelectItem key="kinh-doanh" textValue="Kinh doanh">
-                            Kinh doanh
-                        </SelectItem>
-                        <SelectItem key="san-xuat" textValue="Sản xuất">
-                            Sản xuất
-                        </SelectItem>
-                    </Select>
+                        options={[
+                            { value: "sinh-hoat", label: "Sinh hoạt" },
+                            { value: "kinh-doanh", label: "Kinh doanh" },
+                            { value: "san-xuat", label: "Sản xuất" },
+                        ]}
+                    />
                 </div>
             </div>
         </div>

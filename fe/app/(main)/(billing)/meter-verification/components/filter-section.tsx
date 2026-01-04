@@ -4,7 +4,7 @@ import React from "react";
 import { Button, DatePicker, Select, SelectItem } from "@heroui/react";
 import { FunnelIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { GenericSearchFilter, FilterLabel } from "@/components/ui/GenericSearchFilter";
-import CustomInput from "@/components/ui/CustomInput";
+import CustomInput from "@/components/ui/custom/CustomInput";
 
 export const FilterSection = () => {
     const selectFields = [

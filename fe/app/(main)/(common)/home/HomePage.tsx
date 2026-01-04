@@ -1,6 +1,6 @@
 'use client'
 
-import CustomInput from "@/components/ui/CustomInput";
+import CustomInput from "@/components/ui/custom/CustomInput";
 import { Button, Card, CardBody, Input, Select, SelectItem } from "@heroui/react";
 import { useState } from "react";
 
