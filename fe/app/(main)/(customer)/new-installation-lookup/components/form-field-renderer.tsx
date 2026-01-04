@@ -1,3 +1,5 @@
+"use client";
+
 import { Input, DatePicker, Select, SelectItem } from "@heroui/react";
 
 import { FormField } from "@/types/index";
