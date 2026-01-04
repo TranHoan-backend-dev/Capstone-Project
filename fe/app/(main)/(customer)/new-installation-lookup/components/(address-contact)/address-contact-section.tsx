@@ -1,8 +1,9 @@
 "use client";
 
+import { FormFieldRenderer } from "../form-field-renderer";
+
 import { addressContactFields } from "./address-contact.fields";
 import { bankInfoFields } from "./bank-info.field";
-import { FormFieldRenderer } from "../form-field-renderer";
 
 export const AddressContactSection = () => (
   <div className="space-y-6">

@@ -26,16 +26,16 @@ const CustomSingleDatePicker = ({
     <div className="space-y-1">
       <DatePicker
         aria-label={label}
+        className={className}
+        isDisabled={isDisabled}
+        isRequired={isRequired}
         label={label}
         labelPlacement="inside"
-        variant="bordered"
         radius="md"
         size="md"
         value={value}
+        variant="bordered"
         onChange={onChange}
-        isDisabled={isDisabled}
-        isRequired={isRequired}
-        className={className}
         {...props}
       />
     </div>

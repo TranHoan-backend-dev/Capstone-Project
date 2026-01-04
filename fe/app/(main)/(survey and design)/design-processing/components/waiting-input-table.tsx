@@ -3,6 +3,9 @@
 import React, { useState } from "react";
 import { Chip, Link, Tooltip } from "@heroui/react";
 import NextLink from "next/link";
+
+import { DesignProcessingModal } from "./design-processing-modal";
+
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import {
   BlueYellowIconColor,
@@ -10,9 +13,8 @@ import {
   DarkRedChip,
   RestoreIcon,
   DarkGrayChip,
-  DarkPurpleChip
+  DarkPurpleChip,
 } from "@/config/chip-and-icon";
-import { DesignProcessingModal } from "./design-processing-modal";
 import { DesignProcessingItem, StatusDetailData } from "@/types";
 
 interface WaitingInputTableProps {
@@ -56,7 +58,7 @@ export const WaitingInputTable = ({
     useState<DesignProcessingItem | null>(null);
 
   const mapDesignToModalData = (
-    item: DesignProcessingItem
+    item: DesignProcessingItem,
   ): StatusDetailData => ({
     code: item.code,
     address: item.address,
@@ -69,7 +71,7 @@ export const WaitingInputTable = ({
     totalPrice: "",
     note: "",
   });
-  
+
   const columns: any[] = [
     { key: "stt", label: "#", align: "center", width: "60px" },
     { key: "code", label: "Mã đơn" },
@@ -96,8 +98,8 @@ export const WaitingInputTable = ({
         return (
           <Link
             as={NextLink}
-            href="#"
             className="font-bold text-blue-600 hover:underline hover:text-blue-800 dark:text-primary dark:hover:text-primary-600"
+            href="#"
           >
             {item.code}
           </Link>
@@ -110,16 +112,17 @@ export const WaitingInputTable = ({
         );
       case "status":
         const config = statusMap[item.status];
+
         return (
           <button
-            onClick={() => handleStatusClick(item)}
             className="hover:opacity-80 transition-opacity focus:outline-none"
+            onClick={() => handleStatusClick(item)}
           >
             <Chip
-              size="sm"
-              variant="flat"
               className={`font-bold ${config.bg}`}
               color={`${config.color}`}
+              size="sm"
+              variant="flat"
             >
               {config.label}
             </Chip>
@@ -128,7 +131,7 @@ export const WaitingInputTable = ({
       case "action":
         return (
           <div className="flex justify-center">
-            <Tooltip content="Khôi phục" color="primary">
+            <Tooltip color="primary" content="Khôi phục">
               <RestoreIcon
                 className={BlueYellowIconColor}
                 onClick={() => onRestore?.(item)}
@@ -154,22 +157,22 @@ export const WaitingInputTable = ({
   return (
     <>
       <GenericDataTable
-        title="Danh sách đang chờ đầu vào & từ chối thiết kế"
+        isCollapsible
         columns={columns}
         data={data}
-        renderCell={renderCell}
-        isCollapsible
+        headerSummary={`${data.length}`}
         paginationProps={{
           total: 5,
           initialPage: 1,
           summary: `${data.length}`,
         }}
-        headerSummary={`${data.length}`}
+        renderCell={renderCell}
+        title="Danh sách đang chờ đầu vào & từ chối thiết kế"
       />
       <DesignProcessingModal
+        data={selectedDesign ? mapDesignToModalData(selectedDesign) : undefined}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        data={selectedDesign ? mapDesignToModalData(selectedDesign) : undefined}
       />
     </>
   );

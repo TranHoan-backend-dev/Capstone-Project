@@ -4,27 +4,27 @@ import React from "react";
 import { Breadcrumbs, BreadcrumbItem } from "@heroui/react";
 
 interface BreadcrumbItemType {
-    label: string;
-    href?: string;
-    isCurrent?: boolean;
+  label: string;
+  href?: string;
+  isCurrent?: boolean;
 }
 
 interface CustomBreadcrumbProps {
-    items: BreadcrumbItemType[];
+  items: BreadcrumbItemType[];
 }
 
 export const CustomBreadcrumb = ({ items }: CustomBreadcrumbProps) => {
-    return (
-        <Breadcrumbs variant="light" size="sm" className="text-default-400">
-            {items.map((item, index) => (
-                <BreadcrumbItem
-                    key={index}
-                    href={item.href}
-                    className={`${item.isCurrent ? "font-bold text-primary" : ""}`}
-                >
-                    {item.label}
-                </BreadcrumbItem>
-            ))}
-        </Breadcrumbs>
-    );
+  return (
+    <Breadcrumbs className="text-default-400" size="sm" variant="light">
+      {items.map((item, index) => (
+        <BreadcrumbItem
+          key={index}
+          className={`${item.isCurrent ? "font-bold text-primary" : ""}`}
+          href={item.href}
+        >
+          {item.label}
+        </BreadcrumbItem>
+      ))}
+    </Breadcrumbs>
+  );
 };

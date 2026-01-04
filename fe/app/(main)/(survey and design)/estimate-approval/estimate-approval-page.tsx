@@ -1,230 +1,242 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { FilterSection } from "@/components/ui/FilterSection";
-import { ApprovalInputSection } from "./components/approval-input-section";
-import { EstimateTable, EstimateOrder } from "./components/estimate-table";
 import { Tab, Tabs, DateValue } from "@heroui/react";
 
+import { ApprovalInputSection } from "./components/approval-input-section";
+import { EstimateTable, EstimateOrder } from "./components/estimate-table";
+
+import { FilterSection } from "@/components/ui/FilterSection";
+
 const EstimateApprovalPage = () => {
-    const [keyword, setKeyword] = useState("");
-    const [from, setFrom] = useState<DateValue | null | undefined>(null);
-    const [to, setTo] = useState<DateValue | null | undefined>(null);
+  const [keyword, setKeyword] = useState("");
+  const [from, setFrom] = useState<DateValue | null | undefined>(null);
+  const [to, setTo] = useState<DateValue | null | undefined>(null);
 
-    const [approvalDate, setApprovalDate] = useState<DateValue | null | undefined>(null);
-    const [approvalNote, setApprovalNote] = useState("");
-    const [activeTab, setActiveTab] = useState<string>("pending");
+  const [approvalDate, setApprovalDate] = useState<
+    DateValue | null | undefined
+  >(null);
+  const [approvalNote, setApprovalNote] = useState("");
+  const [activeTab, setActiveTab] = useState<string>("pending");
 
-    // Mock Data
-    const mockData: EstimateOrder[] = [
-        {
-            id: 1,
-            code: "DT-2024-001",
-            designProfileName: "Hệ thống điện mặt trời 5kW\nNguyễn Văn Minh",
-            phone: "0912345678",
-            installationAddress: "123 Nguyễn Trãi, Q.1, TP.HCM",
-            totalAmount: "125,000,000 ₫",
-            createdDate: "15/01/2024",
-            creator: "Trần Thị B",
-            status: "pending",
-        },
-        {
-            id: 2,
-            code: "DT-2024-002",
-            designProfileName: "Lắp đặt điện năng lượng 10kW\nLê Thị Hoa",
-            phone: "0987654321",
-            installationAddress: "456 Lê Lợi, Quận 3, TP.HCM",
-            totalAmount: "125,000,000 ₫",
-            createdDate: "14/01/2024",
-            creator: "Lê Văn C",
-            status: "pending",
-        },
-        {
-            id: 3,
-            code: "DT-2024-003",
-            designProfileName: "Hệ thống điện mặt trời 7.5kW\nPhạm Văn Đức",
-            phone: "0901234567",
-            installationAddress: "789 Cách Mạng Tháng 8, Q.10",
-            totalAmount: "125,000,000 ₫",
-            createdDate: "13/01/2024",
-            creator: "Trần Thị B",
-            status: "pending",
-        },
-        {
-            id: 4,
-            code: "DT-2024-004",
-            designProfileName: "Điện năng lượng mặt trời 3kW\nHoàng Thị Mai",
-            phone: "0933445566",
-            installationAddress: "234 Võ Văn Tần, Q.3, TP.HCM",
-            totalAmount: "78,500,000 ₫",
-            createdDate: "12/01/2024",
-            creator: "Lê Văn C",
-            status: "pending",
-        },
-        {
-            id: 5,
-            code: "DT-2024-005",
-            designProfileName: "Hệ thống năng lượng 12kW\nVũ Minh Tuấn",
-            phone: "0977889900",
-            installationAddress: "567 Điện Biên Phủ, Bình Thạnh",
-            totalAmount: "125,000,000 ₫",
-            createdDate: "11/01/2024",
-            creator: "Trần Thị B",
-            status: "pending",
-        },
-        {
-            id: 6,
-            code: "DT-2024-006",
-            designProfileName: "Hệ thống điện mặt trời 20kW\nNguyễn Văn An",
-            phone: "0912999888",
-            installationAddress: "123 Đường Láng, Hà Nội",
-            totalAmount: "250,000,000 ₫",
-            createdDate: "10/01/2024",
-            creator: "Trần Thị B",
-            status: "approved",
-        },
-        {
-            id: 7,
-            code: "DT-2024-007",
-            designProfileName: "Điện năng lượng 15kW\nPhạm Thị Cúc",
-            phone: "0987111222",
-            installationAddress: "456 Cầu Giấy, Hà Nội",
-            totalAmount: "180,000,000 ₫",
-            createdDate: "09/01/2024",
-            creator: "Lê Văn C",
-            status: "approved",
-        }
-    ];
+  // Mock Data
+  const mockData: EstimateOrder[] = [
+    {
+      id: 1,
+      code: "DT-2024-001",
+      designProfileName: "Hệ thống điện mặt trời 5kW\nNguyễn Văn Minh",
+      phone: "0912345678",
+      installationAddress: "123 Nguyễn Trãi, Q.1, TP.HCM",
+      totalAmount: "125,000,000 ₫",
+      createdDate: "15/01/2024",
+      creator: "Trần Thị B",
+      status: "pending",
+    },
+    {
+      id: 2,
+      code: "DT-2024-002",
+      designProfileName: "Lắp đặt điện năng lượng 10kW\nLê Thị Hoa",
+      phone: "0987654321",
+      installationAddress: "456 Lê Lợi, Quận 3, TP.HCM",
+      totalAmount: "125,000,000 ₫",
+      createdDate: "14/01/2024",
+      creator: "Lê Văn C",
+      status: "pending",
+    },
+    {
+      id: 3,
+      code: "DT-2024-003",
+      designProfileName: "Hệ thống điện mặt trời 7.5kW\nPhạm Văn Đức",
+      phone: "0901234567",
+      installationAddress: "789 Cách Mạng Tháng 8, Q.10",
+      totalAmount: "125,000,000 ₫",
+      createdDate: "13/01/2024",
+      creator: "Trần Thị B",
+      status: "pending",
+    },
+    {
+      id: 4,
+      code: "DT-2024-004",
+      designProfileName: "Điện năng lượng mặt trời 3kW\nHoàng Thị Mai",
+      phone: "0933445566",
+      installationAddress: "234 Võ Văn Tần, Q.3, TP.HCM",
+      totalAmount: "78,500,000 ₫",
+      createdDate: "12/01/2024",
+      creator: "Lê Văn C",
+      status: "pending",
+    },
+    {
+      id: 5,
+      code: "DT-2024-005",
+      designProfileName: "Hệ thống năng lượng 12kW\nVũ Minh Tuấn",
+      phone: "0977889900",
+      installationAddress: "567 Điện Biên Phủ, Bình Thạnh",
+      totalAmount: "125,000,000 ₫",
+      createdDate: "11/01/2024",
+      creator: "Trần Thị B",
+      status: "pending",
+    },
+    {
+      id: 6,
+      code: "DT-2024-006",
+      designProfileName: "Hệ thống điện mặt trời 20kW\nNguyễn Văn An",
+      phone: "0912999888",
+      installationAddress: "123 Đường Láng, Hà Nội",
+      totalAmount: "250,000,000 ₫",
+      createdDate: "10/01/2024",
+      creator: "Trần Thị B",
+      status: "approved",
+    },
+    {
+      id: 7,
+      code: "DT-2024-007",
+      designProfileName: "Điện năng lượng 15kW\nPhạm Thị Cúc",
+      phone: "0987111222",
+      installationAddress: "456 Cầu Giấy, Hà Nội",
+      totalAmount: "180,000,000 ₫",
+      createdDate: "09/01/2024",
+      creator: "Lê Văn C",
+      status: "approved",
+    },
+  ];
 
-    const [orders, setOrders] = useState<EstimateOrder[]>(mockData);
+  const [orders, setOrders] = useState<EstimateOrder[]>(mockData);
 
-    const filteredOrders = useMemo(() => {
-        let filtered = orders;
+  const filteredOrders = useMemo(() => {
+    let filtered = orders;
 
-        // Filter by tab
-        if (activeTab === "pending") {
-            filtered = filtered.filter(o => o.status === "pending");
-        } else {
-            // For demo, assuming all others are approved in this tab, 
-            // but really we need mock data for approved.
-            // Since mock data is all pending, let's just show empty or approved items if we had any.
-            filtered = filtered.filter(o => o.status === "approved");
-        }
+    // Filter by tab
+    if (activeTab === "pending") {
+      filtered = filtered.filter((o) => o.status === "pending");
+    } else {
+      // For demo, assuming all others are approved in this tab,
+      // but really we need mock data for approved.
+      // Since mock data is all pending, let's just show empty or approved items if we had any.
+      filtered = filtered.filter((o) => o.status === "approved");
+    }
 
-        // Filter by keyword
-        if (keyword) {
-            const lowerK = keyword.toLowerCase();
-            filtered = filtered.filter(o =>
-                o.code.toLowerCase().includes(lowerK) ||
-                o.designProfileName.toLowerCase().includes(lowerK) ||
-                o.phone.toLowerCase().includes(lowerK)
-            );
-        }
+    // Filter by keyword
+    if (keyword) {
+      const lowerK = keyword.toLowerCase();
 
-        return filtered;
-    }, [orders, activeTab, keyword]);
+      filtered = filtered.filter(
+        (o) =>
+          o.code.toLowerCase().includes(lowerK) ||
+          o.designProfileName.toLowerCase().includes(lowerK) ||
+          o.phone.toLowerCase().includes(lowerK),
+      );
+    }
 
-    const handleSearch = (query: string) => {
-        setKeyword(query);
-    };
+    return filtered;
+  }, [orders, activeTab, keyword]);
 
-    const handleApprove = (item: EstimateOrder) => {
-        console.log("Approve", item);
-        // Implement logic
-    };
+  const handleSearch = (query: string) => {
+    setKeyword(query);
+  };
 
-    const handleReject = (item: EstimateOrder) => {
-        console.log("Reject", item);
-        // Implement logic
-    };
+  const handleApprove = (item: EstimateOrder) => {
+    console.log("Approve", item);
+    // Implement logic
+  };
 
-    const handleEstimate = (item: EstimateOrder) => {
-        console.log("Estimate", item);
-    };
+  const handleReject = (item: EstimateOrder) => {
+    console.log("Reject", item);
+    // Implement logic
+  };
 
-    const handleView = (item: EstimateOrder) => {
-        console.log("View", item);
-    };
+  const handleEstimate = (item: EstimateOrder) => {
+    console.log("Estimate", item);
+  };
 
-    return (
-        <>
-            <FilterSection
-                actions={<></>}
-                title="Bộ lọc tìm kiếm"
-                onSearch={handleSearch}
-                keyword={keyword}
-                from={from}
-                to={to}
-                setKeyword={setKeyword}
-                setFrom={setFrom}
-                setTo={setTo}
-            />
+  const handleView = (item: EstimateOrder) => {
+    console.log("View", item);
+  };
 
-            <ApprovalInputSection
-                approvalDate={approvalDate}
-                approvalNote={approvalNote}
-                setApprovalDate={setApprovalDate}
-                setApprovalNote={setApprovalNote}
-            />
+  return (
+    <>
+      <FilterSection
+        actions={<></>}
+        from={from}
+        keyword={keyword}
+        setFrom={setFrom}
+        setKeyword={setKeyword}
+        setTo={setTo}
+        title="Bộ lọc tìm kiếm"
+        to={to}
+        onSearch={handleSearch}
+      />
 
-            <div className="bg-content1">
-                <Tabs
-                    aria-label="Options"
-                    variant="underlined"
-                    color="primary"
-                    classNames={{
-                        tabList: "gap-6 w-full relative rounded-none p-0 border-b border-divider",
-                        cursor: "w-full bg-primary",
-                        tab: "max-w-fit px-0 h-12",
-                        tabContent: "group-data-[selected=true]:text-primary font-bold text-base"
-                    }}
-                    selectedKey={activeTab}
-                    onSelectionChange={(key) => setActiveTab(key as string)}
-                >
-                    <Tab
-                        key="pending"
-                        title={
-                            <div className="flex items-center space-x-2 px-4">
-                                <span>Chờ duyệt</span>
-                                <span className="bg-orange-400 text-white text-xs px-2 py-0.5 rounded-full">12</span>
-                            </div>
-                        }
-                    >
-                        <div className="p-0">
-                            <EstimateTable
-                                data={filteredOrders}
-                                activeTab="pending"
-                                onApprove={handleApprove}
-                                onReject={handleReject}
-                                onEstimate={handleEstimate}
-                                onView={handleView}
-                            />
-                        </div>
-                    </Tab>
-                    <Tab
-                        key="approved"
-                        title={
-                            <div className="flex items-center space-x-2 px-4">
-                                <span>Đã duyệt</span>
-                                <span className="bg-default-200 text-default-600 text-xs px-2 py-0.5 rounded-full">45</span>
-                            </div>
-                        }
-                    >
-                        <div className="p-0">
-                            <EstimateTable
-                                data={filteredOrders}
-                                activeTab="approved"
-                                onApprove={handleApprove}
-                                onReject={handleReject}
-                                onEstimate={handleEstimate}
-                                onView={handleView}
-                            />
-                        </div>
-                    </Tab>
-                </Tabs>
+      <ApprovalInputSection
+        approvalDate={approvalDate}
+        approvalNote={approvalNote}
+        setApprovalDate={setApprovalDate}
+        setApprovalNote={setApprovalNote}
+      />
+
+      <div className="bg-content1">
+        <Tabs
+          aria-label="Options"
+          classNames={{
+            tabList:
+              "gap-6 w-full relative rounded-none p-0 border-b border-divider",
+            cursor: "w-full bg-primary",
+            tab: "max-w-fit px-0 h-12",
+            tabContent:
+              "group-data-[selected=true]:text-primary font-bold text-base",
+          }}
+          color="primary"
+          selectedKey={activeTab}
+          variant="underlined"
+          onSelectionChange={(key) => setActiveTab(key as string)}
+        >
+          <Tab
+            key="pending"
+            title={
+              <div className="flex items-center space-x-2 px-4">
+                <span>Chờ duyệt</span>
+                <span className="bg-orange-400 text-white text-xs px-2 py-0.5 rounded-full">
+                  12
+                </span>
+              </div>
+            }
+          >
+            <div className="p-0">
+              <EstimateTable
+                activeTab="pending"
+                data={filteredOrders}
+                onApprove={handleApprove}
+                onEstimate={handleEstimate}
+                onReject={handleReject}
+                onView={handleView}
+              />
             </div>
-        </>
-    );
+          </Tab>
+          <Tab
+            key="approved"
+            title={
+              <div className="flex items-center space-x-2 px-4">
+                <span>Đã duyệt</span>
+                <span className="bg-default-200 text-default-600 text-xs px-2 py-0.5 rounded-full">
+                  45
+                </span>
+              </div>
+            }
+          >
+            <div className="p-0">
+              <EstimateTable
+                activeTab="approved"
+                data={filteredOrders}
+                onApprove={handleApprove}
+                onEstimate={handleEstimate}
+                onReject={handleReject}
+                onView={handleView}
+              />
+            </div>
+          </Tab>
+        </Tabs>
+      </div>
+    </>
+  );
 };
 
 export default EstimateApprovalPage;

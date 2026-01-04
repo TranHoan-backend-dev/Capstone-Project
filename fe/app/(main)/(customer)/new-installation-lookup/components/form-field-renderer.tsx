@@ -1,4 +1,5 @@
 import { Input, DatePicker, Select, SelectItem } from "@heroui/react";
+
 import { FormField } from "@/types/index";
 import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
 
@@ -15,40 +16,40 @@ export const FormFieldRenderer = ({
     case "input":
       return (
         <Input
-          label={field.label}
           defaultValue={field.defaultValue}
-          isRequired={field.required}
           isDisabled={field.disabled}
-          variant="bordered"
-          radius="md"
+          isRequired={field.required}
+          label={field.label}
           labelPlacement="inside"
+          radius="md"
+          variant="bordered"
         />
       );
 
     case "date":
       return (
         <DatePicker
-          label={field.label}
-          isRequired={field.required}
-          isDisabled={field.disabled}
-          variant="bordered"
-          radius="md"
-          labelPlacement="inside"
           className="w-full"
+          isDisabled={field.disabled}
+          isRequired={field.required}
+          label={field.label}
+          labelPlacement="inside"
+          radius="md"
+          variant="bordered"
         />
       );
 
     case "select":
       return (
         <Select
-          label={field.label}
           defaultSelectedKeys={
             field.defaultValue ? [field.defaultValue] : undefined
           }
           isDisabled={field.disabled}
-          variant="bordered"
-          radius="md"
+          label={field.label}
           labelPlacement="inside"
+          radius="md"
+          variant="bordered"
         >
           {field.options.map((opt) => (
             <SelectItem key={opt.key}>{opt.label}</SelectItem>
@@ -58,12 +59,12 @@ export const FormFieldRenderer = ({
     case "search-input":
       return (
         <SearchInputWithButton
-          placeholder={field.label}
-          labelPlacement="inside"
-          value={value ?? ""}
-          onValueChange={onValueChange ?? (() => {})}
-          onSearch={field.onSearchClick}
           className="font-bold"
+          labelPlacement="inside"
+          placeholder={field.label}
+          value={value ?? ""}
+          onSearch={field.onSearchClick}
+          onValueChange={onValueChange ?? (() => {})}
         />
       );
   }

@@ -1,8 +1,9 @@
-'use client'
+"use client";
+
+import { Button, Card, CardBody, Select, SelectItem } from "@heroui/react";
+import { useState } from "react";
 
 import CustomInput from "@/components/ui/custom/CustomInput";
-import { Button, Card, CardBody, Input, Select, SelectItem } from "@heroui/react";
-import { useState } from "react";
 
 export const HomePage = () => {
   const [clientMachineName, setClientMachineName] = useState("");
@@ -26,15 +27,15 @@ export const HomePage = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <CustomInput
-              type="text"
-              label="Địa chỉ IP máy khách"
-              value="117.6.63.110"
               isReadOnly
+              label="Địa chỉ IP máy khách"
+              type="text"
+              value="117.6.63.110"
             />
 
             <CustomInput
-              type="text"
               label="Tên máy khách"
+              type="text"
               value={clientMachineName}
               onValueChange={setClientMachineName}
             />
@@ -44,25 +45,28 @@ export const HomePage = () => {
                 label="Chương trình"
                 labelPlacement="inside"
                 selectedKeys={[selectedProgram]}
+                variant="bordered"
                 onSelectionChange={(keys) =>
                   setSelectedProgram(Array.from(keys)[0] as string)
                 }
-                variant="bordered"
               >
                 {programOptions.map((option) => (
-                  <SelectItem key={option.key} className="dark:text-white">{option.label}</SelectItem>
+                  <SelectItem key={option.key} className="dark:text-white">
+                    {option.label}
+                  </SelectItem>
                 ))}
               </Select>
             </div>
           </div>
 
           <div className="flex gap-2 mt-2">
+            <Button color="primary">Tìm kiếm</Button>
             <Button
-              color="primary"
+              className="dark:border-zinc-700 dark:text-zinc-300"
+              variant="bordered"
             >
-              Tìm kiếm
+              Đặt lại
             </Button>
-            <Button variant="bordered" className="dark:border-zinc-700 dark:text-zinc-300">Đặt lại</Button>
           </div>
         </CardBody>
       </Card>
@@ -70,7 +74,9 @@ export const HomePage = () => {
       <Card className="dark:bg-zinc-900 border-none">
         <CardBody>
           <div className="text-center text-gray-500 dark:text-zinc-400 py-12">
-            <p className="text-base font-medium">Không có dữ liệu để hiển thị</p>
+            <p className="text-base font-medium">
+              Không có dữ liệu để hiển thị
+            </p>
             <p className="text-sm mt-2">Vui lòng chọn bộ lọc và tìm kiếm</p>
           </div>
         </CardBody>

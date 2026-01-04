@@ -14,8 +14,8 @@ const ReportContractList = () => {
         <SearchToolbar />
 
         <ReportHeader
-          title="DANH SÁCH ĐƠN TỪ CHỐI THIẾT KẾ KHU VỰC THÀNH PHỐ NAM ĐỊNH"
           dateRange="Từ ngày 07/12/2025 đến ngày 07/12/2025"
+          title="DANH SÁCH ĐƠN TỪ CHỐI THIẾT KẾ KHU VỰC THÀNH PHỐ NAM ĐỊNH"
         />
 
         <DataTable columns={siteConfig.columnsRejectedDesign} data={[]} />

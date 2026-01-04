@@ -1,13 +1,15 @@
-"use client"
+"use client";
 
-import React, { useMemo, useState } from 'react'
-import { ActionsSection } from './components/actions-section'
-import { FilterSection } from '@/components/ui/FilterSection'
-import { OrdersToDesignTable } from './components/orders-to-design-table'
-import { ProcessedDesignsTable } from './components/processed-designs-table'
-import { WaitingInputTable } from './components/waiting-input-table'
-import { DateValue } from '@heroui/react'
-import { DesignProcessingItem } from '@/types'
+import React, { useMemo, useState } from "react";
+import { DateValue } from "@heroui/react";
+
+import { ActionsSection } from "./components/actions-section";
+import { OrdersToDesignTable } from "./components/orders-to-design-table";
+import { ProcessedDesignsTable } from "./components/processed-designs-table";
+import { WaitingInputTable } from "./components/waiting-input-table";
+
+import { FilterSection } from "@/components/ui/FilterSection";
+import { DesignProcessingItem } from "@/types";
 
 const DesignProcessingPage = () => {
   const [keyword, setKeyword] = useState("");
@@ -43,7 +45,8 @@ const DesignProcessingPage = () => {
       code: "0102580016",
       customerName: "Nguyễn Văn Vũ",
       phone: "0913090736",
-      address: "Thửa 344 ngách 31/294, Đường Kênh, Phường Nam Định, TP. Nam Định",
+      address:
+        "Thửa 344 ngách 31/294, Đường Kênh, Phường Nam Định, TP. Nam Định",
       registrationDate: "06/08/2025",
       surveyAppointment: "07/08/2025",
     },
@@ -52,7 +55,8 @@ const DesignProcessingPage = () => {
       code: "0102580015",
       customerName: "Nguyễn Văn Vũ",
       phone: "0913090736",
-      address: "Thửa 343 ngách 31/294, Đường Kênh, Phường Nam Định, TP. Nam Định",
+      address:
+        "Thửa 343 ngách 31/294, Đường Kênh, Phường Nam Định, TP. Nam Định",
       registrationDate: "06/08/2025",
       surveyAppointment: "07/08/2025",
     },
@@ -95,60 +99,78 @@ const DesignProcessingPage = () => {
 
   // Action Handlers
   const handleApprove = (order: DesignProcessingItem) => {
-    setOrdersToDesign(prev => prev.filter(i => i.id !== order.id));
-    setProcessedDesigns(prev => [...prev, order]);
+    setOrdersToDesign((prev) => prev.filter((i) => i.id !== order.id));
+    setProcessedDesigns((prev) => [...prev, order]);
   };
 
   const handleReject = (design: DesignProcessingItem) => {
-    setProcessedDesigns(prev => prev.filter(i => i.id !== design.id));
-    setWaitingInput(prev => [...prev, { ...design, status: "rejected" }]);
+    setProcessedDesigns((prev) => prev.filter((i) => i.id !== design.id));
+    setWaitingInput((prev) => [...prev, { ...design, status: "rejected" }]);
   };
 
   const handleRestore = (item: DesignProcessingItem) => {
-    setWaitingInput(prev => prev.filter(i => i.id !== item.id));
-    setOrdersToDesign(prev => [...prev, { ...item, status: "processing" }]);
+    setWaitingInput((prev) => prev.filter((i) => i.id !== item.id));
+    setOrdersToDesign((prev) => [...prev, { ...item, status: "processing" }]);
   };
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
   };
 
-  const filteredOrders = useMemo(() => ordersToDesign.filter(item =>
-    item.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.code.includes(searchQuery)
-  ), [ordersToDesign, searchQuery]);
+  const filteredOrders = useMemo(
+    () =>
+      ordersToDesign.filter(
+        (item) =>
+          item.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.code.includes(searchQuery),
+      ),
+    [ordersToDesign, searchQuery],
+  );
 
-  const filteredProcessed = useMemo(() => processedDesigns.filter(item =>
-    item.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.code.includes(searchQuery)
-  ), [processedDesigns, searchQuery]);
+  const filteredProcessed = useMemo(
+    () =>
+      processedDesigns.filter(
+        (item) =>
+          item.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.code.includes(searchQuery),
+      ),
+    [processedDesigns, searchQuery],
+  );
 
-  const filteredWaiting = useMemo(() => waitingInput.filter(item =>
-    item.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.code.includes(searchQuery)
-  ), [waitingInput, searchQuery]);
+  const filteredWaiting = useMemo(
+    () =>
+      waitingInput.filter(
+        (item) =>
+          item.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.code.includes(searchQuery),
+      ),
+    [waitingInput, searchQuery],
+  );
 
   return (
     <>
       <ActionsSection />
       <FilterSection
-        title="Tra cứu đơn"
-        onSearch={handleSearch}
-        keyword={keyword}
         from={from}
-        to={to}
-        setKeyword={setKeyword}
+        keyword={keyword}
         setFrom={setFrom}
+        setKeyword={setKeyword}
         setTo={setTo}
+        title="Tra cứu đơn"
+        to={to}
+        onSearch={handleSearch}
       />
 
       <div className="space-y-8">
         <OrdersToDesignTable data={filteredOrders} onApprove={handleApprove} />
-        <ProcessedDesignsTable data={filteredProcessed} onReject={handleReject} />
+        <ProcessedDesignsTable
+          data={filteredProcessed}
+          onReject={handleReject}
+        />
         <WaitingInputTable data={filteredWaiting} onRestore={handleRestore} />
-      </div>  
+      </div>
     </>
-  )
-}
+  );
+};
 
-export default DesignProcessingPage
+export default DesignProcessingPage;

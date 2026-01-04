@@ -5,15 +5,27 @@ export const DocumentTable = ({ data }: { data: SettlementDocumentRow[] }) => {
     <table className="w-full border-collapse text-xs border border-black">
       <thead>
         <tr>
-          <th rowSpan={2} className="border border-black text-center">STT</th>
-          <th rowSpan={2} className="border border-black text-center">Mã hiệu</th>
-          <th rowSpan={2} className="border border-black text-center">
+          <th className="border border-black text-center" rowSpan={2}>
+            STT
+          </th>
+          <th className="border border-black text-center" rowSpan={2}>
+            Mã hiệu
+          </th>
+          <th className="border border-black text-center" rowSpan={2}>
             Tên công việc
           </th>
-          <th rowSpan={2} className="border border-black text-center">ĐVT</th>
-          <th rowSpan={2} className="border border-black text-center">KL</th>
-          <th colSpan={2} className="border border-black text-center">Đơn giá</th>
-          <th colSpan={2} className="border border-black text-center">Thành tiền</th>
+          <th className="border border-black text-center" rowSpan={2}>
+            ĐVT
+          </th>
+          <th className="border border-black text-center" rowSpan={2}>
+            KL
+          </th>
+          <th className="border border-black text-center" colSpan={2}>
+            Đơn giá
+          </th>
+          <th className="border border-black text-center" colSpan={2}>
+            Thành tiền
+          </th>
         </tr>
         <tr>
           <th className="border border-black text-center">VL</th>

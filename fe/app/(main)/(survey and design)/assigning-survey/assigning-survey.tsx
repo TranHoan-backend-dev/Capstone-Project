@@ -1,10 +1,12 @@
 "use client";
 
-import { FilterSection } from "@/components/ui/FilterSection";
 import React, { useState } from "react";
-import { SurveyAssignmentTable } from "./components/results-table";
 import { DateValue } from "@heroui/react";
+
+import { SurveyAssignmentTable } from "./components/results-table";
 import SurveyTabs from "./components/servey-tabs";
+
+import { FilterSection } from "@/components/ui/FilterSection";
 import { SurveyAssignmentItem } from "@/types";
 
 const AssigningSurveyPage = () => {
@@ -55,7 +57,7 @@ const AssigningSurveyPage = () => {
       status: "assigned",
     },
   ];
-  
+
   const [activeTab, setActiveTab] = useState<"pending" | "assigned">("pending");
   const [keyword, setKeyword] = useState("");
   const [from, setFrom] = useState<DateValue | null | undefined>(null);
@@ -66,13 +68,13 @@ const AssigningSurveyPage = () => {
   return (
     <>
       <FilterSection
-        title="Phân công khảo sát thiết kế"
-        keyword={keyword}
         from={from}
-        to={to}
-        setKeyword={setKeyword}
+        keyword={keyword}
         setFrom={setFrom}
+        setKeyword={setKeyword}
         setTo={setTo}
+        title="Phân công khảo sát thiết kế"
+        to={to}
       />
 
       <div>

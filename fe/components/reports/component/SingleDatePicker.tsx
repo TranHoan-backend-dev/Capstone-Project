@@ -19,14 +19,14 @@ export const SingleDatePicker = ({
   return (
     <div className={`${className}`}>
       <DatePicker
+        className="w-full"
+        granularity="day"
         label={label}
         labelPlacement="inside"
-        value={value}
-        onChange={onChange}
-        granularity="day"
         size="md"
+        value={value}
         variant="bordered"
-        className="w-full"
+        onChange={onChange}
       />
     </div>
   );

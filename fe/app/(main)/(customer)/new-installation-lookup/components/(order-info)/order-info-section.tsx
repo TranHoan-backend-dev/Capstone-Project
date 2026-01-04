@@ -1,7 +1,8 @@
 "use client";
 
-import { orderInfoFields } from "./order-info.fields";
 import { FormFieldRenderer } from "../form-field-renderer";
+
+import { orderInfoFields } from "./order-info.fields";
 
 export const OrderInfoSection = () => {
   return (

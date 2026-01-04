@@ -1,6 +1,6 @@
 "use client";
 
-import { Form, Input, Link } from "@heroui/react";
+import { Form, Link } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import {
   UserIcon,
@@ -23,33 +23,34 @@ const LoginForm = () => {
         <Form className="space-y-4 md:space-y-3">
           <CustomInput
             isRequired
-            label="Nhập tên đăng nhập"
             endContent={
               <div className="flex items-center h-full">
                 <UserIcon className="w-5 h-5 text-gray-400 dark:text-zinc-500" />
               </div>
             }
+            label="Nhập tên đăng nhập"
           />
           <PasswordInput
             isRequired
-            label="Nhập mật khẩu"
             classNames={{
-              label: "text-sm font-medium text-gray-700 dark:text-zinc-400 font-bold",
+              label:
+                "text-sm font-medium text-gray-700 dark:text-zinc-400 font-bold",
               input: "text-gray-900 dark:text-white",
               inputWrapper:
                 "border border-gray-300 dark:border-zinc-800 bg-white dark:bg-zinc-800/50 hover:border-gray-400 dark:hover:border-zinc-700 h-12",
             }}
+            label="Nhập mật khẩu"
           />
 
           <div className="w-full pt-2">
             <div className="grid grid-cols-2 sm:grid-cols-1 gap-3 sm:gap-4">
               <CustomButton
-                color="primary"
-                type="submit"
                 className="w-full bg-blue-600 dark:bg-primary text-white md:h-12 font-bold"
+                color="primary"
                 startContent={
                   <ArrowRightStartOnRectangleIcon className="w-5 h-5" />
                 }
+                type="submit"
               >
                 Đăng nhập
               </CustomButton>
@@ -58,8 +59,8 @@ const LoginForm = () => {
 
           <div className="w-full flex justify-center pt-2">
             <Link
-              href="/forgot-password"
               className="text-sm text-blue-600 dark:text-primary hover:text-blue-700 dark:hover:text-primary-400 font-medium"
+              href="/forgot-password"
             >
               Quên mật khẩu?
             </Link>

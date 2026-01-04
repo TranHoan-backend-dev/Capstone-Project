@@ -14,11 +14,10 @@ const SurveyTabs = ({ activeTab, onChange }: Props) => {
           { key: "assigned" as const, label: "Đơn đã phân công", count: 186 },
         ].map((tab) => {
           const isPending = tab.key === "pending";
-          
+
           return (
             <button
               key={tab.key}
-              onClick={() => onChange(tab.key)}
               className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === tab.key
                   ? isPending
@@ -26,6 +25,7 @@ const SurveyTabs = ({ activeTab, onChange }: Props) => {
                     : "border-green-500 text-blue-600"
                   : "border-transparent text-black-600 hover:text-blue-700"
               }`}
+              onClick={() => onChange(tab.key)}
             >
               {tab.label}
               <span

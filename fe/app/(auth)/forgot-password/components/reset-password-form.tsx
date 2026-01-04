@@ -3,9 +3,11 @@
 import { Button } from "@heroui/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import PasswordInput from "@/components/ui/PasswordInput";
-import PasswordRequirements from "./PasswordRequirements";
 import { DocumentArrowDownIcon } from "@heroicons/react/24/solid";
+
+import PasswordRequirements from "./PasswordRequirements";
+
+import PasswordInput from "@/components/ui/PasswordInput";
 
 interface ResetPasswordFormProps {
   email: string;
@@ -44,11 +46,13 @@ const ResetPasswordForm = ({ email }: ResetPasswordFormProps) => {
 
     if (!isPasswordValid) {
       setError("Mật khẩu không đáp ứng các yêu cầu");
+
       return;
     }
 
     if (!passwordsMatch) {
       setError("Mật khẩu không khớp");
+
       return;
     }
 
@@ -88,7 +92,7 @@ const ResetPasswordForm = ({ email }: ResetPasswordFormProps) => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form className="space-y-6" onSubmit={handleSubmit}>
       <div className="space-y-2">
         <h1 className="text-2xl font-bold text-slate-900">Đặt mật khẩu mới</h1>
         <p className="text-sm text-slate-600">
@@ -97,6 +101,7 @@ const ResetPasswordForm = ({ email }: ResetPasswordFormProps) => {
       </div>
       <div>
         <PasswordInput
+          isRequired
           label="Nhập mật khẩu mới"
           value={formData.newPassword}
           onChange={(e) =>
@@ -105,12 +110,12 @@ const ResetPasswordForm = ({ email }: ResetPasswordFormProps) => {
               newPassword: e.target.value,
             })
           }
-          isRequired
         />
       </div>
 
       <div>
         <PasswordInput
+          isRequired
           label="Nhập lại mật khẩu mới"
           value={formData.confirmPassword}
           onChange={(e) =>
@@ -119,7 +124,6 @@ const ResetPasswordForm = ({ email }: ResetPasswordFormProps) => {
               confirmPassword: e.target.value,
             })
           }
-          isRequired
         />
       </div>
 
@@ -127,12 +131,12 @@ const ResetPasswordForm = ({ email }: ResetPasswordFormProps) => {
 
       <div className="flex justify-end space-x-4 pt-4 border-t border-gray-100 dark:border-zinc-800 mt-8">
         <Button
-          type="submit"
-          color="primary"
           className="px-6 h-11 bg-blue-600 dark:bg-primary hover:bg-blue-700 dark:hover:bg-primary-600 text-white font-bold"
-          isLoading={isLoading}
+          color="primary"
           disabled={isLoading}
+          isLoading={isLoading}
           startContent={<DocumentArrowDownIcon className="w-5 h-5" />}
+          type="submit"
         >
           {isLoading ? "Đang xử lý..." : "Đặt lại mật khẩu"}
         </Button>

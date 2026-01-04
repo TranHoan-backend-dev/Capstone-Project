@@ -1,28 +1,28 @@
-import { Input, InputProps } from '@heroui/react'
-import React from 'react'
+import { Input, InputProps } from "@heroui/react";
+import React from "react";
 
 interface CustomInputProps extends InputProps {
-    type?: string;
-    label: string;
+  type?: string;
+  label: string;
 }
 
 const CustomInput = ({
-    type = "text",
-    label,
-    isRequired,
-    ...props
+  type = "text",
+  label,
+  isRequired,
+  ...props
 }: CustomInputProps) => {
-    return (
-        <Input
-            type={type}
-            label={label}
-            labelPlacement="inside"
-            variant="bordered"
-            radius="md"
-            isRequired={isRequired}
-            {...props}
-        />
-    )
-}
+  return (
+    <Input
+      isRequired={isRequired}
+      label={label}
+      labelPlacement="inside"
+      radius="md"
+      type={type}
+      variant="bordered"
+      {...props}
+    />
+  );
+};
 
-export default CustomInput
+export default CustomInput;

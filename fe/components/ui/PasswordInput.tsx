@@ -23,17 +23,12 @@ const PasswordInput = ({
   return (
     <Input
       {...props}
-      size="md"
-      placeholder={placeholder}
-      type={showPassword ? "text" : "password"}
-      label={label}
-      labelPlacement="inside"
       endContent={
         <div className="flex items-center h-full">
           <button
-            type="button"
             aria-label="toggle password visibility"
             className="focus:outline-solid outline-transparent"
+            type="button"
             onClick={togglePasswordVisibility}
           >
             {showPassword ? (
@@ -44,6 +39,11 @@ const PasswordInput = ({
           </button>
         </div>
       }
+      label={label}
+      labelPlacement="inside"
+      placeholder={placeholder}
+      size="md"
+      type={showPassword ? "text" : "password"}
     />
   );
 };

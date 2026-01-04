@@ -34,8 +34,8 @@ export const DataTable = ({ columns, data = [] }: DataTableProps) => {
           {data.length === 0 ? (
             <tr>
               <td
-                colSpan={columns.length}
                 className="px-3 md:px-4 py-8 md:py-12 text-center text-xs md:text-sm text-gray-500 font-medium"
+                colSpan={columns.length}
               >
                 Không có dữ liệu
               </td>

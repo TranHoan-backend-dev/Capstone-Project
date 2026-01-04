@@ -3,10 +3,17 @@
 import React, { useState } from "react";
 import { Chip, Link, Tooltip, Button } from "@heroui/react";
 import NextLink from "next/link";
-import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import { DarkGreenChip, DarkRedChip, EstimationIcon, GreenIconColor } from "@/config/chip-and-icon";
-import { StatusDetailData, EstimateItem } from "@/types";
+
 import { EstimateDetailModal } from "./estimate-detail-modal";
+
+import { GenericDataTable } from "@/components/ui/GenericDataTable";
+import {
+  DarkGreenChip,
+  DarkRedChip,
+  EstimationIcon,
+  GreenIconColor,
+} from "@/config/chip-and-icon";
+import { StatusDetailData, EstimateItem } from "@/types";
 
 interface ResultsTableProps {
   data: EstimateItem[];
@@ -37,9 +44,9 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
     { key: "actions", label: "Hoạt động", align: "center" as const },
   ];
 
-  const baseStyle = "text-gray-500 dark:text-default-500"
+  const baseStyle = "text-gray-500 dark:text-default-500";
   const [selectedEstimate, setSelectedEstimate] = useState<EstimateItem | null>(
-    null
+    null,
   );
   const mapEstimateToModalData = (item: EstimateItem): StatusDetailData => ({
     code: item.code,
@@ -65,15 +72,27 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
   const renderCell = (item: EstimateItem, columnKey: string) => {
     switch (columnKey) {
       case "stt":
-        return <span className="text-black dark:text-white">{data.indexOf(item) + 1}</span>;
+        return (
+          <span className="text-black dark:text-white">
+            {data.indexOf(item) + 1}
+          </span>
+        );
       case "code":
         return (
-          <Link as={NextLink} href="#" className="font-bold text-[#2a66e4] dark:text-primary underline underline-offset-4 hover:text-blue-800 dark:hover:text-primary-600">
+          <Link
+            as={NextLink}
+            className="font-bold text-[#2a66e4] dark:text-primary underline underline-offset-4 hover:text-blue-800 dark:hover:text-primary-600"
+            href="#"
+          >
             {item.code}
           </Link>
         );
       case "customerName":
-        return <span className="font-bold text-gray-900 dark:text-foreground">{item.customerName}</span>;
+        return (
+          <span className="font-bold text-gray-900 dark:text-foreground">
+            {item.customerName}
+          </span>
+        );
       case "phone":
         return <span className={`${baseStyle}`}>{item.phone}</span>;
       case "address":
@@ -82,25 +101,26 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
         return <span className={`${baseStyle}`}>{item.registerDate}</span>;
       case "status":
         const config = statusMap[item.status];
+
         return (
           <Chip
-            size="sm"
-            variant="flat"
             className={`${config.bg}`}
             color={config.color}
+            size="sm"
+            variant="flat"
           >
             {config.label}
           </Chip>
         );
       case "actions":
         return (
-          <Tooltip content="Chạy dự toán" color="success" closeDelay={0}>
+          <Tooltip closeDelay={0} color="success" content="Chạy dự toán">
             <Button
               isIconOnly
               as={NextLink}
               href="/estimate-preparation"
-              variant="light"
               size="sm"
+              variant="light"
             >
               <EstimationIcon className={GreenIconColor} />
             </Button>
@@ -114,25 +134,25 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
   return (
     <>
       <GenericDataTable
-        title="Danh sách lập dự toán"
+        isCollapsible
         columns={columns}
         data={data}
-        renderCell={renderCell}
-        isCollapsible
         paginationProps={{
           total: 5,
           initialPage: 1,
           summary: "1-5 của 25",
         }}
+        renderCell={renderCell}
+        title="Danh sách lập dự toán"
       />
       <EstimateDetailModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
         data={
           selectedEstimate
             ? mapEstimateToModalData(selectedEstimate)
             : undefined
         }
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
       />
     </>
   );

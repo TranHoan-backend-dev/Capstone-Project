@@ -14,8 +14,8 @@ export const InvoiceInfoSection = () => {
         </h2>
 
         <Checkbox
-          size="sm"
           isSelected={hasInvoice}
+          size="sm"
           onValueChange={setHasInvoice}
         >
           Xuất hóa đơn
@@ -25,16 +25,16 @@ export const InvoiceInfoSection = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Input
           label="Tên xuất hóa đơn"
+          labelPlacement="inside"
           placeholder="Nhập tên xuất hóa đơn"
           variant="bordered"
-          labelPlacement="inside"
         />
 
         <Input
           label="Địa chỉ xuất hóa đơn"
+          labelPlacement="inside"
           placeholder="Nhập địa chỉ xuất hóa đơn"
           variant="bordered"
-          labelPlacement="inside"
         />
       </div>
     </div>
