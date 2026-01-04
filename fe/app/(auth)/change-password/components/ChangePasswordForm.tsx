@@ -134,68 +134,59 @@ const ChangePasswordForm = () => {
             )}
 
             <form className="space-y-6" onSubmit={handleSubmit}>
-              <div>
-                <PasswordInput
-                  required
-                  classNames={{
-                    inputWrapper:
-                      "bg-white dark:bg-zinc-800/50 border-gray-300 dark:border-zinc-700 h-11",
-                    label: "text-gray-700 dark:text-zinc-400 font-normal",
-                    input: "dark:text-white",
-                  }}
-                  label="Nhập mật khẩu hiện tại"
-                  value={formData.currentPassword}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      currentPassword: e.target.value,
-                    })
-                  }
-                />
-              </div>
+              <PasswordInput
+                required
+                classNames={{
+                  inputWrapper:
+                    "bg-white dark:bg-zinc-800/50 border-gray-300 dark:border-zinc-700 h-11",
+                  label: "text-gray-700 dark:text-zinc-400 font-normal",
+                  input: "dark:text-white",
+                }}
+                label="Nhập mật khẩu hiện tại"
+                value={formData.currentPassword}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    currentPassword: e.target.value,
+                  })
+                }
+              />
 
-              <div>
-                <PasswordInput
-                  required
-                  classNames={{
-                    inputWrapper:
-                      "bg-white dark:bg-zinc-800/50 border-gray-300 dark:border-zinc-700 h-11",
-                    label: "text-gray-700 dark:text-zinc-400 font-normal",
-                    input: "dark:text-white",
-                  }}
-                  label="Nhập mật khẩu mới"
-                  value={formData.newPassword}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      newPassword: e.target.value,
-                    })
-                  }
-                />
-              </div>
+              <PasswordInput
+                required
+                classNames={{
+                  inputWrapper:
+                    "bg-white dark:bg-zinc-800/50 border-gray-300 dark:border-zinc-700 h-11",
+                  label: "text-gray-700 dark:text-zinc-400 font-normal",
+                  input: "dark:text-white",
+                }}
+                label="Nhập mật khẩu mới"
+                value={formData.newPassword}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    newPassword: e.target.value,
+                  })
+                }
+              />
 
-              <div>
-                <h3 className="text-sm font-bold text-gray-900 dark:text-zinc-300 mb-2">
-                  Xác nhận mật khẩu mới
-                </h3>
-                <PasswordInput
-                  required
-                  classNames={{
-                    inputWrapper:
-                      "bg-white dark:bg-zinc-800/50 border-gray-300 dark:border-zinc-700 h-11",
-                    label: "text-gray-700 dark:text-zinc-400 font-normal",
-                    input: "dark:text-white",
-                  }}
-                  label="Nhập lại mật khẩu mới"
-                  value={formData.confirmPassword}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      confirmPassword: e.target.value,
-                    })
-                  }
-                />
-              </div>
+              <PasswordInput
+                required
+                classNames={{
+                  inputWrapper:
+                    "bg-white dark:bg-zinc-800/50 border-gray-300 dark:border-zinc-700 h-11",
+                  label: "text-gray-700 dark:text-zinc-400 font-normal",
+                  input: "dark:text-white",
+                }}
+                label="Nhập lại mật khẩu mới"
+                value={formData.confirmPassword}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    confirmPassword: e.target.value,
+                  })
+                }
+              />
 
               <PasswordRequirements password={formData.newPassword} />
 
