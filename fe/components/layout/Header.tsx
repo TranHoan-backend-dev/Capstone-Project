@@ -12,12 +12,14 @@ import {
 } from "@heroui/react";
 import Link from "next/link";
 import { Bars3Icon, ChevronDownIcon } from "@heroicons/react/24/solid";
-import NestedDropdown from "../ui/nested-dropdown";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
+
+import NestedDropdown from "../ui/nested-dropdown";
+import { ThemeSwitch } from "../ui/theme-switch";
+
 import Sidebar from "./sidebar";
 import NotificationDropdown from "./NotificationDropdown";
-import { ThemeSwitch } from "../ui/theme-switch";
 
 export interface SubMenuItemChild {
   key: string;
@@ -86,16 +88,16 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
     <>
       <HeroUINavbar
         isBordered
-        maxWidth="full"
         className="px-4 md:px-6"
         classNames={{
           wrapper: "max-w-full px-0",
         }}
+        maxWidth="full"
       >
         <NavbarContent className="md:hidden" justify="start">
           <button
-            onClick={() => setSidebarOpen(true)}
             className="p-2 hover:bg-default-100 rounded-lg transition-colors"
+            onClick={() => setSidebarOpen(true)}
           >
             <Bars3Icon className="w-6 h-6 text-primary" />
           </button>
@@ -124,12 +126,13 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
                 return (
                   <Link
                     key={item.key}
+                    className={`text-sm px-3 py-2 whitespace-nowrap rounded transition-colors cursor-pointer ${
+                      isActive
+                        ? "bg-primary-100 text-primary-800 dark:text-white font-medium"
+                        : "text-foreground-700 hover:bg-default-100"
+                    }`}
                     href={item.href || "#"}
                     onClick={() => handleMenuClick(item.key)}
-                    className={`text-sm px-3 py-2 whitespace-nowrap rounded transition-colors cursor-pointer ${isActive
-                      ? "bg-primary-100 text-primary-800 dark:text-white font-medium"
-                      : "text-foreground-700 hover:bg-default-100"
-                      }`}
                   >
                     {item.label}
                   </Link>
@@ -139,21 +142,21 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
           </div>
         </NavbarContent>
 
-        <NavbarContent as="div" justify="end" className="flex-none gap-4">
+        <NavbarContent as="div" className="flex-none gap-4" justify="end">
           {userName && (
             <>
               <ThemeSwitch />
               <NotificationDropdown />
 
               {/* Desktop version */}
-              <Dropdown placement="bottom-end" className="hidden md:block">
+              <Dropdown className="hidden md:block" placement="bottom-end">
                 <DropdownTrigger>
                   <div className="flex items-center gap-1 px-3 py-2 cursor-pointer rounded-lg transition-colors hover:bg-default-100">
                     <Tooltip
-                      content={userName}
-                      placement="bottom"
-                      delay={500}
                       className="max-w-xs"
+                      content={userName}
+                      delay={500}
+                      placement="bottom"
                     >
                       <div className="flex flex-col items-center max-w-[120px]">
                         <span className="text-foreground text-sm truncate w-full font-bold">
@@ -168,18 +171,24 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
                   <DropdownItem
                     key="profile"
                     as={Link}
+                    className={`${
+                      pathname === "/profile"
+                        ? "bg-primary-100 text-primary-800 dark:text-primary-200"
+                        : ""
+                    }`}
                     href="/profile"
-                    className={`${pathname === "/profile" ? "bg-primary-100 text-primary-800 dark:text-primary-200" : ""
-                      }`}
                   >
                     Thông tin cá nhân
                   </DropdownItem>
                   <DropdownItem
                     key="change-password"
                     as={Link}
+                    className={`${
+                      pathname === "/change-password"
+                        ? "bg-primary-100 text-primary-800 dark:text-primary-200"
+                        : ""
+                    }`}
                     href="/change-password"
-                    className={`${pathname === "/change-password" ? "bg-primary-100 text-primary-800 dark:text-primary-200" : ""
-                      }`}
                   >
                     Đổi mật khẩu
                   </DropdownItem>
@@ -209,18 +218,24 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
                     <DropdownItem
                       key="profile"
                       as={Link}
+                      className={`${
+                        pathname === "/profile"
+                          ? "bg-primary-100 text-primary-800 dark:text-primary-200"
+                          : ""
+                      }`}
                       href="/profile"
-                      className={`${pathname === "/profile" ? "bg-primary-100 text-primary-800 dark:text-primary-200" : ""
-                        }`}
                     >
                       Thông tin cá nhân
                     </DropdownItem>
                     <DropdownItem
                       key="change-password"
                       as={Link}
+                      className={`${
+                        pathname === "/change-password"
+                          ? "bg-primary-100 text-primary-800 dark:text-primary-200"
+                          : ""
+                      }`}
                       href="/change-password"
-                      className={`${pathname === "/change-password" ? "bg-primary-100 text-primary-800 dark:text-primary-200" : ""
-                        }`}
                     >
                       Đổi mật khẩu
                     </DropdownItem>
@@ -241,8 +256,8 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
 
       <Sidebar
         isOpen={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
         menuItems={menuItems}
+        onClose={() => setSidebarOpen(false)}
       />
     </>
   );

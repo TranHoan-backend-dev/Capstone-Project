@@ -15,9 +15,11 @@ export const login = async (request: LoginRequest) => {
     },
     body: JSON.stringify(request),
   });
+
   if (!response.ok) {
     throw new Error("Failed to login");
   }
+
   return await response.json();
 };
 
@@ -43,8 +45,10 @@ export const resetPassword = async (email: string, newPassword: string) => {
     },
     body: JSON.stringify({ email, newPassword }),
   });
+
   if (!response.ok) {
     throw new Error("Failed to reset password");
   }
+
   return response.status;
 };

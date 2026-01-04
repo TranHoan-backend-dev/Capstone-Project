@@ -1,11 +1,12 @@
-import LeftSide from "./components/left-side";
-import LoginForm from "./components/login-form";
 import { Metadata } from "next";
 
+import LeftSide from "./components/left-side";
+import LoginForm from "./components/login-form";
+
 export const metadata: Metadata = {
-  title: 'Đăng nhập',
-  description: 'Đăng nhập',
-}
+  title: "Đăng nhập",
+  description: "Đăng nhập",
+};
 
 const Page = () => {
   return (

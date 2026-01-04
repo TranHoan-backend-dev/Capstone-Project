@@ -23,27 +23,27 @@ export const DateRangePicker = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
         <div className="space-y-1">
           <DatePicker
+            className="w-full"
+            granularity="day"
             label="Từ ngày"
             labelPlacement="inside"
-            value={fromDate}
-            onChange={onFromDateChange}
-            granularity="day"
             size="md"
+            value={fromDate}
             variant="bordered"
-            className="w-full"
+            onChange={onFromDateChange}
           />
         </div>
 
         <div className="space-y-1">
           <DatePicker
+            className="w-full"
+            granularity="day"
             label="Đến ngày"
             labelPlacement="inside"
-            value={toDate}
-            onChange={onToDateChange}
-            granularity="day"
             size="md"
+            value={toDate}
             variant="bordered"
-            className="w-full"
+            onChange={onToDateChange}
           />
         </div>
       </div>

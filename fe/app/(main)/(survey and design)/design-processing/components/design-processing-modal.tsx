@@ -2,6 +2,7 @@
 
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import React from "react";
+
 import { ModalHeader } from "@/components/popup-status/modal-header";
 import { InfoRow } from "@/components/popup-status/info-row";
 import { NoteField } from "@/components/popup-status/note-field";
@@ -11,10 +12,7 @@ export const DesignProcessingModal = ({ isOpen, onClose, data }: any) => {
 
   return (
     <>
-      <div
-        className="fixed inset-0 bg-black/50 z-40"
-        onClick={onClose}
-      />
+      <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} />
 
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div
@@ -26,15 +24,17 @@ export const DesignProcessingModal = ({ isOpen, onClose, data }: any) => {
           <div className="flex-1 overflow-y-auto px-6 py-6 space-y-4">
             <InfoRow
               label="Mã đơn đăng ký"
-              value={<span className="text-blue-600 font-medium">{data.code}</span>}
+              value={
+                <span className="text-blue-600 font-medium">{data.code}</span>
+              }
             />
 
             <InfoRow label="Địa chỉ lắp đặt" value={data.address} />
 
             <InfoRow
+              icon={<InformationCircleIcon className="w-4 h-4 text-gray-400" />}
               label="Ngày đăng ký"
               value={data.registerDate}
-              icon={<InformationCircleIcon className="w-4 h-4 text-gray-400" />}
             />
 
             <InfoRow

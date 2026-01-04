@@ -12,11 +12,7 @@ interface OTPFormProps {
   onBack: () => void;
 }
 
-export default function OTPForm({
-  email,
-  onSuccess,
-  onBack,
-}: OTPFormProps) {
+export default function OTPForm({ email, onSuccess, onBack }: OTPFormProps) {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -27,6 +23,7 @@ export default function OTPForm({
   useEffect(() => {
     if (countdown > 0) {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+
       return () => clearTimeout(timer);
     }
   }, [countdown]);
@@ -44,6 +41,7 @@ export default function OTPForm({
     if (!/^\d*$/.test(value)) return;
 
     const newOtp = [...otp];
+
     newOtp[index] = value;
     setOtp(newOtp);
 
@@ -81,6 +79,7 @@ export default function OTPForm({
 
     if (pastedNumbers.length > 0) {
       const newOtp = [...otp];
+
       pastedNumbers.forEach((num, idx) => {
         if (idx < 6) {
           newOtp[idx] = num;
@@ -89,6 +88,7 @@ export default function OTPForm({
       setOtp(newOtp);
 
       const lastFilledIndex = Math.min(pastedNumbers.length - 1, 5);
+
       inputRefs.current[lastFilledIndex]?.focus();
     }
   };
@@ -103,6 +103,7 @@ export default function OTPForm({
     if (otpString.length !== 6) {
       setError("Vui lòng nhập đầy đủ 6 số OTP");
       setLoading(false);
+
       return;
     }
 
@@ -135,6 +136,7 @@ export default function OTPForm({
 
   const handleContainerClick = () => {
     const firstEmptyIndex = otp.findIndex((num) => num === "");
+
     if (firstEmptyIndex !== -1) {
       inputRefs.current[firstEmptyIndex]?.focus();
     } else {
@@ -161,15 +163,15 @@ export default function OTPForm({
         <p className="text-primary font-medium">raviweb@example.com</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form className="space-y-6" onSubmit={handleSubmit}>
         <div className="space-y-2">
           <label className="text-sm font-medium text-default-700 block text-center">
             Mã xác thực (6 số)
           </label>
           <div
             className="flex justify-center space-x-3"
-            onPaste={handlePaste}
             onClick={handleContainerClick}
+            onPaste={handlePaste}
           >
             {[0, 1, 2, 3, 4, 5].map((index) => (
               <Input
@@ -177,10 +179,6 @@ export default function OTPForm({
                 ref={(el) => {
                   inputRefs.current[index] = el;
                 }}
-                type="text"
-                value={otp[index]}
-                onChange={(e) => handleChange(index, e.target.value)}
-                onKeyDown={(e) => handleKeyDown(index, e)}
                 className="w-14 h-14 text-center text-xl font-semibold"
                 classNames={{
                   input: "text-center text-xl font-semibold",
@@ -192,10 +190,14 @@ export default function OTPForm({
                     bg-primary-50 dark:bg-primary-900/10
                   `,
                 }}
-                maxLength={1}
-                variant="bordered"
-                radius="lg"
                 isDisabled={loading}
+                maxLength={1}
+                radius="lg"
+                type="text"
+                value={otp[index]}
+                variant="bordered"
+                onChange={(e) => handleChange(index, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(index, e)}
               />
             ))}
           </div>
@@ -207,11 +209,11 @@ export default function OTPForm({
         {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
         <Button
-          type="submit"
-          color="primary"
           className="w-full font-medium py-3 text-base"
-          isLoading={loading}
+          color="primary"
           isDisabled={otp.join("").length !== 6}
+          isLoading={loading}
+          type="submit"
         >
           {loading ? "Đang xác nhận..." : "Xác nhận"}
         </Button>
@@ -225,11 +227,11 @@ export default function OTPForm({
           </p>
         ) : (
           <button
-            type="button"
-            onClick={handleResend}
-            disabled={loading}
             className="text-sm text-blue-600 hover:text-blue-700 font-medium 
                  flex items-center gap-1 transition-colors disabled:opacity-50"
+            disabled={loading}
+            type="button"
+            onClick={handleResend}
           >
             <ArrowPathIcon className="w-3 h-3" />
             Gửi lại mã

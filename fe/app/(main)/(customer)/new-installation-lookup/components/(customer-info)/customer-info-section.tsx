@@ -1,7 +1,8 @@
 "use client";
 
-import { customerInfoFields } from "./customer-info.fields";
 import { FormFieldRenderer } from "../form-field-renderer";
+
+import { customerInfoFields } from "./customer-info.fields";
 
 export const CustomerInfoSection = () => (
   <div className="space-y-6">

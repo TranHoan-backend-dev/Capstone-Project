@@ -7,7 +7,7 @@ export const bankInfoFields: FormField[] = [
     type: "select",
     options: [],
   },
-    {
+  {
     key: "accountNumber",
     label: "Số tài khoản",
     type: "input",

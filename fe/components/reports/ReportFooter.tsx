@@ -11,10 +11,14 @@ export const ReportFooter = () => {
       <div className="flex justify-end">
         <div className="mr-10 md:mr-20 w-64">
           <div className="text-end">
-            <p className="text-sm text-gray-500 italic dark:text-white">{formattedDate}</p>
+            <p className="text-sm text-gray-500 italic dark:text-white">
+              {formattedDate}
+            </p>
           </div>
           <div className="text-center">
-            <p className="mt-6 mb-32 text-sm font-bold text-gray-800 dark:text-white">NGƯỜI LẬP</p>
+            <p className="mt-6 mb-32 text-sm font-bold text-gray-800 dark:text-white">
+              NGƯỜI LẬP
+            </p>
           </div>
         </div>
       </div>

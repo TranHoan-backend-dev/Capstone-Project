@@ -34,19 +34,17 @@ const CustomSelect = ({
   return (
     <Select
       aria-label={label}
-      label={label}
-      labelPlacement="inside"
-      variant="bordered"
-      radius="md"
-      size="md"
       className={className}
-      selectedKeys={selectedKeys}
       defaultSelectedKeys={defaultSelectedKeys}
-      onSelectionChange={(keys) =>
-        onSelectionChange?.(keys as Set<string>)
-      }
       isDisabled={isDisabled}
       isRequired={isRequired}
+      label={label}
+      labelPlacement="inside"
+      radius="md"
+      selectedKeys={selectedKeys}
+      size="md"
+      variant="bordered"
+      onSelectionChange={(keys) => onSelectionChange?.(keys as Set<string>)}
       {...props}
     >
       {options.map((item) => (

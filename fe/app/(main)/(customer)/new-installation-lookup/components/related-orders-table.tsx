@@ -1,8 +1,10 @@
 "use client";
 
 import { Button, Tooltip } from "@heroui/react";
-import { GenericDataTable } from "@/components/ui/GenericDataTable";
+
 import { StatusBar } from "./status-bar";
+
+import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import { DeleteIcon, RedIconColor } from "@/config/chip-and-icon";
 
 export const RelatedOrdersTable = ({ data }: { data: any[] }) => {
@@ -37,15 +39,15 @@ export const RelatedOrdersTable = ({ data }: { data: any[] }) => {
           {actionButtons.map((action, idx) => (
             <Tooltip
               key={idx}
-              content={action.content}
-              color={action.color}
               closeDelay={0}
+              color={action.color}
+              content={action.content}
             >
               <Button
                 isIconOnly
-                variant="light"
-                size="sm"
                 className={action.className}
+                size="sm"
+                variant="light"
               >
                 <action.icon className="w-5 h-5" />
               </Button>
@@ -54,16 +56,17 @@ export const RelatedOrdersTable = ({ data }: { data: any[] }) => {
         </div>
       );
     }
+
     return item[key];
   };
 
   return (
     <GenericDataTable
-      title="Danh sách đơn"
       columns={columns}
       data={data}
-      renderCell={renderCell}
       paginationProps={{ total: 3, initialPage: 1 }}
+      renderCell={renderCell}
+      title="Danh sách đơn"
     />
   );
 };

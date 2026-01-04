@@ -1,14 +1,16 @@
 "use client";
 
-import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { DocumentPlusIcon } from "@heroicons/react/24/solid";
 import React from "react";
+
 import { FormActions } from "./components/form-actions";
 import { OrderInfoSection } from "./components/(order-info)/order-info-section";
 import { CustomerInfoSection } from "./components/(customer-info)/customer-info-section";
 import { AddressContactSection } from "./components/(address-contact)/address-contact-section";
 import { RelatedOrdersTable } from "./components/related-orders-table";
 import { InvoiceInfoSection } from "./components/invoice-info-section";
+
+import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 
 const NewInstallationForm = () => {
   const relatedOrders = [
@@ -49,11 +51,11 @@ const NewInstallationForm = () => {
   return (
     <>
       <GenericSearchFilter
-        title="Bộ lọc tìm kiếm"
-        icon={<DocumentPlusIcon className="w-6 h-6" />}
         isCollapsible
-        gridClassName="grid grid-cols-1 lg:grid-cols-3 gap-x-10 gap-y-8"
         actions={<FormActions />}
+        gridClassName="grid grid-cols-1 lg:grid-cols-3 gap-x-10 gap-y-8"
+        icon={<DocumentPlusIcon className="w-6 h-6" />}
+        title="Bộ lọc tìm kiếm"
       >
         <OrderInfoSection />
         <CustomerInfoSection />
