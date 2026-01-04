@@ -25,6 +25,7 @@ const CustomerProfile = () => {
     };
 
     const customerInfomationStyle = "text-sm font-semibold text-gray-800 dark:text-gray-100"
+    const darkButtonBackground = "bg-gradient-to-r dark:from-yellow-900/40 dark:to-yellow-800/20"
 
     return (
         <div className="space-y-6 pt-2 pb-8">
@@ -38,7 +39,7 @@ const CustomerProfile = () => {
 
             <div className="grid gap-6 w-full">
                 <Card className="w-full shadow-md border border-divider dark:border-gray-800 bg-background">
-                    <CardHeader className={`flex gap-3 px-6 py-4 from-blue-100 to-blue-50 dark:from-yellow-900/40 dark:to-yellow-800/20 text-blue-700 ${TitleDarkColor} rounded-t-lg`}>
+                    <CardHeader className={`flex gap-3 px-6 py-4 bg-gradient-to-r from-blue-100 to-blue-50 dark:from-yellow-900/40 dark:to-yellow-800/20 text-blue-700 ${TitleDarkColor} rounded-t-lg`}>
                         <div className="p-2 bg-blue-200/50 rounded-full">
                             <UserCircleIcon className="w-6 h-6 text-blue-600 dark:text-white" />
                         </div>
