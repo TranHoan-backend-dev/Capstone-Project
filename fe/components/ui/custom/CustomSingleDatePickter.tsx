@@ -9,6 +9,8 @@ interface CustomDatePickerProps {
   onChange?: (date: DateValue | null) => void;
   isDisabled?: boolean;
   className?: string;
+  isRequired?: boolean;
+  props?: any;
 }
 
 const CustomSingleDatePicker = ({
@@ -16,7 +18,9 @@ const CustomSingleDatePicker = ({
   value,
   onChange,
   isDisabled = false,
+  isRequired = false,
   className,
+  ...props
 }: CustomDatePickerProps) => {
   return (
     <div className="space-y-1">
@@ -30,7 +34,9 @@ const CustomSingleDatePicker = ({
         value={value}
         onChange={onChange}
         isDisabled={isDisabled}
+        isRequired={isRequired}
         className={className}
+        {...props}
       />
     </div>
   );
