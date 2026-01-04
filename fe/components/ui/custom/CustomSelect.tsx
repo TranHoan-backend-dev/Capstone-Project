@@ -16,6 +16,8 @@ interface BaseSelectProps {
   onSelectionChange?: (keys: Set<string>) => void;
   className?: string;
   isDisabled?: boolean;
+  isRequired?: boolean;
+  props?: any;
 }
 
 const CustomSelect = ({
@@ -26,6 +28,8 @@ const CustomSelect = ({
   onSelectionChange,
   className,
   isDisabled = false,
+  isRequired = false,
+  ...props
 }: BaseSelectProps) => {
   return (
     <Select
@@ -42,6 +46,8 @@ const CustomSelect = ({
         onSelectionChange?.(keys as Set<string>)
       }
       isDisabled={isDisabled}
+      isRequired={isRequired}
+      {...props}
     >
       {options.map((item) => (
         <SelectItem key={item.value} textValue={item.label}>

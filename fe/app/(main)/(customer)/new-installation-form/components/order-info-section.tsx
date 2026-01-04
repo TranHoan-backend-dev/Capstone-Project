@@ -1,10 +1,10 @@
 "use client";
 
 import React from "react";
-import { DatePicker } from "@heroui/react";
 import { TitleDarkColor } from "@/config/chip-and-icon";
 import CustomInput from "@/components/ui/custom/CustomInput";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
+import CustomSingleDatePicker from "@/components/ui/custom/CustomSingleDatePickter";
 
 export const OrderInfoSection = () => {
     const inputFields = [
@@ -35,12 +35,9 @@ export const OrderInfoSection = () => {
 
                 {dateFields.map((item, index) => (
                     <div key={index} className="space-y-1">
-                        <DatePicker
+                        <CustomSingleDatePicker
                             label={item.label}
                             isRequired={item.isRequired}
-                            variant="bordered"
-                            radius="md"
-                            labelPlacement="inside"
                             className="w-full"
                         />
                     </div>
