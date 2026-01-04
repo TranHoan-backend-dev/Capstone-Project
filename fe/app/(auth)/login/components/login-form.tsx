@@ -8,8 +8,8 @@ import {
 } from "@heroicons/react/24/solid";
 
 import PasswordInput from "@/components/ui/PasswordInput";
-import CustomButton from "@/components/ui/CustomButton";
-import CustomInput from "@/components/ui/CustomInput";
+import CustomButton from "@/components/ui/custom/CustomButton";
+import CustomInput from "@/components/ui/custom/CustomInput";
 
 const LoginForm = () => {
   const router = useRouter();

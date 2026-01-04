@@ -3,7 +3,6 @@
 import React from "react";
 import { Link, Chip, Tooltip, Button } from "@heroui/react";
 import NextLink from "next/link";
-import { PrinterIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import { BlueYellowIconColor, DarkGreenChip, DarkYellowChip, DeleteIcon, PrintReceiptIcon, RedIconColor } from "@/config/chip-and-icon";
 

@@ -5,7 +5,7 @@ import { Select, SelectItem, Button, DateValue } from "@heroui/react";
 import { DocumentChartBarIcon } from "@heroicons/react/24/solid";
 import { SingleDatePicker } from "./component/SingleDatePicker";
 import { DateRangePicker } from "./component/DateRangePicker";
-import CustomInput from "../ui/CustomInput";
+import CustomInput from "../ui/custom/CustomInput";
 
 interface FilterFormProps {
   title: string;

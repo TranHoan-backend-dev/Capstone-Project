@@ -2,7 +2,7 @@
 
 import { Input, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from '@heroui/react';
 import React from 'react';
-import { CustomPagination } from '../CustomPagination';
+import { CustomPagination } from '../custom/CustomPagination';
 import BaseModal, { BaseModalProps } from './BaseModal';
 
 export interface CellElements {

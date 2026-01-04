@@ -1,10 +1,10 @@
 "use client";
 
 import React from "react";
-import { Select, SelectItem } from "@heroui/react";
 import { SearchIcon } from "@/components/ui/Icons";
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
-import CustomInput from "@/components/ui/CustomInput";
+import CustomInput from "@/components/ui/custom/CustomInput";
+import CustomSelect from "@/components/ui/custom/CustomSelect";
 
 interface FilterSectionProps {
     branches: { label: string; value: string }[];
@@ -49,19 +49,12 @@ export const FilterSection = ({ branches, areas, districts, wards }: FilterSecti
 
             {selectFields.map((field) => (
                 <div key={field.label} className="space-y-1">
-                    <Select
+                    <CustomSelect
                         aria-label={field.label}
                         label={field.label}
-                        labelPlacement="inside"
-                        variant="bordered"
-                        radius="md"
-                        size="md"
+                        options={field.data}
                         className="font-bold"
-                    >
-                        {field.data.map((item) => (
-                            <SelectItem key={item.value} textValue={item.label}>{item.label}</SelectItem>
-                        ))}
-                    </Select>
+                    />
                 </div>
             ))}
         </GenericSearchFilter>

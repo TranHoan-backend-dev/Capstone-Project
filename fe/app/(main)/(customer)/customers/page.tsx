@@ -1,5 +1,5 @@
 import React from "react";
-import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
+import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
 import { Metadata } from "next";
 import Customers from "./customers";
 

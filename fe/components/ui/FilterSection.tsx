@@ -4,7 +4,7 @@ import React from "react";
 import { DatePicker, DateValue } from "@heroui/react";
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { SearchIcon } from "@/components/ui/Icons";
-import CustomInput from "./CustomInput";
+import CustomInput from "./custom/CustomInput";
 
 interface FilterSectionProps {
     title?: string;

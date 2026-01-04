@@ -1,6 +1,6 @@
 import React from "react";
 import { Metadata } from "next";
-import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
+import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
 import ManageSuppliesPage from "./manage-supplies";
 
 export const metadata: Metadata = {

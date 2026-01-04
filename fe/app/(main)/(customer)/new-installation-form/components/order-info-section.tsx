@@ -1,7 +1,10 @@
 "use client";
 
 import React from "react";
-import { Input, DatePicker, Select, SelectItem } from "@heroui/react";
+import { DatePicker } from "@heroui/react";
+import { TitleDarkColor } from "@/config/chip-and-icon";
+import CustomInput from "@/components/ui/custom/CustomInput";
+import CustomSelect from "@/components/ui/custom/CustomSelect";
 
 export const OrderInfoSection = () => {
     const inputFields = [
@@ -18,16 +21,14 @@ export const OrderInfoSection = () => {
 
     return (
         <div className="space-y-6">
-            <h2 className="text-sm font-bold text-blue-600 dark:text-primary-400 uppercase tracking-wider">Thông tin đơn</h2>
+            <h2 className={`text-sm font-bold text-blue-600 ${TitleDarkColor} uppercase tracking-wider`}>Thông tin đơn</h2>
             <div className="space-y-4">
                 {inputFields.map((item, index) => (
                     <div key={index} className="space-y-1">
-                        <Input
+                        <CustomInput
                             label={item.label}
                             defaultValue={item.defaultValue}
-                            variant="bordered"
-                            radius="md"
-                            labelPlacement="inside"
+                            value={item.defaultValue}
                         />
                     </div>
                 ))}
@@ -46,20 +47,14 @@ export const OrderInfoSection = () => {
                 ))}
 
                 <div className="space-y-1">
-                    <Select
+                    <CustomSelect
                         label="Trạng thái đơn"
-                        defaultSelectedKeys={["new"]}
-                        variant="bordered"
-                        radius="md"
-                        labelPlacement="inside"
-                    >
-                        <SelectItem key="new" textValue="Mới tạo">
-                            Mới tạo
-                        </SelectItem>
-                        <SelectItem key="processing" textValue="Đang xử lý">
-                            Đang xử lý
-                        </SelectItem>
-                    </Select>
+                        defaultSelectedKeys={new Set(["new"])}
+                        options={[
+                            { value: "new", label: "Mới tạo" },
+                            { value: "processing", label: "Đang xử lý" },
+                        ]}
+                    />
                 </div>
             </div>
         </div>

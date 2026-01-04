@@ -3,7 +3,7 @@
 import React from "react";
 import { Select, SelectItem, Button, Textarea } from "@heroui/react";
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
-import CustomInput from "@/components/ui/CustomInput";
+import CustomInput from "@/components/ui/custom/CustomInput";
 import {
     ClipboardDocumentCheckIcon,
     PlusIcon,
