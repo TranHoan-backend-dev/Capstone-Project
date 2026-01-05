@@ -18,38 +18,38 @@ export const FeeTable = () => {
 
   // THÊM TRƯỜNG id VÀO ĐÂY ĐỂ KHỚP VỚI GenericDataTable
   const mockData = [
-    { 
+    {
       id: "1", // Thêm dòng này
-      no: 1, 
-      orderId: "DH001", 
-      receiptId: "PT001", 
-      name: "Nguyễn Văn A", 
-      address: "123 Nguyễn Trãi, P.1, Q.5", 
-      date: "15/12/2024", 
-      amount: "2,500,000 VND", 
-      status: "Đã thu" 
+      no: 1,
+      orderId: "DH001",
+      receiptId: "PT001",
+      name: "Nguyễn Văn A",
+      address: "123 Nguyễn Trãi, P.1, Q.5",
+      date: "15/12/2024",
+      amount: "2,500,000 VND",
+      status: "Đã thu"
     },
-    { 
+    {
       id: "2", // Thêm dòng này
-      no: 2, 
-      orderId: "DH002", 
-      receiptId: "PT002", 
-      name: "Trần Thị B", 
-      address: "456 Lê Lợi, P.2, Q.1", 
-      date: "16/12/2024", 
-      amount: "3,200,000 VND", 
-      status: "Chưa thu" 
+      no: 2,
+      orderId: "DH002",
+      receiptId: "PT002",
+      name: "Trần Thị B",
+      address: "456 Lê Lợi, P.2, Q.1",
+      date: "16/12/2024",
+      amount: "3,200,000 VND",
+      status: "Chưa thu"
     },
-    { 
+    {
       id: "3", // Thêm dòng này
-      no: 3, 
-      orderId: "DH003", 
-      receiptId: "PT003", 
-      name: "Lê Văn C", 
-      address: "789 Võ Văn Tần, P.5, Q.3", 
-      date: "17/12/2024", 
-      amount: "1,800,000 VND", 
-      status: "Đã thu" 
+      no: 3,
+      orderId: "DH003",
+      receiptId: "PT003",
+      name: "Lê Văn C",
+      address: "789 Võ Văn Tần, P.5, Q.3",
+      date: "17/12/2024",
+      amount: "1,800,000 VND",
+      status: "Đã thu"
     },
   ];
 

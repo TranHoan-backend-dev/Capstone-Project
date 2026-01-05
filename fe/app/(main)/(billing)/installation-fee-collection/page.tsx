@@ -1,22 +1,35 @@
-"use client";
-import React from "react";
+import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
+import { Metadata } from "next";
 import { FeeForm } from "./components/fee-form";
 import { FeeTable } from "./components/fee-table";
 
-export default function FeeCollectionPage() {
+export const metadata: Metadata = {
+  title: "Thu tiền lắp đặt",
+  description: "Thu tiền lắp đặt",
+};
+
+const FeeCollectionPage = () => {
+  const breadcrumbItems = [
+    { label: "Trang chủ", href: "/home" },
+    { label: "Ghi chỉ số & Hóa đơn" },
+    { label: "Thu tiền lắp đặt" }
+  ];
+
   return (
-    <main className="p-6 bg-gray-50 min-h-screen space-y-6 text-sm">
-      <div className="max-w-[1400px] mx-auto space-y-6">
+    <>
+      <CustomBreadcrumb items={breadcrumbItems} />
+
+      <div className="pt-2 space-y-6">
+
         {/* Khối Form */}
-        <div className="bg-white rounded-lg shadow-sm border p-8">
-          <FeeForm />
-        </div>
-        
+        <FeeForm />
+
         {/* Khối Table */}
-        <div className="bg-white rounded-lg shadow-sm border p-6">
-          <FeeTable />
-        </div>
+        <FeeTable />
+
       </div>
-    </main>
+    </>
   );
-}
+};
+
+export default FeeCollectionPage;

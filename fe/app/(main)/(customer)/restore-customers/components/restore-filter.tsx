@@ -2,10 +2,9 @@
 
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { SearchIcon } from "@/components/ui/Icons";
-import { XMarkIcon } from "@heroicons/react/24/outline";
-import { Input, Select, SelectItem } from "@heroui/react";
+import { TrashIcon } from "@heroicons/react/24/outline";
+import { Button, Input, Select, SelectItem } from "@heroui/react";
 
-import { FilterActionButton } from "@/components/ui/FilterActionButton";
 
 interface RestoreFilterProps {
     periodData: { label: string; value: string }[];
@@ -27,13 +26,15 @@ export const RestoreFilter = ({ periodData }: RestoreFilterProps) => {
                         className="bg-green-500 hover:bg-green-600 dark:shadow-md dark:shadow-success/40 mr-2"
                         onPress={() => { }}
                     /> */}
-                    <FilterActionButton
-                        label="Xóa lựa chọn"
-                        icon={<XMarkIcon className="w-4 h-4" />}
-                        color="default" 
-                        className="bg-gray-500 hover:bg-gray-600 text-white mr-2" 
+                    <Button
+                        className="bg-gray-100 dark:bg-default-100 text-gray-700 dark:text-foreground font-bold px-6 shadow-none border border-gray-200 dark:border-divider h-9 shrink-0 hover:bg-gray-200 dark:hover:bg-default-200"
+                        startContent={<TrashIcon className="w-5 h-5" />}
+                        size="md"
+                        radius="md"
                         onPress={() => { }}
-                    />
+                    >
+                        Xóa các lựa chọn
+                    </Button>
                     {/* <FilterButton /> */}
                 </>
             }

@@ -1,17 +1,49 @@
 "use client";
-import React from "react";
+import CustomButton from "@/components/ui/CustomButton";
 import CustomInput from "@/components/ui/CustomInput";
-import { Select, SelectItem, Checkbox } from "@heroui/react";
-import { SearchIcon, CalendarIcon } from "@/components/ui/Icons";
+import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
+import { CalendarIcon, CancelIcon, RefreshIcon, SaveIcon, SearchIcon } from "@/components/ui/Icons";
+import { Checkbox, Select, SelectItem } from "@heroui/react";
 
 export const ContractForm = () => {
   return (
-    <div className="space-y-10">
+    <GenericSearchFilter
+      title="Hợp Đồng Cấp Nước Mới"
+      icon={<SearchIcon size={18} />}
+      gridClassName="block space-y-10"
+      isCollapsible={false}
+      actions={
+        <div className="flex justify-end gap-3">
+          <CustomButton
+            color="success"
+            className="w-[120px] h-9 text-white"
+            startContent={<SaveIcon size={16} />}
+          >
+            Lưu
+          </CustomButton>
+
+          <CustomButton
+            color="danger"
+            className="w-[120px] h-9 text-white"
+            startContent={<CancelIcon size={16} />}
+          >
+            Hủy
+          </CustomButton>
+
+          <CustomButton
+            className="w-[120px] h-9 bg-[#71717a] text-white"
+            startContent={<RefreshIcon size={16} />}
+          >
+            Làm mới
+          </CustomButton>
+        </div>
+      }
+    >
       {/* A. THÔNG TIN ĐỊNH DANH */}
       <section className="space-y-4">
-        <h3 className="font-bold text-gray-700">A. THÔNG TIN ĐỊNH DANH</h3>
+        <h3 className="text-base font-bold text-gray-800 dark:text-white mb-4">A. THÔNG TIN ĐỊNH DANH</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <CustomInput label="Mã đơn" placeholder="01025070074" endContent={<SearchIcon size={18} className="text-blue-500"/>} />
+          <CustomInput label="Mã đơn" placeholder="01025070074" endContent={<SearchIcon size={18} className="text-blue-500" />} />
           <CustomInput label="Tên khách hàng" placeholder="Nhập tên khách hàng" />
           <CustomInput label="Người đại diện" placeholder="Nhập tên người đại diện" />
           <CustomInput label="Chức vụ" placeholder="Nhập chức vụ" />
@@ -20,10 +52,10 @@ export const ContractForm = () => {
 
       {/* B. ĐỊA CHỈ LẮP ĐẶT */}
       <section className="space-y-4">
-        <h3 className="font-bold text-gray-700">B. ĐỊA CHỈ LẮP ĐẶT</h3>
+        <h3 className="text-base font-bold text-gray-800 dark:text-white mb-4">B. ĐỊA CHỈ LẮP ĐẶT</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <CustomInput label="Số nhà" placeholder="Nhập số nhà" />
-          <CustomInput label="Đường phố" placeholder="Nhập tên đường phố" endContent={<SearchIcon size={18} className="text-blue-500"/>} />
+          <CustomInput label="Đường phố" placeholder="Nhập tên đường phố" endContent={<SearchIcon size={18} className="text-blue-500" />} />
           <Select label="Thôn / Làng" variant="bordered">
             <SelectItem key="tl1">Chọn thôn/làng</SelectItem>
           </Select>
@@ -38,10 +70,10 @@ export const ContractForm = () => {
 
       {/* C. THÔNG TIN CÁ NHÂN / PHÁP LÝ */}
       <section className="space-y-4">
-        <h3 className="font-bold text-gray-700">C. THÔNG TIN CÁ NHÂN / PHÁP LÝ</h3>
+        <h3 className="text-base font-bold text-gray-800 dark:text-white mb-4">C. THÔNG TIN CÁ NHÂN / PHÁP LÝ</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <CustomInput label="Số CMND / CCCD" />
-          <CustomInput label="Ngày cấp" type="date" endContent={<CalendarIcon size={18}/>} />
+          <CustomInput label="Ngày cấp" type="date" endContent={<CalendarIcon size={18} />} />
           <CustomInput label="Nơi cấp" />
           <CustomInput label="Điện thoại" />
           <CustomInput label="Mã hộ khẩu" />
@@ -56,7 +88,7 @@ export const ContractForm = () => {
 
       {/* D. THÔNG TIN THANH TOÁN & HỢP ĐỒNG */}
       <section className="space-y-4">
-        <h3 className="font-bold text-gray-700">D. THÔNG TIN THANH TOÁN & HỢP ĐỒNG</h3>
+        <h3 className="text-base font-bold text-gray-800 dark:text-white mb-4">D. THÔNG TIN THANH TOÁN & HỢP ĐỒNG</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <CustomInput label="Số hợp đồng" />
           <Select label="Loại hợp đồng" variant="bordered" defaultSelectedKeys={["gd"]}>
@@ -77,8 +109,8 @@ export const ContractForm = () => {
           <Select label="Ngân hàng" variant="bordered">
             <SelectItem key="vcb">Vietcombank</SelectItem>
           </Select>
-          <CustomInput label="Ngày làm hợp đồng" type="date" endContent={<CalendarIcon size={18}/>} />
-          <CustomInput label="Ngày giao thi công" placeholder="2025-12-25" type="date" endContent={<CalendarIcon size={18}/>} />
+          <CustomInput label="Ngày làm hợp đồng" type="date" endContent={<CalendarIcon size={18} />} />
+          <CustomInput label="Ngày giao thi công" placeholder="2025-12-25" type="date" endContent={<CalendarIcon size={18} />} />
           <Select label="Chi nhánh" variant="bordered" defaultSelectedKeys={["nd"]}>
             <SelectItem key="nd">TP Nam Định</SelectItem>
           </Select>
@@ -88,8 +120,8 @@ export const ContractForm = () => {
       {/* G. PHẦN MỞ RỘNG - XUẤT HÓA ĐƠN */}
       <section className="space-y-4">
         <div className="flex items-center gap-4 border-b pb-2">
-           <h3 className="font-bold text-gray-700 uppercase">G. Phần mở rộng - Xuất hóa đơn</h3>
-           <Checkbox size="sm">Đổi thông tin xuất hóa đơn</Checkbox>
+          <h3 className="text-base font-bold text-gray-800 dark:text-white mb-4">G. Phần mở rộng - Xuất hóa đơn</h3>
+          <Checkbox size="sm">Đổi thông tin xuất hóa đơn</Checkbox>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <CustomInput label="Tên xuất hóa đơn" />
@@ -99,6 +131,6 @@ export const ContractForm = () => {
           </div>
         </div>
       </section>
-    </div>
+    </GenericSearchFilter>
   );
 };
