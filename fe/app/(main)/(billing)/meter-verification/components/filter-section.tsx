@@ -1,11 +1,13 @@
 "use client";
 
 import React from "react";
-import { Button, DatePicker, Select, SelectItem } from "@heroui/react";
+import { Button } from "@heroui/react";
 import { FunnelIcon, TrashIcon } from "@heroicons/react/24/outline";
 
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import CustomInput from "@/components/ui/custom/CustomInput";
+import CustomSingleDatePicker from "@/components/ui/custom/CustomSingleDatePicker";
+import CustomSelect from "@/components/ui/custom/CustomSelect";
 
 export const FilterSection = () => {
   const selectFields = [
@@ -43,13 +45,7 @@ export const FilterSection = () => {
       <InputField label="Kỳ hóa đơn" />
 
       <div className="space-y-1">
-        <DatePicker
-          label="Ngày ghi"
-          labelPlacement="inside"
-          radius="md"
-          size="md"
-          variant="bordered"
-        />
+        <CustomSingleDatePicker label="Ngày ghi" />
       </div>
 
       <InputField label="Mã khách hàng" />
@@ -83,19 +79,14 @@ export const SelectField = ({
 }) => {
   return (
     <div className="space-y-1">
-      <Select
+      <CustomSelect
         label={label}
-        labelPlacement="inside"
-        radius="md"
-        size="md"
-        variant="bordered"
-      >
-        {options.map((opt) => (
-          <SelectItem key={opt.key} className="dark:text-white">
-            {opt.label}
-          </SelectItem>
-        ))}
-      </Select>
+        options={options.map((item, _) => ({
+          label: item.label,
+          value: item.key,
+        }))}
+        itemClassname="dark:text-white"
+      />
     </div>
   );
 };

@@ -1,12 +1,13 @@
 "use client";
 
 import React from "react";
-import { DatePicker, DateValue } from "@heroui/react";
+import { DateValue } from "@heroui/react";
 
 import CustomInput from "./custom/CustomInput";
 
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { SearchIcon } from "@/components/ui/Icons";
+import CustomSingleDatePicker from "@/components/ui/custom/CustomSingleDatePicker";
 
 interface FilterSectionProps {
   title?: string;
@@ -72,13 +73,10 @@ export const DatePickerField = ({
 }) => {
   return (
     <div className="lg:col-span-1 space-y-1">
-      <DatePicker
+      <CustomSingleDatePicker
         className="font-bold"
         label={label}
-        radius="md"
-        size="md"
         value={value}
-        variant="bordered"
         onChange={(date) => onDateChange?.(date)}
       />
     </div>

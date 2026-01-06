@@ -8,11 +8,16 @@ import {
 } from "@heroicons/react/24/solid";
 
 import PasswordInput from "@/components/ui/PasswordInput";
-import CustomButton from "@/components/ui/custom/CustomButton";
+import CustomButton from "@/app/(auth)/login/components/custom-button";
 import CustomInput from "@/components/ui/custom/CustomInput";
 
 const LoginForm = () => {
   const router = useRouter();
+
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // fetching data
+  };
 
   return (
     <div className="w-full md:w-1/2 h-full bg-white dark:bg-zinc-900 flex items-center justify-center p-4 md:p-8">
@@ -20,7 +25,7 @@ const LoginForm = () => {
         <h2 className="text-2xl md:text-3xl font-bold text-black-900 dark:text-white mb-6 md:mb-8 text-center">
           Đăng nhập
         </h2>
-        <Form className="space-y-4 md:space-y-3">
+        <Form className="space-y-4 md:space-y-3" onSubmit={handleLogin}>
           <CustomInput
             isRequired
             endContent={

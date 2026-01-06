@@ -5,7 +5,7 @@ import React from "react";
 import { TitleDarkColor } from "@/config/chip-and-icon";
 import CustomInput from "@/components/ui/custom/CustomInput";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
-import CustomSingleDatePicker from "@/components/ui/custom/CustomSingleDatePickter";
+import CustomSingleDatePicker from "@/components/ui/custom/CustomSingleDatePicker";
 
 export const OrderInfoSection = () => {
   const inputFields = [

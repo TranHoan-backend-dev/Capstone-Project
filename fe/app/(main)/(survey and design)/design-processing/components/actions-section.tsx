@@ -18,6 +18,7 @@ import { RouteListModal } from "./route-list-modal";
 import { SearchIcon } from "@/components/ui/Icons";
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
+import CustomSelect from "@/components/ui/custom/CustomSelect";
 
 export const ActionsSection = () => {
   const {
@@ -194,25 +195,19 @@ export const SelectField = ({
 }) => {
   return (
     <div className={`${colSpan} space-y-1`}>
-      <Select
+      <CustomSelect
         className="font-bold"
         label={label}
-        labelPlacement="inside"
-        radius="md"
-        size="md"
-        variant="bordered"
         onSelectionChange={(keys) => {
           const selected = Array.from(keys)[0] as string;
 
           if (selected) onValueChange(selected);
         }}
-      >
-        {options.map((item) => (
-          <SelectItem key={item.value} textValue={item.label}>
-            {item.label}
-          </SelectItem>
-        ))}
-      </Select>
+        options={options.map((item) => ({
+          label: item.label,
+          value: item.value,
+        }))}
+      />
     </div>
   );
 };

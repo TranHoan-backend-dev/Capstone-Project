@@ -78,13 +78,17 @@ export const RouteListModal = ({
 
   return (
     <CustomModal
-      data={data.map((item) => ({
+      data={data.map((item, idx) => ({
         elements: [
-          <span className="font-bold text-blue-700 dark:text-primary">
+          <span key={idx} className="font-bold text-blue-700 dark:text-primary">
             {item.code}
           </span>,
-          <span className="text-foreground">{item.name}</span>,
-          <span className="text-default-600">{item.branch}</span>,
+          <span key={idx} className="text-foreground">
+            {item.name}
+          </span>,
+          <span key={idx} className="text-default-600">
+            {item.branch}
+          </span>,
         ],
       }))}
       isOpen={isOpen}

@@ -8,8 +8,8 @@ import { ResultsTable } from "./components/results-table";
 const Customers = () => {
   const branches = [{ label: "Tất cả", value: "all" }];
   const areas = [{ label: "Tất cả", value: "all" }];
-  const districts = [{ label: "Tất cả", value: "all" }];
   const wards = [{ label: "Tất cả", value: "all" }];
+  const neighborhoods = [{ label: "Tất cả", value: "all" }];
 
   const mockData = [
     {
@@ -55,8 +55,8 @@ const Customers = () => {
       <FilterSection
         areas={areas}
         branches={branches}
-        districts={districts}
         wards={wards}
+        neighborhoods={neighborhoods}
       />
 
       <ResultsTable data={mockData} />

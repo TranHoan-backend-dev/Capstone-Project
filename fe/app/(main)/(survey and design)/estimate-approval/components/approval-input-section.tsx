@@ -1,8 +1,10 @@
 "use client";
 
 import React from "react";
-import { Card, CardBody, DatePicker, Textarea } from "@heroui/react";
+import { Card, CardBody, Textarea } from "@heroui/react";
 import { DateValue } from "@heroui/react";
+
+import CustomSingleDatePicker from "@/components/ui/custom/CustomSingleDatePicker";
 
 interface ApprovalInputSectionProps {
   approvalDate: DateValue | null | undefined;
@@ -22,14 +24,10 @@ export const ApprovalInputSection = ({
       <CardBody className="p-6">
         <div className="flex flex-col gap-4">
           <div className="w-full sm:w-1/3 lg:w-1/4">
-            <DatePicker
+            <CustomSingleDatePicker
               className="font-bold"
               label="Ngày duyệt đơn"
-              labelPlacement="inside"
-              radius="md"
-              size="md"
               value={approvalDate}
-              variant="bordered"
               onChange={setApprovalDate}
             />
           </div>
