@@ -15,6 +15,8 @@ management:
       base-path: /actuator
 server:
   port: 9004
+  servlet:
+    context-path: /api/v1
 # spring:
 # mongodb:
 # uri: mongodb://guest:guest@mongodb:27017/microservice_db?authSource=admin
