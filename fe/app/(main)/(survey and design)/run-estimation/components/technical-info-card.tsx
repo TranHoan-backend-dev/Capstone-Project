@@ -18,16 +18,6 @@ import { DeleteIcon } from "@/config/chip-and-icon";
 export const TechnicalInfoCard = () => {
   const customerInfoFields = [
     { label: "Tên khách hàng", isRequired: true },
-    {
-      label: "Loại ĐT",
-      type: "select",
-      isRequired: true,
-      defaultSelectedKeys: ["binh-thuong"],
-      options: [
-        { key: "binh-thuong", label: "Bình thường" },
-        { key: "uu-tien", label: "Ưu tiên" },
-      ],
-    },
     { label: "Công tác" },
     { label: "Số nhà" },
     {
