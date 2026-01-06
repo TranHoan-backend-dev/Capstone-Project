@@ -81,13 +81,21 @@ export interface SurveyAssignmentItem {
   status: "pending" | "assigned";
 }
 
-export type FieldType = "input" | "date" | "select" | "search-input";
+export type FieldType =
+  | "input"
+  | "date"
+  | "select"
+  | "search-input"
+  | "search"
+  | "checkbox"
+  | "textarea";
 
 interface BaseField {
   key: string;
   label: string;
   required?: boolean;
   disabled?: boolean;
+  colSpan?: number;
 }
 
 export interface InputField extends BaseField {
@@ -105,13 +113,47 @@ export interface SelectField extends BaseField {
   options: { key: string; label: string }[];
 }
 
+export interface SearchField extends BaseField {
+  type: "search";
+  placeholder?: string;
+  defaultValue?: string;
+  onSearch?: (value: string) => void;
+  debounceMs?: number;
+}
+
 export interface SearchInputField extends BaseField {
   type: "search-input";
   onSearchClick?: () => void;
   defaultValue?: string;
 }
 
-export type FormField = InputField | DateField | SelectField | SearchInputField;
+export interface CheckboxField extends BaseField {
+  type: "checkbox";
+  defaultValue?: boolean | string[];
+  checkboxLabel?: string;
+  options?: {
+    key: string;
+    label: string;
+  }[];
+}
+
+export interface TextareaField extends BaseField {
+  type: "textarea";
+  defaultValue?: string;
+  rows?: number;
+  maxLength?: number;
+  placeholder?: string;
+  resize?: "none" | "vertical" | "horizontal" | "both";
+}
+
+export type FormField =
+  | InputField
+  | DateField
+  | SelectField
+  | SearchField
+  | SearchInputField
+  | CheckboxField
+  | TextareaField;
 
 export type OrderStage = "register" | "estimate" | "contract" | "construction";
 

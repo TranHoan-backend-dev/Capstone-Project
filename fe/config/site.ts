@@ -34,6 +34,11 @@ export const siteConfig = {
           label: "Khôi phục khách hàng hủy",
           href: "/restore-customers",
         },
+        {
+          key: "new-customers-import",
+          label: "Nhập khách hàng mới",
+          href: "/new-customers-import",
+        },
       ],
     },
     {
