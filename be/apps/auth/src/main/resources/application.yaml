@@ -72,3 +72,10 @@ cors:
 #  exchange_name:
 #  queue_name:
 #  routing_key:
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui/index.html

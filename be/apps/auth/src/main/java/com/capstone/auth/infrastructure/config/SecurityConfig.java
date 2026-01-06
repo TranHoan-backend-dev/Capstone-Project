@@ -47,7 +47,9 @@ public class SecurityConfig {
       "/auth/**",
       "/login/oauth2/code/google",
       "/oauth2/authorization/google",
-      "/actuator/**"
+      "/actuator/**",
+      "/v3/api-docs/**",
+      "/swagger-ui/**",
   };
 
   @Bean
