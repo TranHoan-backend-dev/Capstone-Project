@@ -18,6 +18,7 @@ const CustomInput = ({
       label={label}
       labelPlacement="inside"
       radius="md"
+      size="md"
       type={type}
       variant="bordered"
       {...props}

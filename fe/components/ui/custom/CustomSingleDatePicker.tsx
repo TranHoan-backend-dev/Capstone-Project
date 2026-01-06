@@ -5,7 +5,7 @@ import { DatePicker, DateValue } from "@heroui/react";
 
 interface CustomDatePickerProps {
   label: string;
-  value?: DateValue;
+  value?: DateValue | null;
   onChange?: (date: DateValue | null) => void;
   isDisabled?: boolean;
   className?: string;

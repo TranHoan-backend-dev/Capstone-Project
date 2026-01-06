@@ -3,9 +3,29 @@
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import { Button, Card, CardBody, Chip } from "@heroui/react";
 import React from "react";
+
 import { DarkGreenChip } from "@/config/chip-and-icon";
 
 const CustomerInformation = () => {
+  const customerDetails = [
+    {
+      label: "Tên khách hàng",
+      value: "Nguyễn Thị Minh Hạnh",
+      className: "text-lg font-bold text-gray-800 dark:text-zinc-200",
+    },
+    {
+      label: "Địa chỉ",
+      value: "123 Đường Lê Lợi, Phường 1, Quận 1, TP. HCM",
+      className: "text-gray-600 dark:text-zinc-400 leading-relaxed font-medium",
+    },
+    {
+      label: "Mã khách hàng",
+      value: "KH-2024-001234",
+      className:
+        "text-lg font-bold text-gray-800 dark:text-zinc-200 tracking-tight",
+    },
+  ];
+
   return (
     <Card
       shadow="sm"
@@ -19,30 +39,14 @@ const CustomerInformation = () => {
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12">
-              <div className="space-y-1">
-                <p className="text-xs font-semibold text-gray-400 dark:text-zinc-500 uppercase tracking-wider">
-                  Tên khách hàng
-                </p>
-                <p className="text-lg font-bold text-gray-800 dark:text-zinc-200">
-                  Nguyễn Thị Minh Hạnh
-                </p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs font-semibold text-gray-400 dark:text-zinc-500 uppercase tracking-wider">
-                  Địa chỉ
-                </p>
-                <p className="text-gray-600 dark:text-zinc-400 leading-relaxed font-medium">
-                  123 Đường Lê Lợi, Phường 1, Quận 1, TP. HCM
-                </p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs font-semibold text-gray-400 dark:text-zinc-500 uppercase tracking-wider">
-                  Mã khách hàng
-                </p>
-                <p className="text-lg font-bold text-gray-800 dark:text-zinc-200 tracking-tight">
-                  KH-2024-001234
-                </p>
-              </div>
+              {customerDetails.map((detail, index) => (
+                <div key={index} className="space-y-1">
+                  <p className="text-xs font-semibold text-gray-400 dark:text-zinc-500 uppercase tracking-wider">
+                    {detail.label}
+                  </p>
+                  <p className={detail.className}>{detail.value}</p>
+                </div>
+              ))}
               <div className="space-y-1">
                 <p className="text-xs font-semibold text-gray-400 dark:text-zinc-500 uppercase tracking-wider">
                   Trạng thái
@@ -51,7 +55,9 @@ const CustomerInformation = () => {
                   className={`font-bold border-none px-2 ${DarkGreenChip}`}
                   color="success"
                   size="sm"
-                  startContent={<div className="w-1.5 h-1.5 rounded-full bg-green-600 dark:bg-white mr-1" />}
+                  startContent={
+                    <div className="w-1.5 h-1.5 rounded-full bg-green-600 dark:bg-white mr-1" />
+                  }
                   variant="flat"
                 >
                   Đang hoạt động

@@ -139,7 +139,7 @@ export const ResultsTable = ({ data }: SettlementTableProps) => {
                   className={action.className}
                   size="sm"
                   variant="light"
-                  onClick={() => {
+                  onPress={() => {
                     if (action.content === "Quyết toán") {
                       setIsEstimateOpen(true);
                     }

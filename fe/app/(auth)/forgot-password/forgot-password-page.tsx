@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 import { ForgotPasswordForm } from "./components/forgot-password-form";
 import ResetPasswordForm from "./components/reset-password-form";
@@ -61,12 +62,12 @@ export default function ForgotPasswordPage() {
         <div className="mt-6 text-center">
           <p className="text-sm text-slate-600">
             Bạn nhớ mật khẩu?{" "}
-            <a
+            <Link
               className="font-semibold text-blue-600 hover:text-blue-700 transition-colors"
               href="/login"
             >
               Đăng nhập
-            </a>
+            </Link>
           </p>
         </div>
       </div>

@@ -1,13 +1,14 @@
 "use client";
 
 import React from "react";
-import { Input, Select, SelectItem } from "@heroui/react";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import { SearchIcon } from "@/components/ui/Icons";
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { FilterActionButton } from "@/components/ui/FilterActionButton";
 import FilterButton from "@/components/ui/FilterButton";
+import CustomSelect from "@/components/ui/custom/CustomSelect";
+import CustomInput from "@/components/ui/custom/CustomInput";
 
 interface RestoreFilterProps {
   periodData: { label: string; value: string }[];
@@ -46,21 +47,15 @@ export const RestoreFilter = ({ periodData }: RestoreFilterProps) => {
       <InputField label="Địa Chỉ" />
       <InputField label="Lý Do Khôi Phục" />
       <div className="space-y-1 lg:col-span-2">
-        <Select
+        <CustomSelect
           className="font-bold"
           defaultSelectedKeys={["T8/2025"]}
           label="Kỳ Khôi Phục"
-          labelPlacement="inside"
-          radius="md"
-          size="md"
-          variant="bordered"
-        >
-          {periodData.map((item) => (
-            <SelectItem key={item.value} textValue={item.label}>
-              {item.label}
-            </SelectItem>
-          ))}
-        </Select>
+          options={periodData.map((item) => ({
+            label: item.label,
+            value: item.value,
+          }))}
+        />
       </div>
     </GenericSearchFilter>
   );
@@ -69,14 +64,7 @@ export const RestoreFilter = ({ periodData }: RestoreFilterProps) => {
 export const InputField = ({ label }: { label: string }) => {
   return (
     <div className="space-y-1 lg:col-span-2">
-      <Input
-        className="font-bold"
-        label={label}
-        labelPlacement="inside"
-        radius="md"
-        size="md"
-        variant="bordered"
-      />
+      <CustomInput className="font-bold" label={label} />
     </div>
   );
 };

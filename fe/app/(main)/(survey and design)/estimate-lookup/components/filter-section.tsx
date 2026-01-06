@@ -1,10 +1,11 @@
 "use client";
 
 import React from "react";
-import { DatePicker, Input } from "@heroui/react";
 
 import { SearchIcon } from "@/components/ui/Icons";
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
+import CustomSingleDatePicker from "@/components/ui/custom/CustomSingleDatePicker";
+import CustomInput from "@/components/ui/custom/CustomInput";
 
 export const FilterSection = () => {
   return (
@@ -33,14 +34,7 @@ export const DatePickerField = ({
 }) => {
   return (
     <div className={`${colSpan} space-y-1`}>
-      <DatePicker
-        className="font-bold"
-        label={label}
-        labelPlacement="inside"
-        radius="md"
-        size="md"
-        variant="bordered"
-      />
+      <CustomSingleDatePicker className="font-bold" label={label} />
     </div>
   );
 };
@@ -54,14 +48,7 @@ export const InputField = ({
 }) => {
   return (
     <div className={`${colSpan} space-y-1`}>
-      <Input
-        className="font-bold"
-        label={label}
-        labelPlacement="inside"
-        radius="md"
-        size="md"
-        variant="bordered"
-      />
+      <CustomInput className="font-bold" label={label} />
     </div>
   );
 };

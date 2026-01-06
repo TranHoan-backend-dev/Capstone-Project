@@ -10,15 +10,15 @@ import CustomSelect from "@/components/ui/custom/CustomSelect";
 interface FilterSectionProps {
   branches: { label: string; value: string }[];
   areas: { label: string; value: string }[];
-  districts: { label: string; value: string }[];
   wards: { label: string; value: string }[];
+  neighborhoods: { label: string; value: string }[];
 }
 
 export const FilterSection = ({
   branches,
   areas,
-  districts,
   wards,
+  neighborhoods,
 }: FilterSectionProps) => {
   const inputFields = [
     { label: "Mã KH", placeholder: "Nhập mã khách hàng" },
@@ -28,13 +28,14 @@ export const FilterSection = ({
     { label: "Số nhà", placeholder: "Nhập số nhà" },
     { label: "Lộ trình ghi", placeholder: "Nhập lộ trình ghi" },
     { label: "Tên đường", placeholder: "Nhập tên đường" },
-    { label: "MST", placeholder: "Nhập mã số thuế" },
+    { label: "Mã số thuế", placeholder: "Nhập mã số thuế" },
   ];
 
   const selectFields = [
     { label: "Chi nhánh", data: branches },
     { label: "Khu vực", data: areas },
     { label: "Phường/Xã", data: wards },
+    { label: "Tổ/Khu phố", data: neighborhoods },
   ];
 
   return (
