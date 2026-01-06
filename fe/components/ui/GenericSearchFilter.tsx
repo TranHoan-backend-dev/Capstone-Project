@@ -4,12 +4,6 @@ import React from "react";
 import { Card, CardBody, Button, ButtonProps } from "@heroui/react";
 import { FunnelIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 
-export const FilterLabel = ({ children }: { children: React.ReactNode }) => (
-  <label className="text-[11px] font-semibold text-default-500 ml-1 uppercase tracking-wider block mb-1">
-    {children}
-  </label>
-);
-
 interface GenericSearchFilterProps {
   title: string;
   icon?: React.ReactNode;

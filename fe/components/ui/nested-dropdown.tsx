@@ -165,7 +165,7 @@ const NestedDropdown = ({ item }: { item: MenuItem }) => {
                 : "text-foreground-700 hover:bg-default-100"
             }`}
             href={item.href}
-            onClick={() => handleItemClick(item.key)}
+            onPress={() => handleItemClick(item.key)}
           >
             {item.label}
           </Link>
@@ -209,7 +209,7 @@ const NestedDropdown = ({ item }: { item: MenuItem }) => {
                         : "text-foreground-700 hover:bg-default-100"
                     }`}
                     href={subItem.href}
-                    onClick={() => handleItemClick(subItem.key)}
+                    onPress={() => handleItemClick(subItem.key)}
                   >
                     {subItem.label}
                   </Link>
@@ -243,7 +243,7 @@ const NestedDropdown = ({ item }: { item: MenuItem }) => {
                             : "text-foreground-700 hover:bg-default-100"
                         }`}
                         href={child.href || "#"}
-                        onClick={() => handleItemClick(child.key)}
+                        onPress={() => handleItemClick(child.key)}
                       >
                         {child.label}
                       </Link>

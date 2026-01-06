@@ -1,7 +1,10 @@
-import { Input, DatePicker, Select, SelectItem } from "@heroui/react";
+"use client";
 
-import { FormField } from "@/types/index";
+import { FormField } from "@/types";
 import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
+import CustomInput from "@/components/ui/custom/CustomInput";
+import CustomSingleDatePicker from "@/components/ui/custom/CustomSingleDatePicker";
+import CustomSelect from "@/components/ui/custom/CustomSelect";
 
 export const FormFieldRenderer = ({
   field,
@@ -15,46 +18,37 @@ export const FormFieldRenderer = ({
   switch (field.type) {
     case "input":
       return (
-        <Input
+        <CustomInput
           defaultValue={field.defaultValue}
           isDisabled={field.disabled}
           isRequired={field.required}
           label={field.label}
-          labelPlacement="inside"
-          radius="md"
-          variant="bordered"
         />
       );
 
     case "date":
       return (
-        <DatePicker
+        <CustomSingleDatePicker
           className="w-full"
           isDisabled={field.disabled}
           isRequired={field.required}
           label={field.label}
-          labelPlacement="inside"
-          radius="md"
-          variant="bordered"
         />
       );
 
     case "select":
       return (
-        <Select
+        <CustomSelect
           defaultSelectedKeys={
             field.defaultValue ? [field.defaultValue] : undefined
           }
           isDisabled={field.disabled}
           label={field.label}
-          labelPlacement="inside"
-          radius="md"
-          variant="bordered"
-        >
-          {field.options.map((opt) => (
-            <SelectItem key={opt.key}>{opt.label}</SelectItem>
-          ))}
-        </Select>
+          options={field.options.map((opt) => ({
+            label: opt.label,
+            value: opt.key,
+          }))}
+        />
       );
     case "search-input":
       return (

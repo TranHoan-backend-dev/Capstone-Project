@@ -11,12 +11,13 @@ export interface SelectOption {
 interface BaseSelectProps {
   label: string;
   options: SelectOption[];
-  selectedKeys?: Set<string>;
-  defaultSelectedKeys?: Set<string>;
+  selectedKeys?: Set<string> | string[] | undefined;
+  defaultSelectedKeys?: Set<string> | string[] | undefined;
   onSelectionChange?: (keys: Set<string>) => void;
   className?: string;
   isDisabled?: boolean;
   isRequired?: boolean;
+  itemClassname?: string;
   props?: any;
 }
 
@@ -29,6 +30,7 @@ const CustomSelect = ({
   className,
   isDisabled = false,
   isRequired = false,
+  itemClassname,
   ...props
 }: BaseSelectProps) => {
   return (
@@ -48,7 +50,11 @@ const CustomSelect = ({
       {...props}
     >
       {options.map((item) => (
-        <SelectItem key={item.value} textValue={item.label}>
+        <SelectItem
+          key={item.value}
+          textValue={item.label}
+          className={itemClassname}
+        >
           {item.label}
         </SelectItem>
       ))}

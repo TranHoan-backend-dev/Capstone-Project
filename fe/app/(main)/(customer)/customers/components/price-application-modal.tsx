@@ -48,12 +48,20 @@ export const PriceApplicationModal = ({
 
   return (
     <CustomModal
-      data={data.map((item) => ({
+      data={data.map((item, idx) => ({
         elements: [
-          <span className="text-center block">{item.id}</span>,
+          <span key={idx} className="text-center block">
+            {item.id}
+          </span>,
           ...[item.description, item.price, item.level, item.quota].map(
-            (val) => (
-              <Input isReadOnly defaultValue={val} size="sm" variant="flat" />
+            (val, index) => (
+              <Input
+                key={index}
+                isReadOnly
+                defaultValue={val}
+                size="sm"
+                variant="flat"
+              />
             ),
           ),
         ],
