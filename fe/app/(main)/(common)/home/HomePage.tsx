@@ -1,9 +1,10 @@
 "use client";
 
-import { Button, Card, CardBody, Select, SelectItem } from "@heroui/react";
+import { Button, Card, CardBody } from "@heroui/react";
 import { useState } from "react";
 
 import CustomInput from "@/components/ui/custom/CustomInput";
+import CustomSelect from "@/components/ui/custom/CustomSelect";
 
 export const HomePage = () => {
   const [clientMachineName, setClientMachineName] = useState("");
@@ -41,21 +42,17 @@ export const HomePage = () => {
             />
 
             <div className="md:col-span-2">
-              <Select
+              <CustomSelect
                 label="Chương trình"
-                labelPlacement="inside"
                 selectedKeys={[selectedProgram]}
-                variant="bordered"
                 onSelectionChange={(keys) =>
                   setSelectedProgram(Array.from(keys)[0] as string)
                 }
-              >
-                {programOptions.map((option) => (
-                  <SelectItem key={option.key} className="dark:text-white">
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </Select>
+                options={programOptions.map((option) => ({
+                  label: option.label,
+                  value: option.key,
+                }))}
+              />
             </div>
           </div>
 

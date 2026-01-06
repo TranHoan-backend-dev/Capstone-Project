@@ -8,7 +8,7 @@ import {
 } from "@heroicons/react/24/solid";
 
 import PasswordInput from "@/components/ui/PasswordInput";
-import CustomButton from "@/components/ui/custom/CustomButton";
+import CustomButton from "@/app/(auth)/login/components/custom-button";
 import CustomInput from "@/components/ui/custom/CustomInput";
 
 const LoginForm = () => {
