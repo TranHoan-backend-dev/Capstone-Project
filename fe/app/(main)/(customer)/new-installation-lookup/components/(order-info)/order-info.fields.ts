@@ -59,7 +59,7 @@ export const orderInfoFields: FormField[] = [
     type: "search-input",
   },
   {
-    key: "routCcode",
+    key: "routeCode",
     label: "Mã lộ trình",
     type: "input",
   },
