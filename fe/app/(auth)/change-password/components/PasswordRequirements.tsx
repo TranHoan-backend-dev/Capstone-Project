@@ -1,26 +1,20 @@
 "use client";
 
+import { checkPasswordRequirements } from "@/utils/requirementPassword";
+
 interface PasswordRequirementsProps {
   password: string;
 }
 
 const PasswordRequirements = ({ password }: PasswordRequirementsProps) => {
+  const result = checkPasswordRequirements(password);
   const requirements = [
-    {
-      label: "Ít nhất 6 ký tự",
-      met: password.length >= 6,
-    },
-    {
-      label: "Có ít nhất 1 chữ hoa",
-      met: /[A-Z]/.test(password),
-    },
-    {
-      label: "Có ít nhất 1 số",
-      met: /[0-9]/.test(password),
-    },
+    { label: "Ít nhất 8 ký tự", met: result.minLength },
+    { label: "Có ít nhất 1 chữ hoa", met: result.uppercase },
+    { label: "Có ít nhất 1 số", met: result.number },
     {
       label: "Có ít nhất 1 ký tự đặc biệt",
-      met: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+      met: result.special,
       optional: true,
     },
   ];

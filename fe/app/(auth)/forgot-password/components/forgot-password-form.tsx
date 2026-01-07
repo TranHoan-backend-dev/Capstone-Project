@@ -2,8 +2,12 @@
 
 import type React from "react";
 
+import { z } from "zod";
 import { useState } from "react";
-import { Input, Button } from "@heroui/react";
+
+import CustomButton from "../../../../components/ui/custom/CustomButton";
+
+import CustomInput from "@/components/ui/custom/CustomInput";
 
 interface ForgotPasswordFormProps {
   onSuccessAction: (email: string) => void;
@@ -16,25 +20,27 @@ export function ForgotPasswordForm({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const forgotPasswordSchema = z.object({
+    email: z
+      .string()
+      .min(1, "Vui lòng nhập email")
+      .email("Vui lòng nhập email hợp lệ"),
+  });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setIsLoading(true);
+    const result = forgotPasswordSchema.safeParse({ email });
 
+    if (!result.success) {
+      setError(result.error.issues[0].message);
+      return;
+    }
+
+    setIsLoading(true);
     try {
-      // Simulate API call to send OTP
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      // Validation
-      if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-        setError("Vui lòng nhập email hợp lệ");
-        setIsLoading(false);
-
-        return;
-      }
-
-      // Here you would call your API to send OTP
-      console.log("Sending OTP to:", email);
       onSuccessAction(email);
     } catch (err) {
       setError("Có lỗi xảy ra. Vui lòng thử lại.");
@@ -53,7 +59,7 @@ export function ForgotPasswordForm({
 
       <div className="space-y-2">
         <div className="relative">
-          <Input
+          <CustomInput
             required
             disabled={isLoading}
             id="email"
@@ -70,13 +76,13 @@ export function ForgotPasswordForm({
         {error && <p className="text-sm text-red-500 font-medium">{error}</p>}
       </div>
 
-      <Button
+      <CustomButton
         className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition-all disabled:opacity-50"
         disabled={isLoading || !email}
         type="submit"
       >
         {isLoading ? <>Đang gửi...</> : "Gửi mã OTP"}
-      </Button>
+      </CustomButton>
     </form>
   );
 }

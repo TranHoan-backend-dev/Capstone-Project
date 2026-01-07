@@ -2,7 +2,6 @@
 
 import { Checkbox } from "@heroui/react";
 
-import CustomButton from "@/app/(auth)/login/components/custom-button";
 import CustomInput from "@/components/ui/custom/CustomInput";
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import {
@@ -12,6 +11,7 @@ import {
   SearchIcon,
 } from "@/components/ui/Icons";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
+import CustomButton from "@/components/ui/custom/CustomButton";
 
 export const FeeForm = () => {
   return (

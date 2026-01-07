@@ -31,7 +31,7 @@ const CustomButton = ({
   return (
     <Button
       className={cn(
-        "w-full h-10 rounded-xl px-3 py-1 font-medium transition",
+        "h-10 rounded-xl px-3 py-1 font-medium transition",
         "disabled:opacity-70 disabled:cursor-not-allowed",
         className,
       )}

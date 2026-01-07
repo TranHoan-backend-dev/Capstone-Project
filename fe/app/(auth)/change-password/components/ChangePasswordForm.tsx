@@ -1,19 +1,36 @@
 "use client";
 
-import { Button } from "@heroui/react";
+import { z } from "zod";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { XMarkIcon, DocumentArrowDownIcon } from "@heroicons/react/24/solid";
 
 import PasswordRequirements from "./PasswordRequirements";
 import ChangePasswordHeader from "./ChangePasswordHeader";
 
 import PasswordInput from "@/components/ui/PasswordInput";
+import CustomButton from "@/components/ui/custom/CustomButton";
+import { passwordSchema } from "@/schemas/password.schema";
+import { RejectIcon, DocumentIcon } from "@/config/chip-and-icon";
+
+const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, "Vui lòng nhập mật khẩu hiện tại"),
+
+    newPassword: passwordSchema,
+
+    confirmPassword: z.string().min(1, "Vui lòng xác nhận mật khẩu"),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Mật khẩu mới và xác nhận không khớp",
+    path: ["confirmPassword"],
+  });
+
+type ChangePasswordFormData = z.infer<typeof changePasswordSchema>;
 
 const ChangePasswordForm = () => {
   const router = useRouter();
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<ChangePasswordFormData>({
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
@@ -22,39 +39,29 @@ const ChangePasswordForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<
+    Partial<Record<keyof ChangePasswordFormData, string>>
+  >({});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setSuccess("");
+    setFieldErrors({});
 
-    if (
-      !formData.currentPassword ||
-      !formData.newPassword ||
-      !formData.confirmPassword
-    ) {
-      setError("Vui lòng điền đầy đủ thông tin");
+    const result = changePasswordSchema.safeParse(formData);
 
-      return;
-    }
+    if (!result.success) {
+      const errors: Partial<Record<keyof ChangePasswordFormData, string>> = {};
 
-    if (formData.newPassword !== formData.confirmPassword) {
-      setError("Mật khẩu mới và xác nhận không khớp");
+      result.error.issues.forEach((err) => {
+        const field = err.path[0] as keyof ChangePasswordFormData;
+        if (field) {
+          errors[field] = err.message;
+        }
+      });
 
-      return;
-    }
-
-    if (formData.newPassword.length < 8) {
-      setError("Mật khẩu mới phải có ít nhất 8 ký tự");
-
-      return;
-    }
-
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/;
-
-    if (!passwordRegex.test(formData.newPassword)) {
-      setError("Mật khẩu phải chứa ít nhất 1 chữ hoa, 1 chữ thường và 1 số");
-
+      setFieldErrors(errors);
       return;
     }
 
@@ -191,26 +198,26 @@ const ChangePasswordForm = () => {
               <PasswordRequirements password={formData.newPassword} />
 
               <div className="flex justify-end space-x-4 pt-4 border-t border-gray-100 dark:border-zinc-800 mt-8">
-                <Button
+                <CustomButton
                   className="px-6 h-11 border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 hover:bg-gray-50 dark:hover:bg-zinc-800 font-bold"
                   disabled={isLoading}
-                  startContent={<XMarkIcon className="w-5 h-5" />}
+                  startContent={<RejectIcon className="w-5 h-5" />}
                   type="button"
                   variant="bordered"
                   onClick={handleCancel}
                 >
                   Hủy
-                </Button>
-                <Button
+                </CustomButton>
+                <CustomButton
                   className="px-6 h-11 bg-blue-600 dark:bg-primary hover:bg-blue-700 dark:hover:bg-primary-600 text-white font-bold"
                   color="primary"
                   disabled={isLoading}
                   isLoading={isLoading}
-                  startContent={<DocumentArrowDownIcon className="w-5 h-5" />}
+                  startContent={<DocumentIcon className="w-5 h-5" />}
                   type="submit"
                 >
                   {isLoading ? "Đang xử lý..." : "Lưu thay đổi"}
-                </Button>
+                </CustomButton>
               </div>
             </form>
           </div>

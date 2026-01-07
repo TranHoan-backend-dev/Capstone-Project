@@ -8,8 +8,8 @@ import { CustomerInfo } from "@/app/(main)/(customer)/customer-registration/comp
 import { AddressInfo } from "@/app/(main)/(customer)/customer-registration/components/address-info";
 import { TechnicalInfo } from "@/app/(main)/(customer)/customer-registration/components/technical-info";
 import { BillingInfo } from "@/app/(main)/(customer)/customer-registration/components/billing-info";
-import CustomButton from "@/app/(auth)/login/components/custom-button";
 import { RefreshIcon, SaveIcon } from "@/components/ui/Icons";
+import CustomButton from "@/components/ui/custom/CustomButton";
 
 const CustomerRegistration = () => {
   return (

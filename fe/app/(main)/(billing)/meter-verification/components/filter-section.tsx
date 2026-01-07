@@ -1,13 +1,12 @@
 "use client";
 
 import React from "react";
-import { Button } from "@heroui/react";
 import { FunnelIcon, TrashIcon } from "@heroicons/react/24/outline";
-
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import CustomInput from "@/components/ui/custom/CustomInput";
 import CustomDatePicker from "@/components/ui/custom/CustomDatePicker";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
+import CustomButton from "@/components/ui/custom/CustomButton";
 
 export const FilterSection = () => {
   const selectFields = [
@@ -24,19 +23,19 @@ export const FilterSection = () => {
     <GenericSearchFilter
       actions={
         <div className="flex gap-2">
-          <Button
+          <CustomButton
             className="px-8 h-10 text-sm font-bold bg-[#2266db] hover:bg-blue-700 rounded-md"
             color="primary"
             startContent={<FunnelIcon className="w-4 h-4" />}
           >
             Lọc
-          </Button>
-          <Button
+          </CustomButton>
+          <CustomButton
             className="px-4 h-10 text-sm font-bold bg-[#ff4d4f] text-white hover:bg-red-600 rounded-md"
             startContent={<TrashIcon className="w-4 h-4" />}
           >
             Xóa toàn bộ lựa chọn
-          </Button>
+          </CustomButton>
         </div>
       }
       gridClassName="grid grid-cols-1 md:grid-cols-4 gap-6"

@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button, useDisclosure, Textarea, DateValue } from "@heroui/react";
-import { TrashIcon } from "@heroicons/react/24/outline";
+import { useDisclosure, Textarea, DateValue } from "@heroui/react";
 
 import { SubMasterMeterModal } from "./sub-master-meter-modal";
 import { RouteListModal } from "./route-list-modal";
@@ -12,6 +11,8 @@ import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
 import CustomDatePicker from "@/components/ui/custom/CustomDatePicker";
+import CustomButton from "@/components/ui/custom/CustomButton";
+import { DeleteIcon } from "@/config/chip-and-icon";
 
 export const ActionsSection = () => {
   const {
@@ -122,15 +123,15 @@ export const ActionsSection = () => {
             />
           </div>
           <div className="flex justify-end">
-            <Button
+            <CustomButton
               className="bg-gray-100 dark:bg-default-100 text-gray-700 dark:text-foreground font-bold px-6 shadow-none border border-gray-200 dark:border-divider h-9 shrink-0 hover:bg-gray-200 dark:hover:bg-default-200"
               radius="md"
               size="md"
-              startContent={<TrashIcon className="w-5 h-5" />}
+              startContent={<DeleteIcon className="w-5 h-5" />}
               onPress={handleClear}
             >
               Xóa các lựa chọn
-            </Button>
+            </CustomButton>
           </div>
         </div>
       </GenericSearchFilter>
@@ -139,7 +140,10 @@ export const ActionsSection = () => {
         isOpen={isMeterOpen}
         onOpenChangeAction={onMeterOpenChange}
       />
-      <RouteListModal isOpen={isRouteOpen} onOpenChangeAction={onRouteOpenChange} />
+      <RouteListModal
+        isOpen={isRouteOpen}
+        onOpenChangeAction={onRouteOpenChange}
+      />
     </>
   );
 };
