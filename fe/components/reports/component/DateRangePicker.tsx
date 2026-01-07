@@ -1,5 +1,3 @@
-"use client";
-
 import { DatePicker } from "@heroui/react";
 import { DateValue } from "@heroui/react";
 

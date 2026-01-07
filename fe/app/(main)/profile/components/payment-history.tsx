@@ -74,7 +74,7 @@ const PaymentHistory = () => {
           initialPage: 1,
           summary: `${paymentHistoryData.length}`,
         }}
-        renderCell={renderCell}
+        renderCellAction={renderCell}
         title="Lịch Sử Thanh Toán"
       />
     </div>

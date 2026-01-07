@@ -8,11 +8,11 @@ import { ArrowPathIcon } from "@heroicons/react/24/solid";
 
 interface OTPFormProps {
   email: string;
-  onSuccess: () => void;
-  onBack: () => void;
+  onSuccessAction: () => void;
+  onBackAction: () => void;
 }
 
-export default function OTPForm({ email, onSuccess, onBack }: OTPFormProps) {
+export default function OTPForm({ email, onSuccessAction, onBackAction }: OTPFormProps) {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -113,7 +113,7 @@ export default function OTPForm({ email, onSuccess, onBack }: OTPFormProps) {
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       if (otpString === "450123") {
-        onSuccess();
+        onSuccessAction();
         console.log("OTP hợp lệ!");
       } else {
         throw new Error("Mã OTP không đúng");

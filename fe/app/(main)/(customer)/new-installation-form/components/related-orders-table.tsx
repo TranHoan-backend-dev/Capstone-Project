@@ -11,7 +11,7 @@ import {
   DarkYellowChip,
   DeleteIcon,
   PrintReceiptIcon,
-  RedIconColor,
+  RedIconColor, TitleDarkColor,
 } from "@/config/chip-and-icon";
 
 interface RelatedOrdersTableProps {
@@ -42,7 +42,7 @@ export const RelatedOrdersTable = ({ data }: RelatedOrdersTableProps) => {
         return (
           <Link
             as={NextLink}
-            className="font-bold text-blue-600 dark:text-primary hover:underline"
+            className={`font-bold text-blue-600 hover:underline hover:text-blue-800 ${TitleDarkColor}`}
             href="#"
           >
             {item.code}
@@ -131,7 +131,7 @@ export const RelatedOrdersTable = ({ data }: RelatedOrdersTableProps) => {
         onChange: (page) => console.log(page),
         summary: `${data.length}`,
       }}
-      renderCell={renderCell}
+      renderCellAction={renderCell}
       title="Danh sách đơn liên quan"
     />
   );

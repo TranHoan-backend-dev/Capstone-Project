@@ -6,6 +6,7 @@ import NextLink from "next/link";
 
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import { SurveyAssignmentItem } from "@/types";
+import {TitleDarkColor} from "@/config/chip-and-icon";
 
 interface Props {
   data: SurveyAssignmentItem[];
@@ -51,7 +52,7 @@ export const SurveyAssignmentTable = ({ data }: Props) => {
         return (
           <Link
             as={NextLink}
-            className="font-bold text-[#2a66e4] underline underline-offset-4"
+            className={`font-bold text-blue-600 hover:underline hover:text-blue-800 ${TitleDarkColor}`}
             href={`/survey/${item.id}`}
           >
             {item.code}
@@ -91,7 +92,7 @@ export const SurveyAssignmentTable = ({ data }: Props) => {
         initialPage: 1,
         summary: `1-${data.length} của ${data.length}`,
       }}
-      renderCell={renderCell}
+      renderCellAction={renderCell}
       title=""
     />
   );

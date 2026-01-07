@@ -1,4 +1,4 @@
-import { FormField } from "@/types/index";
+import { FormField } from "@/types";
 
 export const addressFields: FormField[] = [
   { key: "houseNumber", label: "Số nhà", type: "input" },

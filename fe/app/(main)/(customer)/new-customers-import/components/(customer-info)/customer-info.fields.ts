@@ -1,4 +1,4 @@
-import { FormField } from "@/types/index";
+import { FormField } from "@/types";
 
 export const customerInfoFields: FormField[] = [
   { key: "code", label: "Mã đơn", type: "search-input", required: true },

@@ -7,12 +7,12 @@ import CustomModal from "@/components/ui/modal/CustomModalWithTable";
 
 interface PriceApplicationModalProps {
   isOpen: boolean;
-  onOpenChange: () => void;
+  onOpenChangeAction: () => void;
 }
 
 export const PriceApplicationModal = ({
   isOpen,
-  onOpenChange,
+  onOpenChangeAction,
 }: PriceApplicationModalProps) => {
   // Mock data based on the user image
   const data = [
@@ -70,7 +70,7 @@ export const PriceApplicationModal = ({
       isOpen={isOpen}
       isPagination={false}
       tableColumns={["STT", "Mô tả", "Giá", "Mức", "Định mức"]}
-      onOpenChange={onOpenChange}
+      onOpenChange={onOpenChangeAction}
     />
   );
 };

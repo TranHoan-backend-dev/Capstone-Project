@@ -93,7 +93,7 @@ export const CustomerListTable = ({ data }: CustomerListTableProps) => {
         initialPage: 1,
         summary: "1-5 của 25",
       }}
-      renderCell={renderCell}
+      renderCellAction={renderCell}
       title="Danh sách khách hàng"
     />
   );

@@ -13,7 +13,7 @@ interface CustomDatePickerProps {
   props?: any;
 }
 
-const CustomSingleDatePicker = ({
+const CustomDatePicker = ({
   label,
   value,
   onChange,
@@ -42,4 +42,4 @@ const CustomSingleDatePicker = ({
   );
 };
 
-export default CustomSingleDatePicker;
+export default CustomDatePicker;

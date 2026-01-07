@@ -6,7 +6,7 @@ import { Input, DatePicker } from "@heroui/react";
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { SearchIcon } from "@/components/ui/Icons";
 import CustomInput from "@/components/ui/custom/CustomInput";
-import CustomSingleDatePicker from "@/components/ui/custom/CustomSingleDatePicker";
+import CustomDatePicker from "@/components/ui/custom/CustomDatePicker";
 
 export const FilterSection = () => {
   return (
@@ -31,7 +31,7 @@ export const FilterSection = () => {
 export const DatePickerField = ({ label }: { label: string }) => {
   return (
     <div className="lg:col-span-1 space-y-1">
-      <CustomSingleDatePicker className="font-bold" label={label} />
+      <CustomDatePicker className="font-bold" label={label} />
     </div>
   );
 };

@@ -13,7 +13,7 @@ import {
   DarkRedChip,
   RestoreIcon,
   DarkGrayChip,
-  DarkPurpleChip,
+  DarkPurpleChip, TitleDarkColor,
 } from "@/config/chip-and-icon";
 import { DesignProcessingItem, StatusDetailData } from "@/types";
 
@@ -85,7 +85,6 @@ export const WaitingInputTable = ({
   ];
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDesignOpen, setIsDesignOpen] = useState(false);
 
   const handleStatusClick = (item: DesignProcessingItem) => {
     setSelectedDesign(item);
@@ -98,7 +97,7 @@ export const WaitingInputTable = ({
         return (
           <Link
             as={NextLink}
-            className="font-bold text-blue-600 hover:underline hover:text-blue-800 dark:text-primary dark:hover:text-primary-600"
+            className={`font-bold text-blue-600 hover:underline hover:text-blue-800 ${TitleDarkColor}`}
             href="#"
           >
             {item.code}
@@ -166,7 +165,7 @@ export const WaitingInputTable = ({
           initialPage: 1,
           summary: `${data.length}`,
         }}
-        renderCell={renderCell}
+        renderCellAction={renderCell}
         title="Danh sách đang chờ đầu vào & từ chối thiết kế"
       />
       <DesignProcessingModal

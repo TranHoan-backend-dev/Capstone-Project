@@ -6,7 +6,7 @@ import { FunnelIcon, TrashIcon } from "@heroicons/react/24/outline";
 
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import CustomInput from "@/components/ui/custom/CustomInput";
-import CustomSingleDatePicker from "@/components/ui/custom/CustomSingleDatePicker";
+import CustomDatePicker from "@/components/ui/custom/CustomDatePicker";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
 
 export const FilterSection = () => {
@@ -45,18 +45,23 @@ export const FilterSection = () => {
       <InputField label="Kỳ hóa đơn" />
 
       <div className="space-y-1">
-        <CustomSingleDatePicker label="Ngày ghi" />
+        <CustomDatePicker label="Ngày ghi" />
       </div>
 
       <InputField label="Mã khách hàng" />
       <InputField label="Số ghi" />
 
       {selectFields.map((field) => (
-        <SelectField
-          key={field.label}
-          label={field.label}
-          options={field.options}
-        />
+        <div className="space-y-1">
+          <CustomSelect
+            label={field.label}
+            options={field.options.map((item, _) => ({
+              label: item.label,
+              value: item.key,
+            }))}
+            itemClassname="dark:text-white"
+          />
+        </div>
       ))}
     </GenericSearchFilter>
   );
@@ -66,27 +71,6 @@ export const InputField = ({ label }: { label: string }) => {
   return (
     <div className="space-y-1">
       <CustomInput label={label} />
-    </div>
-  );
-};
-
-export const SelectField = ({
-  label,
-  options,
-}: {
-  label: string;
-  options: { key: string; label: string }[];
-}) => {
-  return (
-    <div className="space-y-1">
-      <CustomSelect
-        label={label}
-        options={options.map((item, _) => ({
-          label: item.label,
-          value: item.key,
-        }))}
-        itemClassname="dark:text-white"
-      />
     </div>
   );
 };

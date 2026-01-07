@@ -112,7 +112,7 @@ export const FilterForm = ({
             className="w-full"
             label="Ngày lập"
             value={filters.createDate}
-            onChange={(value) => handleFilterChange("createDate", value)}
+            onChangeAction={(value) => handleFilterChange("createDate", value)}
           />
         </div>
 

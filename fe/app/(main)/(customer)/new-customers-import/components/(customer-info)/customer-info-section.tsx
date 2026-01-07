@@ -1,21 +1,23 @@
 "use client";
 
-import { FormFieldRenderer } from "../form-field-renderer";
 import { customerInfoFields } from "./customer-info.fields";
 
+import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
+import CustomInput from "@/components/ui/custom/CustomInput";
 
 export const CustomerInfoSection = () => {
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h2 className="text-lg font-semibold mb-4">
-        Thông tin đơn & Định danh
-      </h2>
-
-      <div className="grid grid-cols-3 gap-4">
-        {customerInfoFields.map((f) => (
-          <FormFieldRenderer key={f.key} field={f} />
-        ))}
-      </div>
-    </div>
+    <GenericSearchFilter
+      title="Thông tin đơn & Định danh"
+      gridClassName="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-3"
+      isCollapsible
+      actions={<></>}
+    >
+      {customerInfoFields.map((field, idx) => (
+        <div key={idx} className="space-y-1">
+          <CustomInput key={field.key} label={field.label} />
+        </div>
+      ))}
+    </GenericSearchFilter>
   );
 };

@@ -6,10 +6,12 @@ import { useState } from "react";
 import { Input, Button } from "@heroui/react";
 
 interface ForgotPasswordFormProps {
-  onSuccess: (email: string) => void;
+  onSuccessAction: (email: string) => void;
 }
 
-export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
+export function ForgotPasswordForm({
+  onSuccessAction,
+}: ForgotPasswordFormProps) {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -33,7 +35,7 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
 
       // Here you would call your API to send OTP
       console.log("Sending OTP to:", email);
-      onSuccess(email);
+      onSuccessAction(email);
     } catch (err) {
       setError("Có lỗi xảy ra. Vui lòng thử lại.");
       setIsLoading(false);

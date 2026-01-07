@@ -1,4 +1,4 @@
-import { FormField } from "@/types/index";
+import { FormField } from "@/types";
 
 export const supplementaryInfoFields: FormField[] = [
   {
@@ -21,15 +21,15 @@ export const supplementaryInfoFields: FormField[] = [
     label: "Thời gian khấu trừ",
     type: "input",
   },
-{
-  key: "invoiceOptions",
-  type: "checkbox",
-  label: "",
-  colSpan: 2,
-  options: [
-    { key: "changeInfo", label: "Đổi thông tin xuất hóa đơn" },
-    { key: "noCharge", label: "Không tính tiền" },
-    { key: "promotion", label: "Khuyến mãi" },
-  ],
-},
+  {
+    key: "invoiceOptions",
+    type: "checkbox",
+    label: "",
+    colSpan: 2,
+    options: [
+      { key: "changeInfo", label: "Đổi thông tin xuất hóa đơn" },
+      { key: "noCharge", label: "Không tính tiền" },
+      { key: "promotion", label: "Khuyến mãi" },
+    ],
+  },
 ];

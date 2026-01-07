@@ -29,7 +29,7 @@ interface GenericDataTableProps<T> {
   icon?: React.ReactNode;
   columns: Column[];
   data: T[];
-  renderCell: (item: T, columnKey: string) => React.ReactNode;
+  renderCellAction: (item: T, columnKey: string) => React.ReactNode;
   paginationProps?: {
     total: number;
     initialPage: number;
@@ -50,7 +50,7 @@ export const GenericDataTable = <T extends { id: string | number }>({
   icon,
   columns,
   data,
-  renderCell,
+  renderCellAction,
   paginationProps,
   tableProps,
   isCollapsible = false,
@@ -149,7 +149,7 @@ export const GenericDataTable = <T extends { id: string | number }>({
                             : ""
                         }
                       >
-                        {renderCell(item, column.key)}
+                        {renderCellAction(item, column.key)}
                       </TableCell>
                     ))}
                   </TableRow>

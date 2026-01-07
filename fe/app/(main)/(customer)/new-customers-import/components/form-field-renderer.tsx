@@ -1,18 +1,13 @@
 "use client";
 
-import {
-  Input,
-  DatePicker,
-  Select,
-  SelectItem,
-  Button,
-  Checkbox,
-  Textarea,
-} from "@heroui/react";
+import { Input, Button, Checkbox, Textarea } from "@heroui/react";
 
-import { FormField } from "@/types/index";
+import { FormField } from "@/types";
 import { SearchIcon } from "@/config/chip-and-icon";
 import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
+import CustomInput from "@/components/ui/custom/CustomInput";
+import CustomDatePicker from "@/components/ui/custom/CustomDatePicker";
+import CustomSelect from "@/components/ui/custom/CustomSelect";
 
 export const FormFieldRenderer = ({
   field,
@@ -26,46 +21,37 @@ export const FormFieldRenderer = ({
   switch (field.type) {
     case "input":
       return (
-        <Input
+        <CustomInput
           defaultValue={field.defaultValue}
           isDisabled={field.disabled}
           isRequired={field.required}
           label={field.label}
-          labelPlacement="inside"
-          radius="md"
-          variant="bordered"
         />
       );
 
     case "date":
       return (
-        <DatePicker
+        <CustomDatePicker
           className="w-full"
           isDisabled={field.disabled}
           isRequired={field.required}
           label={field.label}
-          labelPlacement="inside"
-          radius="md"
-          variant="bordered"
         />
       );
 
     case "select":
       return (
-        <Select
+        <CustomSelect
           defaultSelectedKeys={
             field.defaultValue ? [field.defaultValue] : undefined
           }
           isDisabled={field.disabled}
           label={field.label}
-          labelPlacement="inside"
-          radius="md"
-          variant="bordered"
-        >
-          {field.options.map((opt) => (
-            <SelectItem key={opt.key}>{opt.label}</SelectItem>
-          ))}
-        </Select>
+          options={field.options.map((opt) => ({
+            label: opt.label,
+            value: opt.key,
+          }))}
+        />
       );
     case "search":
       return (
@@ -78,26 +64,21 @@ export const FormFieldRenderer = ({
       );
 
     case "checkbox":
-  if (field.options?.length) {
-    return (
-      <div className="flex items-center pt-4 gap-6 whitespace-nowrap">
-        {field.options.map((opt) => (
-          <Checkbox key={opt.key}>
-            {opt.label}
-          </Checkbox>
-        ))}
-      </div>
-    );
-  }
+      if (field.options?.length) {
+        return (
+          <div className="flex items-center pt-4 gap-6 whitespace-nowrap">
+            {field.options.map((opt) => (
+              <Checkbox key={opt.key}>{opt.label}</Checkbox>
+            ))}
+          </div>
+        );
+      }
 
-  return <Checkbox>{field.label}</Checkbox>;
-
+      return <Checkbox>{field.label}</Checkbox>;
 
     case "search-input":
       return (
         <SearchInputWithButton
-          className="font-bold"
-          labelPlacement="inside"
           placeholder={field.label}
           value={value ?? ""}
           onSearch={field.onSearchClick}
