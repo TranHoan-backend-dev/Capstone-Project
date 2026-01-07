@@ -1,40 +1,52 @@
+"use client";
+
 import { SettlementDocumentRow } from "@/types";
 
 export const DocumentTable = ({ data }: { data: SettlementDocumentRow[] }) => {
+  const rowStyle = "border border-black text-center";
+
   return (
     <table className="w-full border-collapse text-xs border border-black">
       <thead>
         <tr>
-          <th rowSpan={2} className="border border-black text-center">STT</th>
-          <th rowSpan={2} className="border border-black text-center">Mã hiệu</th>
-          <th rowSpan={2} className="border border-black text-center">
-            Tên công việc
-          </th>
-          <th rowSpan={2} className="border border-black text-center">ĐVT</th>
-          <th rowSpan={2} className="border border-black text-center">KL</th>
-          <th colSpan={2} className="border border-black text-center">Đơn giá</th>
-          <th colSpan={2} className="border border-black text-center">Thành tiền</th>
+          {[
+            "STT",
+            "Mã hiệu",
+            "Tên công việc",
+            "ĐVT",
+            "KL",
+            "Đơn giá",
+            "Thành tiền",
+          ].map((title, idx) => (
+            <th key={idx} className={rowStyle} rowSpan={2}>
+              {title}
+            </th>
+          ))}
         </tr>
         <tr>
-          <th className="border border-black text-center">VL</th>
-          <th className="border border-black text-center">NC</th>
-          <th className="border border-black text-center">VL</th>
-          <th className="border border-black text-center">NC</th>
+          {["VL", "NC", "VL", "NC"].map((title, idx) => (
+            <th key={idx} className={rowStyle}>
+              {title}
+            </th>
+          ))}
         </tr>
       </thead>
 
       <tbody>
         {data.map((row) => (
           <tr key={row.id}>
-            <td className="border border-black text-center">{row.stt}</td>
-            <td className="border border-black text-center">{row.code}</td>
+            <td className={rowStyle}>{row.stt}</td>
+            <td className={rowStyle}>{row.code}</td>
             <td className="border border-black px-1">{row.name}</td>
-            <td className="border border-black text-center">{row.unit}</td>
-            <td className="border border-black text-center">{row.quantity}</td>
-            <td className="border border-black text-right">{row.priceVL}</td>
-            <td className="border border-black text-right">{row.priceNC}</td>
-            <td className="border border-black text-right">{row.totalVL}</td>
-            <td className="border border-black text-right">{row.totalNC}</td>
+            <td className={rowStyle}>{row.unit}</td>
+            <td className={rowStyle}>{row.quantity}</td>
+            {[row.priceVL, row.priceNC, row.totalVL, row.totalNC].map(
+              (item, idx) => (
+                <td key={idx} className="border border-black text-right">
+                  {item}
+                </td>
+              ),
+            )}
           </tr>
         ))}
       </tbody>

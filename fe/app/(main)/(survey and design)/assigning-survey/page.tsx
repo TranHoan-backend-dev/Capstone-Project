@@ -1,7 +1,9 @@
 import React from "react";
-import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
 import { Metadata } from "next";
+
 import AssigningSurveyPage from "./assigning-survey";
+
+import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
 
 export const metadata: Metadata = {
   title: "Phân công khảo sát thiết kế",

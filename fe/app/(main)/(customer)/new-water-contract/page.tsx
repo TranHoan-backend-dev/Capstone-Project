@@ -1,5 +1,5 @@
 "use client";
-import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
+import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
 import { ContractForm } from "./components/contract-form";
 import { ContractTable } from "./components/contract-table";
 

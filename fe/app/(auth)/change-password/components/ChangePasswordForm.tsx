@@ -3,10 +3,12 @@
 import { Button } from "@heroui/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import PasswordInput from "@/components/ui/PasswordInput";
+import { XMarkIcon, DocumentArrowDownIcon } from "@heroicons/react/24/solid";
+
 import PasswordRequirements from "./PasswordRequirements";
 import ChangePasswordHeader from "./ChangePasswordHeader";
-import { XMarkIcon, DocumentArrowDownIcon } from "@heroicons/react/24/solid";
+
+import PasswordInput from "@/components/ui/PasswordInput";
 
 const ChangePasswordForm = () => {
   const router = useRouter();
@@ -32,22 +34,27 @@ const ChangePasswordForm = () => {
       !formData.confirmPassword
     ) {
       setError("Vui lòng điền đầy đủ thông tin");
+
       return;
     }
 
     if (formData.newPassword !== formData.confirmPassword) {
       setError("Mật khẩu mới và xác nhận không khớp");
+
       return;
     }
 
     if (formData.newPassword.length < 8) {
       setError("Mật khẩu mới phải có ít nhất 8 ký tự");
+
       return;
     }
 
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/;
+
     if (!passwordRegex.test(formData.newPassword)) {
       setError("Mật khẩu phải chứa ít nhất 1 chữ hoa, 1 chữ thường và 1 số");
+
       return;
     }
 
@@ -100,7 +107,9 @@ const ChangePasswordForm = () => {
 
       <div className="max-w-4xl mx-auto p-0 px-4 md:px-0">
         <div className="mb-6">
-          <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-white">Đổi mật khẩu</h2>
+          <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-white">
+            Đổi mật khẩu
+          </h2>
           <p className="text-gray-600 dark:text-zinc-400 mt-1">
             Cập nhật mật khẩu của bạn để đảm bảo tính bảo mật cho tài khoản
           </p>
@@ -110,97 +119,95 @@ const ChangePasswordForm = () => {
           <div className="px-6 py-8 md:px-10 md:py-10">
             {error && (
               <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/30 rounded-xl">
-                <p className="text-red-600 dark:text-red-400 font-medium">{error}</p>
+                <p className="text-red-600 dark:text-red-400 font-medium">
+                  {error}
+                </p>
               </div>
             )}
 
             {success && (
               <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-900/30 rounded-xl">
-                <p className="text-green-600 dark:text-green-400 font-medium">{success}</p>
+                <p className="text-green-600 dark:text-green-400 font-medium">
+                  {success}
+                </p>
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <PasswordInput
-                  label="Nhập mật khẩu hiện tại"
-                  value={formData.currentPassword}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      currentPassword: e.target.value,
-                    })
-                  }
-                  classNames={{
-                    inputWrapper: "bg-white dark:bg-zinc-800/50 border-gray-300 dark:border-zinc-700 h-11",
-                    label: "text-gray-700 dark:text-zinc-400 font-normal",
-                    input: "dark:text-white"
-                  }}
-                  required
-                />
-              </div>
+            <form className="space-y-6" onSubmit={handleSubmit}>
+              <PasswordInput
+                required
+                classNames={{
+                  inputWrapper:
+                    "bg-white dark:bg-zinc-800/50 border-gray-300 dark:border-zinc-700 h-11",
+                  label: "text-gray-700 dark:text-zinc-400 font-normal",
+                  input: "dark:text-white",
+                }}
+                label="Nhập mật khẩu hiện tại"
+                value={formData.currentPassword}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    currentPassword: e.target.value,
+                  })
+                }
+              />
 
-              <div>
-                <PasswordInput
-                  label="Nhập mật khẩu mới"
-                  value={formData.newPassword}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      newPassword: e.target.value,
-                    })
-                  }
-                  classNames={{
-                    inputWrapper: "bg-white dark:bg-zinc-800/50 border-gray-300 dark:border-zinc-700 h-11",
-                    label: "text-gray-700 dark:text-zinc-400 font-normal",
-                    input: "dark:text-white"
-                  }}
-                  required
-                />
-              </div>
+              <PasswordInput
+                required
+                classNames={{
+                  inputWrapper:
+                    "bg-white dark:bg-zinc-800/50 border-gray-300 dark:border-zinc-700 h-11",
+                  label: "text-gray-700 dark:text-zinc-400 font-normal",
+                  input: "dark:text-white",
+                }}
+                label="Nhập mật khẩu mới"
+                value={formData.newPassword}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    newPassword: e.target.value,
+                  })
+                }
+              />
 
-              <div>
-                <h3 className="text-sm font-bold text-gray-900 dark:text-zinc-300 mb-2">
-                  Xác nhận mật khẩu mới
-                </h3>
-                <PasswordInput
-                  label="Nhập lại mật khẩu mới"
-                  value={formData.confirmPassword}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      confirmPassword: e.target.value,
-                    })
-                  }
-                  classNames={{
-                    inputWrapper: "bg-white dark:bg-zinc-800/50 border-gray-300 dark:border-zinc-700 h-11",
-                    label: "text-gray-700 dark:text-zinc-400 font-normal",
-                    input: "dark:text-white"
-                  }}
-                  required
-                />
-              </div>
+              <PasswordInput
+                required
+                classNames={{
+                  inputWrapper:
+                    "bg-white dark:bg-zinc-800/50 border-gray-300 dark:border-zinc-700 h-11",
+                  label: "text-gray-700 dark:text-zinc-400 font-normal",
+                  input: "dark:text-white",
+                }}
+                label="Nhập lại mật khẩu mới"
+                value={formData.confirmPassword}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    confirmPassword: e.target.value,
+                  })
+                }
+              />
 
               <PasswordRequirements password={formData.newPassword} />
 
               <div className="flex justify-end space-x-4 pt-4 border-t border-gray-100 dark:border-zinc-800 mt-8">
                 <Button
-                  type="button"
-                  variant="bordered"
                   className="px-6 h-11 border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 hover:bg-gray-50 dark:hover:bg-zinc-800 font-bold"
-                  onClick={handleCancel}
                   disabled={isLoading}
                   startContent={<XMarkIcon className="w-5 h-5" />}
+                  type="button"
+                  variant="bordered"
+                  onClick={handleCancel}
                 >
                   Hủy
                 </Button>
                 <Button
-                  type="submit"
-                  color="primary"
                   className="px-6 h-11 bg-blue-600 dark:bg-primary hover:bg-blue-700 dark:hover:bg-primary-600 text-white font-bold"
-                  isLoading={isLoading}
+                  color="primary"
                   disabled={isLoading}
+                  isLoading={isLoading}
                   startContent={<DocumentArrowDownIcon className="w-5 h-5" />}
+                  type="submit"
                 >
                   {isLoading ? "Đang xử lý..." : "Lưu thay đổi"}
                 </Button>

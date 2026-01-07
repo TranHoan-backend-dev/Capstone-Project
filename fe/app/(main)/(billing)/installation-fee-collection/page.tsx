@@ -1,7 +1,7 @@
-import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
 import { Metadata } from "next";
 import { FeeForm } from "./components/fee-form";
 import { FeeTable } from "./components/fee-table";
+import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
 
 export const metadata: Metadata = {
   title: "Thu tiền lắp đặt",

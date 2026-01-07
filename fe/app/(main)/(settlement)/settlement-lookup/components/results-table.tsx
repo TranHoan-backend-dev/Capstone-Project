@@ -3,12 +3,14 @@
 import React, { useState } from "react";
 import { Chip, Link, Tooltip, Button } from "@heroui/react";
 import NextLink from "next/link";
-import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import { DarkGreenChip, DarkRedChip } from "@/config/chip-and-icon";
 import { CalculatorIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
-import { SettlementItem, StatusDetailData } from "@/types";
+
 import { SettlementDetailModal } from "./settlement-detail-modal";
 import { SettlementDocumentModal } from "./settlement-document-modal";
+
+import { GenericDataTable } from "@/components/ui/GenericDataTable";
+import {DarkGreenChip, DarkRedChip, TitleDarkColor} from "@/config/chip-and-icon";
+import { SettlementItem, StatusDetailData } from "@/types";
 
 interface SettlementTableProps {
   data: SettlementItem[];
@@ -32,7 +34,7 @@ export const ResultsTable = ({ data }: SettlementTableProps) => {
     useState<SettlementItem | null>(null);
 
   const mapSettlementToModalData = (
-    item: SettlementItem
+    item: SettlementItem,
   ): StatusDetailData => ({
     code: item.code,
     address: item.address,
@@ -77,8 +79,8 @@ export const ResultsTable = ({ data }: SettlementTableProps) => {
         return (
           <Link
             as={NextLink}
+            className={`font-bold text-blue-600 hover:underline hover:text-blue-800 ${TitleDarkColor}`}
             href="#"
-            className="font-bold text-blue-600 hover:underline hover:text-blue-800 dark:text-primary dark:hover:text-primary-600"
           >
             {item.code}
           </Link>
@@ -91,16 +93,17 @@ export const ResultsTable = ({ data }: SettlementTableProps) => {
         );
       case "status":
         const config = statusMap[item.status];
+
         return (
           <button
-            onClick={() => handleStatusClick(item)}
             className="hover:opacity-80 transition-opacity focus:outline-none"
+            onClick={() => handleStatusClick(item)}
           >
             <Chip
-              size="sm"
-              variant="flat"
               className={`${config.bg}`}
               color={config.color}
+              size="sm"
+              variant="flat"
             >
               {config.label}
             </Chip>
@@ -121,21 +124,22 @@ export const ResultsTable = ({ data }: SettlementTableProps) => {
               "text-amber-500 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/30",
           },
         ];
+
         return (
           <div className="flex justify-center items-center gap-1">
             {actions.map((action, idx) => (
               <Tooltip
                 key={idx}
-                content={action.content}
                 closeDelay={0}
                 color={idx % 2 == 0 ? "primary" : "warning"}
+                content={action.content}
               >
                 <Button
                   isIconOnly
-                  variant="light"
-                  size="sm"
                   className={action.className}
-                  onClick={() => {
+                  size="sm"
+                  variant="light"
+                  onPress={() => {
                     if (action.content === "Quyết toán") {
                       setIsEstimateOpen(true);
                     }
@@ -159,31 +163,31 @@ export const ResultsTable = ({ data }: SettlementTableProps) => {
   return (
     <>
       <GenericDataTable
-        title="Danh sách quyết toán"
+        isCollapsible
         columns={columns}
         data={data}
-        renderCell={renderCell}
-        isCollapsible
         headerSummary={`${data.length}`}
         paginationProps={{
           total: 5,
           initialPage: 1,
           summary: `1-5 của 25`,
         }}
+        renderCellAction={renderCell}
+        title="Danh sách quyết toán"
       />
       <SettlementDetailModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
         data={
           selectedSettlement
             ? mapSettlementToModalData(selectedSettlement)
             : undefined
         }
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
       />
       <SettlementDocumentModal
-        isOpen={isEstimateOpen}
-        onClose={() => setIsEstimateOpen(false)}
         data={data}
+        isOpen={isEstimateOpen}
+        onCloseAction={() => setIsEstimateOpen(false)}
       />
     </>
   );

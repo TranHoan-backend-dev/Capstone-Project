@@ -90,7 +90,7 @@ export const FeeTable = () => {
       title="Danh sách phiếu thu"
       columns={columns}
       data={mockData}
-      renderCell={renderCell}
+      renderCellAction={renderCell}
     />
   );
 };

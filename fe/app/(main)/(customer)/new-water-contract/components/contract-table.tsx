@@ -97,7 +97,7 @@ export const ContractTable = () => {
             title="DANH SÁCH HỒ SƠ"
             columns={columns}
             data={mockData}
-            renderCell={renderCell}
+            renderCellAction={renderCell}
             isCollapsible={false}
             paginationProps={{
                 total: 3,

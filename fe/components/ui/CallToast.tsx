@@ -6,13 +6,13 @@ interface ToastProps {
   title?: string;
   message: string;
   color:
-  | "success"
-  | "danger"
-  | "warning"
-  | "default"
-  | "primary"
-  | "secondary"
-  | "foreground";
+    | "success"
+    | "danger"
+    | "warning"
+    | "default"
+    | "primary"
+    | "secondary"
+    | "foreground";
   isCircularProgress?: true;
 }
 
@@ -29,7 +29,7 @@ export const CallToast = ({
     description: (
       <div className="flex items-center gap-2">
         {isCircularProgress && (
-          <CircularProgress size="sm" aria-label="Loading..." />
+          <CircularProgress aria-label="Loading..." size="sm" />
         )}
         <span>{message}</span>
       </div>
