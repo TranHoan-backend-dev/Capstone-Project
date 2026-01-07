@@ -6,7 +6,7 @@ import { TechnicalInfo } from "./components/technical-info";
 import { BillingInfo } from "./components/billing-info";
 // Import thêm Section thông tin thanh toán nếu bạn đã tách riêng
 // import { PaymentInfo } from "./components/payment-info"; 
-import CustomButton from "@/components/ui/CustomButton";
+import CustomButton from "@/components/ui/custom/CustomButton";
 import { SaveIcon, RefreshIcon } from "@/components/ui/Icons"; 
 
 export default function CustomerRegistrationPage() {

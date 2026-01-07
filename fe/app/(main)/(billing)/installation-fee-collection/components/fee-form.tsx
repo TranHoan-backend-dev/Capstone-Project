@@ -1,5 +1,5 @@
 "use client";
-import CustomButton from "@/app/(auth)/login/components/custom-button";
+import CustomButton from "@/components/ui/custom/CustomButton";
 import CustomInput from "@/components/ui/custom/CustomInput";
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { CalendarIcon, RefreshIcon, SaveIcon, SearchIcon } from "@/components/ui/Icons";

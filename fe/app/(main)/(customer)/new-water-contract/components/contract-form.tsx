@@ -5,7 +5,7 @@ import { RefreshIcon, SaveIcon, SearchIcon } from "@/components/ui/Icons";
 import { CalendarDaysIcon } from "@heroicons/react/24/outline";
 import { Checkbox, Select, SelectItem } from "@heroui/react";
 import CustomInput from "@/components/ui/custom/CustomInput";
-import CustomButton from "@/app/(auth)/login/components/custom-button";
+import CustomButton from "@/components/ui/custom/CustomButton";
 
 /* ===== DateInput dùng chung ===== */
 const DateInput = ({ label }: { label: string }) => {

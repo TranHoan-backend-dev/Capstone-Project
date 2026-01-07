@@ -1,5 +1,5 @@
 "use client";
-import CustomInput from "@/components/ui/CustomInput";
+import CustomInput from "@/components/ui/custom/CustomInput";
 import { CalendarIcon, SearchIcon } from "@/components/ui/Icons";
 import { Checkbox, Select, SelectItem } from "@heroui/react";
 
