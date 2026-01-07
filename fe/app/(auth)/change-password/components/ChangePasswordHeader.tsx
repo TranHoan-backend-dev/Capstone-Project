@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeftIcon } from "@heroui/shared-icons";
+import { ArrowedLeftIcon } from "@/config/chip-and-icon";
 
 interface ChangePasswordHeaderProps {
   onBack: () => void;
@@ -17,7 +17,7 @@ const ChangePasswordHeader = ({
         className="flex items-center gap-2 hover:opacity-80 transition-opacity w-fit"
         onClick={onBack}
       >
-        <ArrowLeftIcon className="w-5 h-5" />
+        <ArrowedLeftIcon className="w-5 h-5" />
         <span className="font-medium">{title}</span>
       </button>
     </div>

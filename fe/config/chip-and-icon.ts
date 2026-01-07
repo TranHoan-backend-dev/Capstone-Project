@@ -8,6 +8,13 @@ import {
   PencilSquareIcon,
   ClipboardDocumentListIcon,
   DocumentPlusIcon,
+  DocumentCheckIcon,
+  PlusIcon,
+  TrashIcon,
+  DocumentChartBarIcon,
+  ClipboardDocumentCheckIcon,
+  DocumentMagnifyingGlassIcon,
+  PhotoIcon,
 } from "@heroicons/react/24/outline";
 import {
   ArrowPathIcon,
@@ -15,8 +22,15 @@ import {
   MagnifyingGlassIcon,
   EyeIcon,
   FolderIcon,
-  TrashIcon,
   XCircleIcon,
+  DocumentArrowDownIcon,
+  CheckIcon,
+  ArrowLeftIcon,
+  UserIcon,
+  ArrowRightStartOnRectangleIcon,
+  InformationCircleIcon,
+    BellIcon,
+  DocumentTextIcon,
 } from "@heroicons/react/24/solid";
 
 export const DarkGreenChip = "dark:bg-green-900 dark:text-white";
@@ -44,7 +58,20 @@ export const ViewIcon = EyeIcon;
 export const LoadingMaterialsIcon = ClipboardDocumentListIcon; // bốc vật tư
 export const SearchIcon = MagnifyingGlassIcon;
 export const AddNewIcon = DocumentPlusIcon;
-
+export const DocumentIcon = DocumentArrowDownIcon;
+export const CheckApprovalIcon = CheckIcon;
+export const ArrowedLeftIcon = ArrowLeftIcon;
+export const AvatarIcon = UserIcon;
+export const ArrowRightStartIcon = ArrowRightStartOnRectangleIcon;
+export const DocumentCheckedIcon = DocumentCheckIcon;
+export const SumIcon = PlusIcon;
+export const InformationIcon = InformationCircleIcon;
+export const DocumentChartIcon = DocumentChartBarIcon;
+export const SaveDocumentCheckIcon = ClipboardDocumentCheckIcon;
+export const DocumentMagnifyGlassIcon = DocumentMagnifyingGlassIcon;
+export const PictureIcon = PhotoIcon;
+export const BellsIcon = BellIcon;
+export const PencilIcon = PencilSquareIcon;
 const BaseColor = "w-5 h-5 cursor-pointer transition-colors";
 
 export const RedIconColor = `${BaseColor} text-red-500 dark:text-danger hover:text-red-600 dark:hover:text-danger-400`;

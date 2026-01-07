@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { Input, DatePicker } from "@heroui/react";
 
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { SearchIcon } from "@/components/ui/Icons";

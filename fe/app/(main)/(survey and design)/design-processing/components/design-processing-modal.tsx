@@ -1,11 +1,10 @@
 "use client";
 
-import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import React from "react";
-
 import { ModalHeader } from "@/components/popup-status/modal-header";
 import { InfoRow } from "@/components/popup-status/info-row";
 import { NoteField } from "@/components/popup-status/note-field";
+import { InformationIcon } from "@/config/chip-and-icon";
 
 export const DesignProcessingModal = ({ isOpen, onClose, data }: any) => {
   if (!isOpen) return null;
@@ -32,7 +31,7 @@ export const DesignProcessingModal = ({ isOpen, onClose, data }: any) => {
             <InfoRow label="Địa chỉ lắp đặt" value={data.address} />
 
             <InfoRow
-              icon={<InformationCircleIcon className="w-4 h-4 text-gray-400" />}
+              icon={<InformationIcon className="w-4 h-4 text-gray-400" />}
               label="Ngày đăng ký"
               value={data.registerDate}
             />

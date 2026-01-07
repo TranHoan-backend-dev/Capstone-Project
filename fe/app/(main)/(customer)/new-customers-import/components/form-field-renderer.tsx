@@ -1,6 +1,6 @@
 "use client";
 
-import { Input, Button, Checkbox, Textarea } from "@heroui/react";
+import { Checkbox, Textarea } from "@heroui/react";
 
 import { FormField } from "@/types";
 import { SearchIcon } from "@/config/chip-and-icon";
@@ -8,6 +8,7 @@ import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
 import CustomInput from "@/components/ui/custom/CustomInput";
 import CustomDatePicker from "@/components/ui/custom/CustomDatePicker";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
+import CustomButton from "@/components/ui/custom/CustomButton";
 
 export const FormFieldRenderer = ({
   field,
@@ -56,10 +57,10 @@ export const FormFieldRenderer = ({
     case "search":
       return (
         <div className="flex gap-2">
-          <Input label={field.label} variant="bordered" />
-          <Button isIconOnly variant="bordered">
+          <CustomInput label={field.label} variant="bordered" />
+          <CustomButton isIconOnly variant="bordered">
             <SearchIcon />
-          </Button>
+          </CustomButton>
         </div>
       );
 

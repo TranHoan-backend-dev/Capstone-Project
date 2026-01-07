@@ -1,10 +1,10 @@
 "use client";
 
-import { PencilSquareIcon } from "@heroicons/react/24/solid";
-import { Button, Card, CardBody, Chip } from "@heroui/react";
+import { Card, CardBody, Chip } from "@heroui/react";
 import React from "react";
 
-import { DarkGreenChip } from "@/config/chip-and-icon";
+import { DarkGreenChip, PencilIcon } from "@/config/chip-and-icon";
+import CustomButton from "@/components/ui/custom/CustomButton";
 
 const CustomerInformation = () => {
   const customerDetails = [
@@ -67,12 +67,12 @@ const CustomerInformation = () => {
           </div>
 
           <div className="flex flex-row md:flex-col gap-3 shrink-0">
-            <Button
+            <CustomButton
               className="bg-gray-100 text-gray-700 dark:bg-zinc-800 dark:text-zinc-300 font-bold px-6 h-11 rounded-xl hover:bg-gray-200 dark:hover:bg-zinc-700 border-none"
-              startContent={<PencilSquareIcon className="w-4 h-4" />}
+              startContent={<PencilIcon className="w-4 h-4" />}
             >
               Chỉnh sửa
-            </Button>
+            </CustomButton>
           </div>
         </div>
       </CardBody>
