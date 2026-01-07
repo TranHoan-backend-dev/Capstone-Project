@@ -4,6 +4,7 @@ import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import {
     DocumentMagnifyingGlassIcon,
     PrinterIcon,
+    TrashIcon
 } from "@heroicons/react/24/outline";
 import { Button, Tooltip } from "@heroui/react";
 import NextLink from "next/link";
@@ -29,17 +30,23 @@ export const ContractTable = () => {
 
     // 2. Cấu hình các icon thao tác (giống mẫu bạn gửi)
     const actionItems = [
-        { 
-            content: "In biên nhận", 
-            icon: PrinterIcon, 
-            className: "text-blue-600 hover:bg-blue-50", 
-            href: "#" 
+        {
+            content: "In biên nhận",
+            icon: PrinterIcon,
+            className: "text-blue-600 hover:bg-blue-50",
+            href: "#"
         },
-        { 
-            content: "Xem hồ sơ", 
-            icon: DocumentMagnifyingGlassIcon, 
-            className: "text-indigo-600 hover:bg-indigo-50", 
-            href: "#" 
+        {
+            content: "Xem hồ sơ",
+            icon: DocumentMagnifyingGlassIcon,
+            className: "text-indigo-600 hover:bg-indigo-50",
+            href: "#"
+        },
+        {
+            content: "Xóa",
+            icon: TrashIcon,
+            className: "text-red-500 hover:bg-red-50",
+            href: "#"
         },
     ];
 

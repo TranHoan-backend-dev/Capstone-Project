@@ -1,5 +1,4 @@
-import { Input, InputProps } from '@heroui/react'
-import React from 'react'
+import { Input, InputProps } from '@heroui/react';
 
 interface CustomInputProps extends InputProps {
     type?: string;
