@@ -1,6 +1,6 @@
 "use client";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import { TrashIcon } from "@heroicons/react/24/outline";
+import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { Button, Chip, Tooltip } from "@heroui/react";
 
 export const FeeTable = () => {
@@ -65,12 +65,21 @@ export const FeeTable = () => {
         );
       case "actions":
         return (
-          <Tooltip content="Xóa phiếu thu">
-            <Button isIconOnly variant="light" size="sm" className="text-red-600">
-              <TrashIcon className="w-5 h-5" />
-            </Button>
-          </Tooltip>
+          <div className="flex justify-center gap-2">
+            <Tooltip content="Sửa phiếu thu">
+              <Button isIconOnly variant="light" size="sm" className="text-blue-600">
+                <PencilIcon className="w-5 h-5" />
+              </Button>
+            </Tooltip>
+
+            <Tooltip content="Xóa phiếu thu">
+              <Button isIconOnly variant="light" size="sm" className="text-red-600">
+                <TrashIcon className="w-5 h-5" />
+              </Button>
+            </Tooltip>
+          </div>
         );
+
       default:
         return item[columnKey];
     }

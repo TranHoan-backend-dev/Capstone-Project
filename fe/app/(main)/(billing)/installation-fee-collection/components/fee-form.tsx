@@ -14,20 +14,14 @@ export const FeeForm = () => {
             isCollapsible={false}
             actions={
                 <div className="flex justify-end gap-3">
+                    
+
                     <CustomButton
                         color="success"
                         className="w-[120px] h-9"
                         startContent={<SaveIcon size={16} />}
                     >
                         Lưu
-                    </CustomButton>
-
-                    <CustomButton
-                        color="danger"
-                        className="w-[120px] h-9"
-                        startContent={<CancelIcon size={16} />}
-                    >
-                        Hủy
                     </CustomButton>
 
                     <CustomButton
