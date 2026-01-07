@@ -28,30 +28,37 @@ export const ModalActions = () => {
             </Button>
           </DropdownTrigger>
           <DropdownMenu aria-label="Export actions">
-            <DropdownItem
-              key="excel"
-              startContent={
-                <span className="text-green-600 font-bold w-8">XLS</span>
-              }
-            >
-              Xuất Excel
-            </DropdownItem>
-            <DropdownItem
-              key="pdf"
-              startContent={
-                <span className="text-red-600 font-bold w-8">PDF</span>
-              }
-            >
-              Xuất PDF
-            </DropdownItem>
-            <DropdownItem
-              key="word"
-              startContent={
-                <span className="text-blue-600 font-bold w-8">DOC</span>
-              }
-            >
-              Xuất Word
-            </DropdownItem>
+            {[
+              {
+                key: "excel",
+                label: "Xuất Excel",
+                icon: "XLS",
+                color: "green",
+              },
+              {
+                key: "pdf",
+                label: "Xuất PDF",
+                icon: "PDF",
+                color: "red",
+              },
+              {
+                key: "word",
+                label: "Xuất Word",
+                icon: "DOC",
+                color: "blue",
+              },
+            ].map((item) => (
+              <DropdownItem
+                key={item.key}
+                startContent={
+                  <span className={`text-${item.color}-600 font-bold w-8`}>
+                    {item.icon}
+                  </span>
+                }
+              >
+                {item.label}
+              </DropdownItem>
+            ))}
           </DropdownMenu>
         </Dropdown>
 
