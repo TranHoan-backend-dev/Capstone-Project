@@ -1,6 +1,8 @@
 import { Metadata } from "next";
+
 import { FeeForm } from "./components/fee-form";
 import { FeeTable } from "./components/fee-table";
+
 import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
 
 export const metadata: Metadata = {
@@ -12,7 +14,7 @@ const FeeCollectionPage = () => {
   const breadcrumbItems = [
     { label: "Trang chủ", href: "/home" },
     { label: "Ghi chỉ số & Hóa đơn" },
-    { label: "Thu tiền lắp đặt" }
+    { label: "Thu tiền lắp đặt" },
   ];
 
   return (
@@ -20,13 +22,8 @@ const FeeCollectionPage = () => {
       <CustomBreadcrumb items={breadcrumbItems} />
 
       <div className="pt-2 space-y-6">
-
-        {/* Khối Form */}
         <FeeForm />
-
-        {/* Khối Table */}
         <FeeTable />
-
       </div>
     </>
   );

@@ -31,7 +31,7 @@ export const addressFields: FormField[] = [
   {
     key: "note",
     type: "textarea",
-    label: "Điểm đầu nối, khối thủy",
+    label: "Điểm đầu nối, khởi thủy",
     rows: 3,
   },
 ];

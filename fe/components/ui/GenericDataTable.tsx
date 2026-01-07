@@ -123,7 +123,7 @@ export const GenericDataTable = <T extends { id: string | number }>({
                   <TableColumn
                     key={column.key}
                     align={column.align || "start"}
-                    className={`${index === 0 && column.key !== "selection" ? "!pl-8" : ""} bg-default-100 text-foreground`}
+                    className={`${index === 0 ? "!pl-8" : ""} bg-default-100 text-foreground`}
                     style={column.width ? { width: column.width } : {}}
                   >
                     {column.label}
@@ -143,11 +143,7 @@ export const GenericDataTable = <T extends { id: string | number }>({
                     {columns.map((column, index) => (
                       <TableCell
                         key={column.key}
-                        className={
-                          index === 0 && column.key !== "selection"
-                            ? "!pl-8"
-                            : ""
-                        }
+                        className={index === 0 ? "!pl-8" : ""}
                       >
                         {renderCellAction(item, column.key)}
                       </TableCell>
