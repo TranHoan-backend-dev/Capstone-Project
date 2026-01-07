@@ -1,6 +1,6 @@
 "use client";
 
-import CustomInput from "@/components/ui/CustomInput";
+import CustomInput from "@/components/ui/custom/CustomInput";
 import { Checkbox } from "@heroui/react";
 import { useState } from "react";
 

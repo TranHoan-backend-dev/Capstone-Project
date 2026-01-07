@@ -1,8 +1,8 @@
 "use client";
-import CustomButton from "@/components/ui/CustomButton";
-import CustomInput from "@/components/ui/CustomInput";
+import CustomButton from "@/app/(auth)/login/components/custom-button";
+import CustomInput from "@/components/ui/custom/CustomInput";
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
-import { CalendarIcon, CancelIcon, RefreshIcon, SaveIcon, SearchIcon } from "@/components/ui/Icons";
+import { CalendarIcon, RefreshIcon, SaveIcon, SearchIcon } from "@/components/ui/Icons";
 import { Checkbox, Select, SelectItem } from "@heroui/react";
 
 export const FeeForm = () => {
@@ -14,11 +14,11 @@ export const FeeForm = () => {
             isCollapsible={false}
             actions={
                 <div className="flex justify-end gap-3">
-                    
+
 
                     <CustomButton
                         color="success"
-                        className="w-[120px] h-9"
+                        className="w-[120px] h-9 text-white"
                         startContent={<SaveIcon size={16} />}
                     >
                         Lưu

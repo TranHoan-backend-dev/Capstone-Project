@@ -5,28 +5,28 @@ import { DateValue } from "@heroui/react";
 
 interface SingleDatePickerProps {
   value: DateValue | null;
-  onChange: (date: DateValue | null) => void;
+  onChangeAction: (date: DateValue | null) => void;
   label?: string;
   className?: string;
 }
 
 export const SingleDatePicker = ({
   value,
-  onChange,
+  onChangeAction,
   label = "Ngày lập",
   className = "",
 }: SingleDatePickerProps) => {
   return (
     <div className={`${className}`}>
       <DatePicker
+        className="w-full"
+        granularity="day"
         label={label}
         labelPlacement="inside"
-        value={value}
-        onChange={onChange}
-        granularity="day"
         size="md"
+        value={value}
         variant="bordered"
-        className="w-full"
+        onChange={onChangeAction}
       />
     </div>
   );

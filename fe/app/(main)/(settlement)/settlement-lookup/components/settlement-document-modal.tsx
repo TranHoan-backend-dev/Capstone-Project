@@ -1,29 +1,30 @@
 "use client";
 
+import { Modal, ModalContent, ModalBody } from "@heroui/react";
+
 import { DocumentTable } from "@/components/popup-settlement/documant-table";
 import { DocumentHeader } from "@/components/popup-settlement/document-header";
 import { DocumentPaper } from "@/components/popup-settlement/document-paper";
 import { ModalHeader } from "@/components/popup-settlement/modal-header";
-import { Modal, ModalContent, ModalBody } from "@heroui/react";
 
 interface SettlementDocumentModalProps {
   isOpen: boolean;
-  onClose: () => void;
+  onCloseAction: () => void;
   data: any[];
 }
 
 export const SettlementDocumentModal = ({
   isOpen,
-  onClose,
+  onCloseAction,
   data,
 }: SettlementDocumentModalProps) => {
   return (
     <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      size="5xl"
-      scrollBehavior="inside"
       hideCloseButton={false}
+      isOpen={isOpen}
+      scrollBehavior="inside"
+      size="5xl"
+      onClose={onCloseAction}
     >
       <ModalContent>
         <ModalBody className="p-0 bg-white rounded-lg">

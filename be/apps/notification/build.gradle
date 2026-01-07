@@ -11,6 +11,8 @@ description = 'Demo project for Spring Boot'
 
 dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+  implementation 'org.springframework.boot:spring-boot-starter-security'
+  testImplementation 'org.springframework.security:spring-security-test'
 }
 
 tasks.named('test') {

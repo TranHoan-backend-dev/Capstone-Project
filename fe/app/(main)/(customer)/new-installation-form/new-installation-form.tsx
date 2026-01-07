@@ -1,54 +1,55 @@
 "use client"
 
-import { GenericSearchFilter } from '@/components/ui/GenericSearchFilter';
+import { FormActions } from "./components/form-actions";
+import { OrderInfoSection } from "./components/order-info-section";
+import { CustomerInfoSection } from "./components/customer-info-section";
+import { AddressContactSection } from "./components/address-contact-section";
+import { RelatedOrdersTable } from "./components/related-orders-table";
 import { DocumentPlusIcon } from '@heroicons/react/24/solid';
-import { AddressContactSection } from './components/address-contact-section';
 import { BillingInfoSection } from './components/billing-info-section';
-import { CustomerInfoSection } from './components/customer-info-section';
-import { FormActions } from './components/form-actions';
-import { OrderInfoSection } from './components/order-info-section';
-import { RelatedOrdersTable } from './components/related-orders-table';
+import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 
 const NewInstallationForm = () => {
-    const relatedOrders = [
-        {
-            id: "1",
-            code: "01025070073",
-            contractNo: "VXU3348",
-            customerName: "Bùi Thị Hồng Oanh",
-            address: "7/74 Vị Xuyên, TP. Nam Định",
-            constructionDate: "20/07/2025",
-            status: "completed",
-        },
-    ];
+  const relatedOrders = [
+    {
+      id: "1",
+      code: "DH001235",
+      customerName: "Trần Thị B",
+      phone: "0987654321",
+      address: "123 Nguyễn Văn Cừ, Q1",
+      createdDate: "15/12/2024",
+      status: "completed",
+    },
+    {
+      id: "2",
+      code: "DH001236",
+      customerName: "Lê Văn C",
+      phone: "0912345678",
+      address: "456 Lê Lợi, Q3",
+      createdDate: "14/12/2024",
+      status: "installing",
+    },
+  ];
 
-    return (
-        <>
-            <GenericSearchFilter
-                title="Đơn lắp đặt mới"
-                icon={<DocumentPlusIcon className="w-6 h-6" />}
-                isCollapsible
-                /* Cập nhật grid để các section xếp chồng hợp lý */
-                gridClassName="flex flex-col gap-6"
-                actions={<FormActions />}
-            >
-                {/* Các section thông tin chính */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-                    <OrderInfoSection />
-                    <CustomerInfoSection />
-                    <AddressContactSection />
-                </div>
+  return (
+    <>
+      <GenericSearchFilter
+        isCollapsible
+        actions={<FormActions />}
+        gridClassName="grid grid-cols-1 lg:grid-cols-3 gap-12"
+        icon={<DocumentPlusIcon className="w-6 h-6" />}
+        title="Đơn lắp đặt mới"
+      >
+        <OrderInfoSection />
+        <CustomerInfoSection />
+        <AddressContactSection />
+          {/* Phần thông tin hóa đơn nằm dưới các section trên */}
+          <BillingInfoSection />
+      </GenericSearchFilter>
 
-                {/* Phần thông tin hóa đơn nằm dưới các section trên */}
-                <BillingInfoSection />
-            </GenericSearchFilter>
-
-            {/* Bảng danh sách hồ sơ phía dưới */}
-            <div className="mt-8">
-                <RelatedOrdersTable data={relatedOrders} />
-            </div>
-        </>
-    )
-}
+      <RelatedOrdersTable data={relatedOrders} />
+    </>
+  );
+};
 
 export default NewInstallationForm;

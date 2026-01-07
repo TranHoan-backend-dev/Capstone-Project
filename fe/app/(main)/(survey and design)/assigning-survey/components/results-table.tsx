@@ -3,8 +3,10 @@
 import React, { useState } from "react";
 import { Link, Select, SelectItem } from "@heroui/react";
 import NextLink from "next/link";
+
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import { SurveyAssignmentItem } from "@/types";
+import {TitleDarkColor} from "@/config/chip-and-icon";
 
 interface Props {
   data: SurveyAssignmentItem[];
@@ -50,8 +52,8 @@ export const SurveyAssignmentTable = ({ data }: Props) => {
         return (
           <Link
             as={NextLink}
+            className={`font-bold text-blue-600 hover:underline hover:text-blue-800 ${TitleDarkColor}`}
             href={`/survey/${item.id}`}
-            className="font-bold text-[#2a66e4] underline underline-offset-4"
           >
             {item.code}
           </Link>
@@ -60,18 +62,16 @@ export const SurveyAssignmentTable = ({ data }: Props) => {
       case "surveyor":
         return (
           <Select
-            size="sm"
-            placeholder="Chọn nhân viên"
             className="max-w-[180px]"
+            placeholder="Chọn nhân viên"
             selectedKeys={
               selectedSurveyors[item.id] ? [selectedSurveyors[item.id]] : []
             }
+            size="sm"
             onChange={(e) => handleSurveyorChange(item.id, e.target.value)}
           >
             {surveyors.map((surveyor) => (
-              <SelectItem key={surveyor.id}>
-                {surveyor.name}
-              </SelectItem>
+              <SelectItem key={surveyor.id}>{surveyor.name}</SelectItem>
             ))}
           </Select>
         );
@@ -80,19 +80,20 @@ export const SurveyAssignmentTable = ({ data }: Props) => {
         return (item as any)[columnKey] || "-";
     }
   };
-  return (  
+
+  return (
     <GenericDataTable
-      title=""
       columns={columns}
       data={data}
-      renderCell={renderCell}
+      hideHeader={true}
       isCollapsible={false}
       paginationProps={{
         total: data.length,
         initialPage: 1,
         summary: `1-${data.length} của ${data.length}`,
       }}
-      hideHeader={true}
+      renderCellAction={renderCell}
+      title=""
     />
   );
 };

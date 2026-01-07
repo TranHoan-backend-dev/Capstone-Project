@@ -1,9 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+
 import { ForgotPasswordForm } from "./components/forgot-password-form";
-import OTPForm from "@/components/layout/OTPForm";
 import ResetPasswordForm from "./components/reset-password-form";
+
+import OTPForm from "@/components/layout/OTPForm";
 
 export default function ForgotPasswordPage() {
   const [step, setStep] = useState<"email" | "otp" | "password">("email");
@@ -43,13 +46,13 @@ export default function ForgotPasswordPage() {
 
         <div className="bg-white rounded-2xl shadow-lg p-8 transition-all duration-300">
           {step === "email" && (
-            <ForgotPasswordForm onSuccess={handleEmailSubmit} />
+            <ForgotPasswordForm onSuccessAction={handleEmailSubmit} />
           )}
           {step === "otp" && (
             <OTPForm
               email={email}
-              onSuccess={handleOTPSubmit}
-              onBack={() => setStep("email")}
+              onBackAction={() => setStep("email")}
+              onSuccessAction={handleOTPSubmit}
             />
           )}
           {step === "password" && <ResetPasswordForm email={email} />}
@@ -59,12 +62,12 @@ export default function ForgotPasswordPage() {
         <div className="mt-6 text-center">
           <p className="text-sm text-slate-600">
             Bạn nhớ mật khẩu?{" "}
-            <a
-              href="/login"
+            <Link
               className="font-semibold text-blue-600 hover:text-blue-700 transition-colors"
+              href="/login"
             >
               Đăng nhập
-            </a>
+            </Link>
           </p>
         </div>
       </div>
