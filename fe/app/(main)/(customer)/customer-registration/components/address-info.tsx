@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import CustomInput from "@/components/ui/CustomInput";
+import CustomInput from "@/components/ui/custom/CustomInput";
 import { Select, SelectItem } from "@heroui/react";
 import { SearchIcon } from "@/components/ui/Icons";
 

@@ -15,6 +15,7 @@ import {
   ClipboardDocumentCheckIcon,
   DocumentMagnifyingGlassIcon,
   PhotoIcon,
+  XMarkIcon
 } from "@heroicons/react/24/outline";
 import {
   ArrowPathIcon,
@@ -29,7 +30,7 @@ import {
   UserIcon,
   ArrowRightStartOnRectangleIcon,
   InformationCircleIcon,
-    BellIcon,
+  BellIcon,
   DocumentTextIcon,
 } from "@heroicons/react/24/solid";
 
@@ -72,6 +73,8 @@ export const DocumentMagnifyGlassIcon = DocumentMagnifyingGlassIcon;
 export const PictureIcon = PhotoIcon;
 export const BellsIcon = BellIcon;
 export const PencilIcon = PencilSquareIcon;
+export const CancelIcon = XMarkIcon;
+
 const BaseColor = "w-5 h-5 cursor-pointer transition-colors";
 
 export const RedIconColor = `${BaseColor} text-red-500 dark:text-danger hover:text-red-600 dark:hover:text-danger-400`;

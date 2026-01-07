@@ -1,5 +1,5 @@
 "use client";
-import CustomInput from "@/components/ui/CustomInput";
+import CustomInput from "@/components/ui/custom/CustomInput";
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { SearchIcon } from "@/components/ui/Icons";
 import { Select, SelectItem } from "@heroui/react";

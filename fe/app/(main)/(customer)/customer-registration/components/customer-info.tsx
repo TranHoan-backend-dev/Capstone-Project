@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import CustomInput from "@/components/ui/CustomInput"; // Điều chỉnh đường dẫn theo dự án của bạn
+import CustomInput from "@/components/ui/custom/CustomInput"; // Điều chỉnh đường dẫn theo dự án của bạn
 import { SearchIcon, CalendarIcon } from "@/components/ui/Icons";// Cần thêm icon Calendar
 
 export const CustomerInfo = () => {
