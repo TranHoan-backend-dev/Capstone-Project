@@ -1,10 +1,11 @@
 "use client";
 
-import { Button, Card, CardBody } from "@heroui/react";
+import { Card, CardBody } from "@heroui/react";
 import { useState } from "react";
 
 import CustomInput from "@/components/ui/custom/CustomInput";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
+import CustomButton from "@/components/ui/custom/CustomButton";
 
 export const HomePage = () => {
   const [clientMachineName, setClientMachineName] = useState("");
@@ -57,13 +58,13 @@ export const HomePage = () => {
           </div>
 
           <div className="flex gap-2 mt-2">
-            <Button color="primary">Tìm kiếm</Button>
-            <Button
+            <CustomButton color="primary">Tìm kiếm</CustomButton>
+            <CustomButton
               className="dark:border-zinc-700 dark:text-zinc-300"
               variant="bordered"
             >
               Đặt lại
-            </Button>
+            </CustomButton>
           </div>
         </CardBody>
       </Card>

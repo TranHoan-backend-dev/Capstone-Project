@@ -2,19 +2,11 @@
 
 import React from "react";
 import { Button, Textarea } from "@heroui/react";
-import {
-  ClipboardDocumentCheckIcon,
-  PlusIcon,
-  DocumentMagnifyingGlassIcon,
-  PhotoIcon,
-  ArrowPathIcon,
-  InformationCircleIcon,
-} from "@heroicons/react/24/outline";
-
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import CustomInput from "@/components/ui/custom/CustomInput";
-import { DeleteIcon } from "@/config/chip-and-icon";
+import { DeleteIcon, SaveDocumentCheckIcon, PictureIcon, DocumentMagnifyGlassIcon, RestoreIcon, SumIcon } from "@/config/chip-and-icon";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
+import CustomButton from "@/components/ui/custom/CustomButton";
 
 export const TechnicalInfoCard = () => {
   const customerInfoFields = [
@@ -24,7 +16,7 @@ export const TechnicalInfoCard = () => {
     {
       label: "Đường phố",
       endContent: (
-        <DocumentMagnifyingGlassIcon className="w-5 h-5 text-gray-400 dark:text-default-400" />
+        <DocumentMagnifyGlassIcon className="w-5 h-5 text-gray-400 dark:text-default-400" />
       ),
     },
     {
@@ -133,31 +125,31 @@ export const TechnicalInfoCard = () => {
     <GenericSearchFilter
       actions={
         <div className="flex flex-wrap gap-3 pt-6 border-t border-divider">
-          <Button
+          <CustomButton
             className="font-bold px-6 shadow-md shadow-primary/20"
             color="primary"
-            startContent={<ClipboardDocumentCheckIcon className="w-4 h-4" />}
+            startContent={<SaveDocumentCheckIcon className="w-4 h-4" />}
           >
             Lưu
-          </Button>
-          <Button
+          </CustomButton>
+          <CustomButton
             className="bg-background dark:bg-default-100 font-bold px-6"
-            startContent={<DocumentMagnifyingGlassIcon className="w-4 h-4" />}
+            startContent={<PictureIcon className="w-4 h-4" />}
             variant="bordered"
           >
             Xem hồ sơ
-          </Button>
-          <Button
+          </CustomButton>
+          <CustomButton
             className="text-white font-bold px-6 shadow-md shadow-success/20"
             color="success"
-            startContent={<PhotoIcon className="w-4 h-4" />}
+            startContent={<DocumentMagnifyGlassIcon className="w-4 h-4" />}
           >
             Ảnh cụm đồng hồ
-          </Button>
+          </CustomButton>
         </div>
       }
       gridClassName="grid grid-cols-1 lg:grid-cols-2 gap-12"
-      icon={<ClipboardDocumentCheckIcon className="w-6 h-6" />}
+      icon={<SaveDocumentCheckIcon className="w-6 h-6" />}
       title="Lập hồ sơ kỹ thuật & chi phí vật tư"
     >
       <div className="lg:col-span-1 space-y-4">
@@ -227,7 +219,7 @@ export const TechnicalInfoCard = () => {
                       size="sm"
                       onPress={addRepresentative}
                     >
-                      <PlusIcon className="w-4 h-4" />
+                      <SumIcon className="w-4 h-4" />
                     </Button>
                   )}
                 </div>
@@ -237,7 +229,6 @@ export const TechnicalInfoCard = () => {
         </div>
       </div>
 
-      {/* Material Template Selection Section - Wide */}
       <div className="lg:col-span-2 pt-8 border-t border-divider">
         <div className="flex flex-wrap items-end gap-4">
           <div className="w-full md:w-80">
@@ -255,17 +246,17 @@ export const TechnicalInfoCard = () => {
               ]}
             />
           </div>
-          <Button
+          <CustomButton
             className="text-default-700 font-medium h-14 rounded-xl"
             color="default"
-            startContent={<ArrowPathIcon className="w-4 h-4" />}
+            startContent={<RestoreIcon className="w-4 h-4" />}
             variant="flat"
           >
             Reset về mẫu bốc vật tư mặc định
-          </Button>
+          </CustomButton>
         </div>
         <p className="text-red-500 text-xs mt-2 italic flex items-center gap-1">
-          <InformationCircleIcon className="w-4 h-4" />
+          <RestoreIcon className="w-4 h-4" />
           Chú ý: Thay đổi mẫu bốc vật tư sẽ xóa hết danh sách vật tư hiện tại
         </p>
       </div>

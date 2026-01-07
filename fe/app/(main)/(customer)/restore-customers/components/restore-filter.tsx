@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import { SearchIcon } from "@/components/ui/Icons";
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
@@ -9,6 +8,7 @@ import { FilterActionButton } from "@/components/ui/FilterActionButton";
 import FilterButton from "@/components/ui/FilterButton";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
 import CustomInput from "@/components/ui/custom/CustomInput";
+import { RejectIcon, CheckApprovalIcon } from "@/config/chip-and-icon";
 
 interface RestoreFilterProps {
   periodData: { label: string; value: string }[];
@@ -23,14 +23,14 @@ export const RestoreFilter = ({ periodData }: RestoreFilterProps) => {
           <FilterActionButton
             className="bg-green-500 hover:bg-green-600 dark:shadow-md dark:shadow-success/40 mr-2"
             color="success"
-            icon={<CheckIcon className="w-4 h-4" />}
+            icon={<CheckApprovalIcon className="w-4 h-4" />}
             label="Lưu"
             onPress={() => {}}
           />
           <FilterActionButton
             className="bg-red-500 hover:bg-red-600 dark:shadow-md dark:shadow-danger/40 mr-2"
             color="danger"
-            icon={<XMarkIcon className="w-4 h-4" />}
+            icon={<RejectIcon className="w-4 h-4" />}
             label="Hủy"
             onPress={() => {}}
           />

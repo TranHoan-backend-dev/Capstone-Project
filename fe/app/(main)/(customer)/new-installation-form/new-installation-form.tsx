@@ -1,6 +1,5 @@
 "use client";
 
-import { DocumentPlusIcon } from "@heroicons/react/24/solid";
 import React from "react";
 
 import { FormActions } from "./components/form-actions";
@@ -10,6 +9,7 @@ import { AddressContactSection } from "./components/address-contact-section";
 import { RelatedOrdersTable } from "./components/related-orders-table";
 
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
+import { AddNewIcon } from "@/config/chip-and-icon";
 
 const NewInstallationForm = () => {
   const relatedOrders = [
@@ -39,7 +39,7 @@ const NewInstallationForm = () => {
         isCollapsible
         actions={<FormActions />}
         gridClassName="grid grid-cols-1 lg:grid-cols-3 gap-12"
-        icon={<DocumentPlusIcon className="w-6 h-6" />}
+        icon={<AddNewIcon className="w-6 h-6" />}
         title="Đơn lắp đặt mới"
       >
         <OrderInfoSection />

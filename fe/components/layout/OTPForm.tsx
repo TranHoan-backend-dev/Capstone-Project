@@ -1,10 +1,11 @@
 "use client";
 
+import { z } from "zod";
 import { useState, useRef, useEffect } from "react";
-import { Button } from "@heroui/react";
-import { Input } from "@heroui/input";
 import { useRouter } from "next/navigation";
-import { ArrowPathIcon } from "@heroicons/react/24/solid";
+import { RestoreIcon } from "@/config/chip-and-icon";
+import CustomButton from "../ui/custom/CustomButton";
+import CustomInput from "../ui/custom/CustomInput";
 
 interface OTPFormProps {
   email: string;
@@ -12,8 +13,24 @@ interface OTPFormProps {
   onBackAction: () => void;
 }
 
-export default function OTPForm({ email, onSuccessAction, onBackAction }: OTPFormProps) {
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+const OTP_LENGTH = 6;
+
+const OTP_REGEX = new RegExp(`^\\d{${OTP_LENGTH}}$`);
+
+const MOCK_VALID_OTP = "123456";
+
+export default function OTPForm({
+  email,
+  onSuccessAction,
+  onBackAction,
+}: OTPFormProps) {
+  const otpSchema = z.object({
+    otp: z
+      .string()
+      .length(OTP_LENGTH, `Vui lòng nhập đủ ${OTP_LENGTH} số OTP`)
+      .regex(OTP_REGEX, "Mã OTP chỉ bao gồm chữ số"),
+  });
+  const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(""));
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [countdown, setCountdown] = useState(60);
@@ -100,24 +117,22 @@ export default function OTPForm({ email, onSuccessAction, onBackAction }: OTPFor
 
     const otpString = otp.join("");
 
-    if (otpString.length !== 6) {
-      setError("Vui lòng nhập đầy đủ 6 số OTP");
-      setLoading(false);
+    const result = otpSchema.safeParse({ otp: otpString });
 
+    if (!result.success) {
+      setError(result.error.issues[0].message);
+      setLoading(false);
       return;
     }
 
     try {
-      console.log("OTP submitted:", otpString);
-
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      if (otpString === "450123") {
-        onSuccessAction();
-        console.log("OTP hợp lệ!");
-      } else {
-        throw new Error("Mã OTP không đúng");
+      if (otpString !== MOCK_VALID_OTP) {
+        throw new Error("INVALID_OTP");
       }
+
+      onSuccessAction();
     } catch (err) {
       setError("Mã OTP không hợp lệ. Vui lòng thử lại.");
     } finally {
@@ -173,9 +188,10 @@ export default function OTPForm({ email, onSuccessAction, onBackAction }: OTPFor
             onClick={handleContainerClick}
             onPaste={handlePaste}
           >
-            {[0, 1, 2, 3, 4, 5].map((index) => (
-              <Input
+            {Array.from({ length: OTP_LENGTH }).map((_, index) => (
+              <CustomInput
                 key={index}
+                label=""
                 ref={(el) => {
                   inputRefs.current[index] = el;
                 }}
@@ -208,15 +224,15 @@ export default function OTPForm({ email, onSuccessAction, onBackAction }: OTPFor
 
         {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
-        <Button
+        <CustomButton
           className="w-full font-medium py-3 text-base"
           color="primary"
-          isDisabled={otp.join("").length !== 6}
+          isDisabled={otp.join("").length !== OTP_LENGTH}
           isLoading={loading}
           type="submit"
         >
           {loading ? "Đang xác nhận..." : "Xác nhận"}
-        </Button>
+        </CustomButton>
       </form>
 
       <div className="flex flex-col items-center space-y-3">
@@ -233,7 +249,7 @@ export default function OTPForm({ email, onSuccessAction, onBackAction }: OTPFor
             type="button"
             onClick={handleResend}
           >
-            <ArrowPathIcon className="w-3 h-3" />
+            <RestoreIcon className="w-3 h-3" />
             Gửi lại mã
           </button>
         )}

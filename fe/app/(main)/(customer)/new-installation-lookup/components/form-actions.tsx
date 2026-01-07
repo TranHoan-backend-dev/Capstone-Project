@@ -1,21 +1,20 @@
 "use client";
 
-import { Button } from "@heroui/react";
-
 import { SearchIcon, RestoreIcon, AddNewIcon } from "@/config/chip-and-icon";
+import CustomButton from "@/components/ui/custom/CustomButton";
 
 export const FormActions = () => {
   return (
     <div className="flex justify-end gap-3">
-      <Button color="primary" startContent={<SearchIcon className="w-4 h-4" />}>
+      <CustomButton color="primary" startContent={<SearchIcon className="w-4 h-4" />}>
         Tìm
-      </Button>
+      </CustomButton>
 
-      <Button color="success" startContent={<AddNewIcon className="w-4 h-4" />}>
+      <CustomButton color="success" startContent={<AddNewIcon className="w-4 h-4" />}>
         Lưu thay đổi
-      </Button>
+      </CustomButton>
 
-      <Button
+      <CustomButton
         className="
           bg-gray-500 
           text-white
@@ -26,7 +25,7 @@ export const FormActions = () => {
         startContent={<RestoreIcon className="w-4 h-4" />}
       >
         Làm mới bộ lọc
-      </Button>
+      </CustomButton>
     </div>
   );
 };

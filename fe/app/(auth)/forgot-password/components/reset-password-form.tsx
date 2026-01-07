@@ -1,20 +1,27 @@
 "use client";
 
-import { Button } from "@heroui/react";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { DocumentArrowDownIcon } from "@heroicons/react/24/solid";
-
+import { z } from "zod";
+import { useEffect, useState } from "react";
+import { DocumentIcon } from "@/config/chip-and-icon";
 import PasswordRequirements from "./PasswordRequirements";
-
 import PasswordInput from "@/components/ui/PasswordInput";
+import CustomButton from "@/components/ui/custom/CustomButton";
+import { passwordSchema } from "@/schemas/password.schema";
 
 interface ResetPasswordFormProps {
   email: string;
 }
 
 const ResetPasswordForm = ({ email }: ResetPasswordFormProps) => {
-  const router = useRouter();
+  const resetPasswordSchema = z
+    .object({
+      newPassword: passwordSchema,
+      confirmPassword: z.string(),
+    })
+    .refine((data) => data.newPassword === data.confirmPassword, {
+      message: "Mật khẩu không khớp",
+      path: ["confirmPassword"],
+    });
 
   const [formData, setFormData] = useState({
     currentPassword: "",
@@ -30,42 +37,25 @@ const ResetPasswordForm = ({ email }: ResetPasswordFormProps) => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  const passwordValidation = {
-    minLength: password.length >= 8,
-    hasUpperCase: /[A-Z]/.test(password),
-    hasLowerCase: /[a-z]/.test(password),
-    hasNumber: /\d/.test(password),
-  };
-
-  const isPasswordValid = Object.values(passwordValidation).every((v) => v);
-  const passwordsMatch = password === confirmPassword && password.length > 0;
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    if (!isPasswordValid) {
-      setError("Mật khẩu không đáp ứng các yêu cầu");
+    const result = resetPasswordSchema.safeParse({
+      newPassword: formData.newPassword,
+      confirmPassword: formData.confirmPassword,
+    });
 
-      return;
-    }
-
-    if (!passwordsMatch) {
-      setError("Mật khẩu không khớp");
-
+    if (!result.success) {
+      setError(result.error.issues[0].message);
       return;
     }
 
     setIsLoading(true);
     try {
-      // Simulate API call to reset password
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      // Here you would call your API to reset password
-      console.log("Resetting password for:", email);
       setSuccess(true);
-
-      // Redirect after 2 seconds
       setTimeout(() => {
         window.location.href = "/login";
       }, 2000);
@@ -74,6 +64,13 @@ const ResetPasswordForm = ({ email }: ResetPasswordFormProps) => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (success) {
+      localStorage.removeItem("forgot_step");
+      localStorage.removeItem("forgot_email");
+    }
+  }, [success]);
 
   if (success) {
     return (
@@ -130,16 +127,16 @@ const ResetPasswordForm = ({ email }: ResetPasswordFormProps) => {
       <PasswordRequirements password={formData.newPassword} />
 
       <div className="flex justify-end space-x-4 pt-4 border-t border-gray-100 dark:border-zinc-800 mt-8">
-        <Button
+        <CustomButton
           className="px-6 h-11 bg-blue-600 dark:bg-primary hover:bg-blue-700 dark:hover:bg-primary-600 text-white font-bold"
           color="primary"
           disabled={isLoading}
           isLoading={isLoading}
-          startContent={<DocumentArrowDownIcon className="w-5 h-5" />}
+          startContent={<DocumentIcon className="w-5 h-5" />}
           type="submit"
         >
           {isLoading ? "Đang xử lý..." : "Đặt lại mật khẩu"}
-        </Button>
+        </CustomButton>
       </div>
     </form>
   );

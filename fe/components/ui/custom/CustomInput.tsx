@@ -6,6 +6,7 @@ import React from "react";
 interface CustomInputProps extends InputProps {
   type?: string;
   label: string;
+  isLoading?: boolean;
 }
 
 const CustomInput = ({

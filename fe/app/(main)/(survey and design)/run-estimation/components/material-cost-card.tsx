@@ -2,15 +2,11 @@
 
 import React, { useEffect, useState } from "react";
 import { Button, Input, Tooltip } from "@heroui/react";
-import {
-  DocumentChartBarIcon,
-  CheckCircleIcon,
-} from "@heroicons/react/24/outline";
-
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import CustomInput from "@/components/ui/custom/CustomInput";
 import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
-import { DeleteIcon } from "@/config/chip-and-icon";
+import { ApprovalIcon, DeleteIcon, DocumentChartIcon } from "@/config/chip-and-icon";
+import CustomButton from "@/components/ui/custom/CustomButton";
 
 export const MaterialCostCard = () => {
   const materials = [
@@ -119,20 +115,20 @@ export const MaterialCostCard = () => {
       />
 
       <div className="flex flex-wrap gap-3 p-4">
-        <Button
+        <CustomButton
           className="text-white font-bold ml-auto shadow-md shadow-success/20"
           color="success"
-          startContent={<CheckCircleIcon className="w-4 h-4" />}
+          startContent={<ApprovalIcon className="w-4 h-4" />}
         >
           Hoàn tất dự toán
-        </Button>
-        <Button
+        </CustomButton>
+        <CustomButton
           className="font-bold shadow-md shadow-primary/20"
           color="primary"
-          startContent={<DocumentChartBarIcon className="w-4 h-4" />}
+          startContent={<DocumentChartIcon className="w-4 h-4" />}
         >
           Báo cáo
-        </Button>
+        </CustomButton>
       </div>
     </div>
   );
