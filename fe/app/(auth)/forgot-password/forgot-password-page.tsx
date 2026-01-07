@@ -1,16 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { Spinner } from "@heroui/react";
 
 import { ForgotPasswordForm } from "./components/forgot-password-form";
 import ResetPasswordForm from "./components/reset-password-form";
 
 import OTPForm from "@/components/layout/OTPForm";
 
+type ForgotStep = "email" | "otp" | "password";
+
 export default function ForgotPasswordPage() {
-  const [step, setStep] = useState<"email" | "otp" | "password">("email");
+  const [step, setStep] = useState<ForgotStep>("email");
   const [email, setEmail] = useState("");
+  const [mounted, setMounted] = useState(false);
 
   const handleEmailSubmit = (submittedEmail: string) => {
     setEmail(submittedEmail);
@@ -21,10 +25,37 @@ export default function ForgotPasswordPage() {
     setStep("password");
   };
 
+  useEffect(() => {
+    const savedStep = localStorage.getItem("forgot_step") as ForgotStep | null;
+    const savedEmail = localStorage.getItem("forgot_email");
+
+    if (savedStep) setStep(savedStep);
+    if (savedEmail) setEmail(savedEmail);
+
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    localStorage.setItem("forgot_step", step);
+  }, [step, mounted]);
+
+  useEffect(() => {
+    if (!mounted) return;
+    if (email) localStorage.setItem("forgot_email", email);
+  }, [email, mounted]);
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Progress Indicator */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-2">
             <div className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
@@ -58,7 +89,6 @@ export default function ForgotPasswordPage() {
           {step === "password" && <ResetPasswordForm email={email} />}
         </div>
 
-        {/* Footer Link */}
         <div className="mt-6 text-center">
           <p className="text-sm text-slate-600">
             Bạn nhớ mật khẩu?{" "}

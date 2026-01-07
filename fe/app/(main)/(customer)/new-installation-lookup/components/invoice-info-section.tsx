@@ -1,6 +1,7 @@
 "use client";
 
-import { Checkbox, Divider, Textarea } from "@heroui/react";
+import { Divider } from "@heroui/react";
+import { Checkbox, Textarea, Card, CardBody } from "@heroui/react";
 import { useState } from "react";
 
 import CustomInput from "@/components/ui/custom/CustomInput";
@@ -10,7 +11,8 @@ export const InvoiceInfoSection = () => {
   const [hasInvoice, setHasInvoice] = useState(false);
 
   return (
-    <div className="col-span-full space-y-4">
+      <Card shadow="sm" radius="lg" className="col-span-full">
+          <CardBody className="space-y-4">
       <div className="flex items-center gap-4">
         <h2
           className={`text-sm font-bold text-blue-600 uppercase tracking-wider ${TitleDarkColor}`}
@@ -18,14 +20,14 @@ export const InvoiceInfoSection = () => {
           Thông tin hóa đơn
         </h2>
 
-        <Checkbox
-          isSelected={hasInvoice}
-          size="sm"
-          onValueChange={setHasInvoice}
-        >
-          Xuất hóa đơn
-        </Checkbox>
-      </div>
+          <Checkbox
+            isSelected={hasInvoice}
+            size="sm"
+            onValueChange={setHasInvoice}
+          >
+            Xuất hóa đơn
+          </Checkbox>
+        </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <CustomInput label="Tên xuất hóa đơn" />
@@ -33,6 +35,7 @@ export const InvoiceInfoSection = () => {
         <Textarea label="Nội dung" variant="bordered" />
       </div>
       <Divider className="mb-6" />
-    </div>
+</CardBody>
+</Card>
   );
 };

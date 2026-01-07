@@ -1,15 +1,14 @@
 "use client";
 
 import React from "react";
-import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { SearchIcon } from "@/components/ui/Icons";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
 import CustomInput from "@/components/ui/custom/CustomInput";
-import { TrashIcon } from "@heroicons/react/24/outline";
-import { Button} from "@heroui/react";
-
+import { RejectIcon, CheckApprovalIcon } from "@/config/chip-and-icon";
+import { FilterActionButton } from "@/components/ui/FilterActionButton";
+import FilterButton from "@/components/ui/FilterButton";
 
 interface RestoreFilterProps {
   periodData: { label: string; value: string }[];
@@ -20,15 +19,23 @@ export const RestoreFilter = ({ periodData }: RestoreFilterProps) => {
     <GenericSearchFilter
       isCollapsible
       actions={
-          <Button
-              className="bg-gray-100 dark:bg-default-100 text-gray-700 dark:text-foreground font-bold px-6 shadow-none border border-gray-200 dark:border-divider h-9 shrink-0 hover:bg-gray-200 dark:hover:bg-default-200"
-              startContent={<TrashIcon className="w-5 h-5" />}
-              size="md"
-              radius="md"
-              onPress={() => { }}
-          >
-              Xóa các lựa chọn
-          </Button>
+        <>
+          <FilterActionButton
+            className="bg-green-500 hover:bg-green-600 dark:shadow-md dark:shadow-success/40 mr-2"
+            color="success"
+            icon={<CheckApprovalIcon className="w-4 h-4" />}
+            label="Lưu"
+            onPress={() => {}}
+          />
+          <FilterActionButton
+            className="bg-red-500 hover:bg-red-600 dark:shadow-md dark:shadow-danger/40 mr-2"
+            color="danger"
+            icon={<RejectIcon className="w-4 h-4" />}
+            label="Hủy"
+            onPress={() => {}}
+          />
+          <FilterButton />
+        </>
       }
       gridClassName="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-3"
       icon={<SearchIcon size={18} />}

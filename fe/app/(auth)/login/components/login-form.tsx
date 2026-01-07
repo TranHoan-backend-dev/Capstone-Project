@@ -2,21 +2,17 @@
 
 import { Form, Link } from "@heroui/react";
 import { useRouter } from "next/navigation";
-import {
-  UserIcon,
-  ArrowRightStartOnRectangleIcon,
-} from "@heroicons/react/24/solid";
 
 import PasswordInput from "@/components/ui/PasswordInput";
-import CustomButton from "@/app/(auth)/login/components/custom-button";
+import CustomButton from "@/components/ui/custom/CustomButton";
 import CustomInput from "@/components/ui/custom/CustomInput";
+import { ArrowRightStartIcon, AvatarIcon } from "@/config/chip-and-icon";
 
 const LoginForm = () => {
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // fetching data
   };
 
   return (
@@ -30,7 +26,7 @@ const LoginForm = () => {
             isRequired
             endContent={
               <div className="flex items-center h-full">
-                <UserIcon className="w-5 h-5 text-gray-400 dark:text-zinc-500" />
+                <AvatarIcon className="w-5 h-5 text-gray-400 dark:text-zinc-500" />
               </div>
             }
             label="Nhập tên đăng nhập"
@@ -52,9 +48,7 @@ const LoginForm = () => {
               <CustomButton
                 className="w-full bg-blue-600 dark:bg-primary text-white md:h-12 font-bold"
                 color="primary"
-                startContent={
-                  <ArrowRightStartOnRectangleIcon className="w-5 h-5" />
-                }
+                startContent={<ArrowRightStartIcon className="w-5 h-5" />}
                 type="submit"
               >
                 Đăng nhập

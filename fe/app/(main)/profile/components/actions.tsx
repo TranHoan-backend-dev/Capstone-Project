@@ -1,11 +1,7 @@
 "use client";
 
-import {
-  BellIcon,
-  DocumentTextIcon,
-  PrinterIcon,
-} from "@heroicons/react/24/solid";
-import { Button } from "@heroui/react";
+import CustomButton from "@/components/ui/custom/CustomButton";
+import { AddNewIcon, BellsIcon, PrintReceiptIcon } from "@/config/chip-and-icon";
 import Link from "next/link";
 import React from "react";
 
@@ -13,7 +9,7 @@ const Actions = () => {
   const actions = [
     {
       label: "Tạo hóa đơn",
-      icon: DocumentTextIcon,
+      icon: AddNewIcon,
       className:
         "bg-blue-600 dark:bg-primary text-white shadow-lg shadow-blue-100 dark:shadow-none",
       color: "primary" as const,
@@ -22,7 +18,7 @@ const Actions = () => {
     },
     {
       label: "In hóa đơn",
-      icon: PrinterIcon,
+      icon: PrintReceiptIcon,
       className:
         "bg-gray-100 text-gray-600 dark:bg-zinc-800 dark:text-zinc-300 hover:bg-gray-200 dark:hover:bg-zinc-700",
       color: undefined,
@@ -31,7 +27,7 @@ const Actions = () => {
     },
     {
       label: "Gửi thông báo",
-      icon: BellIcon,
+      icon: BellsIcon,
       className:
         "bg-gray-100 text-gray-600 dark:bg-zinc-800 dark:text-zinc-300 hover:bg-gray-200 dark:hover:bg-zinc-700",
       color: undefined,
@@ -43,7 +39,7 @@ const Actions = () => {
   return (
     <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
       {actions.map((action, index) => (
-        <Button
+        <CustomButton
           key={index}
           as={Link}
           className={`h-12 px-8 font-bold rounded-xl ${action.className}`}
@@ -53,7 +49,7 @@ const Actions = () => {
           variant={action.variant}
         >
           {action.label}
-        </Button>
+        </CustomButton>
       ))}
     </div>
   );
