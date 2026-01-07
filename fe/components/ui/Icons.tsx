@@ -179,3 +179,112 @@ export const SearchIcon = ({
     />
   </svg>
 );
+
+
+//Bổ sung thêm icon Calendar
+export const CalendarIcon = ({
+  size = 24,
+  width,
+  height,
+  ...props
+}: IconSvgProps) => (
+  <svg
+    aria-hidden="true"
+    fill="none"
+    focusable="false"
+    height={size || height}
+    role="presentation"
+    viewBox="0 0 24 24"
+    width={size || width}
+    {...props}
+  >
+    <path
+      d="M8 2V5M16 2V5M3.5 9.09H20.5M21 8.5V17c0 3-1.5 5-5 5H8c-3.5 0-5-2-5-5V8.5c0-3 1.5-5 5-5h8c3.5 0 5 2 5 5Z"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M15.695 13.7h.01M15.695 16.7h.01M11.995 13.7h.01M11.995 16.7h.01M8.295 13.7h.01M8.295 16.7h.01"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+    />
+  </svg>
+);
+
+export const SaveIcon = (props: IconSvgProps) => (
+  <svg fill="none" height="1em" viewBox="0 0 24 24" width="1em" stroke="currentColor" strokeWidth="2" {...props}>
+    <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
+    <path d="M17 21v-8H7v8M7 3v5h8" />
+  </svg>
+);
+
+export const RefreshIcon = (props: IconSvgProps) => (
+  <svg fill="none" height="1em" viewBox="0 0 24 24" width="1em" stroke="currentColor" strokeWidth="2" {...props}>
+    <path d="M23 4v6h-6M1 20v-6h6" />
+    <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" />
+  </svg>
+);
+
+export const CancelIcon = (props: IconSvgProps) => (
+  <svg fill="none" height="1em" viewBox="0 0 24 24" width="1em" stroke="currentColor" strokeWidth="2" {...props}>
+    <path d="M18 6L6 18M6 6l12 12" />
+  </svg>
+);
+
+// Bổ sung icon Check cho nút Duyệt đơn
+export const CheckIcon = ({
+  size = 24,
+  width,
+  height,
+  ...props
+}: IconSvgProps) => (
+  <svg
+    aria-hidden="true"
+    fill="none"
+    focusable="false"
+    height={size || height}
+    role="presentation"
+    viewBox="0 0 24 24"
+    width={size || width}
+    {...props}
+  >
+    <path
+      d="M7.75 12L10.58 14.83L16.25 9.17"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+    />
+  </svg>
+);
+
+// Bổ sung icon XMark (dấu X) cho nút Từ chối
+export const XMarkIcon = ({
+  size = 24,
+  width,
+  height,
+  ...props
+}: IconSvgProps) => (
+  <svg
+    aria-hidden="true"
+    fill="none"
+    focusable="false"
+    height={size || height}
+    role="presentation"
+    viewBox="0 0 24 24"
+    width={size || width}
+    {...props}
+  >
+    <path
+      d="M18 6L6 18M6 6l12 12"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+    />
+  </svg>
+);

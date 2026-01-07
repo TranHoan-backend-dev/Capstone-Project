@@ -2,10 +2,8 @@
 
 import React from "react";
 
-import { SearchIcon } from "@/components/ui/Icons";
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
-import { FilterActionButton } from "@/components/ui/FilterActionButton";
-import FilterButton from "@/components/ui/FilterButton";
+import { SearchIcon } from "@/components/ui/Icons";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
 import CustomInput from "@/components/ui/custom/CustomInput";
 import { RejectIcon, CheckApprovalIcon } from "@/config/chip-and-icon";

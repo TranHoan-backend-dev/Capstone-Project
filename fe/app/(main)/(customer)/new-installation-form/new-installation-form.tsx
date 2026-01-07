@@ -7,7 +7,7 @@ import { OrderInfoSection } from "./components/order-info-section";
 import { CustomerInfoSection } from "./components/customer-info-section";
 import { AddressContactSection } from "./components/address-contact-section";
 import { RelatedOrdersTable } from "./components/related-orders-table";
-
+import { BillingInfoSection } from './components/billing-info-section';
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { AddNewIcon } from "@/config/chip-and-icon";
 
@@ -45,6 +45,8 @@ const NewInstallationForm = () => {
         <OrderInfoSection />
         <CustomerInfoSection />
         <AddressContactSection />
+          {/* Phần thông tin hóa đơn nằm dưới các section trên */}
+          <BillingInfoSection />
       </GenericSearchFilter>
 
       <RelatedOrdersTable data={relatedOrders} />

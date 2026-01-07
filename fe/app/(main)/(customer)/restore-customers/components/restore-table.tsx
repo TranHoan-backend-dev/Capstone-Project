@@ -1,37 +1,37 @@
 "use client";
 
 import React from "react";
-import { TableCellsIcon } from "@heroicons/react/24/outline";
-import { Link } from "@heroui/react";
+import { ArrowPathIcon, TableCellsIcon } from "@heroicons/react/24/outline";
 import NextLink from "next/link";
-
-import { GenericDataTable } from "@/components/ui/GenericDataTable";
+import { Button, Link, Tooltip } from "@heroui/react";
+import {GenericDataTable} from "@/components/ui/GenericDataTable";
 import {TitleDarkColor} from "@/config/chip-and-icon";
 
 interface RestoreItem {
-  id: number;
-  customerCode: string;
-  customerName: string;
-  address: string;
-  restoreDate: string;
-  period: string;
-  reason: string;
+    id: number;
+    customerCode: string;
+    customerName: string;
+    address: string;
+    restoreDate: string;
+    period: string;
+    reason: string;
 }
 
 interface RestoreTableProps {
-  data: RestoreItem[];
+    data: RestoreItem[];
 }
 
-export const RestoreTable = ({ data }: RestoreTableProps) => {
-  const columns = [
-    { key: "no", label: "#", width: "40px" },
-    { key: "customerCode", label: "Mã KH" },
-    { key: "customerName", label: "Tên khách hàng" },
-    { key: "address", label: "Địa chỉ" },
-    { key: "restoreDate", label: "Ngày Khôi Phục" },
-    { key: "period", label: "Kỳ Khôi Phục" },
-    { key: "reason", label: "Lý Do Khôi Phục" },
-  ];
+export const RestoreTable = ({data}: RestoreTableProps) => {
+    const columns = [
+        {key: "no", label: "#", width: "40px"},
+        {key: "customerCode", label: "Mã KH"},
+        {key: "customerName", label: "Tên khách hàng"},
+        {key: "address", label: "Địa chỉ"},
+        {key: "restoreDate", label: "Ngày Khôi Phục"},
+        {key: "period", label: "Kỳ Khôi Phục"},
+        {key: "reason", label: "Lý Do Khôi Phục"},
+        {key: "action", label: "Hoạt động", align: "center" as const},
+    ];
 
   const renderCell = (item: RestoreItem, columnKey: string) => {
     switch (columnKey) {
@@ -77,7 +77,33 @@ export const RestoreTable = ({ data }: RestoreTableProps) => {
             {item.reason}
           </div>
         );
-      default:
+        case "action":
+            return (
+                <div className="flex justify-center items-center">
+                    <Tooltip
+                        content="Khôi phục"
+                        placement="top"
+                        delay={0}
+                        closeDelay={0}
+                        offset={10}
+                        classNames={{
+                            content: "py-1.5 px-3 shadow-xl text-black bg-white font-medium rounded-lg border border-gray-100",
+                        }}
+                    >
+                        <Button
+                            isIconOnly
+                            size="sm"
+                            variant="light"
+                            radius="md"
+                            className="data-[hover=true]:bg-gray-100 min-w-10 w-10 h-10 transition-colors"
+                            onPress={() => console.log("Khôi phục:", item.customerCode)}
+                        >
+                            <ArrowPathIcon className="w-5 h-5 text-orange-400" />
+                        </Button>
+                    </Tooltip>
+                </div>
+            );
+        default:
         return (item as any)[columnKey];
     }
   };
