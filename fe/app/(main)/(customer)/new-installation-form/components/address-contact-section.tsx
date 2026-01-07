@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { Checkbox } from "@heroui/react";
 
 import { TitleDarkColor } from "@/config/chip-and-icon";
 import CustomInput from "@/components/ui/custom/CustomInput";
@@ -13,11 +12,6 @@ export const AddressContactSection = () => {
     { label: "Đường / Thôn / Xóm" },
     { label: "Điện thoại liên hệ", isRequired: true },
     { label: "Email" },
-  ];
-
-  const belowInputFieldContent = [
-    { label: "Chọn phường / xã", isRequired: true },
-    { label: "Chọn tỉnh / thành phố", isRequired: true },
   ];
 
   const selectFieldContent = ["Chọn phường / xã", "Chọn tỉnh / thành phố"];
@@ -45,16 +39,13 @@ export const AddressContactSection = () => {
               />
             </div>
           ))}
-          {belowInputFieldContent.map((item, index) => (
-            <div key={index} className="space-y-1">
-              <CustomInput isRequired={item.isRequired} label={item.label} />
-            </div>
-          ))}
         </div>
       </div>
 
-      <div className="space-y-4 py-2 border-b border-gray-100 dark:border-divider">
-        <h2 className={`text-[13px] font-bold text-gray-800 ${TitleDarkColor}`}>
+      <div className="space-y-4 py-2">
+        <h2
+            className={`text-sm font-bold text-blue-600 ${TitleDarkColor} uppercase tracking-wider`}
+        >
           Thông tin ngân hàng
         </h2>
         <div className="space-y-1 pt-0.5">
@@ -67,15 +58,6 @@ export const AddressContactSection = () => {
             ]}
           />
         </div>
-      </div>
-
-      <div className="space-y-4 py-2">
-        <h2 className={`text-[13px] font-bold text-gray-800 ${TitleDarkColor}`}>
-          Thông tin xuất hóa đơn
-        </h2>
-        <Checkbox classNames={{ label: "text-[13px]" }} size="sm">
-          Xuất hóa đơn
-        </Checkbox>
       </div>
     </div>
   );

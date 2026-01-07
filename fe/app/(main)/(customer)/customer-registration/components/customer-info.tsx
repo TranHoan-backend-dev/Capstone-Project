@@ -1,71 +1,51 @@
 "use client";
 
 import React from "react";
-import CustomInput from "@/components/ui/CustomInput"; // Điều chỉnh đường dẫn theo dự án của bạn
-import { SearchIcon, CalendarIcon } from "@/components/ui/Icons";// Cần thêm icon Calendar
+import { Divider } from "@heroui/react";
+
+import CustomInput from "@/components/ui/custom/CustomInput";
+import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
+import CustomDatePicker from "@/components/ui/custom/CustomDatePicker";
+import { TitleDarkColor } from "@/config/chip-and-icon";
 
 export const CustomerInfo = () => {
   return (
-    <div className="space-y-4">
-      {/* Tiêu đề Section */}
-      <div className="border-b pb-2">
-        <h3 className="text-lg font-bold text-blue-700">Thông tin đơn & định danh</h3>
+    <div>
+      <div className="space-y-6 pb-6 border-b border-gray-100 dark:border-divider">
+        <h2
+          className={`text-sm font-bold text-blue-600 ${TitleDarkColor} uppercase tracking-wider`}
+        >
+          Thông tin đơn & định danh
+        </h2>
       </div>
 
-      {/* Grid Layout 3 cột */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <CustomInput 
-          label="Mã đơn" 
-          placeholder="Nhập mã đơn" 
-          endContent={<SearchIcon className="text-gray-400 size-4" />}
-          isRequired 
-        />
-        <CustomInput 
-          label="Mã khách hàng" 
-          placeholder="Nhập mã khách hàng" 
-        />
-        <CustomInput 
-          label="Mã số thuế" 
-          placeholder="Nhập mã số thuế" 
-        />
-
-        <CustomInput 
-          label="Tên khách hàng" 
-          placeholder="Nhập tên khách hàng" 
-          isRequired
-        />
-        <CustomInput 
-          label="Số CCCD" 
-          placeholder="Nhập số" 
-        />
-        <CustomInput 
-          label="Ngày cấp" 
-          type="date" 
-          endContent={<CalendarIcon className="text-gray-400 size-4" />}
-        />
-
-        <CustomInput 
-          label="Kỳ khai thác" 
-          placeholder="Nhập kỳ khai thác" 
-        />
-        <CustomInput 
-          label="Mã số Quan hệ ngân sách" 
-          placeholder="Nhập mã số Quan hệ ngân sách" 
-        />
-        <CustomInput 
-          label="Số điện thoại" 
-          placeholder="Nhập số điện thoại" 
-        />
-
-        <CustomInput 
-          label="Mã hộ khẩu" 
-          placeholder="Nhập mã hộ khẩu" 
-        />
-        <CustomInput 
-          label="Mã Hộ Chiếu" 
-          placeholder="Nhập số" 
-        />
+        <SearchInputWithButton label="Mã đơn" isRequired />
+        {[
+          { label: "Mã khách hàng", isRequired: false },
+          { label: "Mã số thuế", isRequired: false },
+          { label: "Tên khách hàng", isRequired: true },
+          { label: "Số CCCD", isRequired: false },
+          { label: "Số CCCD", isRequired: false },
+        ].map((item, idx) => (
+          <CustomInput
+            key={idx}
+            label={item.label}
+            isRequired={item.isRequired}
+          />
+        ))}
+        <CustomDatePicker label="Ngày cấp" />
+        {[
+          "Kỳ khai thác",
+          "Mã số Quan hệ ngân sách",
+          "Số điện thoại",
+          "Mã hộ khẩu",
+          "Mã Hộ Chiếu",
+        ].map((item, idx) => (
+          <CustomInput key={idx} label={item} />
+        ))}
       </div>
+      <Divider className="mt-6 mb-6" />
     </div>
   );
 };

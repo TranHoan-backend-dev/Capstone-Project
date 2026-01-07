@@ -1,8 +1,16 @@
 "use client";
+
 import React from "react";
+import { Tooltip, Button } from "@heroui/react";
+import { TrashIcon } from "@heroicons/react/24/outline";
+
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import { Tooltip, Button, Chip } from "@heroui/react";
-import { TrashIcon, CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import {
+  ApprovalIcon,
+  GreenIconColor,
+  RedIconColor,
+  RejectIcon,
+} from "@/config/chip-and-icon";
 
 export const PendingTable = () => {
   const columns = [
@@ -31,31 +39,31 @@ export const PendingTable = () => {
       title="Danh sách đơn chờ"
       columns={columns}
       data={mockData}
-      renderCell={(item: any, key: string) => {
+      isCollapsible
+      headerSummary="3"
+      renderCellAction={(item: any, key: string) => {
         if (key === "actions") {
           return (
             <div className="flex justify-center gap-2">
-              <Tooltip content="Duyệt đơn">
+              <Tooltip content="Duyệt đơn" color="success">
                 <Button
                   isIconOnly
                   variant="light"
-                  size="sm"
-                  className="text-green-600"
+                  size="md"
                   onPress={() => console.log("Duyệt:", item.id)}
                 >
-                  <CheckIcon className="w-5 h-5" />
+                  <ApprovalIcon className={GreenIconColor} />
                 </Button>
               </Tooltip>
 
-              <Tooltip content="Từ chối đơn">
+              <Tooltip content="Từ chối đơn" color="danger">
                 <Button
                   isIconOnly
                   variant="light"
-                  size="sm"
-                  className="text-red-500"
+                  size="md"
                   onPress={() => console.log("Từ chối:", item.id)}
                 >
-                  <XMarkIcon className="w-5 h-5" />
+                  <RejectIcon className={RedIconColor} />
                 </Button>
               </Tooltip>
             </div>
@@ -68,7 +76,6 @@ export const PendingTable = () => {
           </span>
         );
       }}
-      tableProps={{ selectionMode: "multiple" }}
     />
   );
 };
@@ -101,10 +108,11 @@ export const ApprovedTable = () => {
       headerSummary="3"
       columns={columns}
       data={mockData}
-      renderCell={(item: any, key: string) => {
+      isCollapsible
+      renderCellAction={(item: any, key: string) => {
         if (key === "actions") {
           return (
-            <Tooltip content="Xóa">
+            <Tooltip content="Xóa" color="danger">
               <Button
                 isIconOnly
                 variant="light"

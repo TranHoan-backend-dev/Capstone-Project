@@ -78,6 +78,7 @@ export const RelatedOrdersTable = ({ data }: { data: any[] }) => {
   return (
     <GenericDataTable
       columns={columns}
+      isCollapsible
       data={data}
       paginationProps={{ total: 3, initialPage: 1 }}
       renderCellAction={renderCell}

@@ -1,46 +1,67 @@
 "use client";
+
 import React from "react";
-import CustomInput from "@/components/ui/CustomInput";
-import { Checkbox } from "@heroui/react";
-import { CalendarIcon } from "@/components/ui/Icons";
+import { Checkbox, Divider, Textarea } from "@heroui/react";
+
+import CustomInput from "@/components/ui/custom/CustomInput";
+import CustomDatePicker from "@/components/ui/custom/CustomDatePicker";
+import { TitleDarkColor } from "@/config/chip-and-icon";
 
 export const BillingInfo = () => {
   return (
-    <div className="space-y-8">
-      {/* Section: Thông tin phụ */}
-      <div className="space-y-4">
-        <h3 className="text-blue-700 font-bold border-b pb-2 text-[15px]">Thông tin phụ</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Cập nhật: Tháng nợ chuyển sang kiểu date theo mockup mới */}
-          <CustomInput 
-            label="Tháng nợ" 
-            type="date" 
-            endContent={<CalendarIcon size={18} className="text-gray-400" />} 
-          />
-          <CustomInput label="Kinh phí lắp đặt" type="number" defaultValue="0" />
-          <CustomInput label="M3 khuyến mãi" type="number" defaultValue="0" />
-          <CustomInput label="Thời gian khấu trừ" type="number" defaultValue="0" />
+    <>
+      <div>
+        <div className="space-y-6 pb-6 border-b border-gray-100 dark:border-divider">
+          <h2
+            className={`text-sm font-bold text-blue-600 ${TitleDarkColor} uppercase tracking-wider`}
+          >
+            Thông tin phụ
+          </h2>
         </div>
-        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <CustomDatePicker label="Tháng nợ" />
+          {["Kinh phí lắp đặt", "M3 khuyến mãi", "Thời gian khấu trừ"].map(
+            (item, idx) => (
+              <CustomInput key={idx} label={item} type="number" />
+            ),
+          )}
+        </div>
+
         <div className="flex flex-wrap gap-10 pt-2">
-          <Checkbox size="sm" color="primary">Để thông tin xuất hóa đơn</Checkbox>
-          <Checkbox size="sm" color="primary">Không tính tiền</Checkbox>
-          <Checkbox size="sm" color="primary">Khuyến mãi</Checkbox>
+          {["Để thông tin xuất hóa đơn", "Không tính tiền", "Khuyến mãi"].map(
+            (item, idx) => (
+              <Checkbox key={idx} size="sm" color="primary">
+                {item}
+              </Checkbox>
+            ),
+          )}
         </div>
       </div>
+      <Divider className="mt-6 mb-6" />
 
-      {/* Section: Thông tin hóa đơn */}
-      <div className="space-y-4">
-        <h3 className="text-blue-700 font-bold border-b pb-2 text-[15px]">Thông tin hóa đơn</h3>
+      <div>
+        <div className="space-y-6 pb-6 border-b border-gray-100 dark:border-divider">
+          <h2
+            className={`text-sm font-bold text-blue-600 ${TitleDarkColor} uppercase tracking-wider`}
+          >
+            Thông tin hóa đơn
+          </h2>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <CustomInput label="Tên xuất hóa đơn" placeholder="Nhập tên xuất hóa đơn" />
-          <CustomInput label="Địa chỉ xuất hóa đơn" placeholder="Nhập địa chỉ xuất hóa đơn" />
-          {/* Ghi chú chiếm 2 cột theo mockup */}
+          <CustomInput label="Tên xuất hóa đơn" />
+          <CustomInput label="Địa chỉ xuất hóa đơn" />
           <div className="md:col-span-2">
-            <CustomInput label="Ghi chú" placeholder="Nhập ghi chú" />
+            <Textarea
+              label="Ghi chú"
+              placeholder="Nhập ghi chú"
+              variant="bordered"
+              size="md"
+              radius="md"
+            />
           </div>
         </div>
       </div>
-    </div>
+      <Divider className="mt-6 mb-6" />
+    </>
   );
 };

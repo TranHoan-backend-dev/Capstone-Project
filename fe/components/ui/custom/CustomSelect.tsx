@@ -19,6 +19,7 @@ interface BaseSelectProps {
   isRequired?: boolean;
   itemClassname?: string;
   props?: any;
+  endContent?: React.ReactNode;
 }
 
 const CustomSelect = ({

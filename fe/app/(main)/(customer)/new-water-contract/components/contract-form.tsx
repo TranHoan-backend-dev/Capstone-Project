@@ -1,45 +1,18 @@
 "use client";
-import React, { useRef } from "react";
+
+import React from "react";
+import { Checkbox, Textarea } from "@heroui/react";
+
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { RefreshIcon, SaveIcon, SearchIcon } from "@/components/ui/Icons";
-import { CalendarDaysIcon } from "@heroicons/react/24/outline";
-import { Checkbox, Select, SelectItem } from "@heroui/react";
 import CustomInput from "@/components/ui/custom/CustomInput";
 import CustomButton from "@/app/(auth)/login/components/custom-button";
+import CustomDatePicker from "@/components/ui/custom/CustomDatePicker";
+import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
+import CustomSelect from "@/components/ui/custom/CustomSelect";
+import { TitleDarkColor } from "@/config/chip-and-icon";
 
-/* ===== DateInput dùng chung ===== */
-const DateInput = ({ label }: { label: string }) => {
-  const inputRef = useRef<HTMLInputElement | null>(null);
-
-  const openCalendar = () => {
-    if (inputRef.current && typeof inputRef.current.showPicker === "function") {
-      try {
-        inputRef.current.showPicker();
-      } catch {}
-    }
-  };
-
-  return (
-    <div onClick={openCalendar} className="cursor-pointer">
-      <CustomInput
-        ref={inputRef}
-        label={label}
-        type="date"
-        endContent={
-          <CalendarDaysIcon className="w-4 h-4 text-gray-400 pointer-events-none" />
-        }
-        classNames={{
-          input:
-            "[&::-webkit-calendar-picker-indicator]:opacity-0 cursor-pointer",
-        }}
-      />
-    </div>
-  );
-};
-
-
-
-  export const ContractForm = () => {
+export const ContractForm = () => {
   return (
     <GenericSearchFilter
       title="Hợp Đồng Cấp Nước Mới"
@@ -65,97 +38,200 @@ const DateInput = ({ label }: { label: string }) => {
         </div>
       }
     >
-      {/* A. THÔNG TIN ĐỊNH DANH */}
       <section className="space-y-4">
-        <h3 className="text-base font-bold mb-4">A. THÔNG TIN ĐỊNH DANH</h3>
+        <h3
+          className={`text-sm font-bold uppercase tracking-wider ${TitleDarkColor}`}
+        >
+          A. THÔNG TIN ĐỊNH DANH
+        </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <CustomInput label="Mã đơn" endContent={<SearchIcon size={18} />} />
+          <SearchInputWithButton label="Mã đơn" />
           <CustomInput label="Tên khách hàng" />
           <CustomInput label="Người đại diện" />
           <CustomInput label="Chức vụ" />
         </div>
       </section>
 
-      {/* B. ĐỊA CHỈ LẮP ĐẶT */}
       <section className="space-y-4">
-        <h3 className="text-base font-bold mb-4">B. ĐỊA CHỈ LẮP ĐẶT</h3>
+        <h3
+          className={`text-sm font-bold uppercase tracking-wider ${TitleDarkColor}`}
+        >
+          B. ĐỊA CHỈ LẮP ĐẶT
+        </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <CustomInput label="Số nhà" />
-          <CustomInput label="Đường phố" endContent={<SearchIcon size={18} />} />
-          <Select label="Thôn / Làng" variant="bordered">
-            <SelectItem key="tl1">Chọn thôn/làng</SelectItem>
-          </Select>
-          <Select label="Tổ / Khu / Xóm" variant="bordered">
-            <SelectItem key="t1">Chọn tổ/khu/xóm</SelectItem>
-          </Select>
-          <Select label="Phường/Xã" variant="bordered">
-            <SelectItem key="p1">Chọn phường/xã</SelectItem>
-          </Select>
+          <SearchInputWithButton label="Đường phố" />
+          {[
+            {
+              label: "Thôn / Làng",
+              options: [
+                {
+                  label: "Chọn thôn/làng",
+                  value: "tl1",
+                },
+              ],
+            },
+            {
+              label: "Tổ / Khu / Xóm",
+              options: [
+                {
+                  label: "Chọn tổ/khu/xóm",
+                  value: "t1",
+                },
+              ],
+            },
+            {
+              label: "Phường/Xã",
+              options: [
+                {
+                  label: "Chọn phường/xã",
+                  value: "p1",
+                },
+              ],
+            },
+          ].map((item, idx) => (
+            <CustomSelect key={idx} label={item.label} options={item.options} />
+          ))}
         </div>
       </section>
 
-      {/* C. THÔNG TIN CÁ NHÂN / PHÁP LÝ */}
       <section className="space-y-4">
-        <h3 className="text-base font-bold mb-4">C. THÔNG TIN CÁ NHÂN / PHÁP LÝ</h3>
+        <h3
+          className={`text-sm font-bold uppercase tracking-wider ${TitleDarkColor}`}
+        >
+          C. THÔNG TIN CÁ NHÂN / PHÁP LÝ
+        </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <CustomInput label="Số CMND / CCCD" />
-          <DateInput label="Ngày cấp" />
-          <CustomInput label="Nơi cấp" />
-          <CustomInput label="Điện thoại" />
-          <CustomInput label="Mã hộ khẩu" />
-          <CustomInput label="Mã số thuế (MST)" />
-          <CustomInput label="Số hộ" type="number" defaultValue="1" />
-          <CustomInput label="Số nhân khẩu" type="number" defaultValue="1" />
-          <Select label="Mục đích sử dụng" variant="bordered" defaultSelectedKeys={["sh"]}>
-            <SelectItem key="sh">SH - Sinh hoạt</SelectItem>
-          </Select>
+          <CustomDatePicker label="Ngày cấp" />
+          {[
+            { label: "Nơi cấp" },
+            { label: "Điện thoại" },
+            { label: "Mã hộ khẩu" },
+            { label: "Mã số thuế" },
+            { label: "Số hộ", type: "number", defaultValue: "1" },
+            { label: "Số nhân khẩu", type: "number", defaultValue: "1" },
+          ].map((item, idx) => (
+            <CustomInput
+              key={idx}
+              label={item.label}
+              {...(item.type ? { type: item.type } : {})}
+              {...(item.defaultValue ? { type: item.defaultValue } : {})}
+            />
+          ))}
+          <CustomSelect
+            label="Mục đích sử dụng"
+            defaultSelectedKeys={["sh"]}
+            options={[
+              {
+                label: "SH - Sinh hoạt",
+                value: "sh",
+              },
+            ]}
+          />
         </div>
       </section>
 
-      {/* D. THÔNG TIN THANH TOÁN & HỢP ĐỒNG */}
       <section className="space-y-4">
-        <h3 className="text-base font-bold mb-4">D. THÔNG TIN THANH TOÁN & HỢP ĐỒNG</h3>
+        <h3
+          className={`text-sm font-bold uppercase tracking-wider ${TitleDarkColor}`}
+        >
+          D. THÔNG TIN THANH TOÁN & HỢP ĐỒNG
+        </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <CustomInput label="Số hợp đồng" />
-          <Select label="Loại hợp đồng" variant="bordered" defaultSelectedKeys={["gd"]}>
-            <SelectItem key="gd">Gia đình</SelectItem>
-          </Select>
-          <Select label="Mã nguồn" variant="bordered">
-            <SelectItem key="n1">Nhập mã nguồn</SelectItem>
-          </Select>
-          <Select label="Hạng mục" variant="bordered">
-            <SelectItem key="h1">Nhập mã nguồn</SelectItem>
-          </Select>
+          {[
+            {
+              label: "Loại hợp đồng",
+              options: [
+                {
+                  label: "Gia đình",
+                  value: "gd",
+                },
+              ],
+              defaultSelectedKeys: ["gd"],
+            },
+            {
+              label: "Mã nguồn",
+              options: [
+                {
+                  label: "Nhập mã nguồn",
+                  value: "n1",
+                },
+              ],
+            },
+            {
+              label: "Hạng mục",
+              options: [
+                {
+                  label: "Gia đình",
+                  value: "h1",
+                },
+              ],
+            },
+          ].map((item, idx) => (
+            <CustomSelect
+              key={idx}
+              label={item.label}
+              {...(item.defaultSelectedKeys
+                ? { defaultSelectedKeys: item.defaultSelectedKeys }
+                : {})}
+              options={item.options}
+            />
+          ))}
           <CustomInput label="Người ký hợp đồng" />
           <CustomInput label="Chức vụ" />
-          <Select label="Hình thức thanh toán" variant="bordered" defaultSelectedKeys={["tn"]}>
-            <SelectItem key="tn">Thu tại nhà</SelectItem>
-          </Select>
+          <CustomSelect
+            label="Hình thức thanh toán"
+            defaultSelectedKeys={["tn"]}
+            options={[
+              {
+                label: "Thu tại nhà",
+                value: "tn",
+              },
+            ]}
+          />
           <CustomInput label="Số tài khoản" />
-          <Select label="Ngân hàng" variant="bordered">
-            <SelectItem key="vcb">Vietcombank</SelectItem>
-          </Select>
+          <CustomSelect
+            label="Ngân hàng"
+            options={[
+              {
+                label: "Vietcombank",
+                value: "vcb",
+              },
+            ]}
+          />
 
-          <DateInput label="Ngày làm hợp đồng" />
-          <DateInput label="Ngày giao thi công" />
+          <CustomDatePicker label="Ngày làm hợp đồng" />
+          <CustomDatePicker label="Ngày giao thi công" />
 
-          <Select label="Chi nhánh" variant="bordered" defaultSelectedKeys={["nd"]}>
-            <SelectItem key="nd">TP Nam Định</SelectItem>
-          </Select>
+          <CustomSelect
+            label="Chi nhánh"
+            defaultSelectedKeys={["nd"]}
+            options={[
+              {
+                label: "TP Nam Định",
+                value: "nd",
+              },
+            ]}
+          />
         </div>
       </section>
 
-      {/* E. PHẦN MỞ RỘNG */}
       <section className="space-y-4">
-        <div className="flex items-center gap-4 border-b pb-2 mb-4">
-          <h3 className="text-base font-bold">E. PHẦN MỞ RỘNG - XUẤT HÓA ĐƠN</h3>
+        <div className="flex items-center gap-4 pb-2 mb-4">
+          <h3
+            className={`text-sm font-bold uppercase tracking-wider ${TitleDarkColor}`}
+          >
+            E. PHẦN MỞ RỘNG - XUẤT HÓA ĐƠN
+          </h3>
           <Checkbox size="sm">Đổi thông tin xuất hóa đơn</Checkbox>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <CustomInput label="Tên xuất hóa đơn" />
           <CustomInput label="Địa chỉ xuất hóa đơn" />
           <div className="md:col-span-2">
-            <CustomInput label="Nội dung" />
+            <Textarea label="Nội dung" variant="bordered" />
           </div>
         </div>
       </section>
