@@ -4,7 +4,8 @@ import React from "react";
 import { Input, Button, InputProps } from "@heroui/react";
 
 import { SearchIcon } from "./Icons";
-import {TitleDarkColor} from "@/config/chip-and-icon";
+
+import { TitleDarkColor } from "@/config/chip-and-icon";
 
 interface SearchInputWithButtonProps extends Omit<InputProps, "endContent"> {
   onSearch?: () => void;
