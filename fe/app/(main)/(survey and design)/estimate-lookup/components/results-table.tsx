@@ -15,7 +15,7 @@ import {
   EstimationIcon,
   ProfileIcon,
   BlueYellowIconColor,
-  GreenIconColor,
+  GreenIconColor, TitleDarkColor,
 } from "@/config/chip-and-icon";
 
 interface EstimateItem {
@@ -79,7 +79,7 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
         return (
           <Link
             as={NextLink}
-            className="font-bold text-blue-600 hover:underline hover:text-blue-800 dark:text-primary dark:hover:text-primary-600"
+            className={`font-bold text-blue-600 hover:underline hover:text-blue-800 ${TitleDarkColor}`}
             href="#"
           >
             {item.code}
@@ -152,7 +152,7 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
         initialPage: 1,
         summary: `${data.length}`,
       }}
-      renderCell={renderCell}
+      renderCellAction={renderCell}
       title="Danh sách đơn thiết kế"
     />
   );

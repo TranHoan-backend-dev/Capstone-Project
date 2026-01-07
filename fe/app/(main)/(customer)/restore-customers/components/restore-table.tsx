@@ -6,6 +6,7 @@ import { Link } from "@heroui/react";
 import NextLink from "next/link";
 
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
+import {TitleDarkColor} from "@/config/chip-and-icon";
 
 interface RestoreItem {
   id: number;
@@ -44,7 +45,7 @@ export const RestoreTable = ({ data }: RestoreTableProps) => {
         return (
           <Link
             as={NextLink}
-            className="font-bold text-blue-600 hover:underline hover:text-blue-800 dark:text-primary"
+            className={`font-bold text-blue-600 hover:underline hover:text-blue-800 ${TitleDarkColor}`}
             href="#"
           >
             {item.customerCode}
@@ -97,7 +98,7 @@ export const RestoreTable = ({ data }: RestoreTableProps) => {
         initialPage: 1,
         summary: `${data.length}`,
       }}
-      renderCell={renderCell}
+      renderCellAction={renderCell}
       title="Danh sách KH khôi phục"
     />
   );

@@ -7,7 +7,7 @@ import CustomInput from "./custom/CustomInput";
 
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { SearchIcon } from "@/components/ui/Icons";
-import CustomSingleDatePicker from "@/components/ui/custom/CustomSingleDatePicker";
+import CustomDatePicker from "@/components/ui/custom/CustomDatePicker";
 
 interface FilterSectionProps {
   title?: string;
@@ -15,9 +15,9 @@ interface FilterSectionProps {
   keyword: string;
   from: DateValue | null | undefined;
   to: DateValue | null | undefined;
-  setKeyword: (keyword: string) => void;
-  setFrom: (date: DateValue | null | undefined) => void;
-  setTo: (date: DateValue | null | undefined) => void;
+  setKeywordAction: (keyword: string) => void;
+  setFromAction: (date: DateValue | null | undefined) => void;
+  setToAction: (date: DateValue | null | undefined) => void;
   actions?: React.ReactNode;
 }
 
@@ -27,9 +27,9 @@ export const FilterSection = ({
   keyword,
   from,
   to,
-  setKeyword,
-  setFrom,
-  setTo,
+  setKeywordAction,
+  setFromAction,
+  setToAction,
   actions,
 }: FilterSectionProps) => {
   return (
@@ -50,14 +50,22 @@ export const FilterSection = ({
             value={keyword}
             onChange={(e) => {
               onSearch?.(e.target.value);
-              setKeyword?.(e.target.value);
+              setKeywordAction?.(e.target.value);
             }}
           />
         </div>
       </div>
 
-      <DatePickerField label="Từ ngày" value={from} onDateChange={setFrom} />
-      <DatePickerField label="Đến ngày" value={to} onDateChange={setTo} />
+      <DatePickerField
+        label="Từ ngày"
+        value={from}
+        onDateChangeAction={setFromAction}
+      />
+      <DatePickerField
+        label="Đến ngày"
+        value={to}
+        onDateChangeAction={setToAction}
+      />
     </GenericSearchFilter>
   );
 };
@@ -65,19 +73,19 @@ export const FilterSection = ({
 export const DatePickerField = ({
   label,
   value,
-  onDateChange,
+  onDateChangeAction,
 }: {
   label: string;
   value: DateValue | null | undefined;
-  onDateChange: (date: DateValue | null | undefined) => void;
+  onDateChangeAction: (date: DateValue | null | undefined) => void;
 }) => {
   return (
     <div className="lg:col-span-1 space-y-1">
-      <CustomSingleDatePicker
+      <CustomDatePicker
         className="font-bold"
         label={label}
         value={value}
-        onChange={(date) => onDateChange?.(date)}
+        onChange={(date) => onDateChangeAction?.(date)}
       />
     </div>
   );

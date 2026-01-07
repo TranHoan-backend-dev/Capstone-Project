@@ -153,9 +153,9 @@ const DesignProcessingPage = () => {
       <FilterSection
         from={from}
         keyword={keyword}
-        setFrom={setFrom}
-        setKeyword={setKeyword}
-        setTo={setTo}
+        setFromAction={setFrom}
+        setKeywordAction={setKeyword}
+        setToAction={setTo}
         title="Tra cứu đơn"
         to={to}
         onSearch={handleSearch}

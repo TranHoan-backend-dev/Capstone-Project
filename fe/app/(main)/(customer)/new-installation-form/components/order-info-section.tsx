@@ -5,7 +5,7 @@ import React from "react";
 import { TitleDarkColor } from "@/config/chip-and-icon";
 import CustomInput from "@/components/ui/custom/CustomInput";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
-import CustomSingleDatePicker from "@/components/ui/custom/CustomSingleDatePicker";
+import CustomDatePicker from "@/components/ui/custom/CustomDatePicker";
 
 export const OrderInfoSection = () => {
   const inputFields = [
@@ -40,7 +40,7 @@ export const OrderInfoSection = () => {
 
         {dateFields.map((item, index) => (
           <div key={index} className="space-y-1">
-            <CustomSingleDatePicker
+            <CustomDatePicker
               className="w-full"
               isRequired={item.isRequired}
               label={item.label}

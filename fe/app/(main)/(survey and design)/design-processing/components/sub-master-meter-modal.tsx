@@ -16,15 +16,16 @@ import {
 } from "@heroui/react";
 
 import { CustomPagination } from "@/components/ui/custom/CustomPagination";
+import { TitleDarkColor } from "@/config/chip-and-icon";
 
 interface SubMasterMeterModalProps {
   isOpen: boolean;
-  onOpenChange: () => void;
+  onOpenChangeAction: () => void;
 }
 
 export const SubMasterMeterModal = ({
   isOpen,
-  onOpenChange,
+  onOpenChangeAction,
 }: SubMasterMeterModalProps) => {
   const data = [
     {
@@ -111,7 +112,7 @@ export const SubMasterMeterModal = ({
       isOpen={isOpen}
       radius="sm"
       size="3xl"
-      onOpenChange={onOpenChange}
+      onOpenChange={onOpenChangeAction}
     >
       <ModalContent>
         {(onClose) => (
@@ -155,7 +156,9 @@ export const SubMasterMeterModal = ({
                   <TableBody>
                     {data.map((item) => (
                       <TableRow key={item.id}>
-                        <TableCell className="font-bold text-blue-700 dark:text-primary text-[13px]">
+                        <TableCell
+                          className={`font-bold text-blue-600 hover:underline hover:text-blue-800 text-[13px] ${TitleDarkColor}`}
+                        >
                           {item.code}
                         </TableCell>
                         <TableCell className="text-foreground text-[13px]">

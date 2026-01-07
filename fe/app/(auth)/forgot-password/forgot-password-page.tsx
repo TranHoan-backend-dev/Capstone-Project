@@ -46,13 +46,13 @@ export default function ForgotPasswordPage() {
 
         <div className="bg-white rounded-2xl shadow-lg p-8 transition-all duration-300">
           {step === "email" && (
-            <ForgotPasswordForm onSuccess={handleEmailSubmit} />
+            <ForgotPasswordForm onSuccessAction={handleEmailSubmit} />
           )}
           {step === "otp" && (
             <OTPForm
               email={email}
-              onBack={() => setStep("email")}
-              onSuccess={handleOTPSubmit}
+              onBackAction={() => setStep("email")}
+              onSuccessAction={handleOTPSubmit}
             />
           )}
           {step === "password" && <ResetPasswordForm email={email} />}

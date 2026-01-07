@@ -2,13 +2,16 @@
 
 import { Button } from "@heroui/react";
 
-import { SearchIcon, RestoreIcon, AddNewIcon } from "@/config/chip-and-icon";
+import { RestoreIcon, AddNewIcon } from "@/config/chip-and-icon";
 
 export const FormActions = () => {
   return (
     <div className="flex justify-end gap-3">
-
-      <Button color="success" startContent={<AddNewIcon className="w-4 h-4" />}>
+      <Button
+        color="success"
+        className="text-white"
+        startContent={<AddNewIcon className="w-4 h-4" />}
+      >
         Lưu
       </Button>
 

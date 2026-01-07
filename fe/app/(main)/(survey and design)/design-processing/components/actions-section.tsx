@@ -1,15 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  Select,
-  SelectItem,
-  Button,
-  DatePicker,
-  useDisclosure,
-  Textarea,
-  DateValue,
-} from "@heroui/react";
+import { Button, useDisclosure, Textarea, DateValue } from "@heroui/react";
 import { TrashIcon } from "@heroicons/react/24/outline";
 
 import { SubMasterMeterModal } from "./sub-master-meter-modal";
@@ -19,6 +11,7 @@ import { SearchIcon } from "@/components/ui/Icons";
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
+import CustomDatePicker from "@/components/ui/custom/CustomDatePicker";
 
 export const ActionsSection = () => {
   const {
@@ -64,13 +57,10 @@ export const ActionsSection = () => {
       >
         <div className="md:col-span-6 space-y-4">
           <div className="space-y-1">
-            <DatePicker
-              className="max-w-full font-bold"
+            <CustomDatePicker
+              className="max-w-full"
               label="Ngày duyệt đơn"
-              radius="md"
-              size="md"
               value={acceptingFormDate}
-              variant="bordered"
               onChange={setAcceptingFormDate}
             />
           </div>
@@ -81,14 +71,14 @@ export const ActionsSection = () => {
               label="Chi nhánh"
               options={branches}
               value={branch}
-              onValueChange={setBranch}
+              onValueChangeAction={setBranch}
             />
             <SelectField
               colSpan="col-span-1"
               label="Nhánh tổng"
               options={totalBranches}
               value={totalBranch}
-              onValueChange={setTotalBranch}
+              onValueChangeAction={setTotalBranch}
             />
           </div>
 
@@ -98,14 +88,14 @@ export const ActionsSection = () => {
               label="Nhập mã đồng hồ tổng"
               value={meterCode}
               onSearchClick={onMeterOpen}
-              onValueChange={setMeterCode}
+              onValueChangeAction={setMeterCode}
             />
             <SearchInputField
               colSpan="col-span-1"
               label="Nhập mã lộ trình"
               value={routeCode}
               onSearchClick={onRouteOpen}
-              onValueChange={setRouteCode}
+              onValueChangeAction={setRouteCode}
             />
           </div>
         </div>
@@ -116,7 +106,7 @@ export const ActionsSection = () => {
               disableAnimation
               disableAutosize
               isClearable
-              className="flex-1 font-bold"
+              className="flex-1"
               classNames={{
                 inputWrapper:
                   "h-full min-h-[100px] bg-gray-50/30 dark:bg-default-50/50 border-gray-100 dark:border-divider focus-within:!border-blue-500 dark:focus-within:!border-primary-500 transition-all shadow-sm items-start py-2",
@@ -147,9 +137,9 @@ export const ActionsSection = () => {
 
       <SubMasterMeterModal
         isOpen={isMeterOpen}
-        onOpenChange={onMeterOpenChange}
+        onOpenChangeAction={onMeterOpenChange}
       />
-      <RouteListModal isOpen={isRouteOpen} onOpenChange={onRouteOpenChange} />
+      <RouteListModal isOpen={isRouteOpen} onOpenChangeAction={onRouteOpenChange} />
     </>
   );
 };
@@ -159,23 +149,21 @@ export const SearchInputField = ({
   onSearchClick,
   colSpan = "md:col-span-6",
   value,
-  onValueChange,
+  onValueChangeAction,
 }: {
   label: string;
   onSearchClick?: () => void;
   colSpan?: string;
   value: string;
-  onValueChange: (val: string) => void;
+  onValueChangeAction: (val: string) => void;
 }) => {
   return (
     <div className={`${colSpan} space-y-1`}>
       <SearchInputWithButton
-        className="font-bold"
-        labelPlacement="inside"
         placeholder={label}
         value={value}
         onSearch={onSearchClick}
-        onValueChange={onValueChange}
+        onValueChange={onValueChangeAction}
       />
     </div>
   );
@@ -185,23 +173,22 @@ export const SelectField = ({
   label,
   options,
   colSpan = "md:col-span-6",
-  onValueChange,
+  onValueChangeAction,
 }: {
   label: string;
   options: { value: string; label: string }[];
   colSpan?: string;
   value: string;
-  onValueChange: (val: string) => void;
+  onValueChangeAction: (val: string) => void;
 }) => {
   return (
     <div className={`${colSpan} space-y-1`}>
       <CustomSelect
-        className="font-bold"
         label={label}
         onSelectionChange={(keys) => {
           const selected = Array.from(keys)[0] as string;
 
-          if (selected) onValueChange(selected);
+          if (selected) onValueChangeAction(selected);
         }}
         options={options.map((item) => ({
           label: item.label,

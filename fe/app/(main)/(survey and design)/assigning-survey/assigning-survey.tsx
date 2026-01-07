@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { DateValue } from "@heroui/react";
 
 import { SurveyAssignmentTable } from "./components/results-table";
-import SurveyTabs from "./components/servey-tabs";
+import SurveyTabs from "./components/survey-tabs";
 
 import { FilterSection } from "@/components/ui/FilterSection";
 import { SurveyAssignmentItem } from "@/types";
@@ -13,7 +13,7 @@ const AssigningSurveyPage = () => {
   const pendingData: SurveyAssignmentItem[] = [
     {
       id: 1,
-      code: "#DH001234",
+      code: "DH001234",
       customerName: "Nguyễn Thị Mai",
       phone: "0901234567",
       address: "123 Đường Nguyễn Huệ, P. Bến Nghé, Q1...",
@@ -23,7 +23,7 @@ const AssigningSurveyPage = () => {
     },
     {
       id: 2,
-      code: "#DH001235",
+      code: "DH001235",
       customerName: "Trần Văn Hùng",
       phone: "0912345678",
       address: "456 Lê Lợi, P. Bến Thành, Q1, TP.HCM",
@@ -36,7 +36,7 @@ const AssigningSurveyPage = () => {
   const assignedData: SurveyAssignmentItem[] = [
     {
       id: 1,
-      code: "#DH009234",
+      code: "DH009234",
       customerName: "Nguyễn Thị Mai",
       phone: "0901234567",
       address: "123 Đường Nguyễn Huệ, P. Bến Nghé, Q1...",
@@ -47,7 +47,7 @@ const AssigningSurveyPage = () => {
     },
     {
       id: 2,
-      code: "#DH001235",
+      code: "DH001235",
       customerName: "Trần Văn Hùng",
       phone: "0912345678",
       address: "456 Lê Lợi, P. Bến Thành, Q1, TP.HCM",
@@ -70,11 +70,12 @@ const AssigningSurveyPage = () => {
       <FilterSection
         from={from}
         keyword={keyword}
-        setFrom={setFrom}
-        setKeyword={setKeyword}
-        setTo={setTo}
+        setFromAction={setFrom}
+        setKeywordAction={setKeyword}
+        setToAction={setTo}
         title="Phân công khảo sát thiết kế"
         to={to}
+        actions={<></>}
       />
 
       <div>

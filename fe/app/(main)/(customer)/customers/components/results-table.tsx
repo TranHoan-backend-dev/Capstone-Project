@@ -20,6 +20,7 @@ import {
   ProfileIcon,
   ReplaceWaterMeter,
   SetPriceIcon,
+  TitleDarkColor,
   UsageIcon,
   WhiteIconColor,
 } from "@/config/chip-and-icon";
@@ -126,7 +127,7 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
         return (
           <Link
             as={NextLink}
-            className="font-bold text-blue-600 hover:underline hover:text-blue-800 dark:text-primary dark:hover:text-primary-400"
+            className={`font-bold text-blue-600 hover:underline hover:text-blue-800 ${TitleDarkColor}`}
             href="#"
           >
             {item.customerCode}
@@ -203,16 +204,16 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
           initialPage: 1,
           summary: `${data.length}`,
         }}
-        renderCell={renderCell}
+        renderCellAction={renderCell}
         title="Kết quả tìm kiếm"
       />
       <PriceApplicationModal
         isOpen={isPriceOpen}
-        onOpenChange={onPriceOpenChange}
+        onOpenChangeAction={onPriceOpenChange}
       />
       <MeterChangeHistoryModal
         isOpen={isMeterOpen}
-        onOpenChange={onMeterOpenChange}
+        onOpenChangeAction={onMeterOpenChange}
       />
     </>
   );

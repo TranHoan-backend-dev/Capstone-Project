@@ -128,7 +128,7 @@ const ConsumptionHistoryPage = () => {
           initialPage: 1,
           summary: `1-20 của ${historyData.length}`,
         }}
-        renderCell={renderCell}
+        renderCellAction={renderCell}
         title={`Lịch sử tiêu thụ - Khách hàng: 000123 - Nguyễn Song Hoàn`}
       />
     </div>

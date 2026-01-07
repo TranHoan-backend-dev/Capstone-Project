@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@heroui/react";
 import { AddressSection } from "./components/(address-contract)/address-section";
 import { CustomerInfoSection } from "./components/(customer-info)/customer-info-section";
 import { BankInfoSection } from "./components/(bank-info)/bank-info-section";
@@ -12,8 +11,6 @@ import { FormActions } from "./components/form-actions";
 const CRMForm = () => {
   return (
     <>
-      <h1 className="text-2xl font-semibold">Nhập hồ sơ khách hàng</h1>
-
       <form className="space-y-6">
         <CustomerInfoSection />
         <AddressSection />

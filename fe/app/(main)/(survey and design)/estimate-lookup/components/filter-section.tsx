@@ -4,7 +4,7 @@ import React from "react";
 
 import { SearchIcon } from "@/components/ui/Icons";
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
-import CustomSingleDatePicker from "@/components/ui/custom/CustomSingleDatePicker";
+import CustomDatePicker from "@/components/ui/custom/CustomDatePicker";
 import CustomInput from "@/components/ui/custom/CustomInput";
 
 export const FilterSection = () => {
@@ -14,6 +14,7 @@ export const FilterSection = () => {
       gridClassName="grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-4"
       icon={<SearchIcon size={18} />}
       title="Tra cứu dự toán"
+      actions={<></>}
     >
       <InputField label="Từ khóa" />
       <DatePickerField label="Từ ngày" />
@@ -34,7 +35,7 @@ export const DatePickerField = ({
 }) => {
   return (
     <div className={`${colSpan} space-y-1`}>
-      <CustomSingleDatePicker className="font-bold" label={label} />
+      <CustomDatePicker className="font-bold" label={label} />
     </div>
   );
 };

@@ -3,15 +3,16 @@
 import React from "react";
 
 import CustomModal from "@/components/ui/modal/CustomModalWithTable";
+import { TitleDarkColor } from "@/config/chip-and-icon";
 
 interface RouteListModalProps {
   isOpen: boolean;
-  onOpenChange: () => void;
+  onOpenChangeAction: () => void;
 }
 
 export const RouteListModal = ({
   isOpen,
-  onOpenChange,
+  onOpenChangeAction,
 }: RouteListModalProps) => {
   const data = [
     {
@@ -80,7 +81,10 @@ export const RouteListModal = ({
     <CustomModal
       data={data.map((item, idx) => ({
         elements: [
-          <span key={idx} className="font-bold text-blue-700 dark:text-primary">
+          <span
+            key={idx}
+            className={`font-bold text-blue-600 hover:underline hover:text-blue-800 ${TitleDarkColor}`}
+          >
             {item.code}
           </span>,
           <span key={idx} className="text-foreground">
@@ -94,7 +98,7 @@ export const RouteListModal = ({
       isOpen={isOpen}
       isPagination={true}
       tableColumns={["Mã ĐP", "Tên sổ ghi", "Chi nhánh"]}
-      onOpenChange={onOpenChange}
+      onOpenChange={onOpenChangeAction}
     />
   );
 };

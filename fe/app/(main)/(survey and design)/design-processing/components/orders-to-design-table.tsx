@@ -13,7 +13,7 @@ import {
   DarkGreenChip,
   DarkPurpleChip,
   DarkRedChip,
-  DarkGrayChip,
+  DarkGrayChip, TitleDarkColor,
 } from "@/config/chip-and-icon";
 import { DesignProcessingItem, StatusDetailData } from "@/types";
 
@@ -85,7 +85,6 @@ export const OrdersToDesignTable = ({
   ];
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDesignOpen, setIsDesignOpen] = useState(false);
 
   const handleStatusClick = (item: DesignProcessingItem) => {
     setSelectedDesign(item);
@@ -104,7 +103,7 @@ export const OrdersToDesignTable = ({
         return (
           <Link
             as={NextLink}
-            className="font-bold text-blue-600 hover:underline hover:text-blue-800 dark:text-primary dark:hover:text-primary-600"
+            className={`font-bold text-blue-600 hover:underline hover:text-blue-800 ${TitleDarkColor}`}
             href="#"
           >
             {item.code}
@@ -162,7 +161,7 @@ export const OrdersToDesignTable = ({
           initialPage: 1,
           summary: `${data.length}`,
         }}
-        renderCell={renderCell}
+        renderCellAction={renderCell}
         title="Danh sách đơn chờ thiết kế"
       />
       <DesignProcessingModal

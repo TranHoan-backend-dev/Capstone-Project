@@ -10,7 +10,7 @@ import {
   ProfileIcon,
   RejectIcon,
   RedIconColor,
-  BlueYellowIconColor,
+  BlueYellowIconColor, TitleDarkColor,
 } from "@/config/chip-and-icon";
 
 interface ProcessedDesignsTableProps {
@@ -42,7 +42,7 @@ export const ProcessedDesignsTable = ({
         return (
           <Link
             as={NextLink}
-            className="font-bold text-blue-600 hover:underline hover:text-blue-800 dark:text-primary dark:hover:text-primary-600"
+            className={`font-bold text-blue-600 hover:underline hover:text-blue-800 ${TitleDarkColor}`}
             href="#"
           >
             {cellValue}
@@ -96,7 +96,7 @@ export const ProcessedDesignsTable = ({
         initialPage: 1,
         summary: `${data.length}`,
       }}
-      renderCell={renderCell}
+      renderCellAction={renderCell}
       title="Danh sách đã xử lý đơn đã thiết kế"
     />
   );

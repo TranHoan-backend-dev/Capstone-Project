@@ -60,9 +60,9 @@ const EstimatePreparationPage = () => {
         actions={<></>}
         from={from}
         keyword={keyword}
-        setFrom={setFrom}
-        setKeyword={setKeyword}
-        setTo={setTo}
+        setFromAction={setFrom}
+        setKeywordAction={setKeyword}
+        setToAction={setTo}
         title="Bộ lọc"
         to={to}
       />

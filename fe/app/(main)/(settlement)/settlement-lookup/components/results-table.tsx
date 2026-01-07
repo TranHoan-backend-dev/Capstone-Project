@@ -9,7 +9,7 @@ import { SettlementDetailModal } from "./settlement-detail-modal";
 import { SettlementDocumentModal } from "./settlement-document-modal";
 
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import { DarkGreenChip, DarkRedChip } from "@/config/chip-and-icon";
+import {DarkGreenChip, DarkRedChip, TitleDarkColor} from "@/config/chip-and-icon";
 import { SettlementItem, StatusDetailData } from "@/types";
 
 interface SettlementTableProps {
@@ -79,7 +79,7 @@ export const ResultsTable = ({ data }: SettlementTableProps) => {
         return (
           <Link
             as={NextLink}
-            className="font-bold text-blue-600 hover:underline hover:text-blue-800 dark:text-primary dark:hover:text-primary-600"
+            className={`font-bold text-blue-600 hover:underline hover:text-blue-800 ${TitleDarkColor}`}
             href="#"
           >
             {item.code}
@@ -172,7 +172,7 @@ export const ResultsTable = ({ data }: SettlementTableProps) => {
           initialPage: 1,
           summary: `1-5 của 25`,
         }}
-        renderCell={renderCell}
+        renderCellAction={renderCell}
         title="Danh sách quyết toán"
       />
       <SettlementDetailModal
@@ -187,7 +187,7 @@ export const ResultsTable = ({ data }: SettlementTableProps) => {
       <SettlementDocumentModal
         data={data}
         isOpen={isEstimateOpen}
-        onClose={() => setIsEstimateOpen(false)}
+        onCloseAction={() => setIsEstimateOpen(false)}
       />
     </>
   );

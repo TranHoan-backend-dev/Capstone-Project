@@ -1,7 +1,9 @@
 "use client";
 
-import { Input, Checkbox, Textarea } from "@heroui/react";
+import { Checkbox, Textarea } from "@heroui/react";
 import { useState } from "react";
+
+import CustomInput from "@/components/ui/custom/CustomInput";
 
 export const InvoiceInfoSection = () => {
   const [hasInvoice, setHasInvoice] = useState(false);
@@ -23,19 +25,9 @@ export const InvoiceInfoSection = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Input
-          label="Tên xuất hóa đơn"
-          labelPlacement="inside"
-          placeholder="Nhập tên xuất hóa đơn"
-          variant="bordered"
-        />
+        <CustomInput label="Tên xuất hóa đơn" />
 
-        <Input
-          label="Địa chỉ xuất hóa đơn"
-          labelPlacement="inside"
-          placeholder="Nhập địa chỉ xuất hóa đơn"
-          variant="bordered"
-        />
+        <CustomInput label="Địa chỉ xuất hóa đơn" />
         <Textarea
           className="col-span-full"
           label="Ghi chú"

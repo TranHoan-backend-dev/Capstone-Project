@@ -12,6 +12,7 @@ import {
   DarkRedChip,
   EstimationIcon,
   GreenIconColor,
+  TitleDarkColor,
 } from "@/config/chip-and-icon";
 import { StatusDetailData, EstimateItem } from "@/types";
 
@@ -44,7 +45,7 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
     { key: "actions", label: "Hoạt động", align: "center" as const },
   ];
 
-  const baseStyle = "text-gray-500 dark:text-default-500";
+  const baseStyle = "text-gray-500 dark:text-white";
   const [selectedEstimate, setSelectedEstimate] = useState<EstimateItem | null>(
     null,
   );
@@ -81,7 +82,7 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
         return (
           <Link
             as={NextLink}
-            className="font-bold text-[#2a66e4] dark:text-primary underline underline-offset-4 hover:text-blue-800 dark:hover:text-primary-600"
+            className={`font-bold text-blue-600 hover:underline hover:text-blue-800 ${TitleDarkColor}`}
             href="#"
           >
             {item.code}
@@ -89,7 +90,7 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
         );
       case "customerName":
         return (
-          <span className="font-bold text-gray-900 dark:text-foreground">
+          <span className="font-bold text-gray-900 dark:text-white">
             {item.customerName}
           </span>
         );
@@ -142,7 +143,7 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
           initialPage: 1,
           summary: "1-5 của 25",
         }}
-        renderCell={renderCell}
+        renderCellAction={renderCell}
         title="Danh sách lập dự toán"
       />
       <EstimateDetailModal

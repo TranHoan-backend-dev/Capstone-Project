@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { Tab, Tabs, DateValue } from "@heroui/react";
+import { Tab, Tabs, Chip, DateValue } from "@heroui/react";
 
 import { ApprovalInputSection } from "./components/approval-input-section";
 import { EstimateTable, EstimateOrder } from "./components/estimate-table";
@@ -158,9 +158,9 @@ const EstimateApprovalPage = () => {
         actions={<></>}
         from={from}
         keyword={keyword}
-        setFrom={setFrom}
-        setKeyword={setKeyword}
-        setTo={setTo}
+        setFromAction={setFrom}
+        setKeywordAction={setKeyword}
+        setToAction={setTo}
         title="Bộ lọc tìm kiếm"
         to={to}
         onSearch={handleSearch}
@@ -169,72 +169,65 @@ const EstimateApprovalPage = () => {
       <ApprovalInputSection
         approvalDate={approvalDate}
         approvalNote={approvalNote}
-        setApprovalDate={setApprovalDate}
-        setApprovalNote={setApprovalNote}
+        setApprovalDateAction={setApprovalDate}
+        setApprovalNoteAction={setApprovalNote}
       />
 
-      <div className="bg-content1">
-        <Tabs
-          aria-label="Options"
-          classNames={{
-            tabList:
-              "gap-6 w-full relative rounded-none p-0 border-b border-divider",
-            cursor: "w-full bg-primary",
-            tab: "max-w-fit px-0 h-12",
-            tabContent:
-              "group-data-[selected=true]:text-primary font-bold text-base",
-          }}
-          color="primary"
-          selectedKey={activeTab}
-          variant="underlined"
-          onSelectionChange={(key) => setActiveTab(key as string)}
+      <Tabs
+        aria-label="Options"
+        classNames={{
+          cursor: activeTab === "pending" ? "bg-yellow-500" : "bg-green-500",
+          tab: "max-w-fit px-6 h-12",
+          tabContent: `group-data-[selected=true]:text-blue-600 font-medium text-black dark:text-white dark:group-data-[selected=true]:text-yellow-300`,
+          tabList:
+            "gap-6 w-full relative rounded-none p-0 border-b border-divider",
+        }}
+        color="primary"
+        selectedKey={activeTab}
+        variant="underlined"
+        onSelectionChange={(key) => setActiveTab(key as string)}
+      >
+        <Tab
+          key="pending"
+          title={
+            <div className="flex items-center space-x-2">
+              <span>Chờ duyệt</span>
+              <Chip color="warning" size="sm" variant="flat">
+                12
+              </Chip>
+            </div>
+          }
         >
-          <Tab
-            key="pending"
-            title={
-              <div className="flex items-center space-x-2 px-4">
-                <span>Chờ duyệt</span>
-                <span className="bg-orange-400 text-white text-xs px-2 py-0.5 rounded-full">
-                  12
-                </span>
-              </div>
-            }
-          >
-            <div className="p-0">
-              <EstimateTable
-                activeTab="pending"
-                data={filteredOrders}
-                onApprove={handleApprove}
-                onEstimate={handleEstimate}
-                onReject={handleReject}
-                onView={handleView}
-              />
+          <EstimateTable
+            activeTab="pending"
+            data={filteredOrders}
+            onApproveAction={handleApprove}
+            onEstimateAction={handleEstimate}
+            onRejectAction={handleReject}
+            onViewAction={handleView}
+          />
+        </Tab>
+        <Tab
+          key="approved"
+          title={
+            <div className="flex items-center space-x-2">
+              <span>Đã duyệt</span>
+              <Chip color="success" size="sm" variant="flat">
+                45
+              </Chip>
             </div>
-          </Tab>
-          <Tab
-            key="approved"
-            title={
-              <div className="flex items-center space-x-2 px-4">
-                <span>Đã duyệt</span>
-                <span className="bg-default-200 text-default-600 text-xs px-2 py-0.5 rounded-full">
-                  45
-                </span>
-              </div>
-            }
-          >
-            <div className="p-0">
-              <EstimateTable
-                activeTab="approved"
-                data={filteredOrders}
-                onApprove={handleApprove}
-                onEstimate={handleEstimate}
-                onReject={handleReject}
-                onView={handleView}
-              />
-            </div>
-          </Tab>
-        </Tabs>
-      </div>
+          }
+        >
+          <EstimateTable
+            activeTab="approved"
+            data={filteredOrders}
+            onApproveAction={handleApprove}
+            onEstimateAction={handleEstimate}
+            onRejectAction={handleReject}
+            onViewAction={handleView}
+          />
+        </Tab>
+      </Tabs>
     </>
   );
 };

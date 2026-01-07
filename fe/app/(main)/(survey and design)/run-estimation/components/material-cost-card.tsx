@@ -68,34 +68,13 @@ export const MaterialCostCard = () => {
   const renderCell = (item: any, columnKey: string) => {
     switch (columnKey) {
       case "note":
-        return (
-          <Input
-            className="min-w-[100px]"
-            radius="sm"
-            size="sm"
-            variant="bordered"
-          />
-        );
+        return <CustomInputField className="min-w-[100px]" />;
       case "reductionFactor":
         return (
-          <Input
-            className="w-16 mx-auto text-center"
-            defaultValue={item.reductionFactor.toString()}
-            radius="sm"
-            size="sm"
-            variant="bordered"
-          />
+          <CustomInputField defaultValue={item.reductionFactor.toString()} />
         );
       case "quantity":
-        return (
-          <Input
-            className="w-16 mx-auto text-center"
-            defaultValue={item.quantity.toString()}
-            radius="sm"
-            size="sm"
-            variant="bordered"
-          />
-        );
+        return <CustomInputField defaultValue={item.quantity.toString()} />;
       case "materialPrice":
       case "laborPrice":
       case "materialTotal":
@@ -126,7 +105,7 @@ export const MaterialCostCard = () => {
       <GenericDataTable
         columns={columns}
         data={materials}
-        renderCell={renderCell}
+        renderCellAction={renderCell}
         tableProps={{
           className: "pt-0",
         }}
@@ -156,5 +135,23 @@ export const MaterialCostCard = () => {
         </Button>
       </div>
     </div>
+  );
+};
+
+export const CustomInputField = ({
+  className,
+  defaultValue,
+}: {
+  className?: string;
+  defaultValue?: string;
+}) => {
+  return (
+    <Input
+      className={className ?? "w-16 mx-auto text-center"}
+      defaultValue={defaultValue}
+      radius="sm"
+      size="sm"
+      variant="bordered"
+    />
   );
 };

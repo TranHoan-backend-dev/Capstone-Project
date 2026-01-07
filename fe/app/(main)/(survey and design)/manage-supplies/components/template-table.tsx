@@ -115,7 +115,7 @@ export const TemplateTable = ({ data }: TemplateTableProps) => {
         initialPage: 1,
         summary: `1-${data.length} của 25`,
       }}
-      renderCell={renderCell}
+      renderCellAction={renderCell}
       title="Danh sách mẫu vật tư"
     />
   );

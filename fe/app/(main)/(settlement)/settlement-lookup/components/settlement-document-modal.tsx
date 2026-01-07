@@ -9,13 +9,13 @@ import { ModalHeader } from "@/components/popup-settlement/modal-header";
 
 interface SettlementDocumentModalProps {
   isOpen: boolean;
-  onClose: () => void;
+  onCloseAction: () => void;
   data: any[];
 }
 
 export const SettlementDocumentModal = ({
   isOpen,
-  onClose,
+  onCloseAction,
   data,
 }: SettlementDocumentModalProps) => {
   return (
@@ -24,7 +24,7 @@ export const SettlementDocumentModal = ({
       isOpen={isOpen}
       scrollBehavior="inside"
       size="5xl"
-      onClose={onClose}
+      onClose={onCloseAction}
     >
       <ModalContent>
         <ModalBody className="p-0 bg-white rounded-lg">

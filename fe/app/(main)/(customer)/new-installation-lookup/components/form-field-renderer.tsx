@@ -3,7 +3,7 @@
 import { FormField } from "@/types";
 import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
 import CustomInput from "@/components/ui/custom/CustomInput";
-import CustomSingleDatePicker from "@/components/ui/custom/CustomSingleDatePicker";
+import CustomDatePicker from "@/components/ui/custom/CustomDatePicker";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
 
 export const FormFieldRenderer = ({
@@ -28,7 +28,7 @@ export const FormFieldRenderer = ({
 
     case "date":
       return (
-        <CustomSingleDatePicker
+        <CustomDatePicker
           className="w-full"
           isDisabled={field.disabled}
           isRequired={field.required}
@@ -53,8 +53,6 @@ export const FormFieldRenderer = ({
     case "search-input":
       return (
         <SearchInputWithButton
-          className="font-bold"
-          labelPlacement="inside"
           placeholder={field.label}
           value={value ?? ""}
           onSearch={field.onSearchClick}

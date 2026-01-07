@@ -47,7 +47,7 @@ export const FilterSection = ({
     >
       {inputFields.map((field) => (
         <div key={field.label} className="space-y-1">
-          <CustomInput className="font-bold" label={field.label} />
+          <CustomInput label={field.label} />
         </div>
       ))}
 
@@ -55,7 +55,6 @@ export const FilterSection = ({
         <div key={field.label} className="space-y-1">
           <CustomSelect
             aria-label={field.label}
-            className="font-bold"
             label={field.label}
             options={field.data}
           />

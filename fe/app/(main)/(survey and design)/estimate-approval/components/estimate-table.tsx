@@ -12,6 +12,7 @@ import {
   RejectIcon,
   RedIconColor,
   ViewIcon,
+  TitleDarkColor,
 } from "@/config/chip-and-icon";
 
 export interface EstimateOrder {
@@ -29,18 +30,18 @@ export interface EstimateOrder {
 interface EstimateTableProps {
   data: EstimateOrder[];
   activeTab: string; // "pending" or "approved"
-  onApprove: (item: EstimateOrder) => void;
-  onReject: (item: EstimateOrder) => void;
-  onView: (item: EstimateOrder) => void;
-  onEstimate: (item: EstimateOrder) => void;
+  onApproveAction: (item: EstimateOrder) => void;
+  onRejectAction: (item: EstimateOrder) => void;
+  onViewAction: (item: EstimateOrder) => void;
+  onEstimateAction: (item: EstimateOrder) => void;
 }
 
 export const EstimateTable = ({
   data,
-  onApprove,
-  onReject,
-  onView,
-  onEstimate,
+  onApproveAction,
+  onRejectAction,
+  onViewAction,
+  onEstimateAction,
 }: EstimateTableProps) => {
   const columns = [
     { key: "stt", label: "STT", align: "center", width: "50px" },
@@ -59,7 +60,13 @@ export const EstimateTable = ({
       case "stt":
         return <span>{item.id}</span>; // Using ID as STT for simplicity
       case "code":
-        return <span className="font-semibold">{item.code}</span>;
+        return (
+          <span
+            className={`font-bold text-blue-600 hover:underline hover:text-blue-800 ${TitleDarkColor}`}
+          >
+            {item.code}
+          </span>
+        );
       case "designProfileName":
         return (
           <div className="flex flex-col">
@@ -78,25 +85,25 @@ export const EstimateTable = ({
             <Tooltip color="success" content="Duyệt">
               <ApprovalIcon
                 className={GreenIconColor}
-                onClick={() => onApprove(item)}
+                onClick={() => onApproveAction(item)}
               />
             </Tooltip>
             <Tooltip color="danger" content="Từ chối">
               <RejectIcon
                 className={RedIconColor}
-                onClick={() => onReject(item)}
+                onClick={() => onRejectAction(item)}
               />
             </Tooltip>
             <Tooltip color="primary" content="Dự toán">
               <EstimationIcon
                 className={BlueYellowIconColor}
-                onClick={() => onEstimate(item)}
+                onClick={() => onEstimateAction(item)}
               />
             </Tooltip>
             <Tooltip color="primary" content="Xem">
               <ViewIcon
                 className={BlueYellowIconColor}
-                onClick={() => onView(item)}
+                onClick={() => onViewAction(item)}
               />
             </Tooltip>
           </div>
@@ -118,7 +125,7 @@ export const EstimateTable = ({
         initialPage: 1,
         summary: `1-5 trong tổng số ${data.length}`,
       }}
-      renderCell={renderCell}
+      renderCellAction={renderCell}
       tableProps={{
         selectionMode: "none",
       }}

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Select, SelectItem, Button, Textarea } from "@heroui/react";
+import { Button, Textarea } from "@heroui/react";
 import {
   ClipboardDocumentCheckIcon,
   PlusIcon,
@@ -14,6 +14,7 @@ import {
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import CustomInput from "@/components/ui/custom/CustomInput";
 import { DeleteIcon } from "@/config/chip-and-icon";
+import CustomSelect from "@/components/ui/custom/CustomSelect";
 
 export const TechnicalInfoCard = () => {
   const customerInfoFields = [
@@ -91,22 +92,17 @@ export const TechnicalInfoCard = () => {
   const renderField = (field: any) => {
     if (field.type === "select") {
       return (
-        <Select
+        <CustomSelect
           key={field.label}
           className={field.className}
           defaultSelectedKeys={field.defaultSelectedKeys}
           isRequired={field.isRequired}
           label={field.label}
-          labelPlacement="inside"
-          radius="md"
-          variant="bordered"
-        >
-          {(field.options || []).map((opt: any) => (
-            <SelectItem key={opt.key} textValue={opt.label}>
-              {opt.label}
-            </SelectItem>
-          ))}
-        </Select>
+          options={(field.options || []).map((opt: any) => ({
+            label: opt.label,
+            value: opt.key,
+          }))}
+        />
       );
     }
     if (field.type === "textarea") {
@@ -200,20 +196,15 @@ export const TechnicalInfoCard = () => {
             >
               <CustomInput className="lg:col-span-1" label="Người đại diện" />
               <div className="flex gap-2 items-end lg:col-span-1">
-                <Select
+                <CustomSelect
                   className="flex-1"
                   defaultSelectedKeys={[rep.position]}
                   label="Chức vụ"
-                  labelPlacement="inside"
-                  radius="md"
-                  variant="bordered"
-                >
-                  {positionOptions.map((opt) => (
-                    <SelectItem key={opt.key} textValue={opt.label}>
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </Select>
+                  options={positionOptions.map((opt) => ({
+                    label: opt.label,
+                    value: opt.key,
+                  }))}
+                />
                 <div className="flex gap-1 mb-3">
                   {representatives.length > 1 && (
                     <Button
@@ -250,19 +241,19 @@ export const TechnicalInfoCard = () => {
       <div className="lg:col-span-2 pt-8 border-t border-divider">
         <div className="flex flex-wrap items-end gap-4">
           <div className="w-full md:w-80">
-            <Select
+            <CustomSelect
               label="Mẫu bốc vật tư"
-              labelPlacement="inside"
-              radius="md"
-              variant="bordered"
-            >
-              <SelectItem key="m1" textValue="Mẫu 1">
-                Mẫu 1
-              </SelectItem>
-              <SelectItem key="m2" textValue="Mẫu 2">
-                Mẫu 2
-              </SelectItem>
-            </Select>
+              options={[
+                {
+                  label: "Mẫu 1",
+                  value: "m1",
+                },
+                {
+                  label: "Mẫu 2",
+                  value: "m2",
+                },
+              ]}
+            />
           </div>
           <Button
             className="text-default-700 font-medium h-14 rounded-xl"

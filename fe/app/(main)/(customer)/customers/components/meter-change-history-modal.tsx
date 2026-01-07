@@ -6,12 +6,12 @@ import CustomModal from "@/components/ui/modal/CustomModal";
 
 interface MeterChangeHistoryModalProps {
   isOpen: boolean;
-  onOpenChange: () => void;
+  onOpenChangeAction: () => void;
 }
 
 export const MeterChangeHistoryModal = ({
   isOpen,
-  onOpenChange,
+  onOpenChangeAction,
 }: MeterChangeHistoryModalProps) => {
   // Hardcoded mock data for the top section as per image
   const customerInfo = {
@@ -24,7 +24,7 @@ export const MeterChangeHistoryModal = ({
     <CustomModal
       isOpen={isOpen}
       title="Lịch sử thay đồng hồ khách hàng"
-      onOpenChange={onOpenChange}
+      onOpenChange={onOpenChangeAction}
     >
       <div className="flex flex-col gap-2 p-2">
         {[
