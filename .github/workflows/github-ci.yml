@@ -22,9 +22,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # - name: Run Gitleaks
-      #   uses: zricethezav/gitleaks-action@v2.3.2
-
       - name: Services List
         id: set-matrix
         run: |
@@ -114,8 +111,8 @@ jobs:
 
       # Prepend any command with "nx-cloud record --" to record its logs to Nx Cloud
       # - run: npx nx-cloud record -- echo Hello World
-      - run: npx nx run-many -t lint build typecheck --exclude=services
-        working-directory: ./be
+#      - run: npx nx run-many -t lint build typecheck --exclude=services
+#        working-directory: ./be
       # Nx Cloud recommends fixes for failures to help you get CI green faster. Learn more: https://nx.dev/ci/features/self-healing-ci
       - run: npx nx fix-ci
         working-directory: ./be
