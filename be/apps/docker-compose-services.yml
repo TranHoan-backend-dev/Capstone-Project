@@ -1,0 +1,57 @@
+services:
+  auth-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime-auth
+    image: auth-service
+    ports:
+      - "9001:9001"
+    environment:
+      - SERVER_PORT=9001
+      - SERVER_ADDRESS=0.0.0.0
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - app-network
+  chat-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime-chat
+    image: chat-service
+    ports:
+      - "9002:9002"
+    environment:
+      - SERVER_PORT=9002
+      - SERVER_ADDRESS=0.0.0.0
+    networks:
+      - app-network
+  notification-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime-notification
+    image: notification-service
+    ports:
+      - "9004:9004"
+    environment:
+      - SERVER_PORT=9004
+      - SERVER_ADDRESS=0.0.0.0
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - app-network
+  email-service:
+    build:
+      context: ..
+      dockerfile: ./apps/Dockerfile
+      target: runner
+    image: email-service
+    ports:
+      - "3000:9005"
+    environment:
+      - RABBITMQ_URL=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:5672
+    networks:
+      - app-network
+networks:
+  app-network:
+    driver: bridge

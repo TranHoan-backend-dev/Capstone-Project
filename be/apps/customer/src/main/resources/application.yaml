@@ -28,3 +28,16 @@ management:
           - metrics
           - prometheus
       base-path: /
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui/index.html
+#spring:
+#  datasource:
+#    driver-class-name: org.postgresql.Driver
+#    url:
+#    username:
+#    password:

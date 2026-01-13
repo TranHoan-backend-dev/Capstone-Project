@@ -1,6 +1,8 @@
 spring:
   application:
     name: notification
+  profiles:
+    active: dev
 management:
   endpoints:
     web:
@@ -8,4 +10,20 @@ management:
         include:
           - health
           - info
-      base-path: /
+          - metrics
+          - prometheus
+      base-path: /actuator
+server:
+  port: 9004
+  servlet:
+    context-path: /api/v1
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui/index.html
+# spring:
+# mongodb:
+# uri: mongodb://guest:guest@mongodb:27017/microservice_db?authSource=admin

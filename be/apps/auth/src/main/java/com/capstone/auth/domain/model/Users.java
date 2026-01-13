@@ -12,7 +12,6 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collection;
 
-@Table
 @Getter
 @Setter
 @Entity
@@ -20,6 +19,7 @@ import java.util.Collection;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "auth_roles")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Users implements UserDetails, Serializable {
   @Id

@@ -1,0 +1,7 @@
+scalar Date
+  @specifiedBy(url:
+    "https://tools.ietf.org/html/rfc3339"
+  )
+scalar Instant
+scalar JSON
+scalar Long
