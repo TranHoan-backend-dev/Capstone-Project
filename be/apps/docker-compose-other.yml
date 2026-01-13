@@ -5,8 +5,8 @@ services:
     hostname: rabbitmq_host
     restart: always
     environment:
-      RABBIT_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      RABBIT_DEFAULT_USER: ${RABBIT_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
     ports:
       # For AMQP protocol connected from spring boot
       - "5672:5672"
@@ -89,7 +89,6 @@ services:
       - app-network
 volumes:
   rabbitmq_data:
-  # postgres_data:
 networks:
   app-network:
     driver: bridge
