@@ -1,10 +1,11 @@
 "use client";
 
 import React from "react";
-import { Card, CardBody, Textarea } from "@heroui/react";
+import { Card, CardBody } from "@heroui/react";
 import { DateValue } from "@heroui/react";
 
 import CustomDatePicker from "@/components/ui/custom/CustomDatePicker";
+import CustomTextarea from "@/components/ui/custom/CustomTextarea";
 
 interface ApprovalInputSectionProps {
   approvalDate: DateValue | null | undefined;
@@ -32,16 +33,13 @@ export const ApprovalInputSection = ({
             />
           </div>
           <div className="w-full">
-            <Textarea
+            <CustomTextarea
               isClearable
               color="success"
               label="Nội dung / Ghi chú duyệt"
-              labelPlacement="inside"
-              minRows={3}
-              placeholder="Nhập lý do duyệt hoặc từ chối (nếu có)"
-              radius="md"
+              rows={3}
+              placeholder="Nhập lý do duyệt hoặc từ chối"
               value={approvalNote}
-              variant="bordered"
               onValueChange={setApprovalNoteAction}
             />
           </div>

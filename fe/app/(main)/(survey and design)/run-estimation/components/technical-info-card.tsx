@@ -1,12 +1,21 @@
 "use client";
 
 import React from "react";
-import { Button, Textarea } from "@heroui/react";
+import { Button } from "@heroui/react";
+
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import CustomInput from "@/components/ui/custom/CustomInput";
-import { DeleteIcon, SaveDocumentCheckIcon, PictureIcon, DocumentMagnifyGlassIcon, RestoreIcon, SumIcon } from "@/config/chip-and-icon";
+import {
+  DeleteIcon,
+  SaveDocumentCheckIcon,
+  PictureIcon,
+  DocumentMagnifyGlassIcon,
+  RestoreIcon,
+  SumIcon,
+} from "@/config/chip-and-icon";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
 import CustomButton from "@/components/ui/custom/CustomButton";
+import CustomTextarea from "@/components/ui/custom/CustomTextarea";
 
 export const TechnicalInfoCard = () => {
   const customerInfoFields = [
@@ -99,13 +108,10 @@ export const TechnicalInfoCard = () => {
     }
     if (field.type === "textarea") {
       return (
-        <Textarea
+        <CustomTextarea
           key={field.label}
           label={field.label}
-          labelPlacement="inside"
-          minRows={field.minRows}
-          radius="md"
-          variant="bordered"
+          rows={field.minRows}
         />
       );
     }

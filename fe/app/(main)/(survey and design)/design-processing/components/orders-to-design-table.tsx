@@ -13,7 +13,8 @@ import {
   DarkGreenChip,
   DarkPurpleChip,
   DarkRedChip,
-  DarkGrayChip, TitleDarkColor,
+  DarkGrayChip,
+  TitleDarkColor,
 } from "@/config/chip-and-icon";
 import { DesignProcessingItem, StatusDetailData } from "@/types";
 

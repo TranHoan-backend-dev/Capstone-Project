@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useDisclosure, Textarea, DateValue } from "@heroui/react";
+import { useDisclosure, DateValue } from "@heroui/react";
 
 import { SubMasterMeterModal } from "./sub-master-meter-modal";
 import { RouteListModal } from "./route-list-modal";
@@ -13,6 +13,7 @@ import CustomSelect from "@/components/ui/custom/CustomSelect";
 import CustomDatePicker from "@/components/ui/custom/CustomDatePicker";
 import CustomButton from "@/components/ui/custom/CustomButton";
 import { DeleteIcon } from "@/config/chip-and-icon";
+import CustomTextarea from "@/components/ui/custom/CustomTextarea";
 
 export const ActionsSection = () => {
   const {
@@ -103,7 +104,7 @@ export const ActionsSection = () => {
 
         <div className="md:col-span-6 flex flex-col h-full space-y-4">
           <div className="flex-1 flex flex-col space-y-1">
-            <Textarea
+            <CustomTextarea
               disableAnimation
               disableAutosize
               isClearable
@@ -114,11 +115,7 @@ export const ActionsSection = () => {
                 input: "text-[13px] h-full",
               }}
               label="Nội dung"
-              labelPlacement="inside"
-              radius="md"
-              size="md"
               value={content}
-              variant="bordered"
               onValueChange={setContent}
             />
           </div>

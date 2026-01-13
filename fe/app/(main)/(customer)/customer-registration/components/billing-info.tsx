@@ -1,11 +1,12 @@
 "use client";
 
 import React from "react";
-import { Checkbox, Divider, Textarea } from "@heroui/react";
+import { Checkbox, Divider } from "@heroui/react";
 
 import CustomInput from "@/components/ui/custom/CustomInput";
 import CustomDatePicker from "@/components/ui/custom/CustomDatePicker";
 import { TitleDarkColor } from "@/config/chip-and-icon";
+import CustomTextarea from "@/components/ui/custom/CustomTextarea";
 
 export const BillingInfo = () => {
   return (
@@ -51,13 +52,7 @@ export const BillingInfo = () => {
           <CustomInput label="Tên xuất hóa đơn" />
           <CustomInput label="Địa chỉ xuất hóa đơn" />
           <div className="md:col-span-2">
-            <Textarea
-              label="Ghi chú"
-              placeholder="Nhập ghi chú"
-              variant="bordered"
-              size="md"
-              radius="md"
-            />
+            <CustomTextarea label="Ghi chú" placeholder="Nhập ghi chú" />
           </div>
         </div>
       </div>

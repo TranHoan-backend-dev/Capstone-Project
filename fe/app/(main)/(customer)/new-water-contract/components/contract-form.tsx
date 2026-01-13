@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Checkbox, Textarea } from "@heroui/react";
+import { Checkbox } from "@heroui/react";
 
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { RefreshIcon, SaveIcon, SearchIcon } from "@/components/ui/Icons";
@@ -11,6 +11,7 @@ import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
 import { TitleDarkColor } from "@/config/chip-and-icon";
 import CustomButton from "@/components/ui/custom/CustomButton";
+import CustomTextarea from "@/components/ui/custom/CustomTextarea";
 
 export const ContractForm = () => {
   return (
@@ -231,7 +232,7 @@ export const ContractForm = () => {
           <CustomInput label="Tên xuất hóa đơn" />
           <CustomInput label="Địa chỉ xuất hóa đơn" />
           <div className="md:col-span-2">
-            <Textarea label="Nội dung" variant="bordered" />
+            <CustomTextarea label="Nội dung" />
           </div>
         </div>
       </section>

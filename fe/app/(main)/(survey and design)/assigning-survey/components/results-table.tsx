@@ -6,7 +6,7 @@ import NextLink from "next/link";
 
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import { SurveyAssignmentItem } from "@/types";
-import {TitleDarkColor} from "@/config/chip-and-icon";
+import { TitleDarkColor } from "@/config/chip-and-icon";
 
 interface Props {
   data: SurveyAssignmentItem[];

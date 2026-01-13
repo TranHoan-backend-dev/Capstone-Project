@@ -1,8 +1,8 @@
-"use client";
 import React from "react";
 
 import { ConstructionProcessor } from "./components/construction-processor";
-import { ApprovedTable, PendingTable } from "./components/construction-tables";
+import { PendingTable } from "./components/pending-table";
+import { ApprovedTable } from "./components/approval-table";
 
 import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
 

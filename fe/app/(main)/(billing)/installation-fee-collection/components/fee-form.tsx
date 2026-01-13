@@ -4,14 +4,11 @@ import { Checkbox } from "@heroui/react";
 
 import CustomInput from "@/components/ui/custom/CustomInput";
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
-import {
-  CalendarIcon,
-  RefreshIcon,
-  SaveIcon,
-  SearchIcon,
-} from "@/components/ui/Icons";
+import { RefreshIcon, SaveIcon, SearchIcon } from "@/components/ui/Icons";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
 import CustomButton from "@/components/ui/custom/CustomButton";
+import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
+import CustomDatePicker from "@/components/ui/custom/CustomDatePicker";
 
 export const FeeForm = () => {
   return (
@@ -42,24 +39,15 @@ export const FeeForm = () => {
     >
       <div className="space-y-4">
         <h3 className="font-bold text-gray-700">Thông tin khách hàng</h3>
-        <CustomInput
-          label="Mã đơn"
-          placeholder="Nhập mã đơn"
-          endContent={<SearchIcon size={18} className="text-blue-500" />}
-          isRequired
-        />
-        <CustomInput
-          label="Tên khách hàng"
-          placeholder="Nhập tên khách hàng"
-          isRequired
-        />
+        <SearchInputWithButton label="Mã đơn" isRequired />
+        <CustomInput label="Tên khách hàng" isRequired />
       </div>
 
       <div className="space-y-4">
         <h3 className="font-bold text-gray-700">Thông tin địa chỉ</h3>
-        <CustomInput label="Số nhà" placeholder="Nhập số nhà" />
-        <CustomInput label="Thôn/Làng" placeholder="Nhập đường phố" />
-        <CustomInput label="Đường phố" placeholder="Nhập đường phố" />
+        <CustomInput label="Số nhà" />
+        <CustomInput label="Thôn/Làng" />
+        <CustomInput label="Đường phố" />
         <div className="grid grid-cols-2 gap-2">
           <CustomSelect
             label="Phường"
@@ -84,13 +72,8 @@ export const FeeForm = () => {
 
       <div className="space-y-4">
         <h3 className="font-bold text-gray-700">Thông tin thu tiền</h3>
-        <CustomInput
-          label="Ngày thu"
-          type="date"
-          endContent={<CalendarIcon size={18} />}
-          isRequired
-        />
-        <CustomInput label="Số phiếu thu" placeholder="Nhập số phiếu thu" />
+        <CustomDatePicker label="Ngày thu" isRequired />
+        <CustomInput label="Số phiếu thu" />
         <CustomSelect
           label="Hình thức thanh toán"
           options={[

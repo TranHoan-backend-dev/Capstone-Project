@@ -11,7 +11,8 @@ import {
   DarkYellowChip,
   DeleteIcon,
   PrintReceiptIcon,
-  RedIconColor, TitleDarkColor,
+  RedIconColor,
+  TitleDarkColor,
 } from "@/config/chip-and-icon";
 
 interface RelatedOrdersTableProps {

@@ -9,7 +9,11 @@ import { SettlementDetailModal } from "./settlement-detail-modal";
 import { SettlementDocumentModal } from "./settlement-document-modal";
 
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import {DarkGreenChip, DarkRedChip, TitleDarkColor} from "@/config/chip-and-icon";
+import {
+  DarkGreenChip,
+  DarkRedChip,
+  TitleDarkColor,
+} from "@/config/chip-and-icon";
 import { SettlementItem, StatusDetailData } from "@/types";
 
 interface SettlementTableProps {

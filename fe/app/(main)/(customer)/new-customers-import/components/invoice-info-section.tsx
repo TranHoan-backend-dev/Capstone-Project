@@ -1,9 +1,10 @@
 "use client";
 
-import { Checkbox, Textarea, Card, CardBody } from "@heroui/react";
+import { Checkbox, Card, CardBody } from "@heroui/react";
 import { useState } from "react";
 
 import CustomInput from "@/components/ui/custom/CustomInput";
+import CustomTextarea from "@/components/ui/custom/CustomTextarea";
 
 export const InvoiceInfoSection = () => {
   const [hasInvoice, setHasInvoice] = useState(false);
@@ -30,13 +31,11 @@ export const InvoiceInfoSection = () => {
 
           <CustomInput label="Địa chỉ xuất hóa đơn" />
 
-          <Textarea
+          <CustomTextarea
             className="col-span-full"
             label="Ghi chú"
-            labelPlacement="inside"
             placeholder="Nhập ghi chú thêm (nếu có)"
-            variant="bordered"
-            minRows={3}
+            rows={3}
           />
         </div>
       </CardBody>

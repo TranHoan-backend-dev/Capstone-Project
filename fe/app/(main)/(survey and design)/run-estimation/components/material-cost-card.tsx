@@ -2,10 +2,15 @@
 
 import React, { useEffect, useState } from "react";
 import { Button, Input, Tooltip } from "@heroui/react";
+
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import CustomInput from "@/components/ui/custom/CustomInput";
 import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
-import { ApprovalIcon, DeleteIcon, DocumentChartIcon } from "@/config/chip-and-icon";
+import {
+  ApprovalIcon,
+  DeleteIcon,
+  DocumentChartIcon,
+} from "@/config/chip-and-icon";
 import CustomButton from "@/components/ui/custom/CustomButton";
 
 export const MaterialCostCard = () => {

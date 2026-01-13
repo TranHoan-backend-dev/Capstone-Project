@@ -1,8 +1,13 @@
 "use client";
 
 import React from "react";
+
 import CustomButton from "@/components/ui/custom/CustomButton";
-import { DeleteIcon, DocumentCheckedIcon, SumIcon } from "@/config/chip-and-icon";
+import {
+  DeleteIcon,
+  DocumentCheckedIcon,
+  SumIcon,
+} from "@/config/chip-and-icon";
 
 export const FormActions = () => {
   return (
@@ -36,4 +41,3 @@ export const FormActions = () => {
     </div>
   );
 };
-

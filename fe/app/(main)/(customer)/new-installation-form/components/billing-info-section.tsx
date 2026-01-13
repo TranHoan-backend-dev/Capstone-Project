@@ -1,10 +1,11 @@
 "use client";
 
-import { Checkbox, Textarea } from "@heroui/react";
+import { Checkbox } from "@heroui/react";
 import { useState } from "react";
 
 import CustomInput from "@/components/ui/custom/CustomInput";
 import { TitleDarkColor } from "@/config/chip-and-icon";
+import CustomTextarea from "@/components/ui/custom/CustomTextarea";
 
 export const BillingInfoSection = () => {
   const [isExportBill, setIsExportBill] = useState(false);
@@ -31,7 +32,7 @@ export const BillingInfoSection = () => {
         <CustomInput label="Tên xuất hóa đơn" disabled={!isExportBill} />
         <CustomInput label="Địa chỉ xuất hóa đơn" disabled={!isExportBill} />
       </div>
-      <Textarea label="Nội dung" variant="bordered" />
+      <CustomTextarea label="Nội dung" />
     </div>
   );
 };

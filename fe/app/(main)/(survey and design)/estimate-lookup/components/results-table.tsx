@@ -15,7 +15,8 @@ import {
   EstimationIcon,
   ProfileIcon,
   BlueYellowIconColor,
-  GreenIconColor, TitleDarkColor,
+  GreenIconColor,
+  TitleDarkColor,
 } from "@/config/chip-and-icon";
 
 interface EstimateItem {

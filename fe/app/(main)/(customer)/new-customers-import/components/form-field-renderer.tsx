@@ -1,6 +1,6 @@
 "use client";
 
-import { Checkbox, Textarea } from "@heroui/react";
+import { Checkbox } from "@heroui/react";
 
 import { FormField } from "@/types";
 import { SearchIcon } from "@/config/chip-and-icon";
@@ -9,6 +9,7 @@ import CustomInput from "@/components/ui/custom/CustomInput";
 import CustomDatePicker from "@/components/ui/custom/CustomDatePicker";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
 import CustomButton from "@/components/ui/custom/CustomButton";
+import CustomTextarea from "@/components/ui/custom/CustomTextarea";
 
 export const FormFieldRenderer = ({
   field,
@@ -88,14 +89,11 @@ export const FormFieldRenderer = ({
       );
     case "textarea":
       return (
-        <Textarea
+        <CustomTextarea
           label={field.label}
-          labelPlacement="inside"
           rows={field.rows ?? 4}
           isDisabled={field.disabled}
           isRequired={field.required}
-          variant="bordered"
-          radius="md"
         />
       );
     default:

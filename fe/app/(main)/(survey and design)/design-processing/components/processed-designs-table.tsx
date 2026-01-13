@@ -10,7 +10,8 @@ import {
   ProfileIcon,
   RejectIcon,
   RedIconColor,
-  BlueYellowIconColor, TitleDarkColor,
+  BlueYellowIconColor,
+  TitleDarkColor,
 } from "@/config/chip-and-icon";
 
 interface ProcessedDesignsTableProps {

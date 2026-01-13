@@ -44,7 +44,7 @@ export const AddressContactSection = () => {
 
       <div className="space-y-4 py-2">
         <h2
-            className={`text-sm font-bold text-blue-600 ${TitleDarkColor} uppercase tracking-wider`}
+          className={`text-sm font-bold text-blue-600 ${TitleDarkColor} uppercase tracking-wider`}
         >
           Thông tin ngân hàng
         </h2>

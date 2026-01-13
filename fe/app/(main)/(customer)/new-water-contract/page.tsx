@@ -1,7 +1,9 @@
 "use client";
-import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
+
 import { ContractForm } from "./components/contract-form";
 import { ContractTable } from "./components/contract-table";
+
+import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
 
 export default function NewWaterContractPage() {
   const breadcrumbItems = [
@@ -13,10 +15,8 @@ export default function NewWaterContractPage() {
     <>
       <CustomBreadcrumb items={breadcrumbItems} />
       <div className="space-y-6 pt-2">
-        {/* Khối Form */}
         <ContractForm />
 
-        {/* Khối Table */}
         <div className="pt-4">
           <ContractTable />
         </div>

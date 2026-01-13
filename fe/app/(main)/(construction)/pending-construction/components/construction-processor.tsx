@@ -1,12 +1,11 @@
 "use client";
 
-import { Textarea } from "@heroui/react";
-
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { SearchIcon } from "@/components/ui/Icons";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
 import CustomInput from "@/components/ui/custom/CustomInput";
 import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
+import CustomTextarea from "@/components/ui/custom/CustomTextarea";
 
 export const ConstructionProcessor = () => {
   return (
@@ -55,11 +54,7 @@ export const ConstructionProcessor = () => {
             ]}
           />
         </div>
-        <Textarea
-          label="Nội dung"
-          placeholder="Nhập nội dung"
-          variant="bordered"
-        />
+        <CustomTextarea label="Nội dung" placeholder="Nhập nội dung" />
       </section>
     </GenericSearchFilter>
   );

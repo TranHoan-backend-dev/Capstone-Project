@@ -1,9 +1,14 @@
 "use client";
 
-import CustomButton from "@/components/ui/custom/CustomButton";
-import { AddNewIcon, BellsIcon, PrintReceiptIcon } from "@/config/chip-and-icon";
 import Link from "next/link";
 import React from "react";
+
+import CustomButton from "@/components/ui/custom/CustomButton";
+import {
+  AddNewIcon,
+  BellsIcon,
+  PrintReceiptIcon,
+} from "@/config/chip-and-icon";
 
 const Actions = () => {
   const actions = [

@@ -31,13 +31,11 @@ export const HomePage = () => {
             <CustomInput
               isReadOnly
               label="Địa chỉ IP máy khách"
-              type="text"
               value="117.6.63.110"
             />
 
             <CustomInput
               label="Tên máy khách"
-              type="text"
               value={clientMachineName}
               onValueChange={setClientMachineName}
             />
