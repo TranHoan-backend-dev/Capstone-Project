@@ -1,8 +1,12 @@
 spring:
   application:
     name: chat
+  profiles:
+    active: dev
 server:
   port: 9002
+  servlet:
+    context-path: /api/v1
 management:
   endpoints:
     web:
@@ -12,3 +16,14 @@ management:
           - info
           - metrics
           - prometheus
+      base-path: /actuator
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui/index.html
+# spring:
+# mongodb:
+# uri: mongodb://guest:guest@mongodb:27017/microservice_db?authSource=admin

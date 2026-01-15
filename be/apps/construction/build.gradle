@@ -1,27 +1,21 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '4.0.0'
+	id 'org.springframework.boot' version '4.0.1'
 	id 'io.spring.dependency-management' version '1.1.7'
 	id 'maven-publish'
 }
 
-group = 'com.capstone.chat'
+group = 'com.capstone'
 version = '0.0.1-SNAPSHOT'
 description = 'Demo project for Spring Boot'
 
-repositories {
-	mavenCentral()
-}
-
 dependencies {
-  implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
-}
-
-tasks.named('test') {
-	useJUnitPlatform()
 }
 tasks.named('bootJar') {
-  mainClass = 'com.capstone.chat.ChatApplication'
+  mainClass = 'com.capstone.construction.ConstructionApplication'
+}
+tasks.named('test') {
+	useJUnitPlatform()
 }
 springBoot {
 	buildInfo()
