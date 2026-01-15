@@ -1,0 +1,62 @@
+directive @unique on FIELD_DEFINITION
+
+type Customer {
+  customerId: ID!,
+  name: String!,
+  phone: String! @unique,
+#  Object
+  type: String!,
+  isBigCustomer: Boolean!,
+  usageTarget: String!,
+  numberOfHouseholds: Int!,
+  householdRegistrationNumber: Int!,
+  protectEnvironmentFee: Int!,
+  isFree: Boolean,
+  isSale: Boolean,
+  m3Sale: String,
+  fixRate: String,
+#  ld_fee
+  deductionPeriod: String,
+  monthlyRent: Int,
+  waterMeterType: String!,
+
+#  CCCD
+  citizenIdentificationNumber: String! @unique,
+  citizenIdentificationProvideAt: Date!,
+
+#  TK Ngan hang
+  paymentMethod: String!,
+  bankAccountNumber: String!,
+  bankAccountProviderLocation: String!,
+  bankAccountName: String!,
+
+  budgetRelationshipCode: String,
+  passportCode: String,
+  connectionPoint: String,
+  isActive: Boolean!,
+  cancelReason: String,
+#  Foreign key
+  communeId: String!,
+  hamletId: String!,
+  roadmapId: String!,
+  roadId: String!,
+  waterPriceId: String!,
+  userId: String,
+  branchId: String!,
+}
+
+type Contract {
+  contractId: ID!,
+  customer: Customer!,
+  createAt: Date!,
+  updateAt: Date!,
+}
+
+type Bill {
+  billId: ID!,
+  customerId: Customer,
+  name: String!,
+  note: String,
+  exportAddress: String!,
+  installationFormCode: String,
+}

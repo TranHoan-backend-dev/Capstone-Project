@@ -1,4 +1,6 @@
 be/.nx
 be/node_modules/
 .vscode/
+fe/mobile/node_modules/
+fe/webapp/node_modules/
 .idea/

@@ -1,0 +1,42 @@
+"use client";
+
+import { CircularProgress, addToast } from "@heroui/react";
+
+interface ToastProps {
+  title?: string;
+  message: string;
+  color:
+    | "success"
+    | "danger"
+    | "warning"
+    | "default"
+    | "primary"
+    | "secondary"
+    | "foreground";
+  isCircularProgress?: true;
+}
+
+const duration = 3000;
+
+export const CallToast = ({
+  title,
+  message,
+  color,
+  isCircularProgress,
+}: ToastProps) => {
+  addToast({
+    ...(title && { title }),
+    description: (
+      <div className="flex items-center gap-2">
+        {isCircularProgress && (
+          <CircularProgress aria-label="Loading..." size="sm" />
+        )}
+        <span>{message}</span>
+      </div>
+    ),
+    color: color,
+    closeIcon: true,
+    shouldShowTimeoutProgress: true,
+    timeout: duration,
+  });
+};

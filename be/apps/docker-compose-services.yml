@@ -49,7 +49,7 @@ services:
     ports:
       - "3000:9005"
     environment:
-      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - RABBITMQ_URL=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:5672
     networks:
       - app-network
 networks:
