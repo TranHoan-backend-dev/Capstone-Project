@@ -79,14 +79,6 @@ public class Users implements UserDetails, Serializable {
     return LocalDateTime.now();
   }
 
-  public void setUpdatedAt() {
-    this.updatedAt = touch();
-  }
-
-  public void setCreatedAt() {
-    this.createdAt = touch();
-  }
-
   public void setBranchId(String branchId) {
     Objects.requireNonNull(branchId, Constant.PT_18);
     this.branchId = branchId;
@@ -131,10 +123,19 @@ public class Users implements UserDetails, Serializable {
     user.setPassword(password);
     user.setUsername(username);
     user.setRole(role);
-    user.setCreatedAt();
-    user.setUpdatedAt();
     user.setBranchId(branchId);
     user.setDepartmentId(departmentId);
     return user;
+  }
+
+  @PrePersist
+  void onCreate() {
+    this.createdAt = LocalDateTime.now();
+    this.updatedAt = this.createdAt;
+  }
+
+  @PreUpdate
+  void onUpdate() {
+    this.updatedAt = LocalDateTime.now();
   }
 }
