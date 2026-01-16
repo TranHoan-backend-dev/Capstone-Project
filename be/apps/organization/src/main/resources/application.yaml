@@ -1,6 +1,6 @@
 spring:
   application:
-    name: construction
+    name: organization
   profiles:
     active: dev
   jpa:
@@ -29,7 +29,7 @@ management:
           - prometheus
       base-path: /actuator
 server:
-  port: 9003
+  port: 9008
   servlet:
     context-path: /api/v1
 web-frontend-url: ${WEB_FRONTEND_URL:http://localhost:3000}
