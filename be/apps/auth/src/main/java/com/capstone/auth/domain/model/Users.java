@@ -22,9 +22,8 @@ import java.util.Objects;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Users implements UserDetails, Serializable {
   @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "user_id")
-  String id;
+  String employeeCode;
 
   @Column(unique = true, nullable = false)
   String email;
@@ -51,6 +50,11 @@ public class Users implements UserDetails, Serializable {
   @Setter
   @Transient
   Collection<? extends GrantedAuthority> authorities;
+
+  public void setEmployeeCode(String employeeCode) {
+    Objects.requireNonNull(employeeCode, Constant.PT_20);
+    this.employeeCode = employeeCode;
+  }
 
   public void setEmail(String email) {
     Objects.requireNonNull(email, Constant.PT_03);
@@ -115,10 +119,11 @@ public class Users implements UserDetails, Serializable {
   }
 
   public static @NonNull Users builder(
-    String email, String password, String username, Roles role,
-    String branchId, String departmentId
+    String employeeCode, String email, String password, String username,
+    Roles role, String branchId, String departmentId
   ) {
     var user = new Users();
+    user.setEmployeeCode(employeeCode);
     user.setEmail(email);
     user.setPassword(password);
     user.setUsername(username);

@@ -1,4 +1,4 @@
 package com.capstone.customer.service.boundary;
 
-public interface NotificationService {
+public interface ContractService {
 }

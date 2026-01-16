@@ -37,4 +37,5 @@ public class Contract {
   void onUpdate() {
     this.updatedAt = LocalDateTime.now();
   }
+  // TODO: setter
 }

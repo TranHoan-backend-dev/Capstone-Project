@@ -25,4 +25,5 @@ public class Bill {
   @Column(nullable = false)
   String exportAddress;
   String installtionFormCode;
+  // TODO: setter
 }

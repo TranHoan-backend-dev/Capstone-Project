@@ -1,4 +1,4 @@
-package com.capstone.auth.infrastructure.config;
+package com.capstone.construction.infrastructure.config;
 
 public final class Constant {
   public static final String EMAIL_PATTERN = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";

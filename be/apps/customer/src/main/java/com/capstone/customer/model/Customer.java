@@ -111,4 +111,5 @@ public class Customer {
   void onUpdate() {
     this.updatedAt = LocalDateTime.now();
   }
+  // TODO: setter
 }
