@@ -7,12 +7,7 @@ export default function LoginHeader() {
     <View style={styles.header}>
       <Image
         source={require('../../assets/logo.png')}
-        style={{
-          width: 180,
-          height: 60,
-          resizeMode: 'contain',
-          marginBottom: 12,
-        }}
+        style={styles.imageLogo}
       />
       <Text style={styles.title}>Đăng nhập</Text>
       <Text style={styles.subtitle}>Công ty Cổ Phần Cấp Nước Nam Định</Text>

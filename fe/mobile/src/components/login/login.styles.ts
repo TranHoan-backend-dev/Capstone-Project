@@ -56,4 +56,10 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 0.5,
   },
+  imageLogo: {
+    width: 180,
+    height: 60,
+    resizeMode: 'contain',
+    marginBottom: 12,
+  },
 });
