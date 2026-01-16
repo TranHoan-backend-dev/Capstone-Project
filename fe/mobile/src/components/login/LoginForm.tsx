@@ -7,21 +7,12 @@ export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    console.log('Login with:', email, password);
-  };
-
-  const handleForgotPassword = () => {
-    console.log('Forgot password');
-  };
-
   return (
     <View>
       <FormInput
         label="Email"
         value={email}
         onChangeText={setEmail}
-        placeholder="example@email.com"
         keyboardType="email-address"
       />
 
@@ -29,13 +20,12 @@ export default function LoginForm() {
         label="Mật khẩu"
         value={password}
         onChangeText={setPassword}
-        placeholder="••••••••"
         secureTextEntry
       />
 
       <LoginFooter
-        onLogin={handleLogin}
-        onForgotPassword={handleForgotPassword}
+        onLogin={() => console.log(email, password)}
+        onForgotPassword={() => console.log('forgot')}
       />
     </View>
   );

@@ -4,29 +4,30 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  View,
   StyleSheet,
 } from 'react-native';
+import { Card } from 'react-native-paper';
 
 import LoginHeader from '../components/login/LoginHeader';
 import LoginForm from '../components/login/LoginForm';
-import { styles as loginStyles } from '../components/login/login.styles';
 
 export default function LoginScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardView}
+        style={{ flex: 1 }}
       >
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          <View style={loginStyles.card}>
-            <LoginHeader />
-            <LoginForm />
-          </View>
+          <Card style={styles.card} elevation={4}>
+            <Card.Content>
+              <LoginHeader />
+              <LoginForm />
+            </Card.Content>
+          </Card>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -38,12 +39,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#E0F2F7',
   },
-  keyboardView: {
-    flex: 1,
-  },
   scrollContent: {
     flexGrow: 1,
     justifyContent: 'center',
     padding: 20,
+  },
+  card: {
+    borderRadius: 16,
+    backgroundColor: '#FFFFFF'
   },
 });

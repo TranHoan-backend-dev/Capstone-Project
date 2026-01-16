@@ -1,6 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, Text } from 'react-native';
-import { styles } from './login.styles';
+import { Button } from 'react-native-paper';
 
 interface LoginFooterProps {
   onLogin: () => void;
@@ -13,20 +12,20 @@ export default function LoginFooter({
 }: LoginFooterProps) {
   return (
     <>
-      <TouchableOpacity
+      <Button
+        mode="text"
         onPress={onForgotPassword}
-        style={styles.forgotButton}
       >
-        <Text style={styles.forgotText}>Quên mật khẩu?</Text>
-      </TouchableOpacity>
+        Quên mật khẩu?
+      </Button>
 
-      <TouchableOpacity
-        style={styles.signInButton}
+      <Button
+        mode="contained"
         onPress={onLogin}
-        activeOpacity={0.8}
+        style={{ marginTop: 8 }}
       >
-        <Text style={styles.signInButtonText}>Đăng nhập</Text>
-      </TouchableOpacity>
+        Đăng nhập
+      </Button>
     </>
   );
 }
