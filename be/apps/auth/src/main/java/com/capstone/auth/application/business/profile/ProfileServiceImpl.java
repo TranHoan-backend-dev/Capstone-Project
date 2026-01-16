@@ -1,4 +1,4 @@
-package com.capstone.auth.application.business.roles;
+package com.capstone.auth.application.business.profile;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -10,5 +10,5 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class RoleServiceImpl implements RoleService {
+public class ProfileServiceImpl implements ProfileService {
 }
