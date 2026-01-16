@@ -11,7 +11,7 @@ import {
   SafeAreaProvider,
   // useSafeAreaInsets,
 } from 'react-native-safe-area-context';
-import Hello from './src/Hello';
+import LoginScreen from './src/screens/LoginScreen'
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -33,7 +33,7 @@ function AppContent() {
         templateFileName="App.tsx"
         safeAreaInsets={safeAreaInsets}
       /> */}
-      <Hello/>
+      <LoginScreen />
     </View>
   );
 }
