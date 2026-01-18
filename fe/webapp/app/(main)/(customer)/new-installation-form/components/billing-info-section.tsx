@@ -29,8 +29,8 @@ export const BillingInfoSection = () => {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <CustomInput label="Tên xuất hóa đơn" disabled={!isExportBill} />
-        <CustomInput label="Địa chỉ xuất hóa đơn" disabled={!isExportBill} />
+        <CustomInput label="Tên xuất hóa đơn" />
+        <CustomInput label="Địa chỉ xuất hóa đơn" />
       </div>
       <CustomTextarea label="Nội dung" />
     </div>
