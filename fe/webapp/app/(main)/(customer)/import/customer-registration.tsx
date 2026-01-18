@@ -4,12 +4,12 @@ import React from "react";
 import { Card, CardBody } from "@heroui/react";
 import { DocumentPlusIcon } from "@heroicons/react/24/solid";
 
-import { CustomerInfo } from "@/app/(main)/(customer)/customer-registration/components/customer-info";
-import { AddressInfo } from "@/app/(main)/(customer)/customer-registration/components/address-info";
-import { TechnicalInfo } from "@/app/(main)/(customer)/customer-registration/components/technical-info";
-import { BillingInfo } from "@/app/(main)/(customer)/customer-registration/components/billing-info";
 import { RefreshIcon, SaveIcon } from "@/components/ui/Icons";
 import CustomButton from "@/components/ui/custom/CustomButton";
+import { CustomerInfo } from "@/app/(main)/(customer)/import/components/customer-info";
+import { AddressInfo } from "@/app/(main)/(customer)/import/components/address-info";
+import { TechnicalInfo } from "@/app/(main)/(customer)/import/components/technical-info";
+import { BillingInfo } from "@/app/(main)/(customer)/import/components/billing-info";
 
 const CustomerRegistration = () => {
   return (
@@ -24,7 +24,7 @@ const CustomerRegistration = () => {
               <DocumentPlusIcon className="w-6 h-6" />
             </div>
             <h2 className="text-lg font-bold tracking-tight text-foreground">
-              Customer Registration
+              Nhập khách hàng mới
             </h2>
           </div>
         </div>
