@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 @Table
 @Getter
 @Entity
-@Builder
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
@@ -67,10 +66,6 @@ public class InstallationForm {
   Integer householdRegistrationNumber;
 
 //  String object;
-
-  /* ================== */
-  /* RELATION KEYS ONLY */
-  /* ================== */
 
   @Column(nullable = false)
   String customerId;

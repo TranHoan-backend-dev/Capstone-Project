@@ -42,7 +42,7 @@ export const siteConfig = {
         {
           key: "restores-customer",
           label: "Khôi phục khách hàng hủy",
-          href: "/reovery",
+          href: "/recovery",
         },
         {
           key: "new-customers-import",
