@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "users")
+@Table
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Estimation implements Serializable {
   @Id
