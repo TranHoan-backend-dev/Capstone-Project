@@ -1,15 +1,35 @@
 import axiosClient from "@/lib/axios";
 
-export interface LoginRequest {
+export interface SigninRequest {
   username: string;
   password: string;
 }
+
+export interface SigninResponse {
+  accessToken: string;
+  refreshToken?: string;
+  user: {
+    id: string;
+    username: string;
+    role: string;
+  };
+}
+
+export const signinService = async (
+  data: SigninRequest,
+): Promise<SigninResponse> => {
+  const response = await axiosClient.post("/auth/signin", data);
+  return response.data;
+};
 
 export const forgotPasswordService = async (email: string): Promise<void> => {
   await axiosClient.post(`/auth/forgot-password`, { email });
 };
 
-export const verifyOtpService = async (email: string, otp: string): Promise<void> => {
+export const verifyOtpService = async (
+  email: string,
+  otp: string,
+): Promise<void> => {
   await axiosClient.post(`/auth/verify-otp`, { email, otp });
 };
 
