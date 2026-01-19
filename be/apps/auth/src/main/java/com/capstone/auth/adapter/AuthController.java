@@ -30,7 +30,6 @@ public class AuthController {
     log.info("Signup request comes to endpoint: {}", request);
 
     authUC.register(
-      request.fullName(),
       request.username(),
       request.password(),
       request.email(),

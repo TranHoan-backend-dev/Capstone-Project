@@ -29,16 +29,16 @@ EXPOSE 9002
 ENTRYPOINT ["java","-jar","app1.jar"]
 
 # CUSTOMER SERVICE
-#FROM base-builder AS build-customer
-#COPY customer ./customer
-#RUN gradle :customer:bootJar -x test --no-daemon
+FROM base-builder AS build-customer
+COPY customer ./customer
+RUN gradle :customer:bootJar -x test --no-daemon
 
 # RUNTIME
-#FROM eclipse-temurin:21-jre-alpine AS runtime-customer
-#WORKDIR /app
-#COPY --from=build-customer /workspace/customer/build/libs/*.jar app2.jar
-#EXPOSE 9003
-#ENTRYPOINT ["java","-jar","app2.jar"]
+FROM eclipse-temurin:21-jre-alpine AS runtime-customer
+WORKDIR /app
+COPY --from=build-customer /workspace/customer/build/libs/*.jar app2.jar
+EXPOSE 9003
+ENTRYPOINT ["java","-jar","app2.jar"]
 
 # NOTIFICATION SERVICE
 FROM base-builder AS build-notification
@@ -69,3 +69,27 @@ COPY --from=build-email /workspace/apps/email-service/dist ./
 RUN npm install --omit=dev
 EXPOSE 9005
 ENTRYPOINT ["node", "main.js"]
+
+# CONSTRUCTION SERVICE
+FROM base-builder AS build-construction
+COPY construction ./construction
+RUN gradle :construction:bootJar -x test --no-deamon
+
+# RUNTIME
+FROM eclipse-temurin:21-jre-alpine AS runtime-construction
+WORKDIR /app
+COPY --from=build-construction /workspace/construction/build/libs/*.jar app4.jar
+EXPOSE 9006
+ENTRYPOINT ["java", "-jar", "app4.jar"]
+
+# DEVICE SERVICE
+FROM base-builder AS build-device
+COPY construction ./construction
+RUN gradle :device:bootJar -x test --no-deamon
+
+# RUNTIME
+FROM eclipse-temurin:21-jre-alpine AS runtime-device
+WORKDIR /app
+COPY --from=build-device /workspace/device/build/libs/*.jar app5.jar
+EXPOSE 9007
+ENTRYPOINT ["java", "-jar", "app5.jar"]

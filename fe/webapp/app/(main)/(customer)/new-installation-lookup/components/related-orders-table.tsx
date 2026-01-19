@@ -60,7 +60,7 @@ export const RelatedOrdersTable = ({ data }: { data: any[] }) => {
               >
                 <Button
                   isIconOnly
-                  className={action.className}
+                  className={`${action.className} bg-transparent data-[hover=true]:bg-transparent`}
                   size="sm"
                   variant="light"
                 >

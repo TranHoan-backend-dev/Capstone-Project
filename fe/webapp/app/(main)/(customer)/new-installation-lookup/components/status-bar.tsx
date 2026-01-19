@@ -25,10 +25,19 @@ export const StatusBar = ({ stage, status }: StatusBarProps) => {
           const isCurrent = idx === currentIndex;
           const isDone = idx < currentIndex;
 
+          const tooltipColor = isDone
+            ? "bg-green-500 text-white"
+            : isCurrent
+              ? clsx(STATUS_COLOR[status], "text-white")
+              : "bg-gray-200 text-gray-600";
+
           return (
             <Tooltip
               key={s.key}
               closeDelay={0}
+              classNames={{
+                content: tooltipColor,
+              }}
               content={
                 <div className="text-sm">
                   <div className="font-semibold">{s.label}</div>
@@ -61,7 +70,7 @@ export const StatusBar = ({ stage, status }: StatusBarProps) => {
           return (
             <div key={s.key} className="text-center leading-tight">
               <div
-                className={clsx("font-medium", isCurrent && "text-gray-800")}
+                className={clsx("font-medium dark:text-white", isCurrent && "text-gray-800")}
               >
                 {s.label}
               </div>
