@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: device
+  servlet:
+    multipart:
+      location: /tmp/uploads
+      max-file-size: 100MB
+      max-request-size: 200MB
+      file-size-threshold: 10MB
+dgs:
+  graphql:
+    graphiql:
+      enabled: false
+    virtualthreads:
+      enabled: true
+    schema-locations: classpath*:graphql-client/*.graphql*
+    extensions:
+      validation:
+        enabled: true
+      scalars:
+        enabled: true
+    websocket:
+      enabled: true
+dgraph:
+  host: ${DGRAPH_HOST:localhost}
+  port: ${DGRAPH_PORT:9080}
+cors:
+  allowed-origins:
+    - ${web-frontend-url}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

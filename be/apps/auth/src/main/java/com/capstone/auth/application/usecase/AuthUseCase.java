@@ -1,7 +1,6 @@
 package com.capstone.auth.application.usecase;
 
-import com.capstone.auth.application.business.users.UsersService;
-import com.capstone.auth.application.event.producer.AccountCreationEvent;
+import com.capstone.auth.application.business.users.UserService;
 import com.capstone.auth.application.event.producer.MessageProducer;
 import com.capstone.auth.domain.model.enumerate.RoleName;
 import lombok.AccessLevel;
@@ -19,7 +18,7 @@ import java.util.concurrent.ExecutionException;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthUseCase {
-  UsersService service;
+  UserService service;
   MessageProducer template;
 
   @NonFinal
@@ -31,17 +30,16 @@ public class AuthUseCase {
   String TEMPLATE;
 
   public void register(
-    String fullName, String username,
+    String username,
     String password, String email, boolean status
   ) throws ExecutionException, InterruptedException {
     log.info("AuthUseCase is handling business");
 
-    service.createEmployee(
-      fullName,
-      username,
-      password,
-      email,
-      status ? RoleName.EMPLOYEE : RoleName.CUSTOMER);
+//    service.createEmployee(
+//      username,
+//      password,
+//      email,
+//      status ? RoleName.EMPLOYEE : RoleName.CUSTOMER);
 
     log.info("User has been registered successfully");
 //    template.sendMessage(new AccountCreationEvent(email, SUBJECT, TEMPLATE, fullName, username, password));

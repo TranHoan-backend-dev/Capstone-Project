@@ -85,6 +85,7 @@ export const RelatedOrdersTable = ({ data }: RelatedOrdersTableProps) => {
             content: "In biên nhận",
             icon: PrintReceiptIcon,
             className: BlueYellowIconColor,
+            color: "primary" as const,
           },
           {
             content: "Xóa",

@@ -7,7 +7,7 @@ services:
     routes:
       - name: auth-route
         paths:
-          - /auth
+          - /a
         strip_path: true
         methods:
           - GET
@@ -33,7 +33,7 @@ services:
     routes:
       - name: notification-route
         paths:
-          - /noti
+          - /n
         strip_path: true
         methods:
           - GET
