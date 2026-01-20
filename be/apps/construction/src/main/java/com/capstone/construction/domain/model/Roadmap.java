@@ -9,12 +9,12 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-@Getter
+@Table
 @Entity
+@Getter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Roadmap {
   @Id

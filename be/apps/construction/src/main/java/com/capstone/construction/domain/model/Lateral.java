@@ -9,12 +9,12 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-@Getter
 @Entity
+@Getter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table
+@Table(name = "laterals")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Lateral {
   @Id
