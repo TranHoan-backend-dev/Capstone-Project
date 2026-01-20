@@ -9,9 +9,9 @@ services:
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
     ports:
       # For AMQP protocol connected from spring boot
-      - "5672:5672"
+      - ${RABBITMQ_PROTOCOL}
       # For web management UI
-      - "15672:15672"
+      - ${RABBITMQ_WEB_PORT}
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq/mnesia
   # kong-migrations:
