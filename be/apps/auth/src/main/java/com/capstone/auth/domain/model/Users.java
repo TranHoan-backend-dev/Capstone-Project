@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -23,7 +24,7 @@ import java.util.Objects;
 public class Users implements UserDetails, Serializable {
   @Id
   @Column(name = "user_id")
-  String employeeCode;
+  String id;
 
   @Column(unique = true, nullable = false)
   String email;
@@ -31,33 +32,40 @@ public class Users implements UserDetails, Serializable {
   @Column(nullable = false)
   String password;
 
-  @Column(name = "employee_code", unique = true)
+  @Column(unique = true, nullable = false)
   String username;
 
-  @Column(name = "created_date", nullable = false)
+  @Column(nullable = false)
   LocalDateTime createdAt;
 
-  @Column(name = "updated_date", nullable = false)
+  @Column(nullable = false)
   LocalDateTime updatedAt;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "role_id", referencedColumnName = "role_id")
   Roles role;
 
+  @Column(nullable = false)
+  String jobId;
+
+  @Column(nullable = false)
+  List<String> notificationIds;
+
+  @Column(nullable = false)
+  List<String> businessPageIds;
+
+  @Column(nullable = false)
   String departmentId;
-  String branchId; // mang luoi cap nuoc
+
+  @Column(nullable = false)
+  String waterSupplyNetworkId; // mang luoi cap nuoc
 
   @Setter
   @Transient
   Collection<? extends GrantedAuthority> authorities;
 
-  public void setEmployeeCode(String employeeCode) {
-    Objects.requireNonNull(employeeCode, Constant.PT_20);
-    this.employeeCode = employeeCode;
-  }
-
   public void setEmail(String email) {
-    Objects.requireNonNull(email, Constant.PT_03);
+    requireNonNullAndNotEmpty(email, Constant.PT_03);
     if (!email.matches(Constant.EMAIL_PATTERN)) {
       throw new IllegalArgumentException(Constant.PT_01);
     }
@@ -65,12 +73,12 @@ public class Users implements UserDetails, Serializable {
   }
 
   public void setPassword(String password) {
-    Objects.requireNonNull(password, Constant.PT_04);
+    requireNonNullAndNotEmpty(password, Constant.PT_04);
     this.password = password;
   }
 
   public void setUsername(String username) {
-    Objects.requireNonNull(email, Constant.PT_05);
+    requireNonNullAndNotEmpty(email, Constant.PT_05);
     this.username = username;
   }
 
@@ -79,18 +87,36 @@ public class Users implements UserDetails, Serializable {
     this.role = role;
   }
 
-  public LocalDateTime touch() {
-    return LocalDateTime.now();
+  public void setNotificationIds(List<String> values) {
+    Objects.requireNonNull(values, Constant.PT_22);
+    this.notificationIds = values;
   }
 
-  public void setBranchId(String branchId) {
-    Objects.requireNonNull(branchId, Constant.PT_18);
-    this.branchId = branchId;
+  public void setJobId(String value) {
+    requireNonNullAndNotEmpty(value, Constant.PT_20);
+    this.jobId = value;
+  }
+
+  public void setBusinessPageIds(String value) {
+    requireNonNullAndNotEmpty(value, Constant.PT_21);
+    this.jobId = value;
   }
 
   public void setDepartmentId(String departmentId) {
-    Objects.requireNonNull(departmentId, Constant.PT_19);
+    requireNonNullAndNotEmpty(departmentId, Constant.PT_19);
     this.departmentId = departmentId;
+  }
+
+  public void setWaterSupplyNetworkId(String value) {
+    requireNonNullAndNotEmpty(value, Constant.PT_18);
+    this.waterSupplyNetworkId = value;
+  }
+
+  private void requireNonNullAndNotEmpty(String value, String message) {
+    Objects.requireNonNull(value, message);
+    if (value.trim().isEmpty()) {
+      throw new IllegalArgumentException(message);
+    }
   }
 
   @Override
@@ -119,16 +145,15 @@ public class Users implements UserDetails, Serializable {
   }
 
   public static @NonNull Users builder(
-    String employeeCode, String email, String password, String username,
+    String email, String password, String username,
     Roles role, String branchId, String departmentId
   ) {
     var user = new Users();
-    user.setEmployeeCode(employeeCode);
     user.setEmail(email);
     user.setPassword(password);
     user.setUsername(username);
     user.setRole(role);
-    user.setBranchId(branchId);
+    user.setWaterSupplyNetworkId(branchId);
     user.setDepartmentId(departmentId);
     return user;
   }

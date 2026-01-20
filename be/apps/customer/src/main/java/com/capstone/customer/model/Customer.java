@@ -90,26 +90,30 @@ public class Customer {
   @Column(nullable = false)
   Boolean isActive;
   String cancelReason;
+
+  @Column(nullable = false)
   LocalDateTime createdAt;
+
+  @Column(nullable = false)
   LocalDateTime updatedAt;
+
+  @Column(nullable = false)
+  String waterMeterId;
+
+  @Column(nullable = false)
+  String waterPriceId;
+
+  @Column(nullable = false)
+  String estimationId;
+
+  @Column(nullable = false)
+  String waterSupplyNetworkId;
 
   @Column(nullable = false)
   String communeId;
 
   @Column(nullable = false)
-  String hamletId;
-
-  @Column(nullable = false)
   String roadmapId;
-
-  @Column(nullable = false)
-  String roadId;
-
-  @Column(nullable = false)
-  String waterProceId;
-
-  @Column(nullable = false)
-  String branchId;
 
   @PrePersist
   void onCreate() {
@@ -243,34 +247,34 @@ public class Customer {
     this.monthlyRent = value;
   }
 
-  public void setCommuneId(String value) {
+  public void setWaterMeterId(String value) {
     requireId(value, Constant.ENT_33);
+    this.waterMeterId = value;
+  }
+
+  public void setWaterPriceId(String value) {
+    requireId(value, Constant.ENT_34);
+    this.waterPriceId = value;
+  }
+
+  public void setEstimationId(String value) {
+    requireId(value, Constant.ENT_35);
+    this.estimationId = value;
+  }
+
+  public void setWaterSupplyNetworkId(String value) {
+    requireId(value, Constant.ENT_36);
+    this.waterSupplyNetworkId = value;
+  }
+
+  public void setCommuneId(String value) {
+    requireId(value, Constant.ENT_37);
     this.communeId = value;
   }
 
-  public void setHamletId(String value) {
-    requireId(value, Constant.ENT_34);
-    this.hamletId = value;
-  }
-
   public void setRoadmapId(String value) {
-    requireId(value, Constant.ENT_35);
-    this.roadmapId = value;
-  }
-
-  public void setRoadId(String value) {
-    requireId(value, Constant.ENT_36);
-    this.roadId = value;
-  }
-
-  public void setWaterProceId(String value) {
-    requireId(value, Constant.ENT_37);
-    this.waterProceId = value;
-  }
-
-  public void setBranchId(String value) {
     requireId(value, Constant.ENT_38);
-    this.branchId = value;
+    this.roadmapId = value;
   }
 
   public void setM3Sale(String value) {
@@ -453,33 +457,33 @@ public class Customer {
       return this;
     }
 
-    public CustomerBuilder communeId(String communeId) {
-      customer.setCommuneId(communeId);
+    public CustomerBuilder waterMeterId(String communeId) {
+      customer.setWaterMeterId(communeId);
       return this;
     }
 
-    public CustomerBuilder hamletId(String hamletId) {
-      customer.setHamletId(hamletId);
+    public CustomerBuilder waterPriceId(String hamletId) {
+      customer.setWaterPriceId(hamletId);
       return this;
     }
 
-    public CustomerBuilder roadmapId(String roadmapId) {
-      customer.setRoadmapId(roadmapId);
+    public CustomerBuilder estimationId(String roadmapId) {
+      customer.setEstimationId(roadmapId);
       return this;
     }
 
-    public CustomerBuilder roadId(String roadId) {
-      customer.setRoadId(roadId);
+    public CustomerBuilder waterSupplyNetworkId(String roadId) {
+      customer.setWaterSupplyNetworkId(roadId);
       return this;
     }
 
-    public CustomerBuilder waterProceId(String waterProceId) {
-      customer.setWaterProceId(waterProceId);
+    public CustomerBuilder communeId(String value) {
+      customer.setCommuneId(value);
       return this;
     }
 
-    public CustomerBuilder branchId(String branchId) {
-      customer.setBranchId(branchId);
+    public CustomerBuilder roadmapId(String value) {
+      customer.setRoadmapId(value);
       return this;
     }
 

@@ -26,8 +26,10 @@ public class WaterMeterType {
 
   @Column(nullable = false)
   String name;
+
   @Column(nullable = false, unique = true)
   String origin;
+
   @Column(nullable = false, unique = true)
   String meterModel;
 
@@ -64,26 +66,17 @@ public class WaterMeterType {
   }
 
   public void setName(String name) {
-    Objects.requireNonNull(name, Constant.ENT_01);
-    if (name.trim().isEmpty()) {
-      throw new IllegalArgumentException(Constant.ENT_01);
-    }
+    requireNonNullAndNotEmpty(name, Constant.ENT_01);
     this.name = name;
   }
 
   public void setOrigin(String origin) {
-    Objects.requireNonNull(origin, Constant.ENT_14);
-    if (origin.trim().isEmpty()) {
-      throw new IllegalArgumentException(Constant.ENT_14);
-    }
+    requireNonNullAndNotEmpty(origin, Constant.ENT_14);
     this.origin = origin;
   }
 
   public void setMeterModel(String meterModel) {
-    Objects.requireNonNull(meterModel, Constant.ENT_15);
-    if (meterModel.trim().isEmpty()) {
-      throw new IllegalArgumentException(Constant.ENT_15);
-    }
+    requireNonNullAndNotEmpty(meterModel, Constant.ENT_15);
     this.meterModel = meterModel;
   }
 
@@ -95,22 +88,22 @@ public class WaterMeterType {
   }
 
   public void setMaxIndex(String maxIndex) {
-    Objects.requireNonNull(waterMeter, Constant.ENT_28);
+    requireNonNullAndNotEmpty(maxIndex, Constant.ENT_28);
     this.maxIndex = maxIndex;
   }
 
   public void setQn(String qn) {
-    Objects.requireNonNull(waterMeter, Constant.ENT_26);
+    requireNonNullAndNotEmpty(qn, Constant.ENT_26);
     this.qn = qn;
   }
 
   public void setQt(String qt) {
-    Objects.requireNonNull(waterMeter, Constant.ENT_27);
+    requireNonNullAndNotEmpty(qt, Constant.ENT_27);
     this.qt = qt;
   }
 
   public void setQmin(String qmin) {
-    Objects.requireNonNull(waterMeter, Constant.ENT_25);
+    requireNonNullAndNotEmpty(qmin, Constant.ENT_25);
     this.qmin = qmin;
   }
 
@@ -124,6 +117,13 @@ public class WaterMeterType {
   public void setWaterMeter(List<WaterMeter> waterMeter) {
     Objects.requireNonNull(waterMeter, Constant.ENT_24);
     this.waterMeter = waterMeter;
+  }
+
+  private void requireNonNullAndNotEmpty(String value, String message) {
+    Objects.requireNonNull(value, message);
+    if (value.trim().isEmpty()) {
+      throw new IllegalArgumentException(message);
+    }
   }
 
   public static WaterMeterType create(@NonNull Consumer<WaterMeterTypeBuilder> consumer) {

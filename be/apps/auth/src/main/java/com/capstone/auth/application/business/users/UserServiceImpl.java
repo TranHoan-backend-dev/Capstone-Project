@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
 
     var role = roleRepo.findRolesByName(roleName.toString());
     log.info("New account's role: {}", role);
-    var user = Users.builder("", username, hashPassword(password).get(), email, role, "", "");
+    var user = Users.builder(username, hashPassword(password).get(), email, role, "", "");
     log.info("New account's information: {}", user);
 
     repo.save(user);

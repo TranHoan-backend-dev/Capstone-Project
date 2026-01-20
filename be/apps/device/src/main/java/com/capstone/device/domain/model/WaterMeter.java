@@ -20,7 +20,8 @@ import java.util.function.Consumer;
 public class WaterMeter {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  String meterCode;
+  @Column(name = "meter_code")
+  String id;
 
   @Column(nullable = false)
   LocalDate installationDate;
@@ -30,8 +31,6 @@ public class WaterMeter {
 
   @Column(nullable = false)
   Double meterIndex;
-
-  String customerId;
 
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "water_meter_type_id")
@@ -57,11 +56,6 @@ public class WaterMeter {
       throw new IllegalArgumentException(Constant.ENT_12);
     }
     this.meterIndex = meterIndex;
-  }
-
-  public void setCustomerId(String customerId) {
-    Objects.requireNonNull(type, Constant.ENT_30);
-    this.customerId = customerId;
   }
 
   public void setType(WaterMeterType type) {
@@ -95,11 +89,6 @@ public class WaterMeter {
 
     public WaterMeterBuilder meterIndex(Double meterIndex) {
       meter.setMeterIndex(meterIndex);
-      return this;
-    }
-
-    public WaterMeterBuilder customerId(String customerId) {
-      meter.setCustomerId(customerId);
       return this;
     }
 

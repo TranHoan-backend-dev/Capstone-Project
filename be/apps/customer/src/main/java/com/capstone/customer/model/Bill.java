@@ -20,8 +20,8 @@ import java.util.function.Consumer;
 public class Bill {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
+  @Column(name = "customer_id")
   String id;
-  String customerId;
 
   @Column(nullable = false)
   String name;
@@ -29,46 +29,38 @@ public class Bill {
 
   @Column(nullable = false)
   String exportAddress;
-  String installtionFormCode;
+  String installtionFormId;
 
-  public void setCustomerId(String customerId) {
-    Objects.requireNonNull(customerId, Constant.ENT_06);
-    if (customerId.trim().isEmpty()) {
-      throw new IllegalArgumentException(Constant.ENT_06);
-    }
-    this.customerId = customerId;
+  public void setId(String value) {
+    requireNonNullAndNotEmpty(value, Constant.ENT_06);
+    this.id = value;
   }
 
   public void setName(String name) {
-    Objects.requireNonNull(name, Constant.ENT_01);
-    if (name.trim().isEmpty()) {
-      throw new IllegalArgumentException(Constant.ENT_01);
-    }
+    requireNonNullAndNotEmpty(name, Constant.ENT_01);
     this.name = name;
   }
 
   public void setNote(String note) {
-    Objects.requireNonNull(note, Constant.ENT_10);
-    if (note.trim().isEmpty()) {
-      throw new IllegalArgumentException(Constant.ENT_10);
-    }
+    requireNonNullAndNotEmpty(note, Constant.ENT_10);
     this.note = note;
   }
 
   public void setExportAddress(String exportAddress) {
-    Objects.requireNonNull(exportAddress, Constant.ENT_03);
-    if (exportAddress.trim().isEmpty()) {
-      throw new IllegalArgumentException(Constant.ENT_03);
-    }
+    requireNonNullAndNotEmpty(exportAddress, Constant.ENT_03);
     this.exportAddress = exportAddress;
   }
 
-  public void setInstalltionFormCode(String installtionFormCode) {
-    Objects.requireNonNull(installtionFormCode, Constant.ENT_09);
-    if (installtionFormCode.trim().isEmpty()) {
-      throw new IllegalArgumentException(Constant.ENT_09);
+  public void setInstalltionFormId(String installtionFormCode) {
+    requireNonNullAndNotEmpty(installtionFormCode, Constant.ENT_09);
+    this.installtionFormId = installtionFormCode;
+  }
+
+  private void requireNonNullAndNotEmpty(String value, String message) {
+    Objects.requireNonNull(value, message);
+    if (value.trim().isEmpty()) {
+      throw new IllegalArgumentException(message);
     }
-    this.installtionFormCode = installtionFormCode;
   }
 
   public static Bill create(@NonNull Consumer<BillBuilder> consumer) {
@@ -80,8 +72,8 @@ public class Bill {
   public static class BillBuilder {
     private final Bill bill = new Bill();
 
-    public BillBuilder customerId(String customerId) {
-      bill.setCustomerId(customerId);
+    public BillBuilder id(String customerId) {
+      bill.setId(customerId);
       return this;
     }
 
@@ -101,7 +93,7 @@ public class Bill {
     }
 
     public BillBuilder installtionFormCode(String installtionFormCode) {
-      bill.setInstalltionFormCode(installtionFormCode);
+      bill.setInstalltionFormId(installtionFormCode);
       return this;
     }
 

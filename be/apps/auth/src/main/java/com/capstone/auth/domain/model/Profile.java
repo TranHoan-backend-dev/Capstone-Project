@@ -4,9 +4,11 @@ import com.capstone.auth.infrastructure.config.Constant;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.jspecify.annotations.NonNull;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 @Table
 @Getter
@@ -40,10 +42,7 @@ public class Profile {
   }
 
   public void setFullname(String fullname) {
-    Objects.requireNonNull(fullname, Constant.PT_10);
-    if (fullname.isBlank()) {
-      throw new IllegalArgumentException(Constant.PT_10);
-    }
+    requireNonNullAndNotEmpty(fullname, Constant.PT_10);
     if (!fullname.chars().allMatch(Character::isLetter)) {
       throw new IllegalArgumentException(Constant.PT_13);
     }
@@ -51,19 +50,20 @@ public class Profile {
   }
 
   public void setAvatarUrl(String avatarUrl) {
-    Objects.requireNonNull(avatarUrl, Constant.PT_11);
-    if (avatarUrl.isBlank()) {
-      throw new IllegalArgumentException(Constant.PT_11);
-    }
+    requireNonNullAndNotEmpty(avatarUrl, Constant.PT_11);
     this.avatarUrl = avatarUrl;
   }
 
   public void setAddress(String address) {
-    Objects.requireNonNull(address, Constant.PT_12);
-    if (address.isBlank()) {
-      throw new IllegalArgumentException(Constant.PT_12);
-    }
+    requireNonNullAndNotEmpty(address, Constant.PT_12);
     this.address = address;
+  }
+
+  private void requireNonNullAndNotEmpty(String value, String message) {
+    Objects.requireNonNull(value, message);
+    if (value.trim().isEmpty()) {
+      throw new IllegalArgumentException(message);
+    }
   }
 
   public void setPhoneNumber(String phoneNumber) {
@@ -85,5 +85,49 @@ public class Profile {
   public void setBirthday(LocalDate birthday) {
     Objects.requireNonNull(birthday, Constant.PT_17);
     this.birthday = birthday;
+  }
+
+  public static Profile create(@NonNull Consumer<ProfileBuilder> consumer) {
+    var builder = new ProfileBuilder();
+    consumer.accept(builder);
+    return builder.build();
+  }
+
+  public static class ProfileBuilder {
+    private final Profile unit = new Profile();
+
+    public ProfileBuilder address(String value) {
+      unit.setAddress(value);
+      return this;
+    }
+
+    public ProfileBuilder avatarUrl(String value) {
+      unit.setAvatarUrl(value);
+      return this;
+    }
+
+    public ProfileBuilder fullname(String value) {
+      unit.setFullname(value);
+      return this;
+    }
+
+    public ProfileBuilder phoneNumber(String value) {
+      unit.setPhoneNumber(value);
+      return this;
+    }
+
+    public ProfileBuilder gender(Boolean value) {
+      unit.setGender(value);
+      return this;
+    }
+
+    public ProfileBuilder birthday(LocalDate value) {
+      unit.setBirthday(value);
+      return this;
+    }
+
+    public Profile build() {
+      return unit;
+    }
   }
 }

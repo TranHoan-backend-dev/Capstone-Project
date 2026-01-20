@@ -7,6 +7,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Getter
 @Entity
@@ -18,7 +19,7 @@ import java.time.LocalDateTime;
 public class Estimation implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  @Column(name = "estimation_id")
+  @Column(name = "est_id")
   String estimationId;
 
   @Column(nullable = false)
@@ -28,43 +29,67 @@ public class Estimation implements Serializable {
   String address;
 
   String note;
+
   @Column(nullable = false)
   Integer contractFee;
 
+  @Column(nullable = false)
   Integer surveyFee;
+
+  @Column(nullable = false)
   Integer surveyEffort;
+
+  @Column(nullable = false)
   Integer installationFee;
+
+  @Column(nullable = false)
   Integer laborCoefficient;
+
+  @Column(nullable = false)
   Integer generalCostCoefficient;
+
+  @Column(nullable = false)
   Integer precalculatedTaxCoefficient;
+
+  @Column(nullable = false)
   Integer constructionMachineryCoefficient;
+
+  @Column(nullable = false)
   Integer varCoefficient;
+
+  @Column(nullable = false)
   Integer designCoefficient;
+
+  @Column(nullable = false)
   Integer designFee;
+
+  @Column(nullable = false)
   String waterMeterType;
+
+  @Column(nullable = false)
   String waterMeterCode;
   //object, obj
-  String designImageUrl;
-  String customerId;
 
-  @Column(name = "created_date", nullable = false)
+  @Column(nullable = false)
+  String designImageUrl;
+
+  @Column(nullable = false)
   LocalDateTime createdAt;
 
-  @Column(name = "updated_date", nullable = false)
+  @Column(nullable = false)
   LocalDateTime updatedAt;
 
+  @Column(nullable = false)
+  String createBy; // reference to Users, describe which employee has been processing
 
-  public static @NonNull Estimation builder(
-  ) {
-    var user = new Estimation();
-//    user.setEmployeeCode(employeeCode);
-//    user.setEmail(email);
-//    user.setPassword(password);
-//    user.setUsername(username);
-//    user.setRole(role);
-//    user.setBranchId(branchId);
-//    user.setDepartmentId(departmentId);
-    return user;
+  @Column(nullable = false)
+  String waterMeterId;
+
+  private void requireNonNullAndNotEmpty(String value, String message) {
+    Objects.requireNonNull(value, message);
+    if (value.trim().isEmpty()) {
+      throw new IllegalArgumentException(message);
+    }
   }
 
   @PrePersist

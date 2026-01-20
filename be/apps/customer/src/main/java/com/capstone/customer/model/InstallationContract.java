@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Contract {
+public class InstallationContract {
   @EmbeddedId
   ContractId id;
 
@@ -31,6 +31,8 @@ public class Contract {
   @OneToOne(fetch = FetchType.EAGER)
   @MapsId("customerId")
   Customer customer;
+
+  String installationFormId;
 
   @PrePersist
   void onCreate() {
@@ -53,27 +55,35 @@ public class Contract {
     this.id = id;
   }
 
-  public static Contract create(@NonNull Consumer<ContractBuilder> consumer) {
+  public void setInstallationFormId(String value) {
+    Objects.requireNonNull(value, Constant.ENT_09);
+    if (value.trim().isEmpty()) {
+      throw new IllegalArgumentException(Constant.ENT_09);
+    }
+    this.installationFormId = value;
+  }
+
+  public static InstallationContract create(@NonNull Consumer<ContractBuilder> consumer) {
     var builder = new ContractBuilder();
     consumer.accept(builder);
     return builder.build();
   }
 
   public static class ContractBuilder {
-    private final Contract contract = new Contract();
+    private final InstallationContract installationContract = new InstallationContract();
 
     public ContractBuilder customer(Customer customer) {
-      contract.setCustomer(customer);
+      installationContract.setCustomer(customer);
       return this;
     }
 
     public ContractBuilder id(ContractId id) {
-      contract.setId(id);
+      installationContract.setId(id);
       return this;
     }
 
-    public Contract build() {
-      return contract;
+    public InstallationContract build() {
+      return installationContract;
     }
   }
 }

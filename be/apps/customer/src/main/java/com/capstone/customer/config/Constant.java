@@ -12,7 +12,7 @@ public final class Constant {
   public static final String ENT_06 = "Customer ID cannot be null or empty";
   public static final String ENT_07 = "Type cannot be null or empty";
   public static final String ENT_08 = "Person in charge cannot be null or empty";
-  public static final String ENT_09 = "Installation form code cannot be null or empty";
+  public static final String ENT_09 = "Installation form id cannot be null or empty";
   public static final String ENT_10 = "Note cannot be null or empty";
   public static final String ENT_11 = "Customer cannot be null or empty";
   public static final String ENT_12 = "Contract id cannot be null or empty";

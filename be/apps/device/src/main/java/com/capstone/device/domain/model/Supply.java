@@ -21,7 +21,8 @@ import java.util.function.Consumer;
 public class Supply {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  String laborCode; // ma hieu nhan cong
+  @Column(name = "labor_code")
+  String id; // ma hieu nhan cong
 
   @Column(nullable = false)
   String jobContent;
@@ -40,6 +41,14 @@ public class Supply {
 
   @Column(nullable = false, precision = 19, scale = 2)
   BigDecimal constructionMachineryPriceAtRuralCommune;
+
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "supplies_group_id")
+  SuppliesGroup group;
+
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "calculation_unit_id")
+  CalculationUnit unit;
 
   @Column(nullable = false)
   LocalDateTime createdAt;

@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Table
 @Getter
@@ -67,19 +68,51 @@ public class InstallationForm {
 
 //  String object;
 
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "road_id")
+  Road road;
+
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "water_supply_network_id")
+  WaterSupplyNetwork network;
+
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "unit_id")
+  NeighborhoodUnit unit;
+
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "commune_id")
+  Commune commune;
+
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "hamlet_id")
+  Hamlet hamlet;
+  String surveyEmployeeId;
+
   @Column(nullable = false)
-  String customerId;
-
-  String roadId;
-
-  String communeId;
-
-  String neighborhoodUnitId;
+  String overallWaterMeterId;
 
   @Column(nullable = false)
-  String branchId;
+  LocalDateTime createdAt;
 
-  String hamletId;
+  @Column(nullable = false)
+  LocalDateTime updatedAt;
 
-  String overalWaterMeterCode;
+  private void requireNonNullAndNotEmpty(String value, String message) {
+    Objects.requireNonNull(value, message);
+    if (value.trim().isEmpty()) {
+      throw new IllegalArgumentException(message);
+    }
+  }
+
+  @PrePersist
+  void onCreate() {
+    this.createdAt = LocalDateTime.now();
+    this.updatedAt = this.createdAt;
+  }
+
+  @PreUpdate
+  void onUpdate() {
+    this.updatedAt = LocalDateTime.now();
+  }
 }
