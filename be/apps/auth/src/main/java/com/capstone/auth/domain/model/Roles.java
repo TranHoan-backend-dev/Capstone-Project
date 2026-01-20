@@ -5,6 +5,7 @@ import com.capstone.auth.infrastructure.config.Constant;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.jspecify.annotations.NonNull;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -12,7 +13,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
-@Table
+@Table(name = "user_roles")
 @Getter
 @Entity
 @ToString
@@ -25,20 +26,15 @@ public class Roles implements Serializable {
   @Column(name = "role_id")
   private String id;
 
-  @Column(nullable = false, unique = true, columnDefinition = """
-      VARCHAR(255) CHECK(name in (
-        'IT_DEPARTMENT', 'PLANNING_TECHNICAL_DEPARTMENT', 'CONSTRUCTION_DEPARTMENT',
-        SALES_DEPARTMENT, FINANCE_DEPARTMENT
-      ))
-      """)
-  private String name;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false, unique = true)
+  private RoleName name;
 
   @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   Set<Users> users;
 
-  public void setName(String name) {
+  public void setName(RoleName name) {
     Objects.requireNonNull(name, Constant.PT_07); // Nullpointer Exception
-    RoleName.valueOf(name);
     this.name = name;
   }
 
@@ -65,17 +61,17 @@ public class Roles implements Serializable {
     return false;
   }
 
-  public static Roles create(Consumer<RolesBuilder> builder) {
+  public static Roles create(@NonNull Consumer<RolesBuilder> builder) {
     var instance = new RolesBuilder();
     builder.accept(instance);
     return instance.build();
   }
 
   public static class RolesBuilder {
-    private String name;
+    private RoleName name;
     private Set<Users> users;
 
-    public RolesBuilder name(String name) {
+    public RolesBuilder name(RoleName name) {
       this.name = name;
       return this;
     }

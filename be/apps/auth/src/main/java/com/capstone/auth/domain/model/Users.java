@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Users implements UserDetails, Serializable {
   @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "user_id")
   String id;
 
@@ -43,7 +44,7 @@ public class Users implements UserDetails, Serializable {
   LocalDateTime updatedAt;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "role_id", referencedColumnName = "role_id")
+  @JoinColumn(name = "role_id")
   Roles role;
 
   @Column(nullable = false)
@@ -145,7 +146,7 @@ public class Users implements UserDetails, Serializable {
     return UserDetails.super.isAccountNonExpired();
   }
 
-  public static Users create(Consumer<UsersBuilder> builder) {
+  public static Users create(@NonNull Consumer<UsersBuilder> builder) {
     var instance = new UsersBuilder();
     builder.accept(instance);
     return instance.build();
