@@ -29,9 +29,8 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public void createEmployee(
-    String username, String password,
-    String email, RoleName roleName
-  ) throws ExecutionException, InterruptedException {
+      String username, String password,
+      String email, RoleName roleName) throws ExecutionException, InterruptedException {
     log.info("UsersService is handling the request");
     var obj = repo.findByEmail(email);
     if (obj.isPresent()) {
@@ -40,7 +39,14 @@ public class UserServiceImpl implements UserService {
 
     var role = roleRepo.findRolesByName(roleName.toString());
     log.info("New account's role: {}", role);
-    var user = Users.builder(username, hashPassword(password).get(), email, role, "", "");
+    var passwordHash = hashPassword(password).get();
+    var user = Users.create(builder -> builder
+        .email(email)
+        .password(passwordHash)
+        .username(username)
+        .role(role)
+        .branchId("")
+        .departmentId(""));
     log.info("New account's information: {}", user);
 
     repo.save(user);

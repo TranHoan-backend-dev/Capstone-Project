@@ -77,25 +77,17 @@ public class WaterPrice {
   }
 
   public void setPrice(BigDecimal price) {
-    Objects.requireNonNull(price, Constant.ENT_05);
-    if (price.compareTo(BigDecimal.ZERO) < 0) {
-      throw new IllegalArgumentException(Constant.ENT_05);
-    }
+    requireNonNullAndNotEmpty(price, Constant.ENT_05);
     this.price = price;
   }
 
   public void setTax(BigDecimal tax) {
-    Objects.requireNonNull(tax, Constant.ENT_19);
-    if (tax.compareTo(BigDecimal.ZERO) < 0) {
-      throw new IllegalArgumentException(Constant.ENT_19);
-    }
+    requireNonNullAndNotEmpty(tax, Constant.ENT_19);
     this.tax = tax;
   }
 
   public void setEnvironmentPrice(BigDecimal environmentPrice) {
-    if (environmentPrice != null && environmentPrice.compareTo(BigDecimal.ZERO) < 0) {
-      throw new IllegalArgumentException(Constant.ENT_20);
-    }
+    requireNonNullAndNotEmpty(environmentPrice, Constant.ENT_20);
     this.environmentPrice = environmentPrice;
   }
 
@@ -114,6 +106,13 @@ public class WaterPrice {
   public void setDescription(String description) {
     Objects.requireNonNull(applicationPeriod, Constant.ENT_23);
     this.description = description;
+  }
+
+  private void requireNonNullAndNotEmpty(BigDecimal value, String message) {
+    Objects.requireNonNull(value, message);
+    if (value.compareTo(BigDecimal.ZERO) < 0) {
+      throw new IllegalArgumentException(message);
+    }
   }
 
   public static WaterPrice create(@NonNull Consumer<WaterPriceBuilder> consumer) {

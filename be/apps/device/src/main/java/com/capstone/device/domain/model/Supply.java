@@ -76,43 +76,35 @@ public class Supply {
   }
 
   public void setPrice(BigDecimal price) {
-    Objects.requireNonNull(price, Constant.ENT_05);
-    if (price.compareTo(BigDecimal.ZERO) < 0) {
-      throw new IllegalArgumentException(Constant.ENT_05);
-    }
+    requireNonNullAndNotEmpty(price, Constant.ENT_05);
     this.price = price;
   }
 
   public void setLaborPrice(BigDecimal laborPrice) {
-    Objects.requireNonNull(laborPrice, Constant.ENT_06);
-    if (laborPrice.compareTo(BigDecimal.ZERO) < 0) {
-      throw new IllegalArgumentException(Constant.ENT_06);
-    }
+    requireNonNullAndNotEmpty(laborPrice, Constant.ENT_06);
     this.laborPrice = laborPrice;
   }
 
   public void setLaborPriceAtRuralCommune(BigDecimal laborPriceAtRuralCommune) {
-    Objects.requireNonNull(laborPriceAtRuralCommune, Constant.ENT_07);
-    if (laborPriceAtRuralCommune.compareTo(BigDecimal.ZERO) < 0) {
-      throw new IllegalArgumentException(Constant.ENT_07);
-    }
+    requireNonNullAndNotEmpty(laborPriceAtRuralCommune, Constant.ENT_07);
     this.laborPriceAtRuralCommune = laborPriceAtRuralCommune;
   }
 
   public void setConstructionMachineryPrice(BigDecimal constructionMachineryPrice) {
-    Objects.requireNonNull(constructionMachineryPrice, Constant.ENT_08);
-    if (constructionMachineryPrice.compareTo(BigDecimal.ZERO) < 0) {
-      throw new IllegalArgumentException(Constant.ENT_08);
-    }
+    requireNonNullAndNotEmpty(constructionMachineryPrice, Constant.ENT_08);
     this.constructionMachineryPrice = constructionMachineryPrice;
   }
 
   public void setConstructionMachineryPriceAtRuralCommune(BigDecimal constructionMachineryPriceAtRuralCommune) {
-    Objects.requireNonNull(constructionMachineryPriceAtRuralCommune, Constant.ENT_09);
-    if (constructionMachineryPriceAtRuralCommune.compareTo(BigDecimal.ZERO) < 0) {
-      throw new IllegalArgumentException(Constant.ENT_09);
-    }
+    requireNonNullAndNotEmpty(constructionMachineryPriceAtRuralCommune, Constant.ENT_09);
     this.constructionMachineryPriceAtRuralCommune = constructionMachineryPriceAtRuralCommune;
+  }
+
+  private void requireNonNullAndNotEmpty(BigDecimal value, String message) {
+    Objects.requireNonNull(value, message);
+    if (value.compareTo(BigDecimal.ZERO) < 0) {
+      throw new IllegalArgumentException(message);
+    }
   }
 
   public static Supply create(@NonNull Consumer<SupplyBuilder> consumer) {

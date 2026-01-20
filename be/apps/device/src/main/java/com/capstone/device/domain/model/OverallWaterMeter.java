@@ -33,19 +33,20 @@ public class OverallWaterMeter {
   List<WaterMeter> meters;
 
   public void setName(String name) {
-    Objects.requireNonNull(name, Constant.ENT_01);
-    if (name.trim().isEmpty()) {
-      throw new IllegalArgumentException(Constant.ENT_01);
-    }
+    requireNonNullAndNotEmpty(name, Constant.ENT_01);
     this.name = name;
   }
 
   public void setLateralId(String lateralId) {
-    Objects.requireNonNull(lateralId, Constant.ENT_02);
-    if (lateralId.trim().isEmpty()) {
-      throw new IllegalArgumentException(Constant.ENT_02);
-    }
+    requireNonNullAndNotEmpty(lateralId, Constant.ENT_02);
     this.lateralId = lateralId;
+  }
+
+  private void requireNonNullAndNotEmpty(String value, String message) {
+    Objects.requireNonNull(value, message);
+    if (value.trim().isEmpty()) {
+      throw new IllegalArgumentException(message);
+    }
   }
 
   public void setMeters(List<WaterMeter> meters) {

@@ -1,11 +1,13 @@
 package com.capstone.construction.domain.model;
 
 import jakarta.persistence.*;
+import com.capstone.construction.infrastructure.config.Constant;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 @Getter
 @Entity
@@ -32,10 +34,48 @@ public class Commune {
   @Column(nullable = false)
   LocalDateTime updatedAt;
 
+  public void setName(String name) {
+    requireNonNullAndNotEmpty(name, Constant.PT_21);
+    this.name = name;
+  }
+
+  public void setType(String type) {
+    requireNonNullAndNotEmpty(type, Constant.PT_22);
+    this.type = type;
+  }
+
   private void requireNonNullAndNotEmpty(String value, String message) {
     Objects.requireNonNull(value, message);
     if (value.trim().isEmpty()) {
       throw new IllegalArgumentException(message);
+    }
+  }
+
+  public static Commune create(Consumer<CommuneBuilder> builder) {
+    var instance = new CommuneBuilder();
+    builder.accept(instance);
+    return instance.build();
+  }
+
+  public static class CommuneBuilder {
+    private String name;
+    private String type;
+
+    public CommuneBuilder name(String name) {
+      this.name = name;
+      return this;
+    }
+
+    public CommuneBuilder type(String type) {
+      this.type = type;
+      return this;
+    }
+
+    public Commune build() {
+      var commune = new Commune();
+      commune.setName(name);
+      commune.setType(type);
+      return commune;
     }
   }
 

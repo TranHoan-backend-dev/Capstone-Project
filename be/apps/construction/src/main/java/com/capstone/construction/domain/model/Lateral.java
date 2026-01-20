@@ -1,11 +1,13 @@
 package com.capstone.construction.domain.model;
 
 import jakarta.persistence.*;
+import com.capstone.construction.infrastructure.config.Constant;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 @Getter
 @Entity
@@ -35,10 +37,60 @@ public class Lateral {
   @Column(nullable = false)
   LocalDateTime updatedAt;
 
+  public void setName(String name) {
+    requireNonNullAndNotEmpty(name, Constant.PT_70);
+    this.name = name;
+  }
+
+  public void setParentLateralId(String parentLateralId) {
+    requireNonNullAndNotEmpty(parentLateralId, Constant.PT_79);
+    this.parentLateralId = parentLateralId;
+  }
+
+  public void setNetwork(WaterSupplyNetwork network) {
+    Objects.requireNonNull(network, Constant.PT_59);
+    this.network = network;
+  }
+
   private void requireNonNullAndNotEmpty(String value, String message) {
     Objects.requireNonNull(value, message);
     if (value.trim().isEmpty()) {
       throw new IllegalArgumentException(message);
+    }
+  }
+
+  public static Lateral create(Consumer<LateralBuilder> builder) {
+    var instance = new LateralBuilder();
+    builder.accept(instance);
+    return instance.build();
+  }
+
+  public static class LateralBuilder {
+    private String name;
+    private String parentLateralId;
+    private WaterSupplyNetwork network;
+
+    public LateralBuilder name(String name) {
+      this.name = name;
+      return this;
+    }
+
+    public LateralBuilder parentLateralId(String parentLateralId) {
+      this.parentLateralId = parentLateralId;
+      return this;
+    }
+
+    public LateralBuilder network(WaterSupplyNetwork network) {
+      this.network = network;
+      return this;
+    }
+
+    public Lateral build() {
+      var lateral = new Lateral();
+      lateral.setName(name);
+      lateral.setParentLateralId(parentLateralId);
+      lateral.setNetwork(network);
+      return lateral;
     }
   }
 

@@ -1,11 +1,13 @@
 package com.capstone.construction.domain.model;
 
 import jakarta.persistence.*;
+import com.capstone.construction.infrastructure.config.Constant;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 @Getter
 @Entity
@@ -31,10 +33,56 @@ public class Roadmap {
   @JoinColumn(name = "water_supply_network_id")
   WaterSupplyNetwork network;
 
-  private void requireNonNullAndNotEmpty(String value, String message) {
-    Objects.requireNonNull(value, message);
-    if (value.trim().isEmpty()) {
-      throw new IllegalArgumentException(message);
+  public void setName(String name) {
+    Objects.requireNonNull(name, Constant.PT_73);
+    if (name.trim().isEmpty()) {
+      throw new IllegalArgumentException(Constant.PT_73);
+    }
+    this.name = name;
+  }
+
+  public void setLateral(Lateral lateral) {
+    Objects.requireNonNull(lateral, Constant.PT_74);
+    this.lateral = lateral;
+  }
+
+  public void setNetwork(WaterSupplyNetwork network) {
+    Objects.requireNonNull(network, Constant.PT_59);
+    this.network = network;
+  }
+
+  public static Roadmap create(Consumer<RoadmapBuilder> builder) {
+    var instance = new RoadmapBuilder();
+    builder.accept(instance);
+    return instance.build();
+  }
+
+  public static class RoadmapBuilder {
+    private String name;
+    private Lateral lateral;
+    private WaterSupplyNetwork network;
+
+    public RoadmapBuilder name(String name) {
+      this.name = name;
+      return this;
+    }
+
+    public RoadmapBuilder lateral(Lateral lateral) {
+      this.lateral = lateral;
+      return this;
+    }
+
+    public RoadmapBuilder network(WaterSupplyNetwork network) {
+      this.network = network;
+      return this;
+    }
+
+    public Roadmap build() {
+      var roadmap = new Roadmap();
+      roadmap.setName(name);
+      roadmap.setLateral(lateral);
+      roadmap.setNetwork(network);
+      return roadmap;
     }
   }
 

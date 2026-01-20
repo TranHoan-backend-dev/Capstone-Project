@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 @Getter
 @Entity
@@ -78,7 +79,7 @@ public class Users implements UserDetails, Serializable {
   }
 
   public void setUsername(String username) {
-    requireNonNullAndNotEmpty(email, Constant.PT_05);
+    requireNonNullAndNotEmpty(username, Constant.PT_05);
     this.username = username;
   }
 
@@ -97,9 +98,9 @@ public class Users implements UserDetails, Serializable {
     this.jobId = value;
   }
 
-  public void setBusinessPageIds(String value) {
-    requireNonNullAndNotEmpty(value, Constant.PT_21);
-    this.jobId = value;
+  public void setBusinessPageIds(List<String> values) {
+    Objects.requireNonNull(values, Constant.PT_21);
+    this.businessPageIds = values;
   }
 
   public void setDepartmentId(String departmentId) {
@@ -144,18 +145,60 @@ public class Users implements UserDetails, Serializable {
     return UserDetails.super.isAccountNonExpired();
   }
 
-  public static @NonNull Users builder(
-    String email, String password, String username,
-    Roles role, String branchId, String departmentId
-  ) {
-    var user = new Users();
-    user.setEmail(email);
-    user.setPassword(password);
-    user.setUsername(username);
-    user.setRole(role);
-    user.setWaterSupplyNetworkId(branchId);
-    user.setDepartmentId(departmentId);
-    return user;
+  public static Users create(Consumer<UsersBuilder> builder) {
+    var instance = new UsersBuilder();
+    builder.accept(instance);
+    return instance.build();
+  }
+
+  public static class UsersBuilder {
+    private String email;
+    private String password;
+    private String username;
+    private Roles role;
+    private String branchId;
+    private String departmentId;
+
+    public UsersBuilder email(String email) {
+      this.email = email;
+      return this;
+    }
+
+    public UsersBuilder password(String password) {
+      this.password = password;
+      return this;
+    }
+
+    public UsersBuilder username(String username) {
+      this.username = username;
+      return this;
+    }
+
+    public UsersBuilder role(Roles role) {
+      this.role = role;
+      return this;
+    }
+
+    public UsersBuilder branchId(String branchId) {
+      this.branchId = branchId;
+      return this;
+    }
+
+    public UsersBuilder departmentId(String departmentId) {
+      this.departmentId = departmentId;
+      return this;
+    }
+
+    public Users build() {
+      var user = new Users();
+      user.setEmail(email);
+      user.setPassword(password);
+      user.setUsername(username);
+      user.setRole(role);
+      user.setWaterSupplyNetworkId(branchId);
+      user.setDepartmentId(departmentId);
+      return user;
+    }
   }
 
   @PrePersist
