@@ -8,33 +8,44 @@ import PasswordInput from "@/components/ui/PasswordInput";
 import CustomButton from "@/components/ui/custom/CustomButton";
 import { passwordSchema } from "@/schemas/password.schema";
 import { resetPasswordService } from "@/services/auth.service";
+import { CallToast } from "@/components/ui/CallToast";
+import { useRouter } from "next/navigation";
 
 interface ResetPasswordFormProps {
   email: string;
 }
 
-const ResetPasswordForm = ({ email }: ResetPasswordFormProps) => {
-  const resetPasswordSchema = z
-    .object({
-      newPassword: passwordSchema,
-      confirmPassword: z.string(),
-    })
-    .refine((data) => data.newPassword === data.confirmPassword, {
-      message: "Mật khẩu không khớp",
-      path: ["confirmPassword"],
-    });
+const resetPasswordSchema = z
+  .object({
+    newPassword: passwordSchema,
+    confirmPassword: z.string().min(1, "Vui lòng xác nhận mật khẩu"),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Mật khẩu không khớp",
+    path: ["confirmPassword"],
+  });
 
-  const [formData, setFormData] = useState({
+type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
+
+const ResetPasswordForm = ({ email }: ResetPasswordFormProps) => {
+  const router = useRouter();
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [formData, setFormData] = useState<ResetPasswordFormData>({
     newPassword: "",
     confirmPassword: "",
   });
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
+
+  const [fieldErrors, setFieldErrors] = useState<
+    Partial<Record<keyof ResetPasswordFormData, string>>
+  >({});
+
+  const TOAST_DURATION = 3000;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setFieldErrors({});
 
     const result = resetPasswordSchema.safeParse({
       newPassword: formData.newPassword,
@@ -42,47 +53,43 @@ const ResetPasswordForm = ({ email }: ResetPasswordFormProps) => {
     });
 
     if (!result.success) {
-      setError(result.error.issues[0].message);
+      const errors: Partial<Record<keyof ResetPasswordFormData, string>> = {};
+
+      result.error.issues.forEach((err) => {
+        const field = err.path[0] as keyof ResetPasswordFormData;
+        if (field) {
+          errors[field] = err.message;
+        }
+      });
+
+      setFieldErrors(errors);
       return;
     }
 
     setIsLoading(true);
     try {
       await resetPasswordService(email, formData.newPassword);
+      CallToast({
+        title: "Thành công",
+        message: "Mật khẩu đã được đặt lại thành công",
+        color: "success",
+      });
 
-      setSuccess(true);
-      setTimeout(() => {
-        window.location.href = "/login";
-      }, 2000);
-    } catch {
-      setError("Có lỗi xảy ra. Vui lòng thử lại.");
+      localStorage.removeItem("forgot_step");
+      localStorage.removeItem("forgot_email");
+
+      setTimeout(() => router.replace("/login"), TOAST_DURATION);
+    } catch (err: any) {
+      CallToast({
+        title: "Thất bại",
+        message:
+          err?.response?.data?.message || "Có lỗi xảy ra. Vui lòng thử lại.",
+        color: "danger",
+      });
     } finally {
       setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (success) {
-      localStorage.removeItem("forgot_step");
-      localStorage.removeItem("forgot_email");
-    }
-  }, [success]);
-
-  if (success) {
-    return (
-      <div className="space-y-6 py-8">
-        <div className="space-y-2 text-center">
-          <h1 className="text-2xl font-bold text-slate-900">
-            Đổi mật khẩu thành công!
-          </h1>
-          <p className="text-sm text-slate-600">
-            Mật khẩu của bạn đã được cập nhật. Bạn sẽ được chuyển hướng đến
-            trang đăng nhập...
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <form className="space-y-6" onSubmit={handleSubmit}>
@@ -103,6 +110,8 @@ const ResetPasswordForm = ({ email }: ResetPasswordFormProps) => {
               newPassword: e.target.value,
             })
           }
+          errorMessage={fieldErrors.newPassword}
+          isInvalid={!!fieldErrors.newPassword}
         />
       </div>
 
@@ -117,6 +126,8 @@ const ResetPasswordForm = ({ email }: ResetPasswordFormProps) => {
               confirmPassword: e.target.value,
             })
           }
+          errorMessage={fieldErrors.confirmPassword}
+          isInvalid={!!fieldErrors.confirmPassword}
         />
       </div>
 

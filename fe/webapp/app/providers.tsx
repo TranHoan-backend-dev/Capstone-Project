@@ -28,7 +28,7 @@ export const Providers = ({ children, themeProps }: ProvidersProps) => {
     <SocketProvider>
       <HeroUIProvider navigate={router.push}>
         <NextThemesProvider {...themeProps}>
-          <ToastProvider maxVisibleToasts={5} placement="bottom-right" />
+          <ToastProvider maxVisibleToasts={5} placement="top-right" />
           {children}
         </NextThemesProvider>
       </HeroUIProvider>

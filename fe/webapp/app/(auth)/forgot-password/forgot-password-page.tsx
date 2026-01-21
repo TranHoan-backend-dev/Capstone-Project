@@ -26,11 +26,22 @@ export default function ForgotPasswordPage() {
   };
 
   useEffect(() => {
-    const savedStep = localStorage.getItem("forgot_step") as ForgotStep | null;
-    const savedEmail = localStorage.getItem("forgot_email");
+    const navigationType = performance.getEntriesByType(
+      "navigation",
+    )[0] as PerformanceNavigationTiming;
 
-    if (savedStep) setStep(savedStep);
-    if (savedEmail) setEmail(savedEmail);
+    if (navigationType?.type === "reload") {
+      const savedStep = localStorage.getItem(
+        "forgot_step",
+      ) as ForgotStep | null;
+      const savedEmail = localStorage.getItem("forgot_email");
+
+      if (savedStep) setStep(savedStep);
+      if (savedEmail) setEmail(savedEmail);
+    } else {
+      localStorage.removeItem("forgot_step");
+      localStorage.removeItem("forgot_email");
+    }
 
     setMounted(true);
   }, []);
