@@ -1,12 +1,14 @@
 package com.capstone.auth.adapter;
 
 import com.capstone.auth.application.dto.request.CheckExistenceRequest;
+import com.capstone.auth.application.dto.request.LoginRequest;
 import com.capstone.auth.application.dto.request.ResetPasswordRequest;
 import com.capstone.auth.application.dto.request.SendOtpRequest;
 import com.capstone.auth.application.dto.request.SignupRequest;
 import com.capstone.auth.application.dto.request.VerifyOtpRequest;
 import com.capstone.auth.application.dto.response.WrapperApiResponse;
 import com.capstone.auth.application.usecase.AuthUseCase;
+import com.capstone.auth.application.usecase.LoginUseCase;
 import com.capstone.auth.application.usecase.OtpUseCase;
 
 import jakarta.validation.Valid;
@@ -30,6 +32,7 @@ import java.util.concurrent.ExecutionException;
 public class AuthController {
   AuthUseCase authUC;
   OtpUseCase otpUC;
+  LoginUseCase loginUC;
   // TODO: custom error code
 
   @PostMapping("/signup")
@@ -105,6 +108,16 @@ public class AuthController {
         HttpStatus.OK.value(),
         "Get profile successfully",
         authUC.getProfile(id),
+        LocalDateTime.now()));
+  }
+
+  @PostMapping("/login")
+  public ResponseEntity<?> login(@RequestBody @Valid LoginRequest request) {
+    log.info("Login request comes to endpoint: {}", request);
+    return ResponseEntity.ok(new WrapperApiResponse(
+        HttpStatus.OK.value(),
+        "Login successfully",
+        loginUC.login(request.username(), request.password()),
         LocalDateTime.now()));
   }
 }
