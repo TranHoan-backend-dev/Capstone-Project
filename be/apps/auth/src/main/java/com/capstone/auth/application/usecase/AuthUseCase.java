@@ -1,8 +1,9 @@
 package com.capstone.auth.application.usecase;
 
+import com.capstone.auth.application.business.profile.ProfileService;
 import com.capstone.auth.application.business.users.UserService;
+import com.capstone.auth.application.dto.response.ProfileResponse;
 import com.capstone.auth.application.event.producer.MessageProducer;
-import com.capstone.auth.domain.model.enumerate.RoleName;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -18,7 +19,8 @@ import java.util.concurrent.ExecutionException;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthUseCase {
-  UserService service;
+  UserService uSrv;
+  ProfileService pSrv;
   MessageProducer template;
 
   @NonFinal
@@ -43,5 +45,14 @@ public class AuthUseCase {
 
     log.info("User has been registered successfully");
 //    template.sendMessage(new AccountCreationEvent(email, SUBJECT, TEMPLATE, fullName, username, password));
+  }
+
+  public ProfileResponse getProfile(String id) {
+    log.info("Getting profile by id: {}", id);
+    return pSrv.getUserById(id);
+  }
+
+  public void resetPassword(String email, String newPassword) {
+
   }
 }

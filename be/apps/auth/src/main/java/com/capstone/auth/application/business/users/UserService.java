@@ -5,7 +5,9 @@ import com.capstone.auth.domain.model.enumerate.RoleName;
 import java.util.concurrent.ExecutionException;
 
 public interface UserService {
-  void createEmployee(String username, String password, String email, RoleName roleName) throws ExecutionException, InterruptedException;
+  void createEmployee(String username, String password, String email,
+                      RoleName roleName, String jobIds, String businessIds,
+                      String departmentId, String waterSupplyNetworkId) throws ExecutionException, InterruptedException;
 
   void updatePassword(String email, String password, String newPassword);
 

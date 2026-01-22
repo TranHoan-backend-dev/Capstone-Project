@@ -23,7 +23,7 @@ public class OverallWaterMeter {
   @Column(name = "meter_code")
   String id;
 
-  @Column(nullable = false)
+  @Column(nullable = false, unique = true)
   String name;
 
   @Column(nullable = false)

@@ -1,6 +1,7 @@
 package com.capstone.auth.adapter;
 
 import com.capstone.auth.application.dto.request.SignupRequest;
+import com.capstone.auth.application.dto.request.VerifyEmailRequest;
 import com.capstone.auth.application.dto.response.WrapperApiResponse;
 import com.capstone.auth.application.usecase.AuthUseCase;
 import jakarta.validation.Valid;
@@ -44,18 +45,50 @@ public class AuthController {
     ));
   }
 
+  @PostMapping("/verify-email")
+  public ResponseEntity<?> verifyEmail(@RequestBody @Valid VerifyEmailRequest request) {
+
+    return ResponseEntity.ok(new WrapperApiResponse(
+      HttpStatus.OK.value(),
+      "Create account successfully",
+      null,
+      LocalDateTime.now()
+    ));
+  }
+
   @PatchMapping("/forgot-password")
   public ResponseEntity<?> forgotPassword() {
-    return null;
+    log.info("Forgot password request comes to endpoint");
+
+    return ResponseEntity.ok(new WrapperApiResponse(
+      HttpStatus.OK.value(),
+      "Reset password successfully",
+      null,
+      LocalDateTime.now()
+    ));
   }
 
   @PatchMapping("/reset-password")
   public ResponseEntity<?> resetPassword() {
-    return null;
+    log.info("Reset password request comes to endpoint");
+
+    return ResponseEntity.ok(new WrapperApiResponse(
+      HttpStatus.OK.value(),
+      "Reset password successfully",
+      null,
+      LocalDateTime.now()
+    ));
   }
 
   @GetMapping("/me")
-  public ResponseEntity<?> me() {
-    return null;
+  public ResponseEntity<?> me(@RequestParam @RequestHeader("Authorization") String id) {
+    log.info("Get profile request comes to endpoint: {}", id);
+
+    return ResponseEntity.ok(new WrapperApiResponse(
+      HttpStatus.OK.value(),
+      "Get profile successfully",
+      authUC.getProfile(id),
+      LocalDateTime.now()
+    ));
   }
 }

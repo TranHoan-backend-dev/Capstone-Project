@@ -22,7 +22,7 @@ public class Department {
   @Column(name = "department_id")
   String id;
 
-  @Column(nullable = false)
+  @Column(nullable = false, unique = true)
   String name;
 
   @Column(nullable = false, unique = true)

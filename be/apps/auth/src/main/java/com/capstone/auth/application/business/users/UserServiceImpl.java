@@ -11,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,8 +30,10 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public void createEmployee(
-      String username, String password,
-      String email, RoleName roleName) throws ExecutionException, InterruptedException {
+    String username, String password, String email,
+    RoleName roleName, String jobIds, String businessIds,
+    String departmentId, String waterSupplyNetworkId
+  ) throws ExecutionException, InterruptedException {
     log.info("UsersService is handling the request");
     var obj = repo.findByEmail(email);
     if (obj.isPresent()) {
@@ -41,12 +44,12 @@ public class UserServiceImpl implements UserService {
     log.info("New account's role: {}", role);
     var passwordHash = hashPassword(password).get();
     var user = Users.create(builder -> builder
-        .email(email)
-        .password(passwordHash)
-        .username(username)
-        .role(role)
-        .branchId("")
-        .departmentId(""));
+      .email(email)
+      .password(passwordHash)
+      .username(username)
+      .role(role)
+      .waterSupplyNetworkId(waterSupplyNetworkId)
+      .departmentId(departmentId));
     log.info("New account's information: {}", user);
 
     repo.save(user);
@@ -58,17 +61,34 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public void updatePassword(String email, String password, String newPassword) {
-    var obj = repo.findByEmail(email);
-    if (obj.isEmpty()) {
-      throw new NotExistingException(Constant.SE_02);
+  public void updatePassword(String email, @NonNull String password, String newPassword) {
+    var obj = getUsersByEmail(email);
+    if (password.equals(newPassword)) {
+      updateUser(obj, newPassword);
     }
-    // TODO: handle this shit
+    log.debug("Passwords do not match");
+    throw new IllegalArgumentException(Constant.SE_03);
   }
 
   @Override
   public void resetPassword(String email, String newPassword) {
+    var obj = getUsersByEmail(email);
+    updateUser(obj, newPassword);
+  }
 
+  private @NonNull Users getUsersByEmail(String email) {
+    var obj = repo.findByEmail(email);
+    if (obj.isEmpty()) {
+      throw new NotExistingException(Constant.SE_02);
+    }
+    log.info("Find user by email: {}", obj);
+    return obj.get();
+  }
+
+  private void updateUser(@NonNull Users obj, String password) {
+    obj.setPassword(encoder.encode(password));
+    repo.save(obj);
+    log.info("Password reset successfully");
   }
 
 }

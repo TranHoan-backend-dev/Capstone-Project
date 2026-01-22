@@ -32,4 +32,5 @@ public final class Constant {
   // for service layer
   public static final String SE_01 = "Email has been existing";
   public static final String SE_02 = "Email not found";
+  public static final String SE_03 = "2 passwords do not match";
 }

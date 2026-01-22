@@ -85,7 +85,6 @@ public final class Constant {
   public static final String PT_76 = "Connection fee cannot be null";
   public static final String PT_77 = "Note cannot be null or empty";
   public static final String PT_78 = "Schedule survey at cannot be null";
-  public static final String PT_79 = "Parent lateral id cannot be null or empty";
 
   // for service layer
   public static final String SE_01 = "Email has been existing";

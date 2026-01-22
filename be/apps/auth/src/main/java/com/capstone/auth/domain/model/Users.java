@@ -157,7 +157,7 @@ public class Users implements UserDetails, Serializable {
     private String password;
     private String username;
     private Roles role;
-    private String branchId;
+    private String waterSupplyNetworkId;
     private String departmentId;
 
     public UsersBuilder email(String email) {
@@ -180,8 +180,8 @@ public class Users implements UserDetails, Serializable {
       return this;
     }
 
-    public UsersBuilder branchId(String branchId) {
-      this.branchId = branchId;
+    public UsersBuilder waterSupplyNetworkId(String waterSupplyNetworkId) {
+      this.waterSupplyNetworkId = waterSupplyNetworkId;
       return this;
     }
 
@@ -196,7 +196,7 @@ public class Users implements UserDetails, Serializable {
       user.setPassword(password);
       user.setUsername(username);
       user.setRole(role);
-      user.setWaterSupplyNetworkId(branchId);
+      user.setWaterSupplyNetworkId(waterSupplyNetworkId);
       user.setDepartmentId(departmentId);
       return user;
     }
