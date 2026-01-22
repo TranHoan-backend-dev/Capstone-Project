@@ -7,6 +7,8 @@ import com.capstone.auth.application.dto.request.SignupRequest;
 import com.capstone.auth.application.dto.request.VerifyOtpRequest;
 import com.capstone.auth.application.dto.response.WrapperApiResponse;
 import com.capstone.auth.application.usecase.AuthUseCase;
+import com.capstone.auth.application.usecase.OtpUseCase;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,6 +29,7 @@ import java.util.concurrent.ExecutionException;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthController {
   AuthUseCase authUC;
+  OtpUseCase otpUC;
   // TODO: custom error code
 
   @PostMapping("/signup")
@@ -60,7 +63,7 @@ public class AuthController {
   @PostMapping("/send-otp")
   public ResponseEntity<?> sendOtp(
       @RequestBody @Valid SendOtpRequest request) {
-    authUC.sendOtp(request.email());
+    otpUC.sendOtp(request.email());
     return ResponseEntity.ok(new WrapperApiResponse(
         HttpStatus.OK.value(),
         "Send OTP successfully",
@@ -71,7 +74,7 @@ public class AuthController {
   @PostMapping("/verify-otp")
   public ResponseEntity<?> verifyOtp(
       @RequestBody @Valid VerifyOtpRequest request) {
-    var isValid = authUC.verifyOtp(request.email(), request.otp());
+    var isValid = otpUC.verifyOtp(request.email(), request.otp());
     // if not valid, the service might return false or throw exception.
     // Implementation in service returns boolean without exception for mismatch, but
     // exception for expiry/not found.
@@ -86,7 +89,7 @@ public class AuthController {
 
   @PostMapping("/reset-password")
   public ResponseEntity<?> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
-    authUC.resetPasswordWithOtp(request.email(), request.otp(), request.newPassword());
+    otpUC.resetPasswordWithOtp(request.email(), request.otp(), request.newPassword());
     return ResponseEntity.ok(new WrapperApiResponse(
         HttpStatus.OK.value(),
         "Reset password successfully",

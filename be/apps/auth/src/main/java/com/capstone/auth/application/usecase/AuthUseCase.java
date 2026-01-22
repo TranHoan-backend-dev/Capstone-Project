@@ -55,28 +55,9 @@ public class AuthUseCase {
     return pSrv.getUserById(id);
   }
 
-  public void resetPassword(String email, String newPassword) {
-
-  }
-
   public CheckExistenceResponse checkExistence(String username,
       String email) {
     log.info("Checking existence of username and email: {}", username, email);
     return uSrv.checkExistence(username, email);
-  }
-
-  public void sendOtp(String email) {
-    log.info("Sending OTP to email: {}", email);
-    vSrv.sendOtp(email);
-  }
-
-  public boolean verifyOtp(String email, String otp) {
-    log.info("Verifying OTP for email: {}", email);
-    return vSrv.verifyOtp(email, otp);
-  }
-
-  public void resetPasswordWithOtp(String email, String otp, String newPassword) {
-    log.info("Resetting password for email: {}", email);
-    vSrv.verifyAndResetPassword(email, otp, newPassword);
   }
 }
