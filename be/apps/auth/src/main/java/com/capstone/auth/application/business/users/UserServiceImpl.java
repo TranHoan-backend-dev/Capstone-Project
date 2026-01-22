@@ -1,5 +1,6 @@
 package com.capstone.auth.application.business.users;
 
+import com.capstone.auth.application.dto.response.CheckExistenceResponse;
 import com.capstone.auth.application.exception.ExistingException;
 import com.capstone.auth.application.exception.NotExistingException;
 import com.capstone.auth.domain.model.Users;
@@ -30,10 +31,9 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public void createEmployee(
-    String username, String password, String email,
-    RoleName roleName, String jobIds, String businessIds,
-    String departmentId, String waterSupplyNetworkId
-  ) throws ExecutionException, InterruptedException {
+      String username, String password, String email,
+      RoleName roleName, String jobIds, String businessIds,
+      String departmentId, String waterSupplyNetworkId) throws ExecutionException, InterruptedException {
     log.info("UsersService is handling the request");
     var obj = repo.findByEmail(email);
     if (obj.isPresent()) {
@@ -44,12 +44,12 @@ public class UserServiceImpl implements UserService {
     log.info("New account's role: {}", role);
     var passwordHash = hashPassword(password).get();
     var user = Users.create(builder -> builder
-      .email(email)
-      .password(passwordHash)
-      .username(username)
-      .role(role)
-      .waterSupplyNetworkId(waterSupplyNetworkId)
-      .departmentId(departmentId));
+        .email(email)
+        .password(passwordHash)
+        .username(username)
+        .role(role)
+        .waterSupplyNetworkId(waterSupplyNetworkId)
+        .departmentId(departmentId));
     log.info("New account's information: {}", user);
 
     repo.save(user);
@@ -91,4 +91,23 @@ public class UserServiceImpl implements UserService {
     log.info("Password reset successfully");
   }
 
+  @Override
+  public CheckExistenceResponse checkExistence(String username,
+      String email) {
+    boolean isUsernameExists = false;
+    boolean isEmailExists = false;
+
+    if (username != null && !username.isBlank()) {
+      isUsernameExists = repo.existsByUsername(username);
+    }
+
+    if (email != null && !email.isBlank()) {
+      isEmailExists = repo.existsByEmail(email);
+    }
+
+    log.info("Username is {}", isUsernameExists ? "existing" : "not existing");
+    log.info("Email is {}", isEmailExists ? "existing" : "not existing");
+
+    return new CheckExistenceResponse(isUsernameExists, isEmailExists);
+  }
 }

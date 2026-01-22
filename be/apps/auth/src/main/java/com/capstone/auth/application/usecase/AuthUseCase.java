@@ -2,6 +2,8 @@ package com.capstone.auth.application.usecase;
 
 import com.capstone.auth.application.business.profile.ProfileService;
 import com.capstone.auth.application.business.users.UserService;
+import com.capstone.auth.application.business.verification.VerificationService;
+import com.capstone.auth.application.dto.response.CheckExistenceResponse;
 import com.capstone.auth.application.dto.response.ProfileResponse;
 import com.capstone.auth.application.event.producer.MessageProducer;
 import lombok.AccessLevel;
@@ -21,6 +23,7 @@ import java.util.concurrent.ExecutionException;
 public class AuthUseCase {
   UserService uSrv;
   ProfileService pSrv;
+  VerificationService vSrv;
   MessageProducer template;
 
   @NonFinal
@@ -32,19 +35,19 @@ public class AuthUseCase {
   String TEMPLATE;
 
   public void register(
-    String username,
-    String password, String email, boolean status
-  ) throws ExecutionException, InterruptedException {
+      String username,
+      String password, String email, boolean status) throws ExecutionException, InterruptedException {
     log.info("AuthUseCase is handling business");
 
-//    service.createEmployee(
-//      username,
-//      password,
-//      email,
-//      status ? RoleName.EMPLOYEE : RoleName.CUSTOMER);
+    // service.createEmployee(
+    // username,
+    // password,
+    // email,
+    // status ? RoleName.EMPLOYEE : RoleName.CUSTOMER);
 
     log.info("User has been registered successfully");
-//    template.sendMessage(new AccountCreationEvent(email, SUBJECT, TEMPLATE, fullName, username, password));
+    // template.sendMessage(new AccountCreationEvent(email, SUBJECT, TEMPLATE,
+    // fullName, username, password));
   }
 
   public ProfileResponse getProfile(String id) {
@@ -54,5 +57,26 @@ public class AuthUseCase {
 
   public void resetPassword(String email, String newPassword) {
 
+  }
+
+  public CheckExistenceResponse checkExistence(String username,
+      String email) {
+    log.info("Checking existence of username and email: {}", username, email);
+    return uSrv.checkExistence(username, email);
+  }
+
+  public void sendOtp(String email) {
+    log.info("Sending OTP to email: {}", email);
+    vSrv.sendOtp(email);
+  }
+
+  public boolean verifyOtp(String email, String otp) {
+    log.info("Verifying OTP for email: {}", email);
+    return vSrv.verifyOtp(email, otp);
+  }
+
+  public void resetPasswordWithOtp(String email, String otp, String newPassword) {
+    log.info("Resetting password for email: {}", email);
+    vSrv.verifyAndResetPassword(email, otp, newPassword);
   }
 }
