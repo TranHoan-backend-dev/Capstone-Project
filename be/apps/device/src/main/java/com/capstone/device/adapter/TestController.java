@@ -1,4 +1,4 @@
-package com.capstone.infrastructure.adapter;
+package com.capstone.device.adapter;
 
 public class TestController {
 }
