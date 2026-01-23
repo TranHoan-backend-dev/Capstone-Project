@@ -39,6 +39,13 @@ web-frontend-url: ${WEB_FRONTEND_URL:http://localhost:3000}
 cors:
   allowed-origins:
     - ${web-frontend-url}
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui/index.html
 #spring:
 #  datasource:
 #    driver-class-name: org.postgresql.Driver
@@ -72,10 +79,3 @@ cors:
 #  exchange_name:
 #  queue_name:
 #  routing_key:
-springdoc:
-  api-docs:
-    enabled: true
-    path: /v3/api-docs
-  swagger-ui:
-    enabled: true
-    path: /swagger-ui/index.html

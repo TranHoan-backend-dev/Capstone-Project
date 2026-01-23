@@ -24,11 +24,11 @@ public class Roles implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "role_id")
-  private String id;
+  String id;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false, unique = true)
-  private RoleName name;
+  RoleName name;
 
   @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   Set<Users> users;

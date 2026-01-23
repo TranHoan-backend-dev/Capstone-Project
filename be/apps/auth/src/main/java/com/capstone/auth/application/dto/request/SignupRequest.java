@@ -13,6 +13,10 @@ public record SignupRequest(
   @Email(message = Constant.PT_01)
   String email,
 
-  Boolean status
+  Boolean status,
+  String jobId,
+  String businessPageIds,
+  String departmentId,
+  String waterSupplyNetworkId
 ) {
 }

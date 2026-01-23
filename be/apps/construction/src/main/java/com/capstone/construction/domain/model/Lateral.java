@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import com.capstone.construction.infrastructure.config.Constant;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.jspecify.annotations.NonNull;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -25,8 +26,6 @@ public class Lateral {
   @Column(nullable = false, unique = true)
   String name;
 
-  String parentLateralId;
-
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "water_supply_network_id")
   WaterSupplyNetwork network;
@@ -38,13 +37,11 @@ public class Lateral {
   LocalDateTime updatedAt;
 
   public void setName(String name) {
-    requireNonNullAndNotEmpty(name, Constant.PT_70);
+    Objects.requireNonNull(name, Constant.PT_70);
+    if (name.trim().isEmpty()) {
+      throw new IllegalArgumentException(Constant.PT_70);
+    }
     this.name = name;
-  }
-
-  public void setParentLateralId(String parentLateralId) {
-    requireNonNullAndNotEmpty(parentLateralId, Constant.PT_79);
-    this.parentLateralId = parentLateralId;
   }
 
   public void setNetwork(WaterSupplyNetwork network) {
@@ -52,14 +49,7 @@ public class Lateral {
     this.network = network;
   }
 
-  private void requireNonNullAndNotEmpty(String value, String message) {
-    Objects.requireNonNull(value, message);
-    if (value.trim().isEmpty()) {
-      throw new IllegalArgumentException(message);
-    }
-  }
-
-  public static Lateral create(Consumer<LateralBuilder> builder) {
+  public static Lateral create(@NonNull Consumer<LateralBuilder> builder) {
     var instance = new LateralBuilder();
     builder.accept(instance);
     return instance.build();
@@ -67,16 +57,10 @@ public class Lateral {
 
   public static class LateralBuilder {
     private String name;
-    private String parentLateralId;
     private WaterSupplyNetwork network;
 
     public LateralBuilder name(String name) {
       this.name = name;
-      return this;
-    }
-
-    public LateralBuilder parentLateralId(String parentLateralId) {
-      this.parentLateralId = parentLateralId;
       return this;
     }
 
@@ -88,7 +72,6 @@ public class Lateral {
     public Lateral build() {
       var lateral = new Lateral();
       lateral.setName(name);
-      lateral.setParentLateralId(parentLateralId);
       lateral.setNetwork(network);
       return lateral;
     }

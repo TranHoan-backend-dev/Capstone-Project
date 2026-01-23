@@ -20,7 +20,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 
   UserRepository userRepository;
 
-  @Autowired
   public CustomUserDetailsService(UserRepository userRepository) {
     this.userRepository = userRepository;
   }
@@ -29,7 +28,7 @@ public class CustomUserDetailsService implements UserDetailsService {
   @Transactional
   public @NonNull UserDetails loadUserByUsername(@NonNull String email) throws UsernameNotFoundException {
     var user = userRepository.findByEmail(email)
-      .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+        .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
     // Check if user account is active
     if (!user.isAccountNonLocked()) {
@@ -37,23 +36,9 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     var authorities = Collections.singletonList(
-      new SimpleGrantedAuthority("ROLE_" + user.getRole().getName())
-    );
+        new SimpleGrantedAuthority("ROLE_" + user.getRole().getName()));
 
     user.setAuthorities(authorities);
     return user;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

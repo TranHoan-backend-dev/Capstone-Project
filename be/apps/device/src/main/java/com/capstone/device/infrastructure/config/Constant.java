@@ -30,5 +30,4 @@ public final class Constant {
   public static final String ENT_27 = "Qt list cannot be null";
   public static final String ENT_28 = "Max index cannot be null";
   public static final String ENT_29 = "Overall Water Meter cannot be null";
-  public static final String ENT_30 = "Customer id cannot be null";
 }

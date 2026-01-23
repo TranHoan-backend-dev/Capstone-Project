@@ -8,7 +8,6 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -17,12 +16,12 @@ import java.util.function.Consumer;
 
 @Getter
 @Entity
-@ToString
+@ToString(exclude = "role")
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Users implements UserDetails, Serializable {
+public class Users implements UserDetails {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "user_id")
@@ -43,7 +42,7 @@ public class Users implements UserDetails, Serializable {
   @Column(nullable = false)
   LocalDateTime updatedAt;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "role_id")
   Roles role;
 
@@ -157,7 +156,7 @@ public class Users implements UserDetails, Serializable {
     private String password;
     private String username;
     private Roles role;
-    private String branchId;
+    private String waterSupplyNetworkId;
     private String departmentId;
 
     public UsersBuilder email(String email) {
@@ -180,8 +179,8 @@ public class Users implements UserDetails, Serializable {
       return this;
     }
 
-    public UsersBuilder branchId(String branchId) {
-      this.branchId = branchId;
+    public UsersBuilder waterSupplyNetworkId(String waterSupplyNetworkId) {
+      this.waterSupplyNetworkId = waterSupplyNetworkId;
       return this;
     }
 
@@ -196,7 +195,7 @@ public class Users implements UserDetails, Serializable {
       user.setPassword(password);
       user.setUsername(username);
       user.setRole(role);
-      user.setWaterSupplyNetworkId(branchId);
+      user.setWaterSupplyNetworkId(waterSupplyNetworkId);
       user.setDepartmentId(departmentId);
       return user;
     }
