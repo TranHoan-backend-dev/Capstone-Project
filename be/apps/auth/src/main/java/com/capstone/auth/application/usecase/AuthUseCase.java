@@ -7,7 +7,9 @@ import com.capstone.auth.application.business.dto.ProfileResponse;
 import com.capstone.auth.application.dto.response.UserProfileResponse;
 import com.capstone.auth.application.event.producer.MessageProducer;
 import com.capstone.auth.application.exception.NotExistingException;
+
 import com.capstone.auth.infrastructure.config.Constant;
+import org.springframework.security.authentication.DisabledException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -45,6 +47,11 @@ public class AuthUseCase {
       throw new NotExistingException(Constant.SE_05);
     }
 
+    // kiem tra xem tai khoan co bi khoa hay khong
+    if (user.isLocked()) {
+      throw new NotExistingException(Constant.SE_07);
+    }
+
     if (email != null && email.matches(Constant.EMAIL_PATTERN)) {
       if (!email.equals(user.email())) {
         throw new IllegalArgumentException("Email does not match");
@@ -65,22 +72,20 @@ public class AuthUseCase {
     Objects.requireNonNull(profile, Constant.SE_06);
 
     return new UserProfileResponse(
-      profile.fullname(),
-      profile.avatarUrl(),
-      profile.address(),
-      profile.phoneNumber(),
-      profile.gender(),
-      profile.birthday(),
-      user.role().toLowerCase(),
-      user.username(),
-      user.email()
-    );
+        profile.fullname(),
+        profile.avatarUrl(),
+        profile.address(),
+        profile.phoneNumber(),
+        profile.gender(),
+        profile.birthday(),
+        user.role().toLowerCase(),
+        user.username(),
+        user.email());
   }
 
   public void register(
-    String username,
-    String password, String email, boolean status
-  ) throws ExecutionException, InterruptedException {
+      String username,
+      String password, String email, boolean status) throws ExecutionException, InterruptedException {
     log.info("AuthUseCase is handling business");
 
     // service.createEmployee(
@@ -97,6 +102,28 @@ public class AuthUseCase {
   public ProfileResponse getProfile(String id) {
     log.info("Getting profile by id: {}", id);
     return pSrv.getProfileById(id);
+  }
+
+  public UserProfileResponse getMe(String id) {
+    log.info("Check status and get profile by id: {}", id);
+    UserDTO user = uSrv.getUserById(id);
+
+    if (!user.isLocked()) {
+      throw new DisabledException(Constant.SE_07);
+    }
+
+    var profile = pSrv.getProfileById(id);
+
+    return new UserProfileResponse(
+        profile.fullname(),
+        profile.avatarUrl(),
+        profile.address(),
+        profile.phoneNumber(),
+        profile.gender(),
+        profile.birthday(),
+        user.role().toLowerCase(),
+        user.username(),
+        user.email());
   }
 
   public boolean checkExistence(String value) {
