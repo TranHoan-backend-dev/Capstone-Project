@@ -36,4 +36,5 @@ public final class Constant {
   public static final String SE_04 = "User is null";
   public static final String SE_05 = "This credential is not existing";
   public static final String SE_06 = "Profile of this account is not initialized";
+  public static final String SE_07 = "User is locked";
 }

@@ -33,10 +33,9 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public void createEmployee(
-    String username, String password, String email,
-    RoleName roleName, String jobIds, String businessIds,
-    String departmentId, String waterSupplyNetworkId
-  ) throws ExecutionException, InterruptedException {
+      String username, String password, String email,
+      RoleName roleName, String jobIds, String businessIds,
+      String departmentId, String waterSupplyNetworkId) throws ExecutionException, InterruptedException {
     log.info("UsersService is handling the request");
     var obj = repo.findByEmail(email);
     if (obj.isPresent()) {
@@ -47,12 +46,12 @@ public class UserServiceImpl implements UserService {
     log.info("New account's role: {}", role);
     var passwordHash = hashPassword(password).get();
     var user = Users.create(builder -> builder
-      .email(email)
-      .password(passwordHash)
-      .username(username)
-      .role(role)
-      .waterSupplyNetworkId(waterSupplyNetworkId)
-      .departmentId(departmentId));
+        .email(email)
+        .password(passwordHash)
+        .username(username)
+        .role(role)
+        .waterSupplyNetworkId(waterSupplyNetworkId)
+        .departmentId(departmentId));
     log.info("New account's information: {}", user);
 
     repo.save(user);
@@ -127,10 +126,10 @@ public class UserServiceImpl implements UserService {
     if (user.isPresent()) {
       log.info("User found: {}", user.get());
       return new UserDTO(
-        user.get().getRole().getName().name(),
-        user.get().getUsername(),
-        user.get().getEmail()
-      );
+          user.get().getRole().getName().name(),
+          user.get().getUsername(),
+          user.get().getEmail(),
+          user.get().isEnabled());
     }
     throw new NotExistingException("User with id does not exist");
   }

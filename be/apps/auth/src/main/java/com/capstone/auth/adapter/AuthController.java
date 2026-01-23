@@ -45,47 +45,47 @@ public class AuthController {
 
   @PostMapping("/signup")
   public ResponseEntity<?> signup(@RequestBody @Valid SignupRequest request)
-    throws ExecutionException, InterruptedException {
+      throws ExecutionException, InterruptedException {
     log.info("Signup request comes to endpoint: {}", request);
 
     authUC.register(
-      request.username(),
-      request.password(),
-      request.email(),
-      request.status());
+        request.username(),
+        request.password(),
+        request.email(),
+        request.status());
 
     return ResponseEntity.ok(new WrapperApiResponse(
-      HttpStatus.OK.value(),
-      "Create account successfully",
-      null,
-      LocalDateTime.now()));
+        HttpStatus.OK.value(),
+        "Create account successfully",
+        null,
+        LocalDateTime.now()));
   }
 
   // <editor-fold> desc="Forgot password"
   @PostMapping("/check-existence")
   public ResponseEntity<?> checkExistence(
-    @RequestBody @Valid CheckExistenceRequest request) {
+      @RequestBody @Valid CheckExistenceRequest request) {
     return ResponseEntity.ok(new WrapperApiResponse(
-      HttpStatus.OK.value(),
-      "Check existence successfully",
-      authUC.checkExistence(request.value()),
-      LocalDateTime.now()));
+        HttpStatus.OK.value(),
+        "Check existence successfully",
+        authUC.checkExistence(request.value()),
+        LocalDateTime.now()));
   }
 
   @PostMapping("/send-otp")
   public ResponseEntity<?> sendOtp(
-    @RequestBody @Valid SendOtpRequest request) {
+      @RequestBody @Valid SendOtpRequest request) {
     otpUC.sendOtp(request.email());
     return ResponseEntity.ok(new WrapperApiResponse(
-      HttpStatus.OK.value(),
-      "Send OTP successfully",
-      null,
-      LocalDateTime.now()));
+        HttpStatus.OK.value(),
+        "Send OTP successfully",
+        null,
+        LocalDateTime.now()));
   }
 
   @PostMapping("/verify-otp")
   public ResponseEntity<?> verifyOtp(
-    @RequestBody @Valid VerifyOtpRequest request) {
+      @RequestBody @Valid VerifyOtpRequest request) {
     var isValid = otpUC.verifyOtp(request.email(), request.otp());
     // if not valid, the service might return false or throw exception.
     // Implementation in service returns boolean without exception for mismatch, but
@@ -93,10 +93,10 @@ public class AuthController {
     // Let's handle the boolean false case.
 
     return ResponseEntity.badRequest().body(new WrapperApiResponse(
-      !isValid ? HttpStatus.BAD_REQUEST.value() : HttpStatus.OK.value(),
-      !isValid ? "Invalid OTP" : "Verify OTP successfully",
-      null,
-      LocalDateTime.now()));
+        !isValid ? HttpStatus.BAD_REQUEST.value() : HttpStatus.OK.value(),
+        !isValid ? "Invalid OTP" : "Verify OTP successfully",
+        null,
+        LocalDateTime.now()));
   }
   // </editor-fold>
 
@@ -104,32 +104,33 @@ public class AuthController {
   public ResponseEntity<?> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
     otpUC.resetPasswordWithOtp(request.email(), request.otp(), request.newPassword());
     return ResponseEntity.ok(new WrapperApiResponse(
-      HttpStatus.OK.value(),
-      "Reset password successfully",
-      null,
-      LocalDateTime.now()));
+        HttpStatus.OK.value(),
+        "Reset password successfully",
+        null,
+        LocalDateTime.now()));
   }
 
   @GetMapping("/me")
-  public ResponseEntity<?> me(@RequestParam @RequestHeader("Authorization") String id) {
+  public ResponseEntity<?> me(@AuthenticationPrincipal Jwt jwt) {
+    var id = jwt.getSubject();
     log.info("Get profile request comes to endpoint: {}", id);
 
     return ResponseEntity.ok(new WrapperApiResponse(
-      HttpStatus.OK.value(),
-      "Get profile successfully",
-      authUC.getProfile(id),
-      LocalDateTime.now()));
+        HttpStatus.OK.value(),
+        "Get profile successfully",
+        authUC.getMe(id),
+        LocalDateTime.now()));
   }
 
   @Operation(summary = "Login with JWT", description = "Authenticates the user using the JWT token from the Authorization header. "
-    +
-    "It extracts user claims (email, preferred_username), validates the user's existence and data consistency against the database. "
-    +
-    "Returns a success wrapper containing the user's profile information (UserProfileResponse) in the 'data' field if successful.")
+      +
+      "It extracts user claims (email, preferred_username), validates the user's existence and data consistency against the database. "
+      +
+      "Returns a success wrapper containing the user's profile information (UserProfileResponse) in the 'data' field if successful.")
   @ApiResponses(value = {
-    @ApiResponse(responseCode = "200", description = "Login successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "400", description = "Bad Request - Invalid claims or user data mismatch"),
-    @ApiResponse(responseCode = "500", description = "Internal Server Error")
+      @ApiResponse(responseCode = "200", description = "Login successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+      @ApiResponse(responseCode = "400", description = "Bad Request - Invalid claims or user data mismatch"),
+      @ApiResponse(responseCode = "500", description = "Internal Server Error")
   })
   @PostMapping("/login")
   public ResponseEntity<?> login(@AuthenticationPrincipal Jwt jwt) {
@@ -139,12 +140,12 @@ public class AuthController {
     Map<String, Object> claims = jwt.getClaims(); // username, email
 
     return ResponseEntity.ok(new WrapperApiResponse(
-      HttpStatus.OK.value(),
-      "Login successfully",
-      authUC.login(
-        id,
-        claims.get("email").toString(),
-        claims.get("preferred_username").toString()),
-      LocalDateTime.now()));
+        HttpStatus.OK.value(),
+        "Login successfully",
+        authUC.login(
+            id,
+            claims.get("email").toString(),
+            claims.get("preferred_username").toString()),
+        LocalDateTime.now()));
   }
 }
