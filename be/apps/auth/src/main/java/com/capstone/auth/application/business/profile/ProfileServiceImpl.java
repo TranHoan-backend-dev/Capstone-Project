@@ -1,6 +1,6 @@
 package com.capstone.auth.application.business.profile;
 
-import com.capstone.auth.application.business.dto.ProfileResponse;
+import com.capstone.auth.application.business.dto.ProfileDTO;
 import com.capstone.auth.application.exception.NotExistingException;
 import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.domain.repository.ProfileRepository;
@@ -24,20 +24,20 @@ public class ProfileServiceImpl implements ProfileService {
   ProfileRepository repo;
 
   @Override
-  public ProfileResponse getProfileById(String id) {
+  public ProfileDTO getProfileById(String id) {
     Objects.requireNonNull(id, "id cannot be null");
     var profile = repo.findById(id);
     return convertToResponse(profile, id);
   }
 
   @Override
-  public ProfileResponse getProfileByCredentials(String value) {
+  public ProfileDTO getProfileByCredentials(String value) {
     Objects.requireNonNull(value, "id cannot be null");
     var profile = value.matches(Constant.EMAIL_PATTERN) ? repo.findByUsersEmail(value) : repo.findByUsersUsername(value);
     return convertToResponse(profile, value);
   }
 
-  private ProfileResponse convertToResponse(@NonNull Optional<Profile> profile, String value) {
+  private ProfileDTO convertToResponse(@NonNull Optional<Profile> profile, String value) {
     if (profile.isEmpty()) {
       throw new NotExistingException("Profile does not exist");
     }
@@ -46,7 +46,7 @@ public class ProfileServiceImpl implements ProfileService {
     var address = p.getAddress() == null ? "" : p.getAddress();
     var gender = p.getGender() == null ? "" : p.getGender().toString();
     var birthday = p.getBirthday() == null ? "" : p.getBirthday().toString();
-    return new ProfileResponse(
+    return new ProfileDTO(
       IdEncoder.encode(profile.get().getId()),
       profile.get().getFullname(),
       avatarUrl,

@@ -1,11 +1,10 @@
 package com.capstone.auth.application.business.users;
 
 import com.capstone.auth.application.business.dto.UserDTO;
-import com.capstone.auth.application.dto.response.CheckExistenceResponse;
 import com.capstone.auth.application.exception.ExistingException;
 import com.capstone.auth.application.exception.NotExistingException;
+import com.capstone.auth.domain.model.Roles;
 import com.capstone.auth.domain.model.Users;
-import com.capstone.auth.domain.model.enumerate.RoleName;
 import com.capstone.auth.domain.repository.RoleRepository;
 import com.capstone.auth.domain.repository.UserRepository;
 import com.capstone.auth.infrastructure.config.Constant;
@@ -33,17 +32,15 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public void createEmployee(
-      String username, String password, String email,
-      RoleName roleName, String jobIds, String businessIds,
-      String departmentId, String waterSupplyNetworkId) throws ExecutionException, InterruptedException {
+    String username, String password, String email,
+    Roles role, String jobIds, String businessIds,
+    String departmentId, String waterSupplyNetworkId) throws ExecutionException, InterruptedException {
     log.info("UsersService is handling the request");
     var obj = repo.findByEmail(email);
     if (obj.isPresent()) {
       throw new ExistingException(Constant.SE_01);
     }
 
-    var role = roleRepo.findRolesByName(roleName.toString());
-    log.info("New account's role: {}", role);
     var passwordHash = hashPassword(password).get();
     var user = Users.create(builder -> builder
         .email(email)
