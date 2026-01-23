@@ -9,33 +9,58 @@ import CustomInput from "@/components/ui/custom/CustomInput";
 import { ArrowRightStartIcon, AvatarIcon } from "@/config/chip-and-icon";
 import { signinService } from "@/services/auth.service";
 import { useState } from "react";
+import { CallToast } from "@/components/ui/CallToast";
+import { z } from "zod";
 
+const loginSchema = z.object({
+  username: z.string().trim().min(1, "Vui lòng nhập tên đăng nhập"),
+  password: z.string().min(1, "Vui lòng nhập mật khẩu"),
+});
+
+export type LoginFormData = z.infer<typeof loginSchema>;
 const LoginForm = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
   const router = useRouter();
+  const [formData, setFormData] = useState<LoginFormData>({
+    username: "",
+    password: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const TOAST_DURATION = 3000;
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError("");
+    const result = loginSchema.safeParse(formData);
 
-    if (!username || !password) {
-      setError("Vui lòng nhập đầy đủ thông tin đăng nhập");
+    if (!result.success) {
+      CallToast({
+        title: "Thiếu thông tin",
+        message:
+          result.error.issues[0].message ||
+          "Vui lòng nhập đầy đủ thông tin đăng nhập!",
+        color: "warning",
+      });
       return;
     }
     setLoading(true);
     try {
-      const data = await signinService({ username, password });
+      const data = await signinService(result.data);
       localStorage.setItem("access_token", data.accessToken);
       localStorage.setItem("user", JSON.stringify(data.user));
-      router.push("/home");
-    } catch (error: any) {
-      setError(
-        error.response?.data?.message || "Sai tên đăng nhập hoặc mật khẩu",
-      );
+
+      CallToast({
+        title: "Thành công",
+        message: "Đăng nhập thành công!",
+        color: "success",
+      });
+
+      setTimeout(() => router.push("/home"), TOAST_DURATION);
+    } catch (err: any) {
+      CallToast({
+        title: "Thất bại",
+        message:
+          err.response?.data?.message || "Sai tên đăng nhập hoặc mật khẩu",
+        color: "danger",
+      });
     } finally {
       setLoading(false);
     }
@@ -47,11 +72,6 @@ const LoginForm = () => {
         <h2 className="text-2xl md:text-3xl font-bold text-black-900 dark:text-white mb-6 md:mb-8 text-center">
           Đăng nhập
         </h2>
-        {error && (
-          <p className="text-sm text-red-500 font-medium text-center">
-            {error}
-          </p>
-        )}
         <Form className="space-y-4 md:space-y-3" onSubmit={handleLogin}>
           <CustomInput
             isRequired
@@ -68,8 +88,10 @@ const LoginForm = () => {
               </div>
             }
             label="Nhập tên đăng nhập"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={formData.username}
+            onChange={(e) =>
+              setFormData({ ...formData, username: e.target.value })
+            }
           />
           <PasswordInput
             isRequired
@@ -81,8 +103,10 @@ const LoginForm = () => {
                 "border border-gray-300 dark:border-zinc-800 bg-white dark:bg-zinc-800/50 hover:border-gray-400 dark:hover:border-zinc-700 h-12",
             }}
             label="Nhập mật khẩu"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={formData.password}
+            onChange={(e) =>
+              setFormData({ ...formData, password: e.target.value })
+            }
           />
 
           <div className="w-full pt-2">
