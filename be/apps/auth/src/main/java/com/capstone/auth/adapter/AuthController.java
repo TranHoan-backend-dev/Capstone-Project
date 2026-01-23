@@ -110,15 +110,36 @@ public class AuthController {
         LocalDateTime.now()));
   }
 
+  @Operation(summary = "Get Current User Profile", description = "Retrieves the profile of the currently authenticated user based on the JWT token. "
+      +
+      "Flow: 1. Extracts the user ID (subject) and claims (email, preferred_username) from the JWT. "
+      +
+      "2. Validates that the account associated with the ID exists and is not locked/disabled. "
+      +
+      "3. Verifies that the email and username in the token match the records in the database. "
+      +
+      "4. Returns the user's profile information.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Profile retrieved successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+      @ApiResponse(responseCode = "400", description = "Bad Request - Token claims (email/username) do not match database records"),
+      @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing JWT token"),
+      @ApiResponse(responseCode = "403", description = "Forbidden - Account is disabled or locked"),
+      @ApiResponse(responseCode = "500", description = "Internal Server Error")
+  })
   @GetMapping("/me")
   public ResponseEntity<?> me(@AuthenticationPrincipal Jwt jwt) {
     var id = jwt.getSubject();
+
+    Map<String, Object> claims = jwt.getClaims();
     log.info("Get profile request comes to endpoint: {}", id);
 
     return ResponseEntity.ok(new WrapperApiResponse(
         HttpStatus.OK.value(),
         "Get profile successfully",
-        authUC.getMe(id),
+        authUC.getMe(
+            id,
+            claims.get("email").toString(),
+            claims.get("preferred_username").toString()),
         LocalDateTime.now()));
   }
 

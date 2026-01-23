@@ -42,6 +42,16 @@ public class Users implements UserDetails {
   @Column(nullable = false)
   LocalDateTime updatedAt;
 
+  @Column(nullable = false)
+  Boolean isEnabled;
+
+  @Column(nullable = false)
+  Boolean isLocked;
+
+  String lockedReason;
+
+  LocalDateTime lockedAt;
+
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "role_id")
   Roles role;
@@ -127,22 +137,12 @@ public class Users implements UserDetails {
 
   @Override
   public boolean isEnabled() {
-    return UserDetails.super.isEnabled();
-  }
-
-  @Override
-  public boolean isCredentialsNonExpired() {
-    return UserDetails.super.isCredentialsNonExpired();
+    return isEnabled;
   }
 
   @Override
   public boolean isAccountNonLocked() {
-    return UserDetails.super.isAccountNonLocked();
-  }
-
-  @Override
-  public boolean isAccountNonExpired() {
-    return UserDetails.super.isAccountNonExpired();
+    return isLocked;
   }
 
   public static Users create(@NonNull Consumer<UsersBuilder> builder) {

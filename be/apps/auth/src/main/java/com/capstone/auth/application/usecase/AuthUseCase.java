@@ -52,21 +52,7 @@ public class AuthUseCase {
       throw new NotExistingException(Constant.SE_07);
     }
 
-    if (email != null && email.matches(Constant.EMAIL_PATTERN)) {
-      if (!email.equals(user.email())) {
-        throw new IllegalArgumentException("Email does not match");
-      }
-    } else {
-      throw new IllegalArgumentException(Constant.PT_01);
-    }
-
-    if (username != null) {
-      if (!username.equals(user.username())) {
-        throw new IllegalArgumentException("Username does not match");
-      }
-    } else {
-      throw new IllegalArgumentException(Constant.PT_05);
-    }
+    validateCredentials(user, email, username);
 
     var profile = pSrv.getProfileById(userId);
     Objects.requireNonNull(profile, Constant.SE_06);
@@ -104,13 +90,15 @@ public class AuthUseCase {
     return pSrv.getProfileById(id);
   }
 
-  public UserProfileResponse getMe(String id) {
+  public UserProfileResponse getMe(String id, String email, String username) {
     log.info("Check status and get profile by id: {}", id);
     UserDTO user = uSrv.getUserById(id);
 
-    if (!user.isLocked()) {
+    if (user.isLocked()) {
       throw new DisabledException(Constant.SE_07);
     }
+
+    validateCredentials(user, email, username);
 
     var profile = pSrv.getProfileById(id);
 
@@ -129,5 +117,23 @@ public class AuthUseCase {
   public boolean checkExistence(String value) {
     log.info("Checking existence of username and email: {}", value);
     return uSrv.checkExistence(value);
+  }
+
+  private void validateCredentials(UserDTO user, String email, String username) {
+    if (email != null && email.matches(Constant.EMAIL_PATTERN)) {
+      if (!email.equals(user.email())) {
+        throw new IllegalArgumentException("Email does not match");
+      }
+    } else {
+      throw new IllegalArgumentException(Constant.PT_01);
+    }
+
+    if (username != null) {
+      if (!username.equals(user.username())) {
+        throw new IllegalArgumentException("Username does not match");
+      }
+    } else {
+      throw new IllegalArgumentException(Constant.PT_05);
+    }
   }
 }
