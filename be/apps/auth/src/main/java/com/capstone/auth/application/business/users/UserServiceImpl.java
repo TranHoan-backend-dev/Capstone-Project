@@ -1,5 +1,6 @@
 package com.capstone.auth.application.business.users;
 
+import com.capstone.auth.application.business.dto.UserDTO;
 import com.capstone.auth.application.dto.response.CheckExistenceResponse;
 import com.capstone.auth.application.exception.ExistingException;
 import com.capstone.auth.application.exception.NotExistingException;
@@ -17,6 +18,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -31,9 +33,10 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public void createEmployee(
-      String username, String password, String email,
-      RoleName roleName, String jobIds, String businessIds,
-      String departmentId, String waterSupplyNetworkId) throws ExecutionException, InterruptedException {
+    String username, String password, String email,
+    RoleName roleName, String jobIds, String businessIds,
+    String departmentId, String waterSupplyNetworkId
+  ) throws ExecutionException, InterruptedException {
     log.info("UsersService is handling the request");
     var obj = repo.findByEmail(email);
     if (obj.isPresent()) {
@@ -44,12 +47,12 @@ public class UserServiceImpl implements UserService {
     log.info("New account's role: {}", role);
     var passwordHash = hashPassword(password).get();
     var user = Users.create(builder -> builder
-        .email(email)
-        .password(passwordHash)
-        .username(username)
-        .role(role)
-        .waterSupplyNetworkId(waterSupplyNetworkId)
-        .departmentId(departmentId));
+      .email(email)
+      .password(passwordHash)
+      .username(username)
+      .role(role)
+      .waterSupplyNetworkId(waterSupplyNetworkId)
+      .departmentId(departmentId));
     log.info("New account's information: {}", user);
 
     repo.save(user);
@@ -65,6 +68,7 @@ public class UserServiceImpl implements UserService {
     var obj = getUsersByEmail(email);
     if (password.equals(newPassword)) {
       updateUser(obj, newPassword);
+      return;
     }
     log.debug("Passwords do not match");
     throw new IllegalArgumentException(Constant.SE_03);
@@ -92,22 +96,42 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public CheckExistenceResponse checkExistence(String username,
-      String email) {
-    boolean isUsernameExists = false;
-    boolean isEmailExists = false;
+  public boolean checkExistence(String value) {
+    Objects.requireNonNull(value, "Value cannot be null");
+    var isCredentialsExists = false;
 
-    if (username != null && !username.isBlank()) {
-      isUsernameExists = repo.existsByUsername(username);
+    if (!value.isBlank()) {
+      if (value.matches(Constant.EMAIL_PATTERN)) {
+        isCredentialsExists = repo.existsByEmail(value);
+      } else {
+        isCredentialsExists = repo.existsByUsername(value);
+      }
     }
 
-    if (email != null && !email.isBlank()) {
-      isEmailExists = repo.existsByEmail(email);
+    log.info("Credentials is {}", isCredentialsExists ? "existing" : "not existing");
+
+    return isCredentialsExists;
+  }
+
+  @Override
+  public boolean isUserExists(String id) {
+    log.info("Checking existence of user with id: {}", id);
+    Objects.requireNonNull(id, "id cannot be null");
+    return repo.existsById(id);
+  }
+
+  @Override
+  public UserDTO getUserById(String id) {
+    log.info("Getting user by id: {}", id);
+    var user = repo.findById(id);
+    if (user.isPresent()) {
+      log.info("User found: {}", user.get());
+      return new UserDTO(
+        user.get().getRole().getName().name(),
+        user.get().getUsername(),
+        user.get().getEmail()
+      );
     }
-
-    log.info("Username is {}", isUsernameExists ? "existing" : "not existing");
-    log.info("Email is {}", isEmailExists ? "existing" : "not existing");
-
-    return new CheckExistenceResponse(isUsernameExists, isEmailExists);
+    throw new NotExistingException("User with id does not exist");
   }
 }

@@ -1,0 +1,25 @@
+### username is username
+POST http://localhost:8080/realms/cmsn/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+Accept: application/json
+
+grant_type=password&
+client_id=cmsn&
+client_secret=&
+username=&
+password=&
+scope=openid
+
+> {%
+  client.global.set("access_token", response.body.access_token);
+%}
+
+### login
+POST http://localhost:9001/api/v1/auth/login
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+
+}

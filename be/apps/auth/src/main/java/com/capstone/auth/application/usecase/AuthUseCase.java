@@ -1,11 +1,13 @@
 package com.capstone.auth.application.usecase;
 
+import com.capstone.auth.application.business.dto.UserDTO;
 import com.capstone.auth.application.business.profile.ProfileService;
 import com.capstone.auth.application.business.users.UserService;
-import com.capstone.auth.application.business.verification.VerificationService;
-import com.capstone.auth.application.dto.response.CheckExistenceResponse;
-import com.capstone.auth.application.dto.response.ProfileResponse;
+import com.capstone.auth.application.business.dto.ProfileResponse;
+import com.capstone.auth.application.dto.response.UserProfileResponse;
 import com.capstone.auth.application.event.producer.MessageProducer;
+import com.capstone.auth.application.exception.NotExistingException;
+import com.capstone.auth.infrastructure.config.Constant;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -14,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 @Slf4j
@@ -23,7 +26,6 @@ import java.util.concurrent.ExecutionException;
 public class AuthUseCase {
   UserService uSrv;
   ProfileService pSrv;
-  VerificationService vSrv;
   MessageProducer template;
 
   @NonFinal
@@ -34,9 +36,51 @@ public class AuthUseCase {
   @Value("${sending_mail.account_creation.template}")
   String TEMPLATE;
 
+  public UserProfileResponse login(String userId, String email, String username) {
+    log.info("Handling login business with userId={} and email={}", userId, email);
+    UserDTO user = uSrv.getUserById(userId);
+    Objects.requireNonNull(user, Constant.SE_04);
+
+    if (!uSrv.checkExistence(email) || !uSrv.checkExistence(username)) {
+      throw new NotExistingException(Constant.SE_05);
+    }
+
+    if (email != null && email.matches(Constant.EMAIL_PATTERN)) {
+      if (!email.equals(user.email())) {
+        throw new IllegalArgumentException("Email does not match");
+      }
+    } else {
+      throw new IllegalArgumentException(Constant.PT_01);
+    }
+
+    if (username != null) {
+      if (!username.equals(user.username())) {
+        throw new IllegalArgumentException("Username does not match");
+      }
+    } else {
+      throw new IllegalArgumentException(Constant.PT_05);
+    }
+
+    var profile = pSrv.getProfileById(userId);
+    Objects.requireNonNull(profile, Constant.SE_06);
+
+    return new UserProfileResponse(
+      profile.fullname(),
+      profile.avatarUrl(),
+      profile.address(),
+      profile.phoneNumber(),
+      profile.gender(),
+      profile.birthday(),
+      user.role().toLowerCase(),
+      user.username(),
+      user.email()
+    );
+  }
+
   public void register(
-      String username,
-      String password, String email, boolean status) throws ExecutionException, InterruptedException {
+    String username,
+    String password, String email, boolean status
+  ) throws ExecutionException, InterruptedException {
     log.info("AuthUseCase is handling business");
 
     // service.createEmployee(
@@ -52,12 +96,11 @@ public class AuthUseCase {
 
   public ProfileResponse getProfile(String id) {
     log.info("Getting profile by id: {}", id);
-    return pSrv.getUserById(id);
+    return pSrv.getProfileById(id);
   }
 
-  public CheckExistenceResponse checkExistence(String username,
-      String email) {
-    log.info("Checking existence of username and email: {}", username, email);
-    return uSrv.checkExistence(username, email);
+  public boolean checkExistence(String value) {
+    log.info("Checking existence of username and email: {}", value);
+    return uSrv.checkExistence(value);
   }
 }

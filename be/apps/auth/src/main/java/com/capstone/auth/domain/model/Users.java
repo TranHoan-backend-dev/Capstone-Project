@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 
 @Getter
 @Entity
-@ToString
+@ToString(exclude = "role")
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
@@ -42,7 +42,7 @@ public class Users implements UserDetails {
   @Column(nullable = false)
   LocalDateTime updatedAt;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "role_id")
   Roles role;
 

@@ -14,20 +14,20 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class OtpUseCase {
-    VerificationService vSrv;
+  VerificationService vSrv;
 
-    public void sendOtp(String email) {
-        log.info("Sending OTP to email: {}", email);
-        vSrv.sendOtp(email);
-    }
+  public void sendOtp(String email) {
+    log.info("Sending OTP to email: {}", email);
+    vSrv.sendOtp(email);
+  }
 
-    public boolean verifyOtp(String email, String otp) {
-        log.info("Verifying OTP for email: {}", email);
-        return vSrv.verifyOtp(email, otp);
-    }
+  public boolean verifyOtp(String email, String otp) {
+    log.info("Verifying OTP for email: {}", email);
+    return vSrv.verifyOtp(email, otp);
+  }
 
-    public void resetPasswordWithOtp(String email, String otp, String newPassword) {
-        log.info("Resetting password for email: {}", email);
-        vSrv.verifyAndResetPassword(email, otp, newPassword);
-    }
+  public void resetPasswordWithOtp(String email, String otp, String newPassword) {
+    log.info("Resetting password for email: {}", email);
+    vSrv.verifyAndResetPassword(email, otp, newPassword);
+  }
 }

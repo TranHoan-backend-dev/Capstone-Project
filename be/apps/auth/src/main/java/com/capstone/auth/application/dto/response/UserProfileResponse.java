@@ -1,12 +1,14 @@
 package com.capstone.auth.application.dto.response;
 
-public record ProfileResponse(
-  String id,
+public record UserProfileResponse(
   String fullname,
   String avatarUrl,
   String address,
   String phoneNumber,
-  Boolean gender,
-  String birthday
+  String gender,
+  String birthday,
+  String role,
+  String username,
+  String email
 ) {
 }

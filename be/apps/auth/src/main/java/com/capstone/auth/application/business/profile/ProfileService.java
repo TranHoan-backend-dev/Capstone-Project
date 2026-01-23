@@ -1,7 +1,8 @@
 package com.capstone.auth.application.business.profile;
 
-import com.capstone.auth.application.dto.response.ProfileResponse;
+import com.capstone.auth.application.business.dto.ProfileResponse;
 
 public interface ProfileService {
-  ProfileResponse getUserById(String id);
+  ProfileResponse getProfileById(String id);
+  ProfileResponse getProfileByCredentials(String value);
 }

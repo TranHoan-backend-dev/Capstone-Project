@@ -7,9 +7,9 @@ Accept: application/json
 
 {
   "username": "hoantxhe",
-  "email": "hoana5k44nknd@gmail.com",
-  "fullName": "Tran Xuan Hoan",
-  "password": "Hoan1234@",
+  "email": "@gmail.com",
+  "fullName": "",
+  "password": "@",
   "status": false
 }
 
@@ -19,9 +19,9 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "hoantxhe",
-  "email": "hoana5k44nkndgmail.com",
-  "fullName": "Tran Xuan Hoan",
-  "password": "Hoan1234@",
+  "username": "",
+  "email": ".com",
+  "fullName": "",
+  "password": "@",
   "status": false
 }

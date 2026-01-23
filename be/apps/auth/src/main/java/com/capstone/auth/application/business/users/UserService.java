@@ -1,6 +1,6 @@
 package com.capstone.auth.application.business.users;
 
-import com.capstone.auth.application.dto.response.CheckExistenceResponse;
+import com.capstone.auth.application.business.dto.UserDTO;
 import com.capstone.auth.domain.model.enumerate.RoleName;
 
 import java.util.concurrent.ExecutionException;
@@ -14,5 +14,9 @@ public interface UserService {
 
   void resetPassword(String email, String newPassword);
 
-  CheckExistenceResponse checkExistence(String username, String email);
+  boolean checkExistence(String value);
+
+  boolean isUserExists(String id);
+
+  UserDTO getUserById(String id);
 }
