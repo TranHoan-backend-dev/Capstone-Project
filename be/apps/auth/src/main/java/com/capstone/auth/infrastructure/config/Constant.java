@@ -25,9 +25,15 @@ public final class Constant {
   public static final String PT_17 = "Birthdate cannot be null or empty";
   public static final String PT_18 = "Branch id cannot be null or empty";
   public static final String PT_19 = "Department id cannot be null or empty";
-  public static final String PT_20 = "Employee code cannot be null or empty";
+  public static final String PT_20 = "Job id cannot be null or empty";
+  public static final String PT_21 = "Business page ids cannot be null or empty";
+  public static final String PT_22 = "List of notification ids cannot be null or empty";
 
   // for service layer
   public static final String SE_01 = "Email has been existing";
   public static final String SE_02 = "Email not found";
+  public static final String SE_03 = "2 passwords do not match";
+  public static final String SE_04 = "User is null";
+  public static final String SE_05 = "This credential is not existing";
+  public static final String SE_06 = "Profile of this account is not initialized";
 }

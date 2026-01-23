@@ -1,6 +1,6 @@
 package com.capstone.construction.application.exception;
 
-import com.capstone.auth.application.dto.response.WrapperApiResponse;
+import com.capstone.construction.application.dto.response.WrapperApiResponse;
 import org.apache.coyote.BadRequestException;
 import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
@@ -21,49 +21,23 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(BadRequestException.class)
   public ResponseEntity<WrapperApiResponse> handleBadRequestException(@NonNull BadRequestException ex) {
     return ResponseEntity
-      .status(HttpStatus.BAD_REQUEST)
-      .body(new WrapperApiResponse(
-        HttpStatus.BAD_REQUEST.value(),
-        ex.getMessage(),
-        null,
-        LocalDateTime.now()
-      ));
-  }
-
-  @ExceptionHandler(NotExistingException.class)
-  public ResponseEntity<WrapperApiResponse> handleUserNotFoundException(@NonNull NotExistingException ex) {
-    return ResponseEntity
-      .status(HttpStatus.BAD_REQUEST)
-      .body(new WrapperApiResponse(
-        HttpStatus.BAD_REQUEST.value(),
-        ex.getMessage(),
-        null,
-        LocalDateTime.now()
-      ));
-  }
-
-  @ExceptionHandler(ExistingException.class)
-  public ResponseEntity<WrapperApiResponse> handleExistingException(@NonNull ExistingException ex) {
-    return ResponseEntity
-      .status(HttpStatus.BAD_REQUEST)
-      .body(new WrapperApiResponse(
-        HttpStatus.BAD_REQUEST.value(),
-        ex.getMessage(),
-        null,
-        LocalDateTime.now()
-      ));
+        .status(HttpStatus.BAD_REQUEST)
+        .body(new WrapperApiResponse(
+            HttpStatus.BAD_REQUEST.value(),
+            ex.getMessage(),
+            null,
+            LocalDateTime.now()));
   }
 
   @ExceptionHandler(BadCredentialsException.class)
   public ResponseEntity<WrapperApiResponse> handleBadCredentialsException(BadCredentialsException ex) {
     return ResponseEntity
-      .status(HttpStatus.UNAUTHORIZED)
-      .body(new WrapperApiResponse(
-        HttpStatus.UNAUTHORIZED.value(),
-        "Invalid email or password",
-        null,
-        LocalDateTime.now()
-      ));
+        .status(HttpStatus.UNAUTHORIZED)
+        .body(new WrapperApiResponse(
+            HttpStatus.UNAUTHORIZED.value(),
+            "Invalid email or password",
+            null,
+            LocalDateTime.now()));
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -76,11 +50,10 @@ public class GlobalExceptionHandler {
     });
 
     var response = new WrapperApiResponse(
-      HttpStatus.BAD_REQUEST.value(),
-      "Validation failed",
-      errors,
-      LocalDateTime.now()
-    );
+        HttpStatus.BAD_REQUEST.value(),
+        "Validation failed",
+        errors,
+        LocalDateTime.now());
 
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
   }
@@ -88,24 +61,22 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(Exception.class)
   public ResponseEntity<WrapperApiResponse> handleGlobalException(@NonNull Exception ex) {
     return ResponseEntity
-      .status(HttpStatus.INTERNAL_SERVER_ERROR)
-      .body(new WrapperApiResponse(
-        HttpStatus.INTERNAL_SERVER_ERROR.value(),
-        ex.getMessage(),
-        null,
-        LocalDateTime.now()
-      ));
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .body(new WrapperApiResponse(
+            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+            ex.getMessage(),
+            null,
+            LocalDateTime.now()));
   }
 
-  @ExceptionHandler({InterruptedException.class, ExecutionException.class})
+  @ExceptionHandler({ InterruptedException.class, ExecutionException.class })
   public ResponseEntity<WrapperApiResponse> handleInterruptedAndExecutionException(@NonNull Exception ex) {
     return ResponseEntity
-      .status(HttpStatus.INTERNAL_SERVER_ERROR)
-      .body(new WrapperApiResponse(
-        HttpStatus.INTERNAL_SERVER_ERROR.value(),
-        ex.getMessage(),
-        null,
-        LocalDateTime.now()
-      ));
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .body(new WrapperApiResponse(
+            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+            ex.getMessage(),
+            null,
+            LocalDateTime.now()));
   }
 }
