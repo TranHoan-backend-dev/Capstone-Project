@@ -1,5 +1,6 @@
 import axiosClient from "@/lib/axios";
 import { keycloakLogout } from "./keycloak.service";
+import { ApiResponse, EmployeeProfileData } from "@/types";
 
 export interface SigninRequest {
   username: string;
@@ -44,6 +45,13 @@ export const resetPasswordService = async (
     email,
     newPassword,
   });
+};
+
+export const getProfileEmployee = async (): Promise<EmployeeProfileData> => {
+  const response = await axiosClient.get<ApiResponse<EmployeeProfileData>>(
+    "/auth/me"
+  );
+  return response.data.data;
 };
 
 export const logoutService = async () => {

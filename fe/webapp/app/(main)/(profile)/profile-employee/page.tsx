@@ -6,8 +6,9 @@ import ProfilePage from "./profile-page";
 import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
 
 export const metadata: Metadata = {
-  title: "Hồ sơ cá nhân",
-  description: "Thông tin chi tiết và lịch sử thanh toán của khách hàng",
+  title: "Hồ sơ nhân viên",
+  description:
+    "Thông tin chi tiết của nhân viên Công ty Cổ Phần Nước Nam Định - NAWACO",
 };
 
 const Profile = () => {
