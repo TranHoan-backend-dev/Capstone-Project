@@ -31,7 +31,7 @@ management:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:9001/eureka
+      defaultZone: http://localhost:9000/eureka
 springdoc:
   api-docs:
     enabled: true
