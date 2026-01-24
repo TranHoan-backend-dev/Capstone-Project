@@ -11,6 +11,7 @@ import { signinService } from "@/services/auth.service";
 import { useState } from "react";
 import { CallToast } from "@/components/ui/CallToast";
 import { z } from "zod";
+import { keycloakLogin } from "@/services/keycloak.service";
 
 const loginSchema = z.object({
   username: z.string().trim().min(1, "Vui lòng nhập tên đăng nhập"),
@@ -43,10 +44,15 @@ const LoginForm = () => {
     }
     setLoading(true);
     try {
-      const data = await signinService(result.data);
-      localStorage.setItem("access_token", data.accessToken);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      console.log("LOGIN DATA", formData);
 
+      const tokenRes = await keycloakLogin(formData);
+
+    localStorage.setItem("access_token", tokenRes.access_token);
+    localStorage.setItem("refresh_token", tokenRes.refresh_token);
+    const backendRes = await signinService();
+
+    localStorage.setItem("user", JSON.stringify(backendRes.data));
       CallToast({
         title: "Thành công",
         message: "Đăng nhập thành công!",

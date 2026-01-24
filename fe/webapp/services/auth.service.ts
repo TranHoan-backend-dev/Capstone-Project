@@ -15,10 +15,8 @@ export interface SigninResponse {
   };
 }
 
-export const signinService = async (
-  data: SigninRequest,
-): Promise<SigninResponse> => {
-  const response = await axiosClient.post("/auth/signin", data);
+export const signinService = async () => {
+  const response = await axiosClient.post("/auth/login");
   return response.data;
 };
 

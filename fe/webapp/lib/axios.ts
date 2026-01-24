@@ -2,7 +2,7 @@ import axios from "axios";
 import { NEXT_PUBLIC_API_GATEWAY } from "@/utils/constraints";
 
 const axiosClient = axios.create({
-  baseURL: NEXT_PUBLIC_API_GATEWAY,
+  baseURL: "http://localhost:9001/api/v1",
   headers: {
     "Content-Type": "application/json",
   },
@@ -10,7 +10,7 @@ const axiosClient = axios.create({
 
 axiosClient.interceptors.request.use((config) => {
   if (typeof window !== "undefined") {
-    const token = localStorage.getItem("accessToken");
+    const token = localStorage.getItem("access_token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
