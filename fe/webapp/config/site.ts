@@ -10,9 +10,19 @@ export const siteConfig = {
       href: "/home",
     },
     {
+      key: "contract",
+      label: "Hợp đồng",
+      items: [
+        {
+          key: "new-contract",
+          label: "Lập hợp đồng cấp nước mới",
+          href: "/water-supply-contract",
+        },
+      ],
+    },
+    {
       key: "customer",
       label: "Khách hàng",
-      href: "/customers",
       items: [
         {
           key: "new-installation-form",
@@ -32,12 +42,12 @@ export const siteConfig = {
         {
           key: "restores-customer",
           label: "Khôi phục khách hàng hủy",
-          href: "/restore-customers",
+          href: "/recovery",
         },
         {
           key: "new-customers-import",
           label: "Nhập khách hàng mới",
-          href: "/new-customers-import",
+          href: "/import",
         },
       ],
     },

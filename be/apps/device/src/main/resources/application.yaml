@@ -1,34 +1,37 @@
 spring:
   application:
     name: device
-  servlet:
-    multipart:
-      location: /tmp/uploads
-      max-file-size: 100MB
-      max-request-size: 200MB
-      file-size-threshold: 10MB
-dgs:
-  graphql:
-    graphiql:
-      enabled: false
-    virtualthreads:
-      enabled: true
-    schema-locations: classpath*:graphql-client/*.graphql*
-    extensions:
-      validation:
-        enabled: true
-      scalars:
-        enabled: true
-    websocket:
-      enabled: true
-dgraph:
-  host: ${DGRAPH_HOST:localhost}
-  port: ${DGRAPH_PORT:9080}
-cors:
-  allowed-origins:
-    - ${web-frontend-url}
+  profiles:
+    active: dev
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  datasource:
+    hikari:
+      maximum-pool-size: 5 # nang core khi co nhieu truy van song song
+      minimum-idle: 3 # So ket noi idle luon co san
+      connection-timeout: 2000 # Cho ket noi toi da 3s
+      max-lifetime: 600000 # Ket noi song toi da 30p
+      idle-timeout: 30000 # Dong idle sau 30s neu khong su dung
 management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include:
+          - health
+          - info
+          - metrics
+          - prometheus
+      base-path: /
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui/index.html

@@ -4,9 +4,7 @@ import CustomButton from "@/components/ui/custom/CustomButton";
 import {
   SearchIcon,
   RestoreIcon,
-  AddNewIcon,
-  BlueYellowIconColor,
-  WhiteIconColor,
+  SumIcon,
 } from "@/config/chip-and-icon";
 
 export const FormActions = () => {
@@ -14,14 +12,15 @@ export const FormActions = () => {
     <div className="flex justify-end gap-3">
       <CustomButton
         color="primary"
-        startContent={<SearchIcon className={BlueYellowIconColor} />}
+        startContent={<SearchIcon className="text-white" />}
       >
         Tìm
       </CustomButton>
 
       <CustomButton
+        className="bg-[#10a345] text-white h-10 px-6 font-bold text-[13px]"
         color="success"
-        startContent={<AddNewIcon className={WhiteIconColor} />}
+        startContent={<SumIcon className="w-5 h-5" />}
       >
         Lưu thay đổi
       </CustomButton>

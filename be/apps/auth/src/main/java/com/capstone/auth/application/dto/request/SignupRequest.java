@@ -1,21 +1,22 @@
 package com.capstone.auth.application.dto.request;
 
+import com.capstone.auth.infrastructure.config.Constant;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 
 public record SignupRequest(
   String username,
 
-  @Pattern(
-    regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$",
-    message = "Invalid password. Password must contain at least one number, one uppercase letter, one lowercase letter, one special character, and be at least 8 characters long"
-  )
+  @Pattern(regexp = Constant.PASSWORD_PATTERN, message = Constant.PT_02)
   String password,
 
-  @Email(message = "Email must follow the format <name>@<domain>")
+  @Email(message = Constant.PT_01)
   String email,
-
-  String fullName,
-  Boolean status
+  String fullname,
+  String roleId,
+  String jobId,
+  String businessPageIds,
+  String departmentId,
+  String waterSupplyNetworkId
 ) {
 }

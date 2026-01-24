@@ -42,6 +42,18 @@ public class GlobalExceptionHandler {
       ));
   }
 
+  @ExceptionHandler(AccountBlockedException.class)
+  public ResponseEntity<WrapperApiResponse> handleAccountBlockException(@NonNull AccountBlockedException ex) {
+    return ResponseEntity
+      .status(HttpStatus.UNAUTHORIZED)
+      .body(new WrapperApiResponse(
+        HttpStatus.UNAUTHORIZED.value(),
+        ex.getMessage(),
+        null,
+        LocalDateTime.now()
+      ));
+  }
+
   @ExceptionHandler(ExistingException.class)
   public ResponseEntity<WrapperApiResponse> handleExistingException(@NonNull ExistingException ex) {
     return ResponseEntity

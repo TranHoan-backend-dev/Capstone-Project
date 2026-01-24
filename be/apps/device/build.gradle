@@ -1,9 +1,7 @@
 plugins {
   id 'java'
-  // hạ phiên bản spring boot xuống thì mới phù hợp với dgs graphql
-  id 'org.springframework.boot' version '3.3.5'
+  id 'org.springframework.boot' version '4.0.0'
   id 'io.spring.dependency-management' version '1.1.7'
-  id 'com.netflix.dgs.codegen' version '7.0.3'
   id 'maven-publish'
 }
 
@@ -15,43 +13,16 @@ repositories {
   mavenCentral()
 }
 
-ext {
-  set('netflixDgsVersion', "9.1.3")
-  set('dgraph4jVersion', "24.2.0")
-  set('graphqlJavaExtendedVersion', "22.0")
-  set('googleAutoServiceVersion', "1.1.1")
-}
-
 dependencies {
-  implementation "com.google.auto.service:auto-service:${googleAutoServiceVersion}"
-  annotationProcessor "com.google.auto.service:auto-service:${googleAutoServiceVersion}"
-  implementation platform("com.netflix.graphql.dgs:graphql-dgs-platform-dependencies:${netflixDgsVersion}")
-  implementation "com.netflix.graphql.dgs:graphql-dgs-spring-boot-starter"
-  implementation "com.netflix.graphql.dgs:graphql-dgs-extended-scalars"
-  implementation 'com.netflix.graphql.dgs:graphql-dgs-extended-validation'
-  implementation "com.graphql-java:graphql-java-extended-validation:${graphqlJavaExtendedVersion}"
-  implementation "com.graphql-java:graphql-java-extended-scalars:${graphqlJavaExtendedVersion}"
-  implementation 'com.netflix.graphql.dgs:graphql-dgs-pagination'
-  implementation 'com.netflix.graphql.dgs:graphql-dgs-spring-graphql-starter'
-  implementation "io.dgraph:dgraph4j:${dgraph4jVersion}"
-  testImplementation 'com.netflix.graphql.dgs:graphql-dgs-spring-graphql-starter-test'
-}
-
-configurations.configureEach {
-  exclude group: "org.springdoc"
-}
-
-generateJava {
-  schemaPaths = ["${projectDir}/src/main/resources/graphql-client"]
-  packageName = 'com.capstone.infrastructures.codegen'
-  generateClient = true
+  implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+  runtimeOnly 'org.postgresql:postgresql'
 }
 
 tasks.named('test') {
   useJUnitPlatform()
 }
 tasks.named('bootJar') {
-  mainClass = 'com.capstone.infrastructures.InfrastructuresApplication'
+  mainClass = 'com.capstone.device.DeviceApplication'
 }
 springBoot {
   buildInfo()
