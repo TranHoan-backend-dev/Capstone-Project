@@ -20,6 +20,7 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Component;
 import org.springframework.web.cors.CorsConfiguration;
@@ -43,6 +44,7 @@ public class SecurityConfig {
   }
 
   CorsProperties corsProperties;
+  JwtDecoder decoder;
   final String[] PUBLIC_URLS = {
       "/auth/**",
       "/login/oauth2/code/google",
@@ -72,7 +74,9 @@ public class SecurityConfig {
               response.setStatus(HttpStatus.FORBIDDEN.value());
               response.getWriter().write("{\"error\": \"Access denied\"}");
             }))
-        .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+        .oauth2ResourceServer(oauth2 ->
+          oauth2.jwt(jwt -> jwt.decoder(decoder))
+        )
         .build();
   }
 

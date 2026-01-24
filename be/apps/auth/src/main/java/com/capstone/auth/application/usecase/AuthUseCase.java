@@ -129,6 +129,14 @@ public class AuthUseCase {
       user.email());
   }
 
+  public void changePassword(String email, String oldPassword, String newPassword, String confirmPassword) {
+    log.info("Handling change password for email: {}", email);
+    if (!newPassword.equals(confirmPassword)) {
+      throw new IllegalArgumentException("New password and confirm password do not match");
+    }
+    uSrv.updatePassword(email, oldPassword, newPassword);
+  }
+
   public boolean checkExistence(String value) {
     log.info("Checking existence of username and email: {}", value);
     return uSrv.checkExistence(value);

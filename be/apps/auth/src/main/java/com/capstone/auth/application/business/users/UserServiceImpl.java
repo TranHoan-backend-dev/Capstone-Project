@@ -32,9 +32,9 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public void createEmployee(
-    String username, String password, String email,
-    Roles role, String jobIds, String businessIds,
-    String departmentId, String waterSupplyNetworkId) throws ExecutionException, InterruptedException {
+      String username, String password, String email,
+      Roles role, String jobIds, String businessIds,
+      String departmentId, String waterSupplyNetworkId) throws ExecutionException, InterruptedException {
     log.info("UsersService is handling the request");
     var obj = repo.findByEmail(email);
     if (obj.isPresent()) {
@@ -62,11 +62,11 @@ public class UserServiceImpl implements UserService {
   @Override
   public void updatePassword(String email, @NonNull String password, String newPassword) {
     var obj = getUsersByEmail(email);
-    if (password.equals(newPassword)) {
+    if (encoder.matches(password, obj.getPassword())) {
       updateUser(obj, newPassword);
       return;
     }
-    log.debug("Passwords do not match");
+    log.debug("Old passwords do not match");
     throw new IllegalArgumentException(Constant.SE_03);
   }
 

@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 @AllArgsConstructor
 @Table(name = "users")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Users implements UserDetails {
+public class Users {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "user_id")
@@ -130,17 +130,10 @@ public class Users implements UserDetails {
     }
   }
 
-  @Override
-  public @NonNull Collection<? extends GrantedAuthority> getAuthorities() {
-    return authorities;
-  }
-
-  @Override
   public boolean isEnabled() {
     return isEnabled;
   }
 
-  @Override
   public boolean isAccountNonLocked() {
     return isLocked;
   }
