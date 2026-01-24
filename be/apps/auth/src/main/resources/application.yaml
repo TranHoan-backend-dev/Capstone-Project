@@ -72,6 +72,10 @@ cors:
 #  exchange_name:
 #  queue_name:
 #  routing_key:
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:9001/eureka
 springdoc:
   api-docs:
     enabled: true

@@ -1,7 +1,7 @@
 plugins {
   id 'java'
   // hạ phiên bản spring boot xuống thì mới phù hợp với dgs graphql
-  id 'org.springframework.boot' version '3.3.5'
+  id 'org.springframework.boot' version '3.2.2'
   id 'io.spring.dependency-management' version '1.1.7'
   id 'com.netflix.dgs.codegen' version '7.0.3'
   id 'maven-publish'
@@ -14,6 +14,12 @@ description = 'Demo project for Spring Boot'
 repositories {
   mavenCentral()
 }
+dependencyManagement {
+  imports {
+    mavenBom "org.springframework.cloud:spring-cloud-dependencies:2023.0.0"
+  }
+}
+
 
 ext {
   set('netflixDgsVersion', "9.1.3")
@@ -23,6 +29,7 @@ ext {
 }
 
 dependencies {
+  implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
   implementation "com.google.auto.service:auto-service:${googleAutoServiceVersion}"
   annotationProcessor "com.google.auto.service:auto-service:${googleAutoServiceVersion}"
   implementation platform("com.netflix.graphql.dgs:graphql-dgs-platform-dependencies:${netflixDgsVersion}")

@@ -32,3 +32,13 @@ management:
     web:
       exposure:
         include: "*"
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:9001/eureka
+
+  endpoints:
+    web:
+      exposure:
+        include: "*"

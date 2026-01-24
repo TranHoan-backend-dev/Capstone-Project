@@ -28,6 +28,10 @@ management:
           - metrics
           - prometheus
       base-path: /
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:9001/eureka
 springdoc:
   api-docs:
     enabled: true
