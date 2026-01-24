@@ -8,6 +8,7 @@ import com.capstone.auth.application.business.dto.ProfileDTO;
 import com.capstone.auth.application.dto.response.UserProfileResponse;
 import com.capstone.auth.application.event.producer.AccountCreationEvent;
 import com.capstone.auth.application.event.producer.MessageProducer;
+import com.capstone.auth.application.exception.AccountBlockedException;
 import com.capstone.auth.application.exception.NotExistingException;
 
 import com.capstone.auth.infrastructure.config.Constant;
@@ -46,16 +47,16 @@ public class AuthUseCase {
     UserDTO user = uSrv.getUserById(userId);
     Objects.requireNonNull(user, Constant.SE_04);
 
+    validateCredentials(user, email, username);
+
     if (!uSrv.checkExistence(email) || !uSrv.checkExistence(username)) {
       throw new NotExistingException(Constant.SE_05);
     }
 
     // kiem tra xem tai khoan co bi khoa hay khong
     if (user.isLocked()) {
-      throw new NotExistingException(Constant.SE_07);
+      throw new AccountBlockedException(Constant.SE_07);
     }
-
-    validateCredentials(user, email, username);
 
     var profile = pSrv.getProfileById(userId);
     Objects.requireNonNull(profile, Constant.SE_06);
