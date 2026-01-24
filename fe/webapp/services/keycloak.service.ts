@@ -1,8 +1,13 @@
 import axios from "axios";
+import {
+  NEXT_PUBLIC_KEYCLOAK_URL,
+  NEXT_PUBLIC_REALM,
+  NEXT_PUBLIC_CLIENT_ID,
+} from "@/utils/constraints";
 
-const KEYCLOAK_URL = "http://localhost:8080";
-const REALM = "cmsn";
-const CLIENT_ID = "cmsn-web";
+const KEYCLOAK_URL = NEXT_PUBLIC_KEYCLOAK_URL;
+const REALM = NEXT_PUBLIC_REALM;
+const CLIENT_ID = NEXT_PUBLIC_CLIENT_ID!;
 
 export interface KeycloakLoginRequest {
   username: string;
@@ -17,7 +22,7 @@ export interface KeycloakLoginResponse {
 }
 
 export const keycloakLogin = async (
-  data: KeycloakLoginRequest
+  data: KeycloakLoginRequest,
 ): Promise<KeycloakLoginResponse> => {
   const params = new URLSearchParams();
   params.append("grant_type", "password");
@@ -33,8 +38,26 @@ export const keycloakLogin = async (
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
-    }
+    },
   );
 
   return res.data;
+};
+
+export const keycloakLogout = async (refreshToken?: string) => {
+  if (!refreshToken) return;
+  
+    const params = new URLSearchParams();
+    params.append("client_id", CLIENT_ID);
+    params.append("refresh_token", refreshToken);
+
+    await axios.post(
+      `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/logout`,
+      params,
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      },
+    );
 };

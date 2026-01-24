@@ -26,7 +26,7 @@ const LoginForm = () => {
     password: "",
   });
   const [loading, setLoading] = useState(false);
-  const TOAST_DURATION = 3000;
+  const TOAST_DURATION = 1000;
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -44,15 +44,12 @@ const LoginForm = () => {
     }
     setLoading(true);
     try {
-      console.log("LOGIN DATA", formData);
-
       const tokenRes = await keycloakLogin(formData);
+      localStorage.setItem("access_token", tokenRes.access_token);
+      localStorage.setItem("refresh_token", tokenRes.refresh_token);
 
-    localStorage.setItem("access_token", tokenRes.access_token);
-    localStorage.setItem("refresh_token", tokenRes.refresh_token);
-    const backendRes = await signinService();
-
-    localStorage.setItem("user", JSON.stringify(backendRes.data));
+      const result = await signinService();
+      localStorage.setItem("user", JSON.stringify(result.data));
       CallToast({
         title: "Thành công",
         message: "Đăng nhập thành công!",
@@ -63,8 +60,7 @@ const LoginForm = () => {
     } catch (err: any) {
       CallToast({
         title: "Thất bại",
-        message:
-          err.response?.data?.message || "Sai tên đăng nhập hoặc mật khẩu",
+        message: err.response?.data?.message || "Sai tên đăng nhập hoặc mật khẩu",
         color: "danger",
       });
     } finally {
@@ -80,7 +76,6 @@ const LoginForm = () => {
         </h2>
         <Form className="space-y-4 md:space-y-3" onSubmit={handleLogin}>
           <CustomInput
-            isRequired
             classNames={{
               label:
                 "text-sm font-medium text-gray-700 dark:text-zinc-400 font-bold",
@@ -100,7 +95,6 @@ const LoginForm = () => {
             }
           />
           <PasswordInput
-            isRequired
             classNames={{
               label:
                 "text-sm font-medium text-gray-700 dark:text-zinc-400 font-bold",

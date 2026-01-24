@@ -1,8 +1,8 @@
 import axios from "axios";
-import { NEXT_PUBLIC_API_GATEWAY } from "@/utils/constraints";
+import { NEXT_PUBLIC_BACKEND_API } from "@/utils/constraints";
 
 const axiosClient = axios.create({
-  baseURL: "http://localhost:9001/api/v1",
+  baseURL: NEXT_PUBLIC_BACKEND_API,
   headers: {
     "Content-Type": "application/json",
   },

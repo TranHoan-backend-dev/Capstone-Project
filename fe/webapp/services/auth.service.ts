@@ -1,4 +1,5 @@
 import axiosClient from "@/lib/axios";
+import { keycloakLogout } from "./keycloak.service";
 
 export interface SigninRequest {
   username: string;
@@ -43,4 +44,20 @@ export const resetPasswordService = async (
     email,
     newPassword,
   });
+};
+
+export const logoutService = async () => {
+  if (typeof window === "undefined") return;
+
+  const refreshToken = localStorage.getItem("refresh_token");
+
+  try {
+    await keycloakLogout(refreshToken ?? undefined);
+  } catch (err) {
+    console.warn("Keycloak logout failed", err);
+  } finally {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("user");
+  }
 };
