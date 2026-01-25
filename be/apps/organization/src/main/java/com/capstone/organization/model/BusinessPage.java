@@ -41,6 +41,7 @@ public class BusinessPage {
   String installtionFormCode;
 
   public void setUserIds(List<String> userIds) {
+    Objects.requireNonNull(userIds, Constant.ORG_11);
     this.userIds = userIds;
   }
 
