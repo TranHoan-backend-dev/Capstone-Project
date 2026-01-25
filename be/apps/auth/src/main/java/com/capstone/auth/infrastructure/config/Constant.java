@@ -28,6 +28,8 @@ public final class Constant {
   public static final String PT_20 = "Job id cannot be null or empty";
   public static final String PT_21 = "Business page ids cannot be null or empty";
   public static final String PT_22 = "List of notification ids cannot be null or empty";
+  public static final String PT_23 = "Role id cannot be null or empty";
+  public static final String PT_24 = "id cannot be null or empty";
 
   // for service layer
   public static final String SE_01 = "Email has been existing";
@@ -36,4 +38,6 @@ public final class Constant {
   public static final String SE_04 = "User is null";
   public static final String SE_05 = "This credential is not existing";
   public static final String SE_06 = "Profile of this account is not initialized";
+  public static final String SE_07 = "User is locked";
+  public static final String SE_08 = "Role not found";
 }

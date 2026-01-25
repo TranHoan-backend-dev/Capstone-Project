@@ -1,6 +1,6 @@
 package com.capstone.auth.application.business.dto;
 
-public record ProfileResponse(
+public record ProfileDTO(
   String id,
   String fullname,
   String avatarUrl,

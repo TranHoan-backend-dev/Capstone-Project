@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 @AllArgsConstructor
 @Table(name = "users")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Users implements UserDetails {
+public class Users {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "user_id")
@@ -41,6 +41,16 @@ public class Users implements UserDetails {
 
   @Column(nullable = false)
   LocalDateTime updatedAt;
+
+  @Column(nullable = false)
+  Boolean isEnabled;
+
+  @Column(nullable = false)
+  Boolean isLocked;
+
+  String lockedReason;
+
+  LocalDateTime lockedAt;
 
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "role_id")
@@ -120,29 +130,12 @@ public class Users implements UserDetails {
     }
   }
 
-  @Override
-  public @NonNull Collection<? extends GrantedAuthority> getAuthorities() {
-    return authorities;
-  }
-
-  @Override
   public boolean isEnabled() {
-    return UserDetails.super.isEnabled();
+    return isEnabled;
   }
 
-  @Override
-  public boolean isCredentialsNonExpired() {
-    return UserDetails.super.isCredentialsNonExpired();
-  }
-
-  @Override
   public boolean isAccountNonLocked() {
-    return UserDetails.super.isAccountNonLocked();
-  }
-
-  @Override
-  public boolean isAccountNonExpired() {
-    return UserDetails.super.isAccountNonExpired();
+    return isLocked;
   }
 
   public static Users create(@NonNull Consumer<UsersBuilder> builder) {
