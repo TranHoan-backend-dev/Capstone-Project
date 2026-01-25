@@ -12,6 +12,7 @@ import {
   DocumentMagnifyGlassIcon,
   RestoreIcon,
   SumIcon,
+  TitleDarkColor,
 } from "@/config/chip-and-icon";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
 import CustomButton from "@/components/ui/custom/CustomButton";
@@ -41,9 +42,9 @@ export const TechnicalInfoCard = () => {
   ];
 
   const technicalSpecsFields = [
-    { label: "Lệ phí HĐ" },
-    { label: "Công KS" },
-    { label: "Giá KS" },
+    { label: "Lệ phí hợp đồng" },
+    { label: "Công khảo sát" },
+    { label: "Giá khảo sát" },
     { label: "Phí đấu nối" },
     { label: "Hệ số nhân công" },
     { label: "Hệ số chi phí chung" },
@@ -159,14 +160,14 @@ export const TechnicalInfoCard = () => {
       title="Lập hồ sơ kỹ thuật & chi phí vật tư"
     >
       <div className="lg:col-span-1 space-y-4">
-        <h3 className="text-base font-bold text-foreground mb-4">
+        <h3 className={`text-sm font-bold text-blue-600 ${TitleDarkColor} uppercase tracking-wider`}>
           Thông tin khách hàng & công trình
         </h3>
         {customerInfoFields.map(renderField)}
       </div>
 
       <div className="lg:col-span-1 space-y-4">
-        <h3 className="text-base font-bold text-foreground mb-4">
+        <h3 className={`text-sm font-bold text-blue-600 ${TitleDarkColor} uppercase tracking-wider`}>
           Thông số kỹ thuật lắp đặt
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -176,8 +177,8 @@ export const TechnicalInfoCard = () => {
 
       {/* Meter Section - Wide */}
       <div className="lg:col-span-2 pt-8 border-t border-divider space-y-4">
-        <h3 className="text-base font-bold text-foreground">
-          Đông hồ & đơn vị liên quan
+        <h3 className={`text-sm font-bold text-blue-600 ${TitleDarkColor} uppercase tracking-wider`}>
+          Đồng hồ & đơn vị liên quan
         </h3>
 
         {/* Meter Row */}

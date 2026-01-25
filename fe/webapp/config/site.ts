@@ -112,24 +112,24 @@ export const siteConfig = {
           href: "/assigning-survey",
         },
         {
-          key: "estimate-preparation",
-          label: "Lập dự toán",
-          href: "/estimate-preparation",
+          key: "estimate-approval",
+          label: "Duyệt dự toán",
+          href: "/estimate/approval",
+        },
+        {
+          key: "run-estimate",
+          label: "Chạy dự toán",
+          href: "/estimate/run",
         },
         {
           key: "estimate-lookup",
           label: "Tra cứu dự toán",
-          href: "/estimate-lookup",
+          href: "/estimate/lookup",
         },
         {
           key: "manage-supplies",
           label: "Quản lý mẫu bốc vật tư",
           href: "/manage-supplies",
-        },
-        {
-          key: "survey-pending",
-          label: "Nhập đơn dự toán ống trục",
-          href: "/#",
         },
       ],
     },
