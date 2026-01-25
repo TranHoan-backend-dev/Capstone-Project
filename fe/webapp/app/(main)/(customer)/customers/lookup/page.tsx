@@ -1,7 +1,7 @@
 import React from "react";
 import { Metadata } from "next";
 
-import Customers from "./customers";
+import CustomersLookup from "./lookup";
 
 import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
 
@@ -21,7 +21,7 @@ const CustomersPage = () => {
       />
 
       <div className="space-y-6 pt-2">
-        <Customers />
+        <CustomersLookup />
       </div>
     </>
   );

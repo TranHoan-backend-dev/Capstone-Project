@@ -104,14 +104,14 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
       content: "Lịch sử",
       icon: HistoryIcon,
       className: WhiteIconColor,
-      href: `/customers/${id}/history`,
+      href: `/customers/lookup/${id}/history`,
     },
     {
       content: "Hồ sơ",
       color: "primary" as const,
       icon: ProfileIcon,
       className: BlueYellowIconColor,
-      href: `/customers/${id}`,
+      href: `/customers/lookup/${id}`,
     },
   ];
 

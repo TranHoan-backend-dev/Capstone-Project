@@ -94,7 +94,7 @@ const ConsumptionHistoryPage = () => {
               <Button
                 isIconOnly
                 as={Link}
-                href={`/customers/${id}`}
+                href={`/customers/lookup/${id}`}
                 size="sm"
                 variant="light"
               >
@@ -113,7 +113,7 @@ const ConsumptionHistoryPage = () => {
       <CustomBreadcrumb
         items={[
           { label: "Trang chủ", href: "/home" },
-          { label: "Tra cứu khách hàng", href: "/customers" },
+          { label: "Tra cứu khách hàng", href: "/customers/lookup" },
           { label: "Lịch sử tiêu thụ", isCurrent: true },
         ]}
       />

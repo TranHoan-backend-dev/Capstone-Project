@@ -5,7 +5,7 @@ import React from "react";
 import { FilterSection } from "./components/filter-section";
 import { ResultsTable } from "./components/results-table";
 
-const Customers = () => {
+const CustomersLookup = () => {
   const branches = [{ label: "Tất cả", value: "all" }];
   const areas = [{ label: "Tất cả", value: "all" }];
   const wards = [{ label: "Tất cả", value: "all" }];
@@ -64,4 +64,4 @@ const Customers = () => {
   );
 };
 
-export default Customers;
+export default CustomersLookup;
