@@ -11,7 +11,7 @@ export const AddressContactSection = () => (
   <div className="space-y-4">
     <div className="space-y-6 pb-6 border-b border-gray-100 dark:border-divider">
       <h2
-        className={`text-sm font-bold text-blue-600 uppercase tracking-wider ${TitleDarkColor}`}
+        className={`text-sm font-bold uppercase tracking-wider ${TitleDarkColor}`}
       >
         Địa chỉ & liên hệ
       </h2>
@@ -25,7 +25,7 @@ export const AddressContactSection = () => (
 
     <div className="space-y-4">
       <h2
-        className={`text-sm font-bold text-blue-600 uppercase tracking-wider ${TitleDarkColor}`}
+        className={`text-sm font-bold uppercase tracking-wider ${TitleDarkColor}`}
       >
         Thông tin ngân hàng
       </h2>

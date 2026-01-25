@@ -37,7 +37,7 @@ export const CustomerInfoSection = () => {
   return (
     <div className="space-y-6">
       <h2
-        className={`text-sm font-bold text-blue-600 ${TitleDarkColor} uppercase tracking-wider`}
+        className={`text-sm font-bold ${TitleDarkColor} uppercase tracking-wider`}
       >
         Thông tin khách hàng
       </h2>

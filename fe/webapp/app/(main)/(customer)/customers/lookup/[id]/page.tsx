@@ -41,16 +41,16 @@ const CustomerProfile = () => {
       <div className="grid gap-6 w-full">
         <Card className="w-full shadow-md border border-divider dark:border-gray-800 bg-background">
           <CardHeader
-            className={`flex gap-3 px-6 py-4 bg-gradient-to-r from-blue-100 to-blue-50 dark:from-yellow-900/40 dark:to-yellow-800/20 text-blue-700 ${TitleDarkColor} rounded-t-lg`}
+            className={`flex gap-3 px-6 py-4 bg-gradient-to-r from-blue-100 to-blue-50 dark:from-yellow-900/40 dark:to-yellow-800/20 ${TitleDarkColor} rounded-t-lg`}
           >
             <div className="p-2 bg-blue-200/50 rounded-full">
-              <UserCircleIcon className="w-6 h-6 text-blue-600 dark:text-white" />
+              <UserCircleIcon className="w-6 h-6 dark:text-white" />
             </div>
             <div className="flex flex-col">
               <p className="text-md font-bold uppercase tracking-wide">
                 Thông tin hồ sơ
               </p>
-              <p className="text-small text-blue-600/80 dark:text-yellow-300/80">
+              <p className={`text-small ${TitleDarkColor}`}>
                 Chi tiết thông tin khách hàng
               </p>
             </div>

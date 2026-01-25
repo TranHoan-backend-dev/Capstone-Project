@@ -14,7 +14,7 @@ export const BillingInfoSection = () => {
     <div className="space-y-4 pt-4">
       <div className="flex items-center gap-2">
         <h3
-          className={`text-sm font-bold text-blue-600 ${TitleDarkColor} uppercase tracking-wider`}
+          className={`text-sm font-bold ${TitleDarkColor} uppercase tracking-wider`}
         >
           Thông tin hóa đơn
         </h3>

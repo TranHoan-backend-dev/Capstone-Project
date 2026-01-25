@@ -15,7 +15,7 @@ export const InvoiceInfoSection = () => {
     <div className="col-span-full space-y-4">
       <div className="flex items-center gap-4">
         <h2
-          className={`text-sm font-bold text-blue-600 uppercase tracking-wider ${TitleDarkColor}`}
+          className={`text-sm font-bold uppercase tracking-wider ${TitleDarkColor}`}
         >
           Thông tin hóa đơn
         </h2>

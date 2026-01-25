@@ -20,7 +20,7 @@ export const AddressContactSection = () => {
     <div className="space-y-6">
       <div className="space-y-6 pb-6 border-b border-gray-100 dark:border-divider">
         <h2
-          className={`text-sm font-bold text-blue-600 ${TitleDarkColor} uppercase tracking-wider`}
+          className={`text-sm font-bold ${TitleDarkColor} uppercase tracking-wider`}
         >
           Địa chỉ lắp đặt & Liên hệ
         </h2>
@@ -44,7 +44,7 @@ export const AddressContactSection = () => {
 
       <div className="space-y-4 py-2">
         <h2
-          className={`text-sm font-bold text-blue-600 ${TitleDarkColor} uppercase tracking-wider`}
+          className={`text-sm font-bold ${TitleDarkColor} uppercase tracking-wider`}
         >
           Thông tin ngân hàng
         </h2>

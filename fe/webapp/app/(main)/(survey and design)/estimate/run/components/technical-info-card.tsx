@@ -160,14 +160,14 @@ export const TechnicalInfoCard = () => {
       title="Lập hồ sơ kỹ thuật & chi phí vật tư"
     >
       <div className="lg:col-span-1 space-y-4">
-        <h3 className={`text-sm font-bold text-blue-600 ${TitleDarkColor} uppercase tracking-wider`}>
+        <h3 className={`text-sm font-bold ${TitleDarkColor} uppercase tracking-wider`}>
           Thông tin khách hàng & công trình
         </h3>
         {customerInfoFields.map(renderField)}
       </div>
 
       <div className="lg:col-span-1 space-y-4">
-        <h3 className={`text-sm font-bold text-blue-600 ${TitleDarkColor} uppercase tracking-wider`}>
+        <h3 className={`text-sm font-bold ${TitleDarkColor} uppercase tracking-wider`}>
           Thông số kỹ thuật lắp đặt
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -177,7 +177,7 @@ export const TechnicalInfoCard = () => {
 
       {/* Meter Section - Wide */}
       <div className="lg:col-span-2 pt-8 border-t border-divider space-y-4">
-        <h3 className={`text-sm font-bold text-blue-600 ${TitleDarkColor} uppercase tracking-wider`}>
+        <h3 className={`text-sm font-bold ${TitleDarkColor} uppercase tracking-wider`}>
           Đồng hồ & đơn vị liên quan
         </h3>
 

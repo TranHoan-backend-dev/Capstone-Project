@@ -1,7 +1,14 @@
 import React from "react";
+import { Metadata } from "next";
+
+import CustomerRegistration from "./customer-registration";
 
 import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
-import CustomerRegistration from "@/app/(main)/(customer)/import/customer-registration";
+
+export const metadata: Metadata = {
+  title: "Nhập khách hàng mới",
+  description: "Nhập khách hàng mới",
+};
 
 export default function CustomerRegistrationPage() {
   const breadcrumbs = [
