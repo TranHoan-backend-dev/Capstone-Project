@@ -20,13 +20,18 @@ export const TechnicalInfo = () => {
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <CustomInput label="Số hợp đồng" />
-        <CustomInput label="Mã đồng hồ" />
-        <CustomDatePicker label="Ngày hợp đồng" />
-        <CustomDatePicker label="Ngày lắp đặt" />
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <CustomInput label="Số hợp đồng cấp nước" />
+        <CustomDatePicker
+          className="mb-15"
+          label="Ngày lập hợp đồng cấp nước"
+        />
         <CustomInput label="Số hợp đồng lắp đặt" />
         <CustomDatePicker label="Ngày hợp đồng lắp đặt" />
+
+        <CustomInput label="Mã đồng hồ" />
+        <SearchInputWithButton label="Loại đồng hồ" />
+        <CustomDatePicker label="Ngày lắp đặt" />
 
         <CustomSelect
           label="Loại khách hàng"
@@ -76,7 +81,6 @@ export const TechnicalInfo = () => {
         />
 
         <SearchInputWithButton label="Lộ trình ghi" />
-        <SearchInputWithButton label="Loại đồng hồ" />
         <CustomInput label="Chỉ số đồng hồ" type="number" defaultValue="0" />
         <CustomInput label="Định mức" type="number" defaultValue="0" />
         <CustomSelect

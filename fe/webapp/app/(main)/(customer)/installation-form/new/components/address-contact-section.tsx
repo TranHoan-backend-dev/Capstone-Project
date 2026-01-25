@@ -14,7 +14,7 @@ export const AddressContactSection = () => {
     { label: "Email" },
   ];
 
-  const selectFieldContent = ["Chọn phường / xã", "Chọn tỉnh / thành phố"];
+  const selectFieldContent = ["Chọn phường / xã"];
 
   return (
     <div className="space-y-6">

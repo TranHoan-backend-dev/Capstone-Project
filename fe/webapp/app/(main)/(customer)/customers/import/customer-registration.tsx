@@ -4,12 +4,13 @@ import React from "react";
 import { Card, CardBody } from "@heroui/react";
 import { DocumentPlusIcon } from "@heroicons/react/24/solid";
 
-import { RefreshIcon, SaveIcon } from "@/components/ui/Icons";
+import { CustomerInfo } from "./components/customer-info";
+import { AddressInfo } from "./components/address-info";
+import { TechnicalInfo } from "./components/technical-info";
+import { BillingInfo } from "./components/billing-info";
+
 import CustomButton from "@/components/ui/custom/CustomButton";
-import { CustomerInfo } from "@/app/(main)/(customer)/import/components/customer-info";
-import { AddressInfo } from "@/app/(main)/(customer)/import/components/address-info";
-import { TechnicalInfo } from "@/app/(main)/(customer)/import/components/technical-info";
-import { BillingInfo } from "@/app/(main)/(customer)/import/components/billing-info";
+import { RefreshIcon, SaveIcon } from "@/components/ui/Icons";
 
 const CustomerRegistration = () => {
   return (
