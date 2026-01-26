@@ -1,4 +1,4 @@
-package com.capstone
+package com.capstone.ui.views
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
