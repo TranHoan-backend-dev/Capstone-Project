@@ -9,15 +9,11 @@ group = 'com.capstone'
 version = '0.0.1-SNAPSHOT'
 description = 'Demo project for Spring Boot'
 
-repositories {
-    mavenCentral()
-}
 dependencyManagement {
   imports {
     mavenBom "org.springframework.cloud:spring-cloud-dependencies:2024.0.0"
   }
 }
-
 
 dependencies {
   implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'

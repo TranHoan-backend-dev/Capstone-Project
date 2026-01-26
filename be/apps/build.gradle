@@ -48,6 +48,7 @@ subprojects {
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+    implementation 'org.jspecify:jspecify:1.0.0'
 
     // Testing
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

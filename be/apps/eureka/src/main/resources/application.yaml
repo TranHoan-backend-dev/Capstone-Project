@@ -3,11 +3,13 @@ server:
 
 spring:
   application:
-    name: service-registry
+    name: eureka
 
 eureka:
   client:
     register-with-eureka: false
     fetch-registry: false
+    service-url:
+      defaultZone: http://localhost:9000/eureka/
   server:
     wait-time-in-ms-when-sync-empty: 0
