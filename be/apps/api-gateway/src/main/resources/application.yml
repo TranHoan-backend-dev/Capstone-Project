@@ -19,12 +19,12 @@ spring:
             - Path=/auth/**
           filters:
             - StripPrefix=1
-        - id: chat
-          uri: lb://chat
-          predicates:
-            - Path=/chat/**
-          filters:
-            - StripPrefix=1
+#        - id: chat
+#          uri: lb://chat
+#          predicates:
+#            - Path=/chat/**
+#          filters:
+#            - StripPrefix=1
         - id: customer
           uri: lb://customer
           predicates:
