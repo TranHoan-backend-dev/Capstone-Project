@@ -39,6 +39,10 @@ springdoc:
   swagger-ui:
     enabled: true
     path: /swagger-ui/index.html
+server:
+  port: 9005
+  servlet:
+    context-path: /api/v1
 #spring:
 #  datasource:
 #    driver-class-name: org.postgresql.Driver

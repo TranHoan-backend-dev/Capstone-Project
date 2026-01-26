@@ -21,10 +21,6 @@ dependencies {
   implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 }
 
-configurations.configureEach {
-  exclude group: "org.springdoc"
-}
-
 tasks.named('test') {
   useJUnitPlatform()
 }

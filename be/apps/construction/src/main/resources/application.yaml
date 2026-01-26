@@ -29,7 +29,7 @@ management:
           - prometheus
       base-path: /actuator
 server:
-  port: 9003
+  port: 9004
   servlet:
     context-path: /api/v1
 web-frontend-url: ${WEB_FRONTEND_URL:http://localhost:3000}

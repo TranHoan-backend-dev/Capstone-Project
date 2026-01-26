@@ -35,13 +35,11 @@ springdoc:
   swagger-ui:
     enabled: true
     path: /swagger-ui/index.html
-
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:9000/eureka
-
-  endpoints:
-    web:
-      exposure:
-        include: "*"
+server:
+  port: 9006
+  servlet:
+    context-path: /api/v1
