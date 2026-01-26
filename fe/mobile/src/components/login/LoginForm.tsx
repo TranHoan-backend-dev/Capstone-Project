@@ -1,19 +1,34 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
 import FormInput from '../common/FormInput';
 import LoginFooter from './LoginFooter';
+import { RootStackParamList } from '../../navigation/AppNavigator';
+
+type NavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'Login'
+>;
 
 export default function LoginForm() {
-  const [email, setEmail] = useState('');
+  const navigation = useNavigation<NavigationProp>();
+
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
+  const handleLogin = () => {
+    console.log(username, password);
+    navigation.replace('Home');
+  };
 
   return (
     <View>
       <FormInput
-        label="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
+        label="Tên đăng nhập"
+        value={username}
+        onChangeText={setUsername}
       />
 
       <FormInput
@@ -24,7 +39,7 @@ export default function LoginForm() {
       />
 
       <LoginFooter
-        onLogin={() => console.log(email, password)}
+        onLogin={handleLogin}
         onForgotPassword={() => console.log('forgot')}
       />
     </View>
