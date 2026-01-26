@@ -7,7 +7,6 @@ interface FormInputProps {
   value: string;
   onChangeText: (text: string) => void;
   secureTextEntry?: boolean;
-  keyboardType?: 'default' | 'email-address';
 }
 
 export default function FormInput({
@@ -15,7 +14,6 @@ export default function FormInput({
   value,
   onChangeText,
   secureTextEntry = false,
-  keyboardType = 'default',
 }: FormInputProps) {
   return (
     <TextInput
@@ -23,7 +21,6 @@ export default function FormInput({
       value={value}
       onChangeText={onChangeText}
       secureTextEntry={secureTextEntry}
-      keyboardType={keyboardType}
       mode="outlined"
       style={styles.input}
       autoCapitalize="none"
