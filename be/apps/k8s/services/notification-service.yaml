@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service
+  namespace: capstone-project
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification-service
+  template:
+    metadata:
+      labels:
+        app: notification-service
+    spec:
+      containers:
+        - name: notification-service
+          image: notification-service:1.0.0
+          ports:
+            - containerPort: 9004
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 9004
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 9004
+            initialDelaySeconds: 15
+            periodSeconds: 5
+          env:
+            - name: SERVER_PORT
+              value: "9004"
+            - name: SPRING_PROFILES_ACTIVE
+              value: "dev"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-service
+  namespace: capstone-project
+spec:
+  selector:
+    app: notification-service
+  ports:
+    - protocol: TCP
+      port: 9004
+      targetPort: 9004
+  type: ClusterIP

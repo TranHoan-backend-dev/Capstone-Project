@@ -7,36 +7,35 @@ plugins {
 
 group = 'com.capstone'
 version = '0.0.1-SNAPSHOT'
-description = 'Demo project for Spring Boot'
+
+description = 'API Gateway service'
+
 dependencyManagement {
   imports {
     mavenBom "org.springframework.cloud:spring-cloud-dependencies:2024.0.0"
   }
 }
 
+java {
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(21)
+  }
+}
 
 dependencies {
+  // exclude MVC starter inherited from parent
+  configurations.configureEach {
+    exclude group: 'org.springframework.boot', module: 'spring-boot-starter-web'
+  }
+  implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
   implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
-  implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
-  implementation 'org.jspecify:jspecify:1.0.0'
+  testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 tasks.named('test') {
   useJUnitPlatform()
 }
+
 tasks.named('bootJar') {
-  mainClass = 'com.capstone.notification.NotificationApplication'
-}
-springBoot {
-  buildInfo()
-}
-publishing {
-  publications {
-    mavenJava(MavenPublication) {
-      artifact bootJar
-    }
-  }
-}
-test {
-  enabled = false
+  mainClass = 'com.capstone.apigateway.ApiGatewayApplication'
 }
