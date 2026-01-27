@@ -1,5 +1,6 @@
 package com.capstone.construction.domain.model;
 
+import com.capstone.construction.domain.model.utils.ProcessingStatus;
 import jakarta.persistence.*;
 import com.capstone.construction.infrastructure.config.Constant;
 import lombok.*;
@@ -8,8 +9,8 @@ import org.jspecify.annotations.NonNull;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.Objects;
+import java.time.*;
+import java.util.*;
 import java.util.function.Consumer;
 
 @Table
@@ -42,6 +43,13 @@ public class Settlement implements Serializable {
   @Column(nullable = false)
   LocalDateTime updatedAt;
 
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  ProcessingStatus status;
+
+  @Column(nullable = false)
+  LocalDate registrationAt;
+
   @PrePersist
   void onCreate() {
     this.createdAt = LocalDateTime.now();
@@ -53,7 +61,16 @@ public class Settlement implements Serializable {
     this.updatedAt = LocalDateTime.now();
   }
 
-  // Map<String, String> representative;
+  // <editor-fold> desc="setter"
+  public void setStatus(@NonNull ProcessingStatus value) {
+    requireNonNullAndNotEmpty(value.name(), Constant.PT_03);
+    this.status = value;
+  }
+
+  public void setRegistrationAt(@NonNull LocalDate value) {
+    Objects.requireNonNull(value, Constant.PT_04);
+    this.registrationAt = value;
+  }
 
   public void setJobContent(String jobContent) {
     requireNonNullAndNotEmpty(jobContent, Constant.PT_75);
@@ -87,7 +104,9 @@ public class Settlement implements Serializable {
     builder.accept(instance);
     return instance.build();
   }
+  // </editor-fold>
 
+  // <editor-fold> desc="builder"
   public static class SettlementBuilder {
     private final Settlement instance = new Settlement();
 
@@ -96,8 +115,18 @@ public class Settlement implements Serializable {
       return this;
     }
 
+    public SettlementBuilder registrationAt(LocalDate address) {
+      instance.setRegistrationAt(address);
+      return this;
+    }
+
     public SettlementBuilder address(String address) {
       instance.setAddress(address);
+      return this;
+    }
+
+    public SettlementBuilder status(ProcessingStatus address) {
+      instance.setStatus(address);
       return this;
     }
 
@@ -115,4 +144,5 @@ public class Settlement implements Serializable {
       return instance;
     }
   }
+  // </editor-fold>
 }

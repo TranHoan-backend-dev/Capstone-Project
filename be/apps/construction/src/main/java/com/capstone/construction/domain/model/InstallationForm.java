@@ -1,20 +1,25 @@
 package com.capstone.construction.domain.model;
 
+import com.capstone.construction.domain.model.utils.Representative;
+import com.capstone.construction.domain.model.utils.UsageTarget;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
 import com.capstone.construction.infrastructure.config.Constant;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.jspecify.annotations.NonNull;
 
 @Table
 @Getter
 @Entity
-@ToString
+@ToString(exclude = "network")
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -31,13 +36,6 @@ public class InstallationForm {
 
   @Column(nullable = false)
   String address;
-
-  String representative;
-
-  String businessPosition;
-
-  @Column(nullable = false)
-  String houseNumber;
 
   @Column(length = 12, unique = true, nullable = false)
   String citizenIdentificationNumber;
@@ -59,8 +57,9 @@ public class InstallationForm {
   @Column(nullable = false)
   String bankAccountProviderLocation;
 
+  @Enumerated(EnumType.STRING)
   @Column(nullable = false)
-  String usageTarget;
+  UsageTarget usageTarget;
 
   @Column(nullable = false)
   LocalDateTime receivedFormAt;
@@ -73,7 +72,9 @@ public class InstallationForm {
   @Column(nullable = false)
   Integer householdRegistrationNumber;
 
-  // String object;
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(columnDefinition = "jsonb")
+  List<Representative> representative;
 
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "water_supply_network_id")
@@ -113,19 +114,9 @@ public class InstallationForm {
     this.customerName = customerName;
   }
 
-  public void setRepresentative(String representative) {
-    requireNonNullAndNotEmpty(representative, Constant.PT_45);
+  public void setRepresentative(List<Representative> representative) {
+    Objects.requireNonNull(representative, Constant.PT_45);
     this.representative = representative;
-  }
-
-  public void setBusinessPosition(String businessPosition) {
-    requireNonNullAndNotEmpty(businessPosition, Constant.PT_46);
-    this.businessPosition = businessPosition;
-  }
-
-  public void setHouseNumber(String houseNumber) {
-    requireNonNullAndNotEmpty(houseNumber, Constant.PT_47);
-    this.houseNumber = houseNumber;
   }
 
   public void setCitizenIdentificationNumber(String citizenIdentificationNumber) {
@@ -135,13 +126,13 @@ public class InstallationForm {
 
   public void setCitizenIdentificationProvideDate(String citizenIdentificationProvideDate) {
     requireNonNullAndNotEmpty(citizenIdentificationProvideDate,
-        Constant.PT_49);
+      Constant.PT_49);
     this.citizenIdentificationProvideDate = citizenIdentificationProvideDate;
   }
 
   public void setCitizenIdentificationProvideLocation(String citizenIdentificationProvideLocation) {
     requireNonNullAndNotEmpty(citizenIdentificationProvideLocation,
-        Constant.PT_50);
+      Constant.PT_50);
     this.citizenIdentificationProvideLocation = citizenIdentificationProvideLocation;
   }
 
@@ -169,8 +160,8 @@ public class InstallationForm {
   }
 
   public void setUsageTarget(String usageTarget) {
-    requireNonNullAndNotEmpty(usageTarget, Constant.PT_54);
-    this.usageTarget = usageTarget;
+    Objects.requireNonNull(usageTarget, Constant.PT_54);
+    this.usageTarget = UsageTarget.valueOf(usageTarget.trim().toUpperCase());
   }
 
   public void setReceivedFormAt(LocalDateTime receivedFormAt) {
@@ -244,18 +235,8 @@ public class InstallationForm {
       return this;
     }
 
-    public InstallationFormBuilder representative(String representative) {
+    public InstallationFormBuilder representative(List<Representative> representative) {
       instance.setRepresentative(representative);
-      return this;
-    }
-
-    public InstallationFormBuilder businessPosition(String businessPosition) {
-      instance.setBusinessPosition(businessPosition);
-      return this;
-    }
-
-    public InstallationFormBuilder houseNumber(String houseNumber) {
-      instance.setHouseNumber(houseNumber);
       return this;
     }
 

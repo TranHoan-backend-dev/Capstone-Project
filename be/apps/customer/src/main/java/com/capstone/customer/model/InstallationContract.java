@@ -4,8 +4,11 @@ import com.capstone.customer.config.Constant;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.jspecify.annotations.NonNull;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -32,6 +35,10 @@ public class InstallationContract {
   Customer customer;
 
   String installationFormId;
+
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(columnDefinition = "jsonb")
+  List<Representative> representative;
 
   @PrePersist
   void onCreate() {

@@ -32,7 +32,6 @@ public class Customer {
 
   @Column(nullable = false)
   String phoneNumber;
-  // object
 
   @Column(nullable = false)
   String type;
@@ -41,8 +40,9 @@ public class Customer {
   @Column(nullable = false)
   Boolean isBigCustomer;
 
+  @Enumerated(EnumType.STRING)
   @Column(nullable = false)
-  String usageTarget;
+  UsageTarget usageTarget;
 
   @Column(nullable = false)
   Integer numberOfHouseholds;
@@ -52,8 +52,10 @@ public class Customer {
 
   @Column(nullable = false)
   Integer protectEnvironmentFee;
+
   @Setter
   Boolean isFree;
+
   @Setter
   Boolean isSale;
   String m3Sale;
@@ -104,12 +106,6 @@ public class Customer {
   String waterPriceId;
 
   @Column(nullable = false)
-  String costEstimationId;
-
-  @Column(nullable = false)
-  String settlementId;
-
-  @Column(nullable = false)
   String waterMeterId;
 
   @PrePersist
@@ -131,6 +127,7 @@ public class Customer {
     this.name = name;
   }
 
+  // <editor-fold> desc="setter"
   public void setEmail(String email) {
     Objects.requireNonNull(email, Constant.ENT_13);
     if (email.trim().isEmpty()) {
@@ -160,7 +157,7 @@ public class Customer {
 
   public void setUsageTarget(String usageTarget) {
     requireText(usageTarget, Constant.ENT_16);
-    this.usageTarget = usageTarget;
+    this.usageTarget = UsageTarget.valueOf(usageTarget.trim().toUpperCase());
   }
 
   public void setWaterMeterType(String waterMeterType) {
@@ -255,16 +252,6 @@ public class Customer {
     this.waterPriceId = value;
   }
 
-  public void setCostEstimationId(String value) {
-    requireId(value, Constant.ENT_35);
-    this.costEstimationId = value;
-  }
-
-  public void setSettlementId(String value) {
-    requireId(value, Constant.ENT_36);
-    this.settlementId = value;
-  }
-
   public void setWaterMeterId(String value) {
     requireId(value, Constant.ENT_37);
     this.waterMeterId = value;
@@ -301,7 +288,9 @@ public class Customer {
     if (value < 0)
       throw new IllegalArgumentException(message);
   }
+  // </editor-fold>
 
+  // <editor-fold> desc="builder"
   public static Customer create(@NonNull Consumer<CustomerBuilder> consumer) {
     var builder = new CustomerBuilder();
     consumer.accept(builder);
@@ -461,16 +450,6 @@ public class Customer {
       return this;
     }
 
-    public CustomerBuilder costEstimationId(String value) {
-      customer.setCostEstimationId(value);
-      return this;
-    }
-
-    public CustomerBuilder settlementId(String value) {
-      customer.setSettlementId(value);
-      return this;
-    }
-
     public CustomerBuilder installationFormId(String value) {
       customer.setInstallationFormId(value);
       return this;
@@ -484,4 +463,5 @@ public class Customer {
       return customer;
     }
   }
+  // </editor-fold>
 }

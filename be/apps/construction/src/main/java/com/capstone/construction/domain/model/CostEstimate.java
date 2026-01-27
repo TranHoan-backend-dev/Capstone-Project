@@ -1,5 +1,6 @@
 package com.capstone.construction.domain.model;
 
+import com.capstone.construction.domain.model.utils.ProcessingStatus;
 import jakarta.persistence.*;
 import com.capstone.construction.infrastructure.config.Constant;
 import lombok.*;
@@ -7,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 import org.jspecify.annotations.NonNull;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -73,6 +75,13 @@ public class CostEstimate implements Serializable {
   @Column(nullable = false)
   LocalDateTime updatedAt;
 
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  ProcessingStatus status;
+
+  @Column(nullable = false)
+  LocalDate registrationAt;
+
   @Column(nullable = false)
   String createBy; // reference to Users, describe which employee has been processing
 
@@ -81,6 +90,9 @@ public class CostEstimate implements Serializable {
 
   @Column(nullable = false)
   String overallWaterMeterId;
+
+  @Column(nullable = false)
+  String installationFormId;
 
   @PrePersist
   void onCreate() {
@@ -91,6 +103,22 @@ public class CostEstimate implements Serializable {
   @PreUpdate
   void onUpdate() {
     this.updatedAt = LocalDateTime.now();
+  }
+
+  // <editor-fold> desc="setter"
+  public void setStatus(@NonNull ProcessingStatus value) {
+    requireNonNullAndNotEmpty(value.name(), Constant.PT_03);
+    this.status = value;
+  }
+
+  public void setRegistrationAt(@NonNull LocalDate value) {
+    Objects.requireNonNull(value, Constant.PT_04);
+    this.registrationAt = value;
+  }
+
+  public void setInstallationFormId(String value) {
+    requireNonNullAndNotEmpty(value, Constant.PT_66);
+    this.installationFormId = value;
   }
 
   public void setCustomerName(String customerName) {
@@ -195,7 +223,9 @@ public class CostEstimate implements Serializable {
     builder.accept(instance);
     return instance.build();
   }
+  // </editor-fold>
 
+  // <editor-fold> desc="builder"
   public static class EstimationBuilder {
     private final CostEstimate instance = new CostEstimate();
 
@@ -204,8 +234,18 @@ public class CostEstimate implements Serializable {
       return this;
     }
 
+    public EstimationBuilder registrationAt(LocalDate address) {
+      instance.setRegistrationAt(address);
+      return this;
+    }
+
     public EstimationBuilder address(String address) {
       instance.setAddress(address);
+      return this;
+    }
+
+    public EstimationBuilder status(ProcessingStatus address) {
+      instance.setStatus(address);
       return this;
     }
 
@@ -264,6 +304,11 @@ public class CostEstimate implements Serializable {
       return this;
     }
 
+    public EstimationBuilder installationFormId(String value) {
+      instance.setInstallationFormId(value);
+      return this;
+    }
+
     public EstimationBuilder designFee(Integer designFee) {
       instance.setDesignFee(designFee);
       return this;
@@ -293,4 +338,5 @@ public class CostEstimate implements Serializable {
       return instance;
     }
   }
+  // </editor-fold>
 }
