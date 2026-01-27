@@ -1,32 +1,30 @@
 package com.capstone.construction.infrastructure.config;
 
 public final class Constant {
-  public static final String EMAIL_PATTERN = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
   public static final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
   public static final String PHONE_PATTERN = "^[0-9]{10}$";
 
   // for dto and entity layer
   public static final String PT_01 = "Email must follow the format <name>@<domain>";
   public static final String PT_02 = "Invalid password. Password must contain at least one number, one uppercase letter, one lowercase letter, one special character, and be at least 8 characters long";
-  public static final String PT_03 = "Email must not be null or empty";
-  public static final String PT_04 = "Password must not be null or empty";
-  public static final String PT_05 = "Username must not be null or empty";
-  public static final String PT_06 = "Role cannot be null or empty";
-  public static final String PT_07 = "Role name cannot be null or empty";
-  public static final String PT_08 = "Role must have at least one user";
-  public static final String PT_09 = "Profile must have one user";
-  public static final String PT_10 = "Fullname cannot be null or empty";
-  public static final String PT_11 = "Avatar cannot be null or empty";
-  public static final String PT_12 = "Address cannot be null or empty";
-  public static final String PT_13 = "Fullname cannot have digits and special characters";
+  public static final String PT_03 = "";
+  public static final String PT_04 = "";
+  public static final String PT_05 = "";
+  public static final String PT_06 = "";
+  public static final String PT_07 = "";
+  public static final String PT_08 = "";
+  public static final String PT_09 = "";
+  public static final String PT_10 = "";
+  public static final String PT_11 = "";
+  public static final String PT_12 = "";
+  public static final String PT_13 = "";
   public static final String PT_14 = "Phone number must be numberic and 10 digits long";
   public static final String PT_15 = "Phone number cannot be null or empty";
-  public static final String PT_16 = "Gender cannot be null or empty";
-  public static final String PT_17 = "Birthdate cannot be null or empty";
-  public static final String PT_18 = "Branch id cannot be null or empty";
-  public static final String PT_19 = "Department id cannot be null or empty";
-  public static final String PT_20 = "Employee code cannot be null or empty";
-
+  public static final String PT_16 = "";
+  public static final String PT_17 = "";
+  public static final String PT_18 = "";
+  public static final String PT_19 = "";
+  public static final String PT_20 = "";
   public static final String PT_21 = "Commune name cannot be null or empty";
   public static final String PT_22 = "Commune type cannot be null or empty";
   public static final String PT_23 = "Network name cannot be null or empty";
@@ -45,8 +43,8 @@ public final class Constant {
   public static final String PT_36 = "Vat coefficient cannot be null";
   public static final String PT_37 = "Design coefficient cannot be null";
   public static final String PT_38 = "Design fee cannot be null";
-  public static final String PT_39 = "Water meter type cannot be null or empty";
-  public static final String PT_40 = "Water meter code cannot be null or empty";
+  public static final String PT_39 = "";
+  public static final String PT_40 = "";
   public static final String PT_41 = "Design image url cannot be null or empty";
   public static final String PT_42 = "Create by cannot be null or empty";
   public static final String PT_43 = "Water meter id cannot be null or empty";
@@ -67,7 +65,7 @@ public final class Constant {
   public static final String PT_58 = "Road cannot be null";
   public static final String PT_59 = "Network cannot be null";
   public static final String PT_60 = "Unit cannot be null";
-  public static final String PT_61 = "Hamlet cannot be null";
+  public static final String PT_61 = "The staff in the Planning-Technical Department who will create the installation form cannot be null";
   public static final String PT_62 = "Overall water meter ID cannot be null or empty";
   public static final String PT_63 = "Contract ID cannot be null or empty";
   public static final String PT_64 = "Registration date cannot be null";
@@ -85,6 +83,7 @@ public final class Constant {
   public static final String PT_76 = "Connection fee cannot be null";
   public static final String PT_77 = "Note cannot be null or empty";
   public static final String PT_78 = "Schedule survey at cannot be null";
+  public static final String PT_79 = "The staff in the Planning-Technical Department who will handle the installation form cannot be null";
 
   // for service layer
   public static final String SE_01 = "Email has been existing";

@@ -19,8 +19,7 @@ import java.util.function.Consumer;
 public class Commune {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  @Column(name = "commune_id")
-  String id;
+  String communeId;
 
   @Column(nullable = false, unique = true)
   String name;
@@ -33,6 +32,17 @@ public class Commune {
 
   @Column(nullable = false)
   LocalDateTime updatedAt;
+
+  @PrePersist
+  void onCreate() {
+    this.createdAt = LocalDateTime.now();
+    this.updatedAt = this.createdAt;
+  }
+
+  @PreUpdate
+  void onUpdate() {
+    this.updatedAt = LocalDateTime.now();
+  }
 
   public void setName(String name) {
     requireNonNullAndNotEmpty(name, Constant.PT_21);
@@ -58,35 +68,20 @@ public class Commune {
   }
 
   public static class CommuneBuilder {
-    private String name;
-    private String type;
+    private final Commune instance = new Commune();
 
     public CommuneBuilder name(String name) {
-      this.name = name;
+      instance.setName(name);
       return this;
     }
 
     public CommuneBuilder type(String type) {
-      this.type = type;
+      instance.setType(type);
       return this;
     }
 
     public Commune build() {
-      var commune = new Commune();
-      commune.setName(name);
-      commune.setType(type);
-      return commune;
+      return instance;
     }
-  }
-
-  @PrePersist
-  void onCreate() {
-    this.createdAt = LocalDateTime.now();
-    this.updatedAt = this.createdAt;
-  }
-
-  @PreUpdate
-  void onUpdate() {
-    this.updatedAt = LocalDateTime.now();
   }
 }

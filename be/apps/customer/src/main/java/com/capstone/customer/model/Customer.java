@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 public class Customer {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  String id;
+  String customerId;
 
   @Column(nullable = false)
   String name;
@@ -98,22 +98,19 @@ public class Customer {
   LocalDateTime updatedAt;
 
   @Column(nullable = false)
-  String waterMeterId;
+  String installationFormId;
 
   @Column(nullable = false)
   String waterPriceId;
 
   @Column(nullable = false)
-  String estimationId;
+  String costEstimationId;
 
   @Column(nullable = false)
-  String waterSupplyNetworkId;
+  String settlementId;
 
   @Column(nullable = false)
-  String communeId;
-
-  @Column(nullable = false)
-  String roadmapId;
+  String waterMeterId;
 
   @PrePersist
   void onCreate() {
@@ -223,7 +220,8 @@ public class Customer {
 
   public void setNumberOfHouseholds(Integer value) {
     Objects.requireNonNull(value, Constant.ENT_28);
-    if (value <= 0) throw new IllegalArgumentException(Constant.ENT_28);
+    if (value <= 0)
+      throw new IllegalArgumentException(Constant.ENT_28);
     this.numberOfHouseholds = value;
   }
 
@@ -247,9 +245,9 @@ public class Customer {
     this.monthlyRent = value;
   }
 
-  public void setWaterMeterId(String value) {
+  public void setInstallationFormId(String value) {
     requireId(value, Constant.ENT_33);
-    this.waterMeterId = value;
+    this.installationFormId = value;
   }
 
   public void setWaterPriceId(String value) {
@@ -257,24 +255,19 @@ public class Customer {
     this.waterPriceId = value;
   }
 
-  public void setEstimationId(String value) {
+  public void setCostEstimationId(String value) {
     requireId(value, Constant.ENT_35);
-    this.estimationId = value;
+    this.costEstimationId = value;
   }
 
-  public void setWaterSupplyNetworkId(String value) {
+  public void setSettlementId(String value) {
     requireId(value, Constant.ENT_36);
-    this.waterSupplyNetworkId = value;
+    this.settlementId = value;
   }
 
-  public void setCommuneId(String value) {
+  public void setWaterMeterId(String value) {
     requireId(value, Constant.ENT_37);
-    this.communeId = value;
-  }
-
-  public void setRoadmapId(String value) {
-    requireId(value, Constant.ENT_38);
-    this.roadmapId = value;
+    this.waterMeterId = value;
   }
 
   public void setM3Sale(String value) {
@@ -305,7 +298,8 @@ public class Customer {
 
   private void requireNonNegative(Integer value, String message) {
     Objects.requireNonNull(value, message);
-    if (value < 0) throw new IllegalArgumentException(message);
+    if (value < 0)
+      throw new IllegalArgumentException(message);
   }
 
   public static Customer create(@NonNull Consumer<CustomerBuilder> consumer) {
@@ -457,33 +451,28 @@ public class Customer {
       return this;
     }
 
-    public CustomerBuilder waterMeterId(String communeId) {
-      customer.setWaterMeterId(communeId);
+    public CustomerBuilder waterMeterId(String value) {
+      customer.setWaterMeterId(value);
       return this;
     }
 
-    public CustomerBuilder waterPriceId(String hamletId) {
-      customer.setWaterPriceId(hamletId);
+    public CustomerBuilder waterPriceId(String value) {
+      customer.setWaterPriceId(value);
       return this;
     }
 
-    public CustomerBuilder estimationId(String roadmapId) {
-      customer.setEstimationId(roadmapId);
+    public CustomerBuilder costEstimationId(String value) {
+      customer.setCostEstimationId(value);
       return this;
     }
 
-    public CustomerBuilder waterSupplyNetworkId(String roadId) {
-      customer.setWaterSupplyNetworkId(roadId);
+    public CustomerBuilder settlementId(String value) {
+      customer.setSettlementId(value);
       return this;
     }
 
-    public CustomerBuilder communeId(String value) {
-      customer.setCommuneId(value);
-      return this;
-    }
-
-    public CustomerBuilder roadmapId(String value) {
-      customer.setRoadmapId(value);
+    public CustomerBuilder installationFormId(String value) {
+      customer.setInstallationFormId(value);
       return this;
     }
 

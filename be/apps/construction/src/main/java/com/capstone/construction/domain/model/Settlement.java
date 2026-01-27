@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import com.capstone.construction.infrastructure.config.Constant;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.jspecify.annotations.NonNull;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -35,6 +36,23 @@ public class Settlement implements Serializable {
   @Column(nullable = false)
   String note;
 
+  @Column(nullable = false)
+  LocalDateTime createdAt;
+
+  @Column(nullable = false)
+  LocalDateTime updatedAt;
+
+  @PrePersist
+  void onCreate() {
+    this.createdAt = LocalDateTime.now();
+    this.updatedAt = this.createdAt;
+  }
+
+  @PreUpdate
+  void onUpdate() {
+    this.updatedAt = LocalDateTime.now();
+  }
+
   // Map<String, String> representative;
 
   public void setJobContent(String jobContent) {
@@ -64,62 +82,37 @@ public class Settlement implements Serializable {
     }
   }
 
-  public static Settlement create(Consumer<SettlementBuilder> builder) {
+  public static Settlement create(@NonNull Consumer<SettlementBuilder> builder) {
     var instance = new SettlementBuilder();
     builder.accept(instance);
     return instance.build();
   }
 
   public static class SettlementBuilder {
-    private String jobContent;
-    private String address;
-    private BigDecimal connectionFee;
-    private String note;
+    private final Settlement instance = new Settlement();
 
     public SettlementBuilder jobContent(String jobContent) {
-      this.jobContent = jobContent;
+      instance.setJobContent(jobContent);
       return this;
     }
 
     public SettlementBuilder address(String address) {
-      this.address = address;
+      instance.setAddress(address);
       return this;
     }
 
     public SettlementBuilder connectionFee(BigDecimal connectionFee) {
-      this.connectionFee = connectionFee;
+      instance.setConnectionFee(connectionFee);
       return this;
     }
 
     public SettlementBuilder note(String note) {
-      this.note = note;
+      instance.setNote(note);
       return this;
     }
 
     public Settlement build() {
-      var settlement = new Settlement();
-      settlement.setJobContent(jobContent);
-      settlement.setAddress(address);
-      settlement.setConnectionFee(connectionFee);
-      settlement.setNote(note);
-      return settlement;
+      return instance;
     }
-  }
-
-  @Column(nullable = false)
-  LocalDateTime createdAt;
-
-  @Column(nullable = false)
-  LocalDateTime updatedAt;
-
-  @PrePersist
-  void onCreate() {
-    this.createdAt = LocalDateTime.now();
-    this.updatedAt = this.createdAt;
-  }
-
-  @PreUpdate
-  void onUpdate() {
-    this.updatedAt = LocalDateTime.now();
   }
 }

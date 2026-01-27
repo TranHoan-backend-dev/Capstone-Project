@@ -19,8 +19,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InstallationContract {
-  @EmbeddedId
-  ContractId id;
+  @Id
+  String contractId;
 
   @Column(nullable = false)
   LocalDateTime createdAt;
@@ -29,7 +29,6 @@ public class InstallationContract {
   LocalDateTime updatedAt;
 
   @OneToOne(fetch = FetchType.EAGER)
-  @MapsId("customerId")
   Customer customer;
 
   String installationFormId;
@@ -48,11 +47,6 @@ public class InstallationContract {
   public void setCustomer(Customer customer) {
     Objects.requireNonNull(customer, Constant.ENT_11);
     this.customer = customer;
-  }
-
-  public void setId(ContractId id) {
-    Objects.requireNonNull(id, Constant.ENT_12);
-    this.id = id;
   }
 
   public void setInstallationFormId(String value) {
@@ -77,8 +71,8 @@ public class InstallationContract {
       return this;
     }
 
-    public ContractBuilder id(ContractId id) {
-      installationContract.setId(id);
+    public ContractBuilder installationFormId(String installationFormId) {
+      installationContract.setInstallationFormId(installationFormId);
       return this;
     }
 

@@ -23,7 +23,7 @@ public class WaterPrice {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "price_id")
-  String id;
+  String priceId;
 
   @Column(nullable = false)
   String usageTarget;
