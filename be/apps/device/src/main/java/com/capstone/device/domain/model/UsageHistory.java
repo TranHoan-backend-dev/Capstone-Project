@@ -3,6 +3,8 @@ package com.capstone.device.domain.model;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.List;
 
@@ -22,5 +24,7 @@ public class UsageHistory {
   @JoinColumn(name = "meter_code")
   WaterMeter meter;
 
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(columnDefinition = "jsonb", nullable = false)
   List<Usage> usages;
 }

@@ -17,6 +17,6 @@ public class EmployeeJob {
   EmployeeJobId id;
 
   @ManyToOne(fetch = FetchType.EAGER)
-  @MapsId("emp_id")
+  @MapsId("empId")
   Users users;
 }
