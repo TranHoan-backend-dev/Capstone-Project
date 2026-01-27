@@ -25,6 +25,6 @@ public class UsageHistory {
   WaterMeter meter;
 
   @JdbcTypeCode(SqlTypes.JSON)
-  @Column(columnDefinition = "jsonb", nullable = false)
+  @Column(columnDefinition = "jsonb")
   List<Usage> usages;
 }

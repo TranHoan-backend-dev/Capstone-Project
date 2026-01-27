@@ -1,4 +1,4 @@
-package com.capstone.device.domain.model.id;
+package com.capstone.device.domain.model.utils;
 
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -7,12 +7,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-@Embeddable
 @Getter
+@Embeddable
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class MaterialsOfCostEstimateId {
+public class MaterialsOfSettlementId {
   String materialId;
-  String costEstId;
+  String settlementId;
 }

@@ -1,6 +1,6 @@
 package com.capstone.device.domain.model;
 
-import com.capstone.device.domain.model.id.MaterialsOfCostEstimateId;
+import com.capstone.device.domain.model.utils.MaterialsOfCostEstimateId;
 import com.capstone.device.infrastructure.config.Constant;
 import jakarta.persistence.*;
 import lombok.*;
