@@ -19,9 +19,9 @@ import java.util.function.Consumer;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Receipt {
   @Id
-  String id;
+  String installationFormCode;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @MapsId
   InstallationForm installationForm;
 
@@ -43,7 +43,7 @@ public class Receipt {
   public void setInstallationForm(InstallationForm installationForm) {
     Objects.requireNonNull(installationForm, Constant.PT_66);
     this.installationForm = installationForm;
-    this.id = installationForm.getFormCode();
+    this.installationFormCode = installationForm.getFormCode();
   }
 
   public void setReceiptNumber(String receiptNumber) {

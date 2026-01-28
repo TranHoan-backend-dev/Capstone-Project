@@ -6,7 +6,6 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.jspecify.annotations.NonNull;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -20,17 +19,13 @@ import java.util.function.Consumer;
 public class OverallWaterMeter {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  @Column(name = "meter_code")
-  String id;
+  String meterCode;
 
   @Column(nullable = false, unique = true)
   String name;
 
   @Column(nullable = false)
   String lateralId;
-
-  @OneToMany(mappedBy = "overallWaterMeter")
-  List<WaterMeter> meters;
 
   public void setName(String name) {
     requireNonNullAndNotEmpty(name, Constant.ENT_01);
@@ -49,11 +44,6 @@ public class OverallWaterMeter {
     }
   }
 
-  public void setMeters(List<WaterMeter> meters) {
-    Objects.requireNonNull(meters, Constant.ENT_03);
-    this.meters = meters;
-  }
-
   public static OverallWaterMeter create(@NonNull Consumer<OverallWaterMeterBuilder> consumer) {
     var meter = new OverallWaterMeterBuilder();
     consumer.accept(meter);
@@ -70,11 +60,6 @@ public class OverallWaterMeter {
 
     public OverallWaterMeterBuilder lateralId(String lateralId) {
       unit.setLateralId(lateralId);
-      return this;
-    }
-
-    public OverallWaterMeterBuilder meters(List<WaterMeter> meters) {
-      unit.setMeters(meters);
       return this;
     }
 

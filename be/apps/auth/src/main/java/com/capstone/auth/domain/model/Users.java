@@ -6,11 +6,9 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -21,11 +19,10 @@ import java.util.function.Consumer;
 @AllArgsConstructor
 @Table(name = "users")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Users implements UserDetails {
+public class Users {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  @Column(name = "user_id")
-  String id;
+  String userId;
 
   @Column(unique = true, nullable = false)
   String email;
@@ -42,14 +39,18 @@ public class Users implements UserDetails {
   @Column(nullable = false)
   LocalDateTime updatedAt;
 
+  @Setter
   @Column(nullable = false)
   Boolean isEnabled;
 
+  @Setter
   @Column(nullable = false)
   Boolean isLocked;
 
+  @Setter
   String lockedReason;
 
+  @Setter
   LocalDateTime lockedAt;
 
   @ManyToOne(fetch = FetchType.EAGER)
@@ -60,16 +61,12 @@ public class Users implements UserDetails {
   String jobId;
 
   @Column(nullable = false)
-  List<String> notificationIds;
-
-  @Column(nullable = false)
-  List<String> businessPageIds;
-
-  @Column(nullable = false)
   String departmentId;
 
   @Column(nullable = false)
   String waterSupplyNetworkId; // mang luoi cap nuoc
+
+  String electronicSigningUrl;
 
   @Setter
   @Transient
@@ -93,24 +90,19 @@ public class Users implements UserDetails {
     this.username = username;
   }
 
+  public void setElectronicSigningUrl(String value) {
+    requireNonNullAndNotEmpty(value, Constant.PT_24);
+    this.electronicSigningUrl = value;
+  }
+
   public void setRole(Roles role) {
     Objects.requireNonNull(role, Constant.PT_06);
     this.role = role;
   }
 
-  public void setNotificationIds(List<String> values) {
-    Objects.requireNonNull(values, Constant.PT_22);
-    this.notificationIds = values;
-  }
-
   public void setJobId(String value) {
     requireNonNullAndNotEmpty(value, Constant.PT_20);
     this.jobId = value;
-  }
-
-  public void setBusinessPageIds(List<String> values) {
-    Objects.requireNonNull(values, Constant.PT_21);
-    this.businessPageIds = values;
   }
 
   public void setDepartmentId(String departmentId) {
@@ -130,17 +122,10 @@ public class Users implements UserDetails {
     }
   }
 
-  @Override
-  public @NonNull Collection<? extends GrantedAuthority> getAuthorities() {
-    return authorities;
-  }
-
-  @Override
   public boolean isEnabled() {
     return isEnabled;
   }
 
-  @Override
   public boolean isAccountNonLocked() {
     return isLocked;
   }
@@ -152,52 +137,70 @@ public class Users implements UserDetails {
   }
 
   public static class UsersBuilder {
-    private String email;
-    private String password;
-    private String username;
-    private Roles role;
-    private String waterSupplyNetworkId;
-    private String departmentId;
+    private final Users instance = new Users();
 
     public UsersBuilder email(String email) {
-      this.email = email;
+      instance.setEmail(email);
       return this;
     }
 
     public UsersBuilder password(String password) {
-      this.password = password;
+      instance.setPassword(password);
       return this;
     }
 
     public UsersBuilder username(String username) {
-      this.username = username;
+      instance.setUsername(username);
       return this;
     }
 
     public UsersBuilder role(Roles role) {
-      this.role = role;
+      instance.setRole(role);
       return this;
     }
 
     public UsersBuilder waterSupplyNetworkId(String waterSupplyNetworkId) {
-      this.waterSupplyNetworkId = waterSupplyNetworkId;
+      instance.setWaterSupplyNetworkId(waterSupplyNetworkId);
       return this;
     }
 
     public UsersBuilder departmentId(String departmentId) {
-      this.departmentId = departmentId;
+      instance.setDepartmentId(departmentId);
+      return this;
+    }
+
+    public UsersBuilder jobId(String jobId) {
+      instance.setJobId(jobId);
+      return this;
+    }
+
+    public UsersBuilder isEnabled(Boolean isEnabled) {
+      instance.setIsEnabled(isEnabled);
+      return this;
+    }
+
+    public UsersBuilder isLocked(Boolean isLocked) {
+      instance.setIsLocked(isLocked);
+      return this;
+    }
+
+    public UsersBuilder lockedReason(String lockedReason) {
+      instance.setLockedReason(lockedReason);
+      return this;
+    }
+
+    public UsersBuilder lockedAt(LocalDateTime lockedAt) {
+      instance.setLockedAt(lockedAt);
+      return this;
+    }
+
+    public UsersBuilder electronicSigningUrl(String electronicSigningUrl) {
+      instance.setElectronicSigningUrl(electronicSigningUrl);
       return this;
     }
 
     public Users build() {
-      var user = new Users();
-      user.setEmail(email);
-      user.setPassword(password);
-      user.setUsername(username);
-      user.setRole(role);
-      user.setWaterSupplyNetworkId(waterSupplyNetworkId);
-      user.setDepartmentId(departmentId);
-      return user;
+      return instance;
     }
   }
 

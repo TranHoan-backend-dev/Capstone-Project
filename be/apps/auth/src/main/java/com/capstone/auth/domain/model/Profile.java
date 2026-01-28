@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Profile {
   @Id
-  String id;
+  String profileId;
 
   @OneToOne(fetch = FetchType.EAGER)
   @MapsId
@@ -123,6 +123,11 @@ public class Profile {
 
     public ProfileBuilder birthday(LocalDate value) {
       unit.setBirthday(value);
+      return this;
+    }
+
+    public ProfileBuilder users(Users value) {
+      unit.setUsers(value);
       return this;
     }
 

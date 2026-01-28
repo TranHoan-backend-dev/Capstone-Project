@@ -29,16 +29,9 @@ public class WaterMeter {
   @Column(nullable = false)
   Integer size;
 
-  @Column(nullable = false)
-  Double meterIndex;
-
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "water_meter_type_id")
   WaterMeterType type;
-
-  @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "overall_water_meter_id")
-  OverallWaterMeter overallWaterMeter;
 
   public void setInstallationDate(LocalDate installationDate) {
     this.installationDate = Objects.requireNonNull(installationDate, Constant.ENT_10);
@@ -51,21 +44,9 @@ public class WaterMeter {
     this.size = size;
   }
 
-  public void setMeterIndex(Double meterIndex) {
-    if (meterIndex == null || meterIndex < 0) {
-      throw new IllegalArgumentException(Constant.ENT_12);
-    }
-    this.meterIndex = meterIndex;
-  }
-
   public void setType(WaterMeterType type) {
     Objects.requireNonNull(type, Constant.ENT_13);
     this.type = type;
-  }
-
-  public void setOverallWaterMeter(OverallWaterMeter overallWaterMeter) {
-    Objects.requireNonNull(type, Constant.ENT_29);
-    this.overallWaterMeter = overallWaterMeter;
   }
 
   public static WaterMeter create(@NonNull Consumer<WaterMeterBuilder> consumer) {
@@ -87,18 +68,8 @@ public class WaterMeter {
       return this;
     }
 
-    public WaterMeterBuilder meterIndex(Double meterIndex) {
-      meter.setMeterIndex(meterIndex);
-      return this;
-    }
-
     public WaterMeterBuilder type(WaterMeterType type) {
       meter.setType(type);
-      return this;
-    }
-
-    public WaterMeterBuilder overallWaterMeter(OverallWaterMeter overallWaterMeter) {
-      meter.setOverallWaterMeter(overallWaterMeter);
       return this;
     }
 

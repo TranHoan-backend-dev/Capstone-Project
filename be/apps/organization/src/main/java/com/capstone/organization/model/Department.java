@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import com.capstone.organization.config.Constant;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -19,8 +20,7 @@ import java.util.function.Consumer;
 public class Department {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  @Column(name = "department_id")
-  String id;
+  String departmentId;
 
   @Column(nullable = false, unique = true)
   String name;
@@ -48,31 +48,27 @@ public class Department {
     }
   }
 
-  public static Department create(Consumer<DepartmentBuilder> builder) {
+  public static Department create(@NonNull Consumer<DepartmentBuilder> builder) {
     var instance = new DepartmentBuilder();
     builder.accept(instance);
     return instance.build();
   }
 
   public static class DepartmentBuilder {
-    private String name;
-    private String phoneNumber;
+    private final Department instance = new Department();
 
     public DepartmentBuilder name(String name) {
-      this.name = name;
+      instance.setName(name);
       return this;
     }
 
     public DepartmentBuilder phoneNumber(String phoneNumber) {
-      this.phoneNumber = phoneNumber;
+      instance.setPhoneNumber(phoneNumber);
       return this;
     }
 
     public Department build() {
-      var department = new Department();
-      department.setName(name);
-      department.setPhoneNumber(phoneNumber);
-      return department;
+      return instance;
     }
   }
 }
