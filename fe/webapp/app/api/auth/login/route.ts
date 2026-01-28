@@ -4,20 +4,22 @@ import { signinService } from "@/services/auth.service";
 
 export async function POST(req: NextRequest) {
   try {
-    const { username, password } = await req.json();
+    const body = await req.json();
+
+    const { username, password } = body;
 
     const tokenRes = await keycloakLogin({ username, password });
 
-    const backendRes = await signinService(tokenRes.access_token);
+    const backendRes =  signinService(tokenRes.access_token);
 
     const res = NextResponse.json({
-      user: backendRes.data,
+      user: backendRes,
     });
 
     res.cookies.set("access_token", tokenRes.access_token, {
       httpOnly: true,
-      secure: true,
-      maxAge: tokenRes.expires_in, 
+      secure: process.env.NODE_ENV === "production",
+      maxAge: tokenRes.expires_in,
       sameSite: "lax",
       path: "/",
     });

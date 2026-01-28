@@ -1,8 +1,8 @@
 import axios from "axios";
-import { NEXT_PUBLIC_BACKEND_AUTH_API } from "@/utils/constraints";
+import { API_GATEWAY_URL } from "@/utils/constraints";
 
 const axiosBase = axios.create({
-  baseURL: NEXT_PUBLIC_BACKEND_AUTH_API,
+  baseURL: API_GATEWAY_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -17,7 +17,7 @@ axiosBase.interceptors.response.use(
       error.message = "Có lỗi xảy ra, vui lòng thử lại";
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default axiosBase;

@@ -18,8 +18,8 @@ export interface SigninResponse {
 }
 
 export const signinService = async (access_token: string) => {
-  const axios = createAxiosClient(access_token);
-  const response = await axios.post("/auth/login");
+  const axiosClient = createAxiosClient(access_token);
+  const response = await axiosClient.post("/auth/login");
   return response.data;
 };
 

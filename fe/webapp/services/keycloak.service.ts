@@ -1,13 +1,14 @@
 import axios from "axios";
 import {
-  NEXT_PUBLIC_KEYCLOAK_URL,
-  NEXT_PUBLIC_REALM,
-  NEXT_PUBLIC_CLIENT_ID,
+  KEYCLOAK_URL,
+  KEYCLOAK_REALM,
+  KEYCLOAK_CLIENT_ID,
+  KEYCLOAK_CLIENT_SECRET,
 } from "@/utils/constraints";
 
-const KEYCLOAK_URL = NEXT_PUBLIC_KEYCLOAK_URL;
-const REALM = NEXT_PUBLIC_REALM;
-const CLIENT_ID = NEXT_PUBLIC_CLIENT_ID!;
+const NEXT_KEYCLOAK_URL = KEYCLOAK_URL;
+const REALM = KEYCLOAK_REALM;
+const CLIENT_ID = KEYCLOAK_CLIENT_ID!;
 
 export interface KeycloakLoginRequest {
   username: string;
@@ -27,12 +28,13 @@ export const keycloakLogin = async (
   const params = new URLSearchParams();
   params.append("grant_type", "password");
   params.append("client_id", CLIENT_ID);
+  params.append("client_secret", KEYCLOAK_CLIENT_SECRET!);
   params.append("username", data.username);
   params.append("password", data.password);
   params.append("scope", "openid");
 
   const res = await axios.post(
-    `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/token`,
+    `${NEXT_KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/token`,
     params,
     {
       headers: {
@@ -46,18 +48,18 @@ export const keycloakLogin = async (
 
 export const keycloakLogout = async (refreshToken?: string) => {
   if (!refreshToken) return;
-  
-    const params = new URLSearchParams();
-    params.append("client_id", CLIENT_ID);
-    params.append("refresh_token", refreshToken);
 
-    await axios.post(
-      `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/logout`,
-      params,
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
+  const params = new URLSearchParams();
+  params.append("client_id", CLIENT_ID);
+  params.append("refresh_token", refreshToken);
+
+  await axios.post(
+    `${NEXT_KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/logout`,
+    params,
+    {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
       },
-    );
+    },
+  );
 };

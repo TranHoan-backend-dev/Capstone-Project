@@ -2,7 +2,7 @@
 
 import { io, Socket } from "socket.io-client";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { NEXT_PUBLIC_SOCKET_URL } from "@/utils/constraints";
+import { SOCKET_URL } from "@/utils/constraints";
 
 interface SocketContextType {
   socket: Socket | null;
@@ -28,7 +28,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const connect = (token: string) => {
     if (socketRef.current?.connected) return;
 
-    const socket = io(NEXT_PUBLIC_SOCKET_URL, {
+    const socket = io(SOCKET_URL, {
       transports: ["websocket"],
       auth: { token },
       autoConnect: true,
