@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 public class Customer {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  String id;
+  String customerId;
 
   @Column(nullable = false)
   String name;
@@ -32,7 +32,6 @@ public class Customer {
 
   @Column(nullable = false)
   String phoneNumber;
-  // object
 
   @Column(nullable = false)
   String type;
@@ -41,8 +40,9 @@ public class Customer {
   @Column(nullable = false)
   Boolean isBigCustomer;
 
+  @Enumerated(EnumType.STRING)
   @Column(nullable = false)
-  String usageTarget;
+  UsageTarget usageTarget;
 
   @Column(nullable = false)
   Integer numberOfHouseholds;
@@ -52,8 +52,10 @@ public class Customer {
 
   @Column(nullable = false)
   Integer protectEnvironmentFee;
+
   @Setter
   Boolean isFree;
+
   @Setter
   Boolean isSale;
   String m3Sale;
@@ -98,22 +100,13 @@ public class Customer {
   LocalDateTime updatedAt;
 
   @Column(nullable = false)
-  String waterMeterId;
+  String installationFormId;
 
   @Column(nullable = false)
   String waterPriceId;
 
   @Column(nullable = false)
-  String estimationId;
-
-  @Column(nullable = false)
-  String waterSupplyNetworkId;
-
-  @Column(nullable = false)
-  String communeId;
-
-  @Column(nullable = false)
-  String roadmapId;
+  String waterMeterId;
 
   @PrePersist
   void onCreate() {
@@ -134,6 +127,7 @@ public class Customer {
     this.name = name;
   }
 
+  // <editor-fold> desc="setter"
   public void setEmail(String email) {
     Objects.requireNonNull(email, Constant.ENT_13);
     if (email.trim().isEmpty()) {
@@ -163,7 +157,7 @@ public class Customer {
 
   public void setUsageTarget(String usageTarget) {
     requireText(usageTarget, Constant.ENT_16);
-    this.usageTarget = usageTarget;
+    this.usageTarget = UsageTarget.valueOf(usageTarget.trim().toUpperCase());
   }
 
   public void setWaterMeterType(String waterMeterType) {
@@ -223,7 +217,8 @@ public class Customer {
 
   public void setNumberOfHouseholds(Integer value) {
     Objects.requireNonNull(value, Constant.ENT_28);
-    if (value <= 0) throw new IllegalArgumentException(Constant.ENT_28);
+    if (value <= 0)
+      throw new IllegalArgumentException(Constant.ENT_28);
     this.numberOfHouseholds = value;
   }
 
@@ -247,9 +242,9 @@ public class Customer {
     this.monthlyRent = value;
   }
 
-  public void setWaterMeterId(String value) {
+  public void setInstallationFormId(String value) {
     requireId(value, Constant.ENT_33);
-    this.waterMeterId = value;
+    this.installationFormId = value;
   }
 
   public void setWaterPriceId(String value) {
@@ -257,24 +252,9 @@ public class Customer {
     this.waterPriceId = value;
   }
 
-  public void setEstimationId(String value) {
-    requireId(value, Constant.ENT_35);
-    this.estimationId = value;
-  }
-
-  public void setWaterSupplyNetworkId(String value) {
-    requireId(value, Constant.ENT_36);
-    this.waterSupplyNetworkId = value;
-  }
-
-  public void setCommuneId(String value) {
+  public void setWaterMeterId(String value) {
     requireId(value, Constant.ENT_37);
-    this.communeId = value;
-  }
-
-  public void setRoadmapId(String value) {
-    requireId(value, Constant.ENT_38);
-    this.roadmapId = value;
+    this.waterMeterId = value;
   }
 
   public void setM3Sale(String value) {
@@ -305,9 +285,12 @@ public class Customer {
 
   private void requireNonNegative(Integer value, String message) {
     Objects.requireNonNull(value, message);
-    if (value < 0) throw new IllegalArgumentException(message);
+    if (value < 0)
+      throw new IllegalArgumentException(message);
   }
+  // </editor-fold>
 
+  // <editor-fold> desc="builder"
   public static Customer create(@NonNull Consumer<CustomerBuilder> consumer) {
     var builder = new CustomerBuilder();
     consumer.accept(builder);
@@ -457,33 +440,18 @@ public class Customer {
       return this;
     }
 
-    public CustomerBuilder waterMeterId(String communeId) {
-      customer.setWaterMeterId(communeId);
+    public CustomerBuilder waterMeterId(String value) {
+      customer.setWaterMeterId(value);
       return this;
     }
 
-    public CustomerBuilder waterPriceId(String hamletId) {
-      customer.setWaterPriceId(hamletId);
+    public CustomerBuilder waterPriceId(String value) {
+      customer.setWaterPriceId(value);
       return this;
     }
 
-    public CustomerBuilder estimationId(String roadmapId) {
-      customer.setEstimationId(roadmapId);
-      return this;
-    }
-
-    public CustomerBuilder waterSupplyNetworkId(String roadId) {
-      customer.setWaterSupplyNetworkId(roadId);
-      return this;
-    }
-
-    public CustomerBuilder communeId(String value) {
-      customer.setCommuneId(value);
-      return this;
-    }
-
-    public CustomerBuilder roadmapId(String value) {
-      customer.setRoadmapId(value);
+    public CustomerBuilder installationFormId(String value) {
+      customer.setInstallationFormId(value);
       return this;
     }
 
@@ -495,4 +463,5 @@ public class Customer {
       return customer;
     }
   }
+  // </editor-fold>
 }

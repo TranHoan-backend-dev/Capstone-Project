@@ -21,8 +21,7 @@ import java.util.function.Consumer;
 public class WaterMeterType {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  @Column(name = "type_id")
-  String id;
+  String typeId;
 
   @Column(nullable = false)
   String name;
