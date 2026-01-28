@@ -2,7 +2,7 @@ package com.capstone.customer.model;
 
 public enum UsageTarget {
   DOMESTIC, // sinh hoat
-  SERVICE, // dich vu
+  INSTITUTIONAL, // co quan, hanh chinh su nghiep
   INDUSTRIAL, // san xuat
-  COMMERCIAL // kinh doanh
+  COMMERCIAL // kinh doanh dich vu
 }
