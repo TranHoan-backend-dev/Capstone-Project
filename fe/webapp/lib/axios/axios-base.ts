@@ -1,8 +1,8 @@
 import axios from "axios";
-import { NEXT_PUBLIC_BACKEND_API } from "@/utils/constraints";
+import { NEXT_PUBLIC_BACKEND_AUTH_API } from "@/utils/constraints";
 
 const axiosBase = axios.create({
-  baseURL: NEXT_PUBLIC_BACKEND_API,
+  baseURL: NEXT_PUBLIC_BACKEND_AUTH_API,
   headers: {
     "Content-Type": "application/json",
   },
