@@ -11,6 +11,8 @@ import PasswordInput from "@/components/ui/PasswordInput";
 import CustomButton from "@/components/ui/custom/CustomButton";
 import { passwordSchema } from "@/schemas/password.schema";
 import { RejectIcon, DocumentIcon } from "@/config/chip-and-icon";
+import { changePasswordService } from "@/services/auth.service";
+import { CallToast } from "@/components/ui/CallToast";
 
 const changePasswordSchema = z
   .object({
@@ -37,16 +39,13 @@ const ChangePasswordForm = () => {
   });
 
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [fieldErrors, setFieldErrors] = useState<
     Partial<Record<keyof ChangePasswordFormData, string>>
   >({});
+  const TOAST_DURATION = 3000;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
     setFieldErrors({});
 
     const result = changePasswordSchema.safeParse(formData);
@@ -68,25 +67,16 @@ const ChangePasswordForm = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/auth/change-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
-        },
-        body: JSON.stringify({
-          currentPassword: formData.currentPassword,
-          newPassword: formData.newPassword,
-        }),
+      await changePasswordService(
+        formData.currentPassword,
+        formData.newPassword,
+      );
+
+      CallToast({
+        title: "Thành công",
+        message: "Đổi mật khẩu thành công",
+        color: "default",
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Đổi mật khẩu thất bại");
-      }
-
-      setSuccess("Đổi mật khẩu thành công!");
 
       setFormData({
         currentPassword: "",
@@ -94,11 +84,13 @@ const ChangePasswordForm = () => {
         confirmPassword: "",
       });
 
-      setTimeout(() => {
-        router.back();
-      }, 2000);
+      setTimeout(() => router.back(), TOAST_DURATION);
     } catch (err: any) {
-      setError(err.message);
+      CallToast({
+        title: "Thất bại",
+        message: err?.response?.data?.message || "Đổi mật khẩu thất bại",
+        color: "danger",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -124,22 +116,6 @@ const ChangePasswordForm = () => {
 
         <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-gray-200 dark:border-zinc-800 overflow-hidden">
           <div className="px-6 py-8 md:px-10 md:py-10">
-            {error && (
-              <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/30 rounded-xl">
-                <p className="text-red-600 dark:text-red-400 font-medium">
-                  {error}
-                </p>
-              </div>
-            )}
-
-            {success && (
-              <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-900/30 rounded-xl">
-                <p className="text-green-600 dark:text-green-400 font-medium">
-                  {success}
-                </p>
-              </div>
-            )}
-
             <form className="space-y-6" onSubmit={handleSubmit}>
               <PasswordInput
                 required
@@ -157,6 +133,8 @@ const ChangePasswordForm = () => {
                     currentPassword: e.target.value,
                   })
                 }
+                errorMessage={fieldErrors.currentPassword}
+                isInvalid={!!fieldErrors.currentPassword}
               />
 
               <PasswordInput
@@ -175,6 +153,8 @@ const ChangePasswordForm = () => {
                     newPassword: e.target.value,
                   })
                 }
+                errorMessage={fieldErrors.newPassword}
+                isInvalid={!!fieldErrors.newPassword}
               />
 
               <PasswordInput
@@ -193,6 +173,8 @@ const ChangePasswordForm = () => {
                     confirmPassword: e.target.value,
                   })
                 }
+                errorMessage={fieldErrors.confirmPassword}
+                isInvalid={!!fieldErrors.confirmPassword}
               />
 
               <PasswordRequirements password={formData.newPassword} />

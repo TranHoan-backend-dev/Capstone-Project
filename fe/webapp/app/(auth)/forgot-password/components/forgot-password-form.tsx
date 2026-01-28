@@ -1,13 +1,12 @@
 "use client";
 
 import type React from "react";
-
 import { z } from "zod";
 import { useState } from "react";
-
 import CustomButton from "../../../../components/ui/custom/CustomButton";
-
 import CustomInput from "@/components/ui/custom/CustomInput";
+import { forgotPasswordService } from "@/services/auth.service";
+import { CallToast } from "@/components/ui/CallToast";
 
 interface ForgotPasswordFormProps {
   onSuccessAction: (email: string) => void;
@@ -39,11 +38,22 @@ export function ForgotPasswordForm({
 
     setIsLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
+      await forgotPasswordService(email);
+      CallToast({
+        title: "Thành công",
+        message: "Mã OTP đã được gửi đến email của bạn",
+        color: "success",
+      });
       onSuccessAction(email);
-    } catch (err) {
-      setError("Có lỗi xảy ra. Vui lòng thử lại.");
+    } catch (err: any) {
+      CallToast({
+        title: "Thất bại",
+        message:
+          err?.response?.data?.message ||
+          "Không thể gửi email. Vui lòng thử lại",
+        color: "danger",
+      });
+    } finally {
       setIsLoading(false);
     }
   };
