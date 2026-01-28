@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { keycloakLogin } from "@/services/keycloak.service";
-import { signinService } from "@/services/auth.service";
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,10 +9,8 @@ export async function POST(req: NextRequest) {
 
     const tokenRes = await keycloakLogin({ username, password });
 
-    const backendRes =  signinService(tokenRes.access_token);
-
     const res = NextResponse.json({
-      user: backendRes,
+      user: tokenRes,
     });
 
     res.cookies.set("access_token", tokenRes.access_token, {
