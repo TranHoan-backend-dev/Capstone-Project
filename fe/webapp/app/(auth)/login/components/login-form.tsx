@@ -7,11 +7,9 @@ import PasswordInput from "@/components/ui/PasswordInput";
 import CustomButton from "@/components/ui/custom/CustomButton";
 import CustomInput from "@/components/ui/custom/CustomInput";
 import { ArrowRightStartIcon, AvatarIcon } from "@/config/chip-and-icon";
-import { signinService } from "@/services/auth.service";
 import { useState } from "react";
 import { CallToast } from "@/components/ui/CallToast";
 import { z } from "zod";
-import { keycloakLogin } from "@/services/keycloak.service";
 
 const loginSchema = z.object({
   username: z.string().trim().min(1, "Vui lòng nhập tên đăng nhập"),
@@ -26,7 +24,6 @@ const LoginForm = () => {
     password: "",
   });
   const [loading, setLoading] = useState(false);
-  const TOAST_DURATION = 1000;
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -44,23 +41,28 @@ const LoginForm = () => {
     }
     setLoading(true);
     try {
-      const tokenRes = await keycloakLogin(formData);
-      localStorage.setItem("access_token", tokenRes.access_token);
-      localStorage.setItem("refresh_token", tokenRes.refresh_token);
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-      const result = await signinService();
-      localStorage.setItem("user", JSON.stringify(result.data));
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message);
+      }
+
       CallToast({
         title: "Thành công",
         message: "Đăng nhập thành công!",
         color: "success",
       });
 
-      setTimeout(() => router.push("/home"), TOAST_DURATION);
+      router.push("/home");
     } catch (err: any) {
       CallToast({
         title: "Thất bại",
-        message: err.response?.data?.message || "Sai tên đăng nhập hoặc mật khẩu",
+        message: err.message || "Sai tên đăng nhập hoặc mật khẩu",
         color: "danger",
       });
     } finally {
