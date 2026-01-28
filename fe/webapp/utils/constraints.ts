@@ -1,1 +1,1 @@
-export const AUTH_API_URL = process.env.AUTH_API_URL;
+export const NEXT_PUBLIC_API_GATEWAY = process.env.NEXT_PUBLIC_API_GATEWAY;
