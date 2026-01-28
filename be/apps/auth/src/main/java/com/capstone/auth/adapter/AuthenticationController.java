@@ -1,5 +1,6 @@
 package com.capstone.auth.adapter;
 
+import com.capstone.auth.application.dto.request.ChangePasswordRequest;
 import com.capstone.auth.application.dto.request.CheckExistenceRequest;
 import com.capstone.auth.application.dto.request.ResetPasswordRequest;
 import com.capstone.auth.application.dto.request.SendOtpRequest;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
@@ -35,14 +37,14 @@ import java.util.concurrent.ExecutionException;
 
 @Slf4j
 @RestController
-@RequestMapping("/auth")
 @RequiredArgsConstructor
+@RequestMapping("/auth")
+@SecurityRequirement(name = "Keycloak")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Tag(name = "Authentication", description = "Operations for user authentication, registration, OTP, and profile management.")
 public class AuthenticationController {
     AuthUseCase authUC;
     OtpUseCase otpUC;
-    // TODO: custom error code
 
     @Operation(summary = "Register new account", description = "Registers a new user account with employee details including role, department, and water supply network.")
     @RequestBody(description = "Details for the new user account", required = true, content = @Content(schema = @Schema(implementation = SignupRequest.class)))
@@ -114,6 +116,29 @@ public class AuthenticationController {
         return ResponseEntity.ok(new WrapperApiResponse(
                 HttpStatus.OK.value(),
                 "Reset password successfully",
+                null,
+                LocalDateTime.now()));
+    }
+
+    @Operation(summary = "Change password (Authenticated)", description = "Changes the password for the currently logged-in user. Requires the old password and the new password.")
+    @RequestBody(description = "Old password, new password, and confirmation", required = true, content = @Content(schema = @Schema(implementation = ChangePasswordRequest.class)))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Password changed successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Old password incorrect or new passwords do not match"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing JWT token"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestBody @Valid ChangePasswordRequest request) {
+      log.info("Change password request comes to endpoint: {}", jwt);
+        var email = jwt.getClaim("email");
+        authUC.changePassword(email.toString(), request.oldPassword(), request.newPassword(), request.confirmPassword());
+
+        return ResponseEntity.ok(new WrapperApiResponse(
+                HttpStatus.OK.value(),
+                "Change password successfully",
                 null,
                 LocalDateTime.now()));
     }

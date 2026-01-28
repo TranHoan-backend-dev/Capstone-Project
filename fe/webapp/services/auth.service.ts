@@ -1,4 +1,5 @@
-import axiosClient from "@/lib/axios";
+import { createAxiosClient } from "@/lib/axios/axios-client";
+import axiosBase from "@/lib/axios/axios-base";
 import { keycloakLogout } from "./keycloak.service";
 import { ApiResponse, EmployeeProfileData } from "@/types";
 
@@ -17,31 +18,32 @@ export interface SigninResponse {
   };
 }
 
-export const signinService = async () => {
+export const signinService = async (access_token: string) => {
+  const axiosClient = createAxiosClient(access_token);
   const response = await axiosClient.post("/auth/login");
   return response.data;
 };
 
 export const forgotPasswordService = async (email: string): Promise<void> => {
-  await axiosClient.post(`/auth/forgot-password`, { email });
+  await axiosBase.post(`/auth/forgot-password`, { email });
 };
 
 export const verifyOtpService = async (
   email: string,
   otp: string,
 ): Promise<void> => {
-  await axiosClient.post(`/auth/verify-otp`, { email, otp });
+  await axiosBase.post(`/auth/verify-otp`, { email, otp });
 };
 
 export const resendOtpService = async (email: string): Promise<void> => {
-  await axiosClient.post("/auth/resend-otp", { email });
+  await axiosBase.post("/auth/resend-otp", { email });
 };
 
 export const resetPasswordService = async (
   email: string,
   newPassword: string,
 ): Promise<void> => {
-  await axiosClient.post(`/auth/reset-password`, {
+  await axiosBase.post(`/auth/reset-password`, {
     email,
     newPassword,
   });
