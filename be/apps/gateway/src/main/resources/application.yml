@@ -10,18 +10,18 @@ spring:
     compatibility-verifier:
       enabled: false
     gateway:
-      discovery:
-        locator:
-          enabled: true
-          lower-case-service-id: true
+      # có cái này vào thì sẽ bị xung đột
+      # discovery:
+      #   locator:
+      #     enabled: true
+      #     lower-case-service-id: true
       routes:
         - id: auth
-          uri: lb://AUTH
+          uri: lb://auth
           predicates:
             - Path=/auth/**
           filters:
-            - StripPrefix=1 # bỏ 1 phần đầu (/auth)
-            - PrefixPath=/api/v1
+            - RewritePath=/auth/(?<segment>.*), /api/v1/${segment}
         #        - id: chat
         #          uri: lb://chat
         #          predicates:

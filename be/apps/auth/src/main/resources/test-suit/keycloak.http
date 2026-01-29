@@ -36,16 +36,3 @@ Accept: application/json
 client_id=&
 client_secret={{client_secret}}&
 refresh_token={{refresh_token}}
-
-###
-GET http://localhost:9003/api/v1/health
-
-###
-GET http://localhost:8000/auth/health
-
-###
-GET http://localhost:8000/auth/api/v1/v3/api-docs
-
-###
-GET http://localhost:8000/auth/v3/api-docs
-
