@@ -44,7 +44,7 @@ public class InstallationForm {
   @Column(nullable = false)
   String citizenIdentificationProvideLocation;
 
-  @Column(length = 10, unique = true, nullable = false)
+  @Column(length = 10, nullable = false)
   String phoneNumber;
 
   String taxCode;

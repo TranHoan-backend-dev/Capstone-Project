@@ -27,10 +27,10 @@ public class WaterMeterType {
   @Column(nullable = false)
   String name;
 
-  @Column(nullable = false, unique = true)
+  @Column(nullable = false)
   String origin;
 
-  @Column(nullable = false, unique = true)
+  @Column(nullable = false)
   String meterModel;
 
   Integer size;
