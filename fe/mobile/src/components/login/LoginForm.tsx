@@ -7,10 +7,7 @@ import FormInput from '../common/FormInput';
 import LoginFooter from './LoginFooter';
 import { RootStackParamList } from '../../navigation/AppNavigator';
 
-type NavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  'Login'
->;
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Login'>;
 
 export default function LoginForm() {
   const navigation = useNavigation<NavigationProp>();
@@ -40,7 +37,7 @@ export default function LoginForm() {
 
       <LoginFooter
         onLogin={handleLogin}
-        onForgotPassword={() => console.log('forgot')}
+        onForgotPassword={() => navigation.navigate('ForgotPassword')}
       />
     </View>
   );

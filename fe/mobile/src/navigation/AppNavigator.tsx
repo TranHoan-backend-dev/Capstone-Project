@@ -12,6 +12,9 @@ import DebtScreen from '../screens/DebtScreen';
 import CollectionScreen from '../screens/CollectionScreen';
 import InvoiceListScreen from '../screens/InvoiceListScreen';
 import InvoiceDetailScreen from '../screens/InvoiceDetailScreen';
+import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import ChangePasswordScreen from '../screens/ChangePasswordScreen';
 
 export type RootStackParamList = {
   Login: undefined;
@@ -33,6 +36,9 @@ export type RootStackParamList = {
     address: string;
     phone?: string;
   };
+  ForgotPassword: undefined;
+  Profile: undefined;
+  ChangePassword: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -45,6 +51,7 @@ export default function AppNavigator() {
         screenOptions={{ headerShown: false }}
       >
         <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Meter" component={MeterScreen} />
         <Stack.Screen name="MeterRoute" component={MeterRouteScreen} />
@@ -54,6 +61,8 @@ export default function AppNavigator() {
         <Stack.Screen name="Collection" component={CollectionScreen} />
         <Stack.Screen name="InvoiceList" component={InvoiceListScreen} />
         <Stack.Screen name="InvoiceDetail" component={InvoiceDetailScreen} />
+        <Stack.Screen name="Profile" component={ProfileScreen} />
+        <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -15,7 +15,11 @@ export default StyleSheet.create({
     fontWeight: '600',
     flex: 1,
   },
-
+  userInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
   sectionTitle: {
     fontSize: 16,
     fontWeight: '600',
