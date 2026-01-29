@@ -1,5 +1,5 @@
 @keycloak = http://localhost:8080/realms/cmsn/protocol/openid-connect
-@client_secret =tXB3lkOobq0lqqoobH7Bp7RhJXJaANCD
+@client_secret =
 
 ### username is username
 POST {{keycloak}}/token
@@ -7,10 +7,10 @@ Content-Type: application/x-www-form-urlencoded
 Accept: application/json
 
 grant_type=password&
-client_id=cmsn&
+client_id=&
 client_secret={{client_secret}}&
-username=admin&
-password=Hoan2709@&
+username=&
+password=&
 scope=openid
 
 > {%
