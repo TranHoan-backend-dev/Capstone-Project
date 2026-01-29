@@ -1,19 +1,19 @@
 import React from 'react';
 import { BottomNavigation, Text } from 'react-native-paper';
 
-const MusicRoute = () => <Text>Music</Text>;
+const MusicRoute = () => <Text>Musicihohojh</Text>;
 
-const AlbumsRoute = () => <Text>Albums</Text>;
+const AlbumsRoute = () => <Text>Albudqsdms</Text>;
 
-const RecentsRoute = () => <Text>Recents</Text>;
+const RecentsRoute = () => <Text>Recendqwdqwe23e23re23r23r23ts</Text>;
 
 const NotificationsRoute = () => <Text>Notifications</Text>;
 
 const Hello = () => {
     const [index, setIndex] = React.useState(0);
     const [routes] = React.useState([
-        { key: 'music', title: 'Favorites', focusedIcon: 'heart', unfocusedIcon: 'heart-outline' },
-        { key: 'albums', title: 'Albums', focusedIcon: 'album' },
+        { key: 'music', title: 'Favorinnnntes', focusedIcon: 'heart', unfocusedIcon: 'heart-outline' },
+        { key: 'albums', title: 'Albqwdqums', focusedIcon: 'album' },
         { key: 'recents', title: 'Recents', focusedIcon: 'history' },
         { key: 'notifications', title: 'Notifications', focusedIcon: 'bell', unfocusedIcon: 'bell-outline' },
     ]);

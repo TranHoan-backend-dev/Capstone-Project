@@ -1,6 +1,8 @@
 package com.capstone.auth.infrastructure.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.boot.task.ThreadPoolTaskExecutorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,13 +15,11 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.concurrent.Executor;
 
+@RequiredArgsConstructor
 @Configuration
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AppConfig {
-  @Value("${keycloak.issuer-uri}")
-  String issuerUri;
-
-  @Value("${keycloak.aud}")
-  String aud;
+  KeycloakConfig keycloakConfig;
 
   @Bean
   PasswordEncoder passwordEncoder() {
@@ -42,9 +42,9 @@ public class AppConfig {
 
   @Bean
   JwtDecoder jwtDecoder() {
-    NimbusJwtDecoder decoder = JwtDecoders.fromIssuerLocation(issuerUri);
-    OAuth2TokenValidator<Jwt> withIssuer = JwtValidators.createDefaultWithIssuer(issuerUri);
-    OAuth2TokenValidator<Jwt> withAudience = new AudienceValidator(aud);
+    NimbusJwtDecoder decoder = JwtDecoders.fromIssuerLocation(keycloakConfig.getIssuerUri());
+    OAuth2TokenValidator<Jwt> withIssuer = JwtValidators.createDefaultWithIssuer(keycloakConfig.getIssuerUri());
+    OAuth2TokenValidator<Jwt> withAudience = new AudienceValidator(keycloakConfig.getAud());
 
     decoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(withIssuer, withAudience));
     return decoder;
