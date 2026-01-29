@@ -17,7 +17,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +46,7 @@ public class AuthenticationController {
     OtpUseCase otpUC;
 
     @Operation(summary = "Register new account", description = "Registers a new user account with employee details including role, department, and water supply network.")
-    @RequestBody(description = "Details for the new user account", required = true, content = @Content(schema = @Schema(implementation = SignupRequest.class)))
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Details for the new user account", required = true, content = @Content(schema = @Schema(implementation = SignupRequest.class)))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Account created successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request - Validation failed or account already exists"),
@@ -121,7 +120,7 @@ public class AuthenticationController {
     }
 
     @Operation(summary = "Change password (Authenticated)", description = "Changes the password for the currently logged-in user. Requires the old password and the new password.")
-    @RequestBody(description = "Old password, new password, and confirmation", required = true, content = @Content(schema = @Schema(implementation = ChangePasswordRequest.class)))
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Old password, new password, and confirmation", required = true, content = @Content(schema = @Schema(implementation = ChangePasswordRequest.class)))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Password changed successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request - Old password incorrect or new passwords do not match"),

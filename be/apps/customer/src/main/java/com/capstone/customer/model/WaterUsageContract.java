@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class InstallationContract {
+public class WaterUsageContract {
   @Id
   String contractId;
 
@@ -64,27 +64,27 @@ public class InstallationContract {
     this.installationFormId = value;
   }
 
-  public static InstallationContract create(@NonNull Consumer<ContractBuilder> consumer) {
+  public static WaterUsageContract create(@NonNull Consumer<ContractBuilder> consumer) {
     var builder = new ContractBuilder();
     consumer.accept(builder);
     return builder.build();
   }
 
   public static class ContractBuilder {
-    private final InstallationContract installationContract = new InstallationContract();
+    private final WaterUsageContract waterUsageContract = new WaterUsageContract();
 
     public ContractBuilder customer(Customer customer) {
-      installationContract.setCustomer(customer);
+      waterUsageContract.setCustomer(customer);
       return this;
     }
 
     public ContractBuilder installationFormId(String installationFormId) {
-      installationContract.setInstallationFormId(installationFormId);
+      waterUsageContract.setInstallationFormId(installationFormId);
       return this;
     }
 
-    public InstallationContract build() {
-      return installationContract;
+    public WaterUsageContract build() {
+      return waterUsageContract;
     }
   }
 }

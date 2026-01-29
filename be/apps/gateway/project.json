@@ -1,7 +1,7 @@
 {
-  "name": "api-gateway",
+  "name": "gateway",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/api-gateway/src",
+  "sourceRoot": "apps/gateway/src",
   "tags": [],
   "targets": {
     "run": {
@@ -20,7 +20,7 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "./gradlew test",
-        "cwd": "/apps/api-gateway"
+        "cwd": "/apps/gateway"
       }
     }
   }
