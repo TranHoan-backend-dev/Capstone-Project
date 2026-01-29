@@ -16,17 +16,18 @@ spring:
           lower-case-service-id: true
       routes:
         - id: auth
-          uri: lb://auth
+          uri: lb://AUTH
           predicates:
             - Path=/auth/**
           filters:
-            - RewritePath=/auth/(?<segment>.*), /api/v1/${segment}
-#        - id: chat
-#          uri: lb://chat
-#          predicates:
-#            - Path=/chat/**
-#          filters:
-#            - StripPrefix=1
+            - StripPrefix=1 # bỏ 1 phần đầu (/auth)
+            - PrefixPath=/api/v1
+        #        - id: chat
+        #          uri: lb://chat
+        #          predicates:
+        #            - Path=/chat/**
+        #          filters:
+        #            - StripPrefix=1
         - id: customer
           uri: lb://customer
           predicates:
@@ -63,6 +64,8 @@ eureka:
       defaultZone: http://localhost:9000/eureka
     registry-fetch-interval-seconds: 5
     instance-info-replication-interval-seconds: 10
+  instance:
+    prefer-ip-address: true
 api-docs: /v3/api-docs
 springdoc:
   api-docs:
