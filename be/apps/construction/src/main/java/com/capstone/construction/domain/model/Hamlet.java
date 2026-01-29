@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import com.capstone.construction.infrastructure.config.Constant;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.jspecify.annotations.NonNull;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -19,8 +20,7 @@ import java.util.function.Consumer;
 public class Hamlet {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  @Column(name = "hamlet_id")
-  String id;
+  String hamletId;
 
   @Column(nullable = false, unique = true)
   String name;
@@ -60,7 +60,7 @@ public class Hamlet {
     }
   }
 
-  public static Hamlet create(Consumer<HamletBuilder> builder) {
+  public static Hamlet create(@NonNull Consumer<HamletBuilder> builder) {
     var instance = new HamletBuilder();
     builder.accept(instance);
     return instance.build();

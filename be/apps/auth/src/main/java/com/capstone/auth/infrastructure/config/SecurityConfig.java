@@ -46,38 +46,39 @@ public class SecurityConfig {
   CorsProperties corsProperties;
   JwtDecoder decoder;
   final String[] PUBLIC_URLS = {
-      "/auth/**",
-      "/login/oauth2/code/google",
-      "/oauth2/authorization/google",
-      "/actuator/**",
-      "/v3/api-docs/**",
-      "/swagger-ui/**",
-      "/public/**",
+    "/auth/**",
+    "/login/oauth2/code/google",
+    "/oauth2/authorization/google",
+    "/actuator/**",
+    "/v3/api-docs/**",
+    "/swagger-ui/**",
+    "/public/**",
+    "/health",
   };
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) {
+  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     return http
-        .csrf(AbstractHttpConfigurer::disable)
-        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers(PUBLIC_URLS).permitAll()
-            .anyRequest().authenticated())
-        .exceptionHandling(ex -> ex
-            .authenticationEntryPoint((request, response, authException) -> {
-              response.setContentType("application/json");
-              response.setStatus(HttpStatus.UNAUTHORIZED.value());
-              response.getWriter().write("{\"error\": \"Authentication required\"}");
-            })
-            .accessDeniedHandler((request, response, exception) -> {
-              response.setContentType("application/json");
-              response.setStatus(HttpStatus.FORBIDDEN.value());
-              response.getWriter().write("{\"error\": \"Access denied\"}");
-            }))
-        .oauth2ResourceServer(oauth2 ->
-          oauth2.jwt(jwt -> jwt.decoder(decoder))
-        )
-        .build();
+      .csrf(AbstractHttpConfigurer::disable)
+      .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+      .authorizeHttpRequests(auth -> auth
+        .requestMatchers(PUBLIC_URLS).permitAll()
+        .anyRequest().authenticated())
+      .exceptionHandling(ex -> ex
+        .authenticationEntryPoint((request, response, authException) -> {
+          response.setContentType("application/json");
+          response.setStatus(HttpStatus.UNAUTHORIZED.value());
+          response.getWriter().write("{\"error\": \"Authentication required\"}");
+        })
+        .accessDeniedHandler((request, response, exception) -> {
+          response.setContentType("application/json");
+          response.setStatus(HttpStatus.FORBIDDEN.value());
+          response.getWriter().write("{\"error\": \"Access denied\"}");
+        }))
+      .oauth2ResourceServer(oauth2 ->
+        oauth2.jwt(jwt -> jwt.decoder(decoder))
+      )
+      .build();
   }
 
   @Bean
@@ -93,9 +94,9 @@ public class SecurityConfig {
       }
 
       return new DefaultOAuth2User(
-          authorities,
-          user.getAttributes(),
-          "email");
+        authorities,
+        user.getAttributes(),
+        "email");
     };
   }
 

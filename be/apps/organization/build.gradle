@@ -1,6 +1,6 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '4.0.1'
+	id 'org.springframework.boot' version '3.4.0'
 	id 'io.spring.dependency-management' version '1.1.7'
 	id 'maven-publish'
 }
@@ -12,9 +12,23 @@ description = 'Demo project for Spring Boot'
 repositories {
 	mavenCentral()
 }
+dependencyManagement {
+  imports {
+    mavenBom "org.springframework.cloud:spring-cloud-dependencies:2024.0.0"
+  }
+}
 
 dependencies {
+  implementation 'org.springframework.boot:spring-boot-starter-web'
+  runtimeOnly 'org.springframework.boot:spring-boot-devtools'
+  implementation 'org.springframework.boot:spring-boot-starter-security'
+  testImplementation 'org.springframework.security:spring-security-test'
+
+  // swagger
+  implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+  implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
   implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+  implementation 'org.jspecify:jspecify:1.0.0'
   runtimeOnly 'org.postgresql:postgresql'
 }
 

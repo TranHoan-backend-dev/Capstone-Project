@@ -29,7 +29,7 @@ public final class Constant {
   public static final String PT_21 = "Business page ids cannot be null or empty";
   public static final String PT_22 = "List of notification ids cannot be null or empty";
   public static final String PT_23 = "Role id cannot be null or empty";
-  public static final String PT_24 = "id cannot be null or empty";
+  public static final String PT_24 = "Electronic signing url cannot be null or empty";
 
   // for service layer
   public static final String SE_01 = "Email has been existing";
