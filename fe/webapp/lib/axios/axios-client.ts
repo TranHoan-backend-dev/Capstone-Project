@@ -3,7 +3,7 @@ import { API_GATEWAY_URL } from "@/utils/constraints";
 
 export const createAxiosClient = (access_token?: string) => {
   return axios.create({
-    baseURL: API_GATEWAY_URL,
+    baseURL: "http://localhost:8000",
     headers: {
       "Content-Type": "application/json",
       ...(access_token && {

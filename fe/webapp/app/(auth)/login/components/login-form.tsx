@@ -26,49 +26,54 @@ const LoginForm = () => {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const result = loginSchema.safeParse(formData);
+  e.preventDefault();
+  const result = loginSchema.safeParse(formData);
 
-    if (!result.success) {
-      CallToast({
-        title: "Thiếu thông tin",
-        message:
-          result.error.issues[0].message ||
-          "Vui lòng nhập đầy đủ thông tin đăng nhập!",
-        color: "warning",
-      });
-      return;
+  if (!result.success) {
+    CallToast({
+      title: "Thiếu thông tin",
+      message: result.error.issues[0].message || "Vui lòng nhập đầy đủ thông tin đăng nhập!",
+      color: "warning",
+    });
+    return;
+  }
+  
+  setLoading(true);
+  try {
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message);
     }
-    setLoading(true);
-    try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
 
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.message);
-      }
-
-      CallToast({
-        title: "Thành công",
-        message: "Đăng nhập thành công!",
-        color: "success",
-      });
-
-      router.push("/home");
-    } catch (err: any) {
-      CallToast({
-        title: "Thất bại",
-        message: err.message || "Sai tên đăng nhập hoặc mật khẩu",
-        color: "danger",
-      });
-    } finally {
-      setLoading(false);
+    const data = await res.json();
+    
+    if (data.data) {
+      localStorage.setItem("user", JSON.stringify(data.data));
     }
-  };
+
+    CallToast({
+      title: "Thành công",
+      message: "Đăng nhập thành công!",
+      color: "success",
+    });
+
+    router.push("/home");
+  } catch (err: any) {
+    CallToast({
+      title: "Thất bại",
+      message: err.message || "Sai tên đăng nhập hoặc mật khẩu",
+      color: "danger",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="w-full md:w-1/2 h-full bg-white dark:bg-zinc-900 flex items-center justify-center p-4 md:p-8">
