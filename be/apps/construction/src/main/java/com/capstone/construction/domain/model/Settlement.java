@@ -1,14 +1,16 @@
 package com.capstone.construction.domain.model;
 
+import com.capstone.construction.domain.model.utils.ProcessingStatus;
 import jakarta.persistence.*;
 import com.capstone.construction.infrastructure.config.Constant;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.jspecify.annotations.NonNull;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.Objects;
+import java.time.*;
+import java.util.*;
 import java.util.function.Consumer;
 
 @Table
@@ -35,7 +37,40 @@ public class Settlement implements Serializable {
   @Column(nullable = false)
   String note;
 
-  // Map<String, String> representative;
+  @Column(nullable = false)
+  LocalDateTime createdAt;
+
+  @Column(nullable = false)
+  LocalDateTime updatedAt;
+
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  ProcessingStatus status;
+
+  @Column(nullable = false)
+  LocalDate registrationAt;
+
+  @PrePersist
+  void onCreate() {
+    this.createdAt = LocalDateTime.now();
+    this.updatedAt = this.createdAt;
+  }
+
+  @PreUpdate
+  void onUpdate() {
+    this.updatedAt = LocalDateTime.now();
+  }
+
+  // <editor-fold> desc="setter"
+  public void setStatus(@NonNull ProcessingStatus value) {
+    requireNonNullAndNotEmpty(value.name(), Constant.PT_03);
+    this.status = value;
+  }
+
+  public void setRegistrationAt(@NonNull LocalDate value) {
+    Objects.requireNonNull(value, Constant.PT_04);
+    this.registrationAt = value;
+  }
 
   public void setJobContent(String jobContent) {
     requireNonNullAndNotEmpty(jobContent, Constant.PT_75);
@@ -64,62 +99,50 @@ public class Settlement implements Serializable {
     }
   }
 
-  public static Settlement create(Consumer<SettlementBuilder> builder) {
+  public static Settlement create(@NonNull Consumer<SettlementBuilder> builder) {
     var instance = new SettlementBuilder();
     builder.accept(instance);
     return instance.build();
   }
+  // </editor-fold>
 
+  // <editor-fold> desc="builder"
   public static class SettlementBuilder {
-    private String jobContent;
-    private String address;
-    private BigDecimal connectionFee;
-    private String note;
+    private final Settlement instance = new Settlement();
 
     public SettlementBuilder jobContent(String jobContent) {
-      this.jobContent = jobContent;
+      instance.setJobContent(jobContent);
+      return this;
+    }
+
+    public SettlementBuilder registrationAt(LocalDate address) {
+      instance.setRegistrationAt(address);
       return this;
     }
 
     public SettlementBuilder address(String address) {
-      this.address = address;
+      instance.setAddress(address);
+      return this;
+    }
+
+    public SettlementBuilder status(ProcessingStatus address) {
+      instance.setStatus(address);
       return this;
     }
 
     public SettlementBuilder connectionFee(BigDecimal connectionFee) {
-      this.connectionFee = connectionFee;
+      instance.setConnectionFee(connectionFee);
       return this;
     }
 
     public SettlementBuilder note(String note) {
-      this.note = note;
+      instance.setNote(note);
       return this;
     }
 
     public Settlement build() {
-      var settlement = new Settlement();
-      settlement.setJobContent(jobContent);
-      settlement.setAddress(address);
-      settlement.setConnectionFee(connectionFee);
-      settlement.setNote(note);
-      return settlement;
+      return instance;
     }
   }
-
-  @Column(nullable = false)
-  LocalDateTime createdAt;
-
-  @Column(nullable = false)
-  LocalDateTime updatedAt;
-
-  @PrePersist
-  void onCreate() {
-    this.createdAt = LocalDateTime.now();
-    this.updatedAt = this.createdAt;
-  }
-
-  @PreUpdate
-  void onUpdate() {
-    this.updatedAt = LocalDateTime.now();
-  }
+  // </editor-fold>
 }

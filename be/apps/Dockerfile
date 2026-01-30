@@ -12,7 +12,7 @@ RUN gradle :auth:bootJar -x test --no-daemon
 FROM eclipse-temurin:21-jre-alpine AS runtime-auth
 WORKDIR /app
 COPY --from=build-auth /workspace/auth/build/libs/*.jar app.jar
-EXPOSE 9001
+EXPOSE 9003
 ENTRYPOINT ["java","-jar","app.jar"]
 
 # CONSTRUCTION SERVICE
@@ -23,7 +23,7 @@ RUN gradle :construction:bootJar -x test --no-deamon
 FROM eclipse-temurin:21-jre-alpine AS runtime-construction
 WORKDIR /app
 COPY --from=build-construction /workspace/construction/build/libs/*.jar app4.jar
-EXPOSE 9006
+EXPOSE 9004
 ENTRYPOINT ["java", "-jar", "app4.jar"]
 
 # CUSTOMER SERVICE
@@ -34,18 +34,18 @@ RUN gradle :customer:bootJar -x test --no-daemon
 FROM eclipse-temurin:21-jre-alpine AS runtime-customer
 WORKDIR /app
 COPY --from=build-customer /workspace/customer/build/libs/*.jar app2.jar
-EXPOSE 9003
+EXPOSE 9005
 ENTRYPOINT ["java","-jar","app2.jar"]
 
 # DEVICE SERVICE
 FROM base-builder AS build-device
-COPY construction ./construction
+COPY device ./device
 RUN gradle :device:bootJar -x test --no-deamon
 
 FROM eclipse-temurin:21-jre-alpine AS runtime-device
 WORKDIR /app
 COPY --from=build-device /workspace/device/build/libs/*.jar app5.jar
-EXPOSE 9007
+EXPOSE 9006
 ENTRYPOINT ["java", "-jar", "app5.jar"]
 
 # EMAIL SERVICE
@@ -73,7 +73,7 @@ RUN gradle :notification:bootJar -x test --no-daemon
 FROM eclipse-temurin:21-jre-alpine AS runtime-notification
 WORKDIR /app
 COPY --from=build-notification /workspace/notification/build/libs/*.jar app3.jar
-EXPOSE 9004
+EXPOSE 9007
 ENTRYPOINT ["java","-jar","app3.jar"]
 
 # ORGANIZATION SERVICE
@@ -86,3 +86,25 @@ WORKDIR /app
 COPY --from=build-organization /workspace/organization/build/libs/*.jar app5.jar
 EXPOSE 9008
 ENTRYPOINT ["java","-jar","app5.jar"]
+
+# EUREKA SERVICE
+FROM base-builder AS build-eureka
+COPY eureka ./eureka
+RUN gradle :eureka:bootJar -x test --no-daemon
+
+FROM eclipse-temurin:21-jre-alpine AS runtime-eureka
+WORKDIR /app
+COPY --from=build-eureka /workspace/eureka/build/libs/*.jar app.jar
+EXPOSE 9000
+ENTRYPOINT ["java","-jar","app.jar"]
+
+# API GATEWAY SERVICE
+FROM base-builder AS build-api-gateway
+COPY api-gateway ./api-gateway
+RUN gradle :api-gateway:bootJar -x test --no-daemon
+
+FROM eclipse-temurin:21-jre-alpine AS runtime-api-gateway
+WORKDIR /app
+COPY --from=build-api-gateway /workspace/api-gateway/build/libs/*.jar app.jar
+EXPOSE 8000
+ENTRYPOINT ["java","-jar","app.jar"]

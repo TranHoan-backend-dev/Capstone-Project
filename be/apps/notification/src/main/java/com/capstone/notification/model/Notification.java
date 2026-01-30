@@ -18,7 +18,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Notification {
   @Id
-  String id;
+  String notificationId;
   String link;
   String message;
   Boolean status;
