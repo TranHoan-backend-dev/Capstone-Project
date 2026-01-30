@@ -1,54 +1,55 @@
-import "server-only";
+import axiosBase from "@/lib/axios/axios-base";
+import { keycloakLogout } from "./keycloak.service";
+import axios from "axios";
+import { API_GATEWAY_URL } from "@/utils/constraints";
 
-import { AUTH_API_URL } from "@/utils/constraints";
-
-export interface LoginRequest {
+export interface SigninRequest {
   username: string;
   password: string;
 }
 
-export const login = async (request: LoginRequest) => {
-  const response = await fetch(`${AUTH_API_URL}/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(request),
-  });
+export interface SigninResponse {
+  accessToken: string;
+  refreshToken?: string;
+  user: {
+    id: string;
+    username: string;
+    role: string;
+  };
+}
 
-  if (!response.ok) {
-    throw new Error("Failed to login");
-  }
-
-  return await response.json();
-};
-
-export const logout = async (accessToken: string) => {
-  try {
-    await fetch(`${AUTH_API_URL}/logout`, {
-      method: "POST",
-      credentials: "include",
+export const signinService = (accessToken: string) =>
+  axios.post(
+    `${API_GATEWAY_URL}/auth/auth/login`,
+    {},
+    {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
-    });
-  } catch (error) {
-    throw error;
-  }
+    },
+  );
+
+export const forgotPasswordService = async (email: string): Promise<void> => {
+  await axiosBase.post(`/auth/forgot-password`, { email });
 };
 
-export const resetPassword = async (email: string, newPassword: string) => {
-  const response = await fetch(`${AUTH_API_URL}/reset-password`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email, newPassword }),
+export const verifyOtpService = async (
+  email: string,
+  otp: string,
+): Promise<void> => {
+  await axiosBase.post(`/auth/verify-otp`, { email, otp });
+};
+
+export const resendOtpService = async (email: string): Promise<void> => {
+  await axiosBase.post("/auth/resend-otp", { email });
+};
+
+export const resetPasswordService = async (
+  email: string,
+  newPassword: string,
+): Promise<void> => {
+  await axiosBase.post(`/auth/reset-password`, {
+    email,
+    newPassword,
   });
-
-  if (!response.ok) {
-    throw new Error("Failed to reset password");
-  }
-
-  return response.status;
 };

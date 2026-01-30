@@ -13,13 +13,15 @@ import {
 import Link from "next/link";
 import { Bars3Icon, ChevronDownIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 import NestedDropdown from "../ui/nested-dropdown";
 import { ThemeSwitch } from "../ui/theme-switch";
 
 import Sidebar from "./sidebar";
 import NotificationDropdown from "./NotificationDropdown";
+import { CallToast } from "../ui/CallToast";
+import axios from "axios";
 
 export interface SubMenuItemChild {
   key: string;
@@ -48,6 +50,7 @@ interface NavigationProps {
 }
 
 const Header = ({ menuItems, userName }: NavigationProps) => {
+  const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
@@ -82,6 +85,27 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
 
   const handleMenuClick = (key: string) => {
     setActiveMenu(key);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await axios.post("/api/auth/logout");
+      localStorage.removeItem("user");
+      CallToast({
+        title: "Thành công",
+        message: "Đăng xuất thành công!",
+        color: "success",
+      });
+
+      router.replace("/login");
+    } catch (err: any) {
+      CallToast({
+        title: "Thất bại",
+        message:
+          err.response?.data?.message || "Đăng xuất thất bại, vui lòng thử lại",
+        color: "danger",
+      });
+    }
   };
 
   return (
@@ -167,7 +191,13 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
                     <ChevronDownIcon className="w-4 h-4 text-default-500 flex-shrink-0" />
                   </div>
                 </DropdownTrigger>
-                <DropdownMenu aria-label="User menu" variant="flat">
+                <DropdownMenu
+                  aria-label="User menu"
+                  variant="flat"
+                  onAction={(key) => {
+                    if (key === "logout") handleLogout();
+                  }}
+                >
                   <DropdownItem
                     key="profile"
                     as={Link}
@@ -214,7 +244,13 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
                       </div>
                     </div>
                   </DropdownTrigger>
-                  <DropdownMenu aria-label="User menu" variant="flat">
+                  <DropdownMenu
+                    aria-label="User menu"
+                    variant="flat"
+                    onAction={(key) => {
+                      if (key === "logout") handleLogout();
+                    }}
+                  >
                     <DropdownItem
                       key="profile"
                       as={Link}
