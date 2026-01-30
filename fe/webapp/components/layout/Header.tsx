@@ -13,13 +13,17 @@ import {
 import Link from "next/link";
 import { Bars3Icon, ChevronDownIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 import NestedDropdown from "../ui/nested-dropdown";
 import { ThemeSwitch } from "../ui/theme-switch";
 
 import Sidebar from "./sidebar";
 import NotificationDropdown from "./NotificationDropdown";
+import { CallToast } from "../ui/CallToast";
+import axios from "axios";
+import { useEmployeeProfile } from "@/hooks/useEmployeeProfile";
+
 
 export interface SubMenuItemChild {
   key: string;
@@ -43,15 +47,17 @@ export interface MenuItem {
 
 interface NavigationProps {
   menuItems: MenuItem[];
-  userName?: string;
+  fullname?: string;
   onUserMenuAction?: (key: string) => void;
 }
 
-const Header = ({ menuItems, userName }: NavigationProps) => {
+const Header = ({ menuItems }: NavigationProps) => {
+  const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
-  const [mounted, setMounted] = useState(false);
+  const { profile, loading } = useEmployeeProfile();
+
   const isMenuItemActive = (item: MenuItem) => {
     if (item.href && pathname === item.href) {
       return true;
@@ -82,6 +88,27 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
 
   const handleMenuClick = (key: string) => {
     setActiveMenu(key);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await axios.post("/api/auth/logout");
+      localStorage.removeItem("user");
+      CallToast({
+        title: "Thành công",
+        message: "Đăng xuất thành công!",
+        color: "success",
+      });
+
+      router.replace("/login");
+    } catch (err: any) {
+      CallToast({
+        title: "Thất bại",
+        message:
+          err.response?.data?.message || "Đăng xuất thất bại, vui lòng thử lại",
+        color: "danger",
+      });
+    }
   };
 
   return (
@@ -143,7 +170,7 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
         </NavbarContent>
 
         <NavbarContent as="div" className="flex-none gap-4" justify="end">
-          {userName && (
+          {profile?.fullname && (
             <>
               <ThemeSwitch />
               <NotificationDropdown />
@@ -154,29 +181,35 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
                   <div className="flex items-center gap-1 px-3 py-2 cursor-pointer rounded-lg transition-colors hover:bg-default-100">
                     <Tooltip
                       className="max-w-xs"
-                      content={userName}
+                      content={profile.fullname}
                       delay={500}
                       placement="bottom"
                     >
                       <div className="flex flex-col items-center max-w-[120px]">
                         <span className="text-foreground text-sm truncate w-full font-bold">
-                          {userName}
+                          {profile.fullname}
                         </span>
                       </div>
                     </Tooltip>
                     <ChevronDownIcon className="w-4 h-4 text-default-500 flex-shrink-0" />
                   </div>
                 </DropdownTrigger>
-                <DropdownMenu aria-label="User menu" variant="flat">
+                <DropdownMenu
+                  aria-label="User menu"
+                  variant="flat"
+                  onAction={(key) => {
+                    if (key === "logout") handleLogout();
+                  }}
+                >
                   <DropdownItem
                     key="profile"
                     as={Link}
                     className={`${
-                      pathname === "/profile"
+                      pathname === "/profile-employee"
                         ? "bg-primary-100 text-primary-800 dark:text-primary-200"
                         : ""
                     }`}
-                    href="/profile"
+                    href="/profile-employee"
                   >
                     Thông tin cá nhân
                   </DropdownItem>
@@ -209,21 +242,27 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
                     <div className="min-w-10 p-1 cursor-pointer rounded-full hover:bg-primary-50 transition-colors">
                       <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
                         <span className="text-primary-600 font-semibold text-sm">
-                          {userName.charAt(0).toUpperCase()}
+                          {profile.fullname.charAt(0).toUpperCase()}
                         </span>
                       </div>
                     </div>
                   </DropdownTrigger>
-                  <DropdownMenu aria-label="User menu" variant="flat">
+                  <DropdownMenu
+                    aria-label="User menu"
+                    variant="flat"
+                    onAction={(key) => {
+                      if (key === "logout") handleLogout();
+                    }}
+                  >
                     <DropdownItem
                       key="profile"
                       as={Link}
                       className={`${
-                        pathname === "/profile"
+                        pathname === "/profile-employee"
                           ? "bg-primary-100 text-primary-800 dark:text-primary-200"
                           : ""
                       }`}
-                      href="/profile"
+                      href="/profile-employee"
                     >
                       Thông tin cá nhân
                     </DropdownItem>
