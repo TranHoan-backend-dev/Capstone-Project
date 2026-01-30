@@ -1,42 +1,18 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { getProfileEmployee } from "@/services/auth.service";
 import { EmployeeProfileData } from "@/types";
-import { CallToast } from "@/components/ui/CallToast";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
-export function useEmployeeProfile() {
+export const useEmployeeProfile = () => {
   const [profile, setProfile] = useState<EmployeeProfileData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let cancelled = false;
-
-    const fetchProfile = async () => {
-      try {
-        const data = await getProfileEmployee();
-        if (!cancelled) setProfile(data);
-      } catch (err: any) {
-        if (!cancelled) {
-          CallToast({
-            title: "Thất bại",
-            message:
-              err.response?.data?.message ||
-              "Không thể tải thông tin người dùng",
-            color: "danger",
-          });
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    };
-
-    fetchProfile();
-
-    return () => {
-      cancelled = true;
-    };
+    axios
+      .get("/api/auth/me", { withCredentials: true })
+      .then((res) => setProfile(res.data))
+      .catch(() => setProfile(null))
+      .finally(() => setLoading(false));
   }, []);
 
   return { profile, loading };
-}
+};

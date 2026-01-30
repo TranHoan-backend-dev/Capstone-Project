@@ -55,25 +55,17 @@ export const resetPasswordService = async (
   });
 };
 
-export const getProfileEmployee = async (): Promise<EmployeeProfileData> => {
-  const response = await axiosClient.get<ApiResponse<EmployeeProfileData>>(
-    "/auth/me"
+export const getProfileEmployee = async (
+  accessToken: string
+): Promise<EmployeeProfileData> => {
+  const response = await axios.get<ApiResponse<EmployeeProfileData>>(
+    `${API_GATEWAY_URL}/auth/auth/me`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
   );
+
   return response.data.data;
-};
-
-export const logoutService = async () => {
-  if (typeof window === "undefined") return;
-
-  const refreshToken = localStorage.getItem("refresh_token");
-
-  try {
-    await keycloakLogout(refreshToken ?? undefined);
-  } catch (err) {
-    console.warn("Keycloak logout failed", err);
-  } finally {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
-    localStorage.removeItem("user");
-  }
 };
