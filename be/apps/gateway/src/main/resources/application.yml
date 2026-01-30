@@ -1,0 +1,89 @@
+server:
+  port: 8000
+
+spring:
+  main:
+    web-application-type: reactive
+  application:
+    name: api-gateway
+  cloud:
+    compatibility-verifier:
+      enabled: false
+    gateway:
+      # có cái này vào thì sẽ bị xung đột
+      # discovery:
+      #   locator:
+      #     enabled: true
+      #     lower-case-service-id: true
+      routes:
+        - id: auth
+          uri: lb://auth
+          predicates:
+            - Path=/auth/**
+          filters:
+            - RewritePath=/auth/(?<segment>.*), /api/v1/${segment}
+        #        - id: chat
+        #          uri: lb://chat
+        #          predicates:
+        #            - Path=/chat/**
+        #          filters:
+        #            - StripPrefix=1
+        - id: customer
+          uri: lb://customer
+          predicates:
+            - Path=/customer/**
+          filters:
+            - RewritePath=/customer/(?<segment>.*), /api/v1/${segment}
+        - id: device
+          uri: lb://device
+          predicates:
+            - Path=/device/**
+          filters:
+            - RewritePath=/device/(?<segment>.*), /api/v1/${segment}
+        - id: notification
+          uri: lb://notification
+          predicates:
+            - Path=/notification/**
+          filters:
+            - RewritePath=/notification/(?<segment>.*), /api/v1/${segment}
+        - id: construction
+          uri: lb://construction
+          predicates:
+            - Path=/construction/**
+          filters:
+            - RewritePath=/construction/(?<segment>.*), /api/v1/${segment}
+        - id: organization
+          uri: lb://organization
+          predicates:
+            - Path=/organization/**
+          filters:
+            - RewritePath=/organization/(?<segment>.*), /api/v1/${segment}
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:9000/eureka
+    registry-fetch-interval-seconds: 5
+    instance-info-replication-interval-seconds: 10
+  instance:
+    prefer-ip-address: true
+api-docs: /v3/api-docs
+springdoc:
+  api-docs:
+    enabled: true
+    path: ${api-docs}
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    urls:
+      - name: auth
+        url: /auth${api-docs}
+      - name: customer
+        url: /customer${api-docs}
+      - name: device
+        url: /device${api-docs}
+      - name: notification
+        url: /notification${api-docs}
+      - name: construction
+        url: /construction${api-docs}
+      - name: organization
+        url: /organization${api-docs}

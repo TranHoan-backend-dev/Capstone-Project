@@ -1,6 +1,7 @@
-import { createAxiosClient } from "@/lib/axios/axios-client";
 import axiosBase from "@/lib/axios/axios-base";
 import { keycloakLogout } from "./keycloak.service";
+import axios from "axios";
+import { API_GATEWAY_URL } from "@/utils/constraints";
 import { ApiResponse, EmployeeProfileData } from "@/types";
 
 export interface SigninRequest {
@@ -18,11 +19,16 @@ export interface SigninResponse {
   };
 }
 
-export const signinService = async (access_token: string) => {
-  const axiosClient = createAxiosClient(access_token);
-  const response = await axiosClient.get("/auth/me");
-  return response.data;
-};
+export const signinService = (accessToken: string) =>
+  axios.post(
+    `${API_GATEWAY_URL}/auth/auth/login`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
 
 export const forgotPasswordService = async (email: string): Promise<void> => {
   await axiosBase.post(`/auth/forgot-password`, { email });

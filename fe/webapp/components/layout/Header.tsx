@@ -20,8 +20,8 @@ import { ThemeSwitch } from "../ui/theme-switch";
 
 import Sidebar from "./sidebar";
 import NotificationDropdown from "./NotificationDropdown";
-import { logoutService } from "@/services/auth.service";
 import { CallToast } from "../ui/CallToast";
+import axios from "axios";
 import { useEmployeeProfile } from "@/hooks/useEmployeeProfile";
 
 
@@ -92,8 +92,8 @@ const Header = ({ menuItems }: NavigationProps) => {
 
   const handleLogout = async () => {
     try {
-      await logoutService();
-
+      await axios.post("/api/auth/logout");
+      localStorage.removeItem("user");
       CallToast({
         title: "Thành công",
         message: "Đăng xuất thành công!",

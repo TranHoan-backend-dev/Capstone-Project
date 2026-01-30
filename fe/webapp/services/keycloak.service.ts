@@ -31,7 +31,7 @@ export const keycloakLogin = async (
   params.append("client_secret", KEYCLOAK_CLIENT_SECRET!);
   params.append("username", data.username);
   params.append("password", data.password);
-  params.append("scope", "openid");
+  params.append("scope", "openid profile email");
 
   const res = await axios.post(
     `${NEXT_KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/token`,
