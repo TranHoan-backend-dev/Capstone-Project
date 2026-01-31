@@ -16,6 +16,10 @@ class MediaBridgeModule(
 
     override fun getName(): String = "MediaModule"
 
+    /**
+     * Tải lên hình ảnh sau khi chụp.
+     * Luồng: JavaScript (truyền filePath) -> MediaModule -> Repository -> Google Cloud Upload -> Save URL to Backend
+     */
     @ReactMethod
     fun uploadCapturedImage(filePath: String, promise: Promise) {
         scope.launch {
@@ -34,6 +38,10 @@ class MediaBridgeModule(
         }
     }
 
+    /**
+     * Thực hiện OCR nhận diện chữ trên ảnh (Hiện tại là placeholder).
+     * Luồng: JavaScript (truyền imageUrl) -> MediaModule -> Repository -> OCR Service (Future)
+     */
     @ReactMethod
     fun performOcr(imageUrl: String, promise: Promise) {
         scope.launch {

@@ -1,5 +1,6 @@
 package com.capstone.data.source.remote
 
+import com.capstone.common.utils.Constants
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
@@ -11,6 +12,11 @@ class GoogleCloudUploader(
     private val httpClient: OkHttpClient,
     private val apiKey: String
 ) {
+    private const val _prefix = "https://storage.googleapis.com"
+    /**
+     * Tải file lên Google Cloud Storage (GCS).
+     * Luồng: File -> MultipartBody -> GCS API -> Trả về URL public.
+     */
     suspend fun uploadImage(file: File): String {
         val requestBody = file.asRequestBody("image/jpeg".toMediaType())
         val multipartBody = MultipartBody.Builder()
@@ -19,10 +25,10 @@ class GoogleCloudUploader(
             .build()
 
         val request = Request.Builder()
-            .url("https://storage.googleapis.com/upload/storage/v1/b/YOUR_BUCKET_NAME/o?uploadType=multipart&name=${file.name}&key=$apiKey")
+            .url("$_prefix/upload/storage/v1/b/${Constants.GCS_BUCKET_NAME}/o?uploadType=multipart&name=${file.name}&key=$apiKey")
             .post(multipartBody)
             .build()
 
-        return "https://storage.googleapis.com/YOUR_BUCKET_NAME/${file.name}"
+        return "$_prefix/${Constants.GCS_BUCKET_NAME}/${file.name}"
     }
 }

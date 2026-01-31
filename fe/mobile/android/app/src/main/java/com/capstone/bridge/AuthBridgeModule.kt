@@ -15,6 +15,10 @@ class AuthBridgeModule(
 
     override fun getName(): String = "AuthModule"
 
+    /**
+     * Thực hiện đăng nhập bằng Access Token từ Keycloak.
+     * Luồng: JavaScript -> AuthModule.login -> Repository.login -> Backend -> Trả về Profile
+     */
     @ReactMethod
     fun login(accessToken: String, promise: Promise) {
         scope.launch {
@@ -34,6 +38,10 @@ class AuthBridgeModule(
         }
     }
 
+    /**
+     * Gửi yêu cầu mã OTP về email để thực hiện quên mật khẩu.
+     * Luồng: JavaScript -> AuthModule.sendOtp -> Repository.sendOtp -> Backend -> Gửi Email
+     */
     @ReactMethod
     fun sendOtp(email: String, promise: Promise) {
         scope.launch {
@@ -46,6 +54,10 @@ class AuthBridgeModule(
         }
     }
 
+    /**
+     * Xác thực mã OTP mà người dùng nhập vào.
+     * Luồng: JavaScript -> AuthModule.verifyOtp -> Repository.verifyOtp -> Backend -> Kiểm tra OTP
+     */
     @ReactMethod
     fun verifyOtp(email: String, otp: String, promise: Promise) {
         scope.launch {
@@ -58,6 +70,10 @@ class AuthBridgeModule(
         }
     }
 
+    /**
+     * Đặt lại mật khẩu mới sử dụng kèm mã OTP đã xác thực.
+     * Luồng: JavaScript -> AuthModule.resetPassword -> Repository.resetPassword -> Backend -> Cập nhật Pass
+     */
     @ReactMethod
     fun resetPassword(email: String, otp: String, newPassword: String, promise: Promise) {
         scope.launch {
@@ -70,6 +86,10 @@ class AuthBridgeModule(
         }
     }
 
+    /**
+     * Lấy thông tin cá nhân của người dùng hiện tại dựa trên token.
+     * Luồng: JavaScript -> AuthModule.getMe -> Repository.getMe -> Backend -> Trả về Profile
+     */
     @ReactMethod
     fun getMe(accessToken: String, promise: Promise) {
         scope.launch {

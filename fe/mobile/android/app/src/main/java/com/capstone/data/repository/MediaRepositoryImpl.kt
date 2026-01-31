@@ -11,13 +11,19 @@ class MediaRepositoryImpl(
     private val gcsUploader: GoogleCloudUploader
 ) : MediaRepository {
 
+    /**
+     * Quy trình xử lý ảnh: Upload lên Google Cloud trước, sau đó lưu URL nhận được vào Backend.
+     */
     override suspend fun processCapturedImage(file: File): String {
         val gcsUrl = gcsUploader.uploadImage(file)
         mediaApi.saveImageUrl(SaveImageUrlRequest(imageUrl = gcsUrl))
         return gcsUrl
     }
 
+    /**
+     * Placeholder cho chức năng OCR trong tương lai.
+     */
     override suspend fun performOcr(imageUrl: String): String {
-        return "" 
+        return ""
     }
 }
