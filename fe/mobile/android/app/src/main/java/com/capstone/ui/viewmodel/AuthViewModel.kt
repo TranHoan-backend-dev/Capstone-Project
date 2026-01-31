@@ -16,7 +16,8 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val bruteForceManager: com.capstone.infrastructure.security.AntiBruteForceManager
 ) : ViewModel() {
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
@@ -55,15 +56,62 @@ class AuthViewModel @Inject constructor(
 
     /**
      * Xác thực mã OTP.
+     * Bảo mật: Giới hạn số lần nhập sai.
      */
     fun verifyOtp(email: String, otp: String) {
+        if (bruteForceManager.isLocked(email)) {
+            _authState.value = AuthState.Error("Tài khoản bị tạm khóa do nhập sai quá nhiều lần. Vui lòng thử lại sau 15 phút.")
+            return
+        }
+
         viewModelScope.launch {
             _authState.value = AuthState.Loading
             try {
                 val message = authRepository.verifyOtp(email, otp)
+                bruteForceManager.resetAttempts(email)
                 _authState.value = AuthState.MessageSent(message)
             } catch (e: Exception) {
-                _authState.value = AuthState.Error(e.message ?: "Verification failed")
+                bruteForceManager.recordFailure(email)
+                val remaining = bruteForceManager.getRemainingAttempts(email)
+                _authState.value = AuthState.Error("Mã OTP không chính xác. Bạn còn $remaining lần thử.")
+            }
+        }
+    }
+
+    /**
+     * Đặt lại mật khẩu mới.
+     * Bảo mật: Giới hạn số lần thử sai.
+     */
+    fun resetPassword(email: String, otp: String, newPass: String) {
+        if (bruteForceManager.isLocked(email)) {
+            _authState.value = AuthState.Error("Tài khoản đang bị khóa.")
+            return
+        }
+
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+            try {
+                val message = authRepository.resetPassword(email, otp, newPass)
+                bruteForceManager.resetAttempts(email)
+                _authState.value = AuthState.MessageSent(message)
+            } catch (e: Exception) {
+                bruteForceManager.recordFailure(email)
+                _authState.value = AuthState.Error(e.message ?: "Đặt lại mật khẩu thất bại.")
+            }
+        }
+    }
+
+    /**
+     * Lấy thông tin người dùng hiện tại (sử dụng session đã lưu).
+     */
+    fun fetchMe() {
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+            try {
+                val profile = authRepository.getMe()
+                _authState.value = AuthState.AuthSuccess(profile)
+            } catch (e: Exception) {
+                _authState.value = AuthState.Error(e.message ?: "Failed to fetch profile")
             }
         }
     }

@@ -7,5 +7,5 @@ interface AuthRepository {
     suspend fun sendOtp(email: String): String
     suspend fun verifyOtp(email: String, otp: String): String
     suspend fun resetPassword(email: String, otp: String, newPassword: String): String
-    suspend fun getMe(accessToken: String): UserProfile
+    suspend fun getMe(): UserProfile
 }

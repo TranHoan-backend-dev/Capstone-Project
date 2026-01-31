@@ -15,7 +15,11 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideAuthRepository(remote: AuthRemoteDataSource): AuthRepository {
-        return AuthRepositoryImpl(remote)
+    fun provideAuthRepository(
+        remote: AuthRemoteDataSource,
+        tokenManager: com.capstone.infrastructure.security.TokenManager,
+        bruteForceManager: com.capstone.infrastructure.security.AntiBruteForceManager
+    ): AuthRepository {
+        return AuthRepositoryImpl(remote, tokenManager, bruteForceManager)
     }
 }

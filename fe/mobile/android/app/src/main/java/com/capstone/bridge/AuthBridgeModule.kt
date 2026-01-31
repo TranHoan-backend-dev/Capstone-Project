@@ -87,14 +87,14 @@ class AuthBridgeModule(
     }
 
     /**
-     * Lấy thông tin cá nhân của người dùng hiện tại dựa trên token.
+     * Lấy thông tin cá nhân của người dùng hiện tại dựa trên session đã lưu.
      * Luồng: JavaScript -> AuthModule.getMe -> Repository.getMe -> Backend -> Trả về Profile
      */
     @ReactMethod
-    fun getMe(accessToken: String, promise: Promise) {
+    fun getMe(promise: Promise) {
         scope.launch {
             try {
-                val profile = authRepository.getMe(accessToken)
+                val profile = authRepository.getMe()
                 val map = Arguments.createMap().apply {
                     putString("fullName", profile.fullName)
                     putString("avatarUrl", profile.avatarUrl)

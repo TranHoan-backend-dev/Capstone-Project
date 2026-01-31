@@ -9,7 +9,8 @@ import java.io.File
 
 class MediaBridgeModule(
     reactContext: ReactApplicationContext,
-    private val mediaRepository: MediaRepository
+    private val mediaRepository: MediaRepository,
+    private val permissionManager: com.capstone.infrastructure.security.PermissionManager
 ) : ReactContextBaseJavaModule(reactContext) {
 
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -22,6 +23,10 @@ class MediaBridgeModule(
      */
     @ReactMethod
     fun uploadCapturedImage(filePath: String, promise: Promise) {
+        if (!permissionManager.canAccessFullFeatures()) {
+            promise.reject("ACCESS_DENIED", "Bạn không có quyền thực hiện chức năng này")
+            return
+        }
         scope.launch {
             try {
                 val file = File(filePath)
@@ -44,6 +49,10 @@ class MediaBridgeModule(
      */
     @ReactMethod
     fun performOcr(imageUrl: String, promise: Promise) {
+        if (!permissionManager.canAccessFullFeatures()) {
+            promise.reject("ACCESS_DENIED", "Bạn không có quyền thực hiện chức năng này")
+            return
+        }
         scope.launch {
             try {
                 val ocrResult = mediaRepository.performOcr(imageUrl)

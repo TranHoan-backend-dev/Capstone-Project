@@ -8,7 +8,8 @@ import kotlinx.coroutines.launch
 
 class NotificationBridgeModule(
     reactContext: ReactApplicationContext,
-    private val repository: NotificationRepository
+    private val repository: NotificationRepository,
+    private val permissionManager: com.capstone.infrastructure.security.PermissionManager
 ) : ReactContextBaseJavaModule(reactContext) {
 
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -21,6 +22,10 @@ class NotificationBridgeModule(
      */
     @ReactMethod
     fun getNotifications(page: Int, size: Int, promise: Promise) {
+        if (!permissionManager.canAccessFullFeatures()) {
+            promise.reject("ACCESS_DENIED", "Bạn không có quyền thực hiện chức năng này")
+            return
+        }
         scope.launch {
             try {
                 val notifications = repository.getNotifications(page, size)
@@ -48,6 +53,10 @@ class NotificationBridgeModule(
      */
     @ReactMethod
     fun markAsRead(notificationId: String, promise: Promise) {
+        if (!permissionManager.canAccessFullFeatures()) {
+            promise.reject("ACCESS_DENIED", "Bạn không có quyền thực hiện chức năng này")
+            return
+        }
         scope.launch {
             try {
                 val success = repository.markAsRead(notificationId)

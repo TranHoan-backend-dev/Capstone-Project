@@ -5,17 +5,17 @@ import com.capstone.domain.model.UserProfile
 import com.capstone.domain.repository.AuthRepository
 
 class AuthRepositoryImpl(
-    private val remote: AuthRemoteDataSource
+    private val remote: AuthRemoteDataSource,
+    private val tokenManager: com.capstone.infrastructure.security.TokenManager,
+    private val bruteForceManager: com.capstone.infrastructure.security.AntiBruteForceManager
 ): AuthRepository {
     /**
      * Xử lý logic đăng nhập: Gọi DataSource để lấy Profile sau đó convert sang Domain Model.
      */
     override suspend fun login(accessToken: String): UserProfile {
-        // Based on the code in UserProfile.kt, we might need a workaround or if it's top-level
-        // For now, I'll assume it works as used before or provide a local helper if needed.
-        // Actually, let's just implement the new ones and use what's there for profile.
-        return remote.login(accessToken).let { 
-            UserProfile(it.fullName, it.avatarUrl, it.role, it.username, it.email)
+        return remote.login(accessToken).let { profile ->
+            tokenManager.saveSession(accessToken, "SIMULATED_REFRESH_TOKEN", profile.role)
+            UserProfile(profile.fullName, profile.avatarUrl, profile.role, profile.username, profile.email)
         }
     }
 
@@ -28,23 +28,46 @@ class AuthRepositoryImpl(
 
     /**
      * Xác thực mã OTP thông qua Remote DataSource.
+     * Bảo mật: Thăng cường chống Brute Force.
      */
     override suspend fun verifyOtp(email: String, otp: String): String {
-        return remote.verifyOtp(email, otp)
+        if (bruteForceManager.isLocked(email)) {
+            throw Exception("Tài khoản bị tạm khóa do thử sai quá nhiều lần. Vui lòng quay lại sau.")
+        }
+        return try {
+            val result = remote.verifyOtp(email, otp)
+            bruteForceManager.resetAttempts(email)
+            result
+        } catch (e: Exception) {
+            bruteForceManager.recordFailure(email)
+            throw e
+        }
     }
 
     /**
      * Thực hiện đặt lại mật khẩu thông qua Remote DataSource.
+     * Bảo mật: Thăng cường chống Brute Force.
      */
     override suspend fun resetPassword(email: String, otp: String, newPassword: String): String {
-        return remote.resetPassword(com.capstone.data.source.request.ResetPasswordRequest(email, otp, newPassword))
+        if (bruteForceManager.isLocked(email)) {
+            throw Exception("Tài khoản đang bị khóa.")
+        }
+        return try {
+            val result = remote.resetPassword(com.capstone.data.source.request.ResetPasswordRequest(email, otp, newPassword))
+            bruteForceManager.resetAttempts(email)
+            result
+        } catch (e: Exception) {
+            bruteForceManager.recordFailure(email)
+            throw e
+        }
     }
 
     /**
      * Lấy thông tin tài khoản hiện tại và convert sang Domain Model.
+     * Token được đính kèm tự động qua tầng Interceptor.
      */
-    override suspend fun getMe(accessToken: String): UserProfile {
-        return remote.getMe(accessToken).let {
+    override suspend fun getMe(): UserProfile {
+        return remote.getMe().let {
             UserProfile(it.fullName, it.avatarUrl, it.role, it.username, it.email)
         }
     }

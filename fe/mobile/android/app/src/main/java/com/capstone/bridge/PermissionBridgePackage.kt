@@ -1,19 +1,18 @@
 package com.capstone.bridge
 
 import android.view.View
-import com.capstone.domain.repository.NotificationRepository
+import com.capstone.infrastructure.security.PermissionManager
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ReactShadowNode
 import com.facebook.react.uimanager.ViewManager
 
-class NotificationBridgePackage(
-    private val repository: NotificationRepository,
-    private val permissionManager: com.capstone.infrastructure.security.PermissionManager
+class PermissionBridgePackage(
+    private val permissionManager: PermissionManager
 ) : ReactPackage {
     override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
-        return listOf(NotificationBridgeModule(reactContext, repository, permissionManager))
+        return listOf(PermissionBridgeModule(reactContext, permissionManager))
     }
 
     override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<View, ReactShadowNode<*>>> {

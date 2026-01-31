@@ -27,13 +27,21 @@ class MainApplication : Application(), ReactApplication {
             this@MainApplication,
             MediaEntryPoint::class.java
           ).mediaRepository()
-          add(MediaBridgePackage(mediaRepository))
+
+          val permissionManager = EntryPointAccessors.fromApplication(
+            this@MainApplication,
+            PermissionEntryPoint::class.java
+          ).permissionManager()
+
+          add(MediaBridgePackage(mediaRepository, permissionManager))
 
           val notificationRepository = EntryPointAccessors.fromApplication(
             this@MainApplication,
             NotificationEntryPoint::class.java
           ).notificationRepository()
-          add(NotificationBridgePackage(notificationRepository))
+          add(NotificationBridgePackage(notificationRepository, permissionManager))
+
+          add(com.capstone.bridge.PermissionBridgePackage(permissionManager))
         },
     )
   }
@@ -54,6 +62,12 @@ class MainApplication : Application(), ReactApplication {
   @InstallIn(SingletonComponent::class)
   interface NotificationEntryPoint {
     fun notificationRepository(): NotificationRepository
+  }
+
+  @EntryPoint
+  @InstallIn(SingletonComponent::class)
+  interface PermissionEntryPoint {
+    fun permissionManager(): com.capstone.infrastructure.security.PermissionManager
   }
 
   override fun onCreate() {

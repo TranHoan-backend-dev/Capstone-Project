@@ -43,9 +43,10 @@ class AuthRemoteDataSource(
 
     /**
      * Gọi API lấy thông tin profile người dùng.
+     * Token được đính kèm tự động qua AuthInterceptor.
      */
-    suspend fun getMe(accessToken: String): UserProfileResponse {
-        val response = api.getMe("Bearer $accessToken")
+    suspend fun getMe(): UserProfileResponse {
+        val response = api.getMe()
         return response.data
     }
 }
