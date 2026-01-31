@@ -1,13 +1,13 @@
 package com.capstone.device.domain.model;
 
-import com.capstone.device.domain.model.utils.Usage;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.Map;
 
 @Table
 @Getter
@@ -16,16 +16,14 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UsageHistory {
+public class PriceType {
   @Id
-  String usageHistory;
+  @GeneratedValue(strategy = GenerationType.UUID)
+  String priceTypeId;
 
-  @OneToOne(fetch = FetchType.EAGER)
-  @MapsId("usageHistory")
-  @JoinColumn(name = "meter_code")
-  WaterMeter meter;
+  String area;
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(columnDefinition = "jsonb")
-  List<Usage> usages;
+  Map<String, BigDecimal> price;
 }

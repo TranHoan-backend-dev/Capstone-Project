@@ -1,4 +1,4 @@
-package com.capstone.device.domain.model;
+package com.capstone.device.domain.model.utils;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
