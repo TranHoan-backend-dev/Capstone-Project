@@ -12,7 +12,9 @@ class GoogleCloudUploader(
     private val httpClient: OkHttpClient,
     private val apiKey: String
 ) {
-    private const val _prefix = "https://storage.googleapis.com"
+    companion object {
+        private const val PREFIX = "https://storage.googleapis.com"
+    }
     /**
      * Tải file lên Google Cloud Storage (GCS).
      * Luồng: File -> MultipartBody -> GCS API -> Trả về URL public.
@@ -25,10 +27,10 @@ class GoogleCloudUploader(
             .build()
 
         val request = Request.Builder()
-            .url("$_prefix/upload/storage/v1/b/${Constants.GCS_BUCKET_NAME}/o?uploadType=multipart&name=${file.name}&key=$apiKey")
+            .url("$PREFIX/upload/storage/v1/b/${Constants.GCS_BUCKET_NAME}/o?uploadType=multipart&name=${file.name}&key=$apiKey")
             .post(multipartBody)
             .build()
 
-        return "$_prefix/${Constants.GCS_BUCKET_NAME}/${file.name}"
+        return "$PREFIX/${Constants.GCS_BUCKET_NAME}/${file.name}"
     }
 }
