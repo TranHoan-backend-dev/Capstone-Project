@@ -45,5 +45,5 @@ publishing {
   }
 }
 test {
-  enabled = false
+  enabled = true
 }
