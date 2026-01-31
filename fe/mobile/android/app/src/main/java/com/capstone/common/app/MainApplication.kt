@@ -17,9 +17,31 @@ class MainApplication : Application(), ReactApplication {
       packageList =
         PackageList(this).packages.apply {
           // Packages that cannot be autolinked yet can be added manually here, for example:
-          // add(MyReactNativePackage())
+          val authRepository = dagger.hilt.android.EntryPointAccessors.fromApplication(
+            this@MainApplication,
+            AuthEntryPoint::class.java
+          ).authRepository()
+          add(com.capstone.bridge.AuthBridgePackage(authRepository))
+
+          val mediaRepository = dagger.hilt.android.EntryPointAccessors.fromApplication(
+            this@MainApplication,
+            MediaEntryPoint::class.java
+          ).mediaRepository()
+          add(com.capstone.bridge.MediaBridgePackage(mediaRepository))
         },
     )
+  }
+
+  @EntryPoint
+  @InstallIn(SingletonComponent::class)
+  interface AuthEntryPoint {
+    fun authRepository(): com.capstone.domain.repository.AuthRepository
+  }
+
+  @EntryPoint
+  @InstallIn(SingletonComponent::class)
+  interface MediaEntryPoint {
+    fun mediaRepository(): com.capstone.domain.repository.MediaRepository
   }
 
   override fun onCreate() {
