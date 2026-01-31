@@ -8,9 +8,11 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ReactShadowNode
 import com.facebook.react.uimanager.ViewManager
 
+import com.capstone.infrastructure.security.PermissionManager
+
 class NotificationBridgePackage(
     private val repository: NotificationRepository,
-    private val permissionManager: com.capstone.infrastructure.security.PermissionManager
+    private val permissionManager: PermissionManager
 ) : ReactPackage {
     override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
         return listOf(NotificationBridgeModule(reactContext, repository, permissionManager))

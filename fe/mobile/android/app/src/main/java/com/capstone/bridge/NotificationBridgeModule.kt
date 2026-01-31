@@ -5,11 +5,12 @@ import com.facebook.react.bridge.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import com.capstone.infrastructure.security.PermissionManager
 
 class NotificationBridgeModule(
     reactContext: ReactApplicationContext,
     private val repository: NotificationRepository,
-    private val permissionManager: com.capstone.infrastructure.security.PermissionManager
+    private val permissionManager: PermissionManager
 ) : ReactContextBaseJavaModule(reactContext) {
 
     private val scope = CoroutineScope(Dispatchers.IO)

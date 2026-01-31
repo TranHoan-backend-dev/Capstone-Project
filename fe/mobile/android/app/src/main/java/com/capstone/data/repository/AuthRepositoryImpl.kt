@@ -3,11 +3,13 @@ package com.capstone.data.repository
 import com.capstone.data.datasource.AuthRemoteDataSource
 import com.capstone.domain.model.UserProfile
 import com.capstone.domain.repository.AuthRepository
+import com.capstone.infrastructure.security.TokenManager
+import com.capstone.infrastructure.security.AntiBruteForceManager
 
 class AuthRepositoryImpl(
     private val remote: AuthRemoteDataSource,
-    private val tokenManager: com.capstone.infrastructure.security.TokenManager,
-    private val bruteForceManager: com.capstone.infrastructure.security.AntiBruteForceManager
+    private val tokenManager: TokenManager,
+    private val bruteForceManager: AntiBruteForceManager
 ): AuthRepository {
     /**
      * Xử lý logic đăng nhập: Gọi DataSource để lấy Profile sau đó convert sang Domain Model.

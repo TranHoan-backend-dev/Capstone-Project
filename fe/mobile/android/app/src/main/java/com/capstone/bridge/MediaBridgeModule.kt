@@ -6,11 +6,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
+import com.capstone.infrastructure.security.PermissionManager
 
 class MediaBridgeModule(
     reactContext: ReactApplicationContext,
     private val mediaRepository: MediaRepository,
-    private val permissionManager: com.capstone.infrastructure.security.PermissionManager
+    private val permissionManager: PermissionManager
 ) : ReactContextBaseJavaModule(reactContext) {
 
     private val scope = CoroutineScope(Dispatchers.IO)

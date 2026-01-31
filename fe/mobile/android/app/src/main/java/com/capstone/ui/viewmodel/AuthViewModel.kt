@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.capstone.infrastructure.security.AntiBruteForceManager
 
 /**
  * ViewModel quản lý toàn bộ trạng thái xác thực (Login, OTP, Profile).
@@ -17,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val bruteForceManager: com.capstone.infrastructure.security.AntiBruteForceManager
+    private val bruteForceManager: AntiBruteForceManager
 ) : ViewModel() {
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)

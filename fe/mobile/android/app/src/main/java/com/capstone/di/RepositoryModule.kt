@@ -8,6 +8,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+import com.capstone.infrastructure.security.TokenManager
+import com.capstone.infrastructure.security.AntiBruteForceManager
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -17,8 +19,8 @@ object RepositoryModule {
     @Singleton
     fun provideAuthRepository(
         remote: AuthRemoteDataSource,
-        tokenManager: com.capstone.infrastructure.security.TokenManager,
-        bruteForceManager: com.capstone.infrastructure.security.AntiBruteForceManager
+        tokenManager: TokenManager,
+        bruteForceManager: AntiBruteForceManager
     ): AuthRepository {
         return AuthRepositoryImpl(remote, tokenManager, bruteForceManager)
     }

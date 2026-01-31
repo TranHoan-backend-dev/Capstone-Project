@@ -7,6 +7,16 @@ import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeApplicationEntryPoint.loadReactNative
 import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import dagger.hilt.android.HiltAndroidApp
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
+import com.capstone.bridge.AuthBridgePackage
+import com.capstone.bridge.MediaBridgePackage
+import com.capstone.bridge.NotificationBridgePackage
+import com.capstone.domain.repository.AuthRepository
+import com.capstone.domain.repository.MediaRepository
+import com.capstone.domain.repository.NotificationRepository
 
 @HiltAndroidApp
 class MainApplication : Application(), ReactApplication {
