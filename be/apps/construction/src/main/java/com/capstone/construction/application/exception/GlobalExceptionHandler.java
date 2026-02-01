@@ -14,12 +14,27 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+  @ExceptionHandler(ExistingItemException.class)
+  public ResponseEntity<WrapperApiResponse> handleExistingItemException(@NonNull ExistingItemException ex) {
+    log.error("Conflict error: {}", ex.getMessage());
+    return ResponseEntity
+        .status(HttpStatus.CONFLICT)
+        .body(new WrapperApiResponse(
+            HttpStatus.CONFLICT.value(),
+            ex.getMessage(),
+            null,
+            LocalDateTime.now()));
+  }
+
   @ExceptionHandler(BadRequestException.class)
   public ResponseEntity<WrapperApiResponse> handleBadRequestException(@NonNull BadRequestException ex) {
+    log.error("Bad request error: {}", ex.getMessage());
     return ResponseEntity
         .status(HttpStatus.BAD_REQUEST)
         .body(new WrapperApiResponse(
@@ -31,6 +46,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(BadCredentialsException.class)
   public ResponseEntity<WrapperApiResponse> handleBadCredentialsException(BadCredentialsException ex) {
+    log.error("Auth error: {}", ex.getMessage());
     return ResponseEntity
         .status(HttpStatus.UNAUTHORIZED)
         .body(new WrapperApiResponse(
@@ -42,6 +58,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<WrapperApiResponse> handleValidationExceptions(@NonNull MethodArgumentNotValidException ex) {
+    log.warn("Validation error on request: {}", ex.getObjectName());
     var errors = new HashMap<>();
     ex.getBindingResult().getAllErrors().forEach((error) -> {
       var fieldName = ((FieldError) error).getField();
@@ -60,6 +77,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<WrapperApiResponse> handleGlobalException(@NonNull Exception ex) {
+    log.error("Unexpected error occurred: ", ex);
     return ResponseEntity
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .body(new WrapperApiResponse(
@@ -71,6 +89,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler({ InterruptedException.class, ExecutionException.class })
   public ResponseEntity<WrapperApiResponse> handleInterruptedAndExecutionException(@NonNull Exception ex) {
+    log.error("Concurrency error: ", ex);
     return ResponseEntity
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .body(new WrapperApiResponse(
