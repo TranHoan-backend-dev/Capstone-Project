@@ -25,3 +25,9 @@ Accept: application/json
   "password": "@",
   "status": false
 }
+
+### Swagger UI
+GET http://localhost:8000/auth/v3/api-docs
+
+### Health check
+GET http://localhost:8000/auth/health

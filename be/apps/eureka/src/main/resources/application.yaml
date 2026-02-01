@@ -11,5 +11,7 @@ eureka:
     fetch-registry: false
     service-url:
       defaultZone: http://localhost:9000/eureka/
+  instance:
+    prefer-ip-address: true
   server:
     wait-time-in-ms-when-sync-empty: 0
