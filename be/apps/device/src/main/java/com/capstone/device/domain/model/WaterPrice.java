@@ -85,8 +85,12 @@ public class WaterPrice {
     this.applicationPeriod = applicationPeriod;
   }
 
+  public void setExpirationDate(LocalDate expirationDate) {
+    this.expirationDate = Objects.requireNonNull(expirationDate, Constant.ENT_37);
+  }
+
   public void setDescription(String description) {
-    Objects.requireNonNull(applicationPeriod, Constant.ENT_23);
+    Objects.requireNonNull(description, Constant.ENT_23);
     this.description = description;
   }
 
@@ -123,6 +127,11 @@ public class WaterPrice {
 
     public WaterPriceBuilder applicationPeriod(LocalDate applicationPeriod) {
       wp.setApplicationPeriod(applicationPeriod);
+      return this;
+    }
+
+    public WaterPriceBuilder expirationDate(LocalDate expirationDate) {
+      wp.setExpirationDate(expirationDate);
       return this;
     }
 

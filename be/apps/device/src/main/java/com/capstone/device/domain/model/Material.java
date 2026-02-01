@@ -106,6 +106,14 @@ public class Material {
     }
   }
 
+  public void setGroup(MaterialsGroup group) {
+    this.group = Objects.requireNonNull(group, Constant.ENT_35);
+  }
+
+  public void setUnit(Unit unit) {
+    this.unit = Objects.requireNonNull(unit, Constant.ENT_36);
+  }
+
   public static Material create(@NonNull Consumer<SupplyBuilder> consumer) {
     var builder = new SupplyBuilder();
     consumer.accept(builder);
@@ -142,6 +150,16 @@ public class Material {
 
     public SupplyBuilder constructionMachineryPriceAtRuralCommune(BigDecimal constructionMachineryPriceAtRuralCommune) {
       material.setConstructionMachineryPriceAtRuralCommune(constructionMachineryPriceAtRuralCommune);
+      return this;
+    }
+
+    public SupplyBuilder group(MaterialsGroup group) {
+      material.setGroup(group);
+      return this;
+    }
+
+    public SupplyBuilder unit(Unit unit) {
+      material.setUnit(unit);
       return this;
     }
 
