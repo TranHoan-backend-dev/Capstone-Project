@@ -36,6 +36,17 @@ public class Lateral {
   @Column(nullable = false)
   LocalDateTime updatedAt;
 
+  @PrePersist
+  void onCreate() {
+    this.createdAt = LocalDateTime.now();
+    this.updatedAt = this.createdAt;
+  }
+
+  @PreUpdate
+  void onUpdate() {
+    this.updatedAt = LocalDateTime.now();
+  }
+
   public void setName(String name) {
     Objects.requireNonNull(name, Constant.PT_70);
     if (name.trim().isEmpty()) {
@@ -75,16 +86,5 @@ public class Lateral {
       lateral.setNetwork(network);
       return lateral;
     }
-  }
-
-  @PrePersist
-  void onCreate() {
-    this.createdAt = LocalDateTime.now();
-    this.updatedAt = this.createdAt;
-  }
-
-  @PreUpdate
-  void onUpdate() {
-    this.updatedAt = LocalDateTime.now();
   }
 }

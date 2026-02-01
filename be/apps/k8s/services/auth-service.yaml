@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+  namespace: capstone-project
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      containers:
+        - name: auth-service
+          image: auth-service:1.0.0
+          ports:
+            - containerPort: 9001
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 9001
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 9001
+            initialDelaySeconds: 15
+            periodSeconds: 5
+          env:
+            - name: SERVER_PORT
+              value: "9001"
+            - name: SPRING_PROFILES_ACTIVE
+              value: "dev"
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://postgres:5432/microservice"
+            - name: SPRING_RABBITMQ_HOST
+              value: "rabbitmq"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  namespace: capstone-project
+spec:
+  selector:
+    app: auth-service
+  ports:
+    - protocol: TCP
+      port: 9001
+      targetPort: 9001
+  type: ClusterIP

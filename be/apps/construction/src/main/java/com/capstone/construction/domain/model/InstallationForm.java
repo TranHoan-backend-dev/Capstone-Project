@@ -1,19 +1,25 @@
 package com.capstone.construction.domain.model;
 
+import com.capstone.construction.domain.model.utils.Representative;
+import com.capstone.construction.domain.model.utils.UsageTarget;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
 import com.capstone.construction.infrastructure.config.Constant;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+import org.jspecify.annotations.NonNull;
 
 @Table
 @Getter
 @Entity
-@ToString
+@ToString(exclude = "network")
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -28,12 +34,8 @@ public class InstallationForm {
   @Column(nullable = false)
   String customerName;
 
-  String representative;
-
-  String businessPosition;
-
   @Column(nullable = false)
-  String houseNumber;
+  String address;
 
   @Column(length = 12, unique = true, nullable = false)
   String citizenIdentificationNumber;
@@ -55,8 +57,9 @@ public class InstallationForm {
   @Column(nullable = false)
   String bankAccountProviderLocation;
 
+  @Enumerated(EnumType.STRING)
   @Column(nullable = false)
-  String usageTarget;
+  UsageTarget usageTarget;
 
   @Column(nullable = false)
   LocalDateTime receivedFormAt;
@@ -69,28 +72,17 @@ public class InstallationForm {
   @Column(nullable = false)
   Integer householdRegistrationNumber;
 
-  // String object;
-
-  @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "road_id")
-  Road road;
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(columnDefinition = "jsonb")
+  List<Representative> representative;
 
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "water_supply_network_id")
   WaterSupplyNetwork network;
 
-  @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "unit_id")
-  NeighborhoodUnit unit;
-
-  @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "commune_id")
-  Commune commune;
-
-  @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "hamlet_id")
-  Hamlet hamlet;
-  String surveyEmployeeId;
+  @Column(nullable = false)
+  String createdBy; // the planning-technical department staff who create this form
+  String handoverBy; // the planning-technical department staff who will approve/reject this form
 
   @Column(nullable = false)
   String overallWaterMeterId;
@@ -100,6 +92,17 @@ public class InstallationForm {
 
   @Column(nullable = false)
   LocalDateTime updatedAt;
+
+  @PrePersist
+  void onCreate() {
+    this.createdAt = LocalDateTime.now();
+    this.updatedAt = this.createdAt;
+  }
+
+  @PreUpdate
+  void onUpdate() {
+    this.updatedAt = LocalDateTime.now();
+  }
 
   public void setFormNumber(String formNumber) {
     requireNonNullAndNotEmpty(formNumber, Constant.PT_44);
@@ -111,19 +114,9 @@ public class InstallationForm {
     this.customerName = customerName;
   }
 
-  public void setRepresentative(String representative) {
-    requireNonNullAndNotEmpty(representative, Constant.PT_45);
+  public void setRepresentative(List<Representative> representative) {
+    Objects.requireNonNull(representative, Constant.PT_45);
     this.representative = representative;
-  }
-
-  public void setBusinessPosition(String businessPosition) {
-    requireNonNullAndNotEmpty(businessPosition, Constant.PT_46);
-    this.businessPosition = businessPosition;
-  }
-
-  public void setHouseNumber(String houseNumber) {
-    requireNonNullAndNotEmpty(houseNumber, Constant.PT_47);
-    this.houseNumber = houseNumber;
   }
 
   public void setCitizenIdentificationNumber(String citizenIdentificationNumber) {
@@ -133,13 +126,13 @@ public class InstallationForm {
 
   public void setCitizenIdentificationProvideDate(String citizenIdentificationProvideDate) {
     requireNonNullAndNotEmpty(citizenIdentificationProvideDate,
-        Constant.PT_49);
+      Constant.PT_49);
     this.citizenIdentificationProvideDate = citizenIdentificationProvideDate;
   }
 
   public void setCitizenIdentificationProvideLocation(String citizenIdentificationProvideLocation) {
     requireNonNullAndNotEmpty(citizenIdentificationProvideLocation,
-        Constant.PT_50);
+      Constant.PT_50);
     this.citizenIdentificationProvideLocation = citizenIdentificationProvideLocation;
   }
 
@@ -167,8 +160,8 @@ public class InstallationForm {
   }
 
   public void setUsageTarget(String usageTarget) {
-    requireNonNullAndNotEmpty(usageTarget, Constant.PT_54);
-    this.usageTarget = usageTarget;
+    Objects.requireNonNull(usageTarget, Constant.PT_54);
+    this.usageTarget = UsageTarget.valueOf(usageTarget.trim().toUpperCase());
   }
 
   public void setReceivedFormAt(LocalDateTime receivedFormAt) {
@@ -191,38 +184,29 @@ public class InstallationForm {
     this.householdRegistrationNumber = householdRegistrationNumber;
   }
 
-  public void setRoad(Road road) {
-    Objects.requireNonNull(road, Constant.PT_58);
-    this.road = road;
-  }
-
   public void setNetwork(WaterSupplyNetwork network) {
     Objects.requireNonNull(network, Constant.PT_59);
     this.network = network;
   }
 
-  public void setUnit(NeighborhoodUnit unit) {
-    Objects.requireNonNull(unit, Constant.PT_60);
-    this.unit = unit;
+  public void setCreatedBy(String value) {
+    requireNonNullAndNotEmpty(value, Constant.PT_61);
+    this.createdBy = value;
   }
 
-  public void setCommune(Commune commune) {
-    Objects.requireNonNull(commune, Constant.PT_26);
-    this.commune = commune;
-  }
-
-  public void setHamlet(Hamlet hamlet) {
-    Objects.requireNonNull(hamlet, Constant.PT_61);
-    this.hamlet = hamlet;
-  }
-
-  public void setSurveyEmployeeId(String surveyEmployeeId) {
-    this.surveyEmployeeId = surveyEmployeeId;
+  public void setHandoverBy(String value) {
+    requireNonNullAndNotEmpty(value, Constant.PT_79);
+    this.handoverBy = value;
   }
 
   public void setOverallWaterMeterId(String overallWaterMeterId) {
     requireNonNullAndNotEmpty(overallWaterMeterId, Constant.PT_62);
     this.overallWaterMeterId = overallWaterMeterId;
+  }
+
+  public void setAddress(String address) {
+    requireNonNullAndNotEmpty(address, Constant.PT_12);
+    this.address = address;
   }
 
   private void requireNonNullAndNotEmpty(String value, String message) {
@@ -232,196 +216,117 @@ public class InstallationForm {
     }
   }
 
-  public static InstallationForm create(Consumer<InstallationFormBuilder> builder) {
+  public static InstallationForm create(@NonNull Consumer<InstallationFormBuilder> builder) {
     var instance = new InstallationFormBuilder();
     builder.accept(instance);
     return instance.build();
   }
 
   public static class InstallationFormBuilder {
-    private String formNumber;
-    private String customerName;
-    private String representative;
-    private String businessPosition;
-    private String houseNumber;
-    private String citizenIdentificationNumber;
-    private String citizenIdentificationProvideDate;
-    private String citizenIdentificationProvideLocation;
-    private String phoneNumber;
-    private String taxCode;
-    private String bankAccountNumber;
-    private String bankAccountProviderLocation;
-    private String usageTarget;
-    private LocalDateTime receivedFormAt;
-    private LocalDateTime scheduleSurveyAt;
-    private Integer numberOfHousehold;
-    private Integer householdRegistrationNumber;
-    private Road road;
-    private WaterSupplyNetwork network;
-    private NeighborhoodUnit unit;
-    private Commune commune;
-    private Hamlet hamlet;
-    private String surveyEmployeeId;
-    private String overallWaterMeterId;
+    private final InstallationForm instance = new InstallationForm();
 
     public InstallationFormBuilder formNumber(String formNumber) {
-      this.formNumber = formNumber;
+      instance.setFormNumber(formNumber);
       return this;
     }
 
     public InstallationFormBuilder customerName(String customerName) {
-      this.customerName = customerName;
+      instance.setCustomerName(customerName);
       return this;
     }
 
-    public InstallationFormBuilder representative(String representative) {
-      this.representative = representative;
-      return this;
-    }
-
-    public InstallationFormBuilder businessPosition(String businessPosition) {
-      this.businessPosition = businessPosition;
-      return this;
-    }
-
-    public InstallationFormBuilder houseNumber(String houseNumber) {
-      this.houseNumber = houseNumber;
+    public InstallationFormBuilder representative(List<Representative> representative) {
+      instance.setRepresentative(representative);
       return this;
     }
 
     public InstallationFormBuilder citizenIdentificationNumber(String citizenIdentificationNumber) {
-      this.citizenIdentificationNumber = citizenIdentificationNumber;
+      instance.setCitizenIdentificationNumber(citizenIdentificationNumber);
       return this;
     }
 
     public InstallationFormBuilder citizenIdentificationProvideDate(String citizenIdentificationProvideDate) {
-      this.citizenIdentificationProvideDate = citizenIdentificationProvideDate;
+      instance.setCitizenIdentificationProvideDate(citizenIdentificationProvideDate);
       return this;
     }
 
     public InstallationFormBuilder citizenIdentificationProvideLocation(String citizenIdentificationProvideLocation) {
-      this.citizenIdentificationProvideLocation = citizenIdentificationProvideLocation;
+      instance.setCitizenIdentificationProvideLocation(citizenIdentificationProvideLocation);
       return this;
     }
 
     public InstallationFormBuilder phoneNumber(String phoneNumber) {
-      this.phoneNumber = phoneNumber;
+      instance.setPhoneNumber(phoneNumber);
       return this;
     }
 
     public InstallationFormBuilder taxCode(String taxCode) {
-      this.taxCode = taxCode;
+      instance.setTaxCode(taxCode);
       return this;
     }
 
     public InstallationFormBuilder bankAccountNumber(String bankAccountNumber) {
-      this.bankAccountNumber = bankAccountNumber;
+      instance.setBankAccountNumber(bankAccountNumber);
       return this;
     }
 
     public InstallationFormBuilder bankAccountProviderLocation(String bankAccountProviderLocation) {
-      this.bankAccountProviderLocation = bankAccountProviderLocation;
+      instance.setBankAccountProviderLocation(bankAccountProviderLocation);
       return this;
     }
 
     public InstallationFormBuilder usageTarget(String usageTarget) {
-      this.usageTarget = usageTarget;
+      instance.setUsageTarget(usageTarget);
       return this;
     }
 
     public InstallationFormBuilder receivedFormAt(LocalDateTime receivedFormAt) {
-      this.receivedFormAt = receivedFormAt;
+      instance.setReceivedFormAt(receivedFormAt);
       return this;
     }
 
     public InstallationFormBuilder scheduleSurveyAt(LocalDateTime scheduleSurveyAt) {
-      this.scheduleSurveyAt = scheduleSurveyAt;
+      instance.setScheduleSurveyAt(scheduleSurveyAt);
       return this;
     }
 
     public InstallationFormBuilder numberOfHousehold(Integer numberOfHousehold) {
-      this.numberOfHousehold = numberOfHousehold;
+      instance.setNumberOfHousehold(numberOfHousehold);
       return this;
     }
 
     public InstallationFormBuilder householdRegistrationNumber(Integer householdRegistrationNumber) {
-      this.householdRegistrationNumber = householdRegistrationNumber;
-      return this;
-    }
-
-    public InstallationFormBuilder road(Road road) {
-      this.road = road;
+      instance.setHouseholdRegistrationNumber(householdRegistrationNumber);
       return this;
     }
 
     public InstallationFormBuilder network(WaterSupplyNetwork network) {
-      this.network = network;
+      instance.setNetwork(network);
       return this;
     }
 
-    public InstallationFormBuilder unit(NeighborhoodUnit unit) {
-      this.unit = unit;
+    public InstallationFormBuilder createdBy(String createdBy) {
+      instance.setCreatedBy(createdBy);
       return this;
     }
 
-    public InstallationFormBuilder commune(Commune commune) {
-      this.commune = commune;
-      return this;
-    }
-
-    public InstallationFormBuilder hamlet(Hamlet hamlet) {
-      this.hamlet = hamlet;
-      return this;
-    }
-
-    public InstallationFormBuilder surveyEmployeeId(String surveyEmployeeId) {
-      this.surveyEmployeeId = surveyEmployeeId;
+    public InstallationFormBuilder handoverBy(String handoverBy) {
+      instance.setHandoverBy(handoverBy);
       return this;
     }
 
     public InstallationFormBuilder overallWaterMeterId(String overallWaterMeterId) {
-      this.overallWaterMeterId = overallWaterMeterId;
+      instance.setOverallWaterMeterId(overallWaterMeterId);
+      return this;
+    }
+
+    public InstallationFormBuilder address(String address) {
+      instance.setAddress(address);
       return this;
     }
 
     public InstallationForm build() {
-      var form = new InstallationForm();
-      form.setFormNumber(formNumber);
-      form.setCustomerName(customerName);
-      form.setRepresentative(representative);
-      form.setBusinessPosition(businessPosition);
-      form.setHouseNumber(houseNumber);
-      form.setCitizenIdentificationNumber(citizenIdentificationNumber);
-      form.setCitizenIdentificationProvideDate(citizenIdentificationProvideDate);
-      form.setCitizenIdentificationProvideLocation(citizenIdentificationProvideLocation);
-      form.setPhoneNumber(phoneNumber);
-      form.setTaxCode(taxCode);
-      form.setBankAccountNumber(bankAccountNumber);
-      form.setBankAccountProviderLocation(bankAccountProviderLocation);
-      form.setUsageTarget(usageTarget);
-      form.setReceivedFormAt(receivedFormAt);
-      form.setScheduleSurveyAt(scheduleSurveyAt);
-      form.setNumberOfHousehold(numberOfHousehold);
-      form.setHouseholdRegistrationNumber(householdRegistrationNumber);
-      form.setRoad(road);
-      form.setNetwork(network);
-      form.setUnit(unit);
-      form.setCommune(commune);
-      form.setHamlet(hamlet);
-      form.setSurveyEmployeeId(surveyEmployeeId);
-      form.setOverallWaterMeterId(overallWaterMeterId);
-      return form;
+      return instance;
     }
-  }
-
-  @PrePersist
-  void onCreate() {
-    this.createdAt = LocalDateTime.now();
-    this.updatedAt = this.createdAt;
-  }
-
-  @PreUpdate
-  void onUpdate() {
-    this.updatedAt = LocalDateTime.now();
   }
 }

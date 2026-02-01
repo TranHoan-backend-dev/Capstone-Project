@@ -47,7 +47,7 @@ public class ProfileServiceImpl implements ProfileService {
     var gender = p.getGender() == null ? "" : p.getGender().toString();
     var birthday = p.getBirthday() == null ? "" : p.getBirthday().toString();
     return new ProfileDTO(
-      IdEncoder.encode(profile.get().getId()),
+      IdEncoder.encode(profile.get().getProfileId()),
       profile.get().getFullname(),
       avatarUrl,
       address,

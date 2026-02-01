@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kong-gateway
+  namespace: capstone-project
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kong-gateway
+  template:
+    metadata:
+      labels:
+        app: kong-gateway
+    spec:
+      containers:
+        - name: kong-gateway
+          image: kong:3.6
+          env:
+            - name: KONG_DATABASE
+              value: "off"
+            - name: KONG_DECLARATIVE_CONFIG
+              value: /kong/kong.yml
+            - name: KONG_PROXY_ACCESS_LOG
+              value: /dev/stdout
+            - name: KONG_PROXY_ERROR_LOG
+              value: /dev/stderr
+            - name: KONG_ADMIN_LISTEN
+              value: "0.0.0.0:8001"
+          ports:
+            - name: proxy
+              containerPort: 8000
+            - name: admin
+              containerPort: 8001
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+          livenessProbe:
+            httpGet:
+              path: /status
+              port: 8001
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /status
+              port: 8001
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          volumeMounts:
+            - name: kong-config-volume
+              mountPath: /kong
+      volumes:
+        - name: kong-config-volume
+          configMap:
+            name: kong-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kong-gateway
+  namespace: capstone-project
+spec:
+  selector:
+    app: kong-gateway
+  ports:
+    - name: proxy
+      port: 8000
+      targetPort: 8000
+    - name: admin
+      port: 8001
+      targetPort: 8001
+  type: LoadBalancer

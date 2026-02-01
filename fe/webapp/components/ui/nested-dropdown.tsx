@@ -99,20 +99,20 @@ const NestedDropdown = ({ item }: { item: MenuItem }) => {
   };
 
   const handleMouseLeaveMain = () => {
-    closeTimerRef.current = setTimeout(() => {
-      const isMouseInSubMenu = subMenuRef.current?.contains(
-        document.activeElement ||
-          document.elementFromPoint(...getMousePosition()),
-      );
+    // closeTimerRef.current = setTimeout(() => {
+    const isMouseInSubMenu = subMenuRef.current?.contains(
+      document.activeElement ||
+      document.elementFromPoint(...getMousePosition()),
+    );
 
-      if (!isMouseInSubMenu) {
-        setClosing(true);
-        setTimeout(() => {
-          setIsOpen(false);
-          setNestedOpen(null);
-        }, 100);
-      }
-    }, 150);
+    if (!isMouseInSubMenu) {
+      setClosing(true);
+      // setTimeout(() => {
+      setIsOpen(false);
+      setNestedOpen(null);
+      // }, 100);
+    }
+    // }, 150);
   };
 
   const handleMouseEnterSub = () => {
@@ -159,11 +159,10 @@ const NestedDropdown = ({ item }: { item: MenuItem }) => {
         {item.href ? (
           <Link
             as={NextLink}
-            className={`text-sm px-3 py-2 rounded transition-colors ${
-              isItemActive(item.key)
+            className={`text-sm px-3 py-2 rounded transition-colors ${isItemActive(item.key)
                 ? "bg-primary-100 text-primary-800 dark:text-white font-medium"
                 : "text-foreground-700 hover:bg-default-100"
-            }`}
+              }`}
             href={item.href}
             onPress={() => handleItemClick(item.key)}
           >
@@ -171,11 +170,10 @@ const NestedDropdown = ({ item }: { item: MenuItem }) => {
           </Link>
         ) : (
           <span
-            className={`text-sm px-3 py-2 rounded cursor-pointer ${
-              isItemActive(item.key)
+            className={`text-sm px-3 py-2 rounded cursor-pointer ${isItemActive(item.key)
                 ? "bg-primary-100 text-primary-800 dark:text-white font-medium"
                 : "text-foreground-700 hover:bg-default-100"
-            }`}
+              }`}
           >
             {item.label}
           </span>
@@ -185,9 +183,8 @@ const NestedDropdown = ({ item }: { item: MenuItem }) => {
       {isOpen && (
         <div
           ref={subMenuRef}
-          className={`absolute top-full left-0 mt-1 z-50 min-w-[220px] bg-content1 shadow-lg rounded-lg border border-divider py-1 transition-opacity duration-100 ${
-            closing ? "opacity-0" : "opacity-100"
-          }`}
+          className={`absolute top-full left-0 mt-1 z-50 min-w-[220px] bg-content1 shadow-lg rounded-lg border border-divider py-1 transition-opacity duration-100 ${closing ? "opacity-0" : "opacity-100"
+            }`}
           onMouseEnter={handleMouseEnterSub}
           onMouseLeave={handleMouseLeaveSub}
         >
@@ -203,11 +200,10 @@ const NestedDropdown = ({ item }: { item: MenuItem }) => {
               >
                 {subItem.href ? (
                   <Link
-                    className={`flex items-center justify-between px-3 py-2 text-sm transition-colors whitespace-nowrap ${
-                      isItemActive(subItem.key)
+                    className={`flex items-center justify-between px-3 py-2 text-sm transition-colors whitespace-nowrap ${isItemActive(subItem.key)
                         ? "bg-primary-100 text-primary-800 dark:text-white font-medium"
                         : "text-foreground-700 hover:bg-default-100"
-                    }`}
+                      }`}
                     href={subItem.href}
                     onPress={() => handleItemClick(subItem.key)}
                   >
@@ -215,11 +211,10 @@ const NestedDropdown = ({ item }: { item: MenuItem }) => {
                   </Link>
                 ) : (
                   <div
-                    className={`flex items-center justify-between px-3 py-2 text-sm transition-colors cursor-pointer whitespace-nowrap ${
-                      isSubItemActive
+                    className={`flex items-center justify-between px-3 py-2 text-sm transition-colors cursor-pointer whitespace-nowrap ${isSubItemActive
                         ? "bg-primary-50 text-primary"
                         : "text-foreground-700 hover:bg-default-50"
-                    }`}
+                      }`}
                   >
                     <span>{subItem.label}</span>
                     {subItem.children && (
@@ -237,11 +232,10 @@ const NestedDropdown = ({ item }: { item: MenuItem }) => {
                     {subItem.children.map((child) => (
                       <Link
                         key={child.key}
-                        className={`block px-3 py-2 text-sm transition-colors whitespace-nowrap ${
-                          isItemActive(child.key)
+                        className={`block px-3 py-2 text-sm transition-colors whitespace-nowrap ${isItemActive(child.key)
                             ? "bg-primary-100 text-primary-800 dark:text-white font-medium"
                             : "text-foreground-700 hover:bg-default-100"
-                        }`}
+                          }`}
                         href={child.href || "#"}
                         onPress={() => handleItemClick(child.key)}
                       >

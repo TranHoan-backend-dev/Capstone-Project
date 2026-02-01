@@ -4,11 +4,14 @@ export const siteConfig = {
   name: "CRM",
   description: "Make beautiful websites regardless of your design experience.",
   navItems: [
+    // dashboard
     {
       key: "home",
       label: "Trang chủ",
       href: "/home",
     },
+
+    // Hợp đồng
     {
       key: "contract",
       label: "Hợp đồng",
@@ -20,6 +23,8 @@ export const siteConfig = {
         },
       ],
     },
+
+    // Khách hàng
     {
       key: "customer",
       label: "Khách hàng",
@@ -27,30 +32,32 @@ export const siteConfig = {
         {
           key: "new-installation-form",
           label: "Đơn lắp đặt mới",
-          href: "/new-installation-form",
+          href: "/installation-form/new",
         },
         {
           key: "new-installation-lookup",
           label: "Tra cứu đơn lắp đặt mới",
-          href: "/new-installation-lookup",
+          href: "/installation-form/lookup",
         },
         {
           key: "find-customer",
           label: "Tra cứu khách hàng",
-          href: "/customers",
+          href: "/customers/lookup",
         },
         {
           key: "restores-customer",
           label: "Khôi phục khách hàng hủy",
-          href: "/recovery",
+          href: "/customers/recovery",
         },
         {
           key: "new-customers-import",
           label: "Nhập khách hàng mới",
-          href: "/import",
+          href: "/customers/import",
         },
       ],
     },
+
+    // Báo cáo
     {
       key: "report",
       label: "Khảo sát thiết kế",
@@ -112,27 +119,29 @@ export const siteConfig = {
           href: "/assigning-survey",
         },
         {
-          key: "estimate-preparation",
-          label: "Lập dự toán",
-          href: "/estimate-preparation",
+          key: "estimate-approval",
+          label: "Duyệt dự toán",
+          href: "/estimate/approval",
+        },
+        {
+          key: "run-estimate",
+          label: "Chạy dự toán",
+          href: "/estimate/run",
         },
         {
           key: "estimate-lookup",
           label: "Tra cứu dự toán",
-          href: "/estimate-lookup",
+          href: "/estimate/lookup",
         },
         {
           key: "manage-supplies",
           label: "Quản lý mẫu bốc vật tư",
           href: "/manage-supplies",
         },
-        {
-          key: "survey-pending",
-          label: "Nhập đơn dự toán ống trục",
-          href: "/#",
-        },
       ],
     },
+
+    // Thi công
     {
       key: "construction",
       label: "Thi công",
@@ -144,6 +153,8 @@ export const siteConfig = {
         },
       ],
     },
+
+    // Ghi chỉ số & Hóa đơn
     {
       key: "billing",
       label: "Ghi chỉ số & Hóa đơn",

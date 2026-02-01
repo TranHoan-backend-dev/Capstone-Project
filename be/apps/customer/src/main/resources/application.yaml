@@ -28,6 +28,10 @@ management:
           - metrics
           - prometheus
       base-path: /
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:9000/eureka
 springdoc:
   api-docs:
     enabled: true
@@ -35,6 +39,10 @@ springdoc:
   swagger-ui:
     enabled: true
     path: /swagger-ui/index.html
+server:
+  port: 9005
+  servlet:
+    context-path: /api/v1
 #spring:
 #  datasource:
 #    driver-class-name: org.postgresql.Driver

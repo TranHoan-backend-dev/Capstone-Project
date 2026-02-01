@@ -19,26 +19,27 @@ import java.util.function.Consumer;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Bill {
   @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
-  @Column(name = "customer_id")
-  String id;
+  String billId;
+
+  @OneToOne(fetch = FetchType.EAGER)
+  @MapsId("billId")
+  Customer customer;
 
   @Column(nullable = false)
-  String name;
+  String billName;
   String note;
 
   @Column(nullable = false)
   String exportAddress;
-  String installtionFormId;
 
-  public void setId(String value) {
+  public void setBillId(String value) {
     requireNonNullAndNotEmpty(value, Constant.ENT_06);
-    this.id = value;
+    this.billId = value;
   }
 
-  public void setName(String name) {
+  public void setBillName(String name) {
     requireNonNullAndNotEmpty(name, Constant.ENT_01);
-    this.name = name;
+    this.billName = name;
   }
 
   public void setNote(String note) {
@@ -51,9 +52,9 @@ public class Bill {
     this.exportAddress = exportAddress;
   }
 
-  public void setInstalltionFormId(String installtionFormCode) {
-    requireNonNullAndNotEmpty(installtionFormCode, Constant.ENT_09);
-    this.installtionFormId = installtionFormCode;
+  public void setCustomer(Customer customer) {
+    Objects.requireNonNull(customer, Constant.ENT_11);
+    this.customer = customer;
   }
 
   private void requireNonNullAndNotEmpty(String value, String message) {
@@ -73,12 +74,12 @@ public class Bill {
     private final Bill bill = new Bill();
 
     public BillBuilder id(String customerId) {
-      bill.setId(customerId);
+      bill.setBillId(customerId);
       return this;
     }
 
     public BillBuilder name(String name) {
-      bill.setName(name);
+      bill.setBillName(name);
       return this;
     }
 
@@ -92,14 +93,14 @@ public class Bill {
       return this;
     }
 
-    public BillBuilder installtionFormCode(String installtionFormCode) {
-      bill.setInstalltionFormId(installtionFormCode);
+    public BillBuilder customer(Customer customer) {
+      bill.setCustomer(customer);
       return this;
     }
 
     public Bill build() {
-      Objects.requireNonNull(bill.name, Constant.ENT_01);
-      if (bill.name.trim().isEmpty()) {
+      Objects.requireNonNull(bill.billName, Constant.ENT_01);
+      if (bill.billName.trim().isEmpty()) {
         throw new IllegalArgumentException(Constant.ENT_01);
       }
       Objects.requireNonNull(bill.exportAddress, Constant.ENT_03);

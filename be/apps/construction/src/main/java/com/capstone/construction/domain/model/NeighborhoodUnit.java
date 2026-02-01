@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import com.capstone.construction.infrastructure.config.Constant;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.jspecify.annotations.NonNull;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -20,7 +21,7 @@ public class NeighborhoodUnit {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "unit_id")
-  String id;
+  String unitId;
 
   @Column(nullable = false, unique = true)
   String name;
@@ -28,6 +29,23 @@ public class NeighborhoodUnit {
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "commune_id")
   Commune commune;
+
+  @Column(nullable = false)
+  LocalDateTime createdAt;
+
+  @Column(nullable = false)
+  LocalDateTime updatedAt;
+
+  @PrePersist
+  void onCreate() {
+    this.createdAt = LocalDateTime.now();
+    this.updatedAt = this.createdAt;
+  }
+
+  @PreUpdate
+  void onUpdate() {
+    this.updatedAt = LocalDateTime.now();
+  }
 
   public void setName(String name) {
     Objects.requireNonNull(name, Constant.PT_71);
@@ -42,7 +60,7 @@ public class NeighborhoodUnit {
     this.commune = commune;
   }
 
-  public static NeighborhoodUnit create(Consumer<NeighborhoodUnitBuilder> builder) {
+  public static NeighborhoodUnit create(@NonNull Consumer<NeighborhoodUnitBuilder> builder) {
     var instance = new NeighborhoodUnitBuilder();
     builder.accept(instance);
     return instance.build();
@@ -68,22 +86,5 @@ public class NeighborhoodUnit {
       unit.setCommune(commune);
       return unit;
     }
-  }
-
-  @Column(nullable = false)
-  LocalDateTime createdAt;
-
-  @Column(nullable = false)
-  LocalDateTime updatedAt;
-
-  @PrePersist
-  void onCreate() {
-    this.createdAt = LocalDateTime.now();
-    this.updatedAt = this.createdAt;
-  }
-
-  @PreUpdate
-  void onUpdate() {
-    this.updatedAt = LocalDateTime.now();
   }
 }

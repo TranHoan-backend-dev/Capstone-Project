@@ -10,6 +10,19 @@ version = '0.0.1-SNAPSHOT'
 allprojects {
   repositories {
     mavenCentral()
+    maven { url "https://repo.spring.io/milestone" }
+  }
+
+  dependencyManagement {
+    imports {
+      mavenBom "org.springframework.cloud:spring-cloud-dependencies:2024.0.0"
+    }
+  }
+  repositories {
+    mavenCentral()
+    maven { url "https://repo.spring.io/milestone" }
+
+    mavenCentral()
   }
 }
 
@@ -35,11 +48,12 @@ subprojects {
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+    implementation 'org.jspecify:jspecify:1.0.0'
 
     // Testing
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     // swagger
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
   }
 }

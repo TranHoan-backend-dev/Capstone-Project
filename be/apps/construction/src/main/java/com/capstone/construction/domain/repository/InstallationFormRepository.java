@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface InstallationFormRepository extends JpaRepository<InstallationForm, String> {
+    boolean existsByFormNumber(String formNumber);
 }

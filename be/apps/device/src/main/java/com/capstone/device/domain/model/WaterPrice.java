@@ -1,5 +1,6 @@
 package com.capstone.device.domain.model;
 
+import com.capstone.device.domain.model.utils.UsageTarget;
 import com.capstone.device.infrastructure.config.Constant;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,10 +24,11 @@ public class WaterPrice {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "price_id")
-  String id;
+  String priceId;
 
+  @Enumerated(EnumType.STRING)
   @Column(nullable = false)
-  String usageTarget;
+  UsageTarget usageTarget;
 
   @Column(nullable = false)
   Integer area;
@@ -65,7 +67,7 @@ public class WaterPrice {
     if (usageTarget.trim().isEmpty()) {
       throw new IllegalArgumentException(Constant.ENT_17);
     }
-    this.usageTarget = usageTarget;
+    this.usageTarget = UsageTarget.valueOf(usageTarget);
   }
 
   public void setArea(Integer area) {

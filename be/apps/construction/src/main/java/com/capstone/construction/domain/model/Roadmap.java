@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import com.capstone.construction.infrastructure.config.Constant;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.jspecify.annotations.NonNull;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -19,8 +20,7 @@ import java.util.function.Consumer;
 public class Roadmap {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  @Column(name = "roadmap_id")
-  String id;
+  String roadmapId;
 
   @Column(nullable = false, unique = true)
   String name;
@@ -32,6 +32,23 @@ public class Roadmap {
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "water_supply_network_id")
   WaterSupplyNetwork network;
+
+  @Column(nullable = false)
+  LocalDateTime createdAt;
+
+  @Column(nullable = false)
+  LocalDateTime updatedAt;
+
+  @PrePersist
+  void onCreate() {
+    this.createdAt = LocalDateTime.now();
+    this.updatedAt = this.createdAt;
+  }
+
+  @PreUpdate
+  void onUpdate() {
+    this.updatedAt = LocalDateTime.now();
+  }
 
   public void setName(String name) {
     Objects.requireNonNull(name, Constant.PT_73);
@@ -51,7 +68,7 @@ public class Roadmap {
     this.network = network;
   }
 
-  public static Roadmap create(Consumer<RoadmapBuilder> builder) {
+  public static Roadmap create(@NonNull Consumer<RoadmapBuilder> builder) {
     var instance = new RoadmapBuilder();
     builder.accept(instance);
     return instance.build();
@@ -84,22 +101,5 @@ public class Roadmap {
       roadmap.setNetwork(network);
       return roadmap;
     }
-  }
-
-  @Column(nullable = false)
-  LocalDateTime createdAt;
-
-  @Column(nullable = false)
-  LocalDateTime updatedAt;
-
-  @PrePersist
-  void onCreate() {
-    this.createdAt = LocalDateTime.now();
-    this.updatedAt = this.createdAt;
-  }
-
-  @PreUpdate
-  void onUpdate() {
-    this.updatedAt = LocalDateTime.now();
   }
 }

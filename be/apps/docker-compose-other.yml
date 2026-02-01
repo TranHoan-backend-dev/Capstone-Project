@@ -87,6 +87,24 @@ services:
       - "8004:8004"
     networks:
       - app-network
+  keycloak:
+    image: quay.io/keycloak/keycloak:23.0.0
+    container_name: keycloak
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      KC_DB_USERNAME: ${POSTGRES_USER}
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_HTTP_ENABLED: "true"
+      KC_HOSTNAME_STRICT: "false"
+    command: start-dev
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+
 volumes:
   rabbitmq_data:
 networks:

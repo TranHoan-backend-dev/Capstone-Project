@@ -1,4 +1,33 @@
 services:
+  eureka-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime-eureka
+    image: eureka-service
+    ports:
+      - "9000:9000"
+    environment:
+      - SERVER_PORT=9000
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - app-network
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime-api-gateway
+    image: api-gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - SERVER_PORT=8000
+      - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:9000/eureka
+    networks:
+      - app-network
+
   auth-service:
     build:
       context: .
@@ -6,13 +35,15 @@ services:
       target: runtime-auth
     image: auth-service
     ports:
-      - "9001:9001"
+      - "9003:9003"
     environment:
-      - SERVER_PORT=9001
+      - SERVER_PORT=9003
       - SERVER_ADDRESS=0.0.0.0
       - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:9000/eureka
     networks:
       - app-network
+
   construction-service:
     build:
       context: .
@@ -20,13 +51,15 @@ services:
       target: runtime-construction
     image: construction-service
     ports:
-      - "9006:9006"
+      - "9004:9004"
     environment:
-      - SERVER_PORT=9006
+      - SERVER_PORT=9004
       - SERVER_ADDRESS=0.0.0.0
       - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:9000/eureka
     networks:
       - app-network
+
   customer-service:
     build:
       context: .
@@ -34,13 +67,15 @@ services:
       target: runtime-customer
     image: customer-service
     ports:
-      - "9003:9003"
+      - "9005:9005"
     environment:
-      - SERVER_PORT=9003
+      - SERVER_PORT=9005
       - SERVER_ADDRESS=0.0.0.0
       - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:9000/eureka
     networks:
       - app-network
+
   device-service:
     build:
       context: .
@@ -48,25 +83,15 @@ services:
       target: runtime-device
     image: device-service
     ports:
-      - "9007:9007"
+      - "9006:9006"
     environment:
-      - SERVER_PORT=9007
+      - SERVER_PORT=9006
       - SERVER_ADDRESS=0.0.0.0
       - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:9000/eureka
     networks:
       - app-network
-  email-service:
-    build:
-      context: ..
-      dockerfile: ./apps/Dockerfile
-      target: runner
-    image: email-service
-    ports:
-      - "3000:9005"
-    environment:
-      - RABBITMQ_URL=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:5672
-    networks:
-      - app-network
+
   notification-service:
     build:
       context: .
@@ -74,13 +99,15 @@ services:
       target: runtime-notification
     image: notification-service
     ports:
-      - "9004:9004"
+      - "9007:9007"
     environment:
-      - SERVER_PORT=9004
+      - SERVER_PORT=9007
       - SERVER_ADDRESS=0.0.0.0
       - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:9000/eureka
     networks:
       - app-network
+
   organization-service:
     build:
       context: .
@@ -93,8 +120,23 @@ services:
       - SERVER_PORT=9008
       - SERVER_ADDRESS=0.0.0.0
       - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:9000/eureka
     networks:
       - app-network
+
+  email-service:
+    build:
+      context: ..
+      dockerfile: ./apps/Dockerfile
+      target: runner
+    image: email-service
+    ports:
+      - "3000:9009"
+    environment:
+      - RABBITMQ_URL=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:5672
+    networks:
+      - app-network
+
 networks:
   app-network:
     driver: bridge

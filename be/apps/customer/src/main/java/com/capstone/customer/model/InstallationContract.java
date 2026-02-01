@@ -4,8 +4,11 @@ import com.capstone.customer.config.Constant;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.jspecify.annotations.NonNull;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -19,8 +22,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InstallationContract {
-  @EmbeddedId
-  ContractId id;
+  @Id
+  String contractId;
 
   @Column(nullable = false)
   LocalDateTime createdAt;
@@ -29,10 +32,13 @@ public class InstallationContract {
   LocalDateTime updatedAt;
 
   @OneToOne(fetch = FetchType.EAGER)
-  @MapsId("customerId")
   Customer customer;
 
   String installationFormId;
+
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(columnDefinition = "jsonb")
+  List<Representative> representative;
 
   @PrePersist
   void onCreate() {
@@ -48,11 +54,6 @@ public class InstallationContract {
   public void setCustomer(Customer customer) {
     Objects.requireNonNull(customer, Constant.ENT_11);
     this.customer = customer;
-  }
-
-  public void setId(ContractId id) {
-    Objects.requireNonNull(id, Constant.ENT_12);
-    this.id = id;
   }
 
   public void setInstallationFormId(String value) {
@@ -77,8 +78,8 @@ public class InstallationContract {
       return this;
     }
 
-    public ContractBuilder id(ContractId id) {
-      installationContract.setId(id);
+    public ContractBuilder installationFormId(String installationFormId) {
+      installationContract.setInstallationFormId(installationFormId);
       return this;
     }
 
