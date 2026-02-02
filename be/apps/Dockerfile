@@ -100,7 +100,7 @@ ENTRYPOINT ["java","-jar","app.jar"]
 
 # API GATEWAY SERVICE
 FROM base-builder AS build-api-gateway
-COPY api-gateway ./api-gateway
+COPY gateway ./api-gateway
 RUN gradle :api-gateway:bootJar -x test --no-daemon
 
 FROM eclipse-temurin:21-jre-alpine AS runtime-api-gateway

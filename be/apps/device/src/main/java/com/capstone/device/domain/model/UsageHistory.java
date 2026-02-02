@@ -1,5 +1,6 @@
 package com.capstone.device.domain.model;
 
+import com.capstone.device.domain.model.utils.Usage;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

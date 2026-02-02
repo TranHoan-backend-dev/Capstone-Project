@@ -35,4 +35,7 @@ public final class Constant {
   public static final String ENT_32 = "ID cannot be null";
   public static final String ENT_33 = "Material cannot be null";
   public static final String ENT_34 = "Note cannot be null";
+  public static final String ENT_35 = "Materials group cannot be null";
+  public static final String ENT_36 = "Unit cannot be null";
+  public static final String ENT_37 = "Expiration date cannot be null";
 }
