@@ -1,7 +1,7 @@
 import React from "react";
 import { Metadata } from "next";
 
-import ManageSuppliesPage from "./manage-supplies";
+import ManageMaterialsPage from "./manage-materials";
 
 import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
 
@@ -22,7 +22,7 @@ const ManageSupplies = () => {
       />
 
       <div className="space-y-6 pt-2">
-        <ManageSuppliesPage />
+        <ManageMaterialsPage />
       </div>
     </>
   );

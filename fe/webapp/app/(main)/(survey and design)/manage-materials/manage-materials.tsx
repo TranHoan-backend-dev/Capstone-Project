@@ -7,7 +7,7 @@ import { TemplateTable } from "./components/template-table";
 
 import { FilterSection } from "@/components/ui/FilterSection";
 
-const ManageSuppliesPage = () => {
+const ManageMaterialsPage = () => {
   const [keyword, setKeyword] = useState("");
   const [from, setFrom] = useState<DateValue | null | undefined>(null);
   const [to, setTo] = useState<DateValue | null | undefined>(null);
@@ -61,4 +61,4 @@ const ManageSuppliesPage = () => {
   );
 };
 
-export default ManageSuppliesPage;
+export default ManageMaterialsPage;

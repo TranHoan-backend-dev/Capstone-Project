@@ -113,6 +113,11 @@ export const FeeTable = () => {
       columns={columns}
       data={mockData}
       renderCellAction={renderCell}
+      paginationProps={{
+        total: 1,
+        initialPage: 1,
+        summary: `${mockData.length}`,
+      }}
     />
   );
 };
