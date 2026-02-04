@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, ScrollView, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import MeterInputForm from '../components/meter-input/MeterInputForm';
@@ -16,8 +16,8 @@ const MeterInputScreen = ({ route }: any) => {
       <MeterInputHeader onBack={() => navigation.goBack()} />
 
       <ScrollView style={styles.content}>
-        <MeterInputForm 
-          customerId={customerId} 
+        <MeterInputForm
+          customerId={customerId}
           customerName={customerName}
           address={address}
         />

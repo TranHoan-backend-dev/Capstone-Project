@@ -126,8 +126,8 @@ public class UserServiceImpl implements UserService {
           user.get().getRole().getName().name(),
           user.get().getUsername(),
           user.get().getEmail(),
-          user.get().isAccountNonLocked(),
-          user.get().isEnabled());
+          user.get().getIsLocked(),
+          user.get().getIsEnabled());
     }
     throw new NotExistingException("User with id does not exist");
   }

@@ -57,7 +57,7 @@ export const siteConfig = {
       ],
     },
 
-    // Báo cáo
+    // Khảo sát thiết kế
     {
       key: "report",
       label: "Khảo sát thiết kế",
@@ -67,19 +67,9 @@ export const siteConfig = {
           label: "Báo cáo",
           children: [
             {
-              key: "report-contract",
-              label: "Danh sách đơn chuyển lập hợp đồng",
-              href: "/contract",
-            },
-            {
               key: "report-budget-wait",
               label: "Danh sách đơn chờ dự toán",
               href: "/waiting-budget",
-            },
-            {
-              key: "report-design-reject",
-              label: "Danh sách đơn từ chối thiết kế",
-              href: "/rejected-design",
             },
             {
               key: "report-budget-approve-wait",
@@ -90,11 +80,6 @@ export const siteConfig = {
               key: "report-budget-reject",
               label: "Danh sách đơn từ chối duyệt dự toán",
               href: "/rejected-budget-approval",
-            },
-            {
-              key: "report-survey-unassigned",
-              label: "Danh sách đơn chưa phân công khảo sát",
-              href: "/unassigned-survey",
             },
             {
               key: "report-survey-assigned",
@@ -134,9 +119,9 @@ export const siteConfig = {
           href: "/estimate/lookup",
         },
         {
-          key: "manage-supplies",
+          key: "materials-supplies",
           label: "Quản lý mẫu bốc vật tư",
-          href: "/manage-supplies",
+          href: "/materials-supplies",
         },
       ],
     },

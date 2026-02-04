@@ -3,8 +3,7 @@ package com.capstone.auth.application.business.users;
 import com.capstone.auth.application.exception.NotExistingException;
 import com.capstone.auth.domain.model.Roles;
 import com.capstone.auth.domain.model.Users;
-import com.capstone.auth.domain.model.enumerate.RoleName;
-import com.capstone.auth.domain.repository.RoleRepository;
+import com.capstone.auth.domain.enumerate.RoleName;
 import com.capstone.auth.domain.repository.UserRepository;
 import com.capstone.auth.infrastructure.config.Constant;
 import org.junit.jupiter.api.Test;
@@ -37,7 +36,7 @@ class UserServiceImplTest {
 
   @Test
   void getUserById_returns_user_dto() {
-    var role = Roles.create(builder -> builder.name(RoleName.IT_DEPARTMENT_STAFF));
+    var role = Roles.create(builder -> builder.name(RoleName.IT_STAFF));
     var user = Users.create(builder -> builder
         .email("user@example.com")
         .password("hash")
@@ -77,7 +76,7 @@ class UserServiceImplTest {
         .email("user@example.com")
         .password("hash-old")
         .username("user1")
-        .role(Roles.create(b -> b.name(RoleName.IT_DEPARTMENT_STAFF)))
+        .role(Roles.create(b -> b.name(RoleName.IT_STAFF)))
         .jobId("job1")
         .departmentId("dept1")
         .waterSupplyNetworkId("water1")
@@ -101,7 +100,7 @@ class UserServiceImplTest {
         .email("user@example.com")
         .password("hash-old")
         .username("user1")
-        .role(Roles.create(b -> b.name(RoleName.IT_DEPARTMENT_STAFF)))
+        .role(Roles.create(b -> b.name(RoleName.IT_STAFF)))
         .jobId("job1")
         .departmentId("dept1")
         .waterSupplyNetworkId("water1")

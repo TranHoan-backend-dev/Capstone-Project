@@ -1,6 +1,6 @@
 package com.capstone.construction.application.dto.response.settlement;
 
-import com.capstone.construction.domain.model.utils.ProcessingStatus;
+import com.capstone.construction.domain.enumerate.ProcessingStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.time.LocalDate;

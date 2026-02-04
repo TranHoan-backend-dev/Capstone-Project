@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, ScrollView, Animated, KeyboardAvoidingView, Platform } from 'react-native';
+import { ScrollView, Animated, KeyboardAvoidingView, Platform } from 'react-native';
 import { StatusBar } from 'react-native';
 
 import ProgressBar from '../components/forgot-password/ProgressBar';
