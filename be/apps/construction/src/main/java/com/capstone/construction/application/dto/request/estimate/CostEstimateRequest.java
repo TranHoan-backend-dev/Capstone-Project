@@ -1,6 +1,6 @@
 package com.capstone.construction.application.dto.request.estimate;
 
-import com.capstone.construction.domain.model.utils.ProcessingStatus;
+import com.capstone.construction.domain.enumerate.ProcessingStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

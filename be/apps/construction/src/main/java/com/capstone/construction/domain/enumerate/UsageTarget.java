@@ -1,4 +1,4 @@
-package com.capstone.construction.domain.model.utils;
+package com.capstone.construction.domain.enumerate;
 
 public enum UsageTarget {
   DOMESTIC, // sinh hoat
