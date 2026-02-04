@@ -3,10 +3,8 @@ package com.capstone.auth.application.usecase;
 import com.capstone.auth.application.business.dto.ProfileDTO;
 import com.capstone.auth.application.business.dto.UserDTO;
 import com.capstone.auth.application.business.profile.ProfileService;
-import com.capstone.auth.application.business.roles.RoleService;
 import com.capstone.auth.application.business.users.UserService;
 import com.capstone.auth.application.dto.response.UserProfileResponse;
-import com.capstone.auth.application.event.producer.MessageProducer;
 import com.capstone.auth.application.exception.AccountBlockedException;
 import com.capstone.auth.application.exception.NotExistingException;
 import com.capstone.auth.infrastructure.config.Constant;
@@ -52,7 +50,7 @@ class AuthUseCaseLoginTest {
     when(userService.checkExistence(username)).thenReturn(true);
     when(profileService.getProfileById(userId)).thenReturn(profile);
 
-    UserProfileResponse response = authUseCase.login(userId, email, username);
+    var response = authUseCase.login(userId, email, username);
 
     assertNotNull(response);
     assertEquals(profile.fullname(), response.fullname());
