@@ -52,13 +52,6 @@ springdoc:
   swagger-ui:
     enabled: true
     path: /swagger-ui/index.html
-sending_mail:
-  account_creation:
-    subject: ehehe
-    template: huhu
-  otp_verification:
-    subject: 'Mã xác thực OTP'
-    template: 'verify-otp'
 #spring:
 #  datasource:
 #    driver-class-name: org.postgresql.Driver
@@ -84,14 +77,11 @@ sending_mail:
 #    port:
 #    username:
 #    password:
+#sending_mail:
+#  account_creation:
+#    subject:
+#    template:
 #rabbitmqconfig:
 #  exchange_name:
 #  queue_name:
 #  routing_key:
-#keycloak:
-#  issuer-uri:
-#  aud:
-#  token-uri:
-#  client-id:
-#  client-secret:
-#  scope:

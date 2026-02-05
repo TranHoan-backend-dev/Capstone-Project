@@ -12,7 +12,6 @@ import com.capstone.auth.application.exception.AccountBlockedException;
 import com.capstone.auth.application.exception.NotExistingException;
 
 import com.capstone.auth.infrastructure.config.Constant;
-import org.jspecify.annotations.NonNull;
 import org.springframework.security.authentication.DisabledException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -62,7 +61,16 @@ public class AuthUseCase {
     var profile = pSrv.getProfileById(userId);
     Objects.requireNonNull(profile, Constant.SE_06);
 
-    return returnUserProfile(profile, user);
+    return new UserProfileResponse(
+      profile.fullname(),
+      profile.avatarUrl(),
+      profile.address(),
+      profile.phoneNumber(),
+      profile.gender(),
+      profile.birthday(),
+      user.role().toLowerCase(),
+      user.username(),
+      user.email());
   }
 
   public void register(
@@ -92,9 +100,14 @@ public class AuthUseCase {
       fullname, username, password));
   }
 
+  public ProfileDTO getProfile(String id) {
+    log.info("Getting profile by id: {}", id);
+    return pSrv.getProfileById(id);
+  }
+
   public UserProfileResponse getMe(String id, String email, String username) {
     log.info("Check status and get profile by id: {}", id);
-    var user = uSrv.getUserById(id);
+    UserDTO user = uSrv.getUserById(id);
 
     if (user.isLocked()) {
       throw new DisabledException(Constant.SE_07);
@@ -104,10 +117,19 @@ public class AuthUseCase {
 
     var profile = pSrv.getProfileById(id);
 
-    return returnUserProfile(profile, user);
+    return new UserProfileResponse(
+      profile.fullname(),
+      profile.avatarUrl(),
+      profile.address(),
+      profile.phoneNumber(),
+      profile.gender(),
+      profile.birthday(),
+      user.role().toLowerCase(),
+      user.username(),
+      user.email());
   }
 
-  public void changePassword(String email, String oldPassword, @NonNull String newPassword, String confirmPassword) {
+  public void changePassword(String email, String oldPassword, String newPassword, String confirmPassword) {
     log.info("Handling change password for email: {}", email);
     if (!newPassword.equals(confirmPassword)) {
       throw new IllegalArgumentException("New password and confirm password do not match");
@@ -136,18 +158,5 @@ public class AuthUseCase {
     } else {
       throw new IllegalArgumentException(Constant.PT_05);
     }
-  }
-
-  private UserProfileResponse returnUserProfile(@NonNull ProfileDTO profile, @NonNull UserDTO user) {
-    return new UserProfileResponse(
-      profile.fullname(),
-      profile.avatarUrl(),
-      profile.address(),
-      profile.phoneNumber(),
-      profile.gender(),
-      profile.birthday(),
-      user.role().toLowerCase(),
-      user.username(),
-      user.email());
   }
 }

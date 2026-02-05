@@ -36,7 +36,7 @@ class UserServiceImplTest {
 
   @Test
   void getUserById_returns_user_dto() {
-    var role = Roles.create(builder -> builder.name(RoleName.IT_STAFF));
+    var role = Roles.create(builder -> builder.name(RoleName.IT_DEPARTMENT_STAFF));
     var user = Users.create(builder -> builder
         .email("user@example.com")
         .password("hash")
@@ -76,7 +76,7 @@ class UserServiceImplTest {
         .email("user@example.com")
         .password("hash-old")
         .username("user1")
-        .role(Roles.create(b -> b.name(RoleName.IT_STAFF)))
+        .role(Roles.create(b -> b.name(RoleName.IT_DEPARTMENT_STAFF)))
         .jobId("job1")
         .departmentId("dept1")
         .waterSupplyNetworkId("water1")
@@ -100,7 +100,7 @@ class UserServiceImplTest {
         .email("user@example.com")
         .password("hash-old")
         .username("user1")
-        .role(Roles.create(b -> b.name(RoleName.IT_STAFF)))
+        .role(Roles.create(b -> b.name(RoleName.IT_DEPARTMENT_STAFF)))
         .jobId("job1")
         .departmentId("dept1")
         .waterSupplyNetworkId("water1")
