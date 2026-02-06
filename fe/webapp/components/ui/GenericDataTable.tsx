@@ -43,6 +43,7 @@ interface GenericDataTableProps<T> {
   actions?: React.ReactNode;
   topContent?: React.ReactNode;
   hideHeader?: boolean;
+  isLoading?: boolean;
 }
 
 export const GenericDataTable = <T extends { id: string | number }>({
@@ -58,6 +59,7 @@ export const GenericDataTable = <T extends { id: string | number }>({
   headerSummary,
   actions,
   topContent,
+  isLoading,
 }: GenericDataTableProps<T>) => {
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
 
@@ -133,7 +135,9 @@ export const GenericDataTable = <T extends { id: string | number }>({
               <TableBody
                 emptyContent={"Không có dữ liệu để hiển thị."}
                 items={data}
+                isLoading={isLoading}
                 loadingContent={<Spinner label="Loading..." />}
+                className="flex items-center justify-center"
               >
                 {(item) => (
                   <TableRow

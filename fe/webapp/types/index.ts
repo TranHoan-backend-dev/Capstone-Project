@@ -4,6 +4,14 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
+export interface BusinessPageRecord {
+  id: string;
+  nameBusinessPage: string;
+  status: string;
+  creator: string;
+  updator: string;
+}
+
 export interface EstimateItem {
   id: number;
   code: string;

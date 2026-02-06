@@ -1,58 +1,98 @@
 "use client";
 
-import { Button, Tooltip } from "@heroui/react";
-import React from "react";
+import { Button, Chip, Tooltip } from "@heroui/react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import { DeleteIcon } from "@/config/chip-and-icon";
-
-interface ApprovedRecord {
-  id: string;
-  nameBusinessPage: string;
-  status: string;
-  creator: string;
-  updator: string;
-}
+import { DarkGreenChip, DarkRedChip, DeleteIcon } from "@/config/chip-and-icon";
+import { BusinessPageRecord } from "@/types";
+import { BUSINESS_PAGES_COLUMNS } from "@/config/table-colum";
 
 export const BusinessPageTable = () => {
-  const columns = [
-    { key: "id", label: "Mã trang doanh nghiệp" },
-    { key: "nameBusinessPage", label: "Tên trang doanh nghiệp" },
-    { key: "status", label: "Trạng thái" },
-    { key: "creator", label: "Người tạo" },
-    { key: "updator", label: "Người cập nhật" },
-    { key: "actions", label: "Hành động", align: "center" as const },
-  ];
+  const [data, setData] = useState<BusinessPageRecord[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+  const totalPages = Math.ceil(totalItems / pageSize);
 
-  const actionItems = [
-    {
-      content: "Xóa",
-      icon: DeleteIcon,
-      className: "text-red-500 hover:bg-red-50",
-      onClick: (id: string) => console.log("Xóa:", id),
-    },
-  ];
+  const [loading, setLoading] = useState(true);
 
-  const mockData: ApprovedRecord[] = [
-    {
-      id: "TC-2024",
-      nameBusinessPage: "Quản trị hệ thống",
-      status: "Hoạt động",
-      creator: "aDMIN",
-      updator: "aDMIN",
-    },
-  ];
+  useEffect(() => {
+    setLoading(true);
 
-  const renderCell = (item: ApprovedRecord, columnKey: string) => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch(
+          `/api/organization/business-pages?page=${page - 1}&size=${pageSize}`,
+        );
+        if (!res.ok) {
+          console.error("Fetch failed", res.status);
+          return;
+        }
+        const json = await res.json();
+        const pageData = json?.data;
+        const items = json?.data?.items;
+        if (!Array.isArray(items)) {
+          setData([]);
+          return;
+        }
+
+        setTotalItems(pageData.totalItems);
+        setData(
+          items.map((item: any) => ({
+            id: item.pageId,
+            nameBusinessPage: item.name,
+            status: item.activate ? "Hoạt động" : "Không hoạt động",
+            creator: item.creator,
+            updator: item.updator,
+          })),
+        );
+      } catch (e) {
+        setData([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [page]);
+
+  const actionItems = useMemo(
+    () => [
+      {
+        content: "Xóa",
+        icon: DeleteIcon,
+        className: "text-red-500 hover:bg-red-50",
+        onClick: (id: string) => console.log("Xóa:", id),
+      },
+    ],
+    [],
+  );
+
+  const renderCell = (item: BusinessPageRecord, columnKey: string) => {
     switch (columnKey) {
-      case "id":
-        return <span className="font-medium text-blue-600">{item.id}</span>;
-
       case "nameBusinessPage":
         return <span className="font-semibold">{item.nameBusinessPage}</span>;
 
-      case "status":
-        return <span className="text-green-600">{item.status}</span>;
+      case "status": {
+        const isActive = item.status === "Hoạt động";
+        if (isActive) {
+          return (
+            <Chip
+              className={DarkGreenChip}
+              color="success"
+              size="sm"
+              variant="flat"
+            >
+              Hoạt động
+            </Chip>
+          );
+        }
+        return (
+          <Chip className={DarkRedChip} color="danger" size="sm" variant="flat">
+            Không hoạt động
+          </Chip>
+        );
+      }
 
       case "creator":
         return <span className="text-gray-700">{item.creator}</span>;
@@ -86,16 +126,18 @@ export const BusinessPageTable = () => {
 
   return (
     <GenericDataTable
+      isLoading={loading}
       title="Danh sách trang doanh nghiệp"
-      columns={columns}
-      data={mockData}
+      columns={BUSINESS_PAGES_COLUMNS}
+      data={data}
       isCollapsible
       renderCellAction={renderCell}
-      headerSummary={`${mockData.length}`}
+      headerSummary={`${data.length}`}
       paginationProps={{
-        total: mockData.length,
-        initialPage: 1,
-        summary: `${mockData.length}`,
+        total: totalPages,
+        initialPage: page,
+        onChange: setPage,
+        summary: `${totalItems}`,
       }}
     />
   );
