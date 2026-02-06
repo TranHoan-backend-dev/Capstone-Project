@@ -34,10 +34,10 @@ public class SecurityConfig {
 
   CorsProperties corsProperties;
   final String[] PUBLIC_URLS = {
-    "/auth/**",
     "/actuator/**",
     "/v3/api-docs/**",
     "/swagger-ui/**",
+    "/business-pages/**"
   };
 
   @Bean
