@@ -11,6 +11,19 @@ export const siteConfig = {
       href: "/home",
     },
 
+    // Hệ thống
+    {
+      key: "system",
+      label: "Hệ thống",
+      items: [
+        {
+          key: "business-page",
+          label: "Quản lý trang doanh nghiệp",
+          href: "/business-page",
+        },
+      ],
+    },
+
     // Hợp đồng
     {
       key: "contract",
