@@ -44,25 +44,25 @@ import java.time.LocalDateTime;
 public class BusinessPageController {
   BusinessPageService businessPageService;
 
-  @PostMapping
-  @Operation(summary = "Create a business page", description = "Create a new business page and return its data.")
-  @ApiResponses({
-    @ApiResponse(responseCode = "201", description = "Business page created"),
-    @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content),
-    @ApiResponse(responseCode = "500", description = "Server error", content = @Content)
-  })
-  public ResponseEntity<WrapperApiResponse> createBusinessPage(
-    @RequestBody @Valid CreateBusinessPageRequest request
-  ) {
-    log.info("Create business page request comes to endpoint: {}", request);
-    var response = businessPageService.createBusinessPage(request);
-    return ResponseEntity.status(HttpStatus.CREATED).body(new WrapperApiResponse(
-      HttpStatus.CREATED.value(),
-      "Create business page successfully",
-      response,
-      LocalDateTime.now()
-    ));
-  }
+//  @PostMapping
+//  @Operation(summary = "Create a business page", description = "Create a new business page and return its data.")
+//  @ApiResponses({
+//    @ApiResponse(responseCode = "201", description = "Business page created"),
+//    @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content),
+//    @ApiResponse(responseCode = "500", description = "Server error", content = @Content)
+//  })
+//  public ResponseEntity<WrapperApiResponse> createBusinessPage(
+//    @RequestBody @Valid CreateBusinessPageRequest request
+//  ) {
+//    log.info("Create business page request comes to endpoint: {}", request);
+//    var response = businessPageService.createBusinessPage(request);
+//    return ResponseEntity.status(HttpStatus.CREATED).body(new WrapperApiResponse(
+//      HttpStatus.CREATED.value(),
+//      "Create business page successfully",
+//      response,
+//      LocalDateTime.now()
+//    ));
+//  }
 
   @PutMapping("/{pageId}")
   @Operation(summary = "Update a business page", description = "Update business page by encoded ID.")
@@ -83,7 +83,9 @@ public class BusinessPageController {
     @RequestBody @Valid UpdateBusinessPageRequest request
   ) {
     log.info("Update business page request comes to endpoint: {}", pageId);
+
     var response = businessPageService.updateBusinessPage(decodeId(pageId, "pageId"), request);
+
     return ResponseEntity.ok(new WrapperApiResponse(
       HttpStatus.OK.value(),
       "Update business page successfully",
@@ -102,18 +104,21 @@ public class BusinessPageController {
   public ResponseEntity<WrapperApiResponse> getBusinessPages(
     @Parameter(
       in = ParameterIn.QUERY,
-      description = "Page index (0-based)",
+      description = "Page index (0-based). Before send page index to this endpoint, please make sure it is counted from 0, not from 1",
       schema = @Schema(type = "integer", defaultValue = "0", minimum = "0")
     )
     @RequestParam(defaultValue = "0") @PositiveOrZero int page,
     @Parameter(
       in = ParameterIn.QUERY,
       description = "Page size",
-      schema = @Schema(type = "integer", defaultValue = "20", minimum = "1")
+      schema = @Schema(type = "integer", defaultValue = "10", minimum = "1")
     )
-    @RequestParam(defaultValue = "20") @Positive int size
+    @RequestParam(defaultValue = "10", required = false) @Positive int size
   ) {
+    log.info("Get business pages request comes to endpoint: page={}, size={}", page, size);
+
     var response = businessPageService.getBusinessPages(page, size);
+
     return ResponseEntity.ok(new WrapperApiResponse(
       HttpStatus.OK.value(),
       "Get business pages successfully",

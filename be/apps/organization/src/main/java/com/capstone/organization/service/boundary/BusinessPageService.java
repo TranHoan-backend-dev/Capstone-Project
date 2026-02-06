@@ -10,5 +10,11 @@ public interface BusinessPageService {
 
   BusinessPageResponse updateBusinessPage(String pageId, UpdateBusinessPageRequest request);
 
+  /**
+   * Used for get all business website pages with pagination.
+   * @param page page index. Must larger or equal to 0.
+   * @param size max number of items in a page. Default value is 10.
+   * @return PagedBusinessPageResponse: include list of pages, page index, page size, total items, total pages
+   */
   PagedBusinessPageResponse getBusinessPages(int page, int size);
 }
