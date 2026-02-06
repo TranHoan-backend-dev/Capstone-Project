@@ -12,8 +12,8 @@ import { CallToast } from "@/components/ui/CallToast";
 import { z } from "zod";
 
 const loginSchema = z.object({
-  username: z.string().trim().min(1, "Vui lòng nhập tên đăng nhập"),
-  password: z.string().min(1, "Vui lòng nhập mật khẩu"),
+  username: z.string().trim().min(1, "Vui lòng nhập đủ thông tin đăng nhập"),
+  password: z.string().min(1, "Vui lòng nhập đủ thông tin đăng nhập"),
 });
 
 export type LoginFormData = z.infer<typeof loginSchema>;
@@ -26,54 +26,57 @@ const LoginForm = () => {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-  const result = loginSchema.safeParse(formData);
+    e.preventDefault();
+    if (loading) return
+    const result = loginSchema.safeParse(formData);
 
-  if (!result.success) {
-    CallToast({
-      title: "Thiếu thông tin",
-      message: result.error.issues[0].message || "Vui lòng nhập đầy đủ thông tin đăng nhập!",
-      color: "warning",
-    });
-    return;
-  }
-  
-  setLoading(true);
-  try {
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
-
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.message);
+    if (!result.success) {
+      CallToast({
+        title: "Thiếu thông tin",
+        message:
+          result.error.issues[0].message ||
+          "Vui lòng nhập đủ thông tin đăng nhập!",
+        color: "warning",
+      });
+      return;
     }
 
-    const data = await res.json();
-    
-    if (data.data) {
-      localStorage.setItem("user", JSON.stringify(data.data));
+    setLoading(true);
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message);
+      }
+
+      const data = await res.json();
+
+      if (data.data) {
+        localStorage.setItem("user", JSON.stringify(data.data));
+      }
+
+      CallToast({
+        title: "Thành công",
+        message: "Đăng nhập thành công!",
+        color: "success",
+      });
+
+      router.push("/home");
+    } catch (err: any) {
+      CallToast({
+        title: "Thất bại",
+        message: err.message || "Sai tên đăng nhập hoặc mật khẩu",
+        color: "danger",
+      });
+    } finally {
+      setLoading(false);
     }
-
-    CallToast({
-      title: "Thành công",
-      message: "Đăng nhập thành công!",
-      color: "success",
-    });
-
-    router.push("/home");
-  } catch (err: any) {
-    CallToast({
-      title: "Thất bại",
-      message: err.message || "Sai tên đăng nhập hoặc mật khẩu",
-      color: "danger",
-    });
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <div className="w-full md:w-1/2 h-full bg-white dark:bg-zinc-900 flex items-center justify-center p-4 md:p-8">
@@ -121,7 +124,9 @@ const LoginForm = () => {
               <CustomButton
                 className="w-full bg-blue-600 dark:bg-primary text-white md:h-12 font-bold"
                 color="primary"
-                startContent={<ArrowRightStartIcon className="w-5 h-5" />}
+                startContent={
+                  loading ? null : <ArrowRightStartIcon className="w-5 h-5" />
+                }
                 type="submit"
                 isLoading={loading}
                 disabled={loading}
