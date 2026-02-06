@@ -7,6 +7,8 @@ import CustomField from "@/components/ui/custom/CustomField";
 import { DarkGreenChip, PencilIcon } from "@/config/chip-and-icon";
 import { EmployeeProfileData } from "@/types";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
+import { ROLE_META } from "@/config/role.config";
+import { Role } from "@/constants/roles";
 
 interface EmployeeProfileProps {
   data: EmployeeProfileData;
@@ -15,6 +17,9 @@ interface EmployeeProfileProps {
 const EmployeeProfile = ({ data }: EmployeeProfileProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<EmployeeProfileData>(data);
+  const role = formData.role as Role;
+  console.log("formdata: ", formData);
+  const roleLabel = ROLE_META[role]?.label ?? "Không xác định";
 
   const handleChange = (key: keyof EmployeeProfileData, value: string) => {
     setFormData({ ...formData, [key]: value });
@@ -44,7 +49,7 @@ const EmployeeProfile = ({ data }: EmployeeProfileProps) => {
                   isEditing={isEditing}
                   onChange={(v) => handleChange("fullname", v)}
                 />
-                <p className="text-sm text-gray-500">{formData.role}</p>
+                <p className="text-sm text-gray-500">{roleLabel}</p>
               </div>
             </div>
 
@@ -53,6 +58,13 @@ const EmployeeProfile = ({ data }: EmployeeProfileProps) => {
                 label="Tên đăng nhập"
                 value={formData.username}
                 isEditing={false}
+              />
+
+              <CustomField
+                label="Chức vụ"
+                value={roleLabel}
+                isEditing={false}
+                onChange={(v) => handleChange("role", v)}
               />
 
               <CustomField
@@ -66,13 +78,6 @@ const EmployeeProfile = ({ data }: EmployeeProfileProps) => {
                 value={formData.phoneNumber}
                 isEditing={isEditing}
                 onChange={(v) => handleChange("phoneNumber", v)}
-              />
-
-              <CustomField
-                label="Chức vụ"
-                value={formData.role}
-                isEditing={false}
-                onChange={(v) => handleChange("role", v)}
               />
 
               <CustomField
@@ -105,17 +110,13 @@ const EmployeeProfile = ({ data }: EmployeeProfileProps) => {
                     ]}
                   />
                 ) : (
-                  <p className="font-medium">
-                    {formData.gender === "true" ? "Nam" : "Nữ"}
-                  </p>
+                  <CustomField
+                    label="Giới tính"
+                    value={formData.gender === "true" ? "Nam" : "Nữ"}
+                    isEditing={isEditing}
+                    onChange={(v) => handleChange("gender", v)}
+                  />
                 )}
-              </div>
-
-              <div className="space-y-1">
-                <p className="text-xs font-semibold text-gray-400 uppercase">
-                  Trạng thái
-                </p>
-                <Chip className={DarkGreenChip}>Đang hoạt động</Chip>
               </div>
             </div>
           </div>
