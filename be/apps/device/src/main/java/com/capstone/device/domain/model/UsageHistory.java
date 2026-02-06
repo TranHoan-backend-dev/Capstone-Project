@@ -1,5 +1,6 @@
 package com.capstone.device.domain.model;
 
+import com.capstone.device.domain.model.utils.Usage;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -27,7 +28,4 @@ public class UsageHistory {
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(columnDefinition = "jsonb")
   List<Usage> usages;
-
-  @Column(nullable = false)
-  String customr_id;
 }

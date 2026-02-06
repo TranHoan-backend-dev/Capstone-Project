@@ -1,20 +1,20 @@
 package com.capstone.di
 
-import com.capstone.data.datasource.boundary.SampleRemoteDataSource
-import com.capstone.data.datasource.impl.SampleRemoteDataSourceImpl
-import dagger.Binds
+import com.capstone.data.datasource.AuthRemoteDataSource
+import com.capstone.data.source.remote.AuthApi
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class DataSourceModule {
+object DataSourceModule {
 
-    @Binds
+    @Provides
     @Singleton
-    abstract fun bindSampleRemoteDataSource(
-        sampleRemoteDataSourceImpl: SampleRemoteDataSourceImpl
-    ): SampleRemoteDataSource
+    fun provideAuthRemoteDataSource(api: AuthApi): AuthRemoteDataSource {
+        return AuthRemoteDataSource(api)
+    }
 }

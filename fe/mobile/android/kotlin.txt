@@ -1,0 +1,27 @@
+sealed class: tap hop cac kha nang huu han
+vd:
+sealed class LoginState {
+    object Loading : LoginState()
+    data class Success(val data: User) : LoginState()
+    data class Error(val message: String) : LoginState()
+}
+
+vd su dung:
+when (state) {
+    is LoginState.Loading -> …
+    is LoginState.Success -> …
+    is LoginState.Error -> …
+}
+
+when phai xu ly tat ca cac case. Cac trang thai trong sealed class an toan hon Enum
+
+------------------------------------
+
+suspend fun: Phuong thuc co the tam dung
+
+------------------------------------
+
+bien ma co _ dang truoc thi mac dinh dev se hieu la co pham vi la private, chi duoc sua trong noi bo class do
+
+internal mutable
+

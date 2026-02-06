@@ -1,7 +1,7 @@
 package com.capstone.construction.domain.model;
 
 import com.capstone.construction.domain.model.utils.Representative;
-import com.capstone.construction.domain.model.utils.UsageTarget;
+import com.capstone.construction.domain.enumerate.UsageTarget;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

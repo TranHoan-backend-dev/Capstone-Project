@@ -51,6 +51,11 @@ public class WaterUsageContract {
     this.updatedAt = LocalDateTime.now();
   }
 
+  public void setContractId(String id) {
+    Objects.requireNonNull(id, Constant.ENT_06);
+    this.contractId = id;
+  }
+
   public void setCustomer(Customer customer) {
     Objects.requireNonNull(customer, Constant.ENT_11);
     this.customer = customer;
@@ -64,6 +69,12 @@ public class WaterUsageContract {
     this.installationFormId = value;
   }
 
+  public void setRepresentative(List<Representative> representative) {
+    // Note: Assuming ENT_42 is a constant for "Representatives cannot be null"
+    Objects.requireNonNull(representative, "Representatives cannot be null");
+    this.representative = representative;
+  }
+
   public static WaterUsageContract create(@NonNull Consumer<ContractBuilder> consumer) {
     var builder = new ContractBuilder();
     consumer.accept(builder);
@@ -73,6 +84,11 @@ public class WaterUsageContract {
   public static class ContractBuilder {
     private final WaterUsageContract waterUsageContract = new WaterUsageContract();
 
+    public ContractBuilder id(String id) {
+      waterUsageContract.setContractId(id);
+      return this;
+    }
+
     public ContractBuilder customer(Customer customer) {
       waterUsageContract.setCustomer(customer);
       return this;
@@ -80,6 +96,11 @@ public class WaterUsageContract {
 
     public ContractBuilder installationFormId(String installationFormId) {
       waterUsageContract.setInstallationFormId(installationFormId);
+      return this;
+    }
+
+    public ContractBuilder representative(List<Representative> representative) {
+      waterUsageContract.setRepresentative(representative);
       return this;
     }
 
