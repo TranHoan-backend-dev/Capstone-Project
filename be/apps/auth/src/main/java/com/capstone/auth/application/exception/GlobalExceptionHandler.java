@@ -43,11 +43,11 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(AccountBlockedException.class)
-  public ResponseEntity<WrapperApiResponse> handleAccountBlockException(@NonNull AccountBlockedException ex) {
+  public ResponseEntity<WrapperApiResponse> handleAccountBlockedException(@NonNull AccountBlockedException ex) {
     return ResponseEntity
-      .status(HttpStatus.UNAUTHORIZED)
+      .status(HttpStatus.FORBIDDEN)
       .body(new WrapperApiResponse(
-        HttpStatus.UNAUTHORIZED.value(),
+        HttpStatus.FORBIDDEN.value(),
         ex.getMessage(),
         null,
         LocalDateTime.now()
