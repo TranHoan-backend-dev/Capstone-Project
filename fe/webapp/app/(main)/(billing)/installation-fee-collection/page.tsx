@@ -1,6 +1,5 @@
 import { Metadata } from "next";
 
-import { FeeForm } from "./components/fee-form";
 import { FeeTable } from "./components/fee-table";
 
 import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
@@ -22,7 +21,6 @@ const FeeCollectionPage = () => {
       <CustomBreadcrumb items={breadcrumbItems} />
 
       <div className="pt-2 space-y-6">
-        <FeeForm />
         <FeeTable />
       </div>
     </>

@@ -1,9 +1,10 @@
 package com.capstone.construction.application.business.installationform;
 
 import com.capstone.construction.application.dto.request.NewOrderRequest;
+import com.capstone.construction.application.dto.response.InstallationFormListResponse;
+import com.capstone.construction.application.dto.response.InstallationFormResponse;
 import com.capstone.construction.domain.model.InstallationForm;
 import com.capstone.construction.domain.model.WaterSupplyNetwork;
-import com.capstone.construction.domain.model.utils.Representative;
 import com.capstone.construction.domain.repository.InstallationFormRepository;
 import com.capstone.construction.domain.repository.WaterSupplyNetworkRepository;
 import com.capstone.construction.infrastructure.config.Constant;
@@ -17,8 +18,6 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @Service
@@ -31,7 +30,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   OverallWaterMeterService owmSrv;
 
   @Override
-  public void createNewInstallationForm(@NonNull NewOrderRequest request) {
+  public InstallationFormResponse createNewInstallationForm(@NonNull NewOrderRequest request) {
     log.info("Service is creating new installation form: {}", request.formNumber());
 
     if (!checkAuthorExisting(request.createdBy())) {
@@ -41,29 +40,56 @@ public class InstallationFormServiceImpl implements InstallationFormService {
     }
 
     var entity = InstallationForm.create(builder -> builder
-      .formNumber(request.formNumber())
-      .customerName(request.customerName())
-      .address(request.address())
-      .citizenIdentificationNumber(request.citizenIdentificationNumber())
-      .citizenIdentificationProvideDate(request.citizenIdentificationProvideDate())
-      .citizenIdentificationProvideLocation(request.citizenIdentificationProvideLocation())
-      .phoneNumber(request.phoneNumber())
-      .taxCode(request.taxCode())
-      .bankAccountNumber(request.bankAccountNumber())
-      .bankAccountProviderLocation(request.bankAccountProviderLocation())
-      .usageTarget(request.usageTarget())
-      .receivedFormAt(LocalDateTime.parse(request.receivedFormAt()))
-      .scheduleSurveyAt(LocalDateTime.parse(request.scheduleSurveyAt()))
-      .numberOfHousehold(request.numberOfHousehold())
-      .householdRegistrationNumber(request.householdRegistrationNumber())
-      .representative(request.representative())
-      .network(getNetwork(request.networkId()))
-      .createdBy(request.createdBy())
-      .overallWaterMeterId(request.overallWaterMeterId())
-    );
+        .formNumber(request.formNumber())
+        .customerName(request.customerName())
+        .address(request.address())
+        .citizenIdentificationNumber(request.citizenIdentificationNumber())
+        .citizenIdentificationProvideDate(request.citizenIdentificationProvideDate())
+        .citizenIdentificationProvideLocation(request.citizenIdentificationProvideLocation())
+        .phoneNumber(request.phoneNumber())
+        .taxCode(request.taxCode())
+        .bankAccountNumber(request.bankAccountNumber())
+        .bankAccountProviderLocation(request.bankAccountProviderLocation())
+        .usageTarget(request.usageTarget())
+        .receivedFormAt(LocalDateTime.parse(request.receivedFormAt()))
+        .scheduleSurveyAt(LocalDateTime.parse(request.scheduleSurveyAt()))
+        .numberOfHousehold(request.numberOfHousehold())
+        .householdRegistrationNumber(request.householdRegistrationNumber())
+        .representative(request.representative())
+        .network(getNetwork(request.networkId()))
+        .createdBy(request.createdBy())
+        .overallWaterMeterId(request.overallWaterMeterId()));
 
-    ifRepo.save(entity);
+    var saved = ifRepo.save(entity);
     log.info("Installation form with form number: {} is created successfully", request.formNumber());
+
+    return new InstallationFormResponse(
+        saved.getFormNumber(),
+        saved.getCustomerName(),
+        saved.getAddress(),
+        saved.getPhoneNumber(),
+        saved.getCreatedAt());
+  }
+
+  @Override
+  public InstallationFormListResponse getInstallationForms(org.springframework.data.domain.Pageable pageable) {
+    log.info("Fetching paginated installation forms with pageable: {}", pageable);
+
+    var assignedPage = ifRepo.findByHandoverByIsNotNull(pageable);
+    var unassignedPage = ifRepo.findByHandoverByIsNull(pageable);
+
+    return new InstallationFormListResponse(
+        assignedPage.map(this::mapToResponse),
+        unassignedPage.map(this::mapToResponse));
+  }
+
+  private InstallationFormResponse mapToResponse(@NonNull InstallationForm entity) {
+    return new InstallationFormResponse(
+        entity.getFormNumber(),
+        entity.getCustomerName(),
+        entity.getAddress(),
+        entity.getPhoneNumber(),
+        entity.getCreatedAt());
   }
 
   @Override
@@ -73,16 +99,30 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   }
 
   private WaterSupplyNetwork getNetwork(String networkId) {
-    return wsnRepo.findById(networkId).orElseThrow(() -> new IllegalArgumentException(Constant.PT_59));
+    log.info("Fetching water supply network with ID: {}", networkId);
+    return wsnRepo.findById(networkId).orElseThrow(() -> {
+      log.error("Water supply network not found: {}", networkId);
+      return new IllegalArgumentException(Constant.PT_59);
+    });
   }
 
   private boolean checkAuthorExisting(String authorId) {
+    log.info("Verifying existence of employee: {}", authorId);
     var response = empSrv.isEmployeeExisting(authorId);
-    return Boolean.getBoolean(response.data().toString());
+    boolean exists = Boolean.parseBoolean(response.data().toString());
+    if (!exists) {
+      log.warn("Employee not found: {}", authorId);
+    }
+    return exists;
   }
 
   private boolean checkMeterExisting(String id) {
+    log.info("Verifying existence of water meter: {}", id);
     var response = owmSrv.isMeterExisting(id);
-    return Boolean.getBoolean(response.data().toString());
+    boolean exists = Boolean.parseBoolean(response.data().toString());
+    if (!exists) {
+      log.warn("Water meter not found: {}", id);
+    }
+    return exists;
   }
 }

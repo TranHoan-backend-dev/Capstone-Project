@@ -2,12 +2,17 @@ package com.capstone.construction.application.usecase;
 
 import com.capstone.construction.application.business.installationform.InstallationFormService;
 import com.capstone.construction.application.dto.request.NewOrderRequest;
+import com.capstone.construction.application.dto.response.InstallationFormListResponse;
+import com.capstone.construction.application.dto.response.InstallationFormResponse;
+import com.capstone.construction.application.event.producer.InstallationFormCreatedEvent;
+import com.capstone.construction.application.event.producer.MessageProducer;
 import com.capstone.construction.application.exception.ExistingItemException;
 import com.capstone.construction.infrastructure.config.Constant;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -16,13 +21,33 @@ import org.springframework.stereotype.Component;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class InstallationFormHandlingUseCase {
   InstallationFormService ifSrv;
+  MessageProducer messageProducer;
 
-  public void createNewInstallationRequest(NewOrderRequest request) {
-    log.info("Creating new installation request: {}", request);
+  public InstallationFormListResponse getPaginatedInstallationForms(Pageable pageable) {
+    log.info("UseCase is fetching grouped paginated installation forms");
+    return ifSrv.getInstallationForms(pageable);
+  }
+
+  public InstallationFormResponse createNewInstallationRequest(NewOrderRequest request) {
+    log.info("UseCase is processing new installation request for form number: {}", request.formNumber());
 
     if (ifSrv.isInstallationFormExisting(request.formNumber())) {
-      ifSrv.createNewInstallationForm(request);
+      log.warn("Installation form already exists: {}", request.formNumber());
+      throw new ExistingItemException(Constant.SE_01);
     }
-    throw new ExistingItemException(Constant.SE_01);
+
+    var savedResponse = ifSrv.createNewInstallationForm(request);
+
+    // Send notification event using the DTO data
+    var event = new InstallationFormCreatedEvent(
+        savedResponse.formNumber(),
+        savedResponse.customerName(),
+        savedResponse.address(),
+        savedResponse.phoneNumber(),
+        savedResponse.createdAt());
+    messageProducer.sendInstallationFormCreatedEvent(event);
+
+    log.info("Installation request finished successfully for form: {}", savedResponse.formNumber());
+    return savedResponse;
   }
 }

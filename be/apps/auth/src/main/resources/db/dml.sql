@@ -10,7 +10,7 @@ $$
     role_id7 uuid := '6844f465-886a-4838-852b-864eb64e7d92';
     role_id8 uuid := '47c469de-21fd-4a32-a468-01a50f4aced6';
 --
-    user_id1 uuid := 'e78050e5-9e87-46d1-a250-957bfeece3f9';
+    user_id1 uuid := '4f321e7e-3a04-4afa-82e5-4e54e005febe';
     user_id2 uuid := '14c5879c-a6c4-45a6-846b-39d2b9d8c961';
   BEGIN
     INSERT INTO user_roles(role_id, name)

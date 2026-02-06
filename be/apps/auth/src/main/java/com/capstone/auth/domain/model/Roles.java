@@ -1,6 +1,6 @@
 package com.capstone.auth.domain.model;
 
-import com.capstone.auth.domain.model.enumerate.RoleName;
+import com.capstone.auth.domain.enumerate.RoleName;
 import com.capstone.auth.infrastructure.config.Constant;
 import jakarta.persistence.*;
 import lombok.*;

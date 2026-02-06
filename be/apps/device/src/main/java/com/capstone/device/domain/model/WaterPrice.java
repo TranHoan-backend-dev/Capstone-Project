@@ -1,6 +1,6 @@
 package com.capstone.device.domain.model;
 
-import com.capstone.device.domain.model.utils.UsageTarget;
+import com.capstone.device.domain.enumerate.UsageTarget;
 import com.capstone.device.infrastructure.config.Constant;
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,6 +10,7 @@ import org.jspecify.annotations.NonNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -30,19 +31,18 @@ public class WaterPrice {
   @Column(nullable = false)
   UsageTarget usageTarget;
 
-  @Column(nullable = false)
-  Integer area;
-
-  @Column(nullable = false)
-  BigDecimal price;
+  @OneToMany(fetch = FetchType.EAGER)
+  List<PriceType> priceTypes;
 
   @Column(nullable = false)
   BigDecimal tax;
   BigDecimal environmentPrice;
-  Integer level;
 
   @Column(nullable = false)
   LocalDate applicationPeriod;
+
+  @Column(nullable = false)
+  LocalDate expirationDate;
   String description;
 
   @Column(nullable = false)
@@ -70,19 +70,6 @@ public class WaterPrice {
     this.usageTarget = UsageTarget.valueOf(usageTarget);
   }
 
-  public void setArea(Integer area) {
-    Objects.requireNonNull(area, Constant.ENT_18);
-    if (area < 0) {
-      throw new IllegalArgumentException(Constant.ENT_18);
-    }
-    this.area = area;
-  }
-
-  public void setPrice(BigDecimal price) {
-    requireNonNullAndNotEmpty(price, Constant.ENT_05);
-    this.price = price;
-  }
-
   public void setTax(BigDecimal tax) {
     requireNonNullAndNotEmpty(tax, Constant.ENT_19);
     this.tax = tax;
@@ -93,20 +80,17 @@ public class WaterPrice {
     this.environmentPrice = environmentPrice;
   }
 
-  public void setLevel(Integer level) {
-    if (level != null && level < 0) {
-      throw new IllegalArgumentException(Constant.ENT_21);
-    }
-    this.level = level;
-  }
-
   public void setApplicationPeriod(LocalDate applicationPeriod) {
     Objects.requireNonNull(applicationPeriod, Constant.ENT_22);
     this.applicationPeriod = applicationPeriod;
   }
 
+  public void setExpirationDate(LocalDate expirationDate) {
+    this.expirationDate = Objects.requireNonNull(expirationDate, Constant.ENT_37);
+  }
+
   public void setDescription(String description) {
-    Objects.requireNonNull(applicationPeriod, Constant.ENT_23);
+    Objects.requireNonNull(description, Constant.ENT_23);
     this.description = description;
   }
 
@@ -131,16 +115,6 @@ public class WaterPrice {
       return this;
     }
 
-    public WaterPriceBuilder area(Integer area) {
-      wp.setArea(area);
-      return this;
-    }
-
-    public WaterPriceBuilder price(BigDecimal price) {
-      wp.setPrice(price);
-      return this;
-    }
-
     public WaterPriceBuilder tax(BigDecimal tax) {
       wp.setTax(tax);
       return this;
@@ -151,13 +125,13 @@ public class WaterPrice {
       return this;
     }
 
-    public WaterPriceBuilder level(Integer level) {
-      wp.setLevel(level);
+    public WaterPriceBuilder applicationPeriod(LocalDate applicationPeriod) {
+      wp.setApplicationPeriod(applicationPeriod);
       return this;
     }
 
-    public WaterPriceBuilder applicationPeriod(LocalDate applicationPeriod) {
-      wp.setApplicationPeriod(applicationPeriod);
+    public WaterPriceBuilder expirationDate(LocalDate expirationDate) {
+      wp.setExpirationDate(expirationDate);
       return this;
     }
 
