@@ -1,6 +1,5 @@
 package com.capstone.organization.controller;
 
-import com.capstone.organization.dto.request.CreateBusinessPageRequest;
 import com.capstone.organization.dto.request.UpdateBusinessPageRequest;
 import com.capstone.organization.dto.response.WrapperApiResponse;
 import com.capstone.organization.service.boundary.BusinessPageService;
@@ -14,12 +13,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,29 +39,10 @@ import java.time.LocalDateTime;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/business-pages")
+@PreAuthorize("hasAuthority('IT_STAFF')")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BusinessPageController {
   BusinessPageService businessPageService;
-
-//  @PostMapping
-//  @Operation(summary = "Create a business page", description = "Create a new business page and return its data.")
-//  @ApiResponses({
-//    @ApiResponse(responseCode = "201", description = "Business page created"),
-//    @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content),
-//    @ApiResponse(responseCode = "500", description = "Server error", content = @Content)
-//  })
-//  public ResponseEntity<WrapperApiResponse> createBusinessPage(
-//    @RequestBody @Valid CreateBusinessPageRequest request
-//  ) {
-//    log.info("Create business page request comes to endpoint: {}", request);
-//    var response = businessPageService.createBusinessPage(request);
-//    return ResponseEntity.status(HttpStatus.CREATED).body(new WrapperApiResponse(
-//      HttpStatus.CREATED.value(),
-//      "Create business page successfully",
-//      response,
-//      LocalDateTime.now()
-//    ));
-//  }
 
   @PutMapping("/{pageId}")
   @Operation(summary = "Update a business page", description = "Update business page by encoded ID.")
@@ -114,7 +94,7 @@ public class BusinessPageController {
       schema = @Schema(type = "integer", defaultValue = "10", minimum = "1")
     )
     @RequestParam(defaultValue = "10", required = false) @Positive int size
-  ) {
+    ) {
     log.info("Get business pages request comes to endpoint: page={}, size={}", page, size);
 
     var response = businessPageService.getBusinessPages(page, size);

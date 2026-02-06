@@ -1,0 +1,24 @@
+@uri = http://localhost:9008
+
+# Happy case
+### Get the first page
+GET {{uri}}/api/v1/business-pages?page=0&size=10
+
+### Get the second page without providing page size
+GET {{uri}}/api/v1/business-pages?page=1
+
+### Get the third page
+GET {{uri}}/api/v1/business-pages?page=2
+
+### Get the first page with larger page size
+GET {{uri}}/api/v1/business-pages?page=0&size=20
+
+### Missing page index and page size
+GET {{uri}}/api/v1/business-pages
+
+# Unhappy case
+### Page index is a negative number
+GET {{uri}}/api/v1/business-pages?page=-1
+
+### Page size is a negative number
+GET {{uri}}/api/v1/business-pages?size=-1
