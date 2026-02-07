@@ -126,14 +126,14 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
             <Bars3Icon className="w-6 h-6 text-primary" />
           </button>
           <NavbarBrand className="ml-2">
-            <span className="text-lg font-bold">CRM</span>
+            <span className="text-lg font-bold">CMSN</span>
           </NavbarBrand>
         </NavbarContent>
 
         <NavbarContent className="hidden md:flex flex-1 gap-8" justify="start">
           <NavbarBrand className="px-4">
             <Bars3Icon className="w-8 h-8 text-primary" />
-            <span className="text-xl font-bold ml-2">CRM</span>
+            <span className="text-xl font-bold ml-2">CMSN</span>
           </NavbarBrand>
 
           <div className="hidden md:flex items-center gap-6 font-bold">
