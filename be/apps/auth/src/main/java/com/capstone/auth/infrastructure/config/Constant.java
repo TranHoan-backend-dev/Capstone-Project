@@ -27,7 +27,7 @@ public final class Constant {
   public static final String PT_19 = "Department id cannot be null or empty";
   public static final String PT_20 = "Job id cannot be null or empty";
   public static final String PT_21 = "Business page ids cannot be null or empty";
-  public static final String PT_22 = "List of notification ids cannot be null or empty";
+  public static final String PT_22 = "Id cannot be null or empty";
   public static final String PT_23 = "Role id cannot be null or empty";
   public static final String PT_24 = "Electronic signing url cannot be null or empty";
 

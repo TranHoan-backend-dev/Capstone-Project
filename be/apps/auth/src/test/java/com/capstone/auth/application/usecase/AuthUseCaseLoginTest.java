@@ -8,6 +8,7 @@ import com.capstone.auth.application.dto.response.UserProfileResponse;
 import com.capstone.auth.application.exception.AccountBlockedException;
 import com.capstone.auth.application.exception.NotExistingException;
 import com.capstone.auth.infrastructure.config.Constant;
+import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -42,8 +43,8 @@ class AuthUseCaseLoginTest {
         "avatar.png",
         "HCM",
         "0900000000",
-        "MALE",
-        "2000-01-01");
+        true,
+        LocalDate.parse("2000-01-01"));
 
     when(userService.getUserById(userId)).thenReturn(user);
     when(userService.checkExistence(email)).thenReturn(true);
@@ -57,8 +58,8 @@ class AuthUseCaseLoginTest {
     assertEquals(profile.avatarUrl(), response.avatarUrl());
     assertEquals(profile.address(), response.address());
     assertEquals(profile.phoneNumber(), response.phoneNumber());
-    assertEquals(profile.gender(), response.gender());
-    assertEquals(profile.birthday(), response.birthday());
+    assertEquals(profile.gender().toString(), response.gender());
+    assertEquals(profile.birthday().toString(), response.birthday());
     assertEquals(user.role().toLowerCase(), response.role());
     assertEquals(user.username(), response.username());
     assertEquals(user.email(), response.email());

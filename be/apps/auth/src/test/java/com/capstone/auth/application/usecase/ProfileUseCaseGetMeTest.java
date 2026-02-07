@@ -4,6 +4,7 @@ import com.capstone.auth.application.business.dto.ProfileDTO;
 import com.capstone.auth.application.business.dto.UserDTO;
 import com.capstone.auth.application.business.profile.ProfileService;
 import com.capstone.auth.application.business.users.UserService;
+import com.capstone.auth.application.exception.NotExistingException;
 import com.capstone.auth.infrastructure.config.Constant;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class AuthUseCaseGetMeTest {
+class ProfileUseCaseGetMeTest {
 
     @Mock
     UserService userService;
@@ -25,7 +26,7 @@ class AuthUseCaseGetMeTest {
     ProfileService profileService;
 
     @InjectMocks
-    AuthUseCase authUseCase;
+    ProfileUseCase profileUseCase;
 
     @Test
     void getMe_returns_profile_response_when_successful() {
@@ -40,7 +41,7 @@ class AuthUseCaseGetMeTest {
         when(userService.getUserById(id)).thenReturn(userDTO);
         when(profileService.getProfileById(id)).thenReturn(profileDTO);
 
-        var response = authUseCase.getMe(id, email, username);
+        var response = profileUseCase.getMe(id, email, username);
 
         assertNotNull(response);
         assertEquals("Full Name", response.fullname());
@@ -57,7 +58,7 @@ class AuthUseCaseGetMeTest {
         when(userService.getUserById(id)).thenReturn(userDTO);
 
         DisabledException ex = assertThrows(DisabledException.class,
-                () -> authUseCase.getMe(id, "user@example.com", "user1"));
+                () -> profileUseCase.getMe(id, "user@example.com", "user1"));
         assertEquals(Constant.SE_07, ex.getMessage());
     }
 
@@ -69,7 +70,7 @@ class AuthUseCaseGetMeTest {
         when(userService.getUserById(id)).thenReturn(userDTO);
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> authUseCase.getMe(id, "wrong@example.com", "user1"));
+                () -> profileUseCase.getMe(id, "wrong@example.com", "user1"));
         assertEquals("Email does not match", ex.getMessage());
     }
 
@@ -81,7 +82,7 @@ class AuthUseCaseGetMeTest {
         when(userService.getUserById(id)).thenReturn(userDTO);
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> authUseCase.getMe(id, "user@example.com", "wronguser"));
+                () -> profileUseCase.getMe(id, "user@example.com", "wronguser"));
         assertEquals("Username does not match", ex.getMessage());
     }
 
@@ -91,10 +92,10 @@ class AuthUseCaseGetMeTest {
         var email = "user@example.com";
         var username = "user1";
         when(userService.getUserById(id))
-                .thenThrow(new com.capstone.auth.application.exception.NotExistingException("User not found"));
+                .thenThrow(new NotExistingException("User not found"));
 
-        assertThrows(com.capstone.auth.application.exception.NotExistingException.class,
-                () -> authUseCase.getMe(id, email, username));
+        assertThrows(NotExistingException.class,
+                () -> profileUseCase.getMe(id, email, username));
     }
 
     @Test
@@ -103,7 +104,7 @@ class AuthUseCaseGetMeTest {
         var userDTO = new UserDTO("STAFF", "user1", "user@example.com", false, true);
         when(userService.getUserById(id)).thenReturn(userDTO);
 
-        var ex = assertThrows(IllegalArgumentException.class, () -> authUseCase.getMe(id, null, "user1"));
+        var ex = assertThrows(IllegalArgumentException.class, () -> profileUseCase.getMe(id, null, "user1"));
         assertEquals(Constant.PT_01, ex.getMessage());
     }
 
@@ -113,7 +114,7 @@ class AuthUseCaseGetMeTest {
         var userDTO = new UserDTO("STAFF", "user1", "user@example.com", false, true);
         when(userService.getUserById(id)).thenReturn(userDTO);
 
-        var ex = assertThrows(IllegalArgumentException.class, () -> authUseCase.getMe(id, "invalid-email", "user1"));
+        var ex = assertThrows(IllegalArgumentException.class, () -> profileUseCase.getMe(id, "invalid-email", "user1"));
         assertEquals(Constant.PT_01, ex.getMessage());
     }
 
@@ -123,7 +124,7 @@ class AuthUseCaseGetMeTest {
         var userDTO = new UserDTO("STAFF", "user1", "user@example.com", false, true);
         when(userService.getUserById(id)).thenReturn(userDTO);
 
-        var ex = assertThrows(IllegalArgumentException.class, () -> authUseCase.getMe(id, "user@example.com", null));
+        var ex = assertThrows(IllegalArgumentException.class, () -> profileUseCase.getMe(id, "user@example.com", null));
         assertEquals(Constant.PT_05, ex.getMessage());
     }
 
@@ -133,9 +134,9 @@ class AuthUseCaseGetMeTest {
         var userDTO = new UserDTO("STAFF", "user1", "user@example.com", false, true);
         when(userService.getUserById(id)).thenReturn(userDTO);
         when(profileService.getProfileById(id))
-                .thenThrow(new com.capstone.auth.application.exception.NotExistingException("Profile not found"));
+                .thenThrow(new NotExistingException("Profile not found"));
 
-        assertThrows(com.capstone.auth.application.exception.NotExistingException.class,
-                () -> authUseCase.getMe(id, "user@example.com", "user1"));
+        assertThrows(NotExistingException.class,
+                () -> profileUseCase.getMe(id, "user@example.com", "user1"));
     }
 }

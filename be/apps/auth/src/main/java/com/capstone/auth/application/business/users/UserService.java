@@ -19,4 +19,6 @@ public interface UserService {
   boolean isUserExists(String id);
 
   UserDTO getUserById(String id);
+
+  UserDTO updateUsername(String id, String username);
 }

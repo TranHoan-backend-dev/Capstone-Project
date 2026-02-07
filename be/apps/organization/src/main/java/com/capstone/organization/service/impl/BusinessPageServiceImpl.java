@@ -1,6 +1,7 @@
 package com.capstone.organization.service.impl;
 
 import com.capstone.organization.dto.request.CreateBusinessPageRequest;
+import com.capstone.organization.dto.request.FilterBusinessPagesRequest;
 import com.capstone.organization.dto.request.UpdateBusinessPageRequest;
 import com.capstone.organization.dto.response.BusinessPageResponse;
 import com.capstone.organization.dto.response.PagedBusinessPageResponse;
@@ -13,7 +14,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
@@ -68,12 +71,25 @@ public class BusinessPageServiceImpl implements BusinessPageService {
   }
 
   @Override
-  public PagedBusinessPageResponse getBusinessPages(int page, int size) {
-    log.info("Fetching business pages page: {}, size: {}", page, size);
+  public PagedBusinessPageResponse getBusinessPages(@NonNull Pageable pageable) {
+    log.info("Fetching business pages page: {}, size: {}", pageable.getPageNumber(), pageable.getPageSize());
 
-    var result = businessPageRepository.findAll(PageRequest.of(page, size));
+    var result = businessPageRepository.findAll(pageable);
 
-    var items = result.getContent().stream()
+    return mapResponse(result);
+  }
+
+  @Override
+  public PagedBusinessPageResponse filterBusinessPagesList(@NonNull FilterBusinessPagesRequest req, @NonNull Pageable pageable) {
+    log.info("Filter business pages by filter: {} and isActive: {} in page {} and size {}", req.filter(), req.isActive(), pageable.getPageNumber(), pageable.getPageSize());
+
+    var result = businessPageRepository.findByNameAndActivate(req.filter(), req.isActive(), pageable);
+
+    return mapResponse(result);
+  }
+
+  private @NonNull PagedBusinessPageResponse mapResponse(@NonNull Page<BusinessPage> list) {
+    var items = list.getContent().stream()
       .map(pageEntity -> new BusinessPageResponse(
         IdEncoder.encode(pageEntity.getPageId()),
         pageEntity.getName(),
@@ -82,13 +98,12 @@ public class BusinessPageServiceImpl implements BusinessPageService {
         pageEntity.getUpdator()
       ))
       .collect(Collectors.toList());
-
     return new PagedBusinessPageResponse(
       items,
-      result.getNumber(),
-      result.getSize(),
-      result.getTotalElements(),
-      result.getTotalPages()
+      list.getNumber(),
+      list.getSize(),
+      list.getTotalElements(),
+      list.getTotalPages()
     );
   }
 }

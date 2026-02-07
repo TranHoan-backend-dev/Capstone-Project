@@ -25,35 +25,43 @@ public class ProfileServiceImpl implements ProfileService {
 
   @Override
   public ProfileDTO getProfileById(String id) {
+    log.info("Getting profile by id: {}", id);
     Objects.requireNonNull(id, "id cannot be null");
     var profile = repo.findById(id);
-    return convertToResponse(profile, id);
+    return convertToResponse(profile);
   }
 
   @Override
   public ProfileDTO getProfileByCredentials(String value) {
+    log.info("Getting profile by credentials: {}", value);
     Objects.requireNonNull(value, "id cannot be null");
     var profile = value.matches(Constant.EMAIL_PATTERN) ? repo.findByUsersEmail(value) : repo.findByUsersUsername(value);
-    return convertToResponse(profile, value);
+    return convertToResponse(profile);
   }
 
-  private ProfileDTO convertToResponse(@NonNull Optional<Profile> profile, String value) {
+  @Override
+  public ProfileDTO updateProfile(Profile profile) {
+    log.info("Updating profile: {}", profile);
+    if (profile == null) {
+      throw new IllegalArgumentException("Profile is null");
+    }
+    repo.save(profile);
+    return convertToResponse(Optional.of(profile));
+  }
+
+  private ProfileDTO convertToResponse(@NonNull Optional<Profile> profile) {
     if (profile.isEmpty()) {
       throw new NotExistingException("Profile does not exist");
     }
     var p = profile.get();
-    var avatarUrl = p.getAvatarUrl() == null ? "" : p.getAvatarUrl();
-    var address = p.getAddress() == null ? "" : p.getAddress();
-    var gender = p.getGender() == null ? "" : p.getGender().toString();
-    var birthday = p.getBirthday() == null ? "" : p.getBirthday().toString();
     return new ProfileDTO(
       IdEncoder.encode(profile.get().getProfileId()),
-      profile.get().getFullname(),
-      avatarUrl,
-      address,
-      profile.get().getPhoneNumber(),
-      gender,
-      birthday
+      p.getFullname(),
+      p.getAvatarUrl(),
+      p.getAddress(),
+      p.getPhoneNumber(),
+      p.getGender(),
+      p.getBirthday()
     );
   }
 }
