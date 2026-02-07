@@ -4,7 +4,6 @@ import com.capstone.auth.application.business.dto.ProfileDTO;
 import com.capstone.auth.application.business.dto.UserDTO;
 import com.capstone.auth.application.business.profile.ProfileService;
 import com.capstone.auth.application.business.users.UserService;
-import com.capstone.auth.application.dto.response.UserProfileResponse;
 import com.capstone.auth.application.exception.AccountBlockedException;
 import com.capstone.auth.application.exception.NotExistingException;
 import com.capstone.auth.infrastructure.config.Constant;
@@ -36,7 +35,8 @@ class AuthUseCaseLoginTest {
     var userId = "user-1";
     var email = "user@example.com";
     var username = "user1";
-    var user = new UserDTO("IT_DEPARTMENT_STAFF", username, email, false, true);
+    var user = new UserDTO("IT_DEPARTMENT_STAFF", username, email, false, null, null, null, null, null, null, null,
+        null, null, true);
     var profile = new ProfileDTO(
         userId,
         "User One",
@@ -70,7 +70,8 @@ class AuthUseCaseLoginTest {
     var userId = "user-1";
     var email = "invalid-email";
     var username = "user1";
-    var user = new UserDTO("IT_DEPARTMENT_STAFF", username, "user@example.com", false, true);
+    var user = new UserDTO("IT_DEPARTMENT_STAFF", username, "user@example.com", false, null, null, null, null, null,
+        null, null, null, null, true);
 
     when(userService.getUserById(userId)).thenReturn(user);
 
@@ -86,7 +87,8 @@ class AuthUseCaseLoginTest {
     var userId = "user-1";
     var email = "user@example.com";
     var username = "user1";
-    var user = new UserDTO("IT_DEPARTMENT_STAFF", username, email, true, true);
+    var user = new UserDTO("IT_DEPARTMENT_STAFF", username, email, true, null, null, null, null, null, null, null, null,
+        null, true);
 
     when(userService.getUserById(userId)).thenReturn(user);
     when(userService.checkExistence(email)).thenReturn(true);
@@ -104,7 +106,8 @@ class AuthUseCaseLoginTest {
     var userId = "user-1";
     var email = "user@example.com";
     var username = "user1";
-    var user = new UserDTO("IT_DEPARTMENT_STAFF", username, email, false, true);
+    var user = new UserDTO("IT_DEPARTMENT_STAFF", username, email, false, null, null, null, null, null, null, null,
+        null, null, true);
 
     when(userService.getUserById(userId)).thenReturn(user);
     when(userService.checkExistence(email)).thenReturn(false);
@@ -114,5 +117,74 @@ class AuthUseCaseLoginTest {
         () -> authUseCase.login(userId, email, username));
 
     assertEquals(Constant.SE_05, ex.getMessage());
+  }
+
+  @Test
+  void login_throws_when_user_not_found() {
+    var userId = "non-existent";
+    var email = "user@example.com";
+    var username = "user1";
+
+    when(userService.getUserById(userId)).thenReturn(null);
+
+    NullPointerException ex = assertThrows(
+        NullPointerException.class,
+        () -> authUseCase.login(userId, email, username));
+
+    assertEquals(Constant.SE_04, ex.getMessage());
+  }
+
+  @Test
+  void login_throws_when_email_mismatch() {
+    var userId = "user-1";
+    var email = "other@example.com";
+    var username = "user1";
+    var user = new UserDTO("IT_DEPARTMENT_STAFF", "user1", "user@example.com", false, null, null, null, null, null,
+        null, null, null, null, true);
+
+    when(userService.getUserById(userId)).thenReturn(user);
+
+    IllegalArgumentException ex = assertThrows(
+        IllegalArgumentException.class,
+        () -> authUseCase.login(userId, email, username));
+
+    assertEquals("Email does not match", ex.getMessage());
+  }
+
+  @Test
+  void login_throws_when_username_mismatch() {
+    var userId = "user-1";
+    var email = "user@example.com";
+    var username = "wronguser";
+    var user = new UserDTO("IT_DEPARTMENT_STAFF", "user1", email, false, null, null, null, null, null, null, null, null,
+        null, true);
+
+    when(userService.getUserById(userId)).thenReturn(user);
+
+    IllegalArgumentException ex = assertThrows(
+        IllegalArgumentException.class,
+        () -> authUseCase.login(userId, email, username));
+
+    assertEquals("Username does not match", ex.getMessage());
+  }
+
+  @Test
+  void login_throws_when_profile_not_found() {
+    var userId = "user-1";
+    var email = "user@example.com";
+    var username = "user1";
+    var user = new UserDTO("IT_DEPARTMENT_STAFF", username, email, false, null, null, null, null, null, null, null,
+        null, null, true);
+
+    when(userService.getUserById(userId)).thenReturn(user);
+    when(userService.checkExistence(email)).thenReturn(true);
+    when(userService.checkExistence(username)).thenReturn(true);
+    when(profileService.getProfileById(userId)).thenReturn(null);
+
+    NullPointerException ex = assertThrows(
+        NullPointerException.class,
+        () -> authUseCase.login(userId, email, username));
+
+    assertEquals(Constant.SE_06, ex.getMessage());
   }
 }

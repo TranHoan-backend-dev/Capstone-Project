@@ -6,6 +6,7 @@ import com.capstone.auth.application.business.profile.ProfileService;
 import com.capstone.auth.application.business.users.UserService;
 import com.capstone.auth.application.exception.NotExistingException;
 import com.capstone.auth.infrastructure.config.Constant;
+import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -34,9 +35,10 @@ class ProfileUseCaseGetMeTest {
         var email = "user@example.com";
         var username = "user1";
 
-        var userDTO = new UserDTO("IT_DEPARTMENT_STAFF", username, email, false, true);
+        var userDTO = new UserDTO("IT_DEPARTMENT_STAFF", username, email, false, null, null, null, null, null, null,
+                null, null, null, true);
         var profileDTO = new ProfileDTO(
-                id, "Full Name", "avatar.png", "Address", "0912345678", "true", "1990-01-01");
+                id, "Full Name", "avatar.png", "Address", "0912345678", true, LocalDate.parse("1990-01-01"));
 
         when(userService.getUserById(id)).thenReturn(userDTO);
         when(profileService.getProfileById(id)).thenReturn(profileDTO);
@@ -53,7 +55,8 @@ class ProfileUseCaseGetMeTest {
     @Test
     void getMe_throws_disabled_exception_when_account_locked() {
         var id = "user-1";
-        var userDTO = new UserDTO("STAFF", "user1", "user@example.com", true, true);
+        var userDTO = new UserDTO("STAFF", "user1", "user@example.com", true, null, null, null, null, null, null, null,
+                null, null, true);
 
         when(userService.getUserById(id)).thenReturn(userDTO);
 
@@ -65,7 +68,8 @@ class ProfileUseCaseGetMeTest {
     @Test
     void getMe_throws_exception_when_email_mismatch() {
         var id = "user-1";
-        var userDTO = new UserDTO("STAFF", "user1", "user@example.com", false, true);
+        var userDTO = new UserDTO("STAFF", "user1", "user@example.com", false, null, null, null, null, null, null, null,
+                null, null, true);
 
         when(userService.getUserById(id)).thenReturn(userDTO);
 
@@ -77,7 +81,8 @@ class ProfileUseCaseGetMeTest {
     @Test
     void getMe_throws_exception_when_username_mismatch() {
         var id = "user-1";
-        var userDTO = new UserDTO("STAFF", "user1", "user@example.com", false, true);
+        var userDTO = new UserDTO("STAFF", "user1", "user@example.com", false, null, null, null, null, null, null, null,
+                null, null, true);
 
         when(userService.getUserById(id)).thenReturn(userDTO);
 
@@ -101,7 +106,8 @@ class ProfileUseCaseGetMeTest {
     @Test
     void getMe_throws_exception_when_email_null() {
         var id = "user-1";
-        var userDTO = new UserDTO("STAFF", "user1", "user@example.com", false, true);
+        var userDTO = new UserDTO("STAFF", "user1", "user@example.com", false, null, null, null, null, null, null, null,
+                null, null, true);
         when(userService.getUserById(id)).thenReturn(userDTO);
 
         var ex = assertThrows(IllegalArgumentException.class, () -> profileUseCase.getMe(id, null, "user1"));
@@ -111,7 +117,8 @@ class ProfileUseCaseGetMeTest {
     @Test
     void getMe_throws_exception_when_email_invalid_format() {
         var id = "user-1";
-        var userDTO = new UserDTO("STAFF", "user1", "user@example.com", false, true);
+        var userDTO = new UserDTO("STAFF", "user1", "user@example.com", false, null, null, null, null, null, null, null,
+                null, null, true);
         when(userService.getUserById(id)).thenReturn(userDTO);
 
         var ex = assertThrows(IllegalArgumentException.class, () -> profileUseCase.getMe(id, "invalid-email", "user1"));
@@ -121,7 +128,8 @@ class ProfileUseCaseGetMeTest {
     @Test
     void getMe_throws_exception_when_username_null() {
         var id = "user-1";
-        var userDTO = new UserDTO("STAFF", "user1", "user@example.com", false, true);
+        var userDTO = new UserDTO("STAFF", "user1", "user@example.com", false, null, null, null, null, null, null, null,
+                null, null, true);
         when(userService.getUserById(id)).thenReturn(userDTO);
 
         var ex = assertThrows(IllegalArgumentException.class, () -> profileUseCase.getMe(id, "user@example.com", null));
@@ -131,7 +139,8 @@ class ProfileUseCaseGetMeTest {
     @Test
     void getMe_throws_not_existing_exception_when_profile_not_found() {
         var id = "user-1";
-        var userDTO = new UserDTO("STAFF", "user1", "user@example.com", false, true);
+        var userDTO = new UserDTO("STAFF", "user1", "user@example.com", false, null, null, null, null, null, null, null,
+                null, null, true);
         when(userService.getUserById(id)).thenReturn(userDTO);
         when(profileService.getProfileById(id))
                 .thenThrow(new NotExistingException("Profile not found"));
