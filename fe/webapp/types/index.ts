@@ -6,6 +6,7 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
 
 export interface BusinessPageRecord {
   id: string;
+  stt: number;
   nameBusinessPage: string;
   status: string;
   creator: string;

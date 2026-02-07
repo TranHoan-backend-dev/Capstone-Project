@@ -39,7 +39,8 @@ export const BusinessPageTable = () => {
 
         setTotalItems(pageData.totalItems);
         setData(
-          items.map((item: any) => ({
+          items.map((item: any, index: number) => ({
+            stt: (page - 1) * pageSize + index + 1,
             id: item.pageId,
             nameBusinessPage: item.name,
             status: item.activate ? "Hoạt động" : "Không hoạt động",
@@ -70,6 +71,9 @@ export const BusinessPageTable = () => {
 
   const renderCell = (item: BusinessPageRecord, columnKey: string) => {
     switch (columnKey) {
+      case "stt":
+        return <span>{item.stt}</span>;
+
       case "nameBusinessPage":
         return <span className="font-semibold">{item.nameBusinessPage}</span>;
 

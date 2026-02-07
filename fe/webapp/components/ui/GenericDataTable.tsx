@@ -113,7 +113,9 @@ export const GenericDataTable = <T extends { id: string | number }>({
             <Table
               removeWrapper
               aria-label={title}
+              isStriped
               classNames={{
+                tr: "hover:bg-default-100 transition-colors",
                 th: "bg-default-50 text-default-400 font-bold py-4 px-4 text-[11px] uppercase tracking-widest",
                 td: "py-4 px-4 text-sm text-foreground last:border-none",
                 ...tableProps?.classNames,
@@ -142,7 +144,10 @@ export const GenericDataTable = <T extends { id: string | number }>({
                 {(item) => (
                   <TableRow
                     key={item.id}
-                    className="hover:bg-default-50 transition-colors border-divider"
+                    className="hover:bg-default-50  transition-colors
+    hover:bg-default-100
+    even:bg-default-50
+    border-divider"
                   >
                     {columns.map((column, index) => (
                       <TableCell
