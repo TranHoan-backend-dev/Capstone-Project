@@ -6,6 +6,7 @@ import com.capstone.auth.application.dto.request.ResetPasswordRequest;
 import com.capstone.auth.application.dto.request.SendOtpRequest;
 import com.capstone.auth.application.dto.request.SignupRequest;
 import com.capstone.auth.application.dto.request.VerifyOtpRequest;
+import com.capstone.auth.application.dto.response.UserProfileResponse;
 import com.capstone.auth.application.dto.response.WrapperApiResponse;
 import com.capstone.auth.application.usecase.AuthUseCase;
 import com.capstone.auth.application.usecase.OtpUseCase;
@@ -127,7 +128,7 @@ public class AuthenticationController {
   @Operation(summary = "Reset password with OTP", description = "Allows the user to set a new password after successful OTP verification.")
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Password reset successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "400", description = "Invalid OTP or incorrect data")
+    @ApiResponse(responseCode = "400", description = "Invalid OTP or incorrect data", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PostMapping("/reset-password")
   public ResponseEntity<?> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
@@ -143,9 +144,9 @@ public class AuthenticationController {
   @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Old password, new password, and confirmation", required = true, content = @Content(schema = @Schema(implementation = ChangePasswordRequest.class)))
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Password changed successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "400", description = "Bad Request - Old password incorrect or new passwords do not match"),
-    @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing JWT token"),
-    @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    @ApiResponse(responseCode = "400", description = "Bad Request - Old password incorrect or new passwords do not match", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing JWT token", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PostMapping("/change-password")
   public ResponseEntity<?> changePassword(
@@ -169,10 +170,10 @@ public class AuthenticationController {
     +
     "Returns a success wrapper containing the user's profile information (UserProfileResponse) in the 'data' field if successful.")
   @ApiResponses(value = {
-    @ApiResponse(responseCode = "200", description = "Login successful. Returns WrapperApiResponse with data as UserProfileResponse object containing personal information.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "400", description = "Bad Request - Invalid claims or user data mismatch"),
-    @ApiResponse(responseCode = "403", description = "Forbidden - Account is deleted, disabled or locked"),
-    @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    @ApiResponse(responseCode = "200", description = "Login successful. Returns WrapperApiResponse with data as UserProfileResponse object containing personal information.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserProfileResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Bad Request - Invalid claims or user data mismatch", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "403", description = "Forbidden - Account is deleted, disabled or locked", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PostMapping("/login")
   public ResponseEntity<?> login(@AuthenticationPrincipal Jwt jwt) {

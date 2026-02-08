@@ -43,17 +43,25 @@ public class ProfileUseCase {
 
   public UserProfileResponse updateProfile(String id, @NonNull UpdateProfileRequest request) {
     log.info("Updating profile by id: {}", id);
+    log.info("Request: {}", request);
     var user = getUserNonLockedById(id);
     var profile = pSrv.getProfileById(id);
 
     var newProfile = new Profile();
 
-    newProfile.setFullname((request.fullName() != null &&
-      !request.fullName().isEmpty() &&
-      !request.fullName().isBlank() &&
-      !request.fullName().equalsIgnoreCase(profile.fullname()) &&
-      request.fullName().matches("^[a-zA-Z ]+$")) ?
-      request.fullName() : profile.fullname());
+    if (request.fullName() != null) {
+      boolean regexMatch = request.fullName().matches("^[\\p{L} ]+$");
+
+      if (!request.fullName().equalsIgnoreCase(profile.fullname()) && regexMatch) {
+        newProfile.setFullname(request.fullName());
+      } else {
+        log.info("Fullname NOT set - equalsIgnoreCase: {}, regexMatch: {}",
+          request.fullName().equalsIgnoreCase(profile.fullname()), regexMatch);
+        newProfile.setFullname(profile.fullname());
+      }
+    } else {
+      newProfile.setFullname(profile.fullname());
+    }
 
     if (request.username() != null &&
       !request.username().isEmpty() &&
@@ -62,29 +70,38 @@ public class ProfileUseCase {
       user = uSrv.updateUsername(id, request.username());
     }
 
-    newProfile.setPhoneNumber((request.phoneNumber() != null &&
+    if (request.phoneNumber() != null &&
       !request.phoneNumber().isEmpty() &&
       !request.phoneNumber().isBlank() &&
-      !request.phoneNumber().equalsIgnoreCase(profile.phoneNumber()) &&
-      request.phoneNumber().matches(Constant.PHONE_PATTERN)) ?
-      request.phoneNumber() : profile.phoneNumber());
+      !request.phoneNumber().equalsIgnoreCase(profile.phoneNumber())) {
+      if (!request.phoneNumber().matches(Constant.PHONE_PATTERN)) {
+        throw new IllegalArgumentException(Constant.PT_14);
+      }
+      if (!request.phoneNumber().equals(profile.phoneNumber())) {
+        newProfile.setPhoneNumber(request.phoneNumber());
+      } else {
+        newProfile.setPhoneNumber(profile.phoneNumber());
+      }
+    } else {
+      newProfile.setPhoneNumber(profile.phoneNumber());
+    }
 
     if (request.birthdate() != null &&
       !request.birthdate().isEmpty() &&
-      !request.birthdate().isBlank() &&
-      DateUtils.isLocalDate(request.birthdate(), DateTimeFormatter.ISO_LOCAL_DATE)
-    ) {
+      !request.birthdate().isBlank()) {
+      if (!DateUtils.isLocalDate(request.birthdate(), DateTimeFormatter.ISO_LOCAL_DATE)) {
+        throw new IllegalArgumentException(Constant.PT_25);
+      }
       newProfile.setBirthday(
-        LocalDate.parse(request.birthdate(), DateTimeFormatter.ISO_LOCAL_DATE)
-      );
+        LocalDate.parse(request.birthdate(), DateTimeFormatter.ISO_LOCAL_DATE));
+    } else {
+      newProfile.setBirthday(profile.birthday());
     }
 
-    if (request.address() != null &&
+    newProfile.setAddress((request.address() != null &&
       !request.address().isEmpty() &&
       !request.address().isBlank() &&
-      !request.address().equalsIgnoreCase(profile.address())) {
-      newProfile.setAddress(request.address());
-    }
+      !request.address().equalsIgnoreCase(profile.address())) ? request.address() : profile.address());
 
     newProfile.setGender(request.gender() != null ? request.gender() : profile.gender());
     newProfile.setProfileId(IdEncoder.decode(profile.id()));
