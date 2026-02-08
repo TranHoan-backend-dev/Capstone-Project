@@ -54,20 +54,34 @@ class DepartmentServiceImplTest {
   }
 
   @Test
+  void createDepartment_invalidPhone_throws() {
+    var request = new CreateDepartmentRequest("HR", "invalid");
+
+    assertThatThrownBy(() -> departmentService.createDepartment(request))
+        .isInstanceOf(IllegalArgumentException.class);
+  }
+
+  @Test
+  void createDepartment_emptyName_throws() {
+    var request = new CreateDepartmentRequest("", "0123456789");
+
+    assertThatThrownBy(() -> departmentService.createDepartment(request))
+        .isInstanceOf(IllegalArgumentException.class);
+  }
+
+  @Test
   void updateDepartment_updatesAndReturnsResponse() {
     var existing = Department.create(builder -> builder
-      .name("Ops")
-      .phoneNumber("0123456789")
-    );
+        .name("Ops")
+        .phoneNumber("0123456789"));
     setDepartmentId(existing, "dep-2");
 
     when(departmentRepo.findById("dep-2")).thenReturn(Optional.of(existing));
     when(departmentRepo.save(existing)).thenReturn(existing);
 
     var response = departmentService.updateDepartment(
-      "dep-2",
-      new UpdateDepartmentRequest("Operations", "0987654321")
-    );
+        "dep-2",
+        new UpdateDepartmentRequest("Operations", "0987654321"));
 
     assertThat(response.departmentId()).isEqualTo("dep-2");
     assertThat(response.name()).isEqualTo("Operations");
@@ -75,27 +89,36 @@ class DepartmentServiceImplTest {
   }
 
   @Test
+  void updateDepartment_invalidPhone_throws() {
+    var existing = Department.create(builder -> builder.name("Ops").phoneNumber("0123456789"));
+    setDepartmentId(existing, "dep-2");
+    when(departmentRepo.findById("dep-2")).thenReturn(Optional.of(existing));
+
+    assertThatThrownBy(() -> departmentService.updateDepartment(
+        "dep-2",
+        new UpdateDepartmentRequest("Operations", "123"))).isInstanceOf(IllegalArgumentException.class);
+  }
+
+  @Test
   void updateDepartment_missingDepartment_throws() {
     when(departmentRepo.findById("missing")).thenReturn(Optional.empty());
 
     assertThatThrownBy(() -> departmentService.updateDepartment(
-      "missing",
-      new UpdateDepartmentRequest("Ops", "0123456789")
-    )).isInstanceOf(IllegalArgumentException.class)
-      .hasMessage("Department not found");
+        "missing",
+        new UpdateDepartmentRequest("Ops", "0123456789"))).isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("Department not found");
   }
 
   @Test
   void getDepartments_returnsPagedResponse() {
     var department = Department.create(builder -> builder
-      .name("Finance")
-      .phoneNumber("0123456789")
-    );
+        .name("Finance")
+        .phoneNumber("0123456789"));
     setDepartmentId(department, "dep-3");
 
     var pageable = PageRequest.of(0, 2);
     when(departmentRepo.findAll(pageable))
-      .thenReturn(new PageImpl<>(List.of(department), pageable, 1));
+        .thenReturn(new PageImpl<>(List.of(department), pageable, 1));
 
     var response = departmentService.getDepartments(0, 2);
 
@@ -105,6 +128,18 @@ class DepartmentServiceImplTest {
     assertThat(response.size()).isEqualTo(2);
     assertThat(response.totalItems()).isEqualTo(1);
     assertThat(response.totalPages()).isEqualTo(1);
+  }
+
+  @Test
+  void getDepartments_emptyList_returnsEmptyPagedResponse() {
+    var pageable = PageRequest.of(0, 10);
+    when(departmentRepo.findAll(pageable)).thenReturn(new PageImpl<>(List.of(), pageable, 0));
+
+    var response = departmentService.getDepartments(0, 10);
+
+    assertThat(response.items()).isEmpty();
+    assertThat(response.totalItems()).isZero();
+    assertThat(response.totalPages()).isZero();
   }
 
   private void setDepartmentId(Department department, String id) {

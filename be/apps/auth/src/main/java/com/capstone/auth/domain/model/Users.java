@@ -85,6 +85,11 @@ public class Users {
     this.password = password;
   }
 
+  public void setUserId(String value) {
+    requireNonNullAndNotEmpty(value, Constant.PT_22);
+    this.userId = value;
+  }
+
   public void setUsername(String username) {
     requireNonNullAndNotEmpty(username, Constant.PT_05);
     this.username = username;
@@ -120,10 +125,6 @@ public class Users {
     if (value.trim().isEmpty()) {
       throw new IllegalArgumentException(message);
     }
-  }
-
-  public boolean isEnabled() {
-    return isEnabled;
   }
 
   public boolean isAccountNonLocked() {

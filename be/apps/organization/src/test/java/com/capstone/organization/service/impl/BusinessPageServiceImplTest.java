@@ -18,9 +18,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class BusinessPageServiceImplTest {
@@ -46,6 +44,22 @@ class BusinessPageServiceImplTest {
   }
 
   @Test
+  void createBusinessPageThrowsWhenNameIsEmpty() {
+    var request = new CreateBusinessPageRequest("", true, "creator-1", "updator-1");
+
+    assertThatThrownBy(() -> businessPageService.createBusinessPage(request))
+        .isInstanceOf(IllegalArgumentException.class);
+  }
+
+  @Test
+  void createBusinessPageThrowsWhenActivateIsNull() {
+    var request = new CreateBusinessPageRequest("Sales", null, "creator-1", "updator-1");
+
+    assertThatThrownBy(() -> businessPageService.createBusinessPage(request))
+        .isInstanceOf(NullPointerException.class);
+  }
+
+  @Test
   void updateBusinessPageReturnsResponse() {
     var request = new UpdateBusinessPageRequest("Support", false, "updator-2");
     var existing = new BusinessPage("page-2", "Old", true, "creator-2", "updator-1");
@@ -62,26 +76,35 @@ class BusinessPageServiceImplTest {
   }
 
   @Test
+  void updateBusinessPageThrowsWhenNameIsEmpty() {
+    var request = new UpdateBusinessPageRequest(" ", true, "updator-1");
+    var existing = new BusinessPage("page-1", "Old", true, "creator-1", "updator-1");
+    when(businessPageRepository.findById("page-1")).thenReturn(Optional.of(existing));
+
+    assertThatThrownBy(() -> businessPageService.updateBusinessPage("page-1", request))
+        .isInstanceOf(IllegalArgumentException.class);
+  }
+
+  @Test
   void updateBusinessPageThrowsWhenNotFound() {
     var request = new UpdateBusinessPageRequest("Support", false, "updator-2");
     when(businessPageRepository.findById("missing")).thenReturn(Optional.empty());
 
     assertThatThrownBy(() -> businessPageService.updateBusinessPage("missing", request))
-      .isInstanceOf(IllegalArgumentException.class)
-      .hasMessage("Business page not found");
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("Business page not found");
   }
 
   @Test
   void getBusinessPagesReturnsPagedResponse() {
     var pageRequest = PageRequest.of(1, 2);
     var items = List.of(
-      new BusinessPage("page-1", "Sales", true, "creator-1", "updator-1"),
-      new BusinessPage("page-2", "Support", false, "creator-2", "updator-2")
-    );
+        new BusinessPage("page-1", "Sales", true, "creator-1", "updator-1"),
+        new BusinessPage("page-2", "Support", false, "creator-2", "updator-2"));
     var page = new PageImpl<>(items, pageRequest, 4);
     when(businessPageRepository.findAll(pageRequest)).thenReturn(page);
 
-    var response = businessPageService.getBusinessPages(1, 2);
+    var response = businessPageService.getBusinessPages(pageRequest);
 
     assertThat(response.items()).hasSize(2);
     assertThat(response.page()).isEqualTo(1);
@@ -89,5 +112,18 @@ class BusinessPageServiceImplTest {
     assertThat(response.totalItems()).isEqualTo(4);
     assertThat(response.totalPages()).isEqualTo(2);
     verify(businessPageRepository).findAll(pageRequest);
+  }
+
+  @Test
+  void getBusinessPagesReturnsEmptyResponseWhenNoData() {
+    var pageRequest = PageRequest.of(0, 10);
+    var page = new PageImpl<BusinessPage>(List.of(), pageRequest, 0);
+    when(businessPageRepository.findAll(pageRequest)).thenReturn(page);
+
+    var response = businessPageService.getBusinessPages(pageRequest);
+
+    assertThat(response.items()).isEmpty();
+    assertThat(response.totalItems()).isZero();
+    assertThat(response.totalPages()).isZero();
   }
 }

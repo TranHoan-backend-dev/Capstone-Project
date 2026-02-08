@@ -22,6 +22,7 @@ dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-web'
   runtimeOnly 'org.springframework.boot:spring-boot-devtools'
   implementation 'org.springframework.boot:spring-boot-starter-security'
+  implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
   testImplementation 'org.springframework.security:spring-security-test'
 
   // swagger
@@ -30,6 +31,7 @@ dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
   implementation 'org.jspecify:jspecify:1.0.0'
   runtimeOnly 'org.postgresql:postgresql'
+  implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 }
 
 tasks.named('test') {

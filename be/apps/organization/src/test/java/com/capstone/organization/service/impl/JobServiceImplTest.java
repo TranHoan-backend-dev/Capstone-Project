@@ -47,6 +47,14 @@ class JobServiceImplTest {
   }
 
   @Test
+  void createJob_emptyName_throws() {
+    var request = new CreateJobRequest("");
+
+    assertThatThrownBy(() -> jobService.createJob(request))
+        .isInstanceOf(IllegalArgumentException.class);
+  }
+
+  @Test
   void updateJobReturnsResponse() {
     var createdAt = LocalDateTime.of(2026, 1, 30, 9, 0);
     var updatedAt = LocalDateTime.of(2026, 1, 31, 10, 0);
@@ -64,13 +72,23 @@ class JobServiceImplTest {
   }
 
   @Test
+  void updateJob_emptyName_throws() {
+    var request = new UpdateJobRequest(" ");
+    var existing = new Job("job-1", "Old", LocalDateTime.now(), LocalDateTime.now());
+    when(jobRepository.findById("job-1")).thenReturn(Optional.of(existing));
+
+    assertThatThrownBy(() -> jobService.updateJob("job-1", request))
+        .isInstanceOf(IllegalArgumentException.class);
+  }
+
+  @Test
   void updateJobThrowsWhenNotFound() {
     var request = new UpdateJobRequest("Senior Engineer");
     when(jobRepository.findById("missing")).thenReturn(Optional.empty());
 
     assertThatThrownBy(() -> jobService.updateJob("missing", request))
-      .isInstanceOf(IllegalArgumentException.class)
-      .hasMessage("Job not found");
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("Job not found");
   }
 
   @Test
@@ -79,9 +97,8 @@ class JobServiceImplTest {
     var updatedAt = LocalDateTime.of(2026, 1, 31, 10, 0);
     var pageRequest = PageRequest.of(0, 2);
     var items = List.of(
-      new Job("job-1", "Engineer", createdAt, updatedAt),
-      new Job("job-2", "Designer", createdAt, updatedAt)
-    );
+        new Job("job-1", "Engineer", createdAt, updatedAt),
+        new Job("job-2", "Designer", createdAt, updatedAt));
     var page = new PageImpl<>(items, pageRequest, 2);
     when(jobRepository.findAll(pageRequest)).thenReturn(page);
 
@@ -93,5 +110,17 @@ class JobServiceImplTest {
     assertThat(response.totalItems()).isEqualTo(2);
     assertThat(response.totalPages()).isEqualTo(1);
     verify(jobRepository).findAll(pageRequest);
+  }
+
+  @Test
+  void getJobs_emptyList_returnsEmptyPagedResponse() {
+    var pageRequest = PageRequest.of(0, 10);
+    when(jobRepository.findAll(pageRequest)).thenReturn(new PageImpl<Job>(List.of(), pageRequest, 0));
+
+    var response = jobService.getJobs(0, 10);
+
+    assertThat(response.items()).isEmpty();
+    assertThat(response.totalItems()).isZero();
+    assertThat(response.totalPages()).isZero();
   }
 }
