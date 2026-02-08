@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
@@ -32,6 +33,18 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(NotExistingException.class)
   public ResponseEntity<WrapperApiResponse> handleUserNotFoundException(@NonNull NotExistingException ex) {
+    return ResponseEntity
+      .status(HttpStatus.BAD_REQUEST)
+      .body(new WrapperApiResponse(
+        HttpStatus.BAD_REQUEST.value(),
+        ex.getMessage(),
+        null,
+        LocalDateTime.now()
+      ));
+  }
+
+  @ExceptionHandler(DateTimeParseException.class)
+  public ResponseEntity<WrapperApiResponse> handleDateTimeParseException(@NonNull DateTimeParseException ex) {
     return ResponseEntity
       .status(HttpStatus.BAD_REQUEST)
       .body(new WrapperApiResponse(

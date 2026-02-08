@@ -52,7 +52,7 @@ class UserServiceImplTest {
 
     var dto = userService.getUserById("id-1");
 
-    assertEquals("IT_DEPARTMENT_STAFF", dto.role());
+    assertEquals("IT_STAFF", dto.role());
     assertEquals("user1", dto.username());
     assertEquals("user@example.com", dto.email());
     assertFalse(dto.isLocked());

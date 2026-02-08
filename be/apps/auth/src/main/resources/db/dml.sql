@@ -9,23 +9,23 @@ $$
     role_id6 uuid := 'e9e6f842-9d4d-4a72-ae1b-ed06115a5119';
     role_id7 uuid := '6844f465-886a-4838-852b-864eb64e7d92';
     role_id8 uuid := '47c469de-21fd-4a32-a468-01a50f4aced6';
-    role_id7 uuid := '852841cd-8e76-4eea-a7fe-9b15459d5eea';
-    role_id8 uuid := '8ec56833-edd5-4a52-9fc8-256b91e2daca';
+    role_id9 uuid := '852841cd-8e76-4eea-a7fe-9b15459d5eea';
+    role_id10 uuid := '8ec56833-edd5-4a52-9fc8-256b91e2daca';
 --
     user_id1 uuid := 'e78050e5-9e87-46d1-a250-957bfeece3f9';
     user_id2 uuid := '14c5879c-a6c4-45a6-846b-39d2b9d8c961';
   BEGIN
     INSERT INTO user_roles(role_id, name)
     VALUES (role_id2, 'IT_STAFF'),
-           (role_id1, 'PLANNING_TECHNICAL_DEPARTMENT_STAFF'),
+           (role_id1, 'PLANNING_TECHNICAL_DEPARTMENT_HEAD'),
            (role_id3, 'SURVEY_STAFF'),
            (role_id4, 'ORDER_RECEIVING_STAFF'),
            (role_id5, 'FINANCE_DEPARTMENT'),
            (role_id6, 'CONSTRUCTION_DEPARTMENT_HEAD'),
            (role_id7, 'CONSTRUCTION_DEPARTMENT_STAFF'),
            (role_id8, 'BUSINESS_DEPARTMENT_HEAD'),
-           (role_id8, 'METER_INSPECTION_STAFF'),
-           (role_id8, 'COMPANY_LEADERSHIP');
+           (role_id9, 'METER_INSPECTION_STAFF'),
+           (role_id10, 'COMPANY_LEADERSHIP');
 
     insert into users
     values (user_id1, '2025-09-14', 'koofdf', 'efsdf', 'a@gmail.com',true, true, ARRAY ['asdasd', 'asdasd', 'asdasd'], now(), 'dont know',
@@ -34,7 +34,7 @@ $$
             'htrhrt', '2025-03-12', 'username2', 'sdfsdfs', role_id2);
 
     insert into profile
-    values (user_id1, null, null, null, 'fullname1', true, 0949279200),
-           (user_id2, null, null, null, 'fullname2', false, 0949279210);
+    values (user_id1, null, null, null, 'fullname1', true, '0949279200'),
+           (user_id2, null, null, null, 'fullname2', false, '0949279210');
   END
 $$;

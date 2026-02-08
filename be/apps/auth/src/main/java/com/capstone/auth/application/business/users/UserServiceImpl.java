@@ -5,7 +5,6 @@ import com.capstone.auth.application.exception.ExistingException;
 import com.capstone.auth.application.exception.NotExistingException;
 import com.capstone.auth.domain.model.Roles;
 import com.capstone.auth.domain.model.Users;
-import com.capstone.auth.domain.repository.RoleRepository;
 import com.capstone.auth.domain.repository.UserRepository;
 import com.capstone.auth.infrastructure.config.Constant;
 import lombok.AccessLevel;
@@ -27,14 +26,13 @@ import java.util.concurrent.ExecutionException;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserServiceImpl implements UserService {
   UserRepository repo;
-  RoleRepository roleRepo;
   PasswordEncoder encoder;
 
   @Override
   public void createEmployee(
-      String username, String password, String email,
-      Roles role, String jobIds, String businessIds,
-      String departmentId, String waterSupplyNetworkId) throws ExecutionException, InterruptedException {
+    String username, String password, String email,
+    Roles role, String jobIds, String businessIds,
+    String departmentId, String waterSupplyNetworkId) throws ExecutionException, InterruptedException {
     log.info("UsersService is handling the request");
     var obj = repo.findByEmail(email);
     if (obj.isPresent()) {
@@ -43,12 +41,12 @@ public class UserServiceImpl implements UserService {
 
     var passwordHash = hashPassword(password).get();
     var user = Users.create(builder -> builder
-        .email(email)
-        .password(passwordHash)
-        .username(username)
-        .role(role)
-        .waterSupplyNetworkId(waterSupplyNetworkId)
-        .departmentId(departmentId));
+      .email(email)
+      .password(passwordHash)
+      .username(username)
+      .role(role)
+      .waterSupplyNetworkId(waterSupplyNetworkId)
+      .departmentId(departmentId));
     log.info("New account's information: {}", user);
 
     repo.save(user);
@@ -123,12 +121,49 @@ public class UserServiceImpl implements UserService {
     if (user.isPresent()) {
       log.info("User found: {}", user.get());
       return new UserDTO(
-          user.get().getRole().getName().name(),
-          user.get().getUsername(),
-          user.get().getEmail(),
-          user.get().isAccountNonLocked(),
-          user.get().isEnabled());
+        user.get().getRole().getName().name(),
+        user.get().getUsername(),
+        user.get().getEmail(),
+        user.get().getIsLocked(),
+        user.get().getPassword(),
+        user.get().getCreatedAt(),
+        user.get().getUpdatedAt(),
+        user.get().getLockedReason(),
+        user.get().getLockedAt(),
+        user.get().getJobId(),
+        user.get().getDepartmentId(),
+        user.get().getWaterSupplyNetworkId(),
+        user.get().getElectronicSigningUrl(),
+        user.get().getIsEnabled());
     }
     throw new NotExistingException("User with id does not exist");
+  }
+
+  @Override
+  public UserDTO updateUsername(String id, String username) {
+    log.info("Saving user: {}", username);
+    var currentUser = repo.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
+
+    if (username != null) {
+      currentUser.setUsername(username);
+
+      repo.save(currentUser);
+      return new UserDTO(
+        currentUser.getRole().getName().name(),
+        currentUser.getUsername(),
+        currentUser.getEmail(),
+        currentUser.getIsLocked(),
+        currentUser.getPassword(),
+        currentUser.getCreatedAt(),
+        currentUser.getUpdatedAt(),
+        currentUser.getLockedReason(),
+        currentUser.getLockedAt(),
+        currentUser.getJobId(),
+        currentUser.getDepartmentId(),
+        currentUser.getWaterSupplyNetworkId(),
+        currentUser.getElectronicSigningUrl(),
+        currentUser.getIsEnabled());
+    }
+    return null;
   }
 }

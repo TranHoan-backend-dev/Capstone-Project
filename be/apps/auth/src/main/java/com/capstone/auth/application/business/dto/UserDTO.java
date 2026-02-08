@@ -1,12 +1,20 @@
 package com.capstone.auth.application.business.dto;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDateTime;
 
-@Schema(description = "User account information data transfer object")
 public record UserDTO(
-        @Schema(description = "User role", example = "USER") String role,
-        @Schema(description = "Username", example = "johndoe") String username,
-        @Schema(description = "Email address", example = "johndoe@gmail.com") String email,
-        @Schema(description = "Account lock status", example = "false") boolean isLocked,
-        @Schema(description = "Account enabled status", example = "true") boolean isEnabled) {
+    String role,
+    String username,
+    String email,
+    boolean isLocked,
+    String password,
+    LocalDateTime createdAt,
+    LocalDateTime updatedAt,
+    String lockedReason,
+    LocalDateTime lockedAt,
+    String jobId,
+    String departmentId,
+    String waterSupplyNetworkId,
+    String electronicSigningUrl,
+    boolean isEnabled) {
 }

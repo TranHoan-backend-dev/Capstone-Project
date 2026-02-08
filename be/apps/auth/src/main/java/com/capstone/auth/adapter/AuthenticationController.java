@@ -40,187 +40,154 @@ import java.util.concurrent.ExecutionException;
 @RequestMapping("/auth")
 @SecurityRequirement(name = "Keycloak")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@Tag(name = "Authentication", description = "Operations for user authentication, registration, OTP, and profile management.")
+@Tag(name = "Authentication", description = "Operations for user authentication, registration, OTP.")
 public class AuthenticationController {
-        AuthUseCase authUC;
-        OtpUseCase otpUC;
+  AuthUseCase authUC;
+  OtpUseCase otpUC;
 
-        @Operation(summary = "Register new account", description = "Registers a new user account with employee details including role, department, and water supply network.")
-        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Details for the new user account", required = true, content = @Content(schema = @Schema(implementation = SignupRequest.class)))
-        @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "Registration successful. Returns WrapperApiResponse with data as null.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-                        @ApiResponse(responseCode = "400", description = "Bad Request - Validation failed or account already exists"),
-                        @ApiResponse(responseCode = "500", description = "Internal Server Error")
-        })
-        @PostMapping("/signup")
-        public ResponseEntity<?> signup(@RequestBody @Valid SignupRequest request)
-                        throws ExecutionException, InterruptedException {
-                log.info("Signup request comes to endpoint: {}", request);
+  @Operation(summary = "Register new account", description = "Registers a new user account with employee details including role, department, and water supply network.")
+  @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Details for the new user account", required = true, content = @Content(schema = @Schema(implementation = SignupRequest.class)))
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Registration successful. Returns WrapperApiResponse with data as null.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Bad Request - Validation failed or account already exists"),
+    @ApiResponse(responseCode = "500", description = "Internal Server Error")
+  })
+  @PostMapping("/signup")
+  public ResponseEntity<?> signup(@RequestBody @Valid SignupRequest request)
+    throws ExecutionException, InterruptedException {
+    log.info("Signup request comes to endpoint: {}", request);
 
-                authUC.register(
-                                request.username(), request.password(),
-                                request.email(), request.roleId(), request.fullname(),
-                                request.jobId(), request.businessPageIds(),
-                                request.departmentId(), request.waterSupplyNetworkId());
+    authUC.register(
+      request.username(), request.password(),
+      request.email(), request.roleId(), request.fullname(),
+      request.jobId(), request.businessPageIds(),
+      request.departmentId(), request.waterSupplyNetworkId());
 
-                return ResponseEntity.ok(new WrapperApiResponse(
-                                HttpStatus.OK.value(),
-                                "Create account successfully",
-                                null,
-                                LocalDateTime.now()));
-        }
+    return ResponseEntity.ok(new WrapperApiResponse(
+      HttpStatus.OK.value(),
+      "Create account successfully",
+      null,
+      LocalDateTime.now()));
+  }
 
-        // <editor-fold> desc="Forgot password"
-        @Operation(summary = "Check existence of username or email", description = "Checks if the provided username or email is already taken in the system.")
-        @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "Check successful. Returns WrapperApiResponse with data as CheckExistenceResponse object.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-                        @ApiResponse(responseCode = "400", description = "Bad Request")
-        })
-        @PostMapping("/check-existence")
-        public ResponseEntity<?> checkExistence(
-                        @RequestBody @Valid CheckExistenceRequest request) {
-                return ResponseEntity.ok(new WrapperApiResponse(
-                                HttpStatus.OK.value(),
-                                "Check existence successfully",
-                                authUC.checkExistence(request.value()),
-                                LocalDateTime.now()));
-        }
+  // <editor-fold> desc="Forgot password"
+  @Operation(summary = "Check existence of username or email", description = "Checks if the provided username or email is already taken in the system.")
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Check successful. Returns WrapperApiResponse with data as CheckExistenceResponse object.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Bad Request")
+  })
+  @PostMapping("/check-existence")
+  public ResponseEntity<?> checkExistence(
+    @RequestBody @Valid CheckExistenceRequest request) {
+    return ResponseEntity.ok(new WrapperApiResponse(
+      HttpStatus.OK.value(),
+      "Check existence successfully",
+      authUC.checkExistence(request.value()),
+      LocalDateTime.now()));
+  }
 
-        @Operation(summary = "Send OTP via email", description = "Sends an OTP code to the provided email for verification or password reset.")
-        @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "OTP sent successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-                        @ApiResponse(responseCode = "400", description = "Invalid or non-existent email")
-        })
-        @PostMapping("/send-otp")
-        public ResponseEntity<?> sendOtp(
-                        @RequestBody @Valid SendOtpRequest request) {
-                otpUC.sendOtp(request.email());
-                return ResponseEntity.ok(new WrapperApiResponse(
-                                HttpStatus.OK.value(),
-                                "Send OTP successfully",
-                                null,
-                                LocalDateTime.now()));
-        }
+  @Operation(summary = "Send OTP via email", description = "Sends an OTP code to the provided email for verification or password reset.")
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "OTP sent successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Invalid or non-existent email")
+  })
+  @PostMapping("/send-otp")
+  public ResponseEntity<?> sendOtp(
+    @RequestBody @Valid SendOtpRequest request) {
+    otpUC.sendOtp(request.email());
+    return ResponseEntity.ok(new WrapperApiResponse(
+      HttpStatus.OK.value(),
+      "Send OTP successfully",
+      null,
+      LocalDateTime.now()));
+  }
 
-        @Operation(summary = "Verify OTP code", description = "Verifies the validity of the OTP code sent via email.")
-        @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "OTP verified successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-                        @ApiResponse(responseCode = "400", description = "Invalid or expired OTP code")
-        })
-        @PostMapping("/verify-otp")
-        public ResponseEntity<?> verifyOtp(
-                        @RequestBody @Valid VerifyOtpRequest request) {
-                var isValid = otpUC.verifyOtp(request.email(), request.otp());
-                // if not valid, the service might return false or throw exception.
-                // Implementation in service returns boolean without exception for mismatch, but
-                // exception for expiry/not found.
-                // Let's handle the boolean false case.
+  @Operation(summary = "Verify OTP code", description = "Verifies the validity of the OTP code sent via email.")
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "OTP verified successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Invalid or expired OTP code")
+  })
+  @PostMapping("/verify-otp")
+  public ResponseEntity<?> verifyOtp(
+    @RequestBody @Valid VerifyOtpRequest request) {
+    var isValid = otpUC.verifyOtp(request.email(), request.otp());
+    // if not valid, the service might return false or throw exception.
+    // Implementation in service returns boolean without exception for mismatch, but
+    // exception for expiry/not found.
+    // Let's handle the boolean false case.
 
-                return ResponseEntity.badRequest().body(new WrapperApiResponse(
-                                !isValid ? HttpStatus.BAD_REQUEST.value() : HttpStatus.OK.value(),
-                                !isValid ? "Invalid OTP" : "Verify OTP successfully",
-                                null,
-                                LocalDateTime.now()));
-        }
-        // </editor-fold>
+    return ResponseEntity.badRequest().body(new WrapperApiResponse(
+      !isValid ? HttpStatus.BAD_REQUEST.value() : HttpStatus.OK.value(),
+      !isValid ? "Invalid OTP" : "Verify OTP successfully",
+      null,
+      LocalDateTime.now()));
+  }
+  // </editor-fold>
 
-        @Operation(summary = "Reset password with OTP", description = "Allows the user to set a new password after successful OTP verification.")
-        @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "Password reset successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-                        @ApiResponse(responseCode = "400", description = "Invalid OTP or incorrect data")
-        })
-        @PostMapping("/reset-password")
-        public ResponseEntity<?> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
-                otpUC.resetPasswordWithOtp(request.email(), request.otp(), request.newPassword());
-                return ResponseEntity.ok(new WrapperApiResponse(
-                                HttpStatus.OK.value(),
-                                "Reset password successfully",
-                                null,
-                                LocalDateTime.now()));
-        }
+  @Operation(summary = "Reset password with OTP", description = "Allows the user to set a new password after successful OTP verification.")
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Password reset successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Invalid OTP or incorrect data")
+  })
+  @PostMapping("/reset-password")
+  public ResponseEntity<?> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
+    otpUC.resetPasswordWithOtp(request.email(), request.otp(), request.newPassword());
+    return ResponseEntity.ok(new WrapperApiResponse(
+      HttpStatus.OK.value(),
+      "Reset password successfully",
+      null,
+      LocalDateTime.now()));
+  }
 
-        @Operation(summary = "Change password (Authenticated)", description = "Changes the password for the currently logged-in user. Requires the old password and the new password.")
-        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Old password, new password, and confirmation", required = true, content = @Content(schema = @Schema(implementation = ChangePasswordRequest.class)))
-        @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "Password changed successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-                        @ApiResponse(responseCode = "400", description = "Bad Request - Old password incorrect or new passwords do not match"),
-                        @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing JWT token"),
-                        @ApiResponse(responseCode = "500", description = "Internal Server Error")
-        })
-        @PostMapping("/change-password")
-        public ResponseEntity<?> changePassword(
-                        @AuthenticationPrincipal Jwt jwt,
-                        @RequestBody @Valid ChangePasswordRequest request) {
-                log.info("Change password request comes to endpoint: {}", jwt);
-                var email = jwt.getClaim("email");
-                authUC.changePassword(email.toString(), request.oldPassword(), request.newPassword(),
-                                request.confirmPassword());
+  @Operation(summary = "Change password (Authenticated)", description = "Changes the password for the currently logged-in user. Requires the old password and the new password.")
+  @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Old password, new password, and confirmation", required = true, content = @Content(schema = @Schema(implementation = ChangePasswordRequest.class)))
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Password changed successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Bad Request - Old password incorrect or new passwords do not match"),
+    @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing JWT token"),
+    @ApiResponse(responseCode = "500", description = "Internal Server Error")
+  })
+  @PostMapping("/change-password")
+  public ResponseEntity<?> changePassword(
+    @AuthenticationPrincipal Jwt jwt,
+    @RequestBody @Valid ChangePasswordRequest request) {
+    log.info("Change password request comes to endpoint: {}", jwt);
+    var email = jwt.getClaim("email");
+    authUC.changePassword(email.toString(), request.oldPassword(), request.newPassword(),
+      request.confirmPassword());
 
-                return ResponseEntity.ok(new WrapperApiResponse(
-                                HttpStatus.OK.value(),
-                                "Change password successfully",
-                                null,
-                                LocalDateTime.now()));
-        }
+    return ResponseEntity.ok(new WrapperApiResponse(
+      HttpStatus.OK.value(),
+      "Change password successfully",
+      null,
+      LocalDateTime.now()));
+  }
 
-        @Operation(summary = "Get Current User Profile", description = "Retrieves the profile of the currently authenticated user based on the JWT token. "
-                        +
-                        "Flow: 1. Extracts the user ID (subject) and claims (email, preferred_username) from the JWT. "
-                        +
-                        "2. Validates that the account associated with the ID exists and is not locked/disabled. "
-                        +
-                        "3. Verifies that the email and username in the token match the records in the database. "
-                        +
-                        "4. Returns the user's profile information.")
-        @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "Profile retrieved successfully. Returns WrapperApiResponse with data as UserProfileResponse object.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-                        @ApiResponse(responseCode = "400", description = "Bad Request - Token claims (email/username) do not match database records"),
-                        @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing JWT token"),
-                        @ApiResponse(responseCode = "403", description = "Forbidden - Account is disabled or locked"),
-                        @ApiResponse(responseCode = "500", description = "Internal Server Error")
-        })
-        @GetMapping("/me")
-        public ResponseEntity<?> me(@AuthenticationPrincipal Jwt jwt) {
-                var id = jwt.getSubject();
+  @Operation(summary = "Login with JWT", description = "Authenticates the user using the JWT token from the Authorization header. "
+    +
+    "It extracts user claims (email, preferred_username), validates the user's existence, account status (not deleted, locked or disabled) and data consistency against the database. "
+    +
+    "Returns a success wrapper containing the user's profile information (UserProfileResponse) in the 'data' field if successful.")
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Login successful. Returns WrapperApiResponse with data as UserProfileResponse object containing personal information.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Bad Request - Invalid claims or user data mismatch"),
+    @ApiResponse(responseCode = "403", description = "Forbidden - Account is deleted, disabled or locked"),
+    @ApiResponse(responseCode = "500", description = "Internal Server Error")
+  })
+  @PostMapping("/login")
+  public ResponseEntity<?> login(@AuthenticationPrincipal Jwt jwt) {
+    log.info("Login request comes to endpoint: {}", jwt);
 
-                Map<String, Object> claims = jwt.getClaims();
-                log.info("Get profile request comes to endpoint: {}", id);
+    var id = jwt.getSubject();
+    Map<String, Object> claims = jwt.getClaims(); // username, email
 
-                return ResponseEntity.ok(new WrapperApiResponse(
-                                HttpStatus.OK.value(),
-                                "Get profile successfully",
-                                authUC.getMe(
-                                                id,
-                                                claims.get("email").toString(),
-                                                claims.get("preferred_username").toString()),
-                                LocalDateTime.now()));
-        }
-
-        @Operation(summary = "Login with JWT", description = "Authenticates the user using the JWT token from the Authorization header. "
-                        +
-                        "It extracts user claims (email, preferred_username), validates the user's existence, account status (not deleted, locked or disabled) and data consistency against the database. "
-                        +
-                        "Returns a success wrapper containing the user's profile information (UserProfileResponse) in the 'data' field if successful.")
-        @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "Login successful. Returns WrapperApiResponse with data as UserProfileResponse object containing personal information.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-                        @ApiResponse(responseCode = "400", description = "Bad Request - Invalid claims or user data mismatch"),
-                        @ApiResponse(responseCode = "403", description = "Forbidden - Account is deleted, disabled or locked"),
-                        @ApiResponse(responseCode = "500", description = "Internal Server Error")
-        })
-        @PostMapping("/login")
-        public ResponseEntity<?> login(@AuthenticationPrincipal Jwt jwt) {
-                log.info("Login request comes to endpoint: {}", jwt);
-
-                var id = jwt.getSubject();
-                Map<String, Object> claims = jwt.getClaims(); // username, email
-
-                return ResponseEntity.ok(new WrapperApiResponse(
-                                HttpStatus.OK.value(),
-                                "Login successfully",
-                                authUC.login(
-                                                id,
-                                                claims.get("email").toString(),
-                                                claims.get("preferred_username").toString()),
-                                LocalDateTime.now()));
-        }
+    return ResponseEntity.ok(new WrapperApiResponse(
+      HttpStatus.OK.value(),
+      "Login successfully",
+      authUC.login(
+        id,
+        claims.get("email").toString(),
+        claims.get("preferred_username").toString()),
+      LocalDateTime.now()));
+  }
 }
