@@ -72,6 +72,7 @@ public class BusinessPageServiceImpl implements BusinessPageService {
     log.info("Fetching business pages page: {}, size: {}", page, size);
 
     var result = businessPageRepository.findAll(PageRequest.of(page, size));
+
     var items = result.getContent().stream()
       .map(pageEntity -> new BusinessPageResponse(
         IdEncoder.encode(pageEntity.getPageId()),

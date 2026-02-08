@@ -25,7 +25,7 @@ public class Department {
   @Column(nullable = false, unique = true)
   String name;
 
-  @Column(nullable = false, unique = true)
+  @Column(unique = true)
   String phoneNumber;
 
   public void setName(String name) {
