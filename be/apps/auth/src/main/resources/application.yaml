@@ -4,7 +4,6 @@ spring:
   profiles:
     active: dev
   jackson:
-    default-property-inclusion: non_null
     time-zone: Asia/Ho_Chi_Minh
     locale: vi_VN
   jpa:

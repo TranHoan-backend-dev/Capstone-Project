@@ -12,7 +12,7 @@ $$
     role_id9 uuid := '852841cd-8e76-4eea-a7fe-9b15459d5eea';
     role_id10 uuid := '8ec56833-edd5-4a52-9fc8-256b91e2daca';
 --
-    user_id1 uuid := '4f321e7e-3a04-4afa-82e5-4e54e005febe';
+    user_id1 uuid := '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20';
     user_id2 uuid := '14c5879c-a6c4-45a6-846b-39d2b9d8c961';
   BEGIN
     INSERT INTO user_roles(role_id, name)
@@ -28,8 +28,8 @@ $$
            (role_id10, 'COMPANY_LEADERSHIP');
 
     insert into users
-    values (user_id1, '2025-09-14', 'koofdf', 'efsdf', 'a@gmail.com',true, true, ARRAY ['asdasd', 'asdasd', 'asdasd'], now(), 'dont know',
-            'aeraewrwer', '2025-09-20', 'username1', 'sdfsdfs', role_id1),
+    values (user_id1, '2025-09-14', 'koofdf', 'efsdf', 'ndd1032003@gmail.com',true, false, ARRAY ['asdasd', 'asdasd', 'asdasd'], now(), 'dont know',
+            'aeraewrwer', '2025-09-20', 'test', 'sdfsdfs', role_id1),
            (user_id2, '2024-03-24', 'hetyhj', 'argear', 'b@gmail.com',false, false, ARRAY ['asdasd', 'asdasd', 'asdasd'], now(), 'eh',
             'htrhrt', '2025-03-12', 'username2', 'sdfsdfs', role_id2);
 

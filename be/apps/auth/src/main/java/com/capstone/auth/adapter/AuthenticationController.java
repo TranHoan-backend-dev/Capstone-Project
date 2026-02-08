@@ -177,10 +177,8 @@ public class AuthenticationController {
   })
   @PostMapping("/login")
   public ResponseEntity<?> login(@AuthenticationPrincipal Jwt jwt) {
-    log.info("Login request comes to endpoint: {}", jwt);
-
     var id = jwt.getSubject();
-    Map<String, Object> claims = jwt.getClaims(); // username, email
+    Map<String, Object> claims = jwt.getClaims(); // username,
 
     return ResponseEntity.ok(new WrapperApiResponse(
       HttpStatus.OK.value(),

@@ -45,7 +45,7 @@ public class AuthUseCase {
 
   public UserProfileResponse login(String userId, String email, String username) {
     log.info("Handling login business with userId={} and email={}", userId, email);
-    UserDTO user = uSrv.getUserById(userId);
+    var user = uSrv.getUserById(userId);
     Objects.requireNonNull(user, Constant.SE_04);
 
     CredentialsUtils.validateCredentials(user, email, username);
