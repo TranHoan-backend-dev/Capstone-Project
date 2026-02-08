@@ -6,7 +6,7 @@ type RoleMeta = {
 };
 
 export const ROLE_META: Record<Role, RoleMeta> = {
-  it_department_staff: {
+  it_staff: {
     label: "Nhân viên IT",
     department: "IT",
   },

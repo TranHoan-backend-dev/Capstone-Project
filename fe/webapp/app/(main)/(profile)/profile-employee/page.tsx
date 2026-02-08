@@ -17,7 +17,7 @@ const Profile = () => {
       <CustomBreadcrumb
         items={[
           { label: "Trang chủ", href: "/home" },
-          { label: "Thông tin khách hàng", isCurrent: true },
+          { label: "Hồ sơ nhân viên", isCurrent: true },
         ]}
       />
 

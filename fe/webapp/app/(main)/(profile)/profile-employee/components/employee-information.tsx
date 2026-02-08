@@ -4,11 +4,12 @@ import { useState } from "react";
 import { Card, CardBody, Chip, Avatar } from "@heroui/react";
 import CustomButton from "@/components/ui/custom/CustomButton";
 import CustomField from "@/components/ui/custom/CustomField";
-import { DarkGreenChip, PencilIcon } from "@/config/chip-and-icon";
+import { PencilIcon } from "@/config/chip-and-icon";
 import { EmployeeProfileData } from "@/types";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
 import { ROLE_META } from "@/config/role.config";
 import { Role } from "@/constants/roles";
+import { CallToast } from "@/components/ui/CallToast";
 
 interface EmployeeProfileProps {
   data: EmployeeProfileData;
@@ -16,17 +17,62 @@ interface EmployeeProfileProps {
 
 const EmployeeProfile = ({ data }: EmployeeProfileProps) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [originalData, setOriginalData] = useState(data);
   const [formData, setFormData] = useState<EmployeeProfileData>(data);
   const role = formData.role as Role;
-  console.log("formdata: ", formData);
   const roleLabel = ROLE_META[role]?.label ?? "Không xác định";
+  const genderLabel =
+    formData.gender === "true"
+      ? "Nam"
+      : formData.gender === "false"
+        ? "Nữ"
+        : "Chưa cập nhật";
 
   const handleChange = (key: keyof EmployeeProfileData, value: string) => {
     setFormData({ ...formData, [key]: value });
   };
 
   const handleSave = async () => {
-    setIsEditing(false);
+    try {
+      const payload = {
+        fullname: formData.fullname,
+        phoneNumber: formData.phoneNumber,
+        avatarUrl: formData.avatarUrl,
+        gender: formData.gender,
+        birthday: formData.birthday,
+        address: formData.address,
+      };
+
+      const res = await fetch("/api/auth/me", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const json = await res.json();
+
+      if (!res.ok) {
+        throw new Error(json.message || "Cập nhật thông tin thất bại");
+      }
+
+      setFormData((prev) => ({
+        ...prev,
+        ...json.data,
+      }));
+      setOriginalData(json.data);
+      setIsEditing(false);
+      CallToast({
+        title: "Thành công",
+        message: "Cập nhật thông tin thành công!",
+        color: "success",
+      });
+    } catch (error: any) {
+      CallToast({
+        title: "Thất bại",
+        message: error.message || "Cập nhật thông tin thất bại!",
+        color: "danger",
+      });
+    }
   };
 
   return (
@@ -99,10 +145,13 @@ const EmployeeProfile = ({ data }: EmployeeProfileProps) => {
                 {isEditing ? (
                   <CustomSelect
                     label="Giới tính"
-                    selectedKeys={[formData.gender]}
+                    selectedKeys={[String(formData.gender)]}
                     onSelectionChange={(keys) => {
                       const value = Array.from(keys)[0];
-                      handleChange("gender", value);
+                      setFormData({
+                        ...formData,
+                        gender: value,
+                      });
                     }}
                     options={[
                       { label: "Nam", value: "true" },
@@ -112,7 +161,7 @@ const EmployeeProfile = ({ data }: EmployeeProfileProps) => {
                 ) : (
                   <CustomField
                     label="Giới tính"
-                    value={formData.gender === "true" ? "Nam" : "Nữ"}
+                    value={genderLabel}
                     isEditing={isEditing}
                     onChange={(v) => handleChange("gender", v)}
                   />
