@@ -1,13 +1,11 @@
 "use client";
 
 import type React from "react";
-
 import { z } from "zod";
 import { useState } from "react";
-
 import CustomButton from "../../../../components/ui/custom/CustomButton";
-
 import CustomInput from "@/components/ui/custom/CustomInput";
+import { forgotPasswordService } from "@/services/auth.service";
 
 interface ForgotPasswordFormProps {
   onSuccessAction: (email: string) => void;
@@ -39,11 +37,14 @@ export function ForgotPasswordForm({
 
     setIsLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await forgotPasswordService(email);
 
       onSuccessAction(email);
-    } catch (err) {
-      setError("Có lỗi xảy ra. Vui lòng thử lại.");
+    } catch (err: any) {
+      setError(
+        err.response?.data?.message || "Không thể gửi email. Vui lòng thử lại",
+      );
+    } finally {
       setIsLoading(false);
     }
   };
