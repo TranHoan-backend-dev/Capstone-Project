@@ -112,7 +112,7 @@ public class AuthUseCase {
       profile.address(),
       profile.phoneNumber(),
       profile.gender().toString(),
-      profile.birthday().toString(),
+      profile.birthday() == null ? null : profile.birthday().toString(),
       user.role().toLowerCase(),
       user.username(),
       user.email());
