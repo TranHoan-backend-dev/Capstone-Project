@@ -6,7 +6,7 @@ create table public.business_page
   creator  varchar(255) not null,
   name     varchar(255) not null
     constraint ukd95s8n40xd5gu8nf7k5beq3l0
-            unique,
+      unique,
   updator  varchar(255) not null
 );
 
@@ -19,10 +19,10 @@ create table public.department
     primary key,
   name          varchar(255) not null
     constraint uk1t68827l97cwyxo9r1u6t4p7d
-            unique,
-  phone_number  varchar(255) not null
+      unique,
+  phone_number  varchar(255)
     constraint uk3xtr67uls6rn1u4qy6iy68ffo
-            unique
+      unique
 );
 
 alter table public.department
@@ -35,7 +35,7 @@ create table public.job
   created_at timestamp(6) not null,
   name       varchar(255) not null
     constraint ukatcl7ldp04r846fq0cep4e3wi
-            unique,
+      unique,
   updated_at timestamp(6) not null
 );
 

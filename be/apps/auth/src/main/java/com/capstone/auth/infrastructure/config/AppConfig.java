@@ -20,6 +20,7 @@ import java.util.concurrent.Executor;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AppConfig {
   KeycloakConfig keycloakConfig;
+  AuthorizedPartyValidator validator;
 
   @Bean
   PasswordEncoder passwordEncoder() {
@@ -46,7 +47,11 @@ public class AppConfig {
     OAuth2TokenValidator<Jwt> withIssuer = JwtValidators.createDefaultWithIssuer(keycloakConfig.getIssuerUri());
     OAuth2TokenValidator<Jwt> withAudience = new AudienceValidator(keycloakConfig.getAud());
 
-    decoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(withIssuer, withAudience));
+    decoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(
+      withIssuer,
+      withAudience,
+      validator
+    ));
     return decoder;
   }
 }

@@ -1,4 +1,0 @@
-@uri = http://localhost:9008
-
-### Register new account for customer, happy case
-GET {{uri}}/api/v1/business-pages?page=0&size=10

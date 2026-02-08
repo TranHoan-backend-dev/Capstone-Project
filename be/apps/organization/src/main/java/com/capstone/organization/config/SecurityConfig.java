@@ -9,9 +9,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Component;
 import org.springframework.web.cors.CorsConfiguration;
@@ -23,6 +26,7 @@ import java.util.List;
 @EnableWebSecurity
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
+@EnableMethodSecurity
 public class SecurityConfig {
   @Component
   @ConfigurationProperties(prefix = "cors")
@@ -32,12 +36,13 @@ public class SecurityConfig {
     private List<String> allowedOrigins;
   }
 
+  JwtDecoder decoder;
+  JwtAuthenticationConverter converter;
   CorsProperties corsProperties;
   final String[] PUBLIC_URLS = {
     "/actuator/**",
     "/v3/api-docs/**",
     "/swagger-ui/**",
-    "/business-pages/**"
   };
 
   @Bean
@@ -48,6 +53,11 @@ public class SecurityConfig {
       .authorizeHttpRequests(auth -> auth
         .requestMatchers(PUBLIC_URLS).permitAll()
         .anyRequest().authenticated())
+      .oauth2ResourceServer(oauth2 -> oauth2
+        .jwt(jwt -> jwt
+          .decoder(decoder)
+          .jwtAuthenticationConverter(converter))
+      )
       .exceptionHandling(ex -> ex
         .authenticationEntryPoint((request, response, authException) -> {
           response.setContentType("application/json");

@@ -1,6 +1,7 @@
 package com.capstone.auth.domain.model;
 
 import com.capstone.auth.infrastructure.config.Constant;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -34,6 +35,8 @@ public class Profile {
   @Column(unique = true, nullable = false)
   String phoneNumber;
   Boolean gender;
+
+  @JsonFormat(pattern = "yyyy-MM-dd")
   LocalDate birthday;
 
   public void setUsers(Users users) {
@@ -41,9 +44,14 @@ public class Profile {
     this.users = users;
   }
 
+  public void setProfileId(String value) {
+    Objects.requireNonNull(value, Constant.PT_22);
+    this.profileId = value;
+  }
+
   public void setFullname(String fullname) {
     requireNonNullAndNotEmpty(fullname, Constant.PT_10);
-    if (!fullname.chars().allMatch(Character::isLetter)) {
+    if (!fullname.chars().allMatch(c -> Character.isLetter(c) || Character.isWhitespace(c))) {
       throw new IllegalArgumentException(Constant.PT_13);
     }
     this.fullname = fullname;
