@@ -104,7 +104,7 @@ class BusinessPageServiceImplTest {
     var page = new PageImpl<>(items, pageRequest, 4);
     when(businessPageRepository.findAll(pageRequest)).thenReturn(page);
 
-    var response = businessPageService.getBusinessPages(1, 2);
+    var response = businessPageService.getBusinessPages(pageRequest);
 
     assertThat(response.items()).hasSize(2);
     assertThat(response.page()).isEqualTo(1);
@@ -120,7 +120,7 @@ class BusinessPageServiceImplTest {
     var page = new PageImpl<BusinessPage>(List.of(), pageRequest, 0);
     when(businessPageRepository.findAll(pageRequest)).thenReturn(page);
 
-    var response = businessPageService.getBusinessPages(0, 10);
+    var response = businessPageService.getBusinessPages(pageRequest);
 
     assertThat(response.items()).isEmpty();
     assertThat(response.totalItems()).isZero();
