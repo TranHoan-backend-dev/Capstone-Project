@@ -1,6 +1,7 @@
 package com.capstone.auth.adapter;
 
 import com.capstone.auth.application.dto.request.UpdateProfileRequest;
+import com.capstone.auth.application.dto.response.UserProfileResponse;
 import com.capstone.auth.application.dto.response.WrapperApiResponse;
 import com.capstone.auth.application.usecase.ProfileUseCase;
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,11 +45,11 @@ public class ProfileController {
     +
     "4. Returns the user's profile information.")
   @ApiResponses(value = {
-    @ApiResponse(responseCode = "200", description = "Profile retrieved successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "400", description = "Bad Request - Token claims (email/username) do not match database records or are invalid", content = @Content),
-    @ApiResponse(responseCode = "401", description = "Unauthorized - Valid JWT token is missing or expired", content = @Content),
-    @ApiResponse(responseCode = "403", description = "Forbidden - The user account is locked or disabled", content = @Content),
-    @ApiResponse(responseCode = "500", description = "Internal Server Error - An unexpected error occurred", content = @Content)
+    @ApiResponse(responseCode = "200", description = "Profile retrieved successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserProfileResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Bad Request - Token claims (email/username) do not match database records or are invalid", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "401", description = "Unauthorized - Valid JWT token is missing or expired", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "403", description = "Forbidden - The user account is locked or disabled", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "500", description = "Internal Server Error - An unexpected error occurred", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @GetMapping()
   public ResponseEntity<WrapperApiResponse> me(@AuthenticationPrincipal Jwt jwt) {
@@ -72,11 +73,11 @@ public class ProfileController {
     "Fields like fullName, phoneNumber, and birthdate are validated before updating. " +
     "Only provided non-null fields will be updated; others retain their current values.")
   @ApiResponses(value = {
-    @ApiResponse(responseCode = "200", description = "Profile updated successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "400", description = "Bad Request - Validation failed for one or more fields (e.g., invalid phone format, invalid date)", content = @Content),
-    @ApiResponse(responseCode = "401", description = "Unauthorized - Valid JWT token is missing or expired", content = @Content),
-    @ApiResponse(responseCode = "403", description = "Forbidden - The user account is locked or disabled", content = @Content),
-    @ApiResponse(responseCode = "500", description = "Internal Server Error - An unexpected error occurred", content = @Content)
+    @ApiResponse(responseCode = "200", description = "Profile updated successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserProfileResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Bad Request - Validation failed for one or more fields (e.g., invalid phone format, invalid date)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "401", description = "Unauthorized - Valid JWT token is missing or expired", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "403", description = "Forbidden - The user account is locked or disabled", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "500", description = "Internal Server Error - An unexpected error occurred", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PostMapping()
   public ResponseEntity<WrapperApiResponse> updateProfile(
@@ -96,4 +97,10 @@ public class ProfileController {
       profileUC.updateProfile(id, request),
       LocalDateTime.now()));
   }
+
+//  @PutMapping()
+//  public ResponseEntity<WrapperApiResponse> updateProfile(
+//    @AuthenticationPrincipal Jwt jwt,
+//
+//  ) {}
 }

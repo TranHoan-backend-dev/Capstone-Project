@@ -1,7 +1,7 @@
 @keycloak = http://localhost:8080/realms/cmsn/protocol/openid-connect
 @client_secret =
 
-### username is username
+### get token
 POST {{keycloak}}/token
 Content-Type: application/x-www-form-urlencoded
 Accept: application/json
@@ -41,7 +41,7 @@ Accept: application/json
   "gender": null
 }
 
-### Update profile, all fields are not nullable
+### Update profile, all fields are not nullable 1
 POST {{uri}}/api/v1/me
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
@@ -53,5 +53,80 @@ Accept: application/json
   "phoneNumber": "1234567890",
   "birthdate": "2013-10-10",
   "address": "address",
+  "gender": true
+}
+
+### Update profile, all fields are not nullable 2; phone number is only 9 digits
+POST {{uri}}/api/v1/me
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "fullName": "hoan",
+  "username": "admin1",
+  "phoneNumber": "123456789",
+  "birthdate": "2013-10-10",
+  "address": "address",
+  "gender": false
+}
+
+### Update profile, all fields are not nullable 3; problem in birthdate
+POST {{uri}}/api/v1/me
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "fullName": "hoan",
+  "username": "admin1",
+  "phoneNumber": "1234567890",
+  "birthdate": "2013",
+  "address": "address",
+  "gender": false
+}
+
+### Update profile, all fields are blank
+POST {{uri}}/api/v1/me
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "fullName": "",
+  "username": "",
+  "phoneNumber": "",
+  "birthdate": "",
+  "address": "",
+  "gender": false
+}
+
+### Update profile, except of birthdate and phoneNumber, all fields are blank
+POST {{uri}}/api/v1/me
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "fullName": "",
+  "username": "",
+  "phoneNumber": "0912345678",
+  "birthdate": "2013-10-10",
+  "address": "",
+  "gender": false
+}
+
+### Update profile, fullname is Vietnamese
+POST {{uri}}/api/v1/me
+Authorization: Bearer {{access_token}}
+Content-Type: application/json; charset=UTF-8
+Accept: application/json
+
+{
+  "fullName": "Trần Xuân Hoàn",
+  "username": "admin1",
+  "phoneNumber": "1234567890",
+  "birthdate": "2013-10-10",
+  "address": "address1",
   "gender": true
 }

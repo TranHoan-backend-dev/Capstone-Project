@@ -3,6 +3,9 @@ spring:
     name: auth
   profiles:
     active: dev
+  jackson:
+    time-zone: Asia/Ho_Chi_Minh
+    locale: vi_VN
   jpa:
     hibernate:
       ddl-auto: update
@@ -35,6 +38,12 @@ server:
   port: 9003
   servlet:
     context-path: /api/v1
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+      force-request: true
+      force-response: true
 web-frontend-url: ${WEB_FRONTEND_URL:http://localhost:3000}
 cors:
   allowed-origins:
