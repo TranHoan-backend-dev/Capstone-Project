@@ -3,6 +3,9 @@ spring:
     name: auth
   profiles:
     active: dev
+  jackson:
+    time-zone: Asia/Ho_Chi_Minh
+    locale: vi_VN
   jpa:
     hibernate:
       ddl-auto: update
@@ -35,6 +38,12 @@ server:
   port: 9003
   servlet:
     context-path: /api/v1
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+      force-request: true
+      force-response: true
 web-frontend-url: ${WEB_FRONTEND_URL:http://localhost:3000}
 cors:
   allowed-origins:
@@ -52,6 +61,15 @@ springdoc:
   swagger-ui:
     enabled: true
     path: /swagger-ui/index.html
+sending_mail:
+  account_creation:
+    subject: ehehe
+    template: huhu
+  otp_verification:
+    subject: 'Mã xác thực OTP'
+    template: 'verify-otp'
+#gcs:
+#  bucket: ${GCS_BUCKET_NAME:default}
 #spring:
 #  datasource:
 #    driver-class-name: org.postgresql.Driver
@@ -77,11 +95,14 @@ springdoc:
 #    port:
 #    username:
 #    password:
-#sending_mail:
-#  account_creation:
-#    subject:
-#    template:
 #rabbitmqconfig:
 #  exchange_name:
 #  queue_name:
 #  routing_key:
+#keycloak:
+#  issuer-uri:
+#  aud:
+#  token-uri:
+#  client-id:
+#  client-secret:
+#  scope:

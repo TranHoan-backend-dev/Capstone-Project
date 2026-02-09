@@ -12,7 +12,7 @@ import com.capstone.auth.application.exception.AccountBlockedException;
 import com.capstone.auth.application.exception.NotExistingException;
 
 import com.capstone.auth.infrastructure.config.Constant;
-import com.capstone.auth.infrastructure.utils.CredentialsUtils;
+import com.capstone.auth.infrastructure.utils.Utils;
 import org.jspecify.annotations.NonNull;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -45,10 +45,10 @@ public class AuthUseCase {
 
   public UserProfileResponse login(String userId, String email, String username) {
     log.info("Handling login business with userId={} and email={}", userId, email);
-    UserDTO user = uSrv.getUserById(userId);
+    var user = uSrv.getUserById(userId);
     Objects.requireNonNull(user, Constant.SE_04);
 
-    CredentialsUtils.validateCredentials(user, email, username);
+    Utils.validateCredentials(user, email, username);
 
     if (!uSrv.checkExistence(email) || !uSrv.checkExistence(username)) {
       throw new NotExistingException(Constant.SE_05);
@@ -112,7 +112,7 @@ public class AuthUseCase {
       profile.address(),
       profile.phoneNumber(),
       profile.gender().toString(),
-      profile.birthday().toString(),
+      profile.birthday() == null ? null : profile.birthday().toString(),
       user.role().toLowerCase(),
       user.username(),
       user.email());

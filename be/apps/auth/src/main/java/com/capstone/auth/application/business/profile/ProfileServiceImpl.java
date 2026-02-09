@@ -6,6 +6,7 @@ import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.domain.repository.ProfileRepository;
 import com.capstone.auth.infrastructure.config.Constant;
 import com.capstone.auth.infrastructure.utils.IdEncoder;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -47,6 +48,14 @@ public class ProfileServiceImpl implements ProfileService {
     }
     repo.save(profile);
     return convertToResponse(Optional.of(profile));
+  }
+
+  @Transactional
+  @Override
+  public ProfileDTO updateAvatar(String id, String avatar) {
+    log.info("Update avatar with id: {} and avatar url: {}", id, avatar);
+    repo.updateAvatarByProfileId(id, avatar);
+    return convertToResponse(repo.findById(id));
   }
 
   private ProfileDTO convertToResponse(@NonNull Optional<Profile> profile) {

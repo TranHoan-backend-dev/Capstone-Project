@@ -51,7 +51,7 @@ public class Profile {
 
   public void setFullname(String fullname) {
     requireNonNullAndNotEmpty(fullname, Constant.PT_10);
-    if (!fullname.chars().allMatch(Character::isLetter)) {
+    if (!fullname.chars().allMatch(c -> Character.isLetter(c) || Character.isWhitespace(c))) {
       throw new IllegalArgumentException(Constant.PT_13);
     }
     this.fullname = fullname;

@@ -30,6 +30,7 @@ public final class Constant {
   public static final String PT_22 = "Id cannot be null or empty";
   public static final String PT_23 = "Role id cannot be null or empty";
   public static final String PT_24 = "Electronic signing url cannot be null or empty";
+  public static final String PT_25 = "Birthdate is in a wrong format. Must ensure birthdate format is yyyy-MM-dd";
 
   // for service layer
   public static final String SE_01 = "Email has been existing";
