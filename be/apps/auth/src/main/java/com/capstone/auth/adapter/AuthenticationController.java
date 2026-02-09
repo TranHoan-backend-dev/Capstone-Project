@@ -11,6 +11,7 @@ import com.capstone.auth.application.dto.response.WrapperApiResponse;
 import com.capstone.auth.application.usecase.AuthUseCase;
 import com.capstone.auth.application.usecase.OtpUseCase;
 
+import com.capstone.auth.infrastructure.utils.Utils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -157,11 +158,10 @@ public class AuthenticationController {
     authUC.changePassword(email.toString(), request.oldPassword(), request.newPassword(),
       request.confirmPassword());
 
-    return ResponseEntity.ok(new WrapperApiResponse(
+    return Utils.returnResponse(
       HttpStatus.OK.value(),
       "Change password successfully",
-      null,
-      LocalDateTime.now()));
+      null);
   }
 
   @Operation(summary = "Login with JWT", description = "Authenticates the user using the JWT token from the Authorization header. "
@@ -178,15 +178,14 @@ public class AuthenticationController {
   @PostMapping("/login")
   public ResponseEntity<?> login(@AuthenticationPrincipal Jwt jwt) {
     var id = jwt.getSubject();
-    Map<String, Object> claims = jwt.getClaims(); // username,
+    Map<String, Object> claims = jwt.getClaims(); // username, prefered_username, realm_access->roles
 
-    return ResponseEntity.ok(new WrapperApiResponse(
+    return Utils.returnResponse(
       HttpStatus.OK.value(),
       "Login successfully",
       authUC.login(
         id,
         claims.get("email").toString(),
-        claims.get("preferred_username").toString()),
-      LocalDateTime.now()));
+        claims.get("preferred_username").toString()));
   }
 }
