@@ -9,6 +9,7 @@ import com.capstone.auth.application.dto.response.UserProfileResponse;
 import com.capstone.auth.application.exception.IncompatibleAvatarException;
 import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.infrastructure.config.Constant;
+import com.capstone.auth.infrastructure.service.GcsService;
 import com.capstone.auth.infrastructure.utils.Utils;
 import com.capstone.auth.infrastructure.utils.IdEncoder;
 import lombok.AccessLevel;
@@ -34,12 +35,11 @@ public class ProfileUseCase {
   UserService uSrv;
   ProfileService pSrv;
   Keycloak keycloak;
+  GcsService gcsSrv;
 
   @Value("${keycloak.realms}")
   @NonFinal
   String realm;
-  // GcsStorageService gcsSrv;
-  // static String FOLDER_NAME = "image";
 
   public UserProfileResponse getMe(String id, String email, String username) {
     log.info("Check status and get profile by id: {}", id);
@@ -127,7 +127,7 @@ public class ProfileUseCase {
 
     // TODO: tải lên GCS
     var avatarUrl = "hehe";
-    // var avatarUrl = gcsSrv.upload(file, FOLDER_NAME);
+//    var avatarUrl = gcsSrv.upload(file);
 
     var profile = pSrv.updateAvatar(id, avatarUrl);
     if (!avatarUrl.equals(profile.avatarUrl())) {

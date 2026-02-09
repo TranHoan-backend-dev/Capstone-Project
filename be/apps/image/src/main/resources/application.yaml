@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: image
+  jackson:
+    time-zone: Asia/Ho_Chi_Minh
+    locale: vi_VN
+management:
+  health:
+    rabbit:
+      enabled: false
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+          - metrics
+          - prometheus
+      base-path: /actuator
+server:
+  port: 9009
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+      force-request: true
+      force-response: true
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:9000/eureka
+  instance:
+    prefer-ip-address: true
+gcs:
+  bucket: ${GCS_BUCKET_NAME:default}
