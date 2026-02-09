@@ -45,7 +45,7 @@ public class AuthUseCase {
 
   public UserProfileResponse login(String userId, String email, String username) {
     log.info("Handling login business with userId={} and email={}", userId, email);
-    UserDTO user = uSrv.getUserById(userId);
+    var user = uSrv.getUserById(userId);
     Objects.requireNonNull(user, Constant.SE_04);
 
     CredentialsUtils.validateCredentials(user, email, username);
@@ -112,7 +112,7 @@ public class AuthUseCase {
       profile.address(),
       profile.phoneNumber(),
       profile.gender().toString(),
-      profile.birthday().toString(),
+      profile.birthday() == null ? null : profile.birthday().toString(),
       user.role().toLowerCase(),
       user.username(),
       user.email());
