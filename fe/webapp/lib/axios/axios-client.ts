@@ -1,14 +1,32 @@
-import axios from "axios";
-import { API_GATEWAY_URL } from "@/utils/constraints";
+"use client";
 
-export const createAxiosClient = (access_token?: string) => {
-  return axios.create({
-    baseURL: "http://localhost:8000",
-    headers: {
-      "Content-Type": "application/json",
-      ...(access_token && {
-        Authorization: `Bearer ${access_token}`,
-      }),
-    },
-  });
-};
+import axios from "axios";
+
+const axiosClient = axios.create({
+  withCredentials: true,
+});
+
+axiosClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
+
+      try {
+        await axios.post("/api/auth/refresh", {}, { withCredentials: true });
+        return axiosClient(originalRequest);
+      } catch (err) {
+        window.location.href = "/login";
+      }
+    }
+
+    return Promise.reject(error);
+  },
+);
+
+export default axiosClient;
