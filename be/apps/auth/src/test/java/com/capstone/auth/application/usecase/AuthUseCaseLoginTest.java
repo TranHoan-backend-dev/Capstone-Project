@@ -7,7 +7,9 @@ import com.capstone.auth.application.business.users.UserService;
 import com.capstone.auth.application.exception.AccountBlockedException;
 import com.capstone.auth.application.exception.NotExistingException;
 import com.capstone.auth.infrastructure.config.Constant;
+
 import java.time.LocalDate;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -35,16 +37,17 @@ class AuthUseCaseLoginTest {
     var userId = "user-1";
     var email = "user@example.com";
     var username = "user1";
-    var user = new UserDTO("IT_DEPARTMENT_STAFF", username, email, false, null, null, null, null, null, null, null,
-        null, null, true);
+    var user = new UserDTO(userId, "IT_DEPARTMENT_STAFF", username, email, false, null, null, null, null, null, null,
+      null,
+      null, null, true);
     var profile = new ProfileDTO(
-        userId,
-        "User One",
-        "avatar.png",
-        "HCM",
-        "0900000000",
-        true,
-        LocalDate.parse("2000-01-01"));
+      userId,
+      "User One",
+      "avatar.png",
+      "HCM",
+      "0900000000",
+      true,
+      LocalDate.parse("2000-01-01"));
 
     when(userService.getUserById(userId)).thenReturn(user);
     when(userService.checkExistence(email)).thenReturn(true);
@@ -70,14 +73,15 @@ class AuthUseCaseLoginTest {
     var userId = "user-1";
     var email = "invalid-email";
     var username = "user1";
-    var user = new UserDTO("IT_DEPARTMENT_STAFF", username, "user@example.com", false, null, null, null, null, null,
-        null, null, null, null, true);
+    var user = new UserDTO(userId, "IT_DEPARTMENT_STAFF", username, "user@example.com", false, null, null, null, null,
+      null,
+      null, null, null, null, true);
 
     when(userService.getUserById(userId)).thenReturn(user);
 
     IllegalArgumentException ex = assertThrows(
-        IllegalArgumentException.class,
-        () -> authUseCase.login(userId, email, username));
+      IllegalArgumentException.class,
+      () -> authUseCase.login(userId, email, username));
 
     assertEquals(Constant.PT_01, ex.getMessage());
   }
@@ -87,16 +91,17 @@ class AuthUseCaseLoginTest {
     var userId = "user-1";
     var email = "user@example.com";
     var username = "user1";
-    var user = new UserDTO("IT_DEPARTMENT_STAFF", username, email, true, null, null, null, null, null, null, null, null,
-        null, true);
+    var user = new UserDTO(userId, "IT_DEPARTMENT_STAFF", username, email, true, null, null, null, null, null, null,
+      null, null,
+      null, true);
 
     when(userService.getUserById(userId)).thenReturn(user);
     when(userService.checkExistence(email)).thenReturn(true);
     when(userService.checkExistence(username)).thenReturn(true);
 
     AccountBlockedException ex = assertThrows(
-        AccountBlockedException.class,
-        () -> authUseCase.login(userId, email, username));
+      AccountBlockedException.class,
+      () -> authUseCase.login(userId, email, username));
 
     assertEquals(Constant.SE_07, ex.getMessage());
   }
@@ -106,15 +111,16 @@ class AuthUseCaseLoginTest {
     var userId = "user-1";
     var email = "user@example.com";
     var username = "user1";
-    var user = new UserDTO("IT_DEPARTMENT_STAFF", username, email, false, null, null, null, null, null, null, null,
-        null, null, true);
+    var user = new UserDTO(userId, "IT_DEPARTMENT_STAFF", username, email, false, null, null, null, null, null, null,
+      null,
+      null, null, true);
 
     when(userService.getUserById(userId)).thenReturn(user);
     when(userService.checkExistence(email)).thenReturn(false);
 
     NotExistingException ex = assertThrows(
-        NotExistingException.class,
-        () -> authUseCase.login(userId, email, username));
+      NotExistingException.class,
+      () -> authUseCase.login(userId, email, username));
 
     assertEquals(Constant.SE_05, ex.getMessage());
   }
@@ -128,8 +134,8 @@ class AuthUseCaseLoginTest {
     when(userService.getUserById(userId)).thenReturn(null);
 
     NullPointerException ex = assertThrows(
-        NullPointerException.class,
-        () -> authUseCase.login(userId, email, username));
+      NullPointerException.class,
+      () -> authUseCase.login(userId, email, username));
 
     assertEquals(Constant.SE_04, ex.getMessage());
   }
@@ -139,14 +145,15 @@ class AuthUseCaseLoginTest {
     var userId = "user-1";
     var email = "other@example.com";
     var username = "user1";
-    var user = new UserDTO("IT_DEPARTMENT_STAFF", "user1", "user@example.com", false, null, null, null, null, null,
-        null, null, null, null, true);
+    var user = new UserDTO(userId, "IT_DEPARTMENT_STAFF", "user1", "user@example.com", false, null, null, null, null,
+      null,
+      null, null, null, null, true);
 
     when(userService.getUserById(userId)).thenReturn(user);
 
     IllegalArgumentException ex = assertThrows(
-        IllegalArgumentException.class,
-        () -> authUseCase.login(userId, email, username));
+      IllegalArgumentException.class,
+      () -> authUseCase.login(userId, email, username));
 
     assertEquals("Email does not match", ex.getMessage());
   }
@@ -156,14 +163,15 @@ class AuthUseCaseLoginTest {
     var userId = "user-1";
     var email = "user@example.com";
     var username = "wronguser";
-    var user = new UserDTO("IT_DEPARTMENT_STAFF", "user1", email, false, null, null, null, null, null, null, null, null,
-        null, true);
+    var user = new UserDTO(userId, "IT_DEPARTMENT_STAFF", "user1", email, false, null, null, null, null, null, null,
+      null, null,
+      null, true);
 
     when(userService.getUserById(userId)).thenReturn(user);
 
     IllegalArgumentException ex = assertThrows(
-        IllegalArgumentException.class,
-        () -> authUseCase.login(userId, email, username));
+      IllegalArgumentException.class,
+      () -> authUseCase.login(userId, email, username));
 
     assertEquals("Username does not match", ex.getMessage());
   }
@@ -173,8 +181,9 @@ class AuthUseCaseLoginTest {
     var userId = "user-1";
     var email = "user@example.com";
     var username = "user1";
-    var user = new UserDTO("IT_DEPARTMENT_STAFF", username, email, false, null, null, null, null, null, null, null,
-        null, null, true);
+    var user = new UserDTO(userId, "IT_DEPARTMENT_STAFF", username, email, false, null, null, null, null, null, null,
+      null,
+      null, null, true);
 
     when(userService.getUserById(userId)).thenReturn(user);
     when(userService.checkExistence(email)).thenReturn(true);
@@ -182,8 +191,8 @@ class AuthUseCaseLoginTest {
     when(profileService.getProfileById(userId)).thenReturn(null);
 
     NullPointerException ex = assertThrows(
-        NullPointerException.class,
-        () -> authUseCase.login(userId, email, username));
+      NullPointerException.class,
+      () -> authUseCase.login(userId, email, username));
 
     assertEquals(Constant.SE_06, ex.getMessage());
   }

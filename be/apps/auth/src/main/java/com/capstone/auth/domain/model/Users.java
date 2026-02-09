@@ -145,6 +145,11 @@ public class Users {
       return this;
     }
 
+    public UsersBuilder userId(String id) {
+      instance.setUserId(id);
+      return this;
+    }
+
     public UsersBuilder password(String password) {
       instance.setPassword(password);
       return this;

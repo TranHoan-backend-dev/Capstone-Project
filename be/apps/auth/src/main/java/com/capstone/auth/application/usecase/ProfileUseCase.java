@@ -6,18 +6,22 @@ import com.capstone.auth.application.business.profile.ProfileService;
 import com.capstone.auth.application.business.users.UserService;
 import com.capstone.auth.application.dto.request.UpdateProfileRequest;
 import com.capstone.auth.application.dto.response.UserProfileResponse;
+import com.capstone.auth.application.exception.IncompatibleAvatarException;
 import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.infrastructure.config.Constant;
-import com.capstone.auth.infrastructure.utils.CredentialsUtils;
-import com.capstone.auth.infrastructure.utils.DateUtils;
+import com.capstone.auth.infrastructure.utils.Utils;
 import com.capstone.auth.infrastructure.utils.IdEncoder;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
+import org.keycloak.admin.client.Keycloak;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -29,12 +33,19 @@ import java.time.format.DateTimeFormatter;
 public class ProfileUseCase {
   UserService uSrv;
   ProfileService pSrv;
+  Keycloak keycloak;
+
+  @Value("${keycloak.realms}")
+  @NonFinal
+  String realm;
+  // GcsStorageService gcsSrv;
+  // static String FOLDER_NAME = "image";
 
   public UserProfileResponse getMe(String id, String email, String username) {
     log.info("Check status and get profile by id: {}", id);
     var user = getUserNonLockedById(id);
 
-    CredentialsUtils.validateCredentials(user, email, username);
+    Utils.validateCredentials(user, email, username);
 
     var profile = pSrv.getProfileById(id);
 
@@ -43,53 +54,86 @@ public class ProfileUseCase {
 
   public UserProfileResponse updateProfile(String id, @NonNull UpdateProfileRequest request) {
     log.info("Updating profile by id: {}", id);
+    log.info("Request: {}", request);
     var user = getUserNonLockedById(id);
     var profile = pSrv.getProfileById(id);
 
     var newProfile = new Profile();
 
-    newProfile.setFullname((request.fullName() != null &&
-      !request.fullName().isEmpty() &&
-      !request.fullName().isBlank() &&
-      !request.fullName().equalsIgnoreCase(profile.fullname()) &&
-      request.fullName().matches("^[a-zA-Z ]+$")) ?
-      request.fullName() : profile.fullname());
+    log.info("FullName: {}", request.fullName());
+    if (request.fullName() != null) {
+      var regexMatch = request.fullName().matches("^[\\p{L} ]+$");
+      log.info("FullName regexMatch: {}", regexMatch);
+      if (regexMatch) {
+        newProfile.setFullname(request.fullName());
+      } else {
+        throw new IllegalArgumentException("Fullname can not contain digits and special characters");
+      }
+    } else {
+      newProfile.setFullname(profile.fullname());
+    }
 
     if (request.username() != null &&
       !request.username().isEmpty() &&
       !request.username().isBlank() &&
       !request.username().equalsIgnoreCase(user.username())) {
+      // update information on keycloak
+      updateOnKeycloak(id, request.username());
       user = uSrv.updateUsername(id, request.username());
     }
 
-    newProfile.setPhoneNumber((request.phoneNumber() != null &&
+    if (request.phoneNumber() != null &&
       !request.phoneNumber().isEmpty() &&
       !request.phoneNumber().isBlank() &&
-      !request.phoneNumber().equalsIgnoreCase(profile.phoneNumber()) &&
-      request.phoneNumber().matches(Constant.PHONE_PATTERN)) ?
-      request.phoneNumber() : profile.phoneNumber());
+      !request.phoneNumber().equalsIgnoreCase(profile.phoneNumber())) {
+      if (!request.phoneNumber().matches(Constant.PHONE_PATTERN)) {
+        throw new IllegalArgumentException(Constant.PT_14);
+      }
+      if (!request.phoneNumber().equals(profile.phoneNumber())) {
+        newProfile.setPhoneNumber(request.phoneNumber());
+      } else {
+        newProfile.setPhoneNumber(profile.phoneNumber());
+      }
+    } else {
+      newProfile.setPhoneNumber(profile.phoneNumber());
+    }
 
     if (request.birthdate() != null &&
       !request.birthdate().isEmpty() &&
-      !request.birthdate().isBlank() &&
-      DateUtils.isLocalDate(request.birthdate(), DateTimeFormatter.ISO_LOCAL_DATE)
-    ) {
+      !request.birthdate().isBlank()) {
+      if (!Utils.isLocalDate(request.birthdate(), DateTimeFormatter.ISO_LOCAL_DATE)) {
+        throw new IllegalArgumentException(Constant.PT_25);
+      }
       newProfile.setBirthday(
-        LocalDate.parse(request.birthdate(), DateTimeFormatter.ISO_LOCAL_DATE)
-      );
+        LocalDate.parse(request.birthdate(), DateTimeFormatter.ISO_LOCAL_DATE));
+    } else {
+      newProfile.setBirthday(profile.birthday());
     }
 
-    if (request.address() != null &&
+    newProfile.setAddress((request.address() != null &&
       !request.address().isEmpty() &&
       !request.address().isBlank() &&
-      !request.address().equalsIgnoreCase(profile.address())) {
-      newProfile.setAddress(request.address());
-    }
+      !request.address().equalsIgnoreCase(profile.address())) ? request.address() : profile.address());
 
     newProfile.setGender(request.gender() != null ? request.gender() : profile.gender());
     newProfile.setProfileId(IdEncoder.decode(profile.id()));
 
     return returnUserProfile(pSrv.updateProfile(newProfile), user);
+  }
+
+  public UserProfileResponse updateAvatar(String id, MultipartFile file) {
+    log.info("Update avatar");
+    var user = getUserNonLockedById(id);
+
+    // TODO: tải lên GCS
+    var avatarUrl = "hehe";
+    // var avatarUrl = gcsSrv.upload(file, FOLDER_NAME);
+
+    var profile = pSrv.updateAvatar(id, avatarUrl);
+    if (!avatarUrl.equals(profile.avatarUrl())) {
+      throw new IncompatibleAvatarException();
+    }
+    return returnUserProfile(profile, user);
   }
 
   private @NonNull UserDTO getUserNonLockedById(String id) {
@@ -99,6 +143,44 @@ public class ProfileUseCase {
       throw new DisabledException(Constant.SE_07);
     }
     return user;
+  }
+
+  private void updateOnKeycloak(String id, String username) {
+    log.info("Updating username on keycloak for user id: {}", id);
+
+    var realmResource = keycloak.realm(realm);
+    var userResource = realmResource.users().get(id);
+
+    // Verify user exists in Keycloak first
+    var user = userResource.toRepresentation();
+    if (user == null) {
+      log.error("User with id {} not found in Keycloak", id);
+      throw new IllegalArgumentException("User not found in Keycloak");
+    }
+    log.info("Found user in Keycloak: id={}, username={}, email={}", user.getId(), user.getUsername(), user.getEmail());
+
+    // check trung username
+    var users = realmResource.users().search(username, true);
+    if (!users.isEmpty() && users.stream().noneMatch(u -> u.getId().equals(id))) {
+      throw new IllegalArgumentException("Username already exists");
+    }
+
+    user.setUsername(username);
+    log.info("Attempting to update username to: {}", username);
+
+    try {
+      userResource.update(user);
+      log.info("Successfully updated username on Keycloak");
+    } catch (jakarta.ws.rs.BadRequestException e) {
+      log.error("Keycloak BadRequest error: {}", e.getMessage());
+      var response = e.getResponse();
+      if (response != null) {
+        log.error("Keycloak response status: {}", response.getStatus());
+        var entity = response.readEntity(String.class);
+        log.error("Keycloak response body: {}", entity);
+      }
+      throw new IllegalArgumentException("Failed to update username on Keycloak: " + e.getMessage(), e);
+    }
   }
 
   private UserProfileResponse returnUserProfile(@NonNull ProfileDTO profile, @NonNull UserDTO user) {
