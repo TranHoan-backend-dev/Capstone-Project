@@ -125,9 +125,8 @@ public class ProfileUseCase {
     log.info("Update avatar");
     var user = getUserNonLockedById(id);
 
-    // TODO: tải lên GCS
-    var avatarUrl = "hehe";
-//    var avatarUrl = gcsSrv.upload(file);
+    // tải lên GCS
+    var avatarUrl = gcsSrv.upload(file);
 
     var profile = pSrv.updateAvatar(id, avatarUrl);
     if (!avatarUrl.equals(profile.avatarUrl())) {

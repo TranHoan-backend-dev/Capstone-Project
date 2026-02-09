@@ -22,14 +22,16 @@ public class GcsController {
   GcsStorageService storageService;
   static String FOLDER_NAME = "image";
 
-  @PostMapping(name = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<String> upload(@RequestParam(value = "avatar") MultipartFile file) {
     log.info("Uploading file: {}", file.getOriginalFilename());
 
     if (file.isEmpty()) {
       return ResponseEntity.badRequest().body("Failed to upload empty file");
     }
-    var avatarUrl = storageService.upload(file, FOLDER_NAME);
+    var avatarUrl = "haha";
+    // TODO: config secret key of gcs
+//    var avatarUrl = storageService.upload(file, FOLDER_NAME);
 
     return ResponseEntity.ok(avatarUrl);
   }
