@@ -59,7 +59,7 @@ export const getProfileEmployee = async (
   accessToken: string
 ): Promise<EmployeeProfileData> => {
   const response = await axios.get<ApiResponse<EmployeeProfileData>>(
-    `${API_GATEWAY_URL}/auth/auth/me`,
+    `${API_GATEWAY_URL}/auth/me`,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,

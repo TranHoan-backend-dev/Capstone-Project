@@ -25,15 +25,10 @@ export async function POST(req: NextRequest) {
     let backendData;
     try {
       const backendRes = await signinService(tokenRes.access_token);
-      console.log("backendRes", backendRes);
       backendData = backendRes.data?.data;
     } catch (backendError: any) {
-      console.log("BACKEND ERROR RAW =====>", backendError);
 
       if (axios.isAxiosError(backendError)) {
-        console.log("STATUS =====>", backendError.response?.status);
-        console.log("DATA =====>", backendError.response?.data);
-
         const status = backendError.response?.status;
         const message = backendError.response?.data?.message;
 
