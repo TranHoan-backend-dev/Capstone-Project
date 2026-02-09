@@ -2,9 +2,7 @@ import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 import { keycloakLogin } from "@/services/keycloak.service";
 import { signinService } from "@/services/auth.service";
-import {
-  IS_PRODUCTION,
-} from "@/constants/auth.constants";
+import { IS_PRODUCTION } from "@/constants/auth.constants";
 
 export async function POST(req: NextRequest) {
   try {
@@ -30,11 +28,11 @@ export async function POST(req: NextRequest) {
       console.log("backendRes", backendRes);
       backendData = backendRes.data?.data;
     } catch (backendError: any) {
-  console.log("BACKEND ERROR RAW =====>", backendError);
+      console.log("BACKEND ERROR RAW =====>", backendError);
 
-  if (axios.isAxiosError(backendError)) {
-    console.log("STATUS =====>", backendError.response?.status);
-    console.log("DATA =====>", backendError.response?.data);
+      if (axios.isAxiosError(backendError)) {
+        console.log("STATUS =====>", backendError.response?.status);
+        console.log("DATA =====>", backendError.response?.data);
 
         const status = backendError.response?.status;
         const message = backendError.response?.data?.message;
@@ -75,6 +73,14 @@ export async function POST(req: NextRequest) {
     res.cookies.set(
       IS_PRODUCTION ? "__Secure-access_token" : "access_token",
       tokenRes.access_token,
+      {
+        ...cookieOptions,
+      },
+    );
+
+    res.cookies.set(
+      IS_PRODUCTION ? "__Secure-refresh_token" : "refresh_token",
+      tokenRes.refresh_token,
       {
         ...cookieOptions,
       },
