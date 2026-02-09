@@ -120,21 +120,7 @@ public class UserServiceImpl implements UserService {
     var user = repo.findById(id);
     if (user.isPresent()) {
       log.info("User found: {}", user.get());
-      return new UserDTO(
-        user.get().getRole().getName().name(),
-        user.get().getUsername(),
-        user.get().getEmail(),
-        user.get().getIsLocked(),
-        user.get().getPassword(),
-        user.get().getCreatedAt(),
-        user.get().getUpdatedAt(),
-        user.get().getLockedReason(),
-        user.get().getLockedAt(),
-        user.get().getJobId(),
-        user.get().getDepartmentId(),
-        user.get().getWaterSupplyNetworkId(),
-        user.get().getElectronicSigningUrl(),
-        user.get().getIsEnabled());
+      return returnUserDTO(user.get());
     }
     throw new NotExistingException("User with id does not exist");
   }
@@ -146,24 +132,28 @@ public class UserServiceImpl implements UserService {
 
     if (username != null) {
       currentUser.setUsername(username);
-
       repo.save(currentUser);
-      return new UserDTO(
-        currentUser.getRole().getName().name(),
-        currentUser.getUsername(),
-        currentUser.getEmail(),
-        currentUser.getIsLocked(),
-        currentUser.getPassword(),
-        currentUser.getCreatedAt(),
-        currentUser.getUpdatedAt(),
-        currentUser.getLockedReason(),
-        currentUser.getLockedAt(),
-        currentUser.getJobId(),
-        currentUser.getDepartmentId(),
-        currentUser.getWaterSupplyNetworkId(),
-        currentUser.getElectronicSigningUrl(),
-        currentUser.getIsEnabled());
+      return returnUserDTO(currentUser);
     }
     return null;
+  }
+
+  private UserDTO returnUserDTO(@NonNull Users currentUser) {
+    return new UserDTO(
+      currentUser.getUserId(),
+      currentUser.getRole().getName().name(),
+      currentUser.getUsername(),
+      currentUser.getEmail(),
+      currentUser.getIsLocked(),
+      currentUser.getPassword(),
+      currentUser.getCreatedAt(),
+      currentUser.getUpdatedAt(),
+      currentUser.getLockedReason(),
+      currentUser.getLockedAt(),
+      currentUser.getJobId(),
+      currentUser.getDepartmentId(),
+      currentUser.getWaterSupplyNetworkId(),
+      currentUser.getElectronicSigningUrl(),
+      currentUser.getIsEnabled());
   }
 }

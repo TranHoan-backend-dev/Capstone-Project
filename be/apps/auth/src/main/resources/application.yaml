@@ -68,6 +68,8 @@ sending_mail:
   otp_verification:
     subject: 'Mã xác thực OTP'
     template: 'verify-otp'
+#gcs:
+#  bucket: ${GCS_BUCKET_NAME:default}
 #spring:
 #  datasource:
 #    driver-class-name: org.postgresql.Driver
