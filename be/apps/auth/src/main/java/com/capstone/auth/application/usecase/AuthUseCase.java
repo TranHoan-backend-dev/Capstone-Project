@@ -25,6 +25,9 @@ import org.springframework.stereotype.Component;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.representations.idm.CredentialRepresentation;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -34,6 +37,8 @@ public class AuthUseCase {
   ProfileService pSrv;
   RoleService rSrv;
   MessageProducer template;
+  
+  Keycloak keycloak;
 
   @NonFinal
   @Value("${sending_mail.account_creation.subject}")
@@ -42,6 +47,10 @@ public class AuthUseCase {
   @NonFinal
   @Value("${sending_mail.account_creation.template}")
   String TEMPLATE;
+
+  @Value("${keycloak.realms}")
+  @NonFinal
+  String realm;
 
   public UserProfileResponse login(String userId, String email, String username) {
     log.info("Handling login business with userId={} and email={}", userId, email);
@@ -92,12 +101,31 @@ public class AuthUseCase {
       fullname, username, password));
   }
 
-  public void changePassword(String email, String oldPassword, @NonNull String newPassword, String confirmPassword) {
+  public void changePassword(String userId, String email, String oldPassword, @NonNull String newPassword, String confirmPassword) {
     log.info("Handling change password for email: {}", email);
     if (!newPassword.equals(confirmPassword)) {
       throw new IllegalArgumentException("New password and confirm password do not match");
     }
     uSrv.updatePassword(email, oldPassword, newPassword);
+    
+    // Update password on Keycloak
+    updatePasswordOnKeycloak(userId, newPassword);
+  }
+
+  private void updatePasswordOnKeycloak(String userId, String newPassword) {
+    log.info("Updating password on Keycloak for user: {}", userId);
+    try {
+      var credential = new org.keycloak.representations.idm.CredentialRepresentation();
+      credential.setType(org.keycloak.representations.idm.CredentialRepresentation.PASSWORD);
+      credential.setValue(newPassword);
+      credential.setTemporary(false);
+
+      keycloak.realm(realm).users().get(userId).resetPassword(credential);
+      log.info("Successfully updated password on Keycloak");
+    } catch (Exception e) {
+      log.error("Failed to update password on Keycloak", e);
+      throw new IllegalArgumentException("Failed to update password on Keycloak: " + e.getMessage());
+    }
   }
 
   public boolean checkExistence(String value) {

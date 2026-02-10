@@ -138,6 +138,13 @@ public class UserServiceImpl implements UserService {
     return null;
   }
 
+  @Override
+  public UserDTO getUserByEmail(String email) {
+    log.info("Getting user by email: {}", email);
+    var user = getUsersByEmail(email);
+    return returnUserDTO(user);
+  }
+
   private UserDTO returnUserDTO(@NonNull Users currentUser) {
     return new UserDTO(
       currentUser.getUserId(),

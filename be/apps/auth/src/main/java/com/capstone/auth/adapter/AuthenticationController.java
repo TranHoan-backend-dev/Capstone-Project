@@ -73,10 +73,15 @@ public class AuthenticationController {
   }
 
   // <editor-fold> desc="Forgot password"
-  @Operation(summary = "Check existence of username or email", description = "Checks if the provided username or email is already taken in the system.")
+  // <editor-fold> desc="Forgot password"
+  @Operation(
+      summary = "Check existence of username or email",
+      description = "Checks if the provided username or email is already registered in the system.")
   @ApiResponses(value = {
-    @ApiResponse(responseCode = "200", description = "Check successful. Returns WrapperApiResponse with data as CheckExistenceResponse object.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "400", description = "Bad Request")
+    @ApiResponse(responseCode = "200", description = "Check successful. Returns WrapperApiResponse with data as boolean (true if exists).",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = Boolean.class))),
+    @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input format",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PostMapping("/check-existence")
   public ResponseEntity<?> checkExistence(
@@ -88,10 +93,15 @@ public class AuthenticationController {
       LocalDateTime.now()));
   }
 
-  @Operation(summary = "Send OTP via email", description = "Sends an OTP code to the provided email for verification or password reset.")
+  @Operation(
+      summary = "Send OTP via email",
+      description = "Sends a One-Time Password (OTP) to the provided email address for verification or password reset purposes.")
   @ApiResponses(value = {
-    @ApiResponse(responseCode = "200", description = "OTP sent successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "400", description = "Invalid or non-existent email")
+    @ApiResponse(responseCode = "200", description = "OTP sent successfully trả về empty payload data"),
+    @ApiResponse(responseCode = "400", description = "Bad Request - Invalid email format or sending failed",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "500", description = "Internal Server Error",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PostMapping("/send-otp")
   public ResponseEntity<?> sendOtp(
@@ -104,10 +114,13 @@ public class AuthenticationController {
       LocalDateTime.now()));
   }
 
-  @Operation(summary = "Verify OTP code", description = "Verifies the validity of the OTP code sent via email.")
+  @Operation(
+      summary = "Verify OTP code",
+      description = "Verifies the validity of the OTP code sent to the user's email.")
   @ApiResponses(value = {
-    @ApiResponse(responseCode = "200", description = "OTP verified successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "400", description = "Invalid or expired OTP code")
+    @ApiResponse(responseCode = "200", description = "OTP verified successfully. trả về empty payload data"),
+    @ApiResponse(responseCode = "400", description = "Invalid or expired OTP code",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PostMapping("/verify-otp")
   public ResponseEntity<?> verifyOtp(
@@ -126,10 +139,15 @@ public class AuthenticationController {
   }
   // </editor-fold>
 
-  @Operation(summary = "Reset password with OTP", description = "Allows the user to set a new password after successful OTP verification.")
+  @Operation(
+      summary = "Reset password with OTP",
+      description = "Resets the user's password using a valid OTP and email. Requires a new password meeting complexity requirements.")
   @ApiResponses(value = {
-    @ApiResponse(responseCode = "200", description = "Password reset successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "400", description = "Invalid OTP or incorrect data", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
+    @ApiResponse(responseCode = "200", description = "Password reset successfully trả về empty payload data"),
+    @ApiResponse(responseCode = "400", description = "Bad Request - Invalid OTP, expired OTP, or weak password",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "500", description = "Internal Server Error",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PostMapping("/reset-password")
   public ResponseEntity<?> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
@@ -141,13 +159,21 @@ public class AuthenticationController {
       LocalDateTime.now()));
   }
 
-  @Operation(summary = "Change password (Authenticated)", description = "Changes the password for the currently logged-in user. Requires the old password and the new password.")
-  @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Old password, new password, and confirmation", required = true, content = @Content(schema = @Schema(implementation = ChangePasswordRequest.class)))
+  @Operation(
+      summary = "Change password (Authenticated)",
+      description = "Changes the password for the currently authenticated user. Validates the old password and ensures new password complexity.")
+  @io.swagger.v3.oas.annotations.parameters.RequestBody(
+      description = "Password change details including old password, new password, and confirmation",
+      required = true,
+      content = @Content(schema = @Schema(implementation = ChangePasswordRequest.class)))
   @ApiResponses(value = {
-    @ApiResponse(responseCode = "200", description = "Password changed successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "400", description = "Bad Request - Old password incorrect or new passwords do not match", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing JWT token", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
+    @ApiResponse(responseCode = "200", description = "Password changed successfully trả về empty payload data"),
+    @ApiResponse(responseCode = "400", description = "Bad Request - Old password mismatch, new passwords mismatch, or weak password",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing authentication token",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "500", description = "Internal Server Error",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PostMapping("/change-password")
   public ResponseEntity<?> changePassword(
@@ -155,7 +181,8 @@ public class AuthenticationController {
     @RequestBody @Valid ChangePasswordRequest request) {
     log.info("Change password request comes to endpoint: {}", jwt);
     var email = jwt.getClaim("email");
-    authUC.changePassword(email.toString(), request.oldPassword(), request.newPassword(),
+    var userId = jwt.getSubject();
+    authUC.changePassword(userId, email.toString(), request.oldPassword(), request.newPassword(),
       request.confirmPassword());
 
     return Utils.returnResponse(

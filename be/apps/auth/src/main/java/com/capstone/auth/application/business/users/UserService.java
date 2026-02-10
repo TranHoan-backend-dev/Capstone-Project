@@ -21,4 +21,6 @@ public interface UserService {
   UserDTO getUserById(String id);
 
   UserDTO updateUsername(String id, String username);
+
+  UserDTO getUserByEmail(String email);
 }
