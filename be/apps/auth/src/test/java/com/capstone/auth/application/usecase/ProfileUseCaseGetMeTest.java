@@ -38,8 +38,7 @@ class ProfileUseCaseGetMeTest {
     var username = "user1";
 
     var userDTO = new UserDTO(id, "IT_DEPARTMENT_STAFF", username, email, false, null, null, null, null,
-      null, null,
-      null, null, null, true);
+      null, null, null, null, true);
     var profileDTO = new ProfileDTO(
       id, "Full Name", "avatar.png", "Address", "0912345678", true,
       LocalDate.parse("1990-01-01"));
@@ -60,8 +59,7 @@ class ProfileUseCaseGetMeTest {
   void getMe_throws_disabled_exception_when_account_locked() {
     var id = "user-1";
     var userDTO = new UserDTO(id, "STAFF", "user1", "user@example.com", true, null, null, null, null, null,
-      null, null,
-      null, null, true);
+      null, null, null, true);
 
     when(userService.getUserById(id)).thenReturn(userDTO);
 
@@ -74,8 +72,7 @@ class ProfileUseCaseGetMeTest {
   void getMe_throws_exception_when_email_mismatch() {
     var id = "user-1";
     var userDTO = new UserDTO(id, "STAFF", "user1", "user@example.com", false, null, null, null, null, null,
-      null, null,
-      null, null, true);
+      null, null, null, true);
 
     when(userService.getUserById(id)).thenReturn(userDTO);
 
@@ -88,8 +85,7 @@ class ProfileUseCaseGetMeTest {
   void getMe_throws_exception_when_username_mismatch() {
     var id = "user-1";
     var userDTO = new UserDTO(id, "STAFF", "user1", "user@example.com", false, null, null, null, null, null,
-      null, null,
-      null, null, true);
+      null, null, null, true);
 
     when(userService.getUserById(id)).thenReturn(userDTO);
 
@@ -114,8 +110,7 @@ class ProfileUseCaseGetMeTest {
   void getMe_throws_exception_when_email_null() {
     var id = "user-1";
     var userDTO = new UserDTO(id, "STAFF", "user1", "user@example.com", false, null, null, null, null, null,
-      null, null,
-      null, null, true);
+      null, null, null, true);
     when(userService.getUserById(id)).thenReturn(userDTO);
 
     var ex = assertThrows(IllegalArgumentException.class, () -> profileUseCase.getMe(id, null, "user1"));
@@ -126,8 +121,7 @@ class ProfileUseCaseGetMeTest {
   void getMe_throws_exception_when_email_invalid_format() {
     var id = "user-1";
     var userDTO = new UserDTO(id, "STAFF", "user1", "user@example.com", false, null, null, null, null, null,
-      null, null,
-      null, null, true);
+      null, null, null, true);
     when(userService.getUserById(id)).thenReturn(userDTO);
 
     var ex = assertThrows(IllegalArgumentException.class,
@@ -139,8 +133,7 @@ class ProfileUseCaseGetMeTest {
   void getMe_throws_exception_when_username_null() {
     var id = "user-1";
     var userDTO = new UserDTO(id, "STAFF", "user1", "user@example.com", false, null, null, null, null, null,
-      null, null,
-      null, null, true);
+      null, null, null, true);
     when(userService.getUserById(id)).thenReturn(userDTO);
 
     var ex = assertThrows(IllegalArgumentException.class,
@@ -152,8 +145,7 @@ class ProfileUseCaseGetMeTest {
   void getMe_throws_not_existing_exception_when_profile_not_found() {
     var id = "user-1";
     var userDTO = new UserDTO(id, "STAFF", "user1", "user@example.com", false, null, null, null, null, null,
-      null, null,
-      null, null, true);
+      null, null, null, true);
     when(userService.getUserById(id)).thenReturn(userDTO);
     when(profileService.getProfileById(id))
       .thenThrow(new NotExistingException("Profile not found"));

@@ -18,5 +18,6 @@ public class BusinessPagesOfEmployees {
 
   @ManyToOne(fetch = FetchType.EAGER)
   @MapsId("empId")
+  @JoinColumn(name = "users_user_id")
   Users users;
 }

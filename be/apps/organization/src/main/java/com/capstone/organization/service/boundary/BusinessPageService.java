@@ -7,6 +7,8 @@ import com.capstone.organization.dto.response.BusinessPageResponse;
 import com.capstone.organization.dto.response.PagedBusinessPageResponse;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface BusinessPageService {
   BusinessPageResponse createBusinessPage(CreateBusinessPageRequest request);
 
@@ -28,4 +30,6 @@ public interface BusinessPageService {
    * @return PagedBusinessPageResponse: include list of pages, page index, page size, total items, total pages
    */
   PagedBusinessPageResponse filterBusinessPagesList(FilterBusinessPagesRequest req, Pageable pageable);
+
+  List<String> getAllBusinessPageNamesByIds(List<String> ids);
 }

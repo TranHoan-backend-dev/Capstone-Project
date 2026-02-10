@@ -15,10 +15,10 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -86,6 +86,16 @@ public class BusinessPageServiceImpl implements BusinessPageService {
     var result = businessPageRepository.findByNameAndActivate(req.filter(), req.isActive(), pageable);
 
     return mapResponse(result);
+  }
+
+  @Override
+  public List<String> getAllBusinessPageNamesByIds(List<String> ids) {
+    log.info("Fetching business pages by ids: {}", ids);
+    var result = businessPageRepository.findAllById(ids);
+    return result
+      .stream()
+      .map(BusinessPage::getName)
+      .collect(Collectors.toList());
   }
 
   private @NonNull PagedBusinessPageResponse mapResponse(@NonNull Page<BusinessPage> list) {

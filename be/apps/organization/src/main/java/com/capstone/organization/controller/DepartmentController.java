@@ -5,6 +5,7 @@ import com.capstone.organization.dto.request.UpdateDepartmentRequest;
 import com.capstone.organization.dto.response.WrapperApiResponse;
 import com.capstone.organization.service.boundary.DepartmentService;
 import com.capstone.organization.utils.IdEncoder;
+import com.capstone.organization.utils.Utils;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
@@ -51,57 +52,55 @@ public class DepartmentController {
   @PostMapping
   @Operation(summary = "Create a department", description = "Create a new department and return its data.")
   @ApiResponses({
-      @ApiResponse(responseCode = "201", description = "Department created successfully", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-      @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content),
-      @ApiResponse(responseCode = "500", description = "Server error", content = @Content)
+    @ApiResponse(responseCode = "201", description = "Department created successfully", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content),
+    @ApiResponse(responseCode = "500", description = "Server error", content = @Content)
   })
   public ResponseEntity<WrapperApiResponse> createDepartment(
-      @RequestBody @Valid CreateDepartmentRequest request) {
+    @RequestBody @Valid CreateDepartmentRequest request) {
     log.info("Create department request comes to endpoint: {}", request);
     var response = departmentService.createDepartment(request);
     return ResponseEntity.status(HttpStatus.CREATED).body(new WrapperApiResponse(
-        HttpStatus.CREATED.value(),
-        "Create department successfully",
-        response,
-        LocalDateTime.now()));
+      HttpStatus.CREATED.value(),
+      "Create department successfully",
+      response,
+      LocalDateTime.now()));
   }
 
   @PutMapping("/{departmentId}")
   @Operation(summary = "Update a department", description = "Update an existing department by its encoded ID.")
   @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "Department updated successfully", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-      @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content),
-      @ApiResponse(responseCode = "404", description = "Department not found", content = @Content),
-      @ApiResponse(responseCode = "500", description = "Server error", content = @Content)
+    @ApiResponse(responseCode = "200", description = "Department updated successfully", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content),
+    @ApiResponse(responseCode = "404", description = "Department not found", content = @Content),
+    @ApiResponse(responseCode = "500", description = "Server error", content = @Content)
   })
   public ResponseEntity<WrapperApiResponse> updateDepartment(
-      @Parameter(in = ParameterIn.PATH, description = "Encoded department ID", required = true, schema = @Schema(type = "string")) @PathVariable @NotBlank String departmentId,
-      @RequestBody @Valid UpdateDepartmentRequest request) {
+    @Parameter(in = ParameterIn.PATH, description = "Encoded department ID", required = true, schema = @Schema(type = "string")) @PathVariable @NotBlank String departmentId,
+    @RequestBody @Valid UpdateDepartmentRequest request) {
     log.info("Update department request comes to endpoint: {}", departmentId);
     var response = departmentService.updateDepartment(decodeId(departmentId, "departmentId"), request);
-    return ResponseEntity.ok(new WrapperApiResponse(
-        HttpStatus.OK.value(),
-        "Update department successfully",
-        response,
-        LocalDateTime.now()));
+    return Utils.returnResponse(
+      HttpStatus.OK.value(),
+      "Update department successfully",
+      response);
   }
 
   @GetMapping
   @Operation(summary = "List departments", description = "Get a paged list of departments.")
   @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "Departments fetched successfully", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-      @ApiResponse(responseCode = "400", description = "Invalid paging parameters", content = @Content),
-      @ApiResponse(responseCode = "500", description = "Server error", content = @Content)
+    @ApiResponse(responseCode = "200", description = "Departments fetched successfully", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Invalid paging parameters", content = @Content),
+    @ApiResponse(responseCode = "500", description = "Server error", content = @Content)
   })
   public ResponseEntity<WrapperApiResponse> getDepartments(
-      @Parameter(in = ParameterIn.QUERY, description = "Page index (0-based)", schema = @Schema(type = "integer", defaultValue = "0", minimum = "0")) @RequestParam(defaultValue = "0") @PositiveOrZero int page,
-      @Parameter(in = ParameterIn.QUERY, description = "Page size", schema = @Schema(type = "integer", defaultValue = "20", minimum = "1")) @RequestParam(defaultValue = "20") @Positive int size) {
+    @Parameter(in = ParameterIn.QUERY, description = "Page index (0-based)", schema = @Schema(type = "integer", defaultValue = "0", minimum = "0")) @RequestParam(defaultValue = "0") @PositiveOrZero int page,
+    @Parameter(in = ParameterIn.QUERY, description = "Page size", schema = @Schema(type = "integer", defaultValue = "20", minimum = "1")) @RequestParam(defaultValue = "20") @Positive int size) {
     var response = departmentService.getDepartments(page, size);
-    return ResponseEntity.ok(new WrapperApiResponse(
-        HttpStatus.OK.value(),
-        "Get departments successfully",
-        response,
-        LocalDateTime.now()));
+    return Utils.returnResponse(
+      HttpStatus.OK.value(),
+      "Get departments successfully",
+      response);
   }
 
   private @NonNull String decodeId(String encodedId, String fieldName) {
