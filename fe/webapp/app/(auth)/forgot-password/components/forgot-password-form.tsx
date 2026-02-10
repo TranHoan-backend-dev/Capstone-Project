@@ -5,11 +5,8 @@ import { z } from "zod";
 import { useState } from "react";
 import CustomButton from "../../../../components/ui/custom/CustomButton";
 import CustomInput from "@/components/ui/custom/CustomInput";
-import { forgotPasswordService } from "@/services/auth.service";
-
-interface ForgotPasswordFormProps {
-  onSuccessAction: (email: string) => void;
-}
+import { CallToast } from "@/components/ui/CallToast";
+import { ForgotPasswordFormProps } from "@/types";
 
 export function ForgotPasswordForm({
   onSuccessAction,
@@ -31,19 +28,40 @@ export function ForgotPasswordForm({
     const result = forgotPasswordSchema.safeParse({ email });
 
     if (!result.success) {
-      setError(result.error.issues[0].message);
+      CallToast({
+        title: "Thiếu thông tin",
+        message: result.error.issues[0].message || "Vui lòng nhập email",
+        color: "warning",
+      });
       return;
     }
 
     setIsLoading(true);
     try {
-      await forgotPasswordService(email);
+      const res = await fetch("/api/auth/check-existence", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
 
+      const data = await res.json();
+      if (!res.ok || !data.data) {
+        CallToast({
+          title: "Sai thông tin",
+          message: "Email không tồn tại trong hệ thống",
+          color: "danger",
+        });
+        return;
+      }
       onSuccessAction(email);
     } catch (err: any) {
-      setError(
-        err.response?.data?.message || "Không thể gửi email. Vui lòng thử lại",
-      );
+      CallToast({
+        title: "Thất bại",
+        message: "Gửi email thất bại",
+        color: "danger",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -65,7 +83,6 @@ export function ForgotPasswordForm({
             disabled={isLoading}
             id="email"
             label="Địa chỉ Email"
-            placeholder="your@email.com"
             type="email"
             value={email}
             onChange={(e) => {

@@ -10,17 +10,16 @@ export async function POST(req: NextRequest) {
   const REFRESH_TOKEN_MAX_AGE = 60 * 60 * 24 * 7; // 7 ngày
 
   try {
-    const body = await req.json();
-    const { username, password } = body;
+    const { identifier, password } = await req.json();
 
-    if (!username || !password) {
+    if (!identifier || !password) {
       return NextResponse.json(
         { message: "Thiếu tên đăng nhập hoặc mật khẩu" },
         { status: 400 },
       );
     }
 
-    const tokenRes = await keycloakLogin({ username, password });
+    const tokenRes = await keycloakLogin({ identifier, password });
 
     if (!tokenRes?.access_token) {
       throw new Error("NO_TOKEN");
