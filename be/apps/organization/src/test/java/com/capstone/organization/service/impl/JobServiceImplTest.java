@@ -51,7 +51,7 @@ class JobServiceImplTest {
     var request = new CreateJobRequest("");
 
     assertThatThrownBy(() -> jobService.createJob(request))
-        .isInstanceOf(IllegalArgumentException.class);
+      .isInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
@@ -78,7 +78,7 @@ class JobServiceImplTest {
     when(jobRepository.findById("job-1")).thenReturn(Optional.of(existing));
 
     assertThatThrownBy(() -> jobService.updateJob("job-1", request))
-        .isInstanceOf(IllegalArgumentException.class);
+      .isInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
@@ -87,8 +87,8 @@ class JobServiceImplTest {
     when(jobRepository.findById("missing")).thenReturn(Optional.empty());
 
     assertThatThrownBy(() -> jobService.updateJob("missing", request))
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessage("Job not found");
+      .isInstanceOf(IllegalArgumentException.class)
+      .hasMessage("Job not found");
   }
 
   @Test
@@ -97,8 +97,8 @@ class JobServiceImplTest {
     var updatedAt = LocalDateTime.of(2026, 1, 31, 10, 0);
     var pageRequest = PageRequest.of(0, 2);
     var items = List.of(
-        new Job("job-1", "Engineer", createdAt, updatedAt),
-        new Job("job-2", "Designer", createdAt, updatedAt));
+      new Job("job-1", "Engineer", createdAt, updatedAt),
+      new Job("job-2", "Designer", createdAt, updatedAt));
     var page = new PageImpl<>(items, pageRequest, 2);
     when(jobRepository.findAll(pageRequest)).thenReturn(page);
 
@@ -115,7 +115,7 @@ class JobServiceImplTest {
   @Test
   void getJobs_emptyList_returnsEmptyPagedResponse() {
     var pageRequest = PageRequest.of(0, 10);
-    when(jobRepository.findAll(pageRequest)).thenReturn(new PageImpl<Job>(List.of(), pageRequest, 0));
+    when(jobRepository.findAll(pageRequest)).thenReturn(new PageImpl<>(List.of(), pageRequest, 0));
 
     var response = jobService.getJobs(0, 10);
 
