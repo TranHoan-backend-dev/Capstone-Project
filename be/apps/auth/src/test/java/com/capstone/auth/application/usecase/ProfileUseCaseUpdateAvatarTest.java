@@ -37,13 +37,11 @@ class ProfileUseCaseUpdateAvatarTest {
 
   private UserDTO createNonLockedUser() {
     return new UserDTO("", "STAFF", "user1", "user@example.com", false, null, null, null, null, null, null, null,
-      null,
       null, true);
   }
 
   private UserDTO createLockedUser() {
     return new UserDTO("", "STAFF", "user1", "user@example.com", true, null, null, null, null, null, null, null,
-      null,
       null, true);
   }
 
@@ -203,7 +201,7 @@ class ProfileUseCaseUpdateAvatarTest {
     var id = "user-1";
     var file = createMockFile();
     var userDTO = new UserDTO("", "IT_DEPARTMENT_STAFF", "user1", "user@example.com", false, null, null, null, null,
-      null, null, null, null, null, true);
+      null, null, null, null, true);
     var profileDTO = createProfileDTO("hehe");
 
     when(userService.getUserById(id)).thenReturn(userDTO);
@@ -253,7 +251,7 @@ class ProfileUseCaseUpdateAvatarTest {
     var id = "user-1";
     var file = createMockFile();
     var userDTO = new UserDTO("", "ADMIN", "adminuser", "admin@example.com", false, null, null, null, null, null,
-      null, null, null, null, true);
+      null, null, null, true);
     var profileDTO = new ProfileDTO("encoded-id", "Admin User", "hehe", "Admin Address", "0987654321", false,
       LocalDate.of(1985, 5, 15));
 

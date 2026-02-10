@@ -39,7 +39,7 @@ class AuthUseCaseLoginTest {
     var username = "user1";
     var user = new UserDTO(userId, "IT_DEPARTMENT_STAFF", username, email, false, null, null, null, null, null, null,
       null,
-      null, null, true);
+      null, true);
     var profile = new ProfileDTO(
       userId,
       "User One",
@@ -75,7 +75,7 @@ class AuthUseCaseLoginTest {
     var username = "user1";
     var user = new UserDTO(userId, "IT_DEPARTMENT_STAFF", username, "user@example.com", false, null, null, null, null,
       null,
-      null, null, null, null, true);
+      null, null, null, true);
 
     when(userService.getUserById(userId)).thenReturn(user);
 
@@ -92,8 +92,7 @@ class AuthUseCaseLoginTest {
     var email = "user@example.com";
     var username = "user1";
     var user = new UserDTO(userId, "IT_DEPARTMENT_STAFF", username, email, true, null, null, null, null, null, null,
-      null, null,
-      null, true);
+      null, null, true);
 
     when(userService.getUserById(userId)).thenReturn(user);
     when(userService.checkExistence(email)).thenReturn(true);
@@ -113,7 +112,7 @@ class AuthUseCaseLoginTest {
     var username = "user1";
     var user = new UserDTO(userId, "IT_DEPARTMENT_STAFF", username, email, false, null, null, null, null, null, null,
       null,
-      null, null, true);
+      null, true);
 
     when(userService.getUserById(userId)).thenReturn(user);
     when(userService.checkExistence(email)).thenReturn(false);
@@ -147,7 +146,7 @@ class AuthUseCaseLoginTest {
     var username = "user1";
     var user = new UserDTO(userId, "IT_DEPARTMENT_STAFF", "user1", "user@example.com", false, null, null, null, null,
       null,
-      null, null, null, null, true);
+      null, null, null, true);
 
     when(userService.getUserById(userId)).thenReturn(user);
 
@@ -164,8 +163,7 @@ class AuthUseCaseLoginTest {
     var email = "user@example.com";
     var username = "wronguser";
     var user = new UserDTO(userId, "IT_DEPARTMENT_STAFF", "user1", email, false, null, null, null, null, null, null,
-      null, null,
-      null, true);
+      null, null, true);
 
     when(userService.getUserById(userId)).thenReturn(user);
 
@@ -182,7 +180,6 @@ class AuthUseCaseLoginTest {
     var email = "user@example.com";
     var username = "user1";
     var user = new UserDTO(userId, "IT_DEPARTMENT_STAFF", username, email, false, null, null, null, null, null, null,
-      null,
       null, null, true);
 
     when(userService.getUserById(userId)).thenReturn(user);

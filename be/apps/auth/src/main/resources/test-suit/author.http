@@ -1,0 +1,50 @@
+@uri = http://localhost:9003/api/v1
+@keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
+@client_secret=
+
+### get token
+POST {{keycloak}}/token
+Content-Type: application/x-www-form-urlencoded
+Accept: application/json
+
+grant_type=password&
+client_id=&
+client_secret={{client_secret}}&
+username=&
+password=&
+scope=openid
+
+> {%
+  client.global.set("access_token", response.body.access_token);
+  client.global.set("refresh_token", response.body.refresh_token);
+%}
+
+### get all active employees, full of pageable
+GET {{uri}}/authorization/employees?page=0&size=10
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+### get all active employees, missing size
+GET {{uri}}/authorization/employees?page=0
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+### get all active employees, missing page
+GET {{uri}}/authorization/employees?size=10
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+### get all active employees, missing all information
+GET {{uri}}/authorization/employees
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+### get all active employees, full of pagable and status; username is existing
+GET {{uri}}/authorization/employees?page=0&size=10&isEnabled=true&username=user
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+### get all active employees, full of pagable and status; username is not existing
+GET {{uri}}/authorization/employees?page=0&size=10&isEnabled=true&username=admin
+Authorization: Bearer {{access_token}}
+Content-Type: application/json

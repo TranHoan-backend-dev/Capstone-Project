@@ -13,10 +13,13 @@ import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.web.client.RestTemplate;
 
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
+
 import java.util.concurrent.Executor;
 
 @RequiredArgsConstructor
 @Configuration
+@EnableSpringDataWebSupport(pageSerializationMode = EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AppConfig {
   KeycloakConfig keycloakConfig;
@@ -48,10 +51,9 @@ public class AppConfig {
     OAuth2TokenValidator<Jwt> withAudience = new AudienceValidator(keycloakConfig.getAud());
 
     decoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(
-      withIssuer,
-      withAudience,
-      validator
-    ));
+        withIssuer,
+        withAudience,
+        validator));
     return decoder;
   }
 }
