@@ -61,14 +61,13 @@ public class ProfileController {
     Map<String, Object> claims = jwt.getClaims();
     log.info("Get profile request comes to endpoint: {}", id);
 
-    return ResponseEntity.ok(new WrapperApiResponse(
+    return Utils.returnResponse(
         HttpStatus.OK.value(),
         "Get profile successfully",
         profileUC.getMe(
             id,
             claims.get("email").toString(),
-            claims.get("preferred_username").toString()),
-        LocalDateTime.now()));
+            claims.get("preferred_username").toString()));
   }
 
   @Operation(summary = "Update Current User Profile", description = "Updates the profile information of the currently authenticated user. "

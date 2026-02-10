@@ -47,12 +47,13 @@ public class AuthenticationController {
   AuthUseCase authUC;
   OtpUseCase otpUC;
 
+  // TODO: update response body of openapi doc
   @Operation(summary = "Register new account", description = "Registers a new user account with employee details including role, department, and water supply network.")
   @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Details for the new user account", required = true, content = @Content(schema = @Schema(implementation = SignupRequest.class)))
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Registration successful. Returns WrapperApiResponse with data as null.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "400", description = "Bad Request - Validation failed or account already exists"),
-    @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    @ApiResponse(responseCode = "400", description = "Bad Request - Validation failed or account already exists", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PostMapping("/signup")
   public ResponseEntity<?> signup(@RequestBody @Valid SignupRequest request)
@@ -65,14 +66,12 @@ public class AuthenticationController {
       request.jobId(), request.businessPageIds(),
       request.departmentId(), request.waterSupplyNetworkId());
 
-    return ResponseEntity.ok(new WrapperApiResponse(
+    return Utils.returnResponse(
       HttpStatus.OK.value(),
       "Create account successfully",
-      null,
-      LocalDateTime.now()));
+      null);
   }
 
-  // <editor-fold> desc="Forgot password"
   // <editor-fold> desc="Forgot password"
   @Operation(
       summary = "Check existence of username or email",
@@ -86,11 +85,10 @@ public class AuthenticationController {
   @PostMapping("/check-existence")
   public ResponseEntity<?> checkExistence(
     @RequestBody @Valid CheckExistenceRequest request) {
-    return ResponseEntity.ok(new WrapperApiResponse(
+    return Utils.returnResponse(
       HttpStatus.OK.value(),
       "Check existence successfully",
-      authUC.checkExistence(request.value()),
-      LocalDateTime.now()));
+      authUC.checkExistence(request.value()));
   }
 
   @Operation(
@@ -107,11 +105,11 @@ public class AuthenticationController {
   public ResponseEntity<?> sendOtp(
     @RequestBody @Valid SendOtpRequest request) {
     otpUC.sendOtp(request.email());
-    return ResponseEntity.ok(new WrapperApiResponse(
+    return Utils.returnResponse(
       HttpStatus.OK.value(),
       "Send OTP successfully",
-      null,
-      LocalDateTime.now()));
+      null
+      );
   }
 
   @Operation(
@@ -131,11 +129,10 @@ public class AuthenticationController {
     // exception for expiry/not found.
     // Let's handle the boolean false case.
 
-    return ResponseEntity.badRequest().body(new WrapperApiResponse(
+    return Utils.returnResponse(
       !isValid ? HttpStatus.BAD_REQUEST.value() : HttpStatus.OK.value(),
       !isValid ? "Invalid OTP" : "Verify OTP successfully",
-      null,
-      LocalDateTime.now()));
+      null);
   }
   // </editor-fold>
 
@@ -152,11 +149,10 @@ public class AuthenticationController {
   @PostMapping("/reset-password")
   public ResponseEntity<?> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
     otpUC.resetPasswordWithOtp(request.email(), request.otp(), request.newPassword());
-    return ResponseEntity.ok(new WrapperApiResponse(
+    return Utils.returnResponse(
       HttpStatus.OK.value(),
       "Reset password successfully",
-      null,
-      LocalDateTime.now()));
+      null);
   }
 
   @Operation(

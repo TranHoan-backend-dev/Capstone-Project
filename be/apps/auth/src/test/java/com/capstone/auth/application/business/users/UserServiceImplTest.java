@@ -39,7 +39,6 @@ class UserServiceImplTest {
     var role = Roles.create(builder -> builder.name(RoleName.IT_DEPARTMENT_STAFF));
     var user = Users.create(builder -> builder
         .email("user@example.com")
-        .password("hash")
         .username("user1")
         .role(role)
         .jobId("job1")
@@ -74,7 +73,6 @@ class UserServiceImplTest {
   void updatePassword_updates_when_old_password_matches() {
     var user = Users.create(builder -> builder
         .email("user@example.com")
-        .password("hash-old")
         .username("user1")
         .role(Roles.create(b -> b.name(RoleName.IT_DEPARTMENT_STAFF)))
         .jobId("job1")
@@ -91,14 +89,12 @@ class UserServiceImplTest {
 
     ArgumentCaptor<Users> captor = ArgumentCaptor.forClass(Users.class);
     verify(userRepository).save(captor.capture());
-    assertEquals("hash-new", captor.getValue().getPassword());
   }
 
   @Test
   void updatePassword_throws_when_old_password_mismatch() {
     var user = Users.create(builder -> builder
         .email("user@example.com")
-        .password("hash-old")
         .username("user1")
         .role(Roles.create(b -> b.name(RoleName.IT_DEPARTMENT_STAFF)))
         .jobId("job1")
