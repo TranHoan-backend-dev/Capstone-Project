@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { RestoreIcon } from "@/config/chip-and-icon";
 import CustomButton from "../ui/custom/CustomButton";
 import CustomInput from "../ui/custom/CustomInput";
+import { resendOtpService, verifyOtpService } from "@/services/auth.service";
 
 interface OTPFormProps {
   email: string;
@@ -16,8 +17,6 @@ interface OTPFormProps {
 const OTP_LENGTH = 6;
 
 const OTP_REGEX = new RegExp(`^\\d{${OTP_LENGTH}}$`);
-
-const MOCK_VALID_OTP = "123456";
 
 export default function OTPForm({
   email,
@@ -126,11 +125,7 @@ export default function OTPForm({
     }
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      if (otpString !== MOCK_VALID_OTP) {
-        throw new Error("INVALID_OTP");
-      }
+      await verifyOtpService(email, otpString);
 
       onSuccessAction();
     } catch (err) {
@@ -138,15 +133,6 @@ export default function OTPForm({
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleResendOTP = () => {
-    setOtp(["", "", "", "", "", ""]);
-    setError("");
-    if (inputRefs.current[0]) {
-      inputRefs.current[0]?.focus();
-    }
-    console.log("Resending OTP...");
   };
 
   const handleContainerClick = () => {
@@ -160,10 +146,18 @@ export default function OTPForm({
   };
 
   const handleResend = async () => {
-    setCountdown(60);
-    setOtp(["", "", "", "", "", ""]);
-    setError("");
-    console.log("Resending OTP to:", email);
+    try {
+      setLoading(true);
+      await resendOtpService(email);
+      setCountdown(60);
+      setOtp(Array(OTP_LENGTH).fill(""));
+      setError("");
+      inputRefs.current[0]?.focus();
+    } catch {
+      setError("Không thể gửi lại mã OTP");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -175,7 +169,7 @@ export default function OTPForm({
         <p className="text-default-600">
           Vui lòng nhập mã xác thực 6 số đã gửi đến
         </p>
-        <p className="text-primary font-medium">raviweb@example.com</p>
+        <p className="text-primary font-medium">{email}</p>
       </div>
 
       <form className="space-y-6" onSubmit={handleSubmit}>
@@ -227,7 +221,7 @@ export default function OTPForm({
         <CustomButton
           className="w-full font-medium py-3 text-base"
           color="primary"
-          isDisabled={otp.join("").length !== OTP_LENGTH}
+          isDisabled={loading || otp.join("").length !== OTP_LENGTH}
           isLoading={loading}
           type="submit"
         >

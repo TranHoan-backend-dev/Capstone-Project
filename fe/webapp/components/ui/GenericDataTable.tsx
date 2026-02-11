@@ -43,6 +43,7 @@ interface GenericDataTableProps<T> {
   actions?: React.ReactNode;
   topContent?: React.ReactNode;
   hideHeader?: boolean;
+  isLoading?: boolean;
 }
 
 export const GenericDataTable = <T extends { id: string | number }>({
@@ -58,6 +59,7 @@ export const GenericDataTable = <T extends { id: string | number }>({
   headerSummary,
   actions,
   topContent,
+  isLoading,
 }: GenericDataTableProps<T>) => {
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
 
@@ -111,7 +113,9 @@ export const GenericDataTable = <T extends { id: string | number }>({
             <Table
               removeWrapper
               aria-label={title}
+              isStriped
               classNames={{
+                tr: "hover:bg-default-100 transition-colors",
                 th: "bg-default-50 text-default-400 font-bold py-4 px-4 text-[11px] uppercase tracking-widest",
                 td: "py-4 px-4 text-sm text-foreground last:border-none",
                 ...tableProps?.classNames,
@@ -133,12 +137,17 @@ export const GenericDataTable = <T extends { id: string | number }>({
               <TableBody
                 emptyContent={"Không có dữ liệu để hiển thị."}
                 items={data}
+                isLoading={isLoading}
                 loadingContent={<Spinner label="Loading..." />}
+                className="flex items-center justify-center"
               >
                 {(item) => (
                   <TableRow
                     key={item.id}
-                    className="hover:bg-default-50 transition-colors border-divider"
+                    className="hover:bg-default-50  transition-colors
+    hover:bg-default-100
+    even:bg-default-50
+    border-divider"
                   >
                     {columns.map((column, index) => (
                       <TableCell
