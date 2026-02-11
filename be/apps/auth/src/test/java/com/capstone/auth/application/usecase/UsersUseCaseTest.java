@@ -3,6 +3,7 @@ package com.capstone.auth.application.usecase;
 import com.capstone.auth.application.business.pages.BusinessPageService;
 import com.capstone.auth.application.business.users.UserService;
 import com.capstone.auth.application.dto.request.FilterUsersRequest;
+import com.capstone.auth.application.dto.request.UpdateBusinessPageNamesRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -65,5 +66,52 @@ class UsersUseCaseTest {
     // Assert
     assertEquals(expectedResult, result);
     verify(bpService).getPagesByEmployeeId(employeeId);
+  }
+
+  @Test
+  @DisplayName("Should update business pages for list of employees successfully")
+  void updateBusinessPagesListOfEmployees_Success() {
+    // Arrange
+    var request1 = new UpdateBusinessPageNamesRequest("emp1",
+        java.util.Set.of("p1", "p2"));
+    var request2 = new UpdateBusinessPageNamesRequest("emp2",
+        java.util.Set.of("p3"));
+    var requests = List.of(request1, request2);
+
+    // Act
+    usersUseCase.updateBusinessPagesListOfEmployees(requests);
+
+    // Assert
+    verify(bpService).updatePagesOfEmployee("emp1", java.util.Set.of("p1", "p2"));
+    verify(bpService).updatePagesOfEmployee("emp2", java.util.Set.of("p3"));
+    verifyNoMoreInteractions(bpService);
+  }
+
+  @Test
+  @DisplayName("Should handle empty list of updates gracefully")
+  void updateBusinessPagesListOfEmployees_EmptyList() {
+    // Arrange
+    List<UpdateBusinessPageNamesRequest> requests = Collections.emptyList();
+
+    // Act
+    usersUseCase.updateBusinessPagesListOfEmployees(requests);
+
+    // Assert
+    verifyNoInteractions(bpService);
+  }
+
+  @Test
+  @DisplayName("Should propagate exception when service fails")
+  void updateBusinessPagesListOfEmployees_ServiceException() {
+    // Arrange
+    var request = new UpdateBusinessPageNamesRequest("emp1",
+        java.util.Set.of("p1"));
+    var requests = List.of(request);
+
+    doThrow(new RuntimeException("Service Error")).when(bpService).updatePagesOfEmployee(anyString(), anySet());
+
+    // Act & Assert
+    assertThrows(RuntimeException.class, () -> usersUseCase.updateBusinessPagesListOfEmployees(requests));
+    verify(bpService).updatePagesOfEmployee("emp1", java.util.Set.of("p1"));
   }
 }

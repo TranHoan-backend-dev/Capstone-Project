@@ -1,6 +1,6 @@
 package com.capstone.auth.domain.repository;
 
-import com.capstone.auth.domain.model.VerificationCode;
+import com.capstone.auth.domain.model.utils.VerificationCode;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

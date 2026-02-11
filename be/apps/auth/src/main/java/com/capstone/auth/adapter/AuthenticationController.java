@@ -42,18 +42,17 @@ import java.util.concurrent.ExecutionException;
 @RequestMapping("/auth")
 @SecurityRequirement(name = "Keycloak")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@Tag(name = "Authentication", description = "Operations for user authentication, registration, OTP.")
+@Tag(name = "Authentication", description = "Các hoạt động xác thực người dùng, đăng ký tài khoản, OTP, quên-đổi mật khẩu.")
 public class AuthenticationController {
   AuthUseCase authUC;
   OtpUseCase otpUC;
 
-  // TODO: update response body of openapi doc
-  @Operation(summary = "Register new account", description = "Registers a new user account with employee details including role, department, and water supply network.")
-  @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Details for the new user account", required = true, content = @Content(schema = @Schema(implementation = SignupRequest.class)))
+  @Operation(summary = "Đăng ký tài khoản mới", description = "Đăng ký tài khoản người dùng mới với thông tin nhân viên bao gồm vai trò, phòng ban và mạng lưới cấp nước. Trả về WrapperApiResponse với data là null.")
+  @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Thông tin chi tiết cho tài khoản người dùng mới", required = true, content = @Content(schema = @Schema(implementation = SignupRequest.class)))
   @ApiResponses(value = {
-    @ApiResponse(responseCode = "200", description = "Registration successful. Returns WrapperApiResponse with data as null.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "400", description = "Bad Request - Validation failed or account already exists", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
+    @ApiResponse(responseCode = "200", description = "Đăng ký thành công", content = @Content(mediaType = "application/json")),
+    @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ - Xác thực thất bại hoặc tài khoản đã tồn tại", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "500", description = "Lỗi máy chủ nội bộ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PostMapping("/signup")
   public ResponseEntity<?> signup(@RequestBody @Valid SignupRequest request)
@@ -73,14 +72,10 @@ public class AuthenticationController {
   }
 
   // <editor-fold> desc="Forgot password"
-  @Operation(
-      summary = "Check existence of username or email",
-      description = "Checks if the provided username or email is already registered in the system.")
+  @Operation(summary = "Kiểm tra xem tên đăng nhập hoặc email", description = "Kiểm tra xem tên đăng nhập hoặc email đã được sử dụng trong hệ thống hoặc tồn tại hay chưa.")
   @ApiResponses(value = {
-    @ApiResponse(responseCode = "200", description = "Check successful. Returns WrapperApiResponse with data as boolean (true if exists).",
-        content = @Content(mediaType = "application/json", schema = @Schema(implementation = Boolean.class))),
-    @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input format",
-        content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
+    @ApiResponse(responseCode = "200", description = "Kiểm tra thành công. Trả về WrapperApiResponse với data là giá trị boolean.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Boolean.class))),
+    @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PostMapping("/check-existence")
   public ResponseEntity<?> checkExistence(
@@ -91,19 +86,14 @@ public class AuthenticationController {
       authUC.checkExistence(request.value()));
   }
 
-  @Operation(
-      summary = "Send OTP via email",
-      description = "Sends a One-Time Password (OTP) to the provided email address for verification or password reset purposes.")
+  @Operation(summary = "Gửi OTP qua email", description = "Gửi mã OTP đến email được cung cấp để xác minh hoặc đặt lại mật khẩu. Data response rỗng.")
+  @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Địa chỉ email của tài khoản cần gửi OTP", required = true, content = @Content(schema = @Schema(implementation = SendOtpRequest.class)))
   @ApiResponses(value = {
-    @ApiResponse(responseCode = "200", description = "OTP sent successfully trả về empty payload data"),
-    @ApiResponse(responseCode = "400", description = "Bad Request - Invalid email format or sending failed",
-        content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "500", description = "Internal Server Error",
-        content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
+    @ApiResponse(responseCode = "200", description = "OTP đã được gửi thành công"),
+    @ApiResponse(responseCode = "400", description = "Email không hợp lệ hoặc không tồn tại", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PostMapping("/send-otp")
-  public ResponseEntity<?> sendOtp(
-    @RequestBody @Valid SendOtpRequest request) {
+  public ResponseEntity<?> sendOtp(@RequestBody @Valid SendOtpRequest request) {
     otpUC.sendOtp(request.email());
     return Utils.returnResponse(
       HttpStatus.OK.value(),
@@ -112,17 +102,14 @@ public class AuthenticationController {
       );
   }
 
-  @Operation(
-      summary = "Verify OTP code",
-      description = "Verifies the validity of the OTP code sent to the user's email.")
+  @Operation(summary = "Xác minh mã OTP", description = "Xác minh tính hợp lệ của mã OTP được gửi qua email. Data response rỗng.")
+  @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Địa chỉ email và mã OTP cần xác minh", required = true, content = @Content(schema = @Schema(implementation = VerifyOtpRequest.class)))
   @ApiResponses(value = {
-    @ApiResponse(responseCode = "200", description = "OTP verified successfully. trả về empty payload data"),
-    @ApiResponse(responseCode = "400", description = "Invalid or expired OTP code",
-        content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
+    @ApiResponse(responseCode = "200", description = "OTP đã được xác minh thành công"),
+    @ApiResponse(responseCode = "400", description = "Mã OTP không hợp lệ hoặc đã hết hạn", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PostMapping("/verify-otp")
-  public ResponseEntity<?> verifyOtp(
-    @RequestBody @Valid VerifyOtpRequest request) {
+  public ResponseEntity<?> verifyOtp(@RequestBody @Valid VerifyOtpRequest request) {
     var isValid = otpUC.verifyOtp(request.email(), request.otp());
     // if not valid, the service might return false or throw exception.
     // Implementation in service returns boolean without exception for mismatch, but
@@ -136,15 +123,11 @@ public class AuthenticationController {
   }
   // </editor-fold>
 
-  @Operation(
-      summary = "Reset password with OTP",
-      description = "Resets the user's password using a valid OTP and email. Requires a new password meeting complexity requirements.")
+  @Operation(summary = "Đặt lại mật khẩu với OTP", description = "Cho phép người dùng đặt mật khẩu mới sau khi xác minh OTP thành công. Data response rỗng.")
+  @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Địa chỉ email, mã OTP và mật khẩu mới cần đặt lại", required = true, content = @Content(schema = @Schema(implementation = ResetPasswordRequest.class)))
   @ApiResponses(value = {
-    @ApiResponse(responseCode = "200", description = "Password reset successfully trả về empty payload data"),
-    @ApiResponse(responseCode = "400", description = "Bad Request - Invalid OTP, expired OTP, or weak password",
-        content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "500", description = "Internal Server Error",
-        content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
+    @ApiResponse(responseCode = "200", description = "Đặt lại mật khẩu thành công"),
+    @ApiResponse(responseCode = "400", description = "OTP không hợp lệ hoặc dữ liệu không chính xác", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PostMapping("/reset-password")
   public ResponseEntity<?> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
@@ -155,21 +138,13 @@ public class AuthenticationController {
       null);
   }
 
-  @Operation(
-      summary = "Change password (Authenticated)",
-      description = "Changes the password for the currently authenticated user. Validates the old password and ensures new password complexity.")
-  @io.swagger.v3.oas.annotations.parameters.RequestBody(
-      description = "Password change details including old password, new password, and confirmation",
-      required = true,
-      content = @Content(schema = @Schema(implementation = ChangePasswordRequest.class)))
+  @Operation(summary = "Đổi mật khẩu (Đã xác thực)", description = "Thay đổi mật khẩu cho người dùng hiện đang đăng nhập. Yêu cầu mật khẩu cũ và mật khẩu mới. Data response rỗng.")
+  @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Mật khẩu cũ, mật khẩu mới và xác nhận mật khẩu", required = true, content = @Content(schema = @Schema(implementation = ChangePasswordRequest.class)))
   @ApiResponses(value = {
-    @ApiResponse(responseCode = "200", description = "Password changed successfully trả về empty payload data"),
-    @ApiResponse(responseCode = "400", description = "Bad Request - Old password mismatch, new passwords mismatch, or weak password",
-        content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing authentication token",
-        content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "500", description = "Internal Server Error",
-        content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
+    @ApiResponse(responseCode = "200", description = "Mật khẩu đã được thay đổi thành công"),
+    @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ - Mật khẩu cũ không chính xác hoặc mật khẩu mới không khớp", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "401", description = "Không được phép - Token JWT không hợp lệ hoặc bị thiếu", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "500", description = "Lỗi máy chủ nội bộ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PostMapping("/change-password")
   public ResponseEntity<?> changePassword(
@@ -187,16 +162,16 @@ public class AuthenticationController {
       null);
   }
 
-  @Operation(summary = "Login with JWT", description = "Authenticates the user using the JWT token from the Authorization header. "
+  @Operation(summary = "Đăng nhập bằng JWT", description = "Xác thực người dùng sử dụng token JWT từ header Authorization. "
     +
-    "It extracts user claims (email, preferred_username), validates the user's existence, account status (not deleted, locked or disabled) and data consistency against the database. "
+    "Nó trích xuất claims của người dùng (email, tên người dùng ưu tiên), xác thực sự tồn tại của người dùng, trạng thái tài khoản (không bị xóa, khóa hoặc vô hiệu hóa) và tính nhất quán dữ liệu với cơ sở dữ liệu. "
     +
-    "Returns a success wrapper containing the user's profile information (UserProfileResponse) in the 'data' field if successful.")
+    "Trả về wrapper thành công chứa thông tin hồ sơ người dùng (UserProfileResponse) trong trường 'data' nếu thành công.")
   @ApiResponses(value = {
-    @ApiResponse(responseCode = "200", description = "Login successful. Returns WrapperApiResponse with data as UserProfileResponse object containing personal information.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserProfileResponse.class))),
-    @ApiResponse(responseCode = "400", description = "Bad Request - Invalid claims or user data mismatch", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "403", description = "Forbidden - Account is deleted, disabled or locked", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
+    @ApiResponse(responseCode = "200", description = "Đăng nhập thành công. Trả về WrapperApiResponse với data là đối tượng UserProfileResponse chứa thông tin cá nhân.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserProfileResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ - Claims không hợp lệ hoặc dữ liệu người dùng không khớp", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "403", description = "Bị cấm - Tài khoản bị xóa, vô hiệu hóa hoặc bị khóa", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "500", description = "Lỗi máy chủ nội bộ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PostMapping("/login")
   public ResponseEntity<?> login(@AuthenticationPrincipal Jwt jwt) {

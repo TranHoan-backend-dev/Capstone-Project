@@ -3,7 +3,7 @@ package com.capstone.auth.application.business.verification;
 import com.capstone.auth.application.business.users.UserService;
 import com.capstone.auth.application.event.producer.MessageProducer;
 import com.capstone.auth.application.event.producer.OtpEvent;
-import com.capstone.auth.domain.model.VerificationCode;
+import com.capstone.auth.domain.model.utils.VerificationCode;
 import com.capstone.auth.domain.repository.VerificationCodeRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

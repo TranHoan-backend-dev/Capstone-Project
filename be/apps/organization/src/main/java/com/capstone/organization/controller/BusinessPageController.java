@@ -2,6 +2,8 @@ package com.capstone.organization.controller;
 
 import com.capstone.organization.dto.request.FilterBusinessPagesRequest;
 import com.capstone.organization.dto.request.UpdateBusinessPageRequest;
+import com.capstone.organization.dto.response.BusinessPageResponse;
+import com.capstone.organization.dto.response.PagedBusinessPageResponse;
 import com.capstone.organization.dto.response.WrapperApiResponse;
 import com.capstone.organization.service.boundary.BusinessPageService;
 import com.capstone.organization.utils.IdEncoder;
@@ -29,7 +31,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 
 @Slf4j
@@ -39,44 +40,47 @@ import java.util.Arrays;
 @RequestMapping("/business-pages")
 @PreAuthorize("hasAuthority('IT_STAFF')")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@Tag(name = "Business Page", description = "Endpoints for managing business pages. All users must have IT_STAFF role in order to access those endpoints")
+@Tag(name = "Business Page", description = "Các endpoint để quản lý trang nghiệp vụ. Tất cả người dùng phải có vai trò IT_STAFF để truy cập các endpoint này")
 public class BusinessPageController {
   BusinessPageService businessPageService;
 
   @PutMapping("/{pageId}")
-  @Operation(summary = "Update a business page", description = "Update an existing business page by its encoded ID.")
+  @Operation(summary = "Cập nhật trang nghiệp vụ", description = "Cập nhật một trang nghiệp vụ hiện có bằng ID đã mã hóa của nó.")
+  @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Thông tin chi tiết cho trang nghiệp vụ, người cập nhật", required = true, content = @Content(schema = @Schema(implementation = UpdateBusinessPageRequest.class)))
   @ApiResponses({
-    @ApiResponse(responseCode = "200", description = "Business page updated", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content),
-    @ApiResponse(responseCode = "404", description = "Business page not found", content = @Content),
-    @ApiResponse(responseCode = "500", description = "Server error", content = @Content)
+    @ApiResponse(responseCode = "200", description = "Đã cập nhật trang nghiệp vụ", content = @Content(schema = @Schema(implementation = BusinessPageResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy trang nghiệp vụ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   public ResponseEntity<WrapperApiResponse> updateBusinessPage(
-    @Parameter(in = ParameterIn.PATH, description = "Encoded business page ID", required = true, schema = @Schema(type = "string")) @PathVariable @NotBlank String pageId,
+    @Parameter(in = ParameterIn.PATH, description = "ID trang nghiệp vụ đã mã hóa", required = true, schema = @Schema(type = "string"))
+    @PathVariable
+    @NotBlank
+    String pageId,
     @RequestBody @Valid UpdateBusinessPageRequest request) {
     log.info("Update business page request comes to endpoint: {}", pageId);
 
     var response = businessPageService.updateBusinessPage(decodeId(pageId, "pageId"), request);
 
-    return ResponseEntity.ok(new WrapperApiResponse(
+    return Utils.returnResponse(
       HttpStatus.OK.value(),
       "Update business page successfully",
-      response,
-      LocalDateTime.now()));
+      response);
   }
 
   @GetMapping
-  @Operation(summary = "List and Filter business pages", description = "Get a paged list of business pages with optional filtering by name and activation status. Results are wrapped in a standard API response.")
+  @Operation(summary = "Liệt kê và Lọc các trang nghiệp vụ", description = "Lấy danh sách phân trang các trang nghiệp vụ với tùy chọn lọc theo tên và trạng thái kích hoạt. Kết quả được bao bọc trong một phản hồi API tiêu chuẩn.")
   @ApiResponses({
-    @ApiResponse(responseCode = "200", description = "Business pages fetched successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "400", description = "Invalid request or paging parameters", content = @Content),
-    @ApiResponse(responseCode = "401", description = "Unauthorized access", content = @Content),
-    @ApiResponse(responseCode = "403", description = "Forbidden - Requires IT_STAFF role", content = @Content),
-    @ApiResponse(responseCode = "500", description = "Internal server error occurred while processing the request", content = @Content)
+    @ApiResponse(responseCode = "200", description = "Lấy danh sách trang nghiệp vụ thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PagedBusinessPageResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Yêu cầu hoặc tham số phân trang không hợp lệ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "401", description = "Truy cập trái phép", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "403", description = "Bị cấm - Yêu cầu vai trò IT_STAFF", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "500", description = "Lỗi máy chủ nội bộ xảy ra trong khi xử lý yêu cầu", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   public ResponseEntity<WrapperApiResponse> getBusinessPages(
-    @Parameter(description = "Pagination parameters (page, size, sort)") Pageable pageable,
-    @Parameter(description = "Filtering criteria (name filter and active status)") FilterBusinessPagesRequest request) {
+    @Parameter(description = "Tham số phân trang (page, size, sort)") Pageable pageable,
+    @Parameter(description = "Tiêu chí lọc (lọc theo tên và trạng thái hoạt động)") FilterBusinessPagesRequest request) {
     log.info("Get business pages request comes to endpoint: page={}, size={}", pageable.getPageNumber(),
       pageable.getPageSize());
 
@@ -91,15 +95,19 @@ public class BusinessPageController {
   }
 
   @GetMapping("/e")
-  @Operation(summary = "Resolve business page names by IDs", description = "Retrieves a list of business page names corresponding to the provided comma-separated list of page IDs. Response data includes a list of string"
-    +
-    "This endpoint is used to resolve page identifiers into human-readable names, typically to display the pages an employee is authorized to access.")
+  @Operation(summary = "Tra cứu tên trang nghiệp vụ theo ID", description = """
+    Truy xuất danh sách tên trang nghiệp vụ tương ứng với danh sách ID trang được cung cấp (phân cách bằng dấu phẩy). Dữ liệu phản hồi bao gồm một danh sách chuỗi.
+    Endpoint này được sử dụng để giải quyết các định danh trang thành tên dễ đọc, thường là để hiển thị các trang mà nhân viên được ủy quyền truy cập.
+    """)
   @ApiResponses(value = {
-    @ApiResponse(responseCode = "200", description = "Successfully retrieved the list of page names", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
+    @ApiResponse(responseCode = "200", description = "Đã truy xuất thành công danh sách tên trang"),
+    @ApiResponse(responseCode = "500", description = "Lỗi máy chủ nội bộ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   public ResponseEntity<?> queryAllPagesById(
-    @Parameter(description = "Comma-separated list of business page IDs to resolve", required = true) @RequestParam("id") String idsList) {
+    @Parameter(description = "Danh sách ID trang nghiệp vụ phân cách bằng dấu phẩy cần tra cứu", required = true)
+    @RequestParam("id")
+    String idsList
+  ) {
     log.info("REST request to query all pages by ids: {}", idsList);
     var content = Arrays
       .stream(idsList.split(", "))
