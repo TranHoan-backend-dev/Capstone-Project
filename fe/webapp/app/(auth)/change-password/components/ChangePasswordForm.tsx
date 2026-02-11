@@ -3,26 +3,20 @@
 import { z } from "zod";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
-import PasswordRequirements from "./PasswordRequirements";
-import ChangePasswordHeader from "./ChangePasswordHeader";
-
-import PasswordInput from "@/components/ui/PasswordInput";
-import CustomButton from "@/components/ui/custom/CustomButton";
 import { passwordSchema } from "@/schemas/password.schema";
 import { RejectIcon, DocumentIcon } from "@/config/chip-and-icon";
-import { changePasswordService } from "@/services/auth.service";
 import { CallToast } from "@/components/ui/CallToast";
+import PasswordInput from "@/components/ui/PasswordInput";
+import CustomButton from "@/components/ui/custom/CustomButton";
 
 const changePasswordSchema = z
   .object({
-    currentPassword: z.string().min(1, "Vui lòng nhập mật khẩu hiện tại"),
+    oldPassword: z.string().min(1, "Vui lòng nhập mật khẩu hiện tại"),
 
     newPassword: passwordSchema,
-
-    confirmPassword: z.string().min(1, "Vui lòng xác nhận mật khẩu"),
+    confirmPassword: passwordSchema,
   })
-  .refine((data) => data.newPassword === data.confirmPassword, {
+  .refine((data) => data.newPassword.trim() === data.confirmPassword.trim(), {
     message: "Mật khẩu mới và xác nhận không khớp",
     path: ["confirmPassword"],
   });
@@ -33,7 +27,7 @@ const ChangePasswordForm = () => {
   const router = useRouter();
 
   const [formData, setFormData] = useState<ChangePasswordFormData>({
-    currentPassword: "",
+    oldPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
@@ -67,11 +61,21 @@ const ChangePasswordForm = () => {
     setIsLoading(true);
 
     try {
-      await changePasswordService(
-        formData.currentPassword,
-        formData.newPassword,
-      );
+      const res = await fetch("/api/auth/change-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
+      if (!res.ok) {
+        const data = await res.json();
+        CallToast({
+          title: "Thất bại",
+          message: data?.message || "Đổi mật khẩu thất bại",
+          color: "danger",
+        });
+        return;
+      }
       CallToast({
         title: "Thành công",
         message: "Đổi mật khẩu thành công",
@@ -79,7 +83,7 @@ const ChangePasswordForm = () => {
       });
 
       setFormData({
-        currentPassword: "",
+        oldPassword: "",
         newPassword: "",
         confirmPassword: "",
       });
@@ -101,9 +105,7 @@ const ChangePasswordForm = () => {
   };
 
   return (
-    <div className="min-h-full mb-6">
-      <ChangePasswordHeader onBack={handleCancel} />
-
+    <div className="min-h-full mt-10">
       <div className="max-w-4xl mx-auto p-0 px-4 md:px-0">
         <div className="mb-6">
           <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-white">
@@ -126,15 +128,15 @@ const ChangePasswordForm = () => {
                   input: "dark:text-white",
                 }}
                 label="Nhập mật khẩu hiện tại"
-                value={formData.currentPassword}
+                value={formData.oldPassword}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
-                    currentPassword: e.target.value,
+                    oldPassword: e.target.value,
                   })
                 }
-                errorMessage={fieldErrors.currentPassword}
-                isInvalid={!!fieldErrors.currentPassword}
+                errorMessage={fieldErrors.oldPassword}
+                isInvalid={!!fieldErrors.oldPassword}
               />
 
               <PasswordInput
@@ -176,8 +178,6 @@ const ChangePasswordForm = () => {
                 errorMessage={fieldErrors.confirmPassword}
                 isInvalid={!!fieldErrors.confirmPassword}
               />
-
-              <PasswordRequirements password={formData.newPassword} />
 
               <div className="flex justify-end space-x-4 pt-4 border-t border-gray-100 dark:border-zinc-800 mt-8">
                 <CustomButton

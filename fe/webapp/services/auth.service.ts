@@ -81,11 +81,22 @@ export const resetPasswordService = async (
 };
 
 export const changePasswordService = async (
+  accessToken: string,
   oldPassword: string,
   newPassword: string,
+  confirmPassword: string,
 ): Promise<void> => {
-  await axiosClient.post("/auth/change-password", {
-    oldPassword,
-    newPassword,
-  });
+  await axios.post(
+    `${API_GATEWAY_URL}/auth/auth/change-password`,
+    {
+      oldPassword,
+      newPassword,
+      confirmPassword,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
 };
