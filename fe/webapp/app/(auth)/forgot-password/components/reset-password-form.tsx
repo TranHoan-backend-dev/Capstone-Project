@@ -20,7 +20,14 @@ const ResetPasswordForm = ({ email, otp }: ResetPasswordFormProps) => {
       path: ["confirmPassword"],
     });
 
-  const [formData, setFormData] = useState({
+type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
+
+const ResetPasswordForm = ({ email }: ResetPasswordFormProps) => {
+  const router = useRouter();
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [formData, setFormData] = useState<ResetPasswordFormData>({
     newPassword: "",
     confirmPassword: "",
   });

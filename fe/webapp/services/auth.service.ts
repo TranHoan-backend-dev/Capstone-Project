@@ -79,3 +79,13 @@ export const resetPasswordService = async (
     newPassword,
   });
 };
+
+export const changePasswordService = async (
+  oldPassword: string,
+  newPassword: string,
+): Promise<void> => {
+  await axiosClient.post("/auth/change-password", {
+    oldPassword,
+    newPassword,
+  });
+};
