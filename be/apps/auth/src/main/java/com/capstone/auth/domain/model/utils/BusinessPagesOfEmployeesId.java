@@ -1,4 +1,4 @@
-package com.capstone.auth.domain.model.id;
+package com.capstone.auth.domain.model.utils;
 
 import jakarta.persistence.Embeddable;
 import lombok.*;

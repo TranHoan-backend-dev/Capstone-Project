@@ -2,9 +2,10 @@ package com.capstone.auth.application.business.pages;
 
 import com.capstone.auth.application.dto.response.WrapperApiResponse;
 import com.capstone.auth.domain.model.BusinessPagesOfEmployees;
-import com.capstone.auth.domain.model.id.BusinessPagesOfEmployeesId;
+import com.capstone.auth.domain.model.utils.BusinessPagesOfEmployeesId;
 import com.capstone.auth.domain.repository.BusinessPagesOfEmployeeRepository;
 import com.capstone.auth.infrastructure.service.OrganizationService;
+import com.capstone.auth.application.business.temp.TempService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -26,6 +28,9 @@ class BusinessPageServiceImplTest {
 
   @Mock
   private OrganizationService orgSrv;
+
+  @Mock
+  private TempService tempSrv;
 
   @InjectMocks
   private BusinessPageServiceImpl businessPageService;
@@ -79,5 +84,53 @@ class BusinessPageServiceImplTest {
     assertEquals(expectedResponse.data(), result);
     verify(bpRepo).findByUsersUserId(employeeId);
     verify(orgSrv).getPagesByIds(expectedIds);
+  }
+
+  @Test
+  @DisplayName("Should update pages for employee successfully")
+  void updatePagesOfEmployee_Success() {
+    // Arrange
+    var employeeId = "emp123";
+    Set<String> pageIds = Set.of("page1", "page2");
+
+    // Act
+    businessPageService.updatePagesOfEmployee(employeeId, pageIds);
+
+    // Assert
+    verify(tempSrv).deleteTemps();
+    verify(tempSrv).addNewTemps(pageIds);
+    verify(bpRepo).deleteDistinctRecord(employeeId);
+    verify(bpRepo).insertNewPagesForEmployee(employeeId);
+  }
+
+  @Test
+  @DisplayName("Should update pages with empty set successfully (clears permissions)")
+  void updatePagesOfEmployee_EmptySet() {
+    // Arrange
+    var employeeId = "emp123";
+    Set<String> pageIds = Collections.emptySet();
+
+    // Act
+    businessPageService.updatePagesOfEmployee(employeeId, pageIds);
+
+    // Assert
+    verify(tempSrv).deleteTemps();
+    verify(tempSrv).addNewTemps(pageIds);
+    verify(bpRepo).deleteDistinctRecord(employeeId);
+    verify(bpRepo).insertNewPagesForEmployee(employeeId);
+  }
+
+  @Test
+  @DisplayName("Should propagate exception during update")
+  void updatePagesOfEmployee_Exception() {
+    // Arrange
+    var employeeId = "emp123";
+    Set<String> pageIds = Set.of("page1");
+    doThrow(new RuntimeException("DB Error")).when(tempSrv).deleteTemps();
+
+    // Act & Assert
+    assertThrows(RuntimeException.class, () -> businessPageService.updatePagesOfEmployee(employeeId, pageIds));
+    verify(tempSrv).deleteTemps();
+    verifyNoMoreInteractions(tempSrv, bpRepo);
   }
 }

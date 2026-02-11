@@ -45,62 +45,62 @@ import java.time.LocalDateTime;
 @RequestMapping("/jobs")
 @PreAuthorize("hasAuthority('IT_STAFF')")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@Tag(name = "Job", description = "Endpoints for managing job positions")
+@Tag(name = "Job", description = "Các endpoint quản lý chức danh công việc")
 public class JobController {
   JobService jobService;
 
   @PostMapping
-  @Operation(summary = "Create a job position", description = "Create a new job position and return its data.")
+  @Operation(summary = "Tạo chức danh công việc", description = "Tạo một chức danh công việc mới và trả về dữ liệu của nó.")
   @ApiResponses({
-    @ApiResponse(responseCode = "201", description = "Job position created successfully", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content),
-    @ApiResponse(responseCode = "500", description = "Server error", content = @Content)
+      @ApiResponse(responseCode = "201", description = "Tạo chức danh công việc thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+      @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ", content = @Content),
+      @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
   })
   public ResponseEntity<WrapperApiResponse> createJob(
-    @RequestBody @Valid CreateJobRequest request) {
+      @RequestBody @Valid CreateJobRequest request) {
     log.info("Create job request comes to endpoint: {}", request);
     var response = jobService.createJob(request);
     return ResponseEntity.status(HttpStatus.CREATED).body(new WrapperApiResponse(
-      HttpStatus.CREATED.value(),
-      "Create job successfully",
-      response,
-      LocalDateTime.now()));
+        HttpStatus.CREATED.value(),
+        "Create job successfully",
+        response,
+        LocalDateTime.now()));
   }
 
   @PutMapping("/{jobId}")
-  @Operation(summary = "Update a job position", description = "Update an existing job position by its encoded ID.")
+  @Operation(summary = "Cập nhật chức danh công việc", description = "Cập nhật một chức danh công việc hiện có bằng ID đã mã hóa của nó.")
   @ApiResponses({
-    @ApiResponse(responseCode = "200", description = "Job position updated successfully", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content),
-    @ApiResponse(responseCode = "404", description = "Job position not found", content = @Content),
-    @ApiResponse(responseCode = "500", description = "Server error", content = @Content)
+      @ApiResponse(responseCode = "200", description = "Cập nhật chức danh công việc thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+      @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ", content = @Content),
+      @ApiResponse(responseCode = "404", description = "Không tìm thấy chức danh công việc", content = @Content),
+      @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
   })
   public ResponseEntity<WrapperApiResponse> updateJob(
-    @Parameter(in = ParameterIn.PATH, description = "Encoded job ID", required = true, schema = @Schema(type = "string")) @PathVariable @NotBlank String jobId,
-    @RequestBody @Valid UpdateJobRequest request) {
+      @Parameter(in = ParameterIn.PATH, description = "ID chức danh công việc đã mã hóa", required = true, schema = @Schema(type = "string")) @PathVariable @NotBlank String jobId,
+      @RequestBody @Valid UpdateJobRequest request) {
     log.info("Update job request comes to endpoint: {}", jobId);
     var response = jobService.updateJob(decodeId(jobId, "jobId"), request);
     return Utils.returnResponse(
-      HttpStatus.OK.value(),
-      "Update job successfully",
-      response);
+        HttpStatus.OK.value(),
+        "Update job successfully",
+        response);
   }
 
   @GetMapping
-  @Operation(summary = "List job positions", description = "Get a paged list of job positions.")
+  @Operation(summary = "Liệt kê chức danh công việc", description = "Lấy danh sách phân trang các chức danh công việc.")
   @ApiResponses({
-    @ApiResponse(responseCode = "200", description = "Job positions fetched successfully", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "400", description = "Invalid paging parameters", content = @Content),
-    @ApiResponse(responseCode = "500", description = "Server error", content = @Content)
+      @ApiResponse(responseCode = "200", description = "Lấy danh sách chức danh công việc thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+      @ApiResponse(responseCode = "400", description = "Tham số phân trang không hợp lệ", content = @Content),
+      @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
   })
   public ResponseEntity<WrapperApiResponse> getJobs(
-    @Parameter(in = ParameterIn.QUERY, description = "Page index (0-based)", schema = @Schema(type = "integer", defaultValue = "0", minimum = "0")) @RequestParam(defaultValue = "0") @PositiveOrZero int page,
-    @Parameter(in = ParameterIn.QUERY, description = "Page size", schema = @Schema(type = "integer", defaultValue = "20", minimum = "1")) @RequestParam(defaultValue = "20") @Positive int size) {
+      @Parameter(in = ParameterIn.QUERY, description = "Chỉ số trang (bắt đầu từ 0)", schema = @Schema(type = "integer", defaultValue = "0", minimum = "0")) @RequestParam(defaultValue = "0") @PositiveOrZero int page,
+      @Parameter(in = ParameterIn.QUERY, description = "Kích thước trang", schema = @Schema(type = "integer", defaultValue = "20", minimum = "1")) @RequestParam(defaultValue = "20") @Positive int size) {
     var response = jobService.getJobs(page, size);
     return Utils.returnResponse(
-      HttpStatus.OK.value(),
-      "Get jobs successfully",
-      response);
+        HttpStatus.OK.value(),
+        "Get jobs successfully",
+        response);
   }
 
   private @NonNull String decodeId(String encodedId, String fieldName) {
