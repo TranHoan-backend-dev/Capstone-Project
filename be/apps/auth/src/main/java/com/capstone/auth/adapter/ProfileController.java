@@ -38,7 +38,8 @@ public class ProfileController {
   ProfileUseCase profileUC;
 
   @Operation(summary = "Lấy hồ sơ người dùng hiện tại", description = """
-    Truy xuất hồ sơ của người dùng hiện đang được xác thực dựa trên token JWT.
+    Truy xuất hồ sơ của người dùng hiện đang được xác thực dựa trên token JWT truyền về trong header Authorization.
+
     Luồng:
     1. Trích xuất ID người dùng (subject) và claims (email, tên người dùng ưu tiên) từ JWT.
     2. Xác thực rằng tài khoản liên kết với ID tồn tại và không bị khóa/vô hiệu hóa.
@@ -53,12 +54,21 @@ public class ProfileController {
     Map<String, Object> claims = jwt.getClaims();
     log.info("Get profile request comes to endpoint: {}", id);
 
-    return Utils.returnResponse(HttpStatus.OK.value(), "Get profile successfully", profileUC.getMe(id, claims.get("email").toString(), claims.get("preferred_username").toString()));
+    return Utils.returnResponse(
+      HttpStatus.OK.value(),
+      "Get profile successfully",
+      profileUC.getMe(
+        id,
+        claims.get("email").toString(),
+        claims.get("preferred_username").toString())
+    );
   }
 
   @Operation(summary = "Cập nhật hồ sơ người dùng hiện tại", description = """
     Cập nhật thông tin hồ sơ của người dùng hiện đang được xác thực.
+
     Các trường như họ tên, số điện thoại và ngày sinh được xác thực trước khi cập nhật.
+
     Chỉ các trường được cung cấp khác null mới được cập nhật; các trường khác giữ nguyên giá trị hiện tại.
     """)
   @ApiResponses(value = {
@@ -70,7 +80,6 @@ public class ProfileController {
   @PostMapping()
   public ResponseEntity<WrapperApiResponse> updateProfile(
     @AuthenticationPrincipal Jwt jwt,
-
     @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Thông tin hồ sơ cập nhật", required = true, content = @Content(schema = @Schema(implementation = UpdateProfileRequest.class)))
     @NonNull
     @RequestBody
@@ -88,7 +97,9 @@ public class ProfileController {
 
   @Operation(summary = "Cập nhật ảnh đại diện người dùng", description = """
     Cập nhật ảnh đại diện của người dùng hiện đang được xác thực.
+
     Tệp ảnh đại diện được tải lên qua multipart form data và được lưu trữ trong bộ nhớ đám mây.
+
     Luồng:
     1. Xác thực người dùng không bị khóa/vô hiệu hóa.
     2. Tải tệp ảnh đại diện lên Google Cloud Storage.
@@ -101,7 +112,7 @@ public class ProfileController {
   public ResponseEntity<WrapperApiResponse> updateAvatar(
     @AuthenticationPrincipal
     Jwt jwt,
-    @io.swagger.v3.oas.annotations.Parameter(description = "Tệp ảnh đại diện để tải lên. Các định dạng hỗ trợ: JPEG, PNG, GIF", required = true)
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Tệp ảnh đại diện để tải lên. Các định dạng hỗ trợ: JPEG, PNG, GIF", required = true)
     @RequestParam(value = "avatar")
     MultipartFile file
   ) {
