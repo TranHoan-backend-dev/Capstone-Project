@@ -96,7 +96,10 @@ public class BusinessPageController {
 
   @GetMapping("/e")
   @Operation(summary = "Tra cứu tên trang nghiệp vụ theo ID", description = """
-    Truy xuất danh sách tên trang nghiệp vụ tương ứng với danh sách ID trang được cung cấp (phân cách bằng dấu phẩy). Dữ liệu phản hồi bao gồm một danh sách chuỗi.
+    Truy xuất danh sách tên trang nghiệp vụ tương ứng với danh sách ID trang được cung cấp (phân cách bằng dấu phẩy).
+
+    Dữ liệu phản hồi bao gồm một danh sách chuỗi.
+
     Endpoint này được sử dụng để giải quyết các định danh trang thành tên dễ đọc, thường là để hiển thị các trang mà nhân viên được ủy quyền truy cập.
     """)
   @ApiResponses(value = {
@@ -104,7 +107,7 @@ public class BusinessPageController {
     @ApiResponse(responseCode = "500", description = "Lỗi máy chủ nội bộ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   public ResponseEntity<?> queryAllPagesById(
-    @Parameter(description = "Danh sách ID trang nghiệp vụ phân cách bằng dấu phẩy cần tra cứu", required = true)
+    @Parameter(description = "Danh sách ID trang nghiệp vụ phân cách bằng dấu phẩy cần tra cứu. Không chứa khoảng trắng, không có dấu phẩy ở cuối", required = true)
     @RequestParam("id")
     String idsList
   ) {

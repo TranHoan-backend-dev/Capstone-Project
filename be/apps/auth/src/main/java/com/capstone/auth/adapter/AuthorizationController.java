@@ -42,8 +42,11 @@ public class AuthorizationController {
 
   @Operation(summary = "Lấy tất cả nhân viên", description = """
     Truy xuất danh sách nhân viên được phân trang. Có thể tùy chọn lọc theo trạng thái 'isEnabled' và 'username'. Bạn có thể xem các trang của nhân viên có quyền truy cập bằng cách gọi endpoint /employees/{id}/pages\s
+
     Phản hồi được bao bọc trong WrapperApiResponse chứa dữ liệu được phân trang.
-    Yêu cầu vai trò 'IT_STAFF'.""")
+
+    Yêu cầu vai trò 'IT_STAFF'.
+    """)
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Đã truy xuất thành công danh sách nhân viên", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EmployeeResponse.class))),
     @ApiResponse(responseCode = "401", description = "Không được phép - Người dùng chưa được xác thực", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
@@ -66,9 +69,11 @@ public class AuthorizationController {
       usersUseCase.getPaginatedListOfEmployees(pageable, request));
   }
 
-  @Operation(summary = """
-    Lấy các trang web nghiệp vụ được ủy quyền cho nhân viên", description = "Truy xuất danh sách tên các trang web nghiệp vụ mà nhân viên có ID được chỉ định được phép truy cập. "
+  @Operation(summary = "Lấy các trang web nghiệp vụ được ủy quyền cho nhân viên", description = """
+    Truy xuất danh sách tên các trang web nghiệp vụ mà nhân viên có ID được chỉ định được phép truy cập.
+
     API này được sử dụng để lấy các trang web/trang mà nhân viên có quyền truy cập.
+
     Truy vấn bằng ID nhân viên (đã mã hóa).
     """)
   @ApiResponses(value = {
@@ -78,7 +83,7 @@ public class AuthorizationController {
   })
   @GetMapping("/employees/{empId}/pages")
   public ResponseEntity<WrapperApiResponse> getBusinessPageNamesOfEmployees(
-    @Parameter(description = "The encoded ID of the employee", required = true)
+    @Parameter(description = "ID được mã hóa của nhân viên", required = true)
     @PathVariable
     String empId
   ) {
@@ -93,9 +98,13 @@ public class AuthorizationController {
 
   @Operation(summary = "Cập nhật các trang nghiệp vụ được ủy quyền cho nhiều nhân viên", description = """
     Cập nhật danh sách các trang web nghiệp vụ mà nhân viên cụ thể được phép truy cập.
+
     Endpoint này chấp nhận một danh sách các yêu cầu cập nhật, mỗi yêu cầu chỉ định ID nhân viên và tập hợp ID trang mới của họ.
+
     Thao tác này là giao dịch và idempotent cho từng nhân viên; nó thay thế danh sách truy cập hiện có bằng danh sách mới.
+
     Chỉ người dùng có vai trò 'IT_STAFF' mới có thể thực hiện hành động này."
+
     Dữ liệu payload phản hồi là null, chỉ thông báo là đã cập nhật thành công hay chưa
     """)
   @ApiResponses(value = {
