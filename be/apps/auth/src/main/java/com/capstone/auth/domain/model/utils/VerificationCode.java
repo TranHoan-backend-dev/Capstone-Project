@@ -1,4 +1,4 @@
-package com.capstone.auth.domain.model;
+package com.capstone.auth.domain.model.utils;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

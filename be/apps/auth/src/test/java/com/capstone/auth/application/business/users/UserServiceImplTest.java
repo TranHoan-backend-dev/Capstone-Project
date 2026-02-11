@@ -36,16 +36,16 @@ class UserServiceImplTest {
 
   @Test
   void getUserById_returns_user_dto() {
-    var role = Roles.create(builder -> builder.name(RoleName.IT_DEPARTMENT_STAFF));
+    var role = Roles.create(builder -> builder.name(RoleName.IT_STAFF));
     var user = Users.create(builder -> builder
-        .email("user@example.com")
-        .username("user1")
-        .role(role)
-        .jobId("job1")
-        .departmentId("dept1")
-        .waterSupplyNetworkId("water1")
-        .isLocked(false)
-        .isEnabled(true));
+      .email("user@example.com")
+      .username("user1")
+      .role(role)
+      .jobId("job1")
+      .departmentId("dept1")
+      .waterSupplyNetworkId("water1")
+      .isLocked(false)
+      .isEnabled(true));
 
     when(userRepository.findById("id-1")).thenReturn(Optional.of(user));
 
@@ -63,8 +63,8 @@ class UserServiceImplTest {
     when(userRepository.findById("missing")).thenReturn(Optional.empty());
 
     NotExistingException ex = assertThrows(
-        NotExistingException.class,
-        () -> userService.getUserById("missing"));
+      NotExistingException.class,
+      () -> userService.getUserById("missing"));
 
     assertEquals("User with id does not exist", ex.getMessage());
   }
@@ -72,14 +72,14 @@ class UserServiceImplTest {
   @Test
   void updatePassword_updates_when_old_password_matches() {
     var user = Users.create(builder -> builder
-        .email("user@example.com")
-        .username("user1")
-        .role(Roles.create(b -> b.name(RoleName.IT_DEPARTMENT_STAFF)))
-        .jobId("job1")
-        .departmentId("dept1")
-        .waterSupplyNetworkId("water1")
-        .isLocked(false)
-        .isEnabled(true));
+      .email("user@example.com")
+      .username("user1")
+      .role(Roles.create(b -> b.name(RoleName.IT_STAFF)))
+      .jobId("job1")
+      .departmentId("dept1")
+      .waterSupplyNetworkId("water1")
+      .isLocked(false)
+      .isEnabled(true));
 
     when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
     when(passwordEncoder.matches("oldPass", "hash-old")).thenReturn(true);
@@ -94,21 +94,21 @@ class UserServiceImplTest {
   @Test
   void updatePassword_throws_when_old_password_mismatch() {
     var user = Users.create(builder -> builder
-        .email("user@example.com")
-        .username("user1")
-        .role(Roles.create(b -> b.name(RoleName.IT_DEPARTMENT_STAFF)))
-        .jobId("job1")
-        .departmentId("dept1")
-        .waterSupplyNetworkId("water1")
-        .isLocked(false)
-        .isEnabled(true));
+      .email("user@example.com")
+      .username("user1")
+      .role(Roles.create(b -> b.name(RoleName.IT_STAFF)))
+      .jobId("job1")
+      .departmentId("dept1")
+      .waterSupplyNetworkId("water1")
+      .isLocked(false)
+      .isEnabled(true));
 
     when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
     when(passwordEncoder.matches("oldPass", "hash-old")).thenReturn(false);
 
     IllegalArgumentException ex = assertThrows(
-        IllegalArgumentException.class,
-        () -> userService.updatePassword("user@example.com", "oldPass", "newPass"));
+      IllegalArgumentException.class,
+      () -> userService.updatePassword("user@example.com", "oldPass", "newPass"));
 
     assertEquals(Constant.SE_03, ex.getMessage());
   }

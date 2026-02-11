@@ -1,6 +1,6 @@
 package com.capstone.auth.domain.model;
 
-import com.capstone.auth.domain.model.id.EmployeeJobId;
+import com.capstone.auth.domain.model.utils.EmployeeJobId;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

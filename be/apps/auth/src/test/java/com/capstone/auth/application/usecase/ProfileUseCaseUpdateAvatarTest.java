@@ -35,29 +35,6 @@ class ProfileUseCaseUpdateAvatarTest {
   @InjectMocks
   ProfileUseCase profileUseCase;
 
-  private UserDTO createNonLockedUser() {
-    return new UserDTO("", "STAFF", "user1", "user@example.com", false, null, null, null, null, null, null, null,
-      null, true);
-  }
-
-  private UserDTO createLockedUser() {
-    return new UserDTO("", "STAFF", "user1", "user@example.com", true, null, null, null, null, null, null, null,
-      null, true);
-  }
-
-  private ProfileDTO createProfileDTO(String avatarUrl) {
-    return new ProfileDTO("encoded-id", "Full Name", avatarUrl, "Address", "0912345678", true,
-      LocalDate.parse("1990-01-01"));
-  }
-
-  private MultipartFile createMockFile() {
-    return new MockMultipartFile(
-      "avatar",
-      "avatar.png",
-      "image/png",
-      "test file content".getBytes());
-  }
-
   @Test
   void updateAvatar_returns_profile_response_when_successful() {
     var id = "user-1";
@@ -270,5 +247,28 @@ class ProfileUseCaseUpdateAvatarTest {
     assertEquals("admin", response.role());
     assertEquals("adminuser", response.username());
     assertEquals("admin@example.com", response.email());
+  }
+
+  private UserDTO createNonLockedUser() {
+    return new UserDTO("", "STAFF", "user1", "user@example.com", false, null, null, null, null, null, null, null,
+      null, true);
+  }
+
+  private UserDTO createLockedUser() {
+    return new UserDTO("", "STAFF", "user1", "user@example.com", true, null, null, null, null, null, null, null,
+      null, true);
+  }
+
+  private ProfileDTO createProfileDTO(String avatarUrl) {
+    return new ProfileDTO("encoded-id", "Full Name", avatarUrl, "Address", "0912345678", true,
+      LocalDate.parse("1990-01-01"));
+  }
+
+  private MultipartFile createMockFile() {
+    return new MockMultipartFile(
+      "avatar",
+      "avatar.png",
+      "image/png",
+      "test file content".getBytes());
   }
 }
