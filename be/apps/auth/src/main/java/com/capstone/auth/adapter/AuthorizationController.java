@@ -55,7 +55,6 @@ public class AuthorizationController {
     @ParameterObject Pageable pageable,
 
     @Parameter(description = "Filter criteria for users (isEnabled, username)")
-    @RequestParam(required = false)
     FilterUsersRequest request
   ) {
     log.info("Getting all employees with page index {} and page size {}", pageable.getPageNumber(),
