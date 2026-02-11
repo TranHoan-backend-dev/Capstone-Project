@@ -13,6 +13,16 @@ export interface BusinessPageRecord {
   updator: string;
 }
 
+export interface AccessRightsRecord {
+  id: string;
+  stt: number;
+  username: string;
+  fullname: string;
+  businessPage: string;
+  waterSupplyNetwork: string;
+  updator: string;
+}
+
 export interface EstimateItem {
   id: number;
   code: string;

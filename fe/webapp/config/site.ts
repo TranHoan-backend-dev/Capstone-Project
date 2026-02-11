@@ -21,6 +21,11 @@ export const siteConfig = {
           label: "Quản lý trang doanh nghiệp",
           href: "/business-page",
         },
+        {
+          key: "access-rights",
+          label: "Quản lý quyền truy cập",
+          href: "/access-rights",
+        },
       ],
     },
 
