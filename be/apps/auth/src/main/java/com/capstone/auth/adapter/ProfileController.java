@@ -53,7 +53,14 @@ public class ProfileController {
     Map<String, Object> claims = jwt.getClaims();
     log.info("Get profile request comes to endpoint: {}", id);
 
-    return Utils.returnResponse(HttpStatus.OK.value(), "Get profile successfully", profileUC.getMe(id, claims.get("email").toString(), claims.get("preferred_username").toString()));
+    return Utils.returnResponse(
+      HttpStatus.OK.value(),
+      "Get profile successfully",
+      profileUC.getMe(
+        id,
+        claims.get("email").toString(),
+        claims.get("preferred_username").toString())
+    );
   }
 
   @Operation(summary = "Cập nhật hồ sơ người dùng hiện tại", description = """
@@ -70,7 +77,6 @@ public class ProfileController {
   @PostMapping()
   public ResponseEntity<WrapperApiResponse> updateProfile(
     @AuthenticationPrincipal Jwt jwt,
-
     @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Thông tin hồ sơ cập nhật", required = true, content = @Content(schema = @Schema(implementation = UpdateProfileRequest.class)))
     @NonNull
     @RequestBody

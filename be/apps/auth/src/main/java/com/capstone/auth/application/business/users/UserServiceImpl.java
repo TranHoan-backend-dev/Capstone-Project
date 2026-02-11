@@ -106,12 +106,11 @@ public class UserServiceImpl implements UserService {
   @Override
   public UserDTO getUserById(String id) {
     log.info("Getting user by id: {}", id);
-    var user = repo.findById(id);
-    if (user.isPresent()) {
-      log.info("User found: {}", user.get());
-      return returnUserDTO(user.get());
-    }
-    throw new NotExistingException("User with id does not exist");
+    var user = repo
+      .findById(id)
+      .orElseThrow(() -> new NotExistingException("User with id does not exist"));
+    log.info("User found: {}", user);
+    return returnUserDTO(user);
   }
 
   @Override
@@ -119,12 +118,9 @@ public class UserServiceImpl implements UserService {
     log.info("Saving user: {}", username);
     var currentUser = repo.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
 
-    if (username != null) {
-      currentUser.setUsername(username);
-      repo.save(currentUser);
-      return returnUserDTO(currentUser);
-    }
-    return null;
+    currentUser.setUsername(username);
+    repo.save(currentUser);
+    return returnUserDTO(currentUser);
   }
 
   @Override

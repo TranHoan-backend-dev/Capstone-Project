@@ -43,7 +43,7 @@ public class ProfileUseCase {
 
   public UserProfileResponse getMe(String id, String email, String username) {
     log.info("Check status and get profile by id: {}", id);
-    var user = getUserNonLockedById(id);
+    var user = getNonLockedUserById(id);
 
     Utils.validateCredentials(user, email, username);
 
@@ -55,7 +55,7 @@ public class ProfileUseCase {
   public UserProfileResponse updateProfile(String id, @NonNull UpdateProfileRequest request) {
     log.info("Updating profile by id: {}", id);
     log.info("Request: {}", request);
-    var user = getUserNonLockedById(id);
+    var user = getNonLockedUserById(id);
     var profile = pSrv.getProfileById(id);
 
     var newProfile = new Profile();
@@ -123,7 +123,7 @@ public class ProfileUseCase {
 
   public UserProfileResponse updateAvatar(String id, MultipartFile file) {
     log.info("Update avatar");
-    var user = getUserNonLockedById(id);
+    var user = getNonLockedUserById(id);
 
     // tải lên GCS
     var avatarUrl = gcsSrv.upload(file);
@@ -135,7 +135,7 @@ public class ProfileUseCase {
     return returnUserProfile(profile, user);
   }
 
-  private @NonNull UserDTO getUserNonLockedById(String id) {
+  private @NonNull UserDTO getNonLockedUserById(String id) {
     var user = uSrv.getUserById(id);
 
     if (user.isLocked()) {
