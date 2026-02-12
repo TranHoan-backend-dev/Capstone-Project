@@ -6,12 +6,12 @@ POST {{keycloak}}/token
 Content-Type: application/x-www-form-urlencoded
 Accept: application/json
 
-grant_type=password&
-client_id=&
-client_secret={{client_secret}}&
-username=&
-password=&
-scope=openid
+grant_type = password &
+client_id =  &
+client_secret = {{client_secret}} &
+username =  &
+password =  &
+scope = openid
 
 > {%
   client.global.set("access_token", response.body.access_token);
@@ -25,7 +25,6 @@ Authorization: Bearer {{access_token}}
 Accept: application/json
 
 {
-
 }
 
 ### logout
@@ -33,6 +32,6 @@ POST {{keycloak}}/logout
 Content-Type: application/x-www-form-urlencoded
 Accept: application/json
 
-client_id=&
-client_secret={{client_secret}}&
-refresh_token={{refresh_token}}
+client_id =  &
+client_secret = {{client_secret}} &
+refresh_token = {{refresh_token}}
