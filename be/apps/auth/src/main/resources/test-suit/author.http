@@ -45,7 +45,7 @@ Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 ### get all active employees, full of pagable and status; username is not existing
-GET {{uri}}/authorization/employees?page=0&size=10&isEnabled=true&username=admin
+GET {{uri}}/authorization/employees?page=0&size=10&isEnabled=true
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
