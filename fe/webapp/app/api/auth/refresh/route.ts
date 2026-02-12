@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { keycloakRefreshToken } from "@/services/keycloak.service";
-import { IS_PRODUCTION } from "@/constants/auth.constants";
+import { IS_PRODUCTION, MAX_AGE_REFRESH_TOKEN } from "@/constants/auth.constants";
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,7 +16,6 @@ export async function POST(req: NextRequest) {
     }
 
     const tokenRes = await keycloakRefreshToken(refreshToken);
-
     const res = NextResponse.json({ message: "REFRESH_OK" });
 
     const cookieOptions = {
@@ -31,6 +30,7 @@ export async function POST(req: NextRequest) {
       tokenRes.access_token,
       {
         ...cookieOptions,
+        maxAge: tokenRes.expires_in,
       },
     );
 
@@ -39,6 +39,7 @@ export async function POST(req: NextRequest) {
       tokenRes.refresh_token,
       {
         ...cookieOptions,
+        maxAge: MAX_AGE_REFRESH_TOKEN,
       },
     );
 
