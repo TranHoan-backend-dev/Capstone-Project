@@ -18,7 +18,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -28,11 +29,11 @@ import java.util.concurrent.ExecutionException;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.idm.CredentialRepresentation;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthUseCase {
+  private static final Logger log = LoggerFactory.getLogger(AuthUseCase.class);
   UserService uSrv;
   ProfileService pSrv;
   RoleService rSrv;
@@ -41,14 +42,14 @@ public class AuthUseCase {
   Keycloak keycloak;
 
   @NonFinal
-  @Value("${sending_mail.account_creation.subject}")
+  @Value("${sending_mail.account_creation.subject:Account Created}")
   String SUBJECT;
 
   @NonFinal
-  @Value("${sending_mail.account_creation.template}")
+  @Value("${sending_mail.account_creation.template:account-creation}")
   String TEMPLATE;
 
-  @Value("${keycloak.realms}")
+  @Value("${keycloak.realms:master}")
   @NonFinal
   String realm;
 

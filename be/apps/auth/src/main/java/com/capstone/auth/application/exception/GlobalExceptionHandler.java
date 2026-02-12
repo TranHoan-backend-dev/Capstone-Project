@@ -87,6 +87,11 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
   }
 
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<WrapperApiResponse> handleIllegalArgumentException(@NonNull IllegalArgumentException ex) {
+    return returnBadRequest(ex.getMessage());
+  }
+
   @ExceptionHandler(Exception.class)
   public ResponseEntity<WrapperApiResponse> handleGlobalException(@NonNull Exception ex) {
     return returnInternalServerError(ex.getMessage());

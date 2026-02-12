@@ -152,7 +152,7 @@ public class AuthenticationController {
     @RequestBody @Valid ChangePasswordRequest request) {
     log.info("Change password request comes to endpoint: {}", jwt);
     var email = jwt.getClaim("email");
-    authUC.changePassword(email.toString(), request.oldPassword(), request.newPassword(),
+    authUC.changePassword(jwt.getSubject(), email.toString(), request.oldPassword(), request.newPassword(),
       request.confirmPassword());
 
     return Utils.returnResponse(
