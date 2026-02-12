@@ -27,7 +27,9 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.OAuth2Constants;
 
 @Component
 @RequiredArgsConstructor
@@ -52,6 +54,18 @@ public class AuthUseCase {
   @Value("${keycloak.realms:master}")
   @NonFinal
   String realm;
+
+  @Value("${keycloak.server-url:http://localhost:8080}")
+  @NonFinal
+  String serverUrl;
+
+  @Value("${keycloak.client-id:cmsn}")
+  @NonFinal
+  String clientId;
+
+  @Value("${keycloak.client-secret:}")
+  @NonFinal
+  String clientSecret;
 
   public UserProfileResponse login(String userId, String email, String username) {
     log.info("Handling login business with userId={} and email={}", userId, email);
@@ -103,13 +117,42 @@ public class AuthUseCase {
 
   public void changePassword(String userId, String email, String oldPassword, @NonNull String newPassword, String confirmPassword) {
     log.info("Handling change password for email: {}", email);
+    
+    if (oldPassword.equals(newPassword)) {
+      throw new IllegalArgumentException("New password must be different from the old password");
+    }
+
     if (!newPassword.equals(confirmPassword)) {
       throw new IllegalArgumentException("New password and confirm password do not match");
     }
+
+    // Xác thực mật khẩu cũ với Keycloak
+    verifyOldPassword(email, oldPassword);
+
     uSrv.updatePassword(email, oldPassword, newPassword);
     
-    // Update password on Keycloak
+    // Cập nhật mật khẩu mới trên Keycloak
     updatePasswordOnKeycloak(userId, newPassword);
+  }
+
+  private void verifyOldPassword(String email, String oldPassword) {
+    log.info("Verifying old password for email: {}", email);
+    try (Keycloak tempKeycloak = KeycloakBuilder.builder()
+        .serverUrl(serverUrl)
+        .realm(realm)
+        .clientId(clientId)
+        .clientSecret(clientSecret)
+        .username(email)
+        .password(oldPassword)
+        .grantType(OAuth2Constants.PASSWORD)
+        .build()) {
+      // Thử lấy token để xác thực mật khẩu
+      tempKeycloak.tokenManager().getAccessToken();
+      log.info("Old password verification successful for email: {}", email);
+    } catch (Exception e) {
+      log.error("Old password verification failed for email: {}", email);
+      throw new IllegalArgumentException("Incorrect old password");
+    }
   }
 
   private void updatePasswordOnKeycloak(String userId, String newPassword) {
