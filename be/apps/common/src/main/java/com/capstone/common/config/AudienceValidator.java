@@ -1,0 +1,34 @@
+package com.capstone.common.config;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.security.oauth2.core.OAuth2Error;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
+import org.springframework.security.oauth2.jwt.Jwt;
+
+import java.util.List;
+
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class AudienceValidator implements OAuth2TokenValidator<Jwt> {
+  List<String> audiences;
+
+  @Override
+  public OAuth2TokenValidatorResult validate(Jwt token) {
+    boolean matched = token.getAudience()
+      .stream()
+      .anyMatch(audiences::contains);
+
+    if (matched) {
+      return OAuth2TokenValidatorResult.success();
+    }
+
+    return OAuth2TokenValidatorResult.failure(
+      new OAuth2Error(
+        "invalid_token",
+        "Token audience is not allowed",
+        null));
+  }
+}

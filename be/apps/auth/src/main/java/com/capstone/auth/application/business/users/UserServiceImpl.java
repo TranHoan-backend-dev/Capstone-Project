@@ -1,17 +1,23 @@
 package com.capstone.auth.application.business.users;
 
 import com.capstone.auth.application.business.dto.UserDTO;
+import com.capstone.auth.application.dto.request.FilterUsersRequest;
+import com.capstone.auth.application.dto.response.EmployeeResponse;
 import com.capstone.auth.application.exception.ExistingException;
 import com.capstone.auth.application.exception.NotExistingException;
 import com.capstone.auth.domain.model.Roles;
 import com.capstone.auth.domain.model.Users;
 import com.capstone.auth.domain.repository.UserRepository;
 import com.capstone.auth.infrastructure.config.Constant;
+import com.capstone.auth.infrastructure.utils.IdEncoder;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,19 +36,17 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public void createEmployee(
-    String username, String password, String email,
+    String username, String email,
     Roles role, String jobIds, String businessIds,
-    String departmentId, String waterSupplyNetworkId) throws ExecutionException, InterruptedException {
+    String departmentId, String waterSupplyNetworkId) {
     log.info("UsersService is handling the request");
     var obj = repo.findByEmail(email);
     if (obj.isPresent()) {
       throw new ExistingException(Constant.SE_01);
     }
 
-    var passwordHash = hashPassword(password).get();
     var user = Users.create(builder -> builder
       .email(email)
-      .password(passwordHash)
       .username(username)
       .role(role)
       .waterSupplyNetworkId(waterSupplyNetworkId)
@@ -60,10 +64,10 @@ public class UserServiceImpl implements UserService {
   @Override
   public void updatePassword(String email, @NonNull String password, String newPassword) {
     var obj = getUsersByEmail(email);
-    if (encoder.matches(password, obj.getPassword())) {
-      updateUser(obj, newPassword);
-      return;
-    }
+//    if (encoder.matches(password, obj.getPassword())) {
+//      updateUser(obj, newPassword);
+//      return;
+//    }
     log.debug("Old passwords do not match");
     throw new IllegalArgumentException(Constant.SE_03);
   }
@@ -72,21 +76,6 @@ public class UserServiceImpl implements UserService {
   public void resetPassword(String email, String newPassword) {
     var obj = getUsersByEmail(email);
     updateUser(obj, newPassword);
-  }
-
-  private @NonNull Users getUsersByEmail(String email) {
-    var obj = repo.findByEmail(email);
-    if (obj.isEmpty()) {
-      throw new NotExistingException(Constant.SE_02);
-    }
-    log.info("Find user by email: {}", obj);
-    return obj.get();
-  }
-
-  private void updateUser(@NonNull Users obj, String password) {
-    obj.setPassword(encoder.encode(password));
-    repo.save(obj);
-    log.info("Password reset successfully");
   }
 
   @Override
@@ -117,12 +106,11 @@ public class UserServiceImpl implements UserService {
   @Override
   public UserDTO getUserById(String id) {
     log.info("Getting user by id: {}", id);
-    var user = repo.findById(id);
-    if (user.isPresent()) {
-      log.info("User found: {}", user.get());
-      return returnUserDTO(user.get());
-    }
-    throw new NotExistingException("User with id does not exist");
+    var user = repo
+      .findById(id)
+      .orElseThrow(() -> new NotExistingException("User with id does not exist"));
+    log.info("User found: {}", user);
+    return returnUserDTO(user);
   }
 
   @Override
@@ -130,12 +118,52 @@ public class UserServiceImpl implements UserService {
     log.info("Saving user: {}", username);
     var currentUser = repo.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
 
-    if (username != null) {
-      currentUser.setUsername(username);
-      repo.save(currentUser);
-      return returnUserDTO(currentUser);
+    currentUser.setUsername(username);
+    repo.save(currentUser);
+    return returnUserDTO(currentUser);
+  }
+
+  @Override
+  public Page<EmployeeResponse> getAllEmployeesWithStatus(Pageable pageable, FilterUsersRequest request) {
+    log.info("Getting all active employees with activate status: {}", request);
+
+    var usersList = request.isEnabled() == null ? repo.findAll(pageable) : repo.findByIsEnabledTrueAndIsLockedFalse(pageable);
+    var content = usersList.getContent().stream().map(c -> new EmployeeResponse(
+      IdEncoder.encode(c.getUserId()),
+      c.getUsername(),
+      c.getEmail())
+    ).toList();
+
+    if (request.username() != null) {
+      content = content.stream()
+        .filter(c -> c
+          .username().toLowerCase()
+          .contains(request.username().toLowerCase())
+        )
+        .toList();
     }
-    return null;
+    log.info("Found {} employees", content.size());
+
+    return new PageImpl<>(
+      content,
+      pageable,
+      content.size()
+    );
+  }
+
+  private @NonNull Users getUsersByEmail(String email) {
+    var obj = repo.findByEmail(email);
+    if (obj.isEmpty()) {
+      throw new NotExistingException(Constant.SE_02);
+    }
+    log.info("Find user by email: {}", obj);
+    return obj.get();
+  }
+
+  private void updateUser(@NonNull Users obj, String password) {
+//    obj.setPassword(encoder.encode(password));
+//    repo.save(obj);
+//    log.info("Password reset successfully");
   }
 
   private UserDTO returnUserDTO(@NonNull Users currentUser) {
@@ -145,7 +173,6 @@ public class UserServiceImpl implements UserService {
       currentUser.getUsername(),
       currentUser.getEmail(),
       currentUser.getIsLocked(),
-      currentUser.getPassword(),
       currentUser.getCreatedAt(),
       currentUser.getUpdatedAt(),
       currentUser.getLockedReason(),

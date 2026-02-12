@@ -1,0 +1,83 @@
+@uri = http://localhost:9003/api/v1
+@keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
+@client_secret=
+
+### get token
+POST {{keycloak}}/token
+Content-Type: application/x-www-form-urlencoded
+Accept: application/json
+
+grant_type=password&
+client_id=&
+client_secret={{client_secret}}&
+username=&
+password=&
+scope=openid
+
+> {%
+  client.global.set("access_token", response.body.access_token);
+  client.global.set("refresh_token", response.body.refresh_token);
+%}
+
+### get all active employees, full of pageable
+GET {{uri}}/authorization/employees?page=0&size=10
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+### get all active employees, missing size
+GET {{uri}}/authorization/employees?page=0
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+### get all active employees, missing page
+GET {{uri}}/authorization/employees?size=10
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+### get all active employees, missing all information
+GET {{uri}}/authorization/employees
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+### get all active employees, full of pagable and status; username is existing
+GET {{uri}}/authorization/employees?page=0&size=10&isEnabled=true&username=user
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+### get all active employees, full of pagable and status; username is not existing
+GET {{uri}}/authorization/employees?page=0&size=10&isEnabled=true
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+###
+@empId =
+
+### get all pages of employee
+GET {{uri}}/authorization/employees/{{empId}}/pages
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+### update pages list of employees
+PUT {{uri}}/authorization/employees/pages
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+[
+  {
+    "empId": "14c5879c-a6c4-45a6-846b-39d2b9d8c961",
+    "pages": [
+      "86088520-f274-4ac2-a94b-b761995abf4a",
+      "4c3cdd22-5018-482c-bc34-51331e7167a9",
+      "b4758afc-f456-4538-aabe-3d09a4591f34",
+      "b13d7531-4935-4da6-972e-04bbda46b47a"
+    ]
+  },
+  {
+    "empId": "6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20",
+    "pages": [
+      "b3b1d1ec-9c86-45ff-acb2-31c89b1a748c",
+      "4c3cdd22-5018-482c-bc34-51331e7167a9"
+    ]
+  }
+]
