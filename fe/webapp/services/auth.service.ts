@@ -17,7 +17,12 @@ export interface SigninResponse {
     role: string;
   };
 }
-
+export interface ForgotPasswordResponse {
+  status: number;
+  message: string;
+  data: string;
+  timestamp: string;
+}
 export const signinService = (accessToken: string) =>
   axios.post(
     `${API_GATEWAY_URL}/auth/auth/login`,
@@ -29,15 +34,34 @@ export const signinService = (accessToken: string) =>
     },
   );
 
-export const forgotPasswordService = async (email: string): Promise<void> => {
-  await axiosBase.post(`/auth/forgot-password`, { email });
+export const checkExistenceService = async (
+  value: string,
+): Promise<boolean> => {
+  const res = await axios.post(`${API_GATEWAY_URL}/auth/auth/check-existence`, {
+    value,
+  });
+  return res.data.data;
+};
+
+export const sendOtpService = async (
+  email: string,
+): Promise<ForgotPasswordResponse> => {
+  const res = await axios.post<ForgotPasswordResponse>(
+    `${API_GATEWAY_URL}/auth/auth/send-otp`,
+    { email },
+  );
+  return res.data;
 };
 
 export const verifyOtpService = async (
   email: string,
   otp: string,
-): Promise<void> => {
-  await axiosBase.post(`/auth/verify-otp`, { email, otp });
+): Promise<ForgotPasswordResponse> => {
+  const res = await axios.post(`${API_GATEWAY_URL}/auth/auth/verify-otp`, {
+    email,
+    otp,
+  });
+  return res.data;
 };
 
 export const resendOtpService = async (email: string): Promise<void> => {
@@ -46,10 +70,12 @@ export const resendOtpService = async (email: string): Promise<void> => {
 
 export const resetPasswordService = async (
   email: string,
+  otp: string,
   newPassword: string,
 ): Promise<void> => {
-  await axiosBase.post(`/auth/reset-password`, {
+  await axios.post(`${API_GATEWAY_URL}/auth/auth/reset-password`, {
     email,
+    otp,
     newPassword,
   });
 };

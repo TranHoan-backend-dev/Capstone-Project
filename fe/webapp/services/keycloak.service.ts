@@ -11,7 +11,7 @@ const REALM = KEYCLOAK_REALM;
 const CLIENT_ID = KEYCLOAK_CLIENT_ID!;
 
 export interface KeycloakLoginRequest {
-  username: string;
+  identifier: string;
   password: string;
 }
 
@@ -29,7 +29,7 @@ export const keycloakLogin = async (
   params.append("grant_type", "password");
   params.append("client_id", CLIENT_ID);
   params.append("client_secret", KEYCLOAK_CLIENT_SECRET!);
-  params.append("username", data.username);
+  params.append("username", data.identifier);
   params.append("password", data.password);
   params.append("scope", "openid profile email");
 

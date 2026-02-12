@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const PUBLIC_ROUTES = ["/login", "/forgot-password", "/api/auth/login"];
+const PUBLIC_ROUTES = [
+  "/login",
+  "/forgot-password",
+  "/api/auth/login",
+  "/api/auth/check-existence",
+  "/api/auth/send-otp",
+  "/api/auth/verify-otp",
+  "/api/auth/reset-password",
+];
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
