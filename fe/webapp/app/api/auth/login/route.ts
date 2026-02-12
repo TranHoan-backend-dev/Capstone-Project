@@ -2,25 +2,21 @@ import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 import { keycloakLogin } from "@/services/keycloak.service";
 import { signinService } from "@/services/auth.service";
+import { IS_PRODUCTION } from "@/constants/auth.constants";
 
 export async function POST(req: NextRequest) {
-  const isProduction = process.env.NODE_ENV === "production";
-  const ACCESS_TOKEN_FALLBACK = 300; // 5 phút
-  const ACCESS_TOKEN_MAX_AGE = 900; // 15 phút
-  const REFRESH_TOKEN_MAX_AGE = 60 * 60 * 24 * 7; // 7 ngày
-
   try {
     const body = await req.json();
-    const { username, password } = body;
+    const { identifier, password } = body;
 
-    if (!username || !password) {
+    if (!identifier || !password) {
       return NextResponse.json(
         { message: "Thiếu tên đăng nhập hoặc mật khẩu" },
         { status: 400 },
       );
     }
 
-    const tokenRes = await keycloakLogin({ username, password });
+    const tokenRes = await keycloakLogin({ identifier, password });
 
     if (!tokenRes?.access_token) {
       throw new Error("NO_TOKEN");
@@ -31,26 +27,27 @@ export async function POST(req: NextRequest) {
       const backendRes = await signinService(tokenRes.access_token);
       backendData = backendRes.data?.data;
     } catch (backendError: any) {
+
       if (axios.isAxiosError(backendError)) {
         const status = backendError.response?.status;
         const message = backendError.response?.data?.message;
 
         if (status === 403) {
           return NextResponse.json(
-            { message: message || "Tài khoản đã bị khóa hoặc vô hiệu hóa" },
+            { message: "Tài khoản đã bị khóa hoặc vô hiệu hóa" },
             { status: 403 },
           );
         }
 
         if (status === 400) {
           return NextResponse.json(
-            { message: message || "Thông tin tài khoản không hợp lệ" },
+            { message: "Thông tin tài khoản không hợp lệ" },
             { status: 400 },
           );
         }
       }
 
-      throw new Error("Backend verification failed");
+      throw backendError;
     }
 
     const res = NextResponse.json(
@@ -63,29 +60,25 @@ export async function POST(req: NextRequest) {
 
     const cookieOptions = {
       httpOnly: true,
-      secure: isProduction,
-      sameSite: (isProduction ? "none" : "lax") as "none" | "lax",
+      secure: IS_PRODUCTION,
+      sameSite: (IS_PRODUCTION ? "none" : "lax") as "none" | "lax",
       path: "/",
     };
 
     res.cookies.set(
-      isProduction ? "__Secure-access_token" : "access_token",
+      IS_PRODUCTION ? "__Secure-access_token" : "access_token",
       tokenRes.access_token,
       {
         ...cookieOptions,
-        maxAge: Math.min(
-          tokenRes.expires_in || ACCESS_TOKEN_FALLBACK,
-          ACCESS_TOKEN_MAX_AGE,
-        ),
+        maxAge: tokenRes.expires_in
       },
     );
 
     res.cookies.set(
-      isProduction ? "__Secure-refresh_token" : "refresh_token",
+      IS_PRODUCTION ? "__Secure-refresh_token" : "refresh_token",
       tokenRes.refresh_token,
       {
         ...cookieOptions,
-        maxAge: REFRESH_TOKEN_MAX_AGE,
       },
     );
 

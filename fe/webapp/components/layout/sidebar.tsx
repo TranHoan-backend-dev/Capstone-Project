@@ -55,7 +55,7 @@ const Sidebar = ({ isOpen, onClose, menuItems }: SidebarProps) => {
       >
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center">
-            <span className="text-lg font-bold">CRM</span>
+            <span className="text-lg font-bold">CMSN</span>
           </div>
           <button
             className="p-2 hover:bg-default-100 rounded-lg"
