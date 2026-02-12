@@ -36,7 +36,7 @@ class UserServiceImplTest {
 
   @Test
   void getUserById_returns_user_dto() {
-    var role = Roles.create(builder -> builder.name(RoleName.IT_DEPARTMENT_STAFF));
+    var role = Roles.create(builder -> builder.name(RoleName.IT_STAFF));
     var user = Users.create(builder -> builder
       .email("user@example.com")
       .username("user1")

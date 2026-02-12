@@ -6,6 +6,7 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -58,14 +59,12 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(BadCredentialsException.class)
   public ResponseEntity<WrapperApiResponse> handleBadCredentialsException(BadCredentialsException ex) {
-    return ResponseEntity
-      .status(HttpStatus.UNAUTHORIZED)
-      .body(new WrapperApiResponse(
-        HttpStatus.UNAUTHORIZED.value(),
-        "Invalid email or password",
-        null,
-        LocalDateTime.now()
-      ));
+    return returnUnAuthorizedError("Invalid email or password");
+  }
+
+  @ExceptionHandler(DisabledException.class)
+  public ResponseEntity<WrapperApiResponse> handleDisabledException(@NonNull DisabledException ex) {
+    return returnUnAuthorizedError(ex.getMessage());
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -85,6 +84,11 @@ public class GlobalExceptionHandler {
     );
 
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+  }
+
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<WrapperApiResponse> handleIllegalArgumentException(@NonNull IllegalArgumentException ex) {
+    return returnBadRequest(ex.getMessage());
   }
 
   @ExceptionHandler(Exception.class)
@@ -113,6 +117,17 @@ public class GlobalExceptionHandler {
       .status(HttpStatus.INTERNAL_SERVER_ERROR)
       .body(new WrapperApiResponse(
         HttpStatus.INTERNAL_SERVER_ERROR.value(),
+        message,
+        null,
+        LocalDateTime.now()
+      ));
+  }
+
+  private @NonNull ResponseEntity<WrapperApiResponse> returnUnAuthorizedError(String message) {
+    return ResponseEntity
+      .status(HttpStatus.UNAUTHORIZED)
+      .body(new WrapperApiResponse(
+        HttpStatus.UNAUTHORIZED.value(),
         message,
         null,
         LocalDateTime.now()

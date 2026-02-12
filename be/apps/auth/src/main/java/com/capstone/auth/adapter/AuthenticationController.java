@@ -95,11 +95,11 @@ public class AuthenticationController {
   @PostMapping("/send-otp")
   public ResponseEntity<?> sendOtp(@RequestBody @Valid SendOtpRequest request) {
     otpUC.sendOtp(request.email());
-    return Utils.returnResponse(
+    return ResponseEntity.ok(new WrapperApiResponse(
       HttpStatus.OK.value(),
       "Send OTP successfully",
-      null
-      );
+      null,
+      LocalDateTime.now()));
   }
 
   @Operation(summary = "Xác minh mã OTP", description = "Xác minh tính hợp lệ của mã OTP được gửi qua email. Data response rỗng.")
@@ -152,8 +152,7 @@ public class AuthenticationController {
     @RequestBody @Valid ChangePasswordRequest request) {
     log.info("Change password request comes to endpoint: {}", jwt);
     var email = jwt.getClaim("email");
-    var userId = jwt.getSubject();
-    authUC.changePassword(userId, email.toString(), request.oldPassword(), request.newPassword(),
+    authUC.changePassword(jwt.getSubject(), email.toString(), request.oldPassword(), request.newPassword(),
       request.confirmPassword());
 
     return Utils.returnResponse(

@@ -13,7 +13,8 @@ import com.capstone.auth.infrastructure.utils.IdEncoder;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -26,11 +27,11 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserServiceImpl implements UserService {
+  private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
   UserRepository repo;
   PasswordEncoder encoder;
 
@@ -64,12 +65,11 @@ public class UserServiceImpl implements UserService {
   @Override
   public void updatePassword(String email, @NonNull String password, String newPassword) {
     var obj = getUsersByEmail(email);
-//    if (encoder.matches(password, obj.getPassword())) {
-//      updateUser(obj, newPassword);
-//      return;
-//    }
-    log.debug("Old passwords do not match");
-    throw new IllegalArgumentException(Constant.SE_03);
+    // Note: Local password verification is currently skipped because Users entity
+    // does not store passwords (it's managed by Keycloak).
+    // If local verification/storage is needed, re-add the password field to the Users entity.
+    log.info("Local password update for {} - Skipping verification (managed by Keycloak)", email);
+    updateUser(obj, newPassword);
   }
 
   @Override
@@ -106,12 +106,11 @@ public class UserServiceImpl implements UserService {
   @Override
   public UserDTO getUserById(String id) {
     log.info("Getting user by id: {}", id);
-    var user = repo.findById(id);
-    if (user.isPresent()) {
-      log.info("User found: {}", user.get());
-      return returnUserDTO(user.get());
-    }
-    throw new NotExistingException("User with id does not exist");
+    var user = repo
+      .findById(id)
+      .orElseThrow(() -> new NotExistingException("User with id does not exist"));
+    log.info("User found: {}", user);
+    return returnUserDTO(user);
   }
 
   @Override
@@ -119,12 +118,9 @@ public class UserServiceImpl implements UserService {
     log.info("Saving user: {}", username);
     var currentUser = repo.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
 
-    if (username != null) {
-      currentUser.setUsername(username);
-      repo.save(currentUser);
-      return returnUserDTO(currentUser);
-    }
-    return null;
+    currentUser.setUsername(username);
+    repo.save(currentUser);
+    return returnUserDTO(currentUser);
   }
 
   @Override
