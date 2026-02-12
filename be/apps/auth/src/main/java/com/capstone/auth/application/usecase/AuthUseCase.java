@@ -119,11 +119,11 @@ public class AuthUseCase {
     log.info("Handling change password for email: {}", email);
     
     if (oldPassword.equals(newPassword)) {
-      throw new IllegalArgumentException("New password must be different from the old password");
+      throw new IllegalArgumentException("Mật khẩu mới phải khác mật khẩu cũ");
     }
 
     if (!newPassword.equals(confirmPassword)) {
-      throw new IllegalArgumentException("New password and confirm password do not match");
+      throw new IllegalArgumentException("Mật khẩu mới và xác nhận mật khẩu không khớp");
     }
 
     // Xác thực mật khẩu cũ với Keycloak
@@ -151,7 +151,7 @@ public class AuthUseCase {
       log.info("Old password verification successful for email: {}", email);
     } catch (Exception e) {
       log.error("Old password verification failed for email: {}", email);
-      throw new IllegalArgumentException("Incorrect old password");
+      throw new IllegalArgumentException("Mật khẩu cũ không chính xác");
     }
   }
 
