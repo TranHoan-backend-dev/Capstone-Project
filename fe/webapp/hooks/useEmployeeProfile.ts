@@ -1,5 +1,5 @@
+import axiosBase from "@/lib/axios/axios-client";
 import { EmployeeProfileData } from "@/types";
-import axios from "axios";
 import { useEffect, useState } from "react";
 
 export const useEmployeeProfile = () => {
@@ -7,7 +7,7 @@ export const useEmployeeProfile = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios
+    axiosBase
       .get("/api/auth/me", { withCredentials: true })
       .then((res) => setProfile(res.data))
       .catch(() => setProfile(null))
