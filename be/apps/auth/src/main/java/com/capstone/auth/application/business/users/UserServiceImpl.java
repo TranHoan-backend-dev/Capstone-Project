@@ -9,6 +9,7 @@ import com.capstone.auth.domain.model.Roles;
 import com.capstone.auth.domain.model.Users;
 import com.capstone.auth.domain.repository.UserRepository;
 import com.capstone.auth.infrastructure.config.Constant;
+import com.capstone.auth.infrastructure.utils.IdEncoder;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -37,7 +38,7 @@ public class UserServiceImpl implements UserService {
   public void createEmployee(
     String username, String email,
     Roles role, String jobIds, String businessIds,
-    String departmentId, String waterSupplyNetworkId) throws ExecutionException, InterruptedException {
+    String departmentId, String waterSupplyNetworkId) {
     log.info("UsersService is handling the request");
     var obj = repo.findByEmail(email);
     if (obj.isPresent()) {
@@ -105,12 +106,11 @@ public class UserServiceImpl implements UserService {
   @Override
   public UserDTO getUserById(String id) {
     log.info("Getting user by id: {}", id);
-    var user = repo.findById(id);
-    if (user.isPresent()) {
-      log.info("User found: {}", user.get());
-      return returnUserDTO(user.get());
-    }
-    throw new NotExistingException("User with id does not exist");
+    var user = repo
+      .findById(id)
+      .orElseThrow(() -> new NotExistingException("User with id does not exist"));
+    log.info("User found: {}", user);
+    return returnUserDTO(user);
   }
 
   @Override
@@ -118,12 +118,9 @@ public class UserServiceImpl implements UserService {
     log.info("Saving user: {}", username);
     var currentUser = repo.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
 
-    if (username != null) {
-      currentUser.setUsername(username);
-      repo.save(currentUser);
-      return returnUserDTO(currentUser);
-    }
-    return null;
+    currentUser.setUsername(username);
+    repo.save(currentUser);
+    return returnUserDTO(currentUser);
   }
 
   @Override
@@ -132,7 +129,7 @@ public class UserServiceImpl implements UserService {
 
     var usersList = request.isEnabled() == null ? repo.findAll(pageable) : repo.findByIsEnabledTrueAndIsLockedFalse(pageable);
     var content = usersList.getContent().stream().map(c -> new EmployeeResponse(
-      c.getUserId(),
+      IdEncoder.encode(c.getUserId()),
       c.getUsername(),
       c.getEmail())
     ).toList();

@@ -1,6 +1,6 @@
 package com.capstone.auth.domain.model;
 
-import com.capstone.auth.domain.model.id.BusinessPagesOfEmployeesId;
+import com.capstone.auth.domain.model.utils.BusinessPagesOfEmployeesId;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -18,5 +18,6 @@ public class BusinessPagesOfEmployees {
 
   @ManyToOne(fetch = FetchType.EAGER)
   @MapsId("empId")
+  @JoinColumn(name = "users_user_id")
   Users users;
 }
