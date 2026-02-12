@@ -7,16 +7,16 @@ import { IS_PRODUCTION } from "@/constants/auth.constants";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { username, password } = body;
+    const { identifier, password } = body;
 
-    if (!username || !password) {
+    if (!identifier || !password) {
       return NextResponse.json(
         { message: "Thiếu tên đăng nhập hoặc mật khẩu" },
         { status: 400 },
       );
     }
 
-    const tokenRes = await keycloakLogin({ username, password });
+    const tokenRes = await keycloakLogin({ identifier, password });
 
     if (!tokenRes?.access_token) {
       throw new Error("NO_TOKEN");
