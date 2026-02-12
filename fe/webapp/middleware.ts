@@ -18,13 +18,12 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  const accessToken =
-    req.cookies.get("access_token")?.value ||
-    req.cookies.get("__Secure-access_token")?.value;
+  const refreshToken =
+    req.cookies.get("refresh_token")?.value ||
+    req.cookies.get("__Secure-refresh_token")?.value;
 
-  if (!accessToken) {
-    const loginUrl = new URL("/login", req.url);
-    return NextResponse.redirect(loginUrl);
+  if (!refreshToken) {
+    return NextResponse.redirect(new URL("/login", req.url));
   }
 
   return NextResponse.next();
