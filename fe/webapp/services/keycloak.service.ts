@@ -64,7 +64,9 @@ export const keycloakLogout = async (refreshToken?: string) => {
   );
 };
 
-export const keycloakRefreshToken = async (refreshToken: string) => {
+export const keycloakRefreshToken = async (
+  refreshToken: string,
+): Promise<KeycloakLoginResponse> => {
   const params = new URLSearchParams();
   params.append("grant_type", "refresh_token");
   params.append("client_id", CLIENT_ID);
