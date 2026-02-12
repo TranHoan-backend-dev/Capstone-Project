@@ -20,7 +20,6 @@ create table user_roles
              ((ARRAY [
                'IT_STAFF'::character varying,
                'PLANNING_TECHNICAL_DEPARTMENT_HEAD'::character varying,
-               'PLANNING_TECHNICAL_DEPARTMENT_HEAD'::character varying,
                'SURVEY_STAFF'::character varying,
                'ORDER_RECEIVING_STAFF'::character varying,
                'FINANCE_DEPARTMENT'::character varying,
@@ -50,7 +49,6 @@ create table users
   job_id                  varchar(255) not null,
   locked_at               timestamp(6),
   locked_reason           varchar(255),
-  password                varchar(255) not null,
   updated_at              timestamp(6) not null,
   username                varchar(255) not null
     constraint ukr43af9ap4edm43mmtq01oddj6

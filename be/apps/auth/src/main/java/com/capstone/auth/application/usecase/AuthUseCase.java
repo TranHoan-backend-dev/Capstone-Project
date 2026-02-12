@@ -12,7 +12,7 @@ import com.capstone.auth.application.exception.AccountBlockedException;
 import com.capstone.auth.application.exception.NotExistingException;
 
 import com.capstone.auth.infrastructure.config.Constant;
-import com.capstone.auth.infrastructure.utils.CredentialsUtils;
+import com.capstone.auth.infrastructure.utils.Utils;
 import org.jspecify.annotations.NonNull;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +48,7 @@ public class AuthUseCase {
     var user = uSrv.getUserById(userId);
     Objects.requireNonNull(user, Constant.SE_04);
 
-    CredentialsUtils.validateCredentials(user, email, username);
+    Utils.validateCredentials(user, email, username);
 
     if (!uSrv.checkExistence(email) || !uSrv.checkExistence(username)) {
       throw new NotExistingException(Constant.SE_05);
@@ -73,7 +73,6 @@ public class AuthUseCase {
     log.info("AuthUseCase is handling business");
 
     Objects.requireNonNull(username, Constant.PT_05);
-    Objects.requireNonNull(password, Constant.PT_04);
     Objects.requireNonNull(email, Constant.PT_03);
     Objects.requireNonNull(roleId, Constant.PT_23);
     Objects.requireNonNull(jobId, Constant.PT_20);
@@ -84,7 +83,7 @@ public class AuthUseCase {
     var role = rSrv.getRoleById(roleId);
     Objects.requireNonNull(role, Constant.SE_08);
     uSrv.createEmployee(
-      username, password, email, role,
+      username, email, role,
       jobId, businessPageIds, departmentId, waterSupplyNetworkId);
 
     log.info("User has been registered successfully");

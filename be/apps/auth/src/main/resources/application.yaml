@@ -68,6 +68,8 @@ sending_mail:
   otp_verification:
     subject: 'Mã xác thực OTP'
     template: 'verify-otp'
+#gcs:
+#  bucket: ${GCS_BUCKET_NAME:default}
 #spring:
 #  datasource:
 #    driver-class-name: org.postgresql.Driver
@@ -98,9 +100,13 @@ sending_mail:
 #  queue_name:
 #  routing_key:
 #keycloak:
-#  issuer-uri:
+#  server-url: http://localhost:8080
+#  issuer-uri: ${keycloak.server-url}/realms/${keycloak.realms}
 #  aud:
-#  token-uri:
+#  realms:
+#  username:
+#  password:
+#  token-uri: ${keycloak.server-url}/realms/${keycloak.realms}/protocol/openid-connect/token
 #  client-id:
 #  client-secret:
-#  scope:
+#  scope: openid profile email

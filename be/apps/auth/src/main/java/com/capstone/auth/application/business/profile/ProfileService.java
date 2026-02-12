@@ -9,4 +9,6 @@ public interface ProfileService {
   ProfileDTO getProfileByCredentials(String value);
 
   ProfileDTO updateProfile(Profile profile);
+
+  ProfileDTO updateAvatar(String id, String avatar);
 }

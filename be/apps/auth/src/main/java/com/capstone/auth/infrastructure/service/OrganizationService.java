@@ -1,0 +1,17 @@
+package com.capstone.auth.infrastructure.service;
+
+import com.capstone.auth.application.dto.response.WrapperApiResponse;
+import com.capstone.auth.infrastructure.config.FeignAuthInterceptor;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+@FeignClient(
+  name = "organization",
+  path = "/api/v1",
+  configuration = FeignAuthInterceptor.class
+)
+public interface OrganizationService {
+  @GetMapping(value = "/business-pages/e")
+  WrapperApiResponse getPagesByIds(@RequestParam("id") String id);
+}
