@@ -70,6 +70,7 @@ export async function POST(req: NextRequest) {
       tokenRes.access_token,
       {
         ...cookieOptions,
+        maxAge: tokenRes.expires_in
       },
     );
 
