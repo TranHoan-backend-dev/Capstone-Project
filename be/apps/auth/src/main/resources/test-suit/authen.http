@@ -33,6 +33,6 @@ POST {{keycloak}}/logout
 Content-Type: application/x-www-form-urlencoded
 Accept: application/json
 
-client_id=&
-client_secret={{client_secret}}&
-refresh_token={{refresh_token}}
+client_id =  &
+client_secret = {{client_secret}} &
+refresh_token = {{refresh_token}}

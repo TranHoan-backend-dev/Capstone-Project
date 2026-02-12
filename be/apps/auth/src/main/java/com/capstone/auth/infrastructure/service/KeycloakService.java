@@ -1,7 +1,7 @@
 package com.capstone.auth.infrastructure.service;
 
 import com.capstone.auth.application.dto.response.LoginResponse;
-import com.capstone.auth.infrastructure.config.KeycloakConfig;
+import com.capstone.common.config.KeycloakProperties;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class KeycloakService {
-    KeycloakConfig keycloakConfig;
+    KeycloakProperties keycloakProperties;
     RestTemplate restTemplate;
 
     public LoginResponse login(String username, String password) {
@@ -32,17 +32,18 @@ public class KeycloakService {
 
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add("grant_type", "password");
-        map.add("client_id", keycloakConfig.getClientId());
-        map.add("client_secret", keycloakConfig.getClientSecret());
+        map.add("client_id", keycloakProperties.getClientId());
+        map.add("client_secret", keycloakProperties.getClientSecret());
         map.add("username", username);
         map.add("password", password);
-        map.add("scope", keycloakConfig.getScope());
+        // map.add("scope", keycloakConfig.getScope());
+        map.add("scope", keycloakProperties.getScope());
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
         try {
             ResponseEntity<LoginResponse> response = restTemplate.postForEntity(
-                    keycloakConfig.getTokenUri(),
+                    keycloakProperties.getTokenUri(),
                     request,
                     LoginResponse.class);
             return response.getBody();
