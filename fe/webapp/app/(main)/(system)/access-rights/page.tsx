@@ -7,7 +7,7 @@ import AccessRightsPage from "./access-rights-page";
 export const metadata: Metadata = {
   title: "Quản lý quyền truy cập",
   description:
-    "Trang quản lý và tra cứu các trang doanh nghiệp trong hệ thống CMSN",
+    "Trang quản lý và tra cứu các quyền của người dùng trong hệ thống CMSN",
 };
 
 const ManageBusinessPages = () => {
@@ -16,7 +16,7 @@ const ManageBusinessPages = () => {
       <CustomBreadcrumb
         items={[
           { label: "Trang chủ", href: "/home" },
-          { label: "Quản lý trang doanh nghiệp", href: "/access-right" },
+          { label: "Quản lý quyền truy cập", href: "/access-right" },
         ]}
       />
 

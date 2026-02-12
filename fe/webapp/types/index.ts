@@ -18,9 +18,6 @@ export interface AccessRightsRecord {
   stt: number;
   username: string;
   fullname: string;
-  businessPage: string;
-  waterSupplyNetwork: string;
-  updator: string;
 }
 
 export interface EstimateItem {
