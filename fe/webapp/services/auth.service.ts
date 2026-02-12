@@ -1,5 +1,4 @@
 import axiosBase from "@/lib/axios/axios-base";
-import { keycloakLogout } from "./keycloak.service";
 import axios from "axios";
 import { API_GATEWAY_URL } from "@/utils/constraints";
 

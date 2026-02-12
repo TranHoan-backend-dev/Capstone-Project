@@ -23,12 +23,9 @@ axiosBase.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        await fetch("/api/auth/refresh", {
-          method: "POST",
-          credentials: "include",
-        });
+        await fetch("/api/auth/refresh", { method: "POST" });
 
-        queue.forEach((p) => p.resolve(axiosBase(originalRequest)));
+        queue.forEach((p) => p.resolve());
         queue = [];
 
         return axiosBase(originalRequest);
