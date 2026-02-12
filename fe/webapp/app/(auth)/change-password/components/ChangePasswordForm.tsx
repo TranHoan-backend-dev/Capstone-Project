@@ -33,14 +33,16 @@ const ChangePasswordForm = () => {
   });
 
   const [isLoading, setIsLoading] = useState(false);
-  const [fieldErrors, setFieldErrors] = useState<
-    Partial<Record<keyof ChangePasswordFormData, string>>
-  >({});
+  const [errors, setErrors] = useState<{
+    oldPassword?: string;
+    newPassword?: string;
+    confirmPassword?: string;
+  }>({});
   const TOAST_DURATION = 3000;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFieldErrors({});
+    setErrors({});
 
     const result = changePasswordSchema.safeParse(formData);
 
@@ -54,7 +56,7 @@ const ChangePasswordForm = () => {
         }
       });
 
-      setFieldErrors(errors);
+      setErrors(errors);
       return;
     }
 
@@ -79,7 +81,7 @@ const ChangePasswordForm = () => {
       CallToast({
         title: "Thành công",
         message: "Đổi mật khẩu thành công",
-        color: "default",
+        color: "success",
       });
 
       setFormData({
@@ -121,12 +123,6 @@ const ChangePasswordForm = () => {
             <form className="space-y-6" onSubmit={handleSubmit}>
               <PasswordInput
                 required
-                classNames={{
-                  inputWrapper:
-                    "bg-white dark:bg-zinc-800/50 border-gray-300 dark:border-zinc-700 h-11",
-                  label: "text-gray-700 dark:text-zinc-400 font-normal",
-                  input: "dark:text-white",
-                }}
                 label="Nhập mật khẩu hiện tại"
                 value={formData.oldPassword}
                 onChange={(e) =>
@@ -135,48 +131,41 @@ const ChangePasswordForm = () => {
                     oldPassword: e.target.value,
                   })
                 }
-                errorMessage={fieldErrors.oldPassword}
-                isInvalid={!!fieldErrors.oldPassword}
+                errorMessage={errors.oldPassword}
+                isInvalid={!!errors.oldPassword}
               />
 
               <PasswordInput
                 required
-                classNames={{
-                  inputWrapper:
-                    "bg-white dark:bg-zinc-800/50 border-gray-300 dark:border-zinc-700 h-11",
-                  label: "text-gray-700 dark:text-zinc-400 font-normal",
-                  input: "dark:text-white",
-                }}
                 label="Nhập mật khẩu mới"
                 value={formData.newPassword}
-                onChange={(e) =>
+                onChange={(e) => {
                   setFormData({
                     ...formData,
                     newPassword: e.target.value,
-                  })
-                }
-                errorMessage={fieldErrors.newPassword}
-                isInvalid={!!fieldErrors.newPassword}
+                  });
+                  setErrors((prev) => ({ ...prev, newPassword: undefined }));
+                }}
+                errorMessage={errors.newPassword}
+                isInvalid={!!errors.newPassword}
               />
 
               <PasswordInput
                 required
-                classNames={{
-                  inputWrapper:
-                    "bg-white dark:bg-zinc-800/50 border-gray-300 dark:border-zinc-700 h-11",
-                  label: "text-gray-700 dark:text-zinc-400 font-normal",
-                  input: "dark:text-white",
-                }}
                 label="Nhập lại mật khẩu mới"
                 value={formData.confirmPassword}
-                onChange={(e) =>
+                onChange={(e) => {
                   setFormData({
                     ...formData,
                     confirmPassword: e.target.value,
-                  })
-                }
-                errorMessage={fieldErrors.confirmPassword}
-                isInvalid={!!fieldErrors.confirmPassword}
+                  });
+                  setErrors((prev) => ({
+                    ...prev,
+                    confirmPassword: undefined,
+                  }));
+                }}
+                errorMessage={errors.confirmPassword}
+                isInvalid={!!errors.confirmPassword}
               />
 
               <div className="flex justify-end space-x-4 pt-4 border-t border-gray-100 dark:border-zinc-800 mt-8">
