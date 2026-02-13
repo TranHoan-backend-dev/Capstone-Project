@@ -7,6 +7,7 @@ import PasswordRequirements from "./PasswordRequirements";
 import PasswordInput from "@/components/ui/PasswordInput";
 import CustomButton from "@/components/ui/custom/CustomButton";
 import { passwordSchema } from "@/schemas/password.schema";
+import { resetPasswordService } from "@/services/auth.service";
 
 interface ResetPasswordFormProps {
   email: string;
@@ -24,15 +25,9 @@ const ResetPasswordForm = ({ email }: ResetPasswordFormProps) => {
     });
 
   const [formData, setFormData] = useState({
-    currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
-
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -53,14 +48,15 @@ const ResetPasswordForm = ({ email }: ResetPasswordFormProps) => {
 
     setIsLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await resetPasswordService(email, formData.newPassword);
 
       setSuccess(true);
       setTimeout(() => {
         window.location.href = "/login";
       }, 2000);
-    } catch (err) {
+    } catch {
       setError("Có lỗi xảy ra. Vui lòng thử lại.");
+    } finally {
       setIsLoading(false);
     }
   };

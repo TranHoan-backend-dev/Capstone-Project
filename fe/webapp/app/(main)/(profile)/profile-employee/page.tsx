@@ -1,31 +1,31 @@
 import React from "react";
 import { Metadata } from "next";
 
-import ManageMaterialsPage from "./manage-materials";
+import ProfilePage from "./profile-page";
 
 import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
 
 export const metadata: Metadata = {
-  title: "Quản lý mẫu bốc vật tư",
+  title: "Hồ sơ nhân viên",
   description:
-    "Trang quản lý và tra cứu các mẫu bốc vật tư vật liệu trong hệ thống CMSN.",
+    "Thông tin chi tiết của nhân viên Công ty Cổ Phần Nước Nam Định - NAWACO",
 };
 
-const ManageSupplies = () => {
+const Profile = () => {
   return (
     <>
       <CustomBreadcrumb
         items={[
           { label: "Trang chủ", href: "/home" },
-          { label: "Quản lý mẫu bốc vật tư", href: "/material-template" },
+          { label: "Hồ sơ nhân viên", isCurrent: true },
         ]}
       />
 
       <div className="space-y-6 pt-2">
-        <ManageMaterialsPage />
+        <ProfilePage />
       </div>
     </>
   );
 };
 
-export default ManageSupplies;
+export default Profile;
