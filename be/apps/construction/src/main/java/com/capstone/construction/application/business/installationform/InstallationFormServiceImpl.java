@@ -80,7 +80,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   }
 
   @Override
-  public Page<InstallationFormListResponse> getInstallationForms(Pageable pageable, FilterFormRequest request) {
+  public Page<InstallationFormListResponse> getInstallationForms(Pageable pageable, @NonNull FilterFormRequest request) {
     log.info("Fetching paginated installation forms with pageable: {}", pageable);
 
     LocalDateTime startDate = null;
