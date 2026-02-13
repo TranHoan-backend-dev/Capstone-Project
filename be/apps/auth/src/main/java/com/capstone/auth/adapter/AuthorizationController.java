@@ -38,7 +38,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/authorization")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('IT_STAFF')")
+@PreAuthorize("hasAuthority('IT_STAFF')")
 @Tag(name = "Authorization", description = "Các endpoints để quản lý ủy quyền và truy xuất thông tin nhân viên. Được xử lý bởi tài khoản có role là IT_STAFF")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthorizationController {
