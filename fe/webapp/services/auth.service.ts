@@ -1,6 +1,7 @@
 import axiosBase from "@/lib/axios/axios-base";
 import axios from "axios";
 import { API_GATEWAY_URL } from "@/utils/constraints";
+import { ApiResponse, EmployeeProfileData } from "@/types";
 
 export interface SigninRequest {
   username: string;
@@ -51,4 +52,19 @@ export const resetPasswordService = async (
     email,
     newPassword,
   });
+};
+
+export const getProfileEmployee = async (
+  accessToken: string
+): Promise<EmployeeProfileData> => {
+  const response = await axios.get<ApiResponse<EmployeeProfileData>>(
+    `${API_GATEWAY_URL}/auth/me`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  return response.data.data;
 };
