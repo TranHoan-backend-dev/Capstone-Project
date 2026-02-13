@@ -93,7 +93,7 @@ public class AuthorizationController {
     String empId
   ) {
     log.info("Getting pages of employee with id {}", empId);
-//    empId = IdEncoder.decode(empId);
+    empId = IdEncoder.decode(empId);
 
     return Utils.returnResponse(
       HttpStatus.OK.value(),
