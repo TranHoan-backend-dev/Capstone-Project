@@ -1,5 +1,6 @@
 package com.capstone.organization.service.impl;
 
+import com.capstone.common.utils.IdEncoder;
 import com.capstone.organization.dto.request.CreateDepartmentRequest;
 import com.capstone.organization.dto.request.UpdateDepartmentRequest;
 import com.capstone.organization.dto.response.DepartmentResponse;

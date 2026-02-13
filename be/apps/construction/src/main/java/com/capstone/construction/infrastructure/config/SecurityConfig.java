@@ -25,9 +25,9 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 @Import(SharedSecurityConfig.class)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SecurityConfig {
   @Component
   @ConfigurationProperties(prefix = "cors")

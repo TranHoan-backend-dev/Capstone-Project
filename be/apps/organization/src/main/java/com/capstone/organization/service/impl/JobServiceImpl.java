@@ -1,5 +1,6 @@
 package com.capstone.organization.service.impl;
 
+import com.capstone.common.utils.IdEncoder;
 import com.capstone.organization.dto.request.CreateJobRequest;
 import com.capstone.organization.dto.request.UpdateJobRequest;
 import com.capstone.organization.dto.response.JobResponse;

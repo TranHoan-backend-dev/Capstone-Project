@@ -1,4 +1,4 @@
-package com.capstone.common.utils;
+package com.capstone.common.response;
 
 import java.time.LocalDateTime;
 

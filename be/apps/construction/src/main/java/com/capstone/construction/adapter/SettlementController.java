@@ -1,6 +1,6 @@
 package com.capstone.construction.adapter;
 
-import com.capstone.common.utils.WrapperApiResponse;
+import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.construction.application.dto.request.settlement.SettlementRequest;
 import com.capstone.construction.application.usecase.settlement.SettlementUseCase;
 import io.swagger.v3.oas.annotations.Operation;

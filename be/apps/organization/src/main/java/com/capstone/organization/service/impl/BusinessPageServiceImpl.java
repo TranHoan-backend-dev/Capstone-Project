@@ -1,5 +1,6 @@
 package com.capstone.organization.service.impl;
 
+import com.capstone.common.utils.IdEncoder;
 import com.capstone.organization.dto.request.CreateBusinessPageRequest;
 import com.capstone.organization.dto.request.FilterBusinessPagesRequest;
 import com.capstone.organization.dto.request.UpdateBusinessPageRequest;

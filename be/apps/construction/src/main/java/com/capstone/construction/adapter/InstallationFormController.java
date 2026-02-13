@@ -1,7 +1,7 @@
 package com.capstone.construction.adapter;
 
 import com.capstone.common.utils.Utils;
-import com.capstone.common.utils.WrapperApiResponse;
+import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.construction.application.dto.request.installationform.FilterFormRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;

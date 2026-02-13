@@ -1,5 +1,6 @@
 package com.capstone.construction.application.business.installationform;
 
+import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.construction.application.dto.request.installationform.FilterFormRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import com.capstone.construction.domain.model.InstallationForm;
@@ -56,7 +57,7 @@ class InstallationFormServiceImplTest {
 
         // Mock employee service response
         when(empSrv.getEmployeeNameById("user-id")).thenReturn(
-                new com.capstone.common.utils.WrapperApiResponse(200, "OK", "Employee Name", LocalDateTime.now()));
+                new WrapperApiResponse(200, "OK", "Employee Name", LocalDateTime.now()));
 
         Page<InstallationForm> page = new PageImpl<>(List.of(entity));
         when(ifRepo.findAll(pageable)).thenReturn(page);
@@ -84,7 +85,7 @@ class InstallationFormServiceImplTest {
         when(entity.getScheduleSurveyAt()).thenReturn(LocalDate.now());
 
         when(empSrv.getEmployeeNameById("user-id")).thenReturn(
-                new com.capstone.common.utils.WrapperApiResponse(200, "OK", "Employee Name", LocalDateTime.now()));
+                new WrapperApiResponse(200, "OK", "Employee Name", LocalDateTime.now()));
 
         Page<InstallationForm> page = new PageImpl<>(List.of(entity));
         when(ifRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(page);
@@ -111,7 +112,7 @@ class InstallationFormServiceImplTest {
         when(entity.getScheduleSurveyAt()).thenReturn(LocalDate.now());
 
         when(empSrv.getEmployeeNameById("user-id")).thenReturn(
-                new com.capstone.common.utils.WrapperApiResponse(200, "OK", "Employee Name", LocalDateTime.now()));
+                new WrapperApiResponse(200, "OK", "Employee Name", LocalDateTime.now()));
 
         Page<InstallationForm> page = new PageImpl<>(List.of(entity));
         when(ifRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(page);

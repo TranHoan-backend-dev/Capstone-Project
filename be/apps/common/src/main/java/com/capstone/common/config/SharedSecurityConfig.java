@@ -1,6 +1,7 @@
 package com.capstone.common.config;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +15,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Configuration
 @RequiredArgsConstructor
 @EnableConfigurationProperties(KeycloakProperties.class)
@@ -36,15 +38,17 @@ public class SharedSecurityConfig {
 
   @Bean
   JwtAuthenticationConverter jwtAuthenticationConverter() {
-    JwtAuthenticationConverter authenticationConverter = new JwtAuthenticationConverter();
+    var authenticationConverter = new JwtAuthenticationConverter();
     authenticationConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
       Map<String, Object> realmAccess = jwt.getClaim("realm_access");
+      log.info("realmAccess: {}", realmAccess);
       if (realmAccess == null || realmAccess.isEmpty()) {
         return List.of();
       }
 
       @SuppressWarnings("unchecked")
       List<String> roles = (List<String>) realmAccess.get("roles");
+      log.info("roles: {}", roles);
       if (roles == null || roles.isEmpty()) {
         return List.of();
       }

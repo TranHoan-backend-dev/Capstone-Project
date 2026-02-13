@@ -1,6 +1,6 @@
 package com.capstone.construction.adapter.catalog;
 
-import com.capstone.common.utils.WrapperApiResponse;
+import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.construction.application.dto.request.catalog.RoadmapRequest;
 import com.capstone.construction.application.usecase.catalog.RoadmapUseCase;
 import io.swagger.v3.oas.annotations.Operation;

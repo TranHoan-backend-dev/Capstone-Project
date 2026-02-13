@@ -1,5 +1,6 @@
 package com.capstone.common.utils;
 
+import com.capstone.common.response.WrapperApiResponse;
 import org.jspecify.annotations.NonNull;
 import org.springframework.http.ResponseEntity;
 

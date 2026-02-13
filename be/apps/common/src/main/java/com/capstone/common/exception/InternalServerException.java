@@ -1,4 +1,4 @@
-package com.capstone.common.utils;
+package com.capstone.common.exception;
 
 public class InternalServerException extends RuntimeException {
   public InternalServerException() {

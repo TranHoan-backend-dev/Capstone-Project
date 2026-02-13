@@ -1,6 +1,6 @@
 package com.capstone.construction.application.exception;
 
-import com.capstone.common.utils.WrapperApiResponse;
+import com.capstone.common.response.WrapperApiResponse;
 import org.apache.coyote.BadRequestException;
 import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
