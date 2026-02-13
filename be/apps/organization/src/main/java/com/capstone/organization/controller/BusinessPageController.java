@@ -6,8 +6,6 @@ import com.capstone.organization.dto.response.BusinessPageResponse;
 import com.capstone.organization.dto.response.PagedBusinessPageResponse;
 import com.capstone.organization.dto.response.WrapperApiResponse;
 import com.capstone.organization.service.boundary.BusinessPageService;
-import com.capstone.organization.utils.IdEncoder;
-import com.capstone.organization.utils.Utils;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;

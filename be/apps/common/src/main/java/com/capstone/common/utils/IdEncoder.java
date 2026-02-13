@@ -1,29 +1,22 @@
-package com.capstone.auth.infrastructure.utils;
+package com.capstone.common.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
 import java.util.Base64;
 
+@Slf4j
 public class IdEncoder {
   public static String encode(@NonNull String id) {
     return Base64.getUrlEncoder().encodeToString(id.getBytes());
   }
 
-  @Nullable
   public static String decode(@NonNull String encoded) {
     try {
       return new String(Base64.getUrlDecoder().decode(encoded));
     } catch (Exception e) {
-      return null;
+      log.error(e.getMessage());
+      throw new InternalServerException();
     }
   }
 }
-
-
-
-
-
-
-
-

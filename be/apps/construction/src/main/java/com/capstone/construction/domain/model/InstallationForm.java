@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -62,9 +63,9 @@ public class InstallationForm {
   UsageTarget usageTarget;
 
   @Column(nullable = false)
-  LocalDateTime receivedFormAt;
+  LocalDate receivedFormAt;
 
-  LocalDateTime scheduleSurveyAt;
+  LocalDate scheduleSurveyAt;
 
   @Column(nullable = false)
   Integer numberOfHousehold;
@@ -164,12 +165,12 @@ public class InstallationForm {
     this.usageTarget = UsageTarget.valueOf(usageTarget.trim().toUpperCase());
   }
 
-  public void setReceivedFormAt(LocalDateTime receivedFormAt) {
+  public void setReceivedFormAt(LocalDate receivedFormAt) {
     Objects.requireNonNull(receivedFormAt, Constant.PT_55);
     this.receivedFormAt = receivedFormAt;
   }
 
-  public void setScheduleSurveyAt(LocalDateTime scheduleSurveyAt) {
+  public void setScheduleSurveyAt(LocalDate scheduleSurveyAt) {
     Objects.requireNonNull(scheduleSurveyAt, Constant.PT_78);
     this.scheduleSurveyAt = scheduleSurveyAt;
   }
@@ -280,12 +281,12 @@ public class InstallationForm {
       return this;
     }
 
-    public InstallationFormBuilder receivedFormAt(LocalDateTime receivedFormAt) {
+    public InstallationFormBuilder receivedFormAt(LocalDate receivedFormAt) {
       instance.setReceivedFormAt(receivedFormAt);
       return this;
     }
 
-    public InstallationFormBuilder scheduleSurveyAt(LocalDateTime scheduleSurveyAt) {
+    public InstallationFormBuilder scheduleSurveyAt(LocalDate scheduleSurveyAt) {
       instance.setScheduleSurveyAt(scheduleSurveyAt);
       return this;
     }

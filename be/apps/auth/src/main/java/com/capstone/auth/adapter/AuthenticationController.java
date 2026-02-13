@@ -7,11 +7,11 @@ import com.capstone.auth.application.dto.request.SendOtpRequest;
 import com.capstone.auth.application.dto.request.SignupRequest;
 import com.capstone.auth.application.dto.request.VerifyOtpRequest;
 import com.capstone.auth.application.dto.response.UserProfileResponse;
-import com.capstone.auth.application.dto.response.WrapperApiResponse;
+import com.capstone.common.utils.WrapperApiResponse;
 import com.capstone.auth.application.usecase.AuthUseCase;
 import com.capstone.auth.application.usecase.OtpUseCase;
 
-import com.capstone.auth.infrastructure.utils.Utils;
+import com.capstone.common.utils.Utils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

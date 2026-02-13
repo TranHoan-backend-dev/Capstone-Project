@@ -7,7 +7,6 @@ import com.capstone.organization.dto.response.PagedDepartmentResponse;
 import com.capstone.organization.model.Department;
 import com.capstone.organization.repository.DepartmentRepository;
 import com.capstone.organization.service.boundary.DepartmentService;
-import com.capstone.organization.utils.IdEncoder;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

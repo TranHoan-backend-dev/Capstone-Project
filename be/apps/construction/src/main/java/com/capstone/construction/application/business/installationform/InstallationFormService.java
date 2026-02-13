@@ -1,8 +1,10 @@
 package com.capstone.construction.application.business.installationform;
 
-import com.capstone.construction.application.dto.response.InstallationFormListResponse;
-import com.capstone.construction.application.dto.request.NewOrderRequest;
-import com.capstone.construction.application.dto.response.InstallationFormResponse;
+import com.capstone.construction.application.dto.request.installationform.FilterFormRequest;
+import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
+import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
+import com.capstone.construction.application.dto.response.installationform.InstallationFormResponse;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface InstallationFormService {
@@ -10,5 +12,5 @@ public interface InstallationFormService {
 
   boolean isInstallationFormExisting(String formNumber);
 
-  InstallationFormListResponse getInstallationForms(Pageable pageable);
+  Page<InstallationFormListResponse> getInstallationForms(Pageable pageable, FilterFormRequest request);
 }

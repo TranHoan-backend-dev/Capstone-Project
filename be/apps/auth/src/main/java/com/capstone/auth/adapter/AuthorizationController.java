@@ -3,10 +3,14 @@ package com.capstone.auth.adapter;
 import com.capstone.auth.application.dto.request.FilterUsersRequest;
 import com.capstone.auth.application.dto.request.UpdateBusinessPageNamesRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
-import com.capstone.auth.application.dto.response.WrapperApiResponse;
+import com.capstone.common.utils.WrapperApiResponse;
+import com.capstone.auth.application.usecase.ProfileUseCase;
 import com.capstone.auth.application.usecase.UsersUseCase;
-import com.capstone.auth.infrastructure.utils.IdEncoder;
-import com.capstone.auth.infrastructure.utils.Utils;
+import com.capstone.common.utils.IdEncoder;
+import com.capstone.common.utils.Utils;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +43,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthorizationController {
   UsersUseCase usersUseCase;
+  ProfileUseCase profileUseCase;
 
   @Operation(summary = "Lấy tất cả nhân viên", description = """
     Truy xuất danh sách nhân viên được phân trang. Có thể tùy chọn lọc theo trạng thái 'isEnabled' và 'username'. Bạn có thể xem các trang của nhân viên có quyền truy cập bằng cách gọi endpoint /employees/{id}/pages\s
@@ -88,7 +93,7 @@ public class AuthorizationController {
     String empId
   ) {
     log.info("Getting pages of employee with id {}", empId);
-//    empId = IdEncoder.decode(empId);
+    empId = IdEncoder.decode(empId);
 
     return Utils.returnResponse(
       HttpStatus.OK.value(),
@@ -127,5 +132,21 @@ public class AuthorizationController {
       HttpStatus.OK.value(),
       "Update pages successfully",
       null);
+  }
+
+  @GetMapping("/employees/{id}/name")
+  @PreAuthorize("hasAnyRole('IT_STAFF', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF')")
+  public ResponseEntity<WrapperApiResponse> getEmployeeNameById(
+    @PathVariable @NotBlank @NotEmpty @NotNull String id
+  ) {
+    log.info("Fetching employee name by id: {}", id);
+    if (!Utils.isUUID(id)) {
+      id = IdEncoder.decode(id);
+    }
+    return Utils.returnResponse(
+      HttpStatus.OK.value(),
+      "Get name of current employee successfully",
+      profileUseCase.getFullNameById(id)
+    );
   }
 }

@@ -5,7 +5,7 @@ import com.capstone.auth.application.exception.NotExistingException;
 import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.domain.repository.ProfileRepository;
 import com.capstone.auth.infrastructure.config.Constant;
-import com.capstone.auth.infrastructure.utils.IdEncoder;
+import com.capstone.common.utils.IdEncoder;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

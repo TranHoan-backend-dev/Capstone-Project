@@ -4,8 +4,6 @@ import com.capstone.organization.dto.request.CreateDepartmentRequest;
 import com.capstone.organization.dto.request.UpdateDepartmentRequest;
 import com.capstone.organization.dto.response.WrapperApiResponse;
 import com.capstone.organization.service.boundary.DepartmentService;
-import com.capstone.organization.utils.IdEncoder;
-import com.capstone.organization.utils.Utils;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;

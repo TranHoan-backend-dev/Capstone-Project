@@ -14,25 +14,25 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CostEstimateUseCase {
-    CostEstimateService estimateService;
+  CostEstimateService estimateService;
 
-    public CostEstimateResponse createEstimate(CostEstimateRequest request) {
-        return estimateService.createEstimate(request);
-    }
+  public CostEstimateResponse createEstimate(CostEstimateRequest request) {
+    return estimateService.createEstimate(request);
+  }
 
-    public CostEstimateResponse updateEstimate(String id, CostEstimateRequest request) {
-        return estimateService.updateEstimate(id, request);
-    }
+  public CostEstimateResponse updateEstimate(String id, CostEstimateRequest request) {
+    return estimateService.updateEstimate(id, request);
+  }
 
-    public void deleteEstimate(String id) {
-        estimateService.deleteEstimate(id);
-    }
+  public void deleteEstimate(String id) {
+    estimateService.deleteEstimate(id);
+  }
 
-    public CostEstimateResponse getEstimateById(String id) {
-        return estimateService.getEstimateById(id);
-    }
+  public CostEstimateResponse getEstimateById(String id) {
+    return estimateService.getEstimateById(id);
+  }
 
-    public PageResponse<CostEstimateResponse> getAllEstimates(Pageable pageable) {
-        return estimateService.getAllEstimates(pageable);
-    }
+  public PageResponse<CostEstimateResponse> getAllEstimates(Pageable pageable) {
+    return estimateService.getAllEstimates(pageable);
+  }
 }

@@ -1,6 +1,6 @@
 package com.capstone.auth.application.business.pages;
 
-import com.capstone.auth.application.dto.response.WrapperApiResponse;
+import com.capstone.common.utils.WrapperApiResponse;
 import com.capstone.auth.domain.model.BusinessPagesOfEmployees;
 import com.capstone.auth.domain.model.utils.BusinessPagesOfEmployeesId;
 import com.capstone.auth.domain.repository.BusinessPagesOfEmployeeRepository;

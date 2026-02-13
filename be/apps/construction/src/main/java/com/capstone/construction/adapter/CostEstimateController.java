@@ -1,7 +1,7 @@
-package com.capstone.construction.adapter.estimate;
+package com.capstone.construction.adapter;
 
+import com.capstone.common.utils.WrapperApiResponse;
 import com.capstone.construction.application.dto.request.estimate.CostEstimateRequest;
-import com.capstone.construction.application.dto.response.WrapperApiResponse;
 import com.capstone.construction.application.usecase.estimate.CostEstimateUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

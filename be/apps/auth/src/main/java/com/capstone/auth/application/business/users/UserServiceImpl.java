@@ -9,7 +9,7 @@ import com.capstone.auth.domain.model.Roles;
 import com.capstone.auth.domain.model.Users;
 import com.capstone.auth.domain.repository.UserRepository;
 import com.capstone.auth.infrastructure.config.Constant;
-import com.capstone.auth.infrastructure.utils.IdEncoder;
+import com.capstone.common.utils.IdEncoder;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 @Slf4j
 @Service

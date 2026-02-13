@@ -1,7 +1,7 @@
-package com.capstone.construction.adapter.settlement;
+package com.capstone.construction.adapter;
 
+import com.capstone.common.utils.WrapperApiResponse;
 import com.capstone.construction.application.dto.request.settlement.SettlementRequest;
-import com.capstone.construction.application.dto.response.WrapperApiResponse;
 import com.capstone.construction.application.usecase.settlement.SettlementUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -85,7 +85,7 @@ public class SettlementController {
             @ApiResponse(responseCode = "200", description = "List of settlements retrieved successfully")
     })
     public ResponseEntity<WrapperApiResponse> getAllSettlements(
-            @PageableDefault(size = 10) @Parameter(description = "Pagination parameters") Pageable pageable) {
+            @PageableDefault @Parameter(description = "Pagination parameters") Pageable pageable) {
         log.info("REST request to get all settlements");
         var response = settlementUseCase.getAllSettlements(pageable);
         return ResponseEntity.ok(new WrapperApiResponse(
