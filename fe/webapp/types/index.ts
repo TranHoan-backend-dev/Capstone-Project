@@ -23,6 +23,15 @@ export interface EmployeeProfileData {
   email: string;
 }
 
+export interface EmployeeProfileUpdatePayload {
+  fullName: string;
+  avatarUrl: string;
+  address: string;
+  phoneNumber: string;
+  gender: string;
+  birthdate: string;
+}
+
 export interface EstimateItem {
   id: number;
   code: string;

@@ -1,5 +1,5 @@
 export const ROLES = {
-  IT_STAFF: "it_department_staff",
+  IT_STAFF: "it_staff",
   PLANNING_TECH_STAFF: "planning_technical_department_staff",
   PLANNING_TECH_HEAD: "planning_technical_department_head",
   CONSTRUCTION_STAFF: "construction_department_staff",
