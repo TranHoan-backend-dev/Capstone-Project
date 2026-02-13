@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Card, CardBody, Chip, Avatar } from "@heroui/react";
 import CustomButton from "@/components/ui/custom/CustomButton";
 import CustomField from "@/components/ui/custom/CustomField";
@@ -27,6 +27,7 @@ const EmployeeProfile = ({ data }: EmployeeProfileProps) => {
       : formData.gender === "false"
         ? "Nữ"
         : "Chưa cập nhật";
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleChange = (key: keyof EmployeeProfileData, value: string) => {
     setFormData({ ...formData, [key]: value });
@@ -75,6 +76,69 @@ const EmployeeProfile = ({ data }: EmployeeProfileProps) => {
     }
   };
 
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      CallToast({
+        title: "Lỗi",
+        message: "Vui lòng chọn file ảnh hợp lệ",
+        color: "danger",
+      });
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      CallToast({
+        title: "Lỗi",
+        message: "Dung lượng ảnh tối đa 5MB",
+        color: "danger",
+      });
+      return;
+    }
+
+    try {
+      const formDataUpload = new FormData();
+      formDataUpload.append("avatar", file);
+
+      const res = await fetch("/api/auth/avatar", {
+        method: "PUT",
+        body: formDataUpload,
+      });
+
+      const json = await res.json();
+
+      if (!res.ok) {
+        throw new Error(json.message || "Upload avatar thất bại");
+      }
+
+      setFormData((prev) => ({
+        ...prev,
+        avatarUrl: json.data.avatarUrl,
+      }));
+
+      setOriginalData((prev) => ({
+        ...prev,
+        avatarUrl: json.data.avatarUrl,
+      }));
+
+      CallToast({
+        title: "Thành công",
+        message: "Cập nhật ảnh đại diện thành công",
+        color: "success",
+      });
+    } catch (err: any) {
+      CallToast({
+        title: "Thất bại",
+        message: err.message || "Không thể upload avatar",
+        color: "danger",
+      });
+    } finally {
+      e.target.value = "";
+    }
+  };
+
   return (
     <Card className="border-none rounded-2xl bg-white dark:bg-zinc-900">
       <CardBody className="p-8">
@@ -83,11 +147,28 @@ const EmployeeProfile = ({ data }: EmployeeProfileProps) => {
             <h2 className="text-2xl font-bold">Hồ Sơ Nhân Viên</h2>
 
             <div className="flex items-center gap-4">
-              <Avatar
-                src={formData.avatarUrl}
-                className="w-20 h-20"
-                isBordered
+              <div
+                className="relative cursor-pointer group"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Avatar
+                  src={formData.avatarUrl}
+                  className="w-20 h-20 transition-opacity group-hover:opacity-80"
+                  isBordered
+                />
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                  <PencilIcon className="w-5 h-5 text-white" />
+                </div>
+              </div>
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/png,image/jpeg,image/gif"
+                hidden
+                onChange={handleAvatarChange}
               />
+
               <div>
                 <CustomField
                   label="Họ và tên"
