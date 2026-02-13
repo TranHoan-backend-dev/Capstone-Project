@@ -12,16 +12,16 @@ description = 'Demo project for Spring Boot'
 dependencyManagement {
   imports {
     mavenBom "org.springframework.cloud:spring-cloud-dependencies:2024.0.0"
-//    mavenBom "com.google.cloud:spring-cloud-gcp-dependencies:6.2.2"
   }
 }
 
 dependencies {
+  implementation project(':common')
   implementation 'org.springframework.boot:spring-boot-starter-web'
+  implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
   runtimeOnly 'org.springframework.boot:spring-boot-devtools'
   implementation 'org.springframework.boot:spring-boot-starter-security'
   testImplementation 'org.springframework.security:spring-security-test'
-//  implementation 'com.google.cloud:spring-cloud-gcp-starter-storage'
 
   // swagger
   implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8'
@@ -32,10 +32,9 @@ dependencies {
 
   runtimeOnly 'org.postgresql:postgresql'
 
-  runtimeOnly 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+  implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 
   implementation 'com.google.api-client:google-api-client:2.7.0'
-//  implementation 'com.google.cloud:google-cloud-storage:2.30.1'
   implementation 'org.keycloak:keycloak-admin-client:25.0.1'
 
   implementation 'org.springframework.boot:spring-boot-starter-amqp'

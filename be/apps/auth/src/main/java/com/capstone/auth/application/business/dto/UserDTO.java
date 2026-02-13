@@ -8,7 +8,6 @@ public record UserDTO(
   String username,
   String email,
   boolean isLocked,
-  String password,
   LocalDateTime createdAt,
   LocalDateTime updatedAt,
   String lockedReason,

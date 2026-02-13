@@ -7,16 +7,16 @@ import { IS_PRODUCTION } from "@/constants/auth.constants";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { username, password } = body;
+    const { identifier, password } = body;
 
-    if (!username || !password) {
+    if (!identifier || !password) {
       return NextResponse.json(
         { message: "Thiếu tên đăng nhập hoặc mật khẩu" },
         { status: 400 },
       );
     }
 
-    const tokenRes = await keycloakLogin({ username, password });
+    const tokenRes = await keycloakLogin({ identifier, password });
 
     if (!tokenRes?.access_token) {
       throw new Error("NO_TOKEN");
@@ -27,6 +27,7 @@ export async function POST(req: NextRequest) {
       const backendRes = await signinService(tokenRes.access_token);
       backendData = backendRes.data?.data;
     } catch (backendError: any) {
+
       if (axios.isAxiosError(backendError)) {
         const status = backendError.response?.status;
         const message = backendError.response?.data?.message;
@@ -67,6 +68,15 @@ export async function POST(req: NextRequest) {
     res.cookies.set(
       IS_PRODUCTION ? "__Secure-access_token" : "access_token",
       tokenRes.access_token,
+      {
+        ...cookieOptions,
+        maxAge: tokenRes.expires_in
+      },
+    );
+
+    res.cookies.set(
+      IS_PRODUCTION ? "__Secure-refresh_token" : "refresh_token",
+      tokenRes.refresh_token,
       {
         ...cookieOptions,
       },

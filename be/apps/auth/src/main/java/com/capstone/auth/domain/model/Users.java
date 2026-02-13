@@ -27,9 +27,6 @@ public class Users {
   @Column(unique = true, nullable = false)
   String email;
 
-  @Column(nullable = false)
-  String password;
-
   @Column(unique = true, nullable = false)
   String username;
 
@@ -78,11 +75,6 @@ public class Users {
       throw new IllegalArgumentException(Constant.PT_01);
     }
     this.email = email;
-  }
-
-  public void setPassword(String password) {
-    requireNonNullAndNotEmpty(password, Constant.PT_04);
-    this.password = password;
   }
 
   public void setUserId(String value) {
@@ -147,11 +139,6 @@ public class Users {
 
     public UsersBuilder userId(String id) {
       instance.setUserId(id);
-      return this;
-    }
-
-    public UsersBuilder password(String password) {
-      instance.setPassword(password);
       return this;
     }
 

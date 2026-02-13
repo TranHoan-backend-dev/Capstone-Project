@@ -9,6 +9,7 @@ import com.capstone.auth.application.dto.response.UserProfileResponse;
 import com.capstone.auth.application.exception.IncompatibleAvatarException;
 import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.infrastructure.config.Constant;
+import com.capstone.auth.infrastructure.service.GcsService;
 import com.capstone.auth.infrastructure.utils.Utils;
 import com.capstone.auth.infrastructure.utils.IdEncoder;
 import lombok.AccessLevel;
@@ -34,16 +35,15 @@ public class ProfileUseCase {
   UserService uSrv;
   ProfileService pSrv;
   Keycloak keycloak;
+  GcsService gcsSrv;
 
   @Value("${keycloak.realms}")
   @NonFinal
   String realm;
-  // GcsStorageService gcsSrv;
-  // static String FOLDER_NAME = "image";
 
   public UserProfileResponse getMe(String id, String email, String username) {
     log.info("Check status and get profile by id: {}", id);
-    var user = getUserNonLockedById(id);
+    var user = getNonLockedUserById(id);
 
     Utils.validateCredentials(user, email, username);
 
@@ -55,7 +55,7 @@ public class ProfileUseCase {
   public UserProfileResponse updateProfile(String id, @NonNull UpdateProfileRequest request) {
     log.info("Updating profile by id: {}", id);
     log.info("Request: {}", request);
-    var user = getUserNonLockedById(id);
+    var user = getNonLockedUserById(id);
     var profile = pSrv.getProfileById(id);
 
     var newProfile = new Profile();
@@ -123,11 +123,10 @@ public class ProfileUseCase {
 
   public UserProfileResponse updateAvatar(String id, MultipartFile file) {
     log.info("Update avatar");
-    var user = getUserNonLockedById(id);
+    var user = getNonLockedUserById(id);
 
-    // TODO: tải lên GCS
-    var avatarUrl = "hehe";
-    // var avatarUrl = gcsSrv.upload(file, FOLDER_NAME);
+    // tải lên GCS
+    var avatarUrl = gcsSrv.upload(file);
 
     var profile = pSrv.updateAvatar(id, avatarUrl);
     if (!avatarUrl.equals(profile.avatarUrl())) {
@@ -136,7 +135,7 @@ public class ProfileUseCase {
     return returnUserProfile(profile, user);
   }
 
-  private @NonNull UserDTO getUserNonLockedById(String id) {
+  private @NonNull UserDTO getNonLockedUserById(String id) {
     var user = uSrv.getUserById(id);
 
     if (user.isLocked()) {

@@ -4,6 +4,34 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
+export interface ApiResponse<T> {
+  status: number;
+  message: string;
+  data: T;
+  timestamp: string;
+}
+
+export interface EmployeeProfileData {
+  fullname: string;
+  avatarUrl: string;
+  address: string;
+  phoneNumber: string;
+  gender: string;
+  birthday: string;
+  role: string;
+  username: string;
+  email: string;
+}
+
+export interface EmployeeProfileUpdatePayload {
+  fullName: string;
+  avatarUrl: string;
+  address: string;
+  phoneNumber: string;
+  gender: string;
+  birthdate: string;
+}
+
 export interface BusinessPageRecord {
   id: string;
   stt: number;
@@ -167,3 +195,4 @@ export type FormField =
 export type OrderStage = "register" | "estimate" | "contract" | "construction";
 
 export type OrderStatus = "processing" | "pending" | "approved" | "rejected";
+

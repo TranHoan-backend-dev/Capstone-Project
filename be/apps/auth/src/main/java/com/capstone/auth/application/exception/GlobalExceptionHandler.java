@@ -6,6 +6,7 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,38 +22,22 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(BadRequestException.class)
   public ResponseEntity<WrapperApiResponse> handleBadRequestException(@NonNull BadRequestException ex) {
-    return ResponseEntity
-      .status(HttpStatus.BAD_REQUEST)
-      .body(new WrapperApiResponse(
-        HttpStatus.BAD_REQUEST.value(),
-        ex.getMessage(),
-        null,
-        LocalDateTime.now()
-      ));
+    return returnBadRequest(ex.getMessage());
   }
 
   @ExceptionHandler(NotExistingException.class)
   public ResponseEntity<WrapperApiResponse> handleUserNotFoundException(@NonNull NotExistingException ex) {
-    return ResponseEntity
-      .status(HttpStatus.BAD_REQUEST)
-      .body(new WrapperApiResponse(
-        HttpStatus.BAD_REQUEST.value(),
-        ex.getMessage(),
-        null,
-        LocalDateTime.now()
-      ));
+    return returnBadRequest(ex.getMessage());
+  }
+
+  @ExceptionHandler(IncompatibleAvatarException.class)
+  public ResponseEntity<WrapperApiResponse> handleIncompatibleAvatarException(@NonNull IncompatibleAvatarException ex) {
+    return returnBadRequest(ex.getMessage());
   }
 
   @ExceptionHandler(DateTimeParseException.class)
   public ResponseEntity<WrapperApiResponse> handleDateTimeParseException(@NonNull DateTimeParseException ex) {
-    return ResponseEntity
-      .status(HttpStatus.BAD_REQUEST)
-      .body(new WrapperApiResponse(
-        HttpStatus.BAD_REQUEST.value(),
-        ex.getMessage(),
-        null,
-        LocalDateTime.now()
-      ));
+    return returnBadRequest(ex.getMessage());
   }
 
   @ExceptionHandler(AccountBlockedException.class)
@@ -69,26 +54,17 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(ExistingException.class)
   public ResponseEntity<WrapperApiResponse> handleExistingException(@NonNull ExistingException ex) {
-    return ResponseEntity
-      .status(HttpStatus.BAD_REQUEST)
-      .body(new WrapperApiResponse(
-        HttpStatus.BAD_REQUEST.value(),
-        ex.getMessage(),
-        null,
-        LocalDateTime.now()
-      ));
+    return returnBadRequest(ex.getMessage());
   }
 
   @ExceptionHandler(BadCredentialsException.class)
   public ResponseEntity<WrapperApiResponse> handleBadCredentialsException(BadCredentialsException ex) {
-    return ResponseEntity
-      .status(HttpStatus.UNAUTHORIZED)
-      .body(new WrapperApiResponse(
-        HttpStatus.UNAUTHORIZED.value(),
-        "Invalid email or password",
-        null,
-        LocalDateTime.now()
-      ));
+    return returnUnAuthorizedError("Invalid email or password");
+  }
+
+  @ExceptionHandler(DisabledException.class)
+  public ResponseEntity<WrapperApiResponse> handleDisabledException(@NonNull DisabledException ex) {
+    return returnUnAuthorizedError(ex.getMessage());
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -112,23 +88,42 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<WrapperApiResponse> handleGlobalException(@NonNull Exception ex) {
+    return returnInternalServerError(ex.getMessage());
+  }
+
+  @ExceptionHandler({InterruptedException.class, ExecutionException.class})
+  public ResponseEntity<WrapperApiResponse> handleInterruptedAndExecutionException(@NonNull Exception ex) {
+    return returnInternalServerError(ex.getMessage());
+  }
+
+  private @NonNull ResponseEntity<WrapperApiResponse> returnBadRequest(String message) {
     return ResponseEntity
-      .status(HttpStatus.INTERNAL_SERVER_ERROR)
+      .status(HttpStatus.BAD_REQUEST)
       .body(new WrapperApiResponse(
-        HttpStatus.INTERNAL_SERVER_ERROR.value(),
-        ex.getMessage(),
+        HttpStatus.BAD_REQUEST.value(),
+        message,
         null,
         LocalDateTime.now()
       ));
   }
 
-  @ExceptionHandler({InterruptedException.class, ExecutionException.class})
-  public ResponseEntity<WrapperApiResponse> handleInterruptedAndExecutionException(@NonNull Exception ex) {
+  private @NonNull ResponseEntity<WrapperApiResponse> returnInternalServerError(String message) {
     return ResponseEntity
       .status(HttpStatus.INTERNAL_SERVER_ERROR)
       .body(new WrapperApiResponse(
         HttpStatus.INTERNAL_SERVER_ERROR.value(),
-        ex.getMessage(),
+        message,
+        null,
+        LocalDateTime.now()
+      ));
+  }
+
+  private @NonNull ResponseEntity<WrapperApiResponse> returnUnAuthorizedError(String message) {
+    return ResponseEntity
+      .status(HttpStatus.UNAUTHORIZED)
+      .body(new WrapperApiResponse(
+        HttpStatus.UNAUTHORIZED.value(),
+        message,
         null,
         LocalDateTime.now()
       ));

@@ -8,7 +8,7 @@ import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
 export const metadata: Metadata = {
   title: "Quản lý mẫu bốc vật tư",
   description:
-    "Trang quản lý và tra cứu các mẫu bốc vật tư vật liệu trong hệ thống CRM.",
+    "Trang quản lý và tra cứu các mẫu bốc vật tư vật liệu trong hệ thống CMSN.",
 };
 
 const ManageSupplies = () => {

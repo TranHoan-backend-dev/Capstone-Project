@@ -73,7 +73,6 @@ public class AuthUseCase {
     log.info("AuthUseCase is handling business");
 
     Objects.requireNonNull(username, Constant.PT_05);
-    Objects.requireNonNull(password, Constant.PT_04);
     Objects.requireNonNull(email, Constant.PT_03);
     Objects.requireNonNull(roleId, Constant.PT_23);
     Objects.requireNonNull(jobId, Constant.PT_20);
@@ -84,7 +83,7 @@ public class AuthUseCase {
     var role = rSrv.getRoleById(roleId);
     Objects.requireNonNull(role, Constant.SE_08);
     uSrv.createEmployee(
-      username, password, email, role,
+      username, email, role,
       jobId, businessPageIds, departmentId, waterSupplyNetworkId);
 
     log.info("User has been registered successfully");

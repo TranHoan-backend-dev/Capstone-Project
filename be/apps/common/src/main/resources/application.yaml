@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: common
+  profiles:
+    active: dev
+#keycloak:
+#  server-url:
+#  issuer-uri: ${keycloak.server-url}/realms/${keycloak.realms}
+#  aud:
+#  realms:
+#  username:
+#  password:
+#  token-uri: ${keycloak.server-url}/realms/${keycloak.realms}/protocol/openid-connect/token
+#  client-id:
+#  client-secret:
+#  scope:

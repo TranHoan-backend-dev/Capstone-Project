@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Component;
 import org.springframework.web.cors.CorsConfiguration;
@@ -33,35 +34,39 @@ public class SecurityConfig {
   }
 
   CorsProperties corsProperties;
+  JwtDecoder decoder;
   final String[] PUBLIC_URLS = {
-      "/auth/**",
-      "/login/oauth2/code/google",
-      "/oauth2/authorization/google",
-      "/actuator/**",
-      "/v3/api-docs/**",
-      "/swagger-ui/**",
+    "/auth/**",
+    "/login/oauth2/code/google",
+    "/oauth2/authorization/google",
+    "/actuator/**",
+    "/v3/api-docs/**",
+    "/swagger-ui/**",
+    "/public/**",
+    "/health",
   };
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     return http
-        .csrf(AbstractHttpConfigurer::disable)
-        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers(PUBLIC_URLS).permitAll()
-            .anyRequest().authenticated())
-        .exceptionHandling(ex -> ex
-            .authenticationEntryPoint((request, response, authException) -> {
-              response.setContentType("application/json");
-              response.setStatus(HttpStatus.UNAUTHORIZED.value());
-              response.getWriter().write("{\"error\": \"Authentication required\"}");
-            })
-            .accessDeniedHandler((request, response, exception) -> {
-              response.setContentType("application/json");
-              response.setStatus(HttpStatus.FORBIDDEN.value());
-              response.getWriter().write("{\"error\": \"Access denied\"}");
-            }))
-        .build();
+      .csrf(AbstractHttpConfigurer::disable)
+      .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+      .authorizeHttpRequests(auth -> auth
+        .requestMatchers(PUBLIC_URLS).permitAll()
+        .anyRequest().authenticated())
+      .exceptionHandling(ex -> ex
+        .authenticationEntryPoint((request, response, authException) -> {
+          response.setContentType("application/json");
+          response.setStatus(HttpStatus.UNAUTHORIZED.value());
+          response.getWriter().write("{\"error\": \"Authentication required\"}");
+        })
+        .accessDeniedHandler((request, response, exception) -> {
+          response.setContentType("application/json");
+          response.setStatus(HttpStatus.FORBIDDEN.value());
+          response.getWriter().write("{\"error\": \"Access denied\"}");
+        }))
+      .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(decoder)))
+      .build();
   }
 
   UrlBasedCorsConfigurationSource corsConfigurationSource() {
