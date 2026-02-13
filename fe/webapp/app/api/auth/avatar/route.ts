@@ -20,7 +20,7 @@ export async function PUT(req: NextRequest) {
     }
 
     const data = await updateAvatar(avatar, accessToken);
-console.log("data: " + data)
+
     return NextResponse.json(data, { status: 200 });
   } catch (error: any) {
     console.error("Upload avatar error:", error?.response?.data || error);

@@ -1,4 +1,4 @@
-import axiosBase from "@/lib/axios/axios-client";
+import axiosBase from "@/lib/axios/axios-base";
 import { EmployeeProfileData } from "@/types";
 import { useEffect, useState } from "react";
 
