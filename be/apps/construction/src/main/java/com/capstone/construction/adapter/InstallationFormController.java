@@ -31,10 +31,10 @@ import java.time.format.DateTimeFormatter;
 
 @AppLog
 @RestController
-@RequestMapping("/installation-forms")
 @RequiredArgsConstructor
-@Tag(name = "Installation Form", description = "Endpoints for managing installation forms")
+@RequestMapping("/installation-forms")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Installation Form", description = "Endpoints for managing installation forms")
 public class InstallationFormController {
   InstallationFormHandlingUseCase installationFormHandlingUseCase;
   @NonFinal

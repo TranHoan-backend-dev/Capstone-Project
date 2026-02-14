@@ -53,7 +53,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<WrapperApiResponse> handleGlobalException(@NonNull Exception ex) {
-    log.error("Unexpected error occurred: ", ex);
+    log.error("Unexpected error occurred: {}", ex.getMessage());
     return Utils.returnInternalServerErrorResponse(ex.getMessage(), null);
   }
 

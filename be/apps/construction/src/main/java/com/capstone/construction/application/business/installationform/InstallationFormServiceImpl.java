@@ -47,8 +47,8 @@ public class InstallationFormServiceImpl implements InstallationFormService {
 
     if (!checkAuthorExisting(request.createdBy())) {
       throw new IllegalArgumentException(Constant.PT_61);
-    } else if (!checkMeterExisting(request.overallWaterMeterId())) {
-      throw new IllegalArgumentException(Constant.PT_62);
+//    } else if (!checkMeterExisting(request.overallWaterMeterId())) {
+//      throw new IllegalArgumentException(Constant.PT_62);
     }
 
     var entity = InstallationForm.create(builder -> builder
@@ -128,7 +128,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       entity.getPhoneNumber(),
       entity.getScheduleSurveyAt() == null ? null : entity.getScheduleSurveyAt().toString(),
       entity.getCreatedAt().toString(),
-      fullName.data().toString(),
+      (fullName != null && fullName.data() != null) ? fullName.data().toString() : "Unknown",
       entity.getStatus()
     );
   }

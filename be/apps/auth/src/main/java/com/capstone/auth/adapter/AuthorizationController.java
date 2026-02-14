@@ -65,13 +65,12 @@ public class AuthorizationController {
   public ResponseEntity<WrapperApiResponse> getAllEmployees(
     @ParameterObject Pageable pageable,
 
-    @Parameter(description = "Filter criteria for users (isEnabled, username)")
-    FilterUsersRequest request
-  ) {
+    @Parameter(description = "Filter criteria for users (isEnabled, username)") FilterUsersRequest request) {
     log.info("Getting all employees with page index {} and page size {}", pageable.getPageNumber(),
       pageable.getPageSize());
 
-    return Utils.returnOkResponse("Get all employees successfully", usersUseCase.getPaginatedListOfEmployees(pageable, request));
+    return Utils.returnOkResponse("Get all employees successfully",
+      usersUseCase.getPaginatedListOfEmployees(pageable, request));
   }
 
   @Operation(summary = "Lấy các trang web nghiệp vụ được ủy quyền cho nhân viên", description = """
@@ -89,9 +88,7 @@ public class AuthorizationController {
   @GetMapping("/employees/{empId}/pages")
   public ResponseEntity<WrapperApiResponse> getBusinessPageNamesOfEmployees(
     @Parameter(description = "ID được mã hóa của nhân viên", required = true)
-    @PathVariable
-    String empId
-  ) {
+    @PathVariable String empId) {
     log.info("Getting pages of employee with id {}", empId);
     empId = IdEncoder.decode(empId);
 
@@ -118,10 +115,7 @@ public class AuthorizationController {
   })
   @PutMapping("employees/pages")
   public ResponseEntity<WrapperApiResponse> updateBusinessPageNamesOfEmployees(
-    @Parameter(description = "Danh sách các yêu cầu cập nhật chứa ID nhân viên và bộ ID trang được ủy quyền mới của họ.", required = true)
-    @RequestBody
-    List<UpdateBusinessPageNamesRequest> request
-  ) {
+    @Parameter(description = "Danh sách các yêu cầu cập nhật chứa ID nhân viên và bộ ID trang được ủy quyền mới của họ.", required = true) @RequestBody List<UpdateBusinessPageNamesRequest> request) {
     log.info("Updating pages of employees");
     usersUseCase.updateBusinessPagesListOfEmployees(request);
 
@@ -131,8 +125,7 @@ public class AuthorizationController {
   @GetMapping("/employees/{id}/name")
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF')")
   public ResponseEntity<WrapperApiResponse> getEmployeeNameById(
-    @PathVariable @NotBlank @NotEmpty @NotNull String id
-  ) {
+    @PathVariable @NotBlank @NotEmpty @NotNull String id) {
     log.info("Fetching employee name by id: {}", id);
     if (!Utils.isUUID(id)) {
       id = IdEncoder.decode(id);
@@ -141,11 +134,12 @@ public class AuthorizationController {
   }
 
   @GetMapping("/employees/{authorId}")
-  public ResponseEntity<?> checkAuthorExisting(@PathVariable String authorId) {
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF')")
+  public ResponseEntity<WrapperApiResponse> checkAuthorExisting(@PathVariable String authorId) {
     log.info("Verifying existence of employee: {}", authorId);
     if (!Utils.isUUID(authorId)) {
       authorId = IdEncoder.decode(authorId);
     }
-    return Utils.returnNoContentResponse("Check employee successfully", usersUseCase.checkIfEmployeeExists(authorId));
+    return Utils.returnOkResponse("Check employee successfully", usersUseCase.checkIfEmployeeExists(authorId));
   }
 }

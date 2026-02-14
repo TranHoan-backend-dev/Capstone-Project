@@ -92,4 +92,10 @@ public class WaterMeterServiceImpl implements WaterMeterService {
                 meter.getSize(),
                 meter.getType() != null ? meter.getType().getName() : null);
     }
+
+    @Override
+    public boolean isWaterMeterExisting(String id) {
+        log.info("Checking existence of water meter ID: {}", id);
+        return waterMeterRepository.existsById(id);
+    }
 }

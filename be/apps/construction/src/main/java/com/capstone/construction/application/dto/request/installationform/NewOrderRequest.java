@@ -67,11 +67,9 @@ public record NewOrderRequest(
   String scheduleSurveyAt,
 
   @Schema(description = "Number of households using the meter", example = "1")
-  @NotBlank(message = Constant.PT_56)
   Integer numberOfHousehold, // so nguoi su dung
 
   @Schema(description = "Household registration number", example = "1")
-  @NotBlank(message = Constant.PT_57)
   Integer householdRegistrationNumber, // ma ho khau
 
   @Schema(description = "List of customer representatives")

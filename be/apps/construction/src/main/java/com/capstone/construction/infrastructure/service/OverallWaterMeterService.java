@@ -9,6 +9,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 @Service
 @FeignClient(name = "device", path = "/api/v1")
 public interface OverallWaterMeterService {
-  @GetMapping("/meters/{id}")
+  @GetMapping("/water-meters/{id}/exists")
   WrapperApiResponse isMeterExisting(@PathVariable String id);
 }

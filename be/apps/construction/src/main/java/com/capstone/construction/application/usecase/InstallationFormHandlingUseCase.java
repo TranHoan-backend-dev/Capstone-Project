@@ -20,6 +20,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @AppLog
 @Component
 @RequiredArgsConstructor
@@ -42,6 +44,9 @@ public class InstallationFormHandlingUseCase {
       log.warn("Installation form already exists: {}", request.formNumber());
       throw new ExistingItemException(Constant.SE_01);
     }
+
+    Objects.requireNonNull(request.numberOfHousehold(), Constant.PT_56);
+    Objects.requireNonNull(request.householdRegistrationNumber(), Constant.PT_57);
 
     var savedResponse = ifSrv.createNewInstallationForm(request);
 

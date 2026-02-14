@@ -6,13 +6,13 @@ import com.capstone.construction.application.dto.response.PageResponse;
 import org.springframework.data.domain.Pageable;
 
 public interface WaterSupplyNetworkService {
-    WaterSupplyNetworkResponse createNetwork(WaterSupplyNetworkRequest request);
+  WaterSupplyNetworkResponse createNetwork(WaterSupplyNetworkRequest request);
 
-    WaterSupplyNetworkResponse updateNetwork(String id, WaterSupplyNetworkRequest request);
+  WaterSupplyNetworkResponse updateNetwork(String id, WaterSupplyNetworkRequest request);
 
-    void deleteNetwork(String id);
+  void deleteNetwork(String id);
 
-    WaterSupplyNetworkResponse getNetworkById(String id);
+  WaterSupplyNetworkResponse getNetworkById(String id);
 
-    PageResponse<WaterSupplyNetworkResponse> getAllNetworks(Pageable pageable);
+  PageResponse<WaterSupplyNetworkResponse> getAllNetworks(Pageable pageable);
 }

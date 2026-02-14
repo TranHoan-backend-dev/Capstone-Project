@@ -48,4 +48,12 @@ public interface WaterMeterService {
      * @return a page of water meter responses
      */
     Page<WaterMeterResponse> getAllWaterMeters(Pageable pageable);
+
+    /**
+     * Checks if a water meter with the given ID exists.
+     *
+     * @param id the water meter ID
+     * @return true if the water meter exists, false otherwise
+     */
+    boolean isWaterMeterExisting(String id);
 }

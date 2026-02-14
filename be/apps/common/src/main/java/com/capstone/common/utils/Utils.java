@@ -16,9 +16,9 @@ public class Utils {
   public static boolean isLocalDate(String value, DateTimeFormatter formatter) {
     try {
       LocalDate.parse(value, formatter);
-      return false;
-    } catch (DateTimeParseException e) {
       return true;
+    } catch (DateTimeParseException e) {
+      return false;
     }
   }
 

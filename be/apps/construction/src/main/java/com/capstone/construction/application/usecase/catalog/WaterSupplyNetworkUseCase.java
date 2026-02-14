@@ -8,6 +8,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Component;
 public class WaterSupplyNetworkUseCase {
   WaterSupplyNetworkService networkService;
 
-  public WaterSupplyNetworkResponse createNetwork(WaterSupplyNetworkRequest request) {
+  public WaterSupplyNetworkResponse createNetwork(@NonNull WaterSupplyNetworkRequest request) {
     log.info("UseCase: Creating network {}", request.name());
     return networkService.createNetwork(request);
   }
