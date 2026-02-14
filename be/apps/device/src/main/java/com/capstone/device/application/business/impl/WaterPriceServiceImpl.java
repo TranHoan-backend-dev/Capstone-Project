@@ -4,7 +4,7 @@ import com.capstone.device.application.business.boundary.WaterPriceService;
 import com.capstone.device.application.dto.request.WaterPriceRequest;
 import com.capstone.device.application.dto.response.WaterPriceResponse;
 import com.capstone.device.domain.model.WaterPrice;
-import com.capstone.device.domain.repository.WaterPriceRepository;
+import com.capstone.device.infrastructure.persistence.WaterPriceRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

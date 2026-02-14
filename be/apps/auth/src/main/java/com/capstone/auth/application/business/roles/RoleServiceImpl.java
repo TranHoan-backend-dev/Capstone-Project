@@ -2,7 +2,7 @@ package com.capstone.auth.application.business.roles;
 
 import com.capstone.auth.application.exception.NotExistingException;
 import com.capstone.auth.domain.model.Roles;
-import com.capstone.auth.domain.repository.RoleRepository;
+import com.capstone.auth.infrastructure.persistence.RoleRepository;
 import com.capstone.auth.infrastructure.config.Constant;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

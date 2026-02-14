@@ -7,8 +7,8 @@ import com.capstone.construction.application.dto.response.installationform.Insta
 import com.capstone.construction.application.dto.response.installationform.InstallationFormResponse;
 import com.capstone.construction.domain.model.InstallationForm;
 import com.capstone.construction.domain.model.WaterSupplyNetwork;
-import com.capstone.construction.domain.repository.InstallationFormRepository;
-import com.capstone.construction.domain.repository.WaterSupplyNetworkRepository;
+import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
+import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRepository;
 import com.capstone.construction.infrastructure.config.Constant;
 import com.capstone.construction.infrastructure.service.EmployeeService;
 import com.capstone.construction.infrastructure.service.OverallWaterMeterService;

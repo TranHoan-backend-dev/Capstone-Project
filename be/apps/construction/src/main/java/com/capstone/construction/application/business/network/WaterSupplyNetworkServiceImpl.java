@@ -4,7 +4,7 @@ import com.capstone.construction.application.dto.request.catalog.WaterSupplyNetw
 import com.capstone.construction.application.dto.response.catalog.WaterSupplyNetworkResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.domain.model.WaterSupplyNetwork;
-import com.capstone.construction.domain.repository.WaterSupplyNetworkRepository;
+import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

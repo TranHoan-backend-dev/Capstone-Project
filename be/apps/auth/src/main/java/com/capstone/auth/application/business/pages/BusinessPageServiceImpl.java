@@ -1,7 +1,7 @@
 package com.capstone.auth.application.business.pages;
 
 import com.capstone.auth.application.business.temp.TempService;
-import com.capstone.auth.domain.repository.BusinessPagesOfEmployeeRepository;
+import com.capstone.auth.infrastructure.persistence.BusinessPagesOfEmployeeRepository;
 import com.capstone.auth.infrastructure.service.OrganizationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

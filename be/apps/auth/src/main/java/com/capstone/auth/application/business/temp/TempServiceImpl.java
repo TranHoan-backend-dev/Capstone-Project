@@ -1,7 +1,7 @@
 package com.capstone.auth.application.business.temp;
 
 import com.capstone.auth.domain.model.utils.Temp;
-import com.capstone.auth.domain.repository.TempRepository;
+import com.capstone.auth.infrastructure.persistence.TempRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
