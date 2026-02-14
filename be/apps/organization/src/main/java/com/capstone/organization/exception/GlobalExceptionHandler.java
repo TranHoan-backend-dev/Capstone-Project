@@ -5,17 +5,14 @@ import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
 import jakarta.validation.ConstraintViolationException;
 import org.jspecify.annotations.NonNull;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.time.LocalDateTime;
-
 @RestControllerAdvice
 public class GlobalExceptionHandler {
   @ExceptionHandler(ConstraintViolationException.class)
-  public ResponseEntity<WrapperApiResponse> handleUserNotFoundException(@NonNull ConstraintViolationException ex) {
+  public ResponseEntity<WrapperApiResponse> handleUserNotFoundException() {
     return Utils.returnBadRequestResponse("Input data is invalid. Please check your input data in the log", null);
   }
 

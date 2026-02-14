@@ -2,7 +2,6 @@ package com.capstone.customer.service.impl;
 
 import com.capstone.customer.dto.request.ContractRequest;
 import com.capstone.customer.dto.response.ContractResponse;
-import com.capstone.customer.model.Customer;
 import com.capstone.customer.model.WaterUsageContract;
 import com.capstone.customer.repository.ContractRepository;
 import com.capstone.customer.repository.CustomerRepository;

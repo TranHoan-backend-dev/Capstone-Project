@@ -12,10 +12,10 @@ import java.lang.annotation.Target;
  * Lombok.
  * <p>
  * Usage:
- * 
+ *
  * <pre>
  * &#64;AppLog
- * @Component
+ * &#64;Component
  * public class MyService {
  *     private Logger log; // LoggerPostProcessor will inject this field
  *
@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
  *     }
  * }
  * </pre>
- * 
+ *
  * Note: The logger is NOT available in the constructor as it is injected after
  * instantiation.
  */

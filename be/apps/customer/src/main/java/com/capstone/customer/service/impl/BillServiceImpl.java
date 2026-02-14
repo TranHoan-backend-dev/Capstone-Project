@@ -3,7 +3,6 @@ package com.capstone.customer.service.impl;
 import com.capstone.customer.dto.request.BillRequest;
 import com.capstone.customer.dto.response.BillResponse;
 import com.capstone.customer.model.Bill;
-import com.capstone.customer.model.Customer;
 import com.capstone.customer.repository.BillRepository;
 import com.capstone.customer.repository.CustomerRepository;
 import com.capstone.customer.service.boundary.BillService;
