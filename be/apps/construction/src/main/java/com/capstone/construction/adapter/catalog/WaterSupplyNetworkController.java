@@ -22,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import com.capstone.construction.application.dto.response.PageResponse;
 import org.springframework.web.bind.annotation.*;
 
 @AppLog
@@ -46,8 +47,7 @@ public class WaterSupplyNetworkController {
   })
   @PreAuthorize("hasAnyAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> createNetwork(
-      @Parameter(description = "Thông tin tạo mới mạng lưới", required = true, schema = @Schema(implementation = WaterSupplyNetworkRequest.class))
-      @RequestBody @Valid WaterSupplyNetworkRequest request) {
+      @Parameter(description = "Thông tin tạo mới mạng lưới", required = true, schema = @Schema(implementation = WaterSupplyNetworkRequest.class)) @RequestBody @Valid WaterSupplyNetworkRequest request) {
     log.info("REST request to create network: {}", request.name());
     var response = networkUseCase.createNetwork(request);
     return Utils.returnCreatedResponse("Network created successfully", response);
@@ -92,13 +92,17 @@ public class WaterSupplyNetworkController {
   }
 
   @GetMapping
-  @Operation(summary = "Get all water supply networks", description = "Returns a paginated list of all water supply networks in the system.", responses = {
-      @ApiResponse(responseCode = "200", description = "List of networks retrieved successfully")
+  @Operation(summary = "Lấy danh sách mạng lưới cấp nước", description = "Lấy danh sách các mạng lưới cấp nước trong hệ thống, có hỗ trợ phân trang và tìm kiếm theo từ khóa.", responses = {
+      @ApiResponse(responseCode = "200", description = "Lấy danh sách thành công", content = @Content(schema = @Schema(implementation = PageResponse.class))),
+      @ApiResponse(responseCode = "500", description = "Lỗi hệ thống nội bộ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   public ResponseEntity<WrapperApiResponse> getAllNetworks(
-      @PageableDefault @Parameter(description = "Pagination parameters") Pageable pageable) {
-    log.info("REST request to get all networks");
-    var response = networkUseCase.getAllNetworks(pageable);
-    return Utils.returnOkResponse("Networks retrieved successfully", response);
+      @PageableDefault @Parameter(description = "Tham số phân trang (page, size, sort)") Pageable pageable,
+      @RequestParam(required = false)
+      @Parameter(description = "Từ khóa tìm kiếm theo tên mạng lưới") String keyword
+  ) {
+    log.info("REST request to get all networks with pagination: {}", pageable);
+    var response = networkUseCase.getAllNetworks(pageable, keyword);
+    return Utils.returnOkResponse("Lấy danh sách mạng lưới thành công", response);
   }
 }

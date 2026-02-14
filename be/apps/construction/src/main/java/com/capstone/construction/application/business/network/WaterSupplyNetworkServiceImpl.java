@@ -1,5 +1,7 @@
 package com.capstone.construction.application.business.network;
 
+import com.capstone.common.annotation.AppLog;
+import com.capstone.common.utils.IdEncoder;
 import com.capstone.construction.application.dto.request.catalog.WaterSupplyNetworkRequest;
 import com.capstone.construction.application.dto.response.catalog.WaterSupplyNetworkResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
@@ -8,18 +10,21 @@ import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRe
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
+@AppLog
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class WaterSupplyNetworkServiceImpl implements WaterSupplyNetworkService {
   WaterSupplyNetworkRepository networkRepository;
+  @NonFinal
+  Logger log;
 
   @Override
   @Transactional
@@ -65,15 +70,15 @@ public class WaterSupplyNetworkServiceImpl implements WaterSupplyNetworkService 
   }
 
   @Override
-  public PageResponse<WaterSupplyNetworkResponse> getAllNetworks(Pageable pageable) {
+  public PageResponse<WaterSupplyNetworkResponse> getAllNetworks(Pageable pageable, String keyword) {
     log.info("Fetching all water supply networks with pageable: {}", pageable);
-    var page = networkRepository.findAll(pageable);
+    var page = keyword == null ? networkRepository.findAll(pageable) : networkRepository.findAllByNameContainsIgnoreCase(keyword, pageable);
     return PageResponse.fromPage(page, this::mapToResponse);
   }
 
   private WaterSupplyNetworkResponse mapToResponse(@NonNull WaterSupplyNetwork network) {
     return new WaterSupplyNetworkResponse(
-      network.getBranchId(),
+      IdEncoder.encode(network.getBranchId()),
       network.getName(),
       network.getCreatedAt());
   }

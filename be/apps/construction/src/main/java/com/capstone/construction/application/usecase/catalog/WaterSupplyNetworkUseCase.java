@@ -39,8 +39,8 @@ public class WaterSupplyNetworkUseCase {
     return networkService.getNetworkById(id);
   }
 
-  public PageResponse<WaterSupplyNetworkResponse> getAllNetworks(Pageable pageable) {
+  public PageResponse<WaterSupplyNetworkResponse> getAllNetworks(Pageable pageable, String keyword) {
     log.info("UseCase: Fetching all networks");
-    return networkService.getAllNetworks(pageable);
+    return networkService.getAllNetworks(pageable, keyword);
   }
 }

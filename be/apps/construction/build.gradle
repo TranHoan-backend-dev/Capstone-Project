@@ -31,6 +31,7 @@ dependencies {
   implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
   implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
   runtimeOnly 'org.postgresql:postgresql'
+  testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 tasks.named('test') {
@@ -50,5 +51,5 @@ publishing {
 	}
 }
 test {
-  enabled = false
+  enabled = true
 }

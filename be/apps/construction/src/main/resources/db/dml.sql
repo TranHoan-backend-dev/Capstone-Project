@@ -29,3 +29,19 @@ INSERT INTO installation_form (form_code, address, bank_account_number, bank_acc
 ('5bfebc99-9c0b-4ef8-bb6d-6bb9bd380a2c', '787 Nguyen Thi Thap, District 7, HCMC', '190312345705', 'Techcombank HCMC', '079090000028', '2020-01-28', 'CA TPHCM', '2024-01-28 10:00:00', 'c8357517-3149-41b4-9b2c-881d5a40840a', 'Lang Thi D1', 'FORM-2024-0028', 153456, 4, 'METER-028', '0901234594', '2024-01-28 09:00:00', '2024-01-28 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{"registration": "PROCESSING", "estimate": null, "contract": null, "construction": null}', NULL, NULL),
 ('6cfebc99-9c0b-4ef8-bb6d-6bb9bd380a2d', '898 Le Van Luong, District 7, HCMC', '190312345706', 'Vietcombank HCMC', '079090000029', '2020-01-29', 'CA TPHCM', '2024-01-29 10:00:00', 'c8357517-3149-41b4-9b2c-881d5a40840a', 'Dam Van E1', 'FORM-2024-0029', 253456, 3, 'METER-029', '0901234595', '2024-01-29 09:00:00', '2024-01-29 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{"registration": "PROCESSING", "estimate": null, "contract": null, "construction": null}', NULL, NULL),
 ('7dfebc99-9c0b-4ef8-bb6d-6bb9bd380a2e', '909 Nguyen Huu Tho, Nha Be, HCMC', '190312345707', 'ACB HCMC', '079090000030', '2020-01-30', 'CA TPHCM', '2024-01-30 10:00:00', 'c8357517-3149-41b4-9b2c-881d5a40840a', 'Ung Thi F1', 'FORM-2024-0030', 353456, 5, 'METER-030', '0901234596', '2024-01-30 09:00:00', '2024-01-30 10:00:00', 'INSTITUTIONAL', 'COMPANY', NULL, NULL, NULL, '{"registration": "PROCESSING", "estimate": null, "contract": null, "construction": null}', NULL, NULL);
+
+INSERT INTO water_supply_network (branch_id, created_at, name, updated_at) VALUES
+('550e8400-e29b-41d4-a716-446655440001', '2024-01-01 00:00:00', 'Nhà máy nước Thủ Đức', '2024-01-01 00:00:00'),
+('550e8400-e29b-41d4-a716-446655440002', '2024-01-01 00:00:00', 'Nhà máy nước Tân Hiệp', '2024-01-01 00:00:00'),
+('550e8400-e29b-41d4-a716-446655440003', '2024-01-01 00:00:00', 'Nhà máy nước BOO Thủ Đức', '2024-01-01 00:00:00'),
+('550e8400-e29b-41d4-a716-446655440004', '2024-01-01 00:00:00', 'Nhà máy nước Kênh Đông', '2024-01-01 00:00:00'),
+('550e8400-e29b-41d4-a716-446655440005', '2024-01-01 00:00:00', 'Nhà máy nước Bình An', '2024-01-01 00:00:00'),
+('550e8400-e29b-41d4-a716-446655440006', '2024-01-01 00:00:00', 'Nhà máy nước Tân Phú', '2024-01-01 00:00:00'),
+('550e8400-e29b-41d4-a716-446655440007', '2024-01-01 00:00:00', 'Nhà máy nước Ngầm', '2024-01-01 00:00:00'),
+('550e8400-e29b-41d4-a716-446655440008', '2024-01-01 00:00:00', 'Trạm bơm tăng áp số 1', '2024-01-01 00:00:00'),
+('550e8400-e29b-41d4-a716-446655440009', '2024-01-01 00:00:00', 'Trạm bơm tăng áp số 2', '2024-01-01 00:00:00'),
+('550e8400-e29b-41d4-a716-446655440010', '2024-01-01 00:00:00', 'Trạm cấp nước Bình Chánh', '2024-01-01 00:00:00'),
+('550e8400-e29b-41d4-a716-446655440011', '2024-01-01 00:00:00', 'Trạm cấp nước Nhà Bè', '2024-01-01 00:00:00'),
+('550e8400-e29b-41d4-a716-446655440012', '2024-01-01 00:00:00', 'Trạm cấp nước Cần Giờ', '2024-01-01 00:00:00'),
+('550e8400-e29b-41d4-a716-446655440013', '2024-01-01 00:00:00', 'Mạng lưới cấp nước Khu Công Nghệ Cao', '2024-01-01 00:00:00'),
+('550e8400-e29b-41d4-a716-446655440014', '2024-01-01 00:00:00', 'Mạng lưới cấp nước Khu Đô Thị Mới Thủ Thiêm', '2024-01-01 00:00:00');
