@@ -1,11 +1,11 @@
 import { ViewBusinessPageService } from "@/services/organization.service";
-import { getAccessTokenFromRequest } from "@/utils/getAccessToken";
+import { getAccessToken } from "@/utils/getAccessToken";
 import { NextRequest } from "next/dist/server/web/spec-extension/request";
 import { NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
-    const accessToken = getAccessTokenFromRequest(req);
+    const accessToken = getAccessToken(req);
 
     if (!accessToken) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });

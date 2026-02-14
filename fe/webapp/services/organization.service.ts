@@ -6,7 +6,7 @@ export const ViewBusinessPageService = (
   page: number,
   size: number,
 ) =>
-  axios.get(`${API_GATEWAY_URL}/organization/business-pages`, {
+  axios.get(`${API_GATEWAY_URL}/org/business-pages`, {
     params: {
       page,
       size,
