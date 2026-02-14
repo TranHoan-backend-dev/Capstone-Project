@@ -1,0 +1,45 @@
+@uri = http://localhost:9004/api/v1/networks
+@keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
+@client_secret=
+
+### get token
+POST {{keycloak}}/token
+Content-Type: application/x-www-form-urlencoded
+Accept: application/json
+
+grant_type = password &
+client_id =  &
+client_secret = {{client_secret}} &
+username =  &
+password =  &
+scope = openid
+
+> {%
+  client.global.set("access_token", response.body.access_token);
+  client.global.set("refresh_token", response.body.refresh_token);
+%}
+
+### Create new branch
+POST {{uri}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Namdinh"
+}
+
+### Get list of networks. No params
+GET {{uri}}/networks
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Get list of networks. Pageable
+GET {{uri}}/networks?page=0&size=10
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Get list of networks. Pageable and keyword
+GET {{uri}}/networks?page=0&size=10&keyword=a
+Authorization: Bearer {{access_token}}
+Accept: application/json

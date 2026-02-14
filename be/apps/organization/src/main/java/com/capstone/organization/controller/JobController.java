@@ -1,11 +1,12 @@
 package com.capstone.organization.controller;
 
+import com.capstone.common.annotation.AppLog;
+import com.capstone.common.utils.IdEncoder;
+import com.capstone.common.utils.Utils;
+import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.organization.dto.request.CreateJobRequest;
 import com.capstone.organization.dto.request.UpdateJobRequest;
-import com.capstone.organization.dto.response.WrapperApiResponse;
 import com.capstone.organization.service.boundary.JobService;
-import com.capstone.organization.utils.IdEncoder;
-import com.capstone.organization.utils.Utils;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
@@ -13,9 +14,9 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
-import org.springframework.http.HttpStatus;
+import org.slf4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -36,9 +37,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-import java.time.LocalDateTime;
-
-@Slf4j
+@AppLog
 @Validated
 @RestController
 @RequiredArgsConstructor
@@ -48,64 +47,62 @@ import java.time.LocalDateTime;
 @Tag(name = "Job", description = "Các endpoint quản lý chức danh công việc")
 public class JobController {
   JobService jobService;
+  @NonFinal
+  Logger log;
 
   @PostMapping
   @Operation(summary = "Tạo chức danh công việc", description = "Tạo một chức danh công việc mới và trả về dữ liệu của nó.")
   @ApiResponses({
-      @ApiResponse(responseCode = "201", description = "Tạo chức danh công việc thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-      @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ", content = @Content),
-      @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
+    @ApiResponse(responseCode = "201", description = "Tạo chức danh công việc thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ", content = @Content),
+    @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
   })
   public ResponseEntity<WrapperApiResponse> createJob(
-      @RequestBody @Valid CreateJobRequest request) {
+    @RequestBody @Valid CreateJobRequest request) {
     log.info("Create job request comes to endpoint: {}", request);
     var response = jobService.createJob(request);
-    return ResponseEntity.status(HttpStatus.CREATED).body(new WrapperApiResponse(
-        HttpStatus.CREATED.value(),
-        "Create job successfully",
-        response,
-        LocalDateTime.now()));
+    return Utils.returnOkResponse(
+      "Create job successfully",
+      response);
   }
 
   @PutMapping("/{jobId}")
   @Operation(summary = "Cập nhật chức danh công việc", description = "Cập nhật một chức danh công việc hiện có bằng ID đã mã hóa của nó.")
   @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "Cập nhật chức danh công việc thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-      @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ", content = @Content),
-      @ApiResponse(responseCode = "404", description = "Không tìm thấy chức danh công việc", content = @Content),
-      @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
+    @ApiResponse(responseCode = "200", description = "Cập nhật chức danh công việc thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ", content = @Content),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy chức danh công việc", content = @Content),
+    @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
   })
   public ResponseEntity<WrapperApiResponse> updateJob(
-      @Parameter(in = ParameterIn.PATH, description = "ID chức danh công việc đã mã hóa", required = true, schema = @Schema(type = "string")) @PathVariable @NotBlank String jobId,
-      @RequestBody @Valid UpdateJobRequest request) {
+    @Parameter(in = ParameterIn.PATH, description = "ID chức danh công việc đã mã hóa", required = true, schema = @Schema(type = "string")) @PathVariable @NotBlank String jobId,
+    @RequestBody @Valid UpdateJobRequest request) {
     log.info("Update job request comes to endpoint: {}", jobId);
     var response = jobService.updateJob(decodeId(jobId, "jobId"), request);
-    return Utils.returnResponse(
-        HttpStatus.OK.value(),
-        "Update job successfully",
-        response);
+    return Utils.returnOkResponse(
+      "Update job successfully",
+      response);
   }
 
   @GetMapping
   @Operation(summary = "Liệt kê chức danh công việc", description = "Lấy danh sách phân trang các chức danh công việc.")
   @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "Lấy danh sách chức danh công việc thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-      @ApiResponse(responseCode = "400", description = "Tham số phân trang không hợp lệ", content = @Content),
-      @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
+    @ApiResponse(responseCode = "200", description = "Lấy danh sách chức danh công việc thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Tham số phân trang không hợp lệ", content = @Content),
+    @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
   })
   public ResponseEntity<WrapperApiResponse> getJobs(
-      @Parameter(in = ParameterIn.QUERY, description = "Chỉ số trang (bắt đầu từ 0)", schema = @Schema(type = "integer", defaultValue = "0", minimum = "0")) @RequestParam(defaultValue = "0") @PositiveOrZero int page,
-      @Parameter(in = ParameterIn.QUERY, description = "Kích thước trang", schema = @Schema(type = "integer", defaultValue = "20", minimum = "1")) @RequestParam(defaultValue = "20") @Positive int size) {
+    @Parameter(in = ParameterIn.QUERY, description = "Chỉ số trang (bắt đầu từ 0)", schema = @Schema(type = "integer", defaultValue = "0", minimum = "0")) @RequestParam(defaultValue = "0") @PositiveOrZero int page,
+    @Parameter(in = ParameterIn.QUERY, description = "Kích thước trang", schema = @Schema(type = "integer", defaultValue = "20", minimum = "1")) @RequestParam(defaultValue = "20") @Positive int size) {
     var response = jobService.getJobs(page, size);
-    return Utils.returnResponse(
-        HttpStatus.OK.value(),
-        "Get jobs successfully",
-        response);
+    return Utils.returnOkResponse(
+      "Get jobs successfully",
+      response);
   }
 
   private @NonNull String decodeId(String encodedId, String fieldName) {
     var decoded = IdEncoder.decode(encodedId);
-    if (decoded == null || decoded.isBlank()) {
+    if (decoded.isBlank()) {
       throw new IllegalArgumentException(fieldName + " is invalid");
     }
     return decoded;

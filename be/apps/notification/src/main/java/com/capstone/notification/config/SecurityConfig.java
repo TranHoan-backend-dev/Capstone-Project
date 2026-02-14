@@ -3,6 +3,7 @@ package com.capstone.notification.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,6 +20,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
@@ -32,7 +34,6 @@ public class SecurityConfig {
 
   CorsProperties corsProperties;
   final String[] PUBLIC_URLS = {
-    "/auth/**",
     "/actuator/**",
     "/v3/api-docs/**",
     "/swagger-ui/**",

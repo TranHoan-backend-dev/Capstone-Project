@@ -4,7 +4,7 @@ import com.capstone.auth.application.exception.NotExistingException;
 import com.capstone.auth.domain.model.Roles;
 import com.capstone.auth.domain.model.Users;
 import com.capstone.auth.domain.enumerate.RoleName;
-import com.capstone.auth.domain.repository.UserRepository;
+import com.capstone.auth.infrastructure.persistence.UserRepository;
 import com.capstone.auth.infrastructure.config.Constant;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

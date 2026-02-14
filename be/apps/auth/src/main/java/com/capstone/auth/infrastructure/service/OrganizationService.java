@@ -1,6 +1,6 @@
 package com.capstone.auth.infrastructure.service;
 
-import com.capstone.auth.application.dto.response.WrapperApiResponse;
+import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.auth.infrastructure.config.FeignAuthInterceptor;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

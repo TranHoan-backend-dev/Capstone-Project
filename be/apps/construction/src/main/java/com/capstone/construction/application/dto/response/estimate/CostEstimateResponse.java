@@ -1,6 +1,6 @@
 package com.capstone.construction.application.dto.response.estimate;
 
-import com.capstone.construction.domain.enumerate.ProcessingStatus;
+import com.capstone.common.enumerate.ProcessingStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

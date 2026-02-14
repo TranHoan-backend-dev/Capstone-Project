@@ -6,13 +6,13 @@ import com.capstone.construction.application.dto.response.PageResponse;
 import org.springframework.data.domain.Pageable;
 
 public interface CostEstimateService {
-    CostEstimateResponse createEstimate(CostEstimateRequest request);
+  CostEstimateResponse createEstimate(CostEstimateRequest request);
 
-    CostEstimateResponse updateEstimate(String id, CostEstimateRequest request);
+  CostEstimateResponse updateEstimate(String id, CostEstimateRequest request);
 
-    void deleteEstimate(String id);
+  void deleteEstimate(String id);
 
-    CostEstimateResponse getEstimateById(String id);
+  CostEstimateResponse getEstimateById(String id);
 
-    PageResponse<CostEstimateResponse> getAllEstimates(Pageable pageable);
+  PageResponse<CostEstimateResponse> getAllEstimates(Pageable pageable);
 }

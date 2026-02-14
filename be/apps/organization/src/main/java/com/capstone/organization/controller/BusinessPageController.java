@@ -1,23 +1,24 @@
 package com.capstone.organization.controller;
 
+import com.capstone.common.annotation.AppLog;
+import com.capstone.common.utils.IdEncoder;
+import com.capstone.common.utils.Utils;
+import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.organization.dto.request.FilterBusinessPagesRequest;
 import com.capstone.organization.dto.request.UpdateBusinessPageRequest;
 import com.capstone.organization.dto.response.BusinessPageResponse;
 import com.capstone.organization.dto.response.PagedBusinessPageResponse;
-import com.capstone.organization.dto.response.WrapperApiResponse;
 import com.capstone.organization.service.boundary.BusinessPageService;
-import com.capstone.organization.utils.IdEncoder;
-import com.capstone.organization.utils.Utils;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.Arrays;
 
-@Slf4j
+@AppLog
 @Validated
 @RestController
 @RequiredArgsConstructor
@@ -43,6 +44,8 @@ import java.util.Arrays;
 @Tag(name = "Business Page", description = "Các endpoint để quản lý trang nghiệp vụ. Tất cả người dùng phải có vai trò IT_STAFF để truy cập các endpoint này")
 public class BusinessPageController {
   BusinessPageService businessPageService;
+  @NonFinal
+  Logger log;
 
   @PutMapping("/{pageId}")
   @Operation(summary = "Cập nhật trang nghiệp vụ", description = "Cập nhật một trang nghiệp vụ hiện có bằng ID đã mã hóa của nó.")
@@ -63,8 +66,7 @@ public class BusinessPageController {
 
     var response = businessPageService.updateBusinessPage(decodeId(pageId, "pageId"), request);
 
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
+    return Utils.returnOkResponse(
       "Update business page successfully",
       response);
   }
@@ -88,8 +90,7 @@ public class BusinessPageController {
     var response = status ? businessPageService.filterBusinessPagesList(request, pageable)
       : businessPageService.getBusinessPages(pageable);
 
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
+    return Utils.returnOkResponse(
       "Get business pages successfully",
       response);
   }
@@ -117,15 +118,14 @@ public class BusinessPageController {
       .map(String::trim).filter(c -> !c.isBlank())
       .toList();
 
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
+    return Utils.returnOkResponse(
       "Get all pages by list of ids successfully",
       businessPageService.getAllBusinessPageNamesByIds(content));
   }
 
   private @NonNull String decodeId(String encodedId, String fieldName) {
     var decoded = IdEncoder.decode(encodedId);
-    if (decoded == null || decoded.isBlank()) {
+    if (decoded.isBlank()) {
       throw new IllegalArgumentException(fieldName + " is invalid");
     }
     return decoded;

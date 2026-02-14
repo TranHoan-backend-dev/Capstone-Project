@@ -5,12 +5,12 @@ public final class Constant {
   public static final String PHONE_PATTERN = "^[0-9]{10}$";
 
   // for dto and entity layer
-  public static final String PT_01 = "Email must follow the format <name>@<domain>";
+  public static final String PT_01 = "Form code cannot be null or empty";
   public static final String PT_02 = "Invalid password. Password must contain at least one number, one uppercase letter, one lowercase letter, one special character, and be at least 8 characters long";
   public static final String PT_03 = "Processing status cannot be null or empty";
   public static final String PT_04 = "Registration date cannot be null or empty";
-  public static final String PT_05 = "";
-  public static final String PT_06 = "";
+  public static final String PT_05 = "Invalid date format";
+  public static final String PT_06 = "Customer type cannot be null or empty";
   public static final String PT_07 = "";
   public static final String PT_08 = "";
   public static final String PT_09 = "";

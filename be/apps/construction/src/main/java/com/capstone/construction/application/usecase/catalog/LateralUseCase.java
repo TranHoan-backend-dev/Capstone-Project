@@ -16,30 +16,30 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class LateralUseCase {
-    LateralService lateralService;
+  LateralService lateralService;
 
-    public LateralResponse createLateral(LateralRequest request) {
-        log.info("UseCase: Creating lateral {}", request.name());
-        return lateralService.createLateral(request);
-    }
+  public LateralResponse createLateral(LateralRequest request) {
+    log.info("UseCase: Creating lateral {}", request.name());
+    return lateralService.createLateral(request);
+  }
 
-    public LateralResponse updateLateral(String id, LateralRequest request) {
-        log.info("UseCase: Updating lateral {}", id);
-        return lateralService.updateLateral(id, request);
-    }
+  public LateralResponse updateLateral(String id, LateralRequest request) {
+    log.info("UseCase: Updating lateral {}", id);
+    return lateralService.updateLateral(id, request);
+  }
 
-    public void deleteLateral(String id) {
-        log.info("UseCase: Deleting lateral {}", id);
-        lateralService.deleteLateral(id);
-    }
+  public void deleteLateral(String id) {
+    log.info("UseCase: Deleting lateral {}", id);
+    lateralService.deleteLateral(id);
+  }
 
-    public LateralResponse getLateralById(String id) {
-        log.info("UseCase: Fetching lateral {}", id);
-        return lateralService.getLateralById(id);
-    }
+  public LateralResponse getLateralById(String id) {
+    log.info("UseCase: Fetching lateral {}", id);
+    return lateralService.getLateralById(id);
+  }
 
-    public PageResponse<LateralResponse> getAllLaterals(Pageable pageable) {
-        log.info("UseCase: Fetching all laterals");
-        return lateralService.getAllLaterals(pageable);
-    }
+  public PageResponse<LateralResponse> getAllLaterals(Pageable pageable) {
+    log.info("UseCase: Fetching all laterals");
+    return lateralService.getAllLaterals(pageable);
+  }
 }

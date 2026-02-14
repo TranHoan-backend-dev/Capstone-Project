@@ -4,8 +4,8 @@ import com.capstone.device.application.business.boundary.WaterMeterService;
 import com.capstone.device.application.dto.request.WaterMeterRequest;
 import com.capstone.device.application.dto.response.WaterMeterResponse;
 import com.capstone.device.domain.model.WaterMeter;
-import com.capstone.device.domain.repository.WaterMeterRepository;
-import com.capstone.device.domain.repository.WaterMeterTypeRepository;
+import com.capstone.device.infrastructure.persistence.WaterMeterRepository;
+import com.capstone.device.infrastructure.persistence.WaterMeterTypeRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -91,5 +91,11 @@ public class WaterMeterServiceImpl implements WaterMeterService {
                 meter.getInstallationDate(),
                 meter.getSize(),
                 meter.getType() != null ? meter.getType().getName() : null);
+    }
+
+    @Override
+    public boolean isWaterMeterExisting(String id) {
+        log.info("Checking existence of water meter ID: {}", id);
+        return waterMeterRepository.existsById(id);
     }
 }

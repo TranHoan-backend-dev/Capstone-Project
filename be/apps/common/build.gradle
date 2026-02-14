@@ -1,0 +1,37 @@
+plugins {
+  id 'java-library'
+  id 'io.spring.dependency-management' version '1.1.7'
+  id 'maven-publish'
+}
+
+group = 'com.capstone'
+version = '0.0.1-SNAPSHOT'
+
+dependencyManagement {
+  imports {
+    mavenBom "org.springframework.cloud:spring-cloud-dependencies:2024.0.0"
+    mavenBom "org.springframework.boot:spring-boot-dependencies:3.4.0"
+  }
+}
+
+dependencies {
+  implementation 'org.springframework.boot:spring-boot-starter-security'
+  implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+  implementation 'org.keycloak:keycloak-admin-client:25.0.1' // Kept matching other services version
+
+  compileOnly 'org.projectlombok:lombok'
+  annotationProcessor 'org.projectlombok:lombok'
+  implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8'
+}
+
+test {
+  useJUnitPlatform()
+}
+
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      from components.java
+    }
+  }
+}

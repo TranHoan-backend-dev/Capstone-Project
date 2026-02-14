@@ -1,11 +1,15 @@
 package com.capstone.construction.domain.model;
 
+import com.capstone.common.enumerate.CustomerType;
+import com.capstone.common.enumerate.ProcessingStatus;
+import com.capstone.construction.domain.model.utils.FormProcessingStatus;
 import com.capstone.construction.domain.model.utils.Representative;
-import com.capstone.construction.domain.enumerate.UsageTarget;
+import com.capstone.common.enumerate.UsageTarget;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -25,7 +29,6 @@ import org.jspecify.annotations.NonNull;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InstallationForm {
   @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
   String formCode;
 
   @Column(length = 36, unique = true)
@@ -62,19 +65,27 @@ public class InstallationForm {
   UsageTarget usageTarget;
 
   @Column(nullable = false)
-  LocalDateTime receivedFormAt;
+  LocalDate receivedFormAt;
 
-  LocalDateTime scheduleSurveyAt;
+  LocalDate scheduleSurveyAt;
 
   @Column(nullable = false)
   Integer numberOfHousehold;
 
   @Column(nullable = false)
-  Integer householdRegistrationNumber;
+  Integer householdRegistrationNumber; // ho khau
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(columnDefinition = "jsonb")
   List<Representative> representative;
+
+  @Column(nullable = false, columnDefinition = "jsonb")
+  @JdbcTypeCode(SqlTypes.JSON)
+  FormProcessingStatus status;
+
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  CustomerType customerType;
 
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "water_supply_network_id")
@@ -97,6 +108,8 @@ public class InstallationForm {
   void onCreate() {
     this.createdAt = LocalDateTime.now();
     this.updatedAt = this.createdAt;
+    this.status = new FormProcessingStatus();
+    status.setRegistration(ProcessingStatus.PROCESSING);
   }
 
   @PreUpdate
@@ -164,12 +177,12 @@ public class InstallationForm {
     this.usageTarget = UsageTarget.valueOf(usageTarget.trim().toUpperCase());
   }
 
-  public void setReceivedFormAt(LocalDateTime receivedFormAt) {
+  public void setReceivedFormAt(LocalDate receivedFormAt) {
     Objects.requireNonNull(receivedFormAt, Constant.PT_55);
     this.receivedFormAt = receivedFormAt;
   }
 
-  public void setScheduleSurveyAt(LocalDateTime scheduleSurveyAt) {
+  public void setScheduleSurveyAt(LocalDate scheduleSurveyAt) {
     Objects.requireNonNull(scheduleSurveyAt, Constant.PT_78);
     this.scheduleSurveyAt = scheduleSurveyAt;
   }
@@ -209,6 +222,16 @@ public class InstallationForm {
     this.address = address;
   }
 
+  public void setCustomerType(CustomerType value) {
+    Objects.requireNonNull(value, Constant.PT_06);
+    this.customerType = value;
+  }
+
+  public void setFormCode(String value) {
+    requireNonNullAndNotEmpty(value, Constant.PT_01);
+    this.formCode = value;
+  }
+
   private void requireNonNullAndNotEmpty(String value, String message) {
     Objects.requireNonNull(value, message);
     if (value.trim().isEmpty()) {
@@ -227,6 +250,16 @@ public class InstallationForm {
 
     public InstallationFormBuilder formNumber(String formNumber) {
       instance.setFormNumber(formNumber);
+      return this;
+    }
+
+    public InstallationFormBuilder formCode(String value) {
+      instance.setFormCode(value);
+      return this;
+    }
+
+    public InstallationFormBuilder customerType(CustomerType value) {
+      instance.setCustomerType(value);
       return this;
     }
 
@@ -280,12 +313,12 @@ public class InstallationForm {
       return this;
     }
 
-    public InstallationFormBuilder receivedFormAt(LocalDateTime receivedFormAt) {
+    public InstallationFormBuilder receivedFormAt(LocalDate receivedFormAt) {
       instance.setReceivedFormAt(receivedFormAt);
       return this;
     }
 
-    public InstallationFormBuilder scheduleSurveyAt(LocalDateTime scheduleSurveyAt) {
+    public InstallationFormBuilder scheduleSurveyAt(LocalDate scheduleSurveyAt) {
       instance.setScheduleSurveyAt(scheduleSurveyAt);
       return this;
     }

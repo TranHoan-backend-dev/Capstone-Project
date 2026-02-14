@@ -1,0 +1,48 @@
+@uri = http://localhost:9004/api/v1
+@keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
+@client_secret=
+
+### get token
+POST {{keycloak}}/token
+Content-Type: application/x-www-form-urlencoded
+Accept: application/json
+
+grant_type=password&
+client_id=&
+client_secret={{client_secret}}&
+username=&
+password=&
+scope=openid
+
+> {%
+  client.global.set("access_token", response.body.access_token);
+  client.global.set("refresh_token", response.body.refresh_token);
+%}
+
+### No param
+GET {{uri}}/installation-forms
+Authorization: Bearer {{access_token}}
+
+### pageable
+GET {{uri}}/installation-forms?page=1&size=10
+Authorization: Bearer {{access_token}}
+
+### keyword, from, to
+GET {{uri}}/installation-forms?keyword=HCMC&from=2023-01-01&to=2025-01-01
+Authorization: Bearer {{access_token}}
+
+### keyword, from, to
+GET {{uri}}/installation-forms?keyword=hcmc&from=2024-12-01&to=2025-12-01
+Authorization: Bearer {{access_token}}
+
+### keyword
+GET {{uri}}/installation-forms?keyword=ap
+Authorization: Bearer {{access_token}}
+
+### keyword
+GET {{uri}}/installation-forms?keyword=nam
+Authorization: Bearer {{access_token}}
+
+### unfnfamiliar param
+GET {{uri}}/installation-forms?hehe=nam
+Authorization: Bearer {{access_token}}

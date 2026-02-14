@@ -1,5 +1,7 @@
 package com.capstone.organization.service.impl;
 
+import com.capstone.common.annotation.AppLog;
+import com.capstone.common.utils.IdEncoder;
 import com.capstone.organization.dto.request.CreateJobRequest;
 import com.capstone.organization.dto.request.UpdateJobRequest;
 import com.capstone.organization.dto.response.JobResponse;
@@ -7,23 +9,25 @@ import com.capstone.organization.dto.response.PagedJobResponse;
 import com.capstone.organization.model.Job;
 import com.capstone.organization.repository.JobRepository;
 import com.capstone.organization.service.boundary.JobService;
-import com.capstone.organization.utils.IdEncoder;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
 
-@Slf4j
+@AppLog
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JobServiceImpl implements JobService {
   JobRepository jobRepository;
+  @NonFinal
+  Logger log;
 
   @Override
   public JobResponse createJob(@NonNull CreateJobRequest request) {

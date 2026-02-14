@@ -12,20 +12,19 @@ import com.capstone.auth.application.exception.AccountBlockedException;
 import com.capstone.auth.application.exception.NotExistingException;
 
 import com.capstone.auth.infrastructure.config.Constant;
-import com.capstone.auth.infrastructure.utils.Utils;
+import com.capstone.auth.infrastructure.utils.AuthUtils;
+import com.capstone.common.annotation.AppLog;
 import org.jspecify.annotations.NonNull;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
-import lombok.extern.slf4j.Slf4j;
+import lombok.*;
+import lombok.experimental.*;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
-@Slf4j
+@AppLog
 @Component
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -34,6 +33,8 @@ public class AuthUseCase {
   ProfileService pSrv;
   RoleService rSrv;
   MessageProducer template;
+  @NonFinal
+  Logger log;
 
   @NonFinal
   @Value("${sending_mail.account_creation.subject}")
@@ -48,7 +49,7 @@ public class AuthUseCase {
     var user = uSrv.getUserById(userId);
     Objects.requireNonNull(user, Constant.SE_04);
 
-    Utils.validateCredentials(user, email, username);
+    AuthUtils.validateCredentials(user, email, username);
 
     if (!uSrv.checkExistence(email) || !uSrv.checkExistence(username)) {
       throw new NotExistingException(Constant.SE_05);

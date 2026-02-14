@@ -6,7 +6,7 @@ const LeftSide = () => {
           <span className="text-3xl md:text-5xl font-bold">logo</span>
         </div>
       </div>
-      <h1 className="text-3xl md:text-5xl font-bold mb-2">CRM</h1>
+      <h1 className="text-3xl md:text-5xl font-bold mb-2">CMSN</h1>
       <p className="text-base md:text-lg text-white/90">Phiên bản 1.0.0</p>
     </div>
   );
