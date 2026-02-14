@@ -163,6 +163,10 @@ create table public.installation_form
   created_at                              timestamp(6) not null,
   created_by                              varchar(255) not null,
   customer_name                           varchar(255) not null,
+  customer_type                           varchar(255) not null
+    constraint installation_form_customer_type_check
+            check ((customer_type)::text = ANY
+                   ((ARRAY ['FAMILY'::character varying, 'COMPANY'::character varying])::text[])),
   form_number                             varchar(36)
     constraint uk6x0if5ak390si5y6jggcrfae5
             unique,
@@ -171,9 +175,10 @@ create table public.installation_form
   number_of_household                     integer      not null,
   overall_water_meter_id                  varchar(255) not null,
   phone_number                            varchar(10)  not null,
-  received_form_at                        timestamp(6) not null,
+  received_form_at                        date         not null,
   representative                          jsonb,
-  schedule_survey_at                      timestamp(6),
+  schedule_survey_at                      date,
+  status                                  jsonb        not null,
   tax_code                                varchar(255),
   updated_at                              timestamp(6) not null,
   usage_target                            varchar(255) not null
@@ -242,4 +247,3 @@ create table public.roadmap
 
 alter table public.roadmap
   owner to postgres;
-
