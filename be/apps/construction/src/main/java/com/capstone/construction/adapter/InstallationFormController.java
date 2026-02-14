@@ -5,7 +5,7 @@ import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.construction.application.dto.request.installationform.FilterFormRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
-import com.capstone.construction.application.dto.response.installationform.InstallationFormResponse;
+import com.capstone.construction.application.dto.response.installationform.NewInstallationFormResponse;
 import com.capstone.construction.application.usecase.InstallationFormHandlingUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -34,12 +34,12 @@ public class InstallationFormController {
   private final InstallationFormHandlingUseCase installationFormHandlingUseCase;
 
   @Operation(summary = "Create a new installation form", description = "Initializes a new installation request and triggers notification event", responses = {
-    @ApiResponse(responseCode = "201", description = "Form created successfully", content = @Content(schema = @Schema(implementation = InstallationFormResponse.class))),
+    @ApiResponse(responseCode = "201", description = "Form created successfully", content = @Content(schema = @Schema(implementation = NewInstallationFormResponse.class))),
     @ApiResponse(responseCode = "409", description = "Form already exists", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PostMapping
-  @PreAuthorize("hasAnyAuthority('SURVEY_STAFF', 'IT_STAFF')")
+  @PreAuthorize("hasAnyAuthority('ORDER_RECEIVING_STAFF', 'IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> createInstallationForm(@RequestBody @Valid NewOrderRequest request) {
     log.info("Received request to create installation form: {}", request.formNumber());
 
@@ -80,8 +80,7 @@ public class InstallationFormController {
 
     var response = installationFormHandlingUseCase.getPaginatedInstallationForms(pageable, request);
 
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
+    return Utils.returnOkResponse(
       "Installation forms retrieved successfully",
       response);
   }

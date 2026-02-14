@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -54,13 +53,10 @@ public class ProfileController {
     Map<String, Object> claims = jwt.getClaims();
     log.info("Get profile request comes to endpoint: {}", id);
 
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
-      "Get profile successfully",
-      profileUC.getMe(
-        id,
-        claims.get("email").toString(),
-        claims.get("preferred_username").toString())
+    return Utils.returnOkResponse("Get profile successfully", profileUC.getMe(
+      id,
+      claims.get("email").toString(),
+      claims.get("preferred_username").toString())
     );
   }
 
@@ -89,10 +85,7 @@ public class ProfileController {
     log.info("User's id: {}", id);
     var response = profileUC.updateProfile(id, request);
 
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
-      "Update profile successfully",
-      response);
+    return Utils.returnOkResponse("Update profile successfully", response);
   }
 
   @Operation(summary = "Cập nhật ảnh đại diện người dùng", description = """
@@ -121,9 +114,6 @@ public class ProfileController {
     var id = jwt.getSubject();
     log.info("Update avatar of user that has id: {}", id);
 
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
-      "Update avatar successfully",
-      profileUC.updateAvatar(id, file));
+    return Utils.returnOkResponse("Update avatar successfully", profileUC.updateAvatar(id, file));
   }
 }

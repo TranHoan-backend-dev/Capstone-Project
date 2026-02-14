@@ -2,6 +2,7 @@ package com.capstone.organization.exception;
 
 import com.capstone.common.exception.InternalServerException;
 import com.capstone.common.response.WrapperApiResponse;
+import com.capstone.common.utils.Utils;
 import jakarta.validation.ConstraintViolationException;
 import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
@@ -15,24 +16,11 @@ import java.time.LocalDateTime;
 public class GlobalExceptionHandler {
   @ExceptionHandler(ConstraintViolationException.class)
   public ResponseEntity<WrapperApiResponse> handleUserNotFoundException(@NonNull ConstraintViolationException ex) {
-    return ResponseEntity
-      .status(HttpStatus.BAD_REQUEST)
-      .body(new WrapperApiResponse(
-        HttpStatus.BAD_REQUEST.value(),
-        "Input data is invalid. Please check your input data in the log",
-        null,
-        LocalDateTime.now()
-      ));
+    return Utils.returnBadRequestResponse("Input data is invalid. Please check your input data in the log", null);
   }
+
   @ExceptionHandler(InternalServerException.class)
   public ResponseEntity<WrapperApiResponse> handleInternalServerException(@NonNull InternalServerException ex) {
-    return ResponseEntity
-      .status(HttpStatus.INTERNAL_SERVER_ERROR)
-      .body(new WrapperApiResponse(
-        HttpStatus.INTERNAL_SERVER_ERROR.value(),
-        ex.getMessage(),
-        null,
-        LocalDateTime.now()
-      ));
+    return Utils.returnInternalServerErrorResponse(ex.getMessage(), null);
   }
 }

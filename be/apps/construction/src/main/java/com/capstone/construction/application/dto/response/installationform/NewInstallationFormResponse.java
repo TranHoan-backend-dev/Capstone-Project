@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
 
-public record InstallationFormResponse(
+public record NewInstallationFormResponse(
   @Schema(description = "Unique form number", example = "LF-2024-002") String formNumber,
 
   @Schema(description = "Customer name", example = "Trần Hoàng") String customerName,

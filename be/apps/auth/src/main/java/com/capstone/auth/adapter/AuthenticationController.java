@@ -65,10 +65,7 @@ public class AuthenticationController {
       request.jobId(), request.businessPageIds(),
       request.departmentId(), request.waterSupplyNetworkId());
 
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
-      "Create account successfully",
-      null);
+    return Utils.returnOkResponse("Create account successfully", null);
   }
 
   // <editor-fold> desc="Forgot password"
@@ -80,10 +77,7 @@ public class AuthenticationController {
   @PostMapping("/check-existence")
   public ResponseEntity<?> checkExistence(
     @RequestBody @Valid CheckExistenceRequest request) {
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
-      "Check existence successfully",
-      authUC.checkExistence(request.value()));
+    return Utils.returnOkResponse("Check existence successfully", authUC.checkExistence(request.value()));
   }
 
   @Operation(summary = "Gửi OTP qua email", description = "Gửi mã OTP đến email được cung cấp để xác minh hoặc đặt lại mật khẩu. Data response rỗng.")
@@ -95,11 +89,7 @@ public class AuthenticationController {
   @PostMapping("/send-otp")
   public ResponseEntity<?> sendOtp(@RequestBody @Valid SendOtpRequest request) {
     otpUC.sendOtp(request.email());
-    return ResponseEntity.ok(new WrapperApiResponse(
-      HttpStatus.OK.value(),
-      "Send OTP successfully",
-      null,
-      LocalDateTime.now()));
+    return Utils.returnOkResponse("Send OTP successfully", null);
   }
 
   @Operation(summary = "Xác minh mã OTP", description = "Xác minh tính hợp lệ của mã OTP được gửi qua email. Data response rỗng.")
@@ -116,10 +106,7 @@ public class AuthenticationController {
     // exception for expiry/not found.
     // Let's handle the boolean false case.
 
-    return Utils.returnResponse(
-      !isValid ? HttpStatus.BAD_REQUEST.value() : HttpStatus.OK.value(),
-      !isValid ? "Invalid OTP" : "Verify OTP successfully",
-      null);
+    return Utils.returnOkResponse(!isValid ? "Invalid OTP" : "Verify OTP successfully", null);
   }
   // </editor-fold>
 
@@ -132,10 +119,7 @@ public class AuthenticationController {
   @PostMapping("/reset-password")
   public ResponseEntity<?> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
     otpUC.resetPasswordWithOtp(request.email(), request.otp(), request.newPassword());
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
-      "Reset password successfully",
-      null);
+    return Utils.returnOkResponse("Reset password successfully", null);
   }
 
   @Operation(summary = "Đổi mật khẩu (Đã xác thực)", description = "Thay đổi mật khẩu cho người dùng hiện đang đăng nhập. Yêu cầu mật khẩu cũ và mật khẩu mới. Data response rỗng.")
@@ -155,10 +139,7 @@ public class AuthenticationController {
     authUC.changePassword(email.toString(), request.oldPassword(), request.newPassword(),
       request.confirmPassword());
 
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
-      "Change password successfully",
-      null);
+    return Utils.returnOkResponse("Change password successfully", null);
   }
 
   @Operation(summary = "Đăng nhập bằng JWT", description = "Xác thực người dùng sử dụng token JWT từ header Authorization. "
@@ -177,12 +158,9 @@ public class AuthenticationController {
     var id = jwt.getSubject();
     Map<String, Object> claims = jwt.getClaims(); // username, prefered_username, realm_access->roles
 
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
-      "Login successfully",
-      authUC.login(
-        id,
-        claims.get("email").toString(),
-        claims.get("preferred_username").toString()));
+    return Utils.returnOkResponse("Login successfully", authUC.login(
+      id,
+      claims.get("email").toString(),
+      claims.get("preferred_username").toString()));
   }
 }

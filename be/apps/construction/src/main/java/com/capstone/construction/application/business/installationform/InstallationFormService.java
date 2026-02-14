@@ -3,12 +3,12 @@ package com.capstone.construction.application.business.installationform;
 import com.capstone.construction.application.dto.request.installationform.FilterFormRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
-import com.capstone.construction.application.dto.response.installationform.InstallationFormResponse;
+import com.capstone.construction.application.dto.response.installationform.NewInstallationFormResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface InstallationFormService {
-  InstallationFormResponse createNewInstallationForm(NewOrderRequest request);
+  NewInstallationFormResponse createNewInstallationForm(NewOrderRequest request);
 
   boolean isInstallationFormExisting(String formNumber);
 

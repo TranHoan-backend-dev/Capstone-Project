@@ -17,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -63,8 +62,7 @@ public class BusinessPageController {
 
     var response = businessPageService.updateBusinessPage(decodeId(pageId, "pageId"), request);
 
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
+    return Utils.returnOkResponse(
       "Update business page successfully",
       response);
   }
@@ -88,8 +86,7 @@ public class BusinessPageController {
     var response = status ? businessPageService.filterBusinessPagesList(request, pageable)
       : businessPageService.getBusinessPages(pageable);
 
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
+    return Utils.returnOkResponse(
       "Get business pages successfully",
       response);
   }
@@ -117,8 +114,7 @@ public class BusinessPageController {
       .map(String::trim).filter(c -> !c.isBlank())
       .toList();
 
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
+    return Utils.returnOkResponse(
       "Get all pages by list of ids successfully",
       businessPageService.getAllBusinessPageNamesByIds(content));
   }

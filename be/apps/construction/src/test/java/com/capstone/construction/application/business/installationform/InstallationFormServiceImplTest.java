@@ -5,9 +5,7 @@ import com.capstone.construction.application.dto.request.installationform.Filter
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import com.capstone.construction.domain.model.InstallationForm;
 import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
-import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRepository;
 import com.capstone.construction.infrastructure.service.EmployeeService;
-import com.capstone.construction.infrastructure.service.OverallWaterMeterService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,11 +32,7 @@ class InstallationFormServiceImplTest {
     @Mock
     private InstallationFormRepository ifRepo;
     @Mock
-    private WaterSupplyNetworkRepository wsnRepo;
-    @Mock
     private EmployeeService empSrv;
-    @Mock
-    private OverallWaterMeterService owmSrv;
 
     @InjectMocks
     private InstallationFormServiceImpl service;

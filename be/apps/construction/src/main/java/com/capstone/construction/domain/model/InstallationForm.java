@@ -1,7 +1,9 @@
 package com.capstone.construction.domain.model;
 
+import com.capstone.common.enumerate.ProcessingStatus;
+import com.capstone.construction.domain.model.utils.FormProcessingStatus;
 import com.capstone.construction.domain.model.utils.Representative;
-import com.capstone.construction.domain.enumerate.UsageTarget;
+import com.capstone.common.enumerate.UsageTarget;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -26,7 +28,6 @@ import org.jspecify.annotations.NonNull;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InstallationForm {
   @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
   String formCode;
 
   @Column(length = 36, unique = true)
@@ -77,6 +78,10 @@ public class InstallationForm {
   @Column(columnDefinition = "jsonb")
   List<Representative> representative;
 
+  @Column(nullable = false, columnDefinition = "jsonb")
+  @JdbcTypeCode(SqlTypes.JSON)
+  FormProcessingStatus status;
+
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "water_supply_network_id")
   WaterSupplyNetwork network;
@@ -98,6 +103,8 @@ public class InstallationForm {
   void onCreate() {
     this.createdAt = LocalDateTime.now();
     this.updatedAt = this.createdAt;
+    this.status = new FormProcessingStatus();
+    status.setRegistration(ProcessingStatus.PROCESSING);
   }
 
   @PreUpdate

@@ -1,4 +1,4 @@
-package com.capstone.construction.domain.enumerate;
+package com.capstone.common.enumerate;
 
 public enum ProcessingStatus {
   PROCESSING,

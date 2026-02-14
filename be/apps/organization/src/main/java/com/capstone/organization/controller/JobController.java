@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -58,8 +57,7 @@ public class JobController {
     @RequestBody @Valid CreateJobRequest request) {
     log.info("Create job request comes to endpoint: {}", request);
     var response = jobService.createJob(request);
-    return Utils.returnResponse(
-      HttpStatus.CREATED.value(),
+    return Utils.returnOkResponse(
       "Create job successfully",
       response);
   }
@@ -77,8 +75,7 @@ public class JobController {
     @RequestBody @Valid UpdateJobRequest request) {
     log.info("Update job request comes to endpoint: {}", jobId);
     var response = jobService.updateJob(decodeId(jobId, "jobId"), request);
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
+    return Utils.returnOkResponse(
       "Update job successfully",
       response);
   }
@@ -94,8 +91,7 @@ public class JobController {
     @Parameter(in = ParameterIn.QUERY, description = "Chỉ số trang (bắt đầu từ 0)", schema = @Schema(type = "integer", defaultValue = "0", minimum = "0")) @RequestParam(defaultValue = "0") @PositiveOrZero int page,
     @Parameter(in = ParameterIn.QUERY, description = "Kích thước trang", schema = @Schema(type = "integer", defaultValue = "20", minimum = "1")) @RequestParam(defaultValue = "20") @Positive int size) {
     var response = jobService.getJobs(page, size);
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
+    return Utils.returnOkResponse(
       "Get jobs successfully",
       response);
   }

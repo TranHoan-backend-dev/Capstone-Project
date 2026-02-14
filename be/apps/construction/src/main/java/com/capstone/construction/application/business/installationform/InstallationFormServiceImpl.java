@@ -1,10 +1,9 @@
 package com.capstone.construction.application.business.installationform;
 
-import com.capstone.common.utils.IdEncoder;
 import com.capstone.construction.application.dto.request.installationform.FilterFormRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
-import com.capstone.construction.application.dto.response.installationform.InstallationFormResponse;
+import com.capstone.construction.application.dto.response.installationform.NewInstallationFormResponse;
 import com.capstone.construction.domain.model.InstallationForm;
 import com.capstone.construction.domain.model.WaterSupplyNetwork;
 import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
@@ -38,7 +37,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   OverallWaterMeterService owmSrv;
 
   @Override
-  public InstallationFormResponse createNewInstallationForm(@NonNull NewOrderRequest request) {
+  public NewInstallationFormResponse createNewInstallationForm(@NonNull NewOrderRequest request) {
     log.info("Service is creating new installation form: {}", request.formNumber());
 
     if (!checkAuthorExisting(request.createdBy())) {
@@ -48,35 +47,35 @@ public class InstallationFormServiceImpl implements InstallationFormService {
     }
 
     var entity = InstallationForm.create(builder -> builder
-        .formNumber(request.formNumber())
-        .customerName(request.customerName())
-        .address(request.address())
-        .citizenIdentificationNumber(request.citizenIdentificationNumber())
-        .citizenIdentificationProvideDate(request.citizenIdentificationProvideDate())
-        .citizenIdentificationProvideLocation(request.citizenIdentificationProvideLocation())
-        .phoneNumber(request.phoneNumber())
-        .taxCode(request.taxCode())
-        .bankAccountNumber(request.bankAccountNumber())
-        .bankAccountProviderLocation(request.bankAccountProviderLocation())
-        .usageTarget(request.usageTarget())
-        .receivedFormAt(LocalDate.parse(request.receivedFormAt()))
-        .scheduleSurveyAt(LocalDate.parse(request.scheduleSurveyAt()))
-        .numberOfHousehold(request.numberOfHousehold())
-        .householdRegistrationNumber(request.householdRegistrationNumber())
-        .representative(request.representative())
-        .network(getNetwork(request.networkId()))
-        .createdBy(request.createdBy())
-        .overallWaterMeterId(request.overallWaterMeterId()));
+      .formNumber(request.formNumber())
+      .customerName(request.customerName())
+      .address(request.address())
+      .citizenIdentificationNumber(request.citizenIdentificationNumber())
+      .citizenIdentificationProvideDate(request.citizenIdentificationProvideDate())
+      .citizenIdentificationProvideLocation(request.citizenIdentificationProvideLocation())
+      .phoneNumber(request.phoneNumber())
+      .taxCode(request.taxCode())
+      .bankAccountNumber(request.bankAccountNumber())
+      .bankAccountProviderLocation(request.bankAccountProviderLocation())
+      .usageTarget(request.usageTarget())
+      .receivedFormAt(LocalDate.parse(request.receivedFormAt()))
+      .scheduleSurveyAt(LocalDate.parse(request.scheduleSurveyAt()))
+      .numberOfHousehold(request.numberOfHousehold())
+      .householdRegistrationNumber(request.householdRegistrationNumber())
+      .representative(request.representative())
+      .network(getNetwork(request.networkId()))
+      .createdBy(request.createdBy())
+      .overallWaterMeterId(request.overallWaterMeterId()));
 
     var saved = ifRepo.save(entity);
     log.info("Installation form with form number: {} is created successfully", request.formNumber());
 
-    return new InstallationFormResponse(
-        saved.getFormNumber(),
-        saved.getCustomerName(),
-        saved.getAddress(),
-        saved.getPhoneNumber(),
-        saved.getCreatedAt());
+    return new NewInstallationFormResponse(
+      saved.getFormNumber(),
+      saved.getCustomerName(),
+      saved.getAddress(),
+      saved.getPhoneNumber(),
+      saved.getCreatedAt());
   }
 
   @Override
@@ -92,16 +91,16 @@ public class InstallationFormServiceImpl implements InstallationFormService {
     }
 
     var result = (startDate != null || (request.keyword() != null && !request.keyword().isBlank())) ? ifRepo.findAll(
-        InstallationFormRepository.search(
-            request.keyword(),
-            startDate,
-            endDate),
-        pageable) : ifRepo.findAll(pageable);
+      InstallationFormRepository.search(
+        request.keyword(),
+        startDate,
+        endDate),
+      pageable) : ifRepo.findAll(pageable);
 
     var content = result.getContent()
-        .stream()
-        .map(this::mapToResponse)
-        .toList();
+      .stream()
+      .map(this::mapToResponse)
+      .toList();
 
     return new PageImpl<>(content, pageable, result.getTotalElements());
   }
@@ -115,14 +114,16 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   private @NonNull InstallationFormListResponse mapToResponse(@NonNull InstallationForm entity) {
     var fullName = empSrv.getEmployeeNameById(entity.getCreatedBy());
     return new InstallationFormListResponse(
-        IdEncoder.encode(entity.getFormCode()),
-        entity.getFormNumber(),
-        entity.getCustomerName(),
-        entity.getAddress(),
-        entity.getPhoneNumber(),
-        entity.getScheduleSurveyAt() == null ? null : entity.getScheduleSurveyAt().toString(),
-        entity.getCreatedAt().toString(),
-        fullName.data().toString());
+      entity.getFormCode(),
+      entity.getFormNumber(),
+      entity.getCustomerName(),
+      entity.getAddress(),
+      entity.getPhoneNumber(),
+      entity.getScheduleSurveyAt() == null ? null : entity.getScheduleSurveyAt().toString(),
+      entity.getCreatedAt().toString(),
+      fullName.data().toString(),
+      entity.getStatus()
+    );
   }
 
   private WaterSupplyNetwork getNetwork(String networkId) {

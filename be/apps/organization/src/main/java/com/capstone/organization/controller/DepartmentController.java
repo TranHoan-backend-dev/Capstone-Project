@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -58,8 +57,7 @@ public class DepartmentController {
     @RequestBody @Valid CreateDepartmentRequest request) {
     log.info("Create department request comes to endpoint: {}", request);
     var response = departmentService.createDepartment(request);
-    return Utils.returnResponse(
-      HttpStatus.CREATED.value(),
+    return Utils.returnOkResponse(
       "Create department successfully",
       response);
   }
@@ -78,8 +76,7 @@ public class DepartmentController {
     @RequestBody @Valid UpdateDepartmentRequest request) {
     log.info("Update department request comes to endpoint: {}", departmentId);
     var response = departmentService.updateDepartment(decodeId(departmentId, "departmentId"), request);
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
+    return Utils.returnOkResponse(
       "Update department successfully",
       response);
   }
@@ -95,8 +92,7 @@ public class DepartmentController {
     @Parameter(in = ParameterIn.QUERY, description = "Chỉ số trang (bắt đầu từ 0)", schema = @Schema(type = "integer", defaultValue = "0", minimum = "0")) @RequestParam(defaultValue = "0") @PositiveOrZero int page,
     @Parameter(in = ParameterIn.QUERY, description = "Kích thước trang", schema = @Schema(type = "integer", defaultValue = "20", minimum = "1")) @RequestParam(defaultValue = "20") @Positive int size) {
     var response = departmentService.getDepartments(page, size);
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
+    return Utils.returnOkResponse(
       "Get departments successfully",
       response);
   }

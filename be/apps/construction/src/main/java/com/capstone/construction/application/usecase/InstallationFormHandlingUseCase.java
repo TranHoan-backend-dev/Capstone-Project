@@ -4,7 +4,7 @@ import com.capstone.construction.application.business.installationform.Installat
 import com.capstone.construction.application.dto.request.installationform.FilterFormRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
-import com.capstone.construction.application.dto.response.installationform.InstallationFormResponse;
+import com.capstone.construction.application.dto.response.installationform.NewInstallationFormResponse;
 import com.capstone.construction.application.event.producer.InstallationFormCreatedEvent;
 import com.capstone.construction.application.event.producer.MessageProducer;
 import com.capstone.construction.application.exception.ExistingItemException;
@@ -31,7 +31,7 @@ public class InstallationFormHandlingUseCase {
     return ifSrv.getInstallationForms(pageable, request);
   }
 
-  public InstallationFormResponse createNewInstallationRequest(@NonNull NewOrderRequest request) {
+  public NewInstallationFormResponse createNewInstallationRequest(@NonNull NewOrderRequest request) {
     log.info("UseCase is processing new installation request for form number: {}", request.formNumber());
 
     if (ifSrv.isInstallationFormExisting(request.formNumber())) {

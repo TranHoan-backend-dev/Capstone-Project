@@ -1,4 +1,4 @@
-package com.capstone.device.domain.enumerate;
+package com.capstone.common.enumerate;
 
 public enum UsageTarget {
   DOMESTIC, // sinh hoat

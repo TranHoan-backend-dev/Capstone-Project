@@ -2,6 +2,7 @@ package com.capstone.common.utils;
 
 import com.capstone.common.response.WrapperApiResponse;
 import org.jspecify.annotations.NonNull;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
@@ -31,9 +32,63 @@ public class Utils {
     }
   }
 
-  public static @NonNull ResponseEntity<WrapperApiResponse> returnResponse(int status, String message, Object data) {
-    return ResponseEntity.status(status).body(new WrapperApiResponse(
-      status,
+  public static @NonNull ResponseEntity<WrapperApiResponse> returnOkResponse(String message, Object data) {
+    return ResponseEntity.status(HttpStatus.OK.value()).body(new WrapperApiResponse(
+      HttpStatus.OK.value(),
+      message,
+      data,
+      LocalDateTime.now()
+    ));
+  }
+
+  public static @NonNull ResponseEntity<WrapperApiResponse> returnCreatedResponse(String message, Object data) {
+    return ResponseEntity.status(HttpStatus.CREATED.value()).body(new WrapperApiResponse(
+      HttpStatus.CREATED.value(),
+      message,
+      data,
+      LocalDateTime.now()
+    ));
+  }
+
+  public static @NonNull ResponseEntity<WrapperApiResponse> returnBadRequestResponse(String message, Object data) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).body(new WrapperApiResponse(
+      HttpStatus.BAD_REQUEST.value(),
+      message,
+      data,
+      LocalDateTime.now()
+    ));
+  }
+
+  public static @NonNull ResponseEntity<WrapperApiResponse> returnInternalServerErrorResponse(String message, Object data) {
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).body(new WrapperApiResponse(
+      HttpStatus.INTERNAL_SERVER_ERROR.value(),
+      message,
+      data,
+      LocalDateTime.now()
+    ));
+  }
+
+  public static @NonNull ResponseEntity<WrapperApiResponse> returnUnAuthorizedResponse(String message, Object data) {
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body(new WrapperApiResponse(
+      HttpStatus.UNAUTHORIZED.value(),
+      message,
+      data,
+      LocalDateTime.now()
+    ));
+  }
+
+  public static @NonNull ResponseEntity<WrapperApiResponse> returnForbiddenResponse(String message, Object data) {
+    return ResponseEntity.status(HttpStatus.FORBIDDEN.value()).body(new WrapperApiResponse(
+      HttpStatus.FORBIDDEN.value(),
+      message,
+      data,
+      LocalDateTime.now()
+    ));
+  }
+
+  public static @NonNull ResponseEntity<WrapperApiResponse> returnConflictResponse(String message, Object data) {
+    return ResponseEntity.status(HttpStatus.CONFLICT.value()).body(new WrapperApiResponse(
+      HttpStatus.CONFLICT.value(),
       message,
       data,
       LocalDateTime.now()

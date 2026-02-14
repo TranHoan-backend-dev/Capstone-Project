@@ -12,7 +12,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -68,10 +67,7 @@ public class AuthorizationController {
     log.info("Getting all employees with page index {} and page size {}", pageable.getPageNumber(),
       pageable.getPageSize());
 
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
-      "Get all employees successfully",
-      usersUseCase.getPaginatedListOfEmployees(pageable, request));
+    return Utils.returnOkResponse("Get all employees successfully", usersUseCase.getPaginatedListOfEmployees(pageable, request));
   }
 
   @Operation(summary = "Lấy các trang web nghiệp vụ được ủy quyền cho nhân viên", description = """
@@ -95,10 +91,7 @@ public class AuthorizationController {
     log.info("Getting pages of employee with id {}", empId);
     empId = IdEncoder.decode(empId);
 
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
-      "Get pages successfully",
-      usersUseCase.getListOfPagesByEmployeeId(empId));
+    return Utils.returnOkResponse("Get pages successfully", usersUseCase.getListOfPagesByEmployeeId(empId));
   }
 
   @Operation(summary = "Cập nhật các trang nghiệp vụ được ủy quyền cho nhiều nhân viên", description = """
@@ -128,10 +121,7 @@ public class AuthorizationController {
     log.info("Updating pages of employees");
     usersUseCase.updateBusinessPagesListOfEmployees(request);
 
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
-      "Update pages successfully",
-      null);
+    return Utils.returnOkResponse("Update pages successfully", null);
   }
 
   @GetMapping("/employees/{id}/name")
@@ -143,10 +133,6 @@ public class AuthorizationController {
     if (!Utils.isUUID(id)) {
       id = IdEncoder.decode(id);
     }
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
-      "Get name of current employee successfully",
-      profileUseCase.getFullNameById(id)
-    );
+    return Utils.returnOkResponse("Get name of current employee successfully", profileUseCase.getFullNameById(id));
   }
 }
