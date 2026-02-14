@@ -8,6 +8,12 @@
     "build": {
       "executor": "@nxrocks/nx-spring-boot:build"
     },
+    "typecheck": {
+      "executor": "nx:noop"
+    },
+    "lint": {
+      "executor": "nx:noop"
+    },
     "test": {
       "executor": "nx:run-commands",
       "options": {

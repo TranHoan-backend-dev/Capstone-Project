@@ -10,8 +10,9 @@ import com.capstone.auth.application.exception.IncompatibleAvatarException;
 import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.infrastructure.config.Constant;
 import com.capstone.auth.infrastructure.service.GcsService;
-import com.capstone.auth.infrastructure.utils.Utils;
-import com.capstone.auth.infrastructure.utils.IdEncoder;
+import com.capstone.auth.infrastructure.utils.AuthUtils;
+import com.capstone.common.utils.IdEncoder;
+import com.capstone.common.utils.Utils;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -45,7 +46,7 @@ public class ProfileUseCase {
     log.info("Check status and get profile by id: {}", id);
     var user = getNonLockedUserById(id);
 
-    Utils.validateCredentials(user, email, username);
+    AuthUtils.validateCredentials(user, email, username);
 
     var profile = pSrv.getProfileById(id);
 
@@ -101,7 +102,7 @@ public class ProfileUseCase {
     if (request.birthdate() != null &&
       !request.birthdate().isEmpty() &&
       !request.birthdate().isBlank()) {
-      if (!Utils.isLocalDate(request.birthdate(), DateTimeFormatter.ISO_LOCAL_DATE)) {
+      if (Utils.isLocalDate(request.birthdate(), DateTimeFormatter.ISO_LOCAL_DATE)) {
         throw new IllegalArgumentException(Constant.PT_25);
       }
       newProfile.setBirthday(
@@ -180,6 +181,11 @@ public class ProfileUseCase {
       }
       throw new IllegalArgumentException("Failed to update username on Keycloak: " + e.getMessage(), e);
     }
+  }
+
+  public String getFullNameById(@NonNull String id) {
+    log.info("getFullNameById is handling the request");
+    return pSrv.getProfileById(id).fullname();
   }
 
   private UserProfileResponse returnUserProfile(@NonNull ProfileDTO profile, @NonNull UserDTO user) {

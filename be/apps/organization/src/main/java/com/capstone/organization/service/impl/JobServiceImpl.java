@@ -1,5 +1,6 @@
 package com.capstone.organization.service.impl;
 
+import com.capstone.common.utils.IdEncoder;
 import com.capstone.organization.dto.request.CreateJobRequest;
 import com.capstone.organization.dto.request.UpdateJobRequest;
 import com.capstone.organization.dto.response.JobResponse;
@@ -7,7 +8,6 @@ import com.capstone.organization.dto.response.PagedJobResponse;
 import com.capstone.organization.model.Job;
 import com.capstone.organization.repository.JobRepository;
 import com.capstone.organization.service.boundary.JobService;
-import com.capstone.organization.utils.IdEncoder;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

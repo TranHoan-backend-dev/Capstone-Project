@@ -1,11 +1,11 @@
 package com.capstone.organization.controller;
 
+import com.capstone.common.utils.IdEncoder;
+import com.capstone.common.utils.Utils;
+import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.organization.dto.request.CreateDepartmentRequest;
 import com.capstone.organization.dto.request.UpdateDepartmentRequest;
-import com.capstone.organization.dto.response.WrapperApiResponse;
 import com.capstone.organization.service.boundary.DepartmentService;
-import com.capstone.organization.utils.IdEncoder;
-import com.capstone.organization.utils.Utils;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
@@ -36,8 +36,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-import java.time.LocalDateTime;
-
 @Slf4j
 @Validated
 @RestController
@@ -52,61 +50,60 @@ public class DepartmentController {
   @PostMapping
   @Operation(summary = "Tạo phòng ban", description = "Tạo một phòng ban mới và trả về dữ liệu của nó.")
   @ApiResponses({
-      @ApiResponse(responseCode = "201", description = "Tạo phòng ban thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-      @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ", content = @Content),
-      @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
+    @ApiResponse(responseCode = "201", description = "Tạo phòng ban thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ", content = @Content),
+    @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
   })
   public ResponseEntity<WrapperApiResponse> createDepartment(
-      @RequestBody @Valid CreateDepartmentRequest request) {
+    @RequestBody @Valid CreateDepartmentRequest request) {
     log.info("Create department request comes to endpoint: {}", request);
     var response = departmentService.createDepartment(request);
-    return ResponseEntity.status(HttpStatus.CREATED).body(new WrapperApiResponse(
-        HttpStatus.CREATED.value(),
-        "Create department successfully",
-        response,
-        LocalDateTime.now()));
+    return Utils.returnResponse(
+      HttpStatus.CREATED.value(),
+      "Create department successfully",
+      response);
   }
 
   @PutMapping("/{departmentId}")
   @Operation(summary = "Cập nhật phòng ban", description = "Cập nhật một phòng ban hiện có bằng ID đã mã hóa của nó.")
   @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "Cập nhật phòng ban thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-      @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ", content = @Content),
-      @ApiResponse(responseCode = "404", description = "Không tìm thấy phòng ban", content = @Content),
-      @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
+    @ApiResponse(responseCode = "200", description = "Cập nhật phòng ban thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ", content = @Content),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy phòng ban", content = @Content),
+    @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
   })
   public ResponseEntity<WrapperApiResponse> updateDepartment(
-      @Parameter(in = ParameterIn.PATH, description = "ID phòng ban đã mã hóa", required = true, schema = @Schema(type = "string"))
-      @PathVariable @NotBlank String departmentId,
-      @RequestBody @Valid UpdateDepartmentRequest request) {
+    @Parameter(in = ParameterIn.PATH, description = "ID phòng ban đã mã hóa", required = true, schema = @Schema(type = "string"))
+    @PathVariable @NotBlank String departmentId,
+    @RequestBody @Valid UpdateDepartmentRequest request) {
     log.info("Update department request comes to endpoint: {}", departmentId);
     var response = departmentService.updateDepartment(decodeId(departmentId, "departmentId"), request);
     return Utils.returnResponse(
-        HttpStatus.OK.value(),
-        "Update department successfully",
-        response);
+      HttpStatus.OK.value(),
+      "Update department successfully",
+      response);
   }
 
   @GetMapping
   @Operation(summary = "Liệt kê phòng ban", description = "Lấy danh sách phân trang các phòng ban.")
   @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "Lấy danh sách phòng ban thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-      @ApiResponse(responseCode = "400", description = "Tham số phân trang không hợp lệ", content = @Content),
-      @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
+    @ApiResponse(responseCode = "200", description = "Lấy danh sách phòng ban thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Tham số phân trang không hợp lệ", content = @Content),
+    @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
   })
   public ResponseEntity<WrapperApiResponse> getDepartments(
-      @Parameter(in = ParameterIn.QUERY, description = "Chỉ số trang (bắt đầu từ 0)", schema = @Schema(type = "integer", defaultValue = "0", minimum = "0")) @RequestParam(defaultValue = "0") @PositiveOrZero int page,
-      @Parameter(in = ParameterIn.QUERY, description = "Kích thước trang", schema = @Schema(type = "integer", defaultValue = "20", minimum = "1")) @RequestParam(defaultValue = "20") @Positive int size) {
+    @Parameter(in = ParameterIn.QUERY, description = "Chỉ số trang (bắt đầu từ 0)", schema = @Schema(type = "integer", defaultValue = "0", minimum = "0")) @RequestParam(defaultValue = "0") @PositiveOrZero int page,
+    @Parameter(in = ParameterIn.QUERY, description = "Kích thước trang", schema = @Schema(type = "integer", defaultValue = "20", minimum = "1")) @RequestParam(defaultValue = "20") @Positive int size) {
     var response = departmentService.getDepartments(page, size);
     return Utils.returnResponse(
-        HttpStatus.OK.value(),
-        "Get departments successfully",
-        response);
+      HttpStatus.OK.value(),
+      "Get departments successfully",
+      response);
   }
 
   private @NonNull String decodeId(String encodedId, String fieldName) {
     var decoded = IdEncoder.decode(encodedId);
-    if (decoded == null || decoded.isBlank()) {
+    if (decoded.isBlank()) {
       throw new IllegalArgumentException(fieldName + " is invalid");
     }
     return decoded;

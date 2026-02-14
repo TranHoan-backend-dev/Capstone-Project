@@ -1,8 +1,10 @@
 package com.capstone.construction.application.business.installationform;
 
-import com.capstone.construction.application.dto.request.NewOrderRequest;
-import com.capstone.construction.application.dto.response.InstallationFormListResponse;
-import com.capstone.construction.application.dto.response.InstallationFormResponse;
+import com.capstone.common.utils.IdEncoder;
+import com.capstone.construction.application.dto.request.installationform.FilterFormRequest;
+import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
+import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
+import com.capstone.construction.application.dto.response.installationform.InstallationFormResponse;
 import com.capstone.construction.domain.model.InstallationForm;
 import com.capstone.construction.domain.model.WaterSupplyNetwork;
 import com.capstone.construction.domain.repository.InstallationFormRepository;
@@ -15,9 +17,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @Service
@@ -51,8 +59,8 @@ public class InstallationFormServiceImpl implements InstallationFormService {
         .bankAccountNumber(request.bankAccountNumber())
         .bankAccountProviderLocation(request.bankAccountProviderLocation())
         .usageTarget(request.usageTarget())
-        .receivedFormAt(LocalDateTime.parse(request.receivedFormAt()))
-        .scheduleSurveyAt(LocalDateTime.parse(request.scheduleSurveyAt()))
+        .receivedFormAt(LocalDate.parse(request.receivedFormAt()))
+        .scheduleSurveyAt(LocalDate.parse(request.scheduleSurveyAt()))
         .numberOfHousehold(request.numberOfHousehold())
         .householdRegistrationNumber(request.householdRegistrationNumber())
         .representative(request.representative())
@@ -72,30 +80,49 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   }
 
   @Override
-  public InstallationFormListResponse getInstallationForms(org.springframework.data.domain.Pageable pageable) {
+  public Page<InstallationFormListResponse> getInstallationForms(Pageable pageable, @NonNull FilterFormRequest request) {
     log.info("Fetching paginated installation forms with pageable: {}", pageable);
 
-    var assignedPage = ifRepo.findByHandoverByIsNotNull(pageable);
-    var unassignedPage = ifRepo.findByHandoverByIsNull(pageable);
+    LocalDateTime startDate = null;
+    LocalDateTime endDate = null;
 
-    return new InstallationFormListResponse(
-        assignedPage.map(this::mapToResponse),
-        unassignedPage.map(this::mapToResponse));
-  }
+    if (request.from() != null && request.to() != null) {
+      startDate = LocalDate.parse(request.from(), DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay();
+      endDate = LocalDate.parse(request.to(), DateTimeFormatter.ISO_LOCAL_DATE).atTime(LocalTime.MAX);
+    }
 
-  private InstallationFormResponse mapToResponse(@NonNull InstallationForm entity) {
-    return new InstallationFormResponse(
-        entity.getFormNumber(),
-        entity.getCustomerName(),
-        entity.getAddress(),
-        entity.getPhoneNumber(),
-        entity.getCreatedAt());
+    var result = (startDate != null || (request.keyword() != null && !request.keyword().isBlank())) ? ifRepo.findAll(
+        InstallationFormRepository.search(
+            request.keyword(),
+            startDate,
+            endDate),
+        pageable) : ifRepo.findAll(pageable);
+
+    var content = result.getContent()
+        .stream()
+        .map(this::mapToResponse)
+        .toList();
+
+    return new PageImpl<>(content, pageable, result.getTotalElements());
   }
 
   @Override
   public boolean isInstallationFormExisting(String formNumber) {
     log.info("Checking existence of installation form with form number: {}", formNumber);
     return ifRepo.existsByFormNumber(formNumber);
+  }
+
+  private @NonNull InstallationFormListResponse mapToResponse(@NonNull InstallationForm entity) {
+    var fullName = empSrv.getEmployeeNameById(entity.getCreatedBy());
+    return new InstallationFormListResponse(
+        IdEncoder.encode(entity.getFormCode()),
+        entity.getFormNumber(),
+        entity.getCustomerName(),
+        entity.getAddress(),
+        entity.getPhoneNumber(),
+        entity.getScheduleSurveyAt() == null ? null : entity.getScheduleSurveyAt().toString(),
+        entity.getCreatedAt().toString(),
+        fullName.data().toString());
   }
 
   private WaterSupplyNetwork getNetwork(String networkId) {

@@ -1,13 +1,13 @@
 package com.capstone.organization.controller;
 
+import com.capstone.common.utils.IdEncoder;
+import com.capstone.common.utils.Utils;
+import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.organization.dto.request.FilterBusinessPagesRequest;
 import com.capstone.organization.dto.request.UpdateBusinessPageRequest;
 import com.capstone.organization.dto.response.BusinessPageResponse;
 import com.capstone.organization.dto.response.PagedBusinessPageResponse;
-import com.capstone.organization.dto.response.WrapperApiResponse;
 import com.capstone.organization.service.boundary.BusinessPageService;
-import com.capstone.organization.utils.IdEncoder;
-import com.capstone.organization.utils.Utils;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
@@ -125,7 +125,7 @@ public class BusinessPageController {
 
   private @NonNull String decodeId(String encodedId, String fieldName) {
     var decoded = IdEncoder.decode(encodedId);
-    if (decoded == null || decoded.isBlank()) {
+    if (decoded.isBlank()) {
       throw new IllegalArgumentException(fieldName + " is invalid");
     }
     return decoded;

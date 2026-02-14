@@ -1,6 +1,6 @@
 package com.capstone.auth.application.exception;
 
-import com.capstone.auth.application.dto.response.WrapperApiResponse;
+import com.capstone.common.response.WrapperApiResponse;
 import org.apache.coyote.BadRequestException;
 import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
@@ -86,8 +86,8 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
   }
 
-  @ExceptionHandler(Exception.class)
-  public ResponseEntity<WrapperApiResponse> handleGlobalException(@NonNull Exception ex) {
+  @ExceptionHandler(InternalServerException.class)
+  public ResponseEntity<WrapperApiResponse> handleInternalServerException(@NonNull InternalServerException ex) {
     return returnInternalServerError(ex.getMessage());
   }
 

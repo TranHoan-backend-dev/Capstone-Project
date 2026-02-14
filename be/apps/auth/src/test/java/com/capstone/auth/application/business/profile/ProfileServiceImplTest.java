@@ -3,7 +3,7 @@ package com.capstone.auth.application.business.profile;
 import com.capstone.auth.application.exception.NotExistingException;
 import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.domain.repository.ProfileRepository;
-import com.capstone.auth.infrastructure.utils.IdEncoder;
+import com.capstone.common.utils.IdEncoder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

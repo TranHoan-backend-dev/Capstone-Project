@@ -1,5 +1,6 @@
 package com.capstone.organization.service.impl;
 
+import com.capstone.common.utils.IdEncoder;
 import com.capstone.organization.dto.request.CreateBusinessPageRequest;
 import com.capstone.organization.dto.request.FilterBusinessPagesRequest;
 import com.capstone.organization.dto.request.UpdateBusinessPageRequest;
@@ -8,7 +9,6 @@ import com.capstone.organization.dto.response.PagedBusinessPageResponse;
 import com.capstone.organization.model.BusinessPage;
 import com.capstone.organization.repository.BusinessPageRepository;
 import com.capstone.organization.service.boundary.BusinessPageService;
-import com.capstone.organization.utils.IdEncoder;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

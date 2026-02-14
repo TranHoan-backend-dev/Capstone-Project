@@ -2,9 +2,9 @@ package com.capstone.auth.adapter;
 
 import com.capstone.auth.application.dto.request.UpdateProfileRequest;
 import com.capstone.auth.application.dto.response.UserProfileResponse;
-import com.capstone.auth.application.dto.response.WrapperApiResponse;
+import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.auth.application.usecase.ProfileUseCase;
-import com.capstone.auth.infrastructure.utils.Utils;
+import com.capstone.common.utils.Utils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

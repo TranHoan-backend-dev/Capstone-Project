@@ -20,69 +20,69 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RoadServiceImpl implements RoadService {
-    RoadRepository roadRepository;
+  RoadRepository roadRepository;
 
-    @Override
-    @Transactional
-    public RoadResponse createRoad(@NonNull RoadRequest request) {
-        log.info("Creating new road with name: {}", request.name());
-        if (roadRepository.existsByName(request.name())) {
-            throw new ExistingItemException("Road with name " + request.name() + " already exists");
-        }
-
-        var road = Road.create(builder -> builder
-                .name(request.name()));
-
-        var saved = roadRepository.save(road);
-        return mapToResponse(saved);
+  @Override
+  @Transactional
+  public RoadResponse createRoad(@NonNull RoadRequest request) {
+    log.info("Creating new road with name: {}", request.name());
+    if (roadRepository.existsByName(request.name())) {
+      throw new ExistingItemException("Road with name " + request.name() + " already exists");
     }
 
-    @Override
-    @Transactional
-    public RoadResponse updateRoad(String id, @NonNull RoadRequest request) {
-        log.info("Updating road with id: {}", id);
-        var road = roadRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Road not found with id: " + id));
+    var road = Road.create(builder -> builder
+      .name(request.name()));
 
-        if (!road.getName().equals(request.name()) && roadRepository.existsByName(request.name())) {
-            throw new ExistingItemException("Road with name " + request.name() + " already exists");
-        }
+    var saved = roadRepository.save(road);
+    return mapToResponse(saved);
+  }
 
-        road.setName(request.name());
+  @Override
+  @Transactional
+  public RoadResponse updateRoad(String id, @NonNull RoadRequest request) {
+    log.info("Updating road with id: {}", id);
+    var road = roadRepository.findById(id)
+      .orElseThrow(() -> new IllegalArgumentException("Road not found with id: " + id));
 
-        var saved = roadRepository.save(road);
-        return mapToResponse(saved);
+    if (!road.getName().equals(request.name()) && roadRepository.existsByName(request.name())) {
+      throw new ExistingItemException("Road with name " + request.name() + " already exists");
     }
 
-    @Override
-    @Transactional
-    public void deleteRoad(String id) {
-        log.info("Deleting road with id: {}", id);
-        if (!roadRepository.existsById(id)) {
-            throw new IllegalArgumentException("Road not found with id: " + id);
-        }
-        roadRepository.deleteById(id);
-    }
+    road.setName(request.name());
 
-    @Override
-    public RoadResponse getRoadById(String id) {
-        log.info("Fetching road with id: {}", id);
-        return roadRepository.findById(id)
-                .map(this::mapToResponse)
-                .orElseThrow(() -> new IllegalArgumentException("Road not found with id: " + id));
-    }
+    var saved = roadRepository.save(road);
+    return mapToResponse(saved);
+  }
 
-    @Override
-    public PageResponse<RoadResponse> getAllRoads(Pageable pageable) {
-        log.info("Fetching all roads with pageable: {}", pageable);
-        var page = roadRepository.findAll(pageable);
-        return PageResponse.fromPage(page, this::mapToResponse);
+  @Override
+  @Transactional
+  public void deleteRoad(String id) {
+    log.info("Deleting road with id: {}", id);
+    if (!roadRepository.existsById(id)) {
+      throw new IllegalArgumentException("Road not found with id: " + id);
     }
+    roadRepository.deleteById(id);
+  }
 
-    private RoadResponse mapToResponse(@NonNull Road road) {
-        return new RoadResponse(
-                road.getRoadId(),
-                road.getName(),
-                road.getCreatedAt());
-    }
+  @Override
+  public RoadResponse getRoadById(String id) {
+    log.info("Fetching road with id: {}", id);
+    return roadRepository.findById(id)
+      .map(this::mapToResponse)
+      .orElseThrow(() -> new IllegalArgumentException("Road not found with id: " + id));
+  }
+
+  @Override
+  public PageResponse<RoadResponse> getAllRoads(Pageable pageable) {
+    log.info("Fetching all roads with pageable: {}", pageable);
+    var page = roadRepository.findAll(pageable);
+    return PageResponse.fromPage(page, this::mapToResponse);
+  }
+
+  private RoadResponse mapToResponse(@NonNull Road road) {
+    return new RoadResponse(
+      road.getRoadId(),
+      road.getName(),
+      road.getCreatedAt());
+  }
 }

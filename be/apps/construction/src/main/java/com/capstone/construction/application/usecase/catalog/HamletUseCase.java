@@ -16,30 +16,30 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class HamletUseCase {
-    HamletService hamletService;
+  HamletService hamletService;
 
-    public HamletResponse createHamlet(HamletRequest request) {
-        log.info("UseCase: Creating hamlet {}", request.name());
-        return hamletService.createHamlet(request);
-    }
+  public HamletResponse createHamlet(HamletRequest request) {
+    log.info("UseCase: Creating hamlet {}", request.name());
+    return hamletService.createHamlet(request);
+  }
 
-    public HamletResponse updateHamlet(String id, HamletRequest request) {
-        log.info("UseCase: Updating hamlet {}", id);
-        return hamletService.updateHamlet(id, request);
-    }
+  public HamletResponse updateHamlet(String id, HamletRequest request) {
+    log.info("UseCase: Updating hamlet {}", id);
+    return hamletService.updateHamlet(id, request);
+  }
 
-    public void deleteHamlet(String id) {
-        log.info("UseCase: Deleting hamlet {}", id);
-        hamletService.deleteHamlet(id);
-    }
+  public void deleteHamlet(String id) {
+    log.info("UseCase: Deleting hamlet {}", id);
+    hamletService.deleteHamlet(id);
+  }
 
-    public HamletResponse getHamletById(String id) {
-        log.info("UseCase: Fetching hamlet {}", id);
-        return hamletService.getHamletById(id);
-    }
+  public HamletResponse getHamletById(String id) {
+    log.info("UseCase: Fetching hamlet {}", id);
+    return hamletService.getHamletById(id);
+  }
 
-    public PageResponse<HamletResponse> getAllHamlets(Pageable pageable) {
-        log.info("UseCase: Fetching all hamlets");
-        return hamletService.getAllHamlets(pageable);
-    }
+  public PageResponse<HamletResponse> getAllHamlets(Pageable pageable) {
+    log.info("UseCase: Fetching all hamlets");
+    return hamletService.getAllHamlets(pageable);
+  }
 }

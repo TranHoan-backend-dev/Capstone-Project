@@ -1,0 +1,4 @@
+@uri = http://localhost:9004/api/v1
+
+### Health check
+GET {{uri}}/public/health

@@ -30,4 +30,4 @@ Accept: application/json
 GET http://localhost:8000/auth/v3/api-docs
 
 ### Health check
-GET http://localhost:8000/auth/health
+GET http://localhost:9003/api/v1/health
