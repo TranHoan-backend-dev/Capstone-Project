@@ -1,5 +1,6 @@
 package com.capstone.construction.adapter;
 
+import com.capstone.common.annotation.AppLog;
 import com.capstone.common.utils.Utils;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.construction.application.dto.request.installationform.FilterFormRequest;
@@ -7,6 +8,7 @@ import com.capstone.construction.application.dto.request.installationform.NewOrd
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import com.capstone.construction.application.dto.response.installationform.NewInstallationFormResponse;
 import com.capstone.construction.application.usecase.InstallationFormHandlingUseCase;
+import com.capstone.construction.infrastructure.config.Constant;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,24 +16,29 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
-@Slf4j
+@AppLog
 @RestController
 @RequestMapping("/installation-forms")
 @RequiredArgsConstructor
 @Tag(name = "Installation Form", description = "Endpoints for managing installation forms")
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class InstallationFormController {
-  private final InstallationFormHandlingUseCase installationFormHandlingUseCase;
+  InstallationFormHandlingUseCase installationFormHandlingUseCase;
+  @NonFinal
+  Logger log;
 
   @Operation(summary = "Create a new installation form", description = "Initializes a new installation request and triggers notification event", responses = {
     @ApiResponse(responseCode = "201", description = "Form created successfully", content = @Content(schema = @Schema(implementation = NewInstallationFormResponse.class))),
@@ -42,16 +49,17 @@ public class InstallationFormController {
   @PreAuthorize("hasAnyAuthority('ORDER_RECEIVING_STAFF', 'IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> createInstallationForm(@RequestBody @Valid NewOrderRequest request) {
     log.info("Received request to create installation form: {}", request.formNumber());
+    if (!Utils.isLocalDate(request.receivedFormAt(), DateTimeFormatter.ISO_LOCAL_DATE) ||
+      !Utils.isLocalDate(request.citizenIdentificationProvideDate(), DateTimeFormatter.ISO_LOCAL_DATE) ||
+      !Utils.isLocalDate(request.scheduleSurveyAt(), DateTimeFormatter.ISO_LOCAL_DATE)) {
+      throw new IllegalArgumentException(Constant.PT_05);
+    }
 
     var response = installationFormHandlingUseCase.createNewInstallationRequest(request);
 
     log.info("Successfully created installation form: {}", response.formNumber());
 
-    return ResponseEntity.status(HttpStatus.CREATED).body(new WrapperApiResponse(
-      HttpStatus.CREATED.value(),
-      "Installation form created successfully",
-      response,
-      LocalDateTime.now()));
+    return Utils.returnCreatedResponse("Installation form created successfully", response);
   }
 
   @Operation(summary = "Lấy danh sách đơn lắp đặt (có phân trang & lọc)", description = "API này cho phép lấy danh sách các đơn lắp đặt nước. Hỗ trợ phân trang và lọc theo từ khóa (tên khách hàng, địa chỉ) hoặc khoảng thời gian.", responses = {

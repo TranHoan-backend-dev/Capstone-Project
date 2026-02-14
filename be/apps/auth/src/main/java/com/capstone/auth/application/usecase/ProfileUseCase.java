@@ -11,15 +11,16 @@ import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.infrastructure.config.Constant;
 import com.capstone.auth.infrastructure.service.GcsService;
 import com.capstone.auth.infrastructure.utils.AuthUtils;
+import com.capstone.common.annotation.AppLog;
 import com.capstone.common.utils.IdEncoder;
 import com.capstone.common.utils.Utils;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
-import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.keycloak.admin.client.Keycloak;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.stereotype.Component;
@@ -28,7 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-@Slf4j
+@AppLog
 @Component
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -37,6 +38,8 @@ public class ProfileUseCase {
   ProfileService pSrv;
   Keycloak keycloak;
   GcsService gcsSrv;
+  @NonFinal
+  Logger log;
 
   @Value("${keycloak.realms}")
   @NonFinal

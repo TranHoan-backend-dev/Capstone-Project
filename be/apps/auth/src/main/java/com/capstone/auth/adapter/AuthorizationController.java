@@ -3,6 +3,7 @@ package com.capstone.auth.adapter;
 import com.capstone.auth.application.dto.request.FilterUsersRequest;
 import com.capstone.auth.application.dto.request.UpdateBusinessPageNamesRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
+import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.auth.application.usecase.ProfileUseCase;
 import com.capstone.auth.application.usecase.UsersUseCase;
@@ -11,6 +12,8 @@ import com.capstone.common.utils.Utils;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.experimental.NonFinal;
+import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,11 +32,10 @@ import org.springdoc.core.annotations.ParameterObject;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
-@Slf4j
+@AppLog
 @RestController
 @RequestMapping("/authorization")
 @RequiredArgsConstructor
@@ -43,6 +45,8 @@ import java.util.List;
 public class AuthorizationController {
   UsersUseCase usersUseCase;
   ProfileUseCase profileUseCase;
+  @NonFinal
+  Logger log;
 
   @Operation(summary = "Lấy tất cả nhân viên", description = """
     Truy xuất danh sách nhân viên được phân trang. Có thể tùy chọn lọc theo trạng thái 'isEnabled' và 'username'. Bạn có thể xem các trang của nhân viên có quyền truy cập bằng cách gọi endpoint /employees/{id}/pages\s
@@ -134,5 +138,14 @@ public class AuthorizationController {
       id = IdEncoder.decode(id);
     }
     return Utils.returnOkResponse("Get name of current employee successfully", profileUseCase.getFullNameById(id));
+  }
+
+  @GetMapping("/employees/{authorId}")
+  public ResponseEntity<?> checkAuthorExisting(@PathVariable String authorId) {
+    log.info("Verifying existence of employee: {}", authorId);
+    if (!Utils.isUUID(authorId)) {
+      authorId = IdEncoder.decode(authorId);
+    }
+    return Utils.returnNoContentResponse("Check employee successfully", usersUseCase.checkIfEmployeeExists(authorId));
   }
 }

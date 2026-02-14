@@ -63,7 +63,7 @@ class InstallationFormHandlingUseCaseTest {
         // Given
         var request = mock(NewOrderRequest.class);
         when(request.formNumber()).thenReturn("FORM-001");
-        when(ifSrv.isInstallationFormExisting("FORM-001")).thenReturn(true);
+        when(ifSrv.isInstallationFormExisting("FORM-001", )).thenReturn(true);
 
         // When & Then
         var exception = assertThrows(ExistingItemException.class, () -> {
@@ -72,7 +72,7 @@ class InstallationFormHandlingUseCaseTest {
 
         assertEquals(Constant.SE_01, exception.getMessage()); // Assuming exception message uses Constant.SE_01 or
                                                               // similar key
-        verify(ifSrv).isInstallationFormExisting("FORM-001");
+        verify(ifSrv).isInstallationFormExisting("FORM-001", );
         verify(ifSrv, never()).createNewInstallationForm(any());
     }
 
@@ -82,7 +82,7 @@ class InstallationFormHandlingUseCaseTest {
         // Given
         var request = mock(NewOrderRequest.class);
         when(request.formNumber()).thenReturn("FORM-001");
-        when(ifSrv.isInstallationFormExisting("FORM-001")).thenReturn(false);
+        when(ifSrv.isInstallationFormExisting("FORM-001", )).thenReturn(false);
 
         var formResponse = new NewInstallationFormResponse(
                 "FORM-001", "Customer", "Address", "Phone", java.time.LocalDateTime.of(2023, 1, 1, 0, 0));

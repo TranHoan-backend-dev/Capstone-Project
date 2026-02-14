@@ -1,5 +1,6 @@
 package com.capstone.device.domain.model;
 
+import com.capstone.common.enumerate.UsageTarget;
 import com.capstone.device.infrastructure.config.Constant;
 import jakarta.persistence.*;
 import lombok.*;

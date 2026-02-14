@@ -15,7 +15,7 @@ import java.util.*;
 @Repository
 public interface InstallationFormRepository extends JpaRepository<InstallationForm, String>,
   JpaSpecificationExecutor<InstallationForm> {
-  boolean existsByFormNumber(String formNumber);
+  boolean existsByFormNumberAndFormCode(String formNumber, String formCode);
 
   Page<InstallationForm> findByHandoverByIsNull(Pageable pageable);
 

@@ -33,62 +33,40 @@ public class Utils {
   }
 
   public static @NonNull ResponseEntity<WrapperApiResponse> returnOkResponse(String message, Object data) {
-    return ResponseEntity.status(HttpStatus.OK.value()).body(new WrapperApiResponse(
-      HttpStatus.OK.value(),
-      message,
-      data,
-      LocalDateTime.now()
-    ));
+    return buildResponse(HttpStatus.OK.value(), message, data);
   }
 
   public static @NonNull ResponseEntity<WrapperApiResponse> returnCreatedResponse(String message, Object data) {
-    return ResponseEntity.status(HttpStatus.CREATED.value()).body(new WrapperApiResponse(
-      HttpStatus.CREATED.value(),
-      message,
-      data,
-      LocalDateTime.now()
-    ));
+    return buildResponse(HttpStatus.CREATED.value(), message, data);
   }
 
   public static @NonNull ResponseEntity<WrapperApiResponse> returnBadRequestResponse(String message, Object data) {
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).body(new WrapperApiResponse(
-      HttpStatus.BAD_REQUEST.value(),
-      message,
-      data,
-      LocalDateTime.now()
-    ));
+    return buildResponse(HttpStatus.BAD_REQUEST.value(), message, data);
   }
 
   public static @NonNull ResponseEntity<WrapperApiResponse> returnInternalServerErrorResponse(String message, Object data) {
-    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).body(new WrapperApiResponse(
-      HttpStatus.INTERNAL_SERVER_ERROR.value(),
-      message,
-      data,
-      LocalDateTime.now()
-    ));
+    return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), message, data);
   }
 
   public static @NonNull ResponseEntity<WrapperApiResponse> returnUnAuthorizedResponse(String message, Object data) {
-    return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body(new WrapperApiResponse(
-      HttpStatus.UNAUTHORIZED.value(),
-      message,
-      data,
-      LocalDateTime.now()
-    ));
+    return buildResponse(HttpStatus.UNAUTHORIZED.value(), message, data);
   }
 
   public static @NonNull ResponseEntity<WrapperApiResponse> returnForbiddenResponse(String message, Object data) {
-    return ResponseEntity.status(HttpStatus.FORBIDDEN.value()).body(new WrapperApiResponse(
-      HttpStatus.FORBIDDEN.value(),
-      message,
-      data,
-      LocalDateTime.now()
-    ));
+    return buildResponse(HttpStatus.FORBIDDEN.value(), message, data);
   }
 
   public static @NonNull ResponseEntity<WrapperApiResponse> returnConflictResponse(String message, Object data) {
-    return ResponseEntity.status(HttpStatus.CONFLICT.value()).body(new WrapperApiResponse(
-      HttpStatus.CONFLICT.value(),
+    return buildResponse(HttpStatus.CONFLICT.value(), message, data);
+  }
+
+  public static @NonNull ResponseEntity<WrapperApiResponse> returnNoContentResponse(String message, Object data) {
+    return buildResponse(HttpStatus.NO_CONTENT.value(), message, data);
+  }
+
+  private static @NonNull ResponseEntity<WrapperApiResponse> buildResponse(int statusCode, String message, Object data) {
+    return ResponseEntity.status(statusCode).body(new WrapperApiResponse(
+      statusCode,
       message,
       data,
       LocalDateTime.now()

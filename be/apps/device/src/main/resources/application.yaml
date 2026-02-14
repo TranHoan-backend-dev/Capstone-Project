@@ -27,7 +27,7 @@ management:
           - info
           - metrics
           - prometheus
-      base-path: /
+      base-path: /actuator
 springdoc:
   api-docs:
     enabled: true

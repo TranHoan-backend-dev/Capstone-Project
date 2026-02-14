@@ -5,24 +5,28 @@ import com.capstone.auth.application.exception.NotExistingException;
 import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.infrastructure.persistence.ProfileRepository;
 import com.capstone.auth.infrastructure.config.Constant;
+import com.capstone.common.annotation.AppLog;
 import com.capstone.common.utils.IdEncoder;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 import java.util.Optional;
 
-@Slf4j
+@AppLog
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProfileServiceImpl implements ProfileService {
   ProfileRepository repo;
+  @NonFinal
+  Logger log;
 
   @Override
   public ProfileDTO getProfileById(String id) {

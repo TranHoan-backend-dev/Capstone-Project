@@ -2,6 +2,7 @@ package com.capstone.auth.adapter;
 
 import com.capstone.auth.application.dto.request.UpdateProfileRequest;
 import com.capstone.auth.application.dto.response.UserProfileResponse;
+import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.auth.application.usecase.ProfileUseCase;
 import com.capstone.common.utils.Utils;
@@ -15,8 +16,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,7 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
-@Slf4j
+@AppLog
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/me")
@@ -35,6 +37,8 @@ import java.util.Map;
 @Tag(name = "Authentication", description = "Các hoạt động lấy và chỉnh sửa hồ sơ người dùng.")
 public class ProfileController {
   ProfileUseCase profileUC;
+  @NonFinal
+  Logger log;
 
   @Operation(summary = "Lấy hồ sơ người dùng hiện tại", description = """
     Truy xuất hồ sơ của người dùng hiện đang được xác thực dựa trên token JWT truyền về trong header Authorization.

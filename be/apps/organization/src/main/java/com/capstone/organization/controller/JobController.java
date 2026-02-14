@@ -1,5 +1,6 @@
 package com.capstone.organization.controller;
 
+import com.capstone.common.annotation.AppLog;
 import com.capstone.common.utils.IdEncoder;
 import com.capstone.common.utils.Utils;
 import com.capstone.common.response.WrapperApiResponse;
@@ -13,8 +14,9 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -35,7 +37,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Slf4j
+@AppLog
 @Validated
 @RestController
 @RequiredArgsConstructor
@@ -45,6 +47,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Job", description = "Các endpoint quản lý chức danh công việc")
 public class JobController {
   JobService jobService;
+  @NonFinal
+  Logger log;
 
   @PostMapping
   @Operation(summary = "Tạo chức danh công việc", description = "Tạo một chức danh công việc mới và trả về dữ liệu của nó.")

@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 public interface InstallationFormService {
   NewInstallationFormResponse createNewInstallationForm(NewOrderRequest request);
 
-  boolean isInstallationFormExisting(String formNumber);
+  boolean isInstallationFormExisting(String formNumber, String formCode);
 
   Page<InstallationFormListResponse> getInstallationForms(Pageable pageable, FilterFormRequest request);
 }

@@ -4,10 +4,11 @@ import com.capstone.common.response.WrapperApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Service
 @FeignClient(name = "device", path = "/api/v1")
 public interface OverallWaterMeterService {
   @GetMapping("/meters/{id}")
-  WrapperApiResponse isMeterExisting(String id);
+  WrapperApiResponse isMeterExisting(@PathVariable String id);
 }

@@ -7,6 +7,7 @@ import com.capstone.auth.application.dto.request.SendOtpRequest;
 import com.capstone.auth.application.dto.request.SignupRequest;
 import com.capstone.auth.application.dto.request.VerifyOtpRequest;
 import com.capstone.auth.application.dto.response.UserProfileResponse;
+import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.auth.application.usecase.AuthUseCase;
 import com.capstone.auth.application.usecase.OtpUseCase;
@@ -22,7 +23,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import lombok.experimental.NonFinal;
+import org.slf4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -30,13 +32,11 @@ import org.springframework.web.bind.annotation.*;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-@Slf4j
+@AppLog
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
@@ -46,6 +46,8 @@ import java.util.concurrent.ExecutionException;
 public class AuthenticationController {
   AuthUseCase authUC;
   OtpUseCase otpUC;
+  @NonFinal
+  Logger log;
 
   @Operation(summary = "Đăng ký tài khoản mới", description = "Đăng ký tài khoản người dùng mới với thông tin nhân viên bao gồm vai trò, phòng ban và mạng lưới cấp nước. Trả về WrapperApiResponse với data là null.")
   @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Thông tin chi tiết cho tài khoản người dùng mới", required = true, content = @Content(schema = @Schema(implementation = SignupRequest.class)))

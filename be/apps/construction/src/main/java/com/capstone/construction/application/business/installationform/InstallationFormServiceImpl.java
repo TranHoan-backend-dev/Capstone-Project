@@ -1,5 +1,7 @@
 package com.capstone.construction.application.business.installationform;
 
+import com.capstone.common.annotation.AppLog;
+import com.capstone.common.enumerate.CustomerType;
 import com.capstone.construction.application.dto.request.installationform.FilterFormRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
@@ -14,8 +16,9 @@ import com.capstone.construction.infrastructure.service.OverallWaterMeterService
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -26,7 +29,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-@Slf4j
+@AppLog
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -35,6 +38,8 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   WaterSupplyNetworkRepository wsnRepo;
   EmployeeService empSrv;
   OverallWaterMeterService owmSrv;
+  @NonFinal
+  Logger log;
 
   @Override
   public NewInstallationFormResponse createNewInstallationForm(@NonNull NewOrderRequest request) {
@@ -47,9 +52,11 @@ public class InstallationFormServiceImpl implements InstallationFormService {
     }
 
     var entity = InstallationForm.create(builder -> builder
+      .formCode(request.formCode())
       .formNumber(request.formNumber())
       .customerName(request.customerName())
       .address(request.address())
+      .customerType(CustomerType.valueOf(request.customerType()))
       .citizenIdentificationNumber(request.citizenIdentificationNumber())
       .citizenIdentificationProvideDate(request.citizenIdentificationProvideDate())
       .citizenIdentificationProvideLocation(request.citizenIdentificationProvideLocation())
@@ -71,7 +78,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
     log.info("Installation form with form number: {} is created successfully", request.formNumber());
 
     return new NewInstallationFormResponse(
-      saved.getFormNumber(),
+      saved.getFormCode(),
       saved.getCustomerName(),
       saved.getAddress(),
       saved.getPhoneNumber(),
@@ -106,9 +113,9 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   }
 
   @Override
-  public boolean isInstallationFormExisting(String formNumber) {
+  public boolean isInstallationFormExisting(String formNumber, String formCode) {
     log.info("Checking existence of installation form with form number: {}", formNumber);
-    return ifRepo.existsByFormNumber(formNumber);
+    return ifRepo.existsByFormNumberAndFormCode(formNumber, formCode);
   }
 
   private @NonNull InstallationFormListResponse mapToResponse(@NonNull InstallationForm entity) {

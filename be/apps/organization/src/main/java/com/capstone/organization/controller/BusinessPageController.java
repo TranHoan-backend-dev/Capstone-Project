@@ -1,5 +1,6 @@
 package com.capstone.organization.controller;
 
+import com.capstone.common.annotation.AppLog;
 import com.capstone.common.utils.IdEncoder;
 import com.capstone.common.utils.Utils;
 import com.capstone.common.response.WrapperApiResponse;
@@ -13,8 +14,9 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +34,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.Arrays;
 
-@Slf4j
+@AppLog
 @Validated
 @RestController
 @RequiredArgsConstructor
@@ -42,6 +44,8 @@ import java.util.Arrays;
 @Tag(name = "Business Page", description = "Các endpoint để quản lý trang nghiệp vụ. Tất cả người dùng phải có vai trò IT_STAFF để truy cập các endpoint này")
 public class BusinessPageController {
   BusinessPageService businessPageService;
+  @NonFinal
+  Logger log;
 
   @PutMapping("/{pageId}")
   @Operation(summary = "Cập nhật trang nghiệp vụ", description = "Cập nhật một trang nghiệp vụ hiện có bằng ID đã mã hóa của nó.")

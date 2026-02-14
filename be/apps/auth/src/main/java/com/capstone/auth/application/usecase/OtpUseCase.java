@@ -1,5 +1,8 @@
 package com.capstone.auth.application.usecase;
 
+import com.capstone.common.annotation.AppLog;
+import lombok.experimental.NonFinal;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
 import com.capstone.auth.application.business.verification.VerificationService;
@@ -7,14 +10,15 @@ import com.capstone.auth.application.business.verification.VerificationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+@AppLog
 @Component
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class OtpUseCase {
   VerificationService vSrv;
+  @NonFinal
+  Logger log;
 
   public void sendOtp(String email) {
     log.info("Sending OTP to email: {}", email);

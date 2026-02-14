@@ -2,14 +2,12 @@ package com.capstone.construction.infrastructure.config;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 import java.util.Optional;
 
-@Slf4j
 @Configuration
 public class FeignAuthInterceptor implements RequestInterceptor {
 
