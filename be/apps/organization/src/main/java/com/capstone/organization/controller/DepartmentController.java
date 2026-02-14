@@ -1,5 +1,6 @@
 package com.capstone.organization.controller;
 
+import com.capstone.common.annotation.AppLog;
 import com.capstone.common.utils.IdEncoder;
 import com.capstone.common.utils.Utils;
 import com.capstone.common.response.WrapperApiResponse;
@@ -13,9 +14,9 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
-import org.springframework.http.HttpStatus;
+import org.slf4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -36,7 +37,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Slf4j
+@AppLog
 @Validated
 @RestController
 @RequiredArgsConstructor
@@ -46,6 +47,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Department", description = "Các endpoint quản lý phòng ban")
 public class DepartmentController {
   DepartmentService departmentService;
+  @NonFinal
+  Logger log;
 
   @PostMapping
   @Operation(summary = "Tạo phòng ban", description = "Tạo một phòng ban mới và trả về dữ liệu của nó.")
@@ -58,8 +61,7 @@ public class DepartmentController {
     @RequestBody @Valid CreateDepartmentRequest request) {
     log.info("Create department request comes to endpoint: {}", request);
     var response = departmentService.createDepartment(request);
-    return Utils.returnResponse(
-      HttpStatus.CREATED.value(),
+    return Utils.returnOkResponse(
       "Create department successfully",
       response);
   }
@@ -78,8 +80,7 @@ public class DepartmentController {
     @RequestBody @Valid UpdateDepartmentRequest request) {
     log.info("Update department request comes to endpoint: {}", departmentId);
     var response = departmentService.updateDepartment(decodeId(departmentId, "departmentId"), request);
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
+    return Utils.returnOkResponse(
       "Update department successfully",
       response);
   }
@@ -95,8 +96,7 @@ public class DepartmentController {
     @Parameter(in = ParameterIn.QUERY, description = "Chỉ số trang (bắt đầu từ 0)", schema = @Schema(type = "integer", defaultValue = "0", minimum = "0")) @RequestParam(defaultValue = "0") @PositiveOrZero int page,
     @Parameter(in = ParameterIn.QUERY, description = "Kích thước trang", schema = @Schema(type = "integer", defaultValue = "20", minimum = "1")) @RequestParam(defaultValue = "20") @Positive int size) {
     var response = departmentService.getDepartments(page, size);
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
+    return Utils.returnOkResponse(
       "Get departments successfully",
       response);
   }

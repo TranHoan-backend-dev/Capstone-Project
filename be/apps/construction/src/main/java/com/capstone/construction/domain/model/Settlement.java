@@ -1,6 +1,6 @@
 package com.capstone.construction.domain.model;
 
-import com.capstone.construction.domain.enumerate.ProcessingStatus;
+import com.capstone.common.enumerate.ProcessingStatus;
 import jakarta.persistence.*;
 import com.capstone.construction.infrastructure.config.Constant;
 import lombok.*;

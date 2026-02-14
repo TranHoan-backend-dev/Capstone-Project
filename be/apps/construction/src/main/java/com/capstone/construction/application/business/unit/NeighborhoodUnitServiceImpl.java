@@ -4,8 +4,8 @@ import com.capstone.construction.application.dto.request.catalog.NeighborhoodUni
 import com.capstone.construction.application.dto.response.catalog.NeighborhoodUnitResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.domain.model.NeighborhoodUnit;
-import com.capstone.construction.domain.repository.NeighborhoodUnitRepository;
-import com.capstone.construction.domain.repository.CommuneRepository;
+import com.capstone.construction.infrastructure.persistence.NeighborhoodUnitRepository;
+import com.capstone.construction.infrastructure.persistence.CommuneRepository;
 import com.capstone.construction.application.exception.ExistingItemException;
 import com.capstone.construction.infrastructure.config.Constant;
 import lombok.AccessLevel;

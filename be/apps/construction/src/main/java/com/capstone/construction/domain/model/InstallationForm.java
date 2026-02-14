@@ -1,7 +1,10 @@
 package com.capstone.construction.domain.model;
 
+import com.capstone.common.enumerate.CustomerType;
+import com.capstone.common.enumerate.ProcessingStatus;
+import com.capstone.construction.domain.model.utils.FormProcessingStatus;
 import com.capstone.construction.domain.model.utils.Representative;
-import com.capstone.construction.domain.enumerate.UsageTarget;
+import com.capstone.common.enumerate.UsageTarget;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -26,7 +29,6 @@ import org.jspecify.annotations.NonNull;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InstallationForm {
   @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
   String formCode;
 
   @Column(length = 36, unique = true)
@@ -71,11 +73,19 @@ public class InstallationForm {
   Integer numberOfHousehold;
 
   @Column(nullable = false)
-  Integer householdRegistrationNumber;
+  Integer householdRegistrationNumber; // ho khau
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(columnDefinition = "jsonb")
   List<Representative> representative;
+
+  @Column(nullable = false, columnDefinition = "jsonb")
+  @JdbcTypeCode(SqlTypes.JSON)
+  FormProcessingStatus status;
+
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false, columnDefinition = "jsonb")
+  CustomerType customerType;
 
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "water_supply_network_id")
@@ -98,6 +108,8 @@ public class InstallationForm {
   void onCreate() {
     this.createdAt = LocalDateTime.now();
     this.updatedAt = this.createdAt;
+    this.status = new FormProcessingStatus();
+    status.setRegistration(ProcessingStatus.PROCESSING);
   }
 
   @PreUpdate
@@ -210,6 +222,16 @@ public class InstallationForm {
     this.address = address;
   }
 
+  public void setCustomerType(CustomerType value) {
+    Objects.requireNonNull(value, Constant.PT_06);
+    this.customerType = value;
+  }
+
+  public void setFormCode(String value) {
+    requireNonNullAndNotEmpty(value, Constant.PT_01);
+    this.formCode = value;
+  }
+
   private void requireNonNullAndNotEmpty(String value, String message) {
     Objects.requireNonNull(value, message);
     if (value.trim().isEmpty()) {
@@ -228,6 +250,16 @@ public class InstallationForm {
 
     public InstallationFormBuilder formNumber(String formNumber) {
       instance.setFormNumber(formNumber);
+      return this;
+    }
+
+    public InstallationFormBuilder formCode(String value) {
+      instance.setFormCode(value);
+      return this;
+    }
+
+    public InstallationFormBuilder customerType(CustomerType value) {
+      instance.setCustomerType(value);
       return this;
     }
 

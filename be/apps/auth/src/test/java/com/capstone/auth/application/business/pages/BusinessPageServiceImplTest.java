@@ -3,7 +3,7 @@ package com.capstone.auth.application.business.pages;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.auth.domain.model.BusinessPagesOfEmployees;
 import com.capstone.auth.domain.model.utils.BusinessPagesOfEmployeesId;
-import com.capstone.auth.domain.repository.BusinessPagesOfEmployeeRepository;
+import com.capstone.auth.infrastructure.persistence.BusinessPagesOfEmployeeRepository;
 import com.capstone.auth.infrastructure.service.OrganizationService;
 import com.capstone.auth.application.business.temp.TempService;
 import org.junit.jupiter.api.DisplayName;

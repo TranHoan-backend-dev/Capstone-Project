@@ -7,14 +7,16 @@ import com.capstone.auth.application.exception.ExistingException;
 import com.capstone.auth.application.exception.NotExistingException;
 import com.capstone.auth.domain.model.Roles;
 import com.capstone.auth.domain.model.Users;
-import com.capstone.auth.domain.repository.UserRepository;
+import com.capstone.auth.infrastructure.persistence.UserRepository;
 import com.capstone.auth.infrastructure.config.Constant;
+import com.capstone.common.annotation.AppLog;
 import com.capstone.common.utils.IdEncoder;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -25,13 +27,15 @@ import org.springframework.stereotype.Service;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-@Slf4j
+@AppLog
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserServiceImpl implements UserService {
   UserRepository repo;
   PasswordEncoder encoder;
+  @NonFinal
+  Logger log;
 
   @Override
   public void createEmployee(

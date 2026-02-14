@@ -4,7 +4,7 @@ import com.capstone.construction.application.dto.request.catalog.CommuneRequest;
 import com.capstone.construction.application.dto.response.catalog.CommuneResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.domain.model.Commune;
-import com.capstone.construction.domain.repository.CommuneRepository;
+import com.capstone.construction.infrastructure.persistence.CommuneRepository;
 import com.capstone.construction.application.exception.ExistingItemException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

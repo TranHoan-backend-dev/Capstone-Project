@@ -4,7 +4,7 @@ import com.capstone.construction.application.dto.request.settlement.SettlementRe
 import com.capstone.construction.application.dto.response.settlement.SettlementResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.domain.model.Settlement;
-import com.capstone.construction.domain.repository.SettlementRepository;
+import com.capstone.construction.infrastructure.persistence.SettlementRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

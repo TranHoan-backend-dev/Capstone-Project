@@ -4,7 +4,7 @@ import com.capstone.construction.application.dto.request.estimate.CostEstimateRe
 import com.capstone.construction.application.dto.response.estimate.CostEstimateResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.domain.model.CostEstimate;
-import com.capstone.construction.domain.repository.CostEstimateRepository;
+import com.capstone.construction.infrastructure.persistence.CostEstimateRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

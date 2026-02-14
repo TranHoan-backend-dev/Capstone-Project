@@ -3,6 +3,7 @@ package com.capstone.auth.adapter;
 import com.capstone.auth.application.dto.request.FilterUsersRequest;
 import com.capstone.auth.application.dto.request.UpdateBusinessPageNamesRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
+import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.auth.application.usecase.ProfileUseCase;
 import com.capstone.auth.application.usecase.UsersUseCase;
@@ -11,8 +12,9 @@ import com.capstone.common.utils.Utils;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.experimental.NonFinal;
+import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -30,11 +32,10 @@ import org.springdoc.core.annotations.ParameterObject;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
-@Slf4j
+@AppLog
 @RestController
 @RequestMapping("/authorization")
 @RequiredArgsConstructor
@@ -44,6 +45,8 @@ import java.util.List;
 public class AuthorizationController {
   UsersUseCase usersUseCase;
   ProfileUseCase profileUseCase;
+  @NonFinal
+  Logger log;
 
   @Operation(summary = "Lấy tất cả nhân viên", description = """
     Truy xuất danh sách nhân viên được phân trang. Có thể tùy chọn lọc theo trạng thái 'isEnabled' và 'username'. Bạn có thể xem các trang của nhân viên có quyền truy cập bằng cách gọi endpoint /employees/{id}/pages\s
@@ -68,10 +71,7 @@ public class AuthorizationController {
     log.info("Getting all employees with page index {} and page size {}", pageable.getPageNumber(),
       pageable.getPageSize());
 
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
-      "Get all employees successfully",
-      usersUseCase.getPaginatedListOfEmployees(pageable, request));
+    return Utils.returnOkResponse("Get all employees successfully", usersUseCase.getPaginatedListOfEmployees(pageable, request));
   }
 
   @Operation(summary = "Lấy các trang web nghiệp vụ được ủy quyền cho nhân viên", description = """
@@ -95,10 +95,7 @@ public class AuthorizationController {
     log.info("Getting pages of employee with id {}", empId);
     empId = IdEncoder.decode(empId);
 
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
-      "Get pages successfully",
-      usersUseCase.getListOfPagesByEmployeeId(empId));
+    return Utils.returnOkResponse("Get pages successfully", usersUseCase.getListOfPagesByEmployeeId(empId));
   }
 
   @Operation(summary = "Cập nhật các trang nghiệp vụ được ủy quyền cho nhiều nhân viên", description = """
@@ -128,10 +125,7 @@ public class AuthorizationController {
     log.info("Updating pages of employees");
     usersUseCase.updateBusinessPagesListOfEmployees(request);
 
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
-      "Update pages successfully",
-      null);
+    return Utils.returnOkResponse("Update pages successfully", null);
   }
 
   @GetMapping("/employees/{id}/name")
@@ -143,10 +137,15 @@ public class AuthorizationController {
     if (!Utils.isUUID(id)) {
       id = IdEncoder.decode(id);
     }
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
-      "Get name of current employee successfully",
-      profileUseCase.getFullNameById(id)
-    );
+    return Utils.returnOkResponse("Get name of current employee successfully", profileUseCase.getFullNameById(id));
+  }
+
+  @GetMapping("/employees/{authorId}")
+  public ResponseEntity<?> checkAuthorExisting(@PathVariable String authorId) {
+    log.info("Verifying existence of employee: {}", authorId);
+    if (!Utils.isUUID(authorId)) {
+      authorId = IdEncoder.decode(authorId);
+    }
+    return Utils.returnNoContentResponse("Check employee successfully", usersUseCase.checkIfEmployeeExists(authorId));
   }
 }

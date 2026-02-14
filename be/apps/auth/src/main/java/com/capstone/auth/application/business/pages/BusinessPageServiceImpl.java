@@ -1,18 +1,20 @@
 package com.capstone.auth.application.business.pages;
 
 import com.capstone.auth.application.business.temp.TempService;
-import com.capstone.auth.domain.repository.BusinessPagesOfEmployeeRepository;
+import com.capstone.auth.infrastructure.persistence.BusinessPagesOfEmployeeRepository;
 import com.capstone.auth.infrastructure.service.OrganizationService;
+import com.capstone.common.annotation.AppLog;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import lombok.experimental.NonFinal;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
-@Slf4j
+@AppLog
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -20,6 +22,8 @@ public class BusinessPageServiceImpl implements BusinessPageService {
   BusinessPagesOfEmployeeRepository bpRepo;
   OrganizationService orgSrv;
   TempService tempSrv;
+  @NonFinal
+  Logger log;
 
   @Override
   public Object getPagesByEmployeeId(String employeeId) {

@@ -1,5 +1,7 @@
 package com.capstone.construction.application.dto.response.installationform;
 
+import com.capstone.construction.domain.model.utils.FormProcessingStatus;
+
 public record InstallationFormListResponse(
   String formCode,
   String formNumber,
@@ -8,6 +10,7 @@ public record InstallationFormListResponse(
   String phoneNumber,
   String scheduleSurveyAt,
   String registrationAt,
-  String surveyEmployeeName
+  String surveyEmployeeName,
+  FormProcessingStatus status
 ) {
 }

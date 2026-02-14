@@ -2,20 +2,24 @@ package com.capstone.auth.application.business.roles;
 
 import com.capstone.auth.application.exception.NotExistingException;
 import com.capstone.auth.domain.model.Roles;
-import com.capstone.auth.domain.repository.RoleRepository;
+import com.capstone.auth.infrastructure.persistence.RoleRepository;
 import com.capstone.auth.infrastructure.config.Constant;
+import com.capstone.common.annotation.AppLog;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import lombok.experimental.NonFinal;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
-@Slf4j
+@AppLog
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RoleServiceImpl implements RoleService {
   RoleRepository repo;
+  @NonFinal
+  Logger log;
 
   @Override
   public String getRoleNameById(String id) {
