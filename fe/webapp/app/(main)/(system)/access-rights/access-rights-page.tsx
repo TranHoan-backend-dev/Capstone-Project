@@ -1,12 +1,16 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { AccessRightsTable } from "./components/access-rights-table";
+import { FilterSection } from "./components/filter-section";
 
 const AccessRightsPage = () => {
+  const [username, setUsername] = useState("");
   return (
     <>
-      <AccessRightsTable />
+      <FilterSection username={username}
+        onSearch={setUsername}/>
+      <AccessRightsTable username={username}/>
     </>
   );
 };

@@ -1,7 +1,7 @@
 import { API_GATEWAY_URL } from "@/utils/constraints";
 import axios from "axios";
 
-export const ViewAccessRightsService = (
+export const getAllEmployees = (
   accessToken: string,
   page: number,
   size: number,
@@ -20,3 +20,15 @@ export const ViewAccessRightsService = (
     },
   });
 
+export const getBusinessPageNamesOfEmployees = (
+  accessToken: string,
+  empId: string,
+) =>
+  axios.get(`${API_GATEWAY_URL}/auth/authorization/employees/${empId}/pages`, {
+    params: {
+      empId,
+    },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
