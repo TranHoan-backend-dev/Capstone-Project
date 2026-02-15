@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,6 +54,7 @@ public class BusinessPageServiceImpl implements BusinessPageService {
     );
   }
 
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public BusinessPageResponse updateBusinessPage(String pageId, @NonNull UpdateBusinessPageRequest request) {
     log.info("Updating business page: {}", pageId);

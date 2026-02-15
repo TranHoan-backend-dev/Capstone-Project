@@ -1,59 +1,54 @@
 package com.capstone.auth.infrastructure.service;
 
-import com.capstone.auth.application.dto.response.LoginResponse;
-import com.capstone.common.annotation.AppLog;
-import com.capstone.common.config.KeycloakProperties;
-
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
-import org.slf4j.Logger;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
+import com.capstone.auth.application.dto.request.keycloakparam.TokenExchangeParam;
+import com.capstone.auth.application.dto.request.keycloakparam.UserCreationParam;
+import com.capstone.auth.application.dto.request.keycloakparam.UserTokenExchangeParam;
+import com.capstone.auth.application.dto.response.TokenExchangeResponse;
+import com.capstone.auth.infrastructure.config.FeignMultipartConfig;
+import feign.QueryMap;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.bind.annotation.*;
 
-@AppLog
-@Service
-@RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class KeycloakService {
-  KeycloakProperties keycloakProperties;
-  RestTemplate restTemplate;
-  @NonFinal
-  Logger log;
+import java.util.List;
+import java.util.Map;
 
-  public LoginResponse login(String username, String password) {
-    log.info("Attempting login to Keycloak for user: {}", username);
+@FeignClient(
+  name = "keycloak-client",
+  url = "${keycloak.server-url}",
+  configuration = FeignMultipartConfig.class
+)
+public interface KeycloakService {
+  String TOKEN_URL = "/realms/cmsn/protocol/openid-connect/token";
+  String ADMIN_URL = "/admin/realms/cmsn";
 
-    HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+  @PostMapping(
+    value = TOKEN_URL, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+  TokenExchangeResponse exchangeToken(@RequestBody TokenExchangeParam param);
 
-    MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-    map.add("grant_type", "password");
-    map.add("client_id", keycloakProperties.getClientId());
-    map.add("client_secret", keycloakProperties.getClientSecret());
-    map.add("username", username);
-    map.add("password", password);
-    // map.add("scope", keycloakConfig.getScope());
-    map.add("scope", keycloakProperties.getScope());
+  @PostMapping(
+    value = ADMIN_URL + "/users",
+    consumes = MediaType.APPLICATION_JSON_VALUE
+  )
+  ResponseEntity<?> createUser(
+    @RequestHeader("authorization") String token,
+    @RequestBody UserCreationParam param
+  );
 
-    HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+  @PostMapping(value = TOKEN_URL, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+  TokenExchangeResponse exchangeUserToken(@QueryMap UserTokenExchangeParam param);
 
-    try {
-      ResponseEntity<LoginResponse> response = restTemplate.postForEntity(
-        keycloakProperties.getTokenUri(),
-        request,
-        LoginResponse.class);
-      return response.getBody();
-    } catch (Exception e) {
-      log.error("Login failed for user: {}", username, e);
-      throw new IllegalArgumentException("Invalid credentials or Keycloak error");
-    }
-  }
+  @GetMapping(ADMIN_URL + "/roles/{roleName}")
+  Map<String, Object> getRealmRole(
+    @RequestHeader("authorization") String token,
+    @PathVariable String roleName
+  );
+
+  @PostMapping(ADMIN_URL + "/users/{userId}/role-mappings/realm")
+  void assignRealmRole(
+    @RequestHeader("authorization") String token,
+    @PathVariable String userId,
+    @RequestBody List<Map<String, Object>> roles
+  );
 }

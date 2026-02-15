@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
@@ -37,6 +38,7 @@ public class InstallationFormHandlingUseCase {
     return ifSrv.getInstallationForms(pageable, request);
   }
 
+  @Transactional(rollbackFor = Exception.class)
   public NewInstallationFormResponse createNewInstallationRequest(@NonNull NewOrderRequest request) {
     log.info("UseCase is processing new installation request for form number: {}", request.formNumber());
 

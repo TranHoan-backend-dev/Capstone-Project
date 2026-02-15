@@ -23,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -41,6 +42,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   @NonFinal
   Logger log;
 
+  @Transactional(rollbackFor = Exception.class)
   @Override
   public NewInstallationFormResponse createNewInstallationForm(@NonNull NewOrderRequest request) {
     log.info("Service is creating new installation form: {}", request.formNumber());

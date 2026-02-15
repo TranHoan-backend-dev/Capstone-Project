@@ -17,15 +17,15 @@ import java.util.List;
 @ConfigurationProperties(prefix = "keycloak")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class KeycloakProperties {
-    String issuerUri;
-    String tokenUri;
-    String clientId;
-    String clientSecret;
-    String scope;
-    List<String> aud;
-    String serverUrl;
-    String username;
-    String password;
+  String issuerUri;
+  String tokenUri;
+  String clientId;
+  String clientSecret;
+  String scope;
+  List<String> aud;
+  String serverUrl;
+  String username;
+  String password;
 
   @Bean
   public Keycloak keycloak() {
