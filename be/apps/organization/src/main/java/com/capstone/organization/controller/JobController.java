@@ -47,6 +47,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Job", description = "Các endpoint quản lý chức danh công việc")
 public class JobController {
   JobService jobService;
+
   @NonFinal
   Logger log;
 
@@ -98,6 +99,14 @@ public class JobController {
     return Utils.returnOkResponse(
       "Get jobs successfully",
       response);
+  }
+
+  @GetMapping("/exist/{id}")
+  public Boolean checkExistence(@PathVariable String id) {
+    log.info("Check existence of id: {}", id);
+    var response = jobService.checkExistence(id);
+    log.info("Job is {}", response ? "exist" : "not exist");
+    return response;
   }
 
   private @NonNull String decodeId(String encodedId, String fieldName) {

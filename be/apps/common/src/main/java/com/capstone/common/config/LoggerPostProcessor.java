@@ -16,18 +16,18 @@ import java.lang.reflect.Modifier;
  */
 public class LoggerPostProcessor implements BeanPostProcessor {
 
-    @Override
-    public Object postProcessBeforeInitialization(@NonNull Object bean, @NonNull String beanName)
-            throws BeansException {
-        Class<?> clazz = bean.getClass();
-        if (clazz.isAnnotationPresent(AppLog.class)) {
-            ReflectionUtils.doWithFields(clazz, field -> {
-                if (Logger.class.isAssignableFrom(field.getType()) && !Modifier.isFinal(field.getModifiers())) {
-                    ReflectionUtils.makeAccessible(field);
-                    field.set(bean, LoggerFactory.getLogger(clazz));
-                }
-            });
+  @Override
+  public Object postProcessBeforeInitialization(@NonNull Object bean, @NonNull String beanName)
+    throws BeansException {
+    Class<?> clazz = bean.getClass();
+    if (clazz.isAnnotationPresent(AppLog.class)) {
+      ReflectionUtils.doWithFields(clazz, field -> {
+        if (Logger.class.isAssignableFrom(field.getType()) && !Modifier.isFinal(field.getModifiers())) {
+          ReflectionUtils.makeAccessible(field);
+          field.set(bean, LoggerFactory.getLogger(clazz));
         }
-        return bean;
+      });
     }
+    return bean;
+  }
 }

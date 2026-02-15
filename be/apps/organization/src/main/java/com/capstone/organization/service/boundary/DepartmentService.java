@@ -11,4 +11,6 @@ public interface DepartmentService {
   DepartmentResponse updateDepartment(String departmentId, UpdateDepartmentRequest request);
 
   PagedDepartmentResponse getDepartments(int page, int size);
+
+  boolean checkIfDepartmentExists(String departmentId);
 }

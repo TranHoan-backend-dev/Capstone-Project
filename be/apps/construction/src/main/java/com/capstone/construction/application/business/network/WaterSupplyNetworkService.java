@@ -15,4 +15,6 @@ public interface WaterSupplyNetworkService {
   WaterSupplyNetworkResponse getNetworkById(String id);
 
   PageResponse<WaterSupplyNetworkResponse> getAllNetworks(Pageable pageable, String keyword);
+
+  boolean networkExists(String id);
 }

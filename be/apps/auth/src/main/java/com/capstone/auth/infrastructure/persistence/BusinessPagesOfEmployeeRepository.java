@@ -20,6 +20,13 @@ public interface BusinessPagesOfEmployeeRepository
     """)
   List<BusinessPagesOfEmployees> findByUsersUserId(@Param("userId") String userId);
 
+  @Query("""
+    SELECT bp.id.pageId
+    FROM BusinessPagesOfEmployees bp
+    WHERE bp.users.userId = :userId
+    """)
+  List<String> findPagesOfEmployeesByUsersUserId(@Param("userId") String userId);
+
   @Modifying
   @Query("""
     DELETE FROM BusinessPagesOfEmployees bp

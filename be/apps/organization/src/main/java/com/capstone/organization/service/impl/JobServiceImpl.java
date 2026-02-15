@@ -86,4 +86,9 @@ public class JobServiceImpl implements JobService {
       result.getTotalPages()
     );
   }
+
+  @Override
+  public boolean checkExistence(String jobId) {
+    return jobRepository.existsById(jobId);
+  }
 }

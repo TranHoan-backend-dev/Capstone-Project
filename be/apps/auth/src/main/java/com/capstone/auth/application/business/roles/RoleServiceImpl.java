@@ -1,6 +1,7 @@
 package com.capstone.auth.application.business.roles;
 
 import com.capstone.auth.application.exception.NotExistingException;
+import com.capstone.auth.domain.enumerate.RoleName;
 import com.capstone.auth.domain.model.Roles;
 import com.capstone.auth.infrastructure.persistence.RoleRepository;
 import com.capstone.auth.infrastructure.config.Constant;
@@ -36,5 +37,11 @@ public class RoleServiceImpl implements RoleService {
   public Roles getRoleById(String id) {
     log.info("Getting role by id: {}", id);
     return repo.findById(id).orElseThrow(() -> new NotExistingException(Constant.SE_08));
+  }
+
+  @Override
+  public Roles getRoleByName(RoleName name) {
+    log.info("Getting role by name: {}", name);
+    return repo.findRolesByName(name);
   }
 }

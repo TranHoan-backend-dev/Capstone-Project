@@ -76,6 +76,11 @@ public class WaterSupplyNetworkServiceImpl implements WaterSupplyNetworkService 
     return PageResponse.fromPage(page, this::mapToResponse);
   }
 
+  @Override
+  public boolean networkExists(String id) {
+    return networkRepository.existsById(id);
+  }
+
   private WaterSupplyNetworkResponse mapToResponse(@NonNull WaterSupplyNetwork network) {
     return new WaterSupplyNetworkResponse(
       IdEncoder.encode(network.getBranchId()),

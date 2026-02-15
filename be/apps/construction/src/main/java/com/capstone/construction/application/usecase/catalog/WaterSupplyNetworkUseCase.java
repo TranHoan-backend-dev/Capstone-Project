@@ -43,4 +43,11 @@ public class WaterSupplyNetworkUseCase {
     log.info("UseCase: Fetching all networks");
     return networkService.getAllNetworks(pageable, keyword);
   }
+
+  public boolean checkExistenceOfNetwork(String id) {
+    log.info("UseCase: Checking existence of network {}", id);
+    var response = networkService.networkExists(id);
+    log.info("Network {} {}", id, response ? "exists" : "does not exist");
+    return response;
+  }
 }

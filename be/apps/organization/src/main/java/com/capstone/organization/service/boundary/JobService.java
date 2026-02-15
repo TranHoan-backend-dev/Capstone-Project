@@ -11,4 +11,6 @@ public interface JobService {
   JobResponse updateJob(String jobId, UpdateJobRequest request);
 
   PagedJobResponse getJobs(int page, int size);
+
+  boolean checkExistence(String jobId);
 }

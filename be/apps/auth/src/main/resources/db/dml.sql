@@ -1,28 +1,28 @@
 DO
 $$
   DECLARE
-    role_id1  uuid   := 'c4d8f989-0bc5-4c3a-9449-c3db12295a90';
-    role_id2  uuid   := '6bb525d0-3911-4851-9b8d-d929a080b609';
-    role_id3  uuid   := 'da4429b4-d7a7-4283-b386-189d69a95af9';
-    role_id4  uuid   := 'a789aaf0-6153-4f30-ac38-b08e859d5fcb';
-    role_id5  uuid   := '724184e3-456a-4c89-b3c5-b8ab508f80b5';
-    role_id6  uuid   := 'e9e6f842-9d4d-4a72-ae1b-ed06115a5119';
-    role_id7  uuid   := '6844f465-886a-4838-852b-864eb64e7d92';
-    role_id8  uuid   := '47c469de-21fd-4a32-a468-01a50f4aced6';
-    role_id9  uuid   := '852841cd-8e76-4eea-a7fe-9b15459d5eea';
-    role_id10 uuid   := '8ec56833-edd5-4a52-9fc8-256b91e2daca';
+    role_id1  uuid      := 'c4d8f989-0bc5-4c3a-9449-c3db12295a90';
+    role_id2  uuid      := '6bb525d0-3911-4851-9b8d-d929a080b609';
+    role_id3  uuid      := 'da4429b4-d7a7-4283-b386-189d69a95af9';
+    role_id4  uuid      := 'a789aaf0-6153-4f30-ac38-b08e859d5fcb';
+    role_id5  uuid      := '724184e3-456a-4c89-b3c5-b8ab508f80b5';
+    role_id6  uuid      := 'e9e6f842-9d4d-4a72-ae1b-ed06115a5119';
+    role_id7  uuid      := '6844f465-886a-4838-852b-864eb64e7d92';
+    role_id8  uuid      := '47c469de-21fd-4a32-a468-01a50f4aced6';
+    role_id9  uuid      := '852841cd-8e76-4eea-a7fe-9b15459d5eea';
+    role_id10 uuid      := '8ec56833-edd5-4a52-9fc8-256b91e2daca';
 --
-    user_id1  uuid   := '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20';
-    user_id2  uuid   := '14c5879c-a6c4-45a6-846b-39d2b9d8c961';
-    u3        uuid   := 'c8357517-3149-41b4-9b2c-881d5a40840a';
-    u4        uuid   := 'bd5bc9bb-303d-425f-9f2e-90f83ef75ee8';
-    u5        uuid   := '1cef2ae0-3151-405c-b717-61be20679d79';
-    u6        uuid   := '71bc19b9-4a86-4ff9-aa26-3fc037569cfd';
-    u7        uuid   := 'eae87df0-7f02-47b9-baa2-ac2bc9ea61fb';
-    u8        uuid   := 'd4039a01-4408-4fad-8676-05ef81532eb5';
-    u9        uuid   := 'e6876430-7145-4e43-aac3-dd53ca4f068a';
-    u10       uuid   := '67d04cc3-b4b8-44b9-ba41-91a1e477617a';
-    page_ids  uuid[] := ARRAY [
+    user_id1  uuid      := '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20';
+    user_id2  uuid      := '14c5879c-a6c4-45a6-846b-39d2b9d8c961';
+    u3        uuid      := 'c8357517-3149-41b4-9b2c-881d5a40840a';
+    u4        uuid      := 'bd5bc9bb-303d-425f-9f2e-90f83ef75ee8';
+    u5        uuid      := '1cef2ae0-3151-405c-b717-61be20679d79';
+    u6        uuid      := '71bc19b9-4a86-4ff9-aa26-3fc037569cfd';
+    u7        uuid      := 'eae87df0-7f02-47b9-baa2-ac2bc9ea61fb';
+    u8        uuid      := 'd4039a01-4408-4fad-8676-05ef81532eb5';
+    u9        uuid      := 'e6876430-7145-4e43-aac3-dd53ca4f068a';
+    u10       uuid      := '67d04cc3-b4b8-44b9-ba41-91a1e477617a';
+    page_ids  uuid[]    := ARRAY [
       '86088520-f274-4ac2-a94b-b761995abf4a', '4c3cdd22-5018-482c-bc34-51331e7167a9',
       'b4758afc-f456-4538-aabe-3d09a4591f34', 'b13d7531-4935-4da6-972e-04bbda46b47a',
       '88e1d15b-2407-487f-b4e1-aa96e18f0d85', 'ceedf230-1a7a-4c9d-b0c1-ce635d301ff3',
@@ -35,9 +35,27 @@ $$
       '88384dc8-2150-44f9-9691-202794fb00e2', 'e70256d4-0ceb-4fe6-94bb-78fb2261fd88',
       'bff81f4f-e6be-4750-8d4c-fb4d21b903ae'
       ];
-    user_ids  uuid[] := ARRAY [user_id1, user_id2, u3, u4, u5, u6, u7, u8, u9, u10];
+    job_ids   varchar[] := ARRAY [
+      '2420a323-e180-4927-b956-654761026048', 'b450503c-e30d-45be-803e-ac3226756811',
+      '8718a38c-a113-4395-97df-036113b246a4', 'c374665f-4a65-4d08-8e68-8de1b369c762',
+      'f8b63116-419b-43d9-9596-f9e421e428df', '4b35e298-2a78-4573-8c46-8f8303036006',
+      'a785311e-8d02-4091-af5e-88091152a513', '0586026a-9366-48c3-982e-9d821215b22b',
+      '93268800-410a-4876-b333-662369656828', '18177579-2475-4702-a164-9685652613b1',
+      '065842c2-8025-4c07-bc7e-976402422731', 'd8d21c38-8924-4061-827d-c36399996614',
+      '56475704-5001-443b-a25e-e47573677461', '2060377b-665e-49b4-825e-d21820625406',
+      '09492160-c3d3-467a-b924-cc0985550c60', '50212f45-0370-4322-a7d5-d14300329759',
+      '47585141-9496-4148-8df5-e1150495368a', '0a082087-0b13-491b-b72e-848821958210',
+      '0684277b-7b06-4475-8162-817651877607', '36526154-1296-4660-8488-842230006322',
+      '06085521-1221-4470-8255-888461741517', '96336688-2122-4462-8114-118833989911',
+      '55266155-5221-4471-8963-229944118822', '44115599-2288-4433-7744-996633221144',
+      '88552211-1144-4477-8855-663322114477', '77441122-8855-4466-9966-332211445588',
+      '66332255-7744-4455-8844-551122336699', '55221144-8855-4422-7711-663322558800',
+      '44115599-6633-4411-2288-112233445566', '33224488-5522-4433-1177-889966554433'
+      ];
+    user_ids  uuid[]    := ARRAY [user_id1, user_id2, u3, u4, u5, u6, u7, u8, u9, u10];
     p_id      uuid;
     u_id      uuid;
+    j_id      varchar;
   BEGIN
     INSERT INTO user_roles(role_id, name)
     VALUES (role_id2, 'IT_STAFF'),
@@ -92,6 +110,11 @@ $$
         FOREACH p_id IN ARRAY page_ids
           LOOP
             INSERT INTO business_pages_of_employees(users_user_id, page_id) VALUES (u_id, p_id);
+          END LOOP;
+
+        FOREACH j_id IN ARRAY job_ids
+          LOOP
+            INSERT INTO employee_job(users_user_id, job_id) VALUES (u_id, j_id);
           END LOOP;
       END LOOP;
   END

@@ -85,4 +85,9 @@ public class DepartmentServiceImpl implements DepartmentService {
       result.getTotalPages()
     );
   }
+
+  @Override
+  public boolean checkIfDepartmentExists(String departmentId) {
+    return departmentRepo.existsById(departmentId);
+  }
 }

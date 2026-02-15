@@ -93,12 +93,23 @@ public class DepartmentController {
     @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
   })
   public ResponseEntity<WrapperApiResponse> getDepartments(
-    @Parameter(in = ParameterIn.QUERY, description = "Chỉ số trang (bắt đầu từ 0)", schema = @Schema(type = "integer", defaultValue = "0", minimum = "0")) @RequestParam(defaultValue = "0") @PositiveOrZero int page,
-    @Parameter(in = ParameterIn.QUERY, description = "Kích thước trang", schema = @Schema(type = "integer", defaultValue = "20", minimum = "1")) @RequestParam(defaultValue = "20") @Positive int size) {
+    @Parameter(in = ParameterIn.QUERY, description = "Chỉ số trang (bắt đầu từ 0)", schema = @Schema(type = "integer", defaultValue = "0", minimum = "0"))
+    @RequestParam(defaultValue = "0") @PositiveOrZero int page,
+    @Parameter(in = ParameterIn.QUERY, description = "Kích thước trang", schema = @Schema(type = "integer", defaultValue = "20", minimum = "1"))
+    @RequestParam(defaultValue = "20") @Positive int size
+  ) {
     var response = departmentService.getDepartments(page, size);
     return Utils.returnOkResponse(
       "Get departments successfully",
       response);
+  }
+
+  @GetMapping("/exist/{id}")
+  public Boolean checkExistence(@PathVariable("id") String departmentId) {
+    log.info("Check existence of department {}", departmentId);
+    var response = departmentService.checkIfDepartmentExists(departmentId);
+    log.info("Department is {}", response ? "existing" : "not existing");
+    return response;
   }
 
   private @NonNull String decodeId(String encodedId, String fieldName) {
