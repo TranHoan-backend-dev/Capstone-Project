@@ -29,14 +29,14 @@ class ProfileServiceImplTest {
   void getProfileById_returns_profile_dto_when_exists() {
     var id = "4f321e7e-3a04-4afa-82e5-4e54e005febe";
     var profile = new Profile(
-      id,
-      null,
-      "Nguyen Van A",
-      "avatar.png",
-      "Hanoi",
-      "0912345678",
-      true,
-      LocalDate.of(1990, 1, 1));
+        id,
+        null,
+        "Nguyen Van A",
+        "avatar.png",
+        "Hanoi",
+        "0912345678",
+        true,
+        LocalDate.of(1990, 1, 1));
 
     when(profileRepository.findById(id)).thenReturn(Optional.of(profile));
 
@@ -64,14 +64,14 @@ class ProfileServiceImplTest {
   void getProfileByCredentials_calls_repo_by_email_when_email_pattern_matches() {
     var email = "test@example.com";
     var profile = new Profile(
-      "id-1",
-      null,
-      "Name",
-      null,
-      null,
-      "0912345678",
-      true,
-      null);
+        "id-1",
+        null,
+        "Name",
+        null,
+        null,
+        "0912345678",
+        true,
+        null);
 
     when(profileRepository.findByUsersEmail(email)).thenReturn(Optional.of(profile));
 
@@ -85,14 +85,14 @@ class ProfileServiceImplTest {
   void getProfileByCredentials_calls_repo_by_username_when_not_email() {
     var username = "testuser";
     var profile = new Profile(
-      "id-1",
-      null,
-      "Name",
-      null,
-      null,
-      "0912345678",
-      true,
-      null);
+        "id-1",
+        null,
+        "Name",
+        null,
+        null,
+        "0912345678",
+        true,
+        null);
 
     when(profileRepository.findByUsersUsername(username)).thenReturn(Optional.of(profile));
 
