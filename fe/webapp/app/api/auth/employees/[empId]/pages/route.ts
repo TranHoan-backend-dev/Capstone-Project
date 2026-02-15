@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { empId: string } },
+  { params }: { params: Promise<{ empId: string }> },
 ) {
   try {
     const accessToken = getAccessToken(req);
@@ -12,7 +12,7 @@ export async function GET(
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const { empId } = params;
+    const { empId } = await params;
     const response = await getBusinessPageNamesOfEmployees(accessToken, empId);
 
     return NextResponse.json(
