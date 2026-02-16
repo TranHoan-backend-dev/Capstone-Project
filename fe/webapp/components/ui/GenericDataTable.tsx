@@ -43,6 +43,7 @@ interface GenericDataTableProps<T> {
   actions?: React.ReactNode;
   topContent?: React.ReactNode;
   hideHeader?: boolean;
+  isLoading?: boolean;
 }
 
 export const GenericDataTable = <T extends { id: string | number }>({
@@ -58,6 +59,7 @@ export const GenericDataTable = <T extends { id: string | number }>({
   headerSummary,
   actions,
   topContent,
+  isLoading,
 }: GenericDataTableProps<T>) => {
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
 

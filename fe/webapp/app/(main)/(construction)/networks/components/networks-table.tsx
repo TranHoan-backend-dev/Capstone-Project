@@ -1,15 +1,22 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Chip, Link, Tooltip, Button } from "@heroui/react";
-import NextLink from "next/link";
-import { CalculatorIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
+import React, { useState, useEffect, useMemo } from "react";
+import { Tooltip, Button } from "@heroui/react";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import { TitleDarkColor } from "@/config/chip-and-icon";
+import { DeleteIcon, EditIcon } from "@/config/chip-and-icon";
 import { NetworksItem } from "@/types";
 import { NETWORKS_COLUMN } from "@/config/table-columns";
 
-export const NetworksTable = () => {
+interface Props {
+  keyword: string;
+}
+
+interface NetworkResponse {
+  branchId: string;
+  name: string;
+}
+
+export const NetworksTable = ({ keyword }: Props) => {
   const [data, setData] = useState<NetworksItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
@@ -21,12 +28,23 @@ export const NetworksTable = () => {
   useEffect(() => {
     setLoading(true);
 
+    const currentPage = keyword ? 1 : page;
+    if (keyword && page !== 1) {
+      setPage(1);
+      return;
+    }
+
     const fetchData = async () => {
       try {
         const params = new URLSearchParams({
-          page: String(page - 1),
+          page: String(currentPage - 1),
           size: String(pageSize),
         });
+
+        const trimmedKeyword = keyword.trim();
+        if (trimmedKeyword) {
+          params.append("keyword", trimmedKeyword);
+        }
 
         const res = await fetch(
           `/api/construction/networks?${params.toString()}`,
@@ -40,12 +58,12 @@ export const NetworksTable = () => {
         const json = await res.json();
         const pageData = json?.data;
         const items = pageData?.content ?? [];
-        const pageInfo = pageData?.page;
-        setTotalItems(pageInfo?.totalElements ?? 0);
+        setTotalItems(pageData?.totalElements ?? 0);
+        setTotalPages(pageData?.totalPages ?? 1);
 
-        const mapped = items.map((item: any, index: number) => ({
+        const mapped = items.map((item: NetworkResponse, index: number) => ({
           id: item.branchId,
-          stt: (page - 1) * pageSize + index + 1,
+          stt: (currentPage - 1) * pageSize + index + 1,
           name: item.name,
         }));
         setData(mapped);
@@ -59,22 +77,27 @@ export const NetworksTable = () => {
     };
 
     fetchData();
-  }, [page]);
+  }, [page, keyword]);
 
-  const actions = [
-    {
-      content: "Xóa",
-      icon: CalculatorIcon,
-      className:
-        "text-blue-600 dark:text-primary hover:bg-blue-50 dark:hover:bg-blue-900/30",
-    },
-    {
-      content: "Chỉnh sửa",
-      icon: PencilSquareIcon,
-      className:
-        "text-amber-500 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/30",
-    },
-  ];
+  const actionItems = useMemo(
+    () => [
+      {
+        content: "Chỉnh sửa",
+        icon: EditIcon,
+        className:
+          "text-amber-500 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/30",
+        onClick: (id: string) => console.log("Cập nhật:", id),
+      },
+      {
+        content: "Xóa",
+        icon: DeleteIcon,
+        className: "text-red-500 hover:bg-red-50",
+        onClick: (id: string) => console.log("Xóa:", id),
+      },
+    ],
+    [],
+  );
+
   const renderCell = (item: NetworksItem, columnKey: string) => {
     switch (columnKey) {
       case "stt":
@@ -93,14 +116,19 @@ export const NetworksTable = () => {
 
       case "actions":
         return (
-          <div className="flex justify-center items-center gap-1">
-            {actions.map((action, idx) => (
-              <Tooltip
-                key={idx}
-                closeDelay={0}
-                color={idx % 2 == 0 ? "primary" : "warning"}
-                content={action.content}
-              ></Tooltip>
+          <div className="flex items-center justify-center gap-2">
+            {actionItems.map((action, idx) => (
+              <Tooltip key={idx} content={action.content} closeDelay={0}>
+                <Button
+                  isIconOnly
+                  variant="light"
+                  size="sm"
+                  className={`${action.className} rounded-lg`}
+                  onPress={() => action.onClick(item.id)}
+                >
+                  <action.icon className="w-5 h-5" />
+                </Button>
+              </Tooltip>
             ))}
           </div>
         );
@@ -116,17 +144,19 @@ export const NetworksTable = () => {
   return (
     <>
       <GenericDataTable
-        isCollapsible
+        isLoading={loading}
+        title="Danh sách chi nhánh cấp nước"
         columns={NETWORKS_COLUMN}
         data={data}
-        headerSummary={`${data.length}`}
-        paginationProps={{
-          total: 5,
-          initialPage: 1,
-          summary: `1-5 của 25`,
-        }}
+        isCollapsible
         renderCellAction={renderCell}
-        title="Quản lý Chi nhánh cấp nước"
+        headerSummary={`${totalItems}`}
+        paginationProps={{
+          total: totalPages,
+          initialPage: page,
+          onChange: setPage,
+          summary: `${totalItems}`,
+        }}
       />
     </>
   );

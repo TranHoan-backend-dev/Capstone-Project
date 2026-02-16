@@ -14,7 +14,9 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const page = Number(searchParams.get("page") ?? 0);
     const size = Number(searchParams.get("size") ?? 10);
-    const response = await getAllNetworks(accessToken, page, size);
+    const keyword = searchParams.get("keyword") || undefined;
+
+    const response = await getAllNetworks(accessToken, page, size, keyword);
 
     return NextResponse.json(
       {
