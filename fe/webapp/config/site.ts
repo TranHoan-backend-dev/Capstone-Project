@@ -11,6 +11,19 @@ export const siteConfig = {
       href: "/home",
     },
 
+    //Danh mục
+    {
+      key: "categories",
+      label: "Danh mục",
+      items: [
+        {
+          key: "materials-group",
+          label: "Quản lý nhóm vật tư",
+          href: "/materials-group",
+        },
+      ],
+    },
+
     // Hợp đồng
     {
       key: "contract",

@@ -1,4 +1,5 @@
 import { SVGProps } from "react";
+export * from "./device/materials-group.type";
 
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
