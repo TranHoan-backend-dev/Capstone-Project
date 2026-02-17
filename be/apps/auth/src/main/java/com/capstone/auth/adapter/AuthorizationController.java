@@ -78,7 +78,7 @@ public class AuthorizationController {
 
     API này được sử dụng để lấy các trang web/trang mà nhân viên có quyền truy cập.
 
-    Truy vấn bằng ID nhân viên (đã mã hóa).
+    Truy vấn bằng ID nhân viên.
     """)
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Đã truy xuất thành công danh sách các trang web nghiệp vụ được ủy quyền", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Object.class))),
@@ -87,7 +87,7 @@ public class AuthorizationController {
   })
   @GetMapping("/employees/{empId}/pages")
   public ResponseEntity<WrapperApiResponse> getBusinessPageNamesOfEmployees(
-    @Parameter(description = "ID được mã hóa của nhân viên", required = true) @PathVariable String empId
+    @Parameter(description = "ID của nhân viên", required = true) @PathVariable String empId
   ) {
     log.info("Getting pages of employee with id {}", empId);
     return Utils.returnOkResponse("Get pages successfully", usersUseCase.getListOfPagesByEmployeeId(empId));
@@ -147,7 +147,7 @@ public class AuthorizationController {
   @GetMapping("/employees/{authorId}")
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF')")
   public ResponseEntity<WrapperApiResponse> checkAuthorExisting(
-    @Parameter(description = "ID của nhân viên cần kiểm tra (UUID hoặc mã hóa)", required = true)
+    @Parameter(description = "ID của nhân viên cần kiểm tra", required = true)
     @PathVariable String authorId
   ) {
     log.info("Verifying existence of employee: {}", authorId);

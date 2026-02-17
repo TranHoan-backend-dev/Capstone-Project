@@ -65,7 +65,7 @@ public class DepartmentController {
   }
 
   @PutMapping("/{departmentId}")
-  @Operation(summary = "Cập nhật phòng ban", description = "Cập nhật một phòng ban hiện có bằng ID đã mã hóa của nó.")
+  @Operation(summary = "Cập nhật phòng ban", description = "Cập nhật một phòng ban hiện có bằng ID của nó.")
   @ApiResponses({
     @ApiResponse(responseCode = "200", description = "Cập nhật phòng ban thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ", content = @Content),
@@ -73,7 +73,7 @@ public class DepartmentController {
     @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
   })
   public ResponseEntity<WrapperApiResponse> updateDepartment(
-    @Parameter(in = ParameterIn.PATH, description = "ID phòng ban đã mã hóa", required = true, schema = @Schema(type = "string"))
+    @Parameter(in = ParameterIn.PATH, description = "ID phòng ban", required = true, schema = @Schema(type = "string"))
     @PathVariable @NotBlank String departmentId,
     @RequestBody @Valid UpdateDepartmentRequest request) {
     log.info("Update department request comes to endpoint: {}", departmentId);

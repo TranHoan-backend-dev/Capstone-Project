@@ -46,7 +46,7 @@ public class BusinessPageController {
   Logger log;
 
   @PutMapping("/{pageId}")
-  @Operation(summary = "Cập nhật trang nghiệp vụ", description = "Cập nhật một trang nghiệp vụ hiện có bằng ID đã mã hóa của nó.")
+  @Operation(summary = "Cập nhật trang nghiệp vụ", description = "Cập nhật một trang nghiệp vụ hiện có bằng ID của nó.")
   @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Thông tin chi tiết cho trang nghiệp vụ, người cập nhật", required = true, content = @Content(schema = @Schema(implementation = UpdateBusinessPageRequest.class)))
   @ApiResponses({
     @ApiResponse(responseCode = "200", description = "Đã cập nhật trang nghiệp vụ", content = @Content(schema = @Schema(implementation = BusinessPageResponse.class))),
@@ -55,7 +55,7 @@ public class BusinessPageController {
     @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   public ResponseEntity<WrapperApiResponse> updateBusinessPage(
-    @Parameter(in = ParameterIn.PATH, description = "ID trang nghiệp vụ đã mã hóa", required = true, schema = @Schema(type = "string"))
+    @Parameter(in = ParameterIn.PATH, description = "ID trang nghiệp vụ", required = true, schema = @Schema(type = "string"))
     @PathVariable
     @NotBlank
     String pageId,

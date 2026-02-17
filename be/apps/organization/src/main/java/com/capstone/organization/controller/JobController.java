@@ -66,15 +66,16 @@ public class JobController {
   }
 
   @PutMapping("/{jobId}")
-  @Operation(summary = "Cập nhật chức danh công việc", description = "Cập nhật một chức danh công việc hiện có bằng ID đã mã hóa của nó.")
+  @Operation(summary = "Cập nhật công việc", description = "Cập nhật công việc hiện có bằng ID của nó.")
   @ApiResponses({
-    @ApiResponse(responseCode = "200", description = "Cập nhật chức danh công việc thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "200", description = "Cập nhật công việc thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ", content = @Content),
-    @ApiResponse(responseCode = "404", description = "Không tìm thấy chức danh công việc", content = @Content),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy công việc", content = @Content),
     @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
   })
   public ResponseEntity<WrapperApiResponse> updateJob(
-    @Parameter(in = ParameterIn.PATH, description = "ID chức danh công việc đã mã hóa", required = true, schema = @Schema(type = "string")) @PathVariable @NotBlank String jobId,
+    @Parameter(in = ParameterIn.PATH, description = "ID công việc", required = true, schema = @Schema(type = "string"))
+    @PathVariable @NotBlank String jobId,
     @RequestBody @Valid UpdateJobRequest request) {
     log.info("Update job request comes to endpoint: {}", jobId);
     var response = jobService.updateJob(jobId, request);
@@ -84,15 +85,17 @@ public class JobController {
   }
 
   @GetMapping
-  @Operation(summary = "Liệt kê chức danh công việc", description = "Lấy danh sách phân trang các chức danh công việc.")
+  @Operation(summary = "Liệt kê công việc", description = "Lấy danh sách phân trang các công việc.")
   @ApiResponses({
-    @ApiResponse(responseCode = "200", description = "Lấy danh sách chức danh công việc thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "200", description = "Lấy danh sách công việc thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "400", description = "Tham số phân trang không hợp lệ", content = @Content),
     @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
   })
   public ResponseEntity<WrapperApiResponse> getJobs(
-    @Parameter(in = ParameterIn.QUERY, description = "Chỉ số trang (bắt đầu từ 0)", schema = @Schema(type = "integer", defaultValue = "0", minimum = "0")) @RequestParam(defaultValue = "0") @PositiveOrZero int page,
-    @Parameter(in = ParameterIn.QUERY, description = "Kích thước trang", schema = @Schema(type = "integer", defaultValue = "20", minimum = "1")) @RequestParam(defaultValue = "20") @Positive int size) {
+    @Parameter(in = ParameterIn.QUERY, description = "Chỉ số trang (bắt đầu từ 0)", schema = @Schema(type = "integer", defaultValue = "0", minimum = "0"))
+    @RequestParam(defaultValue = "0") @PositiveOrZero int page,
+    @Parameter(in = ParameterIn.QUERY, description = "Kích thước trang", schema = @Schema(type = "integer", defaultValue = "20", minimum = "1"))
+    @RequestParam(defaultValue = "20") @Positive int size) {
     var response = jobService.getJobs(page, size);
     return Utils.returnOkResponse(
       "Get jobs successfully",
