@@ -38,8 +38,8 @@ public class WaterMeterController {
   @PostMapping
   public ResponseEntity<WrapperApiResponse> createWaterMeter(@RequestBody @Valid WaterMeterRequest request) {
     log.info("REST request to create water meter: {}", request.size());
-    var response = waterMeterService.createWaterMeter(request);
-    return Utils.returnCreatedResponse("Water meter created successfully", response);
+    waterMeterService.createWaterMeter(request);
+    return Utils.returnCreatedResponse("Water meter created successfully");
   }
 
   @Operation(summary = "Update a water meter", description = "Updates details of an existing water meter record", responses = {

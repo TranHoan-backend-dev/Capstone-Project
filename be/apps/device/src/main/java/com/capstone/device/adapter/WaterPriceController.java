@@ -38,8 +38,8 @@ public class WaterPriceController {
   @PostMapping
   public ResponseEntity<WrapperApiResponse> createWaterPrice(@RequestBody @Valid WaterPriceRequest request) {
     log.info("REST request to create water price for target: {}", request.usageTarget());
-    var response = waterPriceService.createWaterPrice(request);
-    return Utils.returnCreatedResponse("Water price created successfully", response);
+    waterPriceService.createWaterPrice(request);
+    return Utils.returnCreatedResponse("Water price created successfully");
   }
 
   @Operation(summary = "Update a water price", description = "Updates details of an existing water pricing policy", responses = {

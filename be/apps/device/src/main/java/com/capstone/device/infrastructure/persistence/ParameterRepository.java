@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ParameterRepository extends JpaRepository<Parameters, String> {
-  Page<Parameters> findAllByCreatorOrUpdator(Pageable pageable, String filter);
+  Page<Parameters> findAllByCreatorOrUpdator(String creator, String updator, Pageable pageable);
 
   Page<Parameters> findAllByNameContainingIgnoreCase(String filter, Pageable pageable);
 }
