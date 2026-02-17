@@ -22,7 +22,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   CostEstimateRepository estimateRepository;
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public CostEstimateResponse createEstimate(@NonNull CostEstimateRequest request) {
     log.info("Creating new cost estimate for customer: {}", request.customerName());
 
@@ -54,7 +54,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public CostEstimateResponse updateEstimate(String id, @NonNull CostEstimateRequest request) {
     log.info("Updating cost estimate with id: {}", id);
     var estimate = estimateRepository.findById(id)
@@ -87,7 +87,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public void deleteEstimate(String id) {
     log.info("Deleting cost estimate with id: {}", id);
     if (!estimateRepository.existsById(id)) {

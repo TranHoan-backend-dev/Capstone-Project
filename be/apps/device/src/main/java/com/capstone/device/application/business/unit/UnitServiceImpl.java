@@ -1,7 +1,6 @@
-package com.capstone.device.application.business.impl;
+package com.capstone.device.application.business.unit;
 
 import com.capstone.common.annotation.AppLog;
-import com.capstone.common.utils.IdEncoder;
 import com.capstone.device.application.dto.response.UnitResponse;
 import com.capstone.device.domain.model.Unit;
 import com.capstone.device.infrastructure.persistence.UnitRepository;
@@ -15,8 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import com.capstone.device.application.business.boundary.UnitService;
 
 @AppLog
 @Service
@@ -40,7 +37,7 @@ public class UnitServiceImpl implements UnitService {
 
   private UnitResponse convertUnitToResponse(@NonNull Unit unit) {
     return new UnitResponse(
-        IdEncoder.encode(unit.getId()),
+        unit.getId(),
         unit.getName(),
         unit.getCreatedAt().toLocalDate().toString(),
         unit.getUpdatedAt().toLocalDate().toString());

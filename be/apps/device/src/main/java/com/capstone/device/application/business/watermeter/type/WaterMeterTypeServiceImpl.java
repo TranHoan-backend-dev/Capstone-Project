@@ -1,4 +1,4 @@
-package com.capstone.device.application.business.impl;
+package com.capstone.device.application.business.watermeter.type;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -10,5 +10,5 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class MaterialsOfCostEstimateServiceImpl {
+public class WaterMeterTypeServiceImpl implements WaterMeterTypeService {
 }

@@ -1,7 +1,6 @@
-package com.capstone.device.application.business.impl;
+package com.capstone.device.application.business.material;
 
 import com.capstone.common.annotation.AppLog;
-import com.capstone.device.application.business.boundary.MaterialService;
 import com.capstone.device.application.dto.request.MaterialRequest;
 import com.capstone.device.application.dto.response.MaterialResponse;
 import com.capstone.device.domain.model.Material;
@@ -33,7 +32,7 @@ public class MaterialServiceImpl implements MaterialService {
   Logger log;
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public MaterialResponse createMaterial(@NonNull MaterialRequest request) {
     log.info("Creating material: {}", request.jobContent());
 
@@ -69,7 +68,7 @@ public class MaterialServiceImpl implements MaterialService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public MaterialResponse updateMaterial(String id, @NonNull MaterialRequest request) {
     log.info("Updating material ID: {}", id);
     var material = materialRepository.findById(id)
@@ -87,7 +86,7 @@ public class MaterialServiceImpl implements MaterialService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public void deleteMaterial(String id) {
     log.info("Deleting material ID: {}", id);
     if (!materialRepository.existsById(id)) {

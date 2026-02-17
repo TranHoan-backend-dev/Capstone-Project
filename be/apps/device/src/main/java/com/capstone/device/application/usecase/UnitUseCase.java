@@ -1,7 +1,7 @@
 package com.capstone.device.application.usecase;
 
 import com.capstone.common.annotation.AppLog;
-import com.capstone.device.application.business.boundary.UnitService;
+import com.capstone.device.application.business.unit.UnitService;
 import com.capstone.device.application.dto.response.UnitResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

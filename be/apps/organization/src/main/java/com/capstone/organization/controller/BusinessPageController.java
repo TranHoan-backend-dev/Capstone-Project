@@ -1,7 +1,6 @@
 package com.capstone.organization.controller;
 
 import com.capstone.common.annotation.AppLog;
-import com.capstone.common.utils.IdEncoder;
 import com.capstone.common.utils.Utils;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.organization.dto.request.FilterBusinessPagesRequest;
@@ -15,7 +14,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
-import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -64,7 +62,7 @@ public class BusinessPageController {
     @RequestBody @Valid UpdateBusinessPageRequest request) {
     log.info("Update business page request comes to endpoint: {}", pageId);
 
-    var response = businessPageService.updateBusinessPage(decodeId(pageId, "pageId"), request);
+    var response = businessPageService.updateBusinessPage(pageId, request);
 
     return Utils.returnOkResponse(
       "Update business page successfully",
@@ -121,13 +119,5 @@ public class BusinessPageController {
     return Utils.returnOkResponse(
       "Get all pages by list of ids successfully",
       businessPageService.getAllBusinessPageNamesByIds(content));
-  }
-
-  private @NonNull String decodeId(String encodedId, String fieldName) {
-    var decoded = IdEncoder.decode(encodedId);
-    if (decoded.isBlank()) {
-      throw new IllegalArgumentException(fieldName + " is invalid");
-    }
-    return decoded;
   }
 }

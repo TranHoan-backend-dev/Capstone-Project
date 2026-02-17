@@ -3,7 +3,7 @@ package com.capstone.device.adapter;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
-import com.capstone.device.application.business.boundary.WaterPriceService;
+import com.capstone.device.application.business.waterprice.WaterPriceService;
 import com.capstone.device.application.dto.request.WaterPriceRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

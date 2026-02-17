@@ -1,4 +1,4 @@
-package com.capstone.device.application.business.boundary;
+package com.capstone.device.application.business.material;
 
 import com.capstone.device.application.dto.request.MaterialRequest;
 import com.capstone.device.application.dto.response.MaterialResponse;

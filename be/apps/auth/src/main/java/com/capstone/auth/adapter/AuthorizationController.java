@@ -8,7 +8,6 @@ import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.auth.application.usecase.ProfileUseCase;
 import com.capstone.auth.application.usecase.UsersUseCase;
-import com.capstone.common.utils.IdEncoder;
 import com.capstone.common.utils.Utils;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -91,8 +90,6 @@ public class AuthorizationController {
     @Parameter(description = "ID được mã hóa của nhân viên", required = true) @PathVariable String empId
   ) {
     log.info("Getting pages of employee with id {}", empId);
-    empId = IdEncoder.decode(empId);
-
     return Utils.returnOkResponse("Get pages successfully", usersUseCase.getListOfPagesByEmployeeId(empId));
   }
 
@@ -131,9 +128,6 @@ public class AuthorizationController {
     @PathVariable @NotBlank @NotEmpty @NotNull String id
   ) {
     log.info("Fetching employee name by id: {}", id);
-    if (!Utils.isUUID(id)) {
-      id = IdEncoder.decode(id);
-    }
     return Utils.returnOkResponse("Get name of current employee successfully", profileUseCase.getFullNameById(id));
   }
 
@@ -157,9 +151,6 @@ public class AuthorizationController {
     @PathVariable String authorId
   ) {
     log.info("Verifying existence of employee: {}", authorId);
-    if (!Utils.isUUID(authorId)) {
-      authorId = IdEncoder.decode(authorId);
-    }
     return Utils.returnOkResponse("Check employee successfully", usersUseCase.checkIfEmployeeExists(authorId));
   }
 
@@ -168,6 +159,6 @@ public class AuthorizationController {
     @RequestBody NewUserRequest request
   ) {
     log.info("Creating new employee");
-    return Utils.returnCreatedResponse("Create new employee successfully", null);
+    return Utils.returnCreatedResponse("Create new employee successfully");
   }
 }

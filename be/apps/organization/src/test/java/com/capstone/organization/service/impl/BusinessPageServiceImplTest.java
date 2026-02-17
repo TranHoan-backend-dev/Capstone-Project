@@ -1,6 +1,5 @@
 package com.capstone.organization.service.impl;
 
-import com.capstone.common.utils.IdEncoder;
 import com.capstone.organization.dto.request.CreateBusinessPageRequest;
 import com.capstone.organization.dto.request.UpdateBusinessPageRequest;
 import com.capstone.organization.model.BusinessPage;
@@ -36,7 +35,7 @@ class BusinessPageServiceImplTest {
 
     var response = businessPageService.createBusinessPage(request);
 
-    assertThat(response.pageId()).isEqualTo(IdEncoder.encode("page-1"));
+    assertThat(response.pageId()).isEqualTo("page-1");
     assertThat(response.name()).isEqualTo("Sales");
     assertThat(response.activate()).isTrue();
     assertThat(response.creator()).isEqualTo("creator-1");
@@ -68,7 +67,7 @@ class BusinessPageServiceImplTest {
 
     var response = businessPageService.updateBusinessPage("page-2", request);
 
-    assertThat(response.pageId()).isEqualTo(IdEncoder.encode("page-2"));
+    assertThat(response.pageId()).isEqualTo("page-2");
     assertThat(response.name()).isEqualTo("Support");
     assertThat(response.activate()).isFalse();
     assertThat(response.creator()).isEqualTo("creator-2");

@@ -1,7 +1,6 @@
-package com.capstone.device.application.business.impl;
+package com.capstone.device.application.business.waterprice;
 
 import com.capstone.common.annotation.AppLog;
-import com.capstone.device.application.business.boundary.WaterPriceService;
 import com.capstone.device.application.dto.request.WaterPriceRequest;
 import com.capstone.device.application.dto.response.WaterPriceResponse;
 import com.capstone.device.domain.model.WaterPrice;
@@ -27,7 +26,7 @@ public class WaterPriceServiceImpl implements WaterPriceService {
   Logger log;
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public WaterPriceResponse createWaterPrice(@NonNull WaterPriceRequest request) {
     log.info("Creating water price for target: {}", request.usageTarget());
 
@@ -39,12 +38,12 @@ public class WaterPriceServiceImpl implements WaterPriceService {
       .description(request.description())
       .expirationDate(request.expirationDate()));
 
-    WaterPrice saved = waterPriceRepository.save(wp);
+    var saved = waterPriceRepository.save(wp);
     return mapToResponse(saved);
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public WaterPriceResponse updateWaterPrice(String id, @NonNull WaterPriceRequest request) {
     log.info("Updating water price ID: {}", id);
     var wp = waterPriceRepository.findById(id)
@@ -57,12 +56,12 @@ public class WaterPriceServiceImpl implements WaterPriceService {
     wp.setExpirationDate(request.expirationDate());
     wp.setDescription(request.description());
 
-    WaterPrice updated = waterPriceRepository.save(wp);
+    var updated = waterPriceRepository.save(wp);
     return mapToResponse(updated);
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public void deleteWaterPrice(String id) {
     log.info("Deleting water price ID: {}", id);
     if (!waterPriceRepository.existsById(id)) {

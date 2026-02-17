@@ -26,7 +26,7 @@ public class HamletServiceImpl implements HamletService {
   CommuneRepository communeRepository;
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public HamletResponse createHamlet(@NonNull HamletRequest request) {
     log.info("Creating new hamlet with name: {}", request.name());
     if (hamletRepository.existsByName(request.name())) {
@@ -46,7 +46,7 @@ public class HamletServiceImpl implements HamletService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public HamletResponse updateHamlet(String id, @NonNull HamletRequest request) {
     log.info("Updating hamlet with id: {}", id);
     var hamlet = hamletRepository.findById(id)
@@ -68,7 +68,7 @@ public class HamletServiceImpl implements HamletService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public void deleteHamlet(String id) {
     log.info("Deleting hamlet with id: {}", id);
     if (!hamletRepository.existsById(id)) {

@@ -1,4 +1,4 @@
-package com.capstone.device.application.business.boundary;
+package com.capstone.device.application.business.unit;
 
 import com.capstone.device.application.dto.response.UnitResponse;
 import org.springframework.data.domain.Page;

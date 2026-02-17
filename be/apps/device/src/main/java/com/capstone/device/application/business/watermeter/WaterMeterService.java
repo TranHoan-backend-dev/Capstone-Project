@@ -1,4 +1,4 @@
-package com.capstone.device.application.business.boundary;
+package com.capstone.device.application.business.watermeter;
 
 import com.capstone.device.application.dto.request.WaterMeterRequest;
 import com.capstone.device.application.dto.response.WaterMeterResponse;
@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable;
 public interface WaterMeterService {
     /**
      * Creates a new water meter record.
-     * 
+     *
      * @param request the water meter creation request
      * @return the created water meter response
      */
@@ -19,7 +19,7 @@ public interface WaterMeterService {
 
     /**
      * Updates an existing water meter record.
-     * 
+     *
      * @param id      the water meter ID
      * @param request the water meter update request
      * @return the updated water meter response
@@ -28,14 +28,14 @@ public interface WaterMeterService {
 
     /**
      * Deletes a water meter record by ID.
-     * 
+     *
      * @param id the water meter ID
      */
     void deleteWaterMeter(String id);
 
     /**
      * Retrieves a water meter record by ID.
-     * 
+     *
      * @param id the water meter ID
      * @return the water meter response
      */
@@ -43,7 +43,7 @@ public interface WaterMeterService {
 
     /**
      * Retrieves all water meters with pagination.
-     * 
+     *
      * @param pageable pagination information
      * @return a page of water meter responses
      */

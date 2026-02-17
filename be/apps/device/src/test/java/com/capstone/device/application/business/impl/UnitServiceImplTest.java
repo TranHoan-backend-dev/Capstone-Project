@@ -1,6 +1,6 @@
 package com.capstone.device.application.business.impl;
 
-import com.capstone.common.utils.IdEncoder;
+import com.capstone.device.application.business.unit.UnitServiceImpl;
 import com.capstone.device.application.dto.response.UnitResponse;
 import com.capstone.device.domain.model.Unit;
 import com.capstone.device.infrastructure.persistence.UnitRepository;
@@ -63,7 +63,7 @@ class UnitServiceImplTest {
     verify(unitRepository, never()).findByNameContainsIgnoreCase(any(), any());
 
     UnitResponse response = result.getContent().getFirst();
-    assertThat(response.id()).isEqualTo(IdEncoder.encode(unit.getId()));
+    assertThat(response.id()).isEqualTo(unit.getId());
     assertThat(response.name()).isEqualTo(unit.getName());
   }
 

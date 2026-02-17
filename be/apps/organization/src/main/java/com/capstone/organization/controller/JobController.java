@@ -1,7 +1,6 @@
 package com.capstone.organization.controller;
 
 import com.capstone.common.annotation.AppLog;
-import com.capstone.common.utils.IdEncoder;
 import com.capstone.common.utils.Utils;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.organization.dto.request.CreateJobRequest;
@@ -15,7 +14,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
-import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -79,7 +77,7 @@ public class JobController {
     @Parameter(in = ParameterIn.PATH, description = "ID chức danh công việc đã mã hóa", required = true, schema = @Schema(type = "string")) @PathVariable @NotBlank String jobId,
     @RequestBody @Valid UpdateJobRequest request) {
     log.info("Update job request comes to endpoint: {}", jobId);
-    var response = jobService.updateJob(decodeId(jobId, "jobId"), request);
+    var response = jobService.updateJob(jobId, request);
     return Utils.returnOkResponse(
       "Update job successfully",
       response);
@@ -107,13 +105,5 @@ public class JobController {
     var response = jobService.checkExistence(id);
     log.info("Job is {}", response ? "exist" : "not exist");
     return response;
-  }
-
-  private @NonNull String decodeId(String encodedId, String fieldName) {
-    var decoded = IdEncoder.decode(encodedId);
-    if (decoded.isBlank()) {
-      throw new IllegalArgumentException(fieldName + " is invalid");
-    }
-    return decoded;
   }
 }

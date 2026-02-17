@@ -23,7 +23,7 @@ public class RoadServiceImpl implements RoadService {
   RoadRepository roadRepository;
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public RoadResponse createRoad(@NonNull RoadRequest request) {
     log.info("Creating new road with name: {}", request.name());
     if (roadRepository.existsByName(request.name())) {
@@ -38,7 +38,7 @@ public class RoadServiceImpl implements RoadService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public RoadResponse updateRoad(String id, @NonNull RoadRequest request) {
     log.info("Updating road with id: {}", id);
     var road = roadRepository.findById(id)
@@ -55,7 +55,7 @@ public class RoadServiceImpl implements RoadService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public void deleteRoad(String id) {
     log.info("Deleting road with id: {}", id);
     if (!roadRepository.existsById(id)) {

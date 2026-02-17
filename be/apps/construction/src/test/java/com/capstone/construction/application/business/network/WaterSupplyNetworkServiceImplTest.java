@@ -1,6 +1,5 @@
 package com.capstone.construction.application.business.network;
 
-import com.capstone.common.utils.IdEncoder;
 import com.capstone.construction.application.dto.request.catalog.WaterSupplyNetworkRequest;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.application.dto.response.catalog.WaterSupplyNetworkResponse;
@@ -64,7 +63,7 @@ class WaterSupplyNetworkServiceImplTest {
     // Assert
     assertNotNull(response);
     assertEquals(networkName, response.name());
-    assertEquals(IdEncoder.encode("id-1"), response.branchId());
+    assertEquals("id-1", response.branchId());
     verify(networkRepository, times(1)).save(any(WaterSupplyNetwork.class));
   }
 
@@ -91,7 +90,7 @@ class WaterSupplyNetworkServiceImplTest {
     // Assert
     assertNotNull(response);
     assertEquals(newName, response.name());
-    assertEquals(IdEncoder.encode(id), response.branchId());
+    assertEquals(id, response.branchId());
 
     verify(networkRepository, times(1)).findById(id);
     verify(networkRepository, times(1)).save(existingNetwork);
@@ -153,7 +152,7 @@ class WaterSupplyNetworkServiceImplTest {
     // Assert
     assertNotNull(response);
     assertEquals(network.getName(), response.name());
-    assertEquals(IdEncoder.encode(id), response.branchId());
+    assertEquals(id, response.branchId());
   }
 
   @Test
