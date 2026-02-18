@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, {useState} from "react";
 
 import { FormActions } from "./components/form-actions";
 import { OrderInfoSection } from "./components/(order-info)/order-info-section";
@@ -12,7 +12,9 @@ import { InvoiceInfoSection } from "./components/invoice-info-section";
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { AddNewIcon } from "@/config/chip-and-icon";
 
-const NewInstallationForm = () => {
+const NewInstallationLookup = () => {
+  const [keyword, setKeyword] = useState("");
+  const [reloadKey, setReloadKey] = useState(0);
   const relatedOrders = [
     {
       id: "1",
@@ -63,9 +65,9 @@ const NewInstallationForm = () => {
         <InvoiceInfoSection />
       </GenericSearchFilter>
 
-      <RelatedOrdersTable data={relatedOrders} />
+      <RelatedOrdersTable keyword={keyword} reloadKey={reloadKey} />
     </>
   );
 };
 
-export default NewInstallationForm;
+export default NewInstallationLookup;

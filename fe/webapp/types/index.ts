@@ -183,7 +183,5 @@ export type FormField =
   | CheckboxField
   | TextareaField;
 
-export type OrderStage = "register" | "estimate" | "contract" | "construction";
 
-export type OrderStatus = "processing" | "pending" | "approved" | "rejected";
 
