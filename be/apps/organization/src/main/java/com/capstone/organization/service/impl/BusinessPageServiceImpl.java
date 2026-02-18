@@ -1,7 +1,6 @@
 package com.capstone.organization.service.impl;
 
 import com.capstone.common.annotation.AppLog;
-import com.capstone.common.utils.IdEncoder;
 import com.capstone.organization.dto.request.CreateBusinessPageRequest;
 import com.capstone.organization.dto.request.FilterBusinessPagesRequest;
 import com.capstone.organization.dto.request.UpdateBusinessPageRequest;
@@ -34,6 +33,7 @@ public class BusinessPageServiceImpl implements BusinessPageService {
   Logger log;
 
   @Override
+  @Transactional(rollbackFor = Exception.class)
   public BusinessPageResponse createBusinessPage(@NonNull CreateBusinessPageRequest request) {
     log.info("Creating business page with name: {}", request.name());
 
@@ -45,17 +45,11 @@ public class BusinessPageServiceImpl implements BusinessPageService {
     );
 
     var saved = businessPageRepository.save(entity);
-    return new BusinessPageResponse(
-      IdEncoder.encode(saved.getPageId()),
-      saved.getName(),
-      saved.getActivate(),
-      saved.getCreator(),
-      saved.getUpdator()
-    );
+    return convert(saved);
   }
 
-  @Transactional(rollbackFor = Exception.class)
   @Override
+  @Transactional(rollbackFor = Exception.class)
   public BusinessPageResponse updateBusinessPage(String pageId, @NonNull UpdateBusinessPageRequest request) {
     log.info("Updating business page: {}", pageId);
 
@@ -67,13 +61,7 @@ public class BusinessPageServiceImpl implements BusinessPageService {
     entity.setUpdator(request.updator());
 
     var saved = businessPageRepository.save(entity);
-    return new BusinessPageResponse(
-      IdEncoder.encode(saved.getPageId()),
-      saved.getName(),
-      saved.getActivate(),
-      saved.getCreator(),
-      saved.getUpdator()
-    );
+    return convert(saved);
   }
 
   @Override
@@ -106,13 +94,7 @@ public class BusinessPageServiceImpl implements BusinessPageService {
 
   private @NonNull PagedBusinessPageResponse mapResponse(@NonNull Page<BusinessPage> list) {
     var items = list.getContent().stream()
-      .map(pageEntity -> new BusinessPageResponse(
-        IdEncoder.encode(pageEntity.getPageId()),
-        pageEntity.getName(),
-        pageEntity.getActivate(),
-        pageEntity.getCreator(),
-        pageEntity.getUpdator()
-      ))
+      .map(this::convert)
       .collect(Collectors.toList());
     return new PagedBusinessPageResponse(
       items,
@@ -120,6 +102,17 @@ public class BusinessPageServiceImpl implements BusinessPageService {
       list.getSize(),
       list.getTotalElements(),
       list.getTotalPages()
+    );
+  }
+
+  // TODO: lay employee name
+  private BusinessPageResponse convert(@NonNull BusinessPage saved) {
+    return new BusinessPageResponse(
+      saved.getPageId(),
+      saved.getName(),
+      saved.getActivate(),
+      saved.getCreator(),
+      saved.getUpdator()
     );
   }
 }

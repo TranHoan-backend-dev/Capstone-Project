@@ -3,7 +3,6 @@ package com.capstone.auth.application.business.profile;
 import com.capstone.auth.application.exception.NotExistingException;
 import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.infrastructure.persistence.ProfileRepository;
-import com.capstone.common.utils.IdEncoder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -43,13 +42,13 @@ class ProfileServiceImplTest {
     var dto = profileService.getProfileById(id);
 
     assertNotNull(dto);
-    assertEquals(IdEncoder.encode(id), dto.id());
+    assertEquals(id, dto.id());
     assertEquals("Nguyen Van A", dto.fullname());
     assertEquals("avatar.png", dto.avatarUrl());
     assertEquals("Hanoi", dto.address());
     assertEquals("0912345678", dto.phoneNumber());
-    assertEquals("true", dto.gender());
-    assertEquals("1990-01-01", dto.birthday());
+    assertEquals(true, dto.gender());
+    assertEquals("1990-01-01", dto.birthday().toString());
   }
 
   @Test
@@ -113,8 +112,8 @@ class ProfileServiceImplTest {
 
     assertEquals("", dto.avatarUrl());
     assertEquals("", dto.address());
-    assertEquals("", dto.gender());
-    assertEquals("", dto.birthday());
+    assertEquals("", dto.gender().toString());
+    assertEquals("", dto.birthday().toString());
   }
 
   @Test

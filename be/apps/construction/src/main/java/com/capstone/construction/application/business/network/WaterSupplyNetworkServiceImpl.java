@@ -1,7 +1,6 @@
 package com.capstone.construction.application.business.network;
 
 import com.capstone.common.annotation.AppLog;
-import com.capstone.common.utils.IdEncoder;
 import com.capstone.construction.application.dto.request.catalog.WaterSupplyNetworkRequest;
 import com.capstone.construction.application.dto.response.catalog.WaterSupplyNetworkResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
@@ -27,7 +26,7 @@ public class WaterSupplyNetworkServiceImpl implements WaterSupplyNetworkService 
   Logger log;
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public WaterSupplyNetworkResponse createNetwork(@NonNull WaterSupplyNetworkRequest request) {
     log.info("Creating new water supply network with name: {}", request.name());
 
@@ -39,7 +38,7 @@ public class WaterSupplyNetworkServiceImpl implements WaterSupplyNetworkService 
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public WaterSupplyNetworkResponse updateNetwork(String id, @NonNull WaterSupplyNetworkRequest request) {
     log.info("Updating water supply network with id: {}", id);
     var network = networkRepository.findById(id)
@@ -52,7 +51,7 @@ public class WaterSupplyNetworkServiceImpl implements WaterSupplyNetworkService 
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public void deleteNetwork(String id) {
     log.info("Deleting water supply network with id: {}", id);
     if (!networkRepository.existsById(id)) {
@@ -83,7 +82,7 @@ public class WaterSupplyNetworkServiceImpl implements WaterSupplyNetworkService 
 
   private WaterSupplyNetworkResponse mapToResponse(@NonNull WaterSupplyNetwork network) {
     return new WaterSupplyNetworkResponse(
-      IdEncoder.encode(network.getBranchId()),
+      network.getBranchId(),
       network.getName(),
       network.getCreatedAt());
   }

@@ -22,7 +22,7 @@ public class SettlementServiceImpl implements SettlementService {
   SettlementRepository settlementRepository;
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public SettlementResponse createSettlement(@NonNull SettlementRequest request) {
     log.info("Creating new settlement for address: {}", request.address());
 
@@ -39,7 +39,7 @@ public class SettlementServiceImpl implements SettlementService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public SettlementResponse updateSettlement(String id, @NonNull SettlementRequest request) {
     log.info("Updating settlement with id: {}", id);
     var settlement = settlementRepository.findById(id)
@@ -57,7 +57,7 @@ public class SettlementServiceImpl implements SettlementService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public void deleteSettlement(String id) {
     log.info("Deleting settlement with id: {}", id);
     if (!settlementRepository.existsById(id)) {

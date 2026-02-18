@@ -26,7 +26,7 @@ public class NeighborhoodUnitServiceImpl implements NeighborhoodUnitService {
   CommuneRepository communeRepository;
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public NeighborhoodUnitResponse createUnit(@NonNull NeighborhoodUnitRequest request) {
     log.info("Creating new neighborhood unit with name: {}", request.name());
     if (unitRepository.existsByName(request.name())) {
@@ -45,7 +45,7 @@ public class NeighborhoodUnitServiceImpl implements NeighborhoodUnitService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public NeighborhoodUnitResponse updateUnit(String id, @NonNull NeighborhoodUnitRequest request) {
     log.info("Updating neighborhood unit with id: {}", id);
     var unit = unitRepository.findById(id)
@@ -66,7 +66,7 @@ public class NeighborhoodUnitServiceImpl implements NeighborhoodUnitService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public void deleteUnit(String id) {
     log.info("Deleting neighborhood unit with id: {}", id);
     if (!unitRepository.existsById(id)) {

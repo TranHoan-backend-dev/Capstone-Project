@@ -1,6 +1,6 @@
 package com.capstone.device.application.usecase;
 
-import com.capstone.device.application.business.boundary.UnitService;
+import com.capstone.device.application.business.unit.UnitService;
 import com.capstone.device.application.dto.response.UnitResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

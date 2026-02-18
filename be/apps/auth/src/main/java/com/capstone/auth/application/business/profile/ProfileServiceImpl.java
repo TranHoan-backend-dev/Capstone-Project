@@ -6,8 +6,6 @@ import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.infrastructure.persistence.ProfileRepository;
 import com.capstone.auth.infrastructure.config.Constant;
 import com.capstone.common.annotation.AppLog;
-import com.capstone.common.utils.IdEncoder;
-import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -15,6 +13,7 @@ import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -45,17 +44,16 @@ public class ProfileServiceImpl implements ProfileService {
   }
 
   @Override
+  @Transactional(rollbackFor = Exception.class)
   public ProfileDTO updateProfile(Profile profile) {
     log.info("Updating profile: {}", profile);
-    if (profile == null) {
-      throw new IllegalArgumentException("Profile is null");
-    }
+    Objects.requireNonNull(profile, "Profile is null");
     repo.save(profile);
     return convertToResponse(Optional.of(profile));
   }
 
-  @Transactional
   @Override
+  @Transactional(rollbackFor = Exception.class)
   public ProfileDTO updateAvatar(String id, String avatar) {
     log.info("Update avatar with id: {} and avatar url: {}", id, avatar);
     repo.updateAvatarByProfileId(id, avatar);
@@ -68,7 +66,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
     var p = profile.get();
     return new ProfileDTO(
-      IdEncoder.encode(profile.get().getProfileId()),
+      profile.get().getProfileId(),
       p.getFullname(),
       p.getAvatarUrl(),
       p.getAddress(),

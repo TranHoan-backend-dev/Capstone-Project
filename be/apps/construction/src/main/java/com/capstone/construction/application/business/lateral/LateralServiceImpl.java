@@ -26,7 +26,7 @@ public class LateralServiceImpl implements LateralService {
   WaterSupplyNetworkRepository networkRepository;
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public LateralResponse createLateral(@NonNull LateralRequest request) {
     log.info("Creating new lateral with name: {}", request.name());
     if (lateralRepository.existsByName(request.name())) {
@@ -45,7 +45,7 @@ public class LateralServiceImpl implements LateralService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public LateralResponse updateLateral(String id, @NonNull LateralRequest request) {
     log.info("Updating lateral with id: {}", id);
     var lateral = lateralRepository.findById(id)
@@ -66,7 +66,7 @@ public class LateralServiceImpl implements LateralService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public void deleteLateral(String id) {
     log.info("Deleting lateral with id: {}", id);
     if (!lateralRepository.existsById(id)) {

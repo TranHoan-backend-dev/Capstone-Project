@@ -18,7 +18,6 @@ import com.capstone.auth.infrastructure.config.Constant;
 import com.capstone.auth.infrastructure.service.NetworkService;
 import com.capstone.auth.infrastructure.service.OrganizationService;
 import com.capstone.common.annotation.AppLog;
-import com.capstone.common.utils.IdEncoder;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -53,8 +52,8 @@ public class UserServiceImpl implements UserService {
   @NonFinal
   Logger log;
 
-  @Transactional(rollbackFor = Exception.class) // rollback neu co loi
   @Override
+  @Transactional(rollbackFor = Exception.class) // rollback neu co loi
   public void createEmployee(
     String username, String email, Roles role, @NonNull List<String> jobIds,
     String departmentId, String waterSupplyNetworkId, String fullName, String phone
@@ -96,6 +95,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional(rollbackFor = Exception.class)
   public void updatePassword(String email, @NonNull String password, String newPassword) {
     var obj = getUsersByEmail(email);
     // if (encoder.matches(password, obj.getPassword())) {
@@ -107,6 +107,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional(rollbackFor = Exception.class)
   public void resetPassword(String email, String newPassword) {
     var obj = getUsersByEmail(email);
     updateUser(obj, newPassword);
@@ -148,6 +149,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional(rollbackFor = Exception.class)
   public UserDTO updateUsername(String id, String username) {
     log.info("Saving user: {}", username);
     var currentUser = repo.findById(id)
@@ -165,7 +167,7 @@ public class UserServiceImpl implements UserService {
     var usersList = request.isEnabled() == null ? repo.findAll(pageable)
       : repo.findByIsEnabledTrueAndIsLockedFalse(pageable);
     var content = usersList.getContent().stream().map(c -> new EmployeeResponse(
-      IdEncoder.encode(c.getUserId()),
+      c.getUserId(),
       c.getUsername(),
       c.getEmail())).toList();
 
@@ -202,7 +204,7 @@ public class UserServiceImpl implements UserService {
   private @NonNull UserDTO returnUserDTO(@NonNull Users currentUser) {
     var jobIds = bpRepo.findPagesOfEmployeesByUsersUserId(currentUser.getUserId());
     return new UserDTO(
-      IdEncoder.encode(currentUser.getUserId()),
+      currentUser.getUserId(),
       currentUser.getRole().getName().name(),
       currentUser.getUsername(),
       currentUser.getEmail(),

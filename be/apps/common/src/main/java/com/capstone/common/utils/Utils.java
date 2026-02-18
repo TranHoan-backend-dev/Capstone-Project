@@ -36,8 +36,8 @@ public class Utils {
     return buildResponse(HttpStatus.OK.value(), message, data);
   }
 
-  public static @NonNull ResponseEntity<WrapperApiResponse> returnCreatedResponse(String message, Object data) {
-    return buildResponse(HttpStatus.CREATED.value(), message, data);
+  public static @NonNull ResponseEntity<WrapperApiResponse> returnCreatedResponse(String message) {
+    return buildResponse(HttpStatus.CREATED.value(), message, null);
   }
 
   public static @NonNull ResponseEntity<WrapperApiResponse> returnBadRequestResponse(String message, Object data) {

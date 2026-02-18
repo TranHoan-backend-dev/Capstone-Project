@@ -28,7 +28,7 @@ public class RoadmapServiceImpl implements RoadmapService {
   WaterSupplyNetworkRepository networkRepository;
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public RoadmapResponse createRoadmap(@NonNull RoadmapRequest request) {
     log.info("Creating new roadmap with name: {}", request.name());
     if (roadmapRepository.existsByName(request.name())) {
@@ -51,7 +51,7 @@ public class RoadmapServiceImpl implements RoadmapService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public RoadmapResponse updateRoadmap(String id, @NonNull RoadmapRequest request) {
     log.info("Updating roadmap with id: {}", id);
     var roadmap = roadmapRepository.findById(id)
@@ -76,7 +76,7 @@ public class RoadmapServiceImpl implements RoadmapService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public void deleteRoadmap(String id) {
     log.info("Deleting roadmap with id: {}", id);
     if (!roadmapRepository.existsById(id)) {

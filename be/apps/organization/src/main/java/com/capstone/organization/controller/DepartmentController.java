@@ -1,7 +1,6 @@
 package com.capstone.organization.controller;
 
 import com.capstone.common.annotation.AppLog;
-import com.capstone.common.utils.IdEncoder;
 import com.capstone.common.utils.Utils;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.organization.dto.request.CreateDepartmentRequest;
@@ -15,7 +14,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
-import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -53,7 +51,7 @@ public class DepartmentController {
   @PostMapping
   @Operation(summary = "Tạo phòng ban", description = "Tạo một phòng ban mới và trả về dữ liệu của nó.")
   @ApiResponses({
-    @ApiResponse(responseCode = "201", description = "Tạo phòng ban thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "201", description = "Tạo phòng ban thành công"),
     @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ", content = @Content),
     @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
   })
@@ -67,7 +65,7 @@ public class DepartmentController {
   }
 
   @PutMapping("/{departmentId}")
-  @Operation(summary = "Cập nhật phòng ban", description = "Cập nhật một phòng ban hiện có bằng ID đã mã hóa của nó.")
+  @Operation(summary = "Cập nhật phòng ban", description = "Cập nhật một phòng ban hiện có bằng ID của nó.")
   @ApiResponses({
     @ApiResponse(responseCode = "200", description = "Cập nhật phòng ban thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ", content = @Content),
@@ -75,11 +73,11 @@ public class DepartmentController {
     @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
   })
   public ResponseEntity<WrapperApiResponse> updateDepartment(
-    @Parameter(in = ParameterIn.PATH, description = "ID phòng ban đã mã hóa", required = true, schema = @Schema(type = "string"))
+    @Parameter(in = ParameterIn.PATH, description = "ID phòng ban", required = true, schema = @Schema(type = "string"))
     @PathVariable @NotBlank String departmentId,
     @RequestBody @Valid UpdateDepartmentRequest request) {
     log.info("Update department request comes to endpoint: {}", departmentId);
-    var response = departmentService.updateDepartment(decodeId(departmentId, "departmentId"), request);
+    var response = departmentService.updateDepartment(departmentId, request);
     return Utils.returnOkResponse(
       "Update department successfully",
       response);
@@ -110,13 +108,5 @@ public class DepartmentController {
     var response = departmentService.checkIfDepartmentExists(departmentId);
     log.info("Department is {}", response ? "existing" : "not existing");
     return response;
-  }
-
-  private @NonNull String decodeId(String encodedId, String fieldName) {
-    var decoded = IdEncoder.decode(encodedId);
-    if (decoded.isBlank()) {
-      throw new IllegalArgumentException(fieldName + " is invalid");
-    }
-    return decoded;
   }
 }
