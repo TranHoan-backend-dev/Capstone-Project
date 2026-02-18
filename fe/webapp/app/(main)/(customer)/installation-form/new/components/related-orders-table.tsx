@@ -1,21 +1,19 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Link, Chip, Tooltip, Button } from "@heroui/react";
+import { Link, Tooltip, Button } from "@heroui/react";
 import NextLink from "next/link";
 
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import {
   BlueYellowIconColor,
-  DarkGreenChip,
-  DarkYellowChip,
   DeleteIcon,
   PrintReceiptIcon,
   RedIconColor,
   TitleDarkColor,
 } from "@/config/chip-and-icon";
 import { INSTALLATION_FORM_NEW_COLUMN } from "@/config/table-columns";
-import { InstallationFormNewItem } from "@/types";
+import { NewInstallationFormItem, NewInstallationFormResponse } from "@/types";
 import { formatDate } from "@/utils/format";
 
 interface Props {
@@ -23,21 +21,8 @@ interface Props {
   reloadKey: number;
 }
 
-interface InstallationFormNewResponse {
-  formCode: string;
-  formNumber: string;
-  customerName: string;
-  address: string;
-  phoneNumber: string;
-  registrationAt: string;
-  surveyEmployeeName: string;
-  status: {
-    registration: string;
-  };
-}
-
 export const RelatedOrdersTable = ({ keyword, reloadKey }: Props) => {
-  const [data, setData] = useState<InstallationFormNewItem[]>([]);
+  const [data, setData] = useState<NewInstallationFormItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -80,18 +65,18 @@ export const RelatedOrdersTable = ({ keyword, reloadKey }: Props) => {
         const json = await res.json();
         const pageData = json?.data;
         const items = pageData?.content ?? [];
-        setTotalItems(pageData?.totalElements ?? 0);
-        setTotalPages(pageData?.totalPages ?? 1);
+        setTotalItems(pageData?.page.totalElements ?? 0);
+        setTotalPages(pageData?.page.totalPages ?? 1);
 
         const mapped = items.map(
-          (item: InstallationFormNewResponse, index: number) => ({
+          (item: NewInstallationFormResponse, index: number) => ({
             id: item.formCode,
             stt: (page - 1) * pageSize + index + 1,
-            code: item.formNumber,
+            formNumber: item.formNumber,
             customerName: item.customerName,
-            phone: item.phoneNumber,
+            phoneNumber: item.phoneNumber,
             address: item.address,
-            createdDate: formatDate(item.registrationAt),
+            registrationAt: formatDate(item.registrationAt),
           }),
         );
 
@@ -108,6 +93,35 @@ export const RelatedOrdersTable = ({ keyword, reloadKey }: Props) => {
     fetchData();
   }, [page, keyword, reloadKey, sort]);
 
+  const handleSortChange = (columnKey: string) => {
+    setPage(1);
+
+    setSort((prev) => {
+      const direction =
+        prev.field === columnKey && prev.direction === "asc" ? "desc" : "asc";
+
+      return {
+        field: columnKey === "stt" ? "createdAt" : columnKey,
+        direction,
+      };
+    });
+  };
+
+  const actionButtons = [
+    {
+      content: "In biên nhận",
+      icon: PrintReceiptIcon,
+      className: BlueYellowIconColor,
+      color: "primary" as const,
+    },
+    {
+      content: "Xóa",
+      icon: DeleteIcon,
+      className: RedIconColor,
+      color: "danger" as const,
+    },
+  ];
+  
   const renderCell = (item: any, columnKey: string) => {
     switch (columnKey) {
       case "stt":
@@ -116,14 +130,14 @@ export const RelatedOrdersTable = ({ keyword, reloadKey }: Props) => {
             {item.stt}
           </span>
         );
-      case "code":
+      case "formNumber":
         return (
           <Link
             as={NextLink}
             className={`font-bold text-blue-600 hover:underline hover:text-blue-800 ${TitleDarkColor}`}
             href="#"
           >
-            {item.code}
+            {item.formNumber}
           </Link>
         );
       case "customerName":
@@ -132,46 +146,7 @@ export const RelatedOrdersTable = ({ keyword, reloadKey }: Props) => {
             {item.customerName}
           </span>
         );
-      case "status":
-        if (item.status === "completed") {
-          return (
-            <Chip
-              className={`font-bold ${DarkGreenChip}`}
-              color="success"
-              size="sm"
-              variant="flat"
-            >
-              Hoàn thành
-            </Chip>
-          );
-        }
-
-        return (
-          <Chip
-            className={`font-bold ${DarkYellowChip}`}
-            color="warning"
-            size="sm"
-            variant="flat"
-          >
-            Đang lắp đặt
-          </Chip>
-        );
       case "actions":
-        const actionButtons = [
-          {
-            content: "In biên nhận",
-            icon: PrintReceiptIcon,
-            className: BlueYellowIconColor,
-            color: "primary" as const,
-          },
-          {
-            content: "Xóa",
-            icon: DeleteIcon,
-            className: RedIconColor,
-            color: "danger" as const,
-          },
-        ];
-
         return (
           <div className="flex items-center gap-2 justify-center">
             {actionButtons.map((action, idx) => (
@@ -211,7 +186,9 @@ export const RelatedOrdersTable = ({ keyword, reloadKey }: Props) => {
         summary: `${totalItems}`,
       }}
       renderCellAction={renderCell}
-      title="Danh sách đơn liên quan"
+      title="Danh sách đơn lắp đặt mới"
+      sort={sort}
+      onSortChange={handleSortChange}
     />
   );
 };
