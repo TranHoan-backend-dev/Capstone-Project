@@ -16,6 +16,7 @@ import {
 } from "@/config/chip-and-icon";
 import { INSTALLATION_FORM_NEW_COLUMN } from "@/config/table-columns";
 import { InstallationFormNewItem } from "@/types";
+import { formatDate } from "@/utils/format";
 
 interface Props {
   keyword: string;
@@ -44,7 +45,7 @@ export const RelatedOrdersTable = ({ keyword, reloadKey }: Props) => {
     field: string;
     direction: "asc" | "desc";
   }>({
-    field: "registrationAt",
+    field: "",
     direction: "desc",
   });
 
@@ -88,10 +89,9 @@ export const RelatedOrdersTable = ({ keyword, reloadKey }: Props) => {
             stt: (page - 1) * pageSize + index + 1,
             code: item.formNumber,
             customerName: item.customerName,
-            phoneNumber: item.phoneNumber,
-            createdAt: item.registrationAt,
-            surveyEmployeeName: item.surveyEmployeeName,
-            status: item.status,
+            phone: item.phoneNumber,
+            address: item.address,
+            createdDate: formatDate(item.registrationAt),
           }),
         );
 
