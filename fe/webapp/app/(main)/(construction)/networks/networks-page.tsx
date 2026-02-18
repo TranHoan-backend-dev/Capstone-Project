@@ -6,10 +6,13 @@ import { Spinner } from "@heroui/react";
 import { useEmployeeProfile } from "@/hooks/useEmployeeProfile";
 import { NetworksTable } from "./components/networks-table";
 import { FilterSection } from "./components/filter-section";
+import { NetworkForm } from "./components/network-form";
 
 const NetworksPage = () => {
   const { profile, loading } = useEmployeeProfile();
   const [keyword, setKeyword] = useState("");
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
 
   if (loading) {
     return (
@@ -26,8 +29,22 @@ const NetworksPage = () => {
 
   return (
     <>
-      <FilterSection keyword={keyword} onSearch={setKeyword}/>
-      <NetworksTable keyword={keyword}/>
+      <FilterSection
+        keyword={keyword}
+        onSearch={setKeyword}
+        onAddNew={() => setShowAddForm(true)}
+      />
+
+      {showAddForm && (
+        <NetworkForm
+          onSuccess={() => {
+            setShowAddForm(false);
+            setReloadKey((prev) => prev + 1);
+          }}
+        />
+      )}
+
+      <NetworksTable keyword={keyword} reloadKey={reloadKey} />
     </>
   );
 };

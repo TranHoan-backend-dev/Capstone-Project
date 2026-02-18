@@ -16,10 +16,12 @@ import {
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
 import { CustomPagination } from "./custom/CustomPagination";
+import { SortAscIcon, SortDescIcon } from "@/config/chip-and-icon";
 
 interface Column {
   key: string;
   label: string | React.ReactNode;
+  sortable?: boolean;
   align?: "start" | "center" | "end";
   width?: string;
 }
@@ -44,6 +46,11 @@ interface GenericDataTableProps<T> {
   topContent?: React.ReactNode;
   hideHeader?: boolean;
   isLoading?: boolean;
+  sort?: {
+    field: string;
+    direction: "asc" | "desc";
+  };
+  onSortChange?: (field: string) => void;
 }
 
 export const GenericDataTable = <T extends { id: string | number }>({
@@ -60,6 +67,8 @@ export const GenericDataTable = <T extends { id: string | number }>({
   actions,
   topContent,
   isLoading,
+  sort,
+  onSortChange,
 }: GenericDataTableProps<T>) => {
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
 
@@ -113,7 +122,9 @@ export const GenericDataTable = <T extends { id: string | number }>({
             <Table
               removeWrapper
               aria-label={title}
+              isStriped
               classNames={{
+                tr: "hover:bg-default-100 transition-colors",
                 th: "bg-default-50 text-default-400 font-bold py-4 px-4 text-[11px] uppercase tracking-widest",
                 td: "py-4 px-4 text-sm text-foreground last:border-none",
                 ...tableProps?.classNames,
@@ -125,10 +136,19 @@ export const GenericDataTable = <T extends { id: string | number }>({
                   <TableColumn
                     key={column.key}
                     align={column.align || "start"}
-                    className={`${index === 0 ? "!pl-8" : ""} bg-default-100 text-foreground`}
+                    onClick={() =>
+                      column.sortable && onSortChange?.(column.key)
+                    }
+                    className={`${index === 0 ? "!pl-8" : ""} bg-default-100 text-foreground ${onSortChange ? "cursor-pointer select-none" : ""} column.sortable ? "cursor-pointer select-none ..." : ""`}
                     style={column.width ? { width: column.width } : {}}
                   >
                     {column.label}
+                    {sort?.field === column.key &&
+                      (sort.direction === "asc" ? (
+                        <SortAscIcon className="w-3 h-3" />
+                      ) : (
+                        <SortDescIcon className="w-3 h-3" />
+                      ))}
                   </TableColumn>
                 ))}
               </TableHeader>
@@ -140,7 +160,7 @@ export const GenericDataTable = <T extends { id: string | number }>({
                 {(item) => (
                   <TableRow
                     key={item.id}
-                    className="hover:bg-default-50 transition-colors border-divider"
+                    className="hover:bg-default-50 transition-colors hover:bg-default-10 even:bg-default-50 border-divider"
                   >
                     {columns.map((column, index) => (
                       <TableCell

@@ -5,16 +5,21 @@ import React, { useState, useEffect } from "react";
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { SearchIcon } from "@/components/ui/Icons";
 import CustomInput from "@/components/ui/custom/CustomInput";
-import { CheckApprovalIcon } from "@/config/chip-and-icon";
+import { AddNewIcon } from "@/config/chip-and-icon";
 import FilterButton from "@/components/ui/FilterButton";
 import { FilterActionButton } from "@/components/ui/FilterActionButton";
 
 interface FilterSectionProps {
   keyword: string;
   onSearch: (value: string) => void;
+  onAddNew: () => void;
 }
 
-export const FilterSection = ({ keyword, onSearch }: FilterSectionProps) => {
+export const FilterSection = ({
+  keyword,
+  onSearch,
+  onAddNew,
+}: FilterSectionProps) => {
   const [inputValue, setInputValue] = useState(keyword);
   useEffect(() => {
     setInputValue(keyword);
@@ -31,9 +36,9 @@ export const FilterSection = ({ keyword, onSearch }: FilterSectionProps) => {
           <FilterActionButton
             className="bg-green-500 hover:bg-green-600 dark:shadow-md dark:shadow-success/40 mr-2"
             color="success"
-            icon={<CheckApprovalIcon className="w-4 h-4" />}
-            label="Lưu"
-            onPress={() => {}}
+            icon={<AddNewIcon className="w-4 h-4" />}
+            label="Thêm mới"
+            onPress={onAddNew}
           />
           <FilterButton onPress={() => onSearch(inputValue)} />
         </div>

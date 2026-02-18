@@ -1,4 +1,4 @@
-import { getAllNetworks } from "@/services/construction.service";
+import { createNetwork, getAllNetworks } from "@/services/construction.service";
 import { getAccessToken } from "@/utils/getAccessToken";
 import { NextRequest } from "next/dist/server/web/spec-extension/request";
 import { NextResponse } from "next/server";
@@ -14,9 +14,16 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const page = Number(searchParams.get("page") ?? 0);
     const size = Number(searchParams.get("size") ?? 10);
+    const sort = searchParams.get("sort") || "createdAt,desc";
     const keyword = searchParams.get("keyword") || undefined;
 
-    const response = await getAllNetworks(accessToken, page, size, keyword);
+    const response = await getAllNetworks(
+      accessToken,
+      page,
+      size,
+      sort,
+      keyword,
+    );
 
     return NextResponse.json(
       {
@@ -34,6 +41,28 @@ export async function GET(req: NextRequest) {
         error: error?.response?.data ?? null,
       },
       { status },
+    );
+  }
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const accessToken = getAccessToken(req);
+
+    if (!accessToken) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+    const { name } = await req.json();
+
+    const response = await createNetwork(accessToken, name);
+    console.log(response);
+    return NextResponse.json(response.data, { status: 201 });
+  } catch (error: any) {
+    return NextResponse.json(
+      {
+        message: error.response?.data?.message || "Create network failed",
+      },
+      { status: error.response?.status || 500 },
     );
   }
 }

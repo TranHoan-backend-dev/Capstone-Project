@@ -9,6 +9,7 @@ import { NETWORKS_COLUMN } from "@/config/table-columns";
 
 interface Props {
   keyword: string;
+  reloadKey: number;
 }
 
 interface NetworkResponse {
@@ -16,11 +17,18 @@ interface NetworkResponse {
   name: string;
 }
 
-export const NetworksTable = ({ keyword }: Props) => {
+export const NetworksTable = ({ keyword, reloadKey }: Props) => {
   const [data, setData] = useState<NetworksItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [sort, setSort] = useState<{
+    field: string;
+    direction: "asc" | "desc";
+  }>({
+    field: "createdAt",
+    direction: "desc",
+  });
 
   const [page, setPage] = useState(1);
   const pageSize = 10;
@@ -28,17 +36,12 @@ export const NetworksTable = ({ keyword }: Props) => {
   useEffect(() => {
     setLoading(true);
 
-    const currentPage = keyword ? 1 : page;
-    if (keyword && page !== 1) {
-      setPage(1);
-      return;
-    }
-
     const fetchData = async () => {
       try {
         const params = new URLSearchParams({
-          page: String(currentPage - 1),
+          page: String(page - 1),
           size: String(pageSize),
+          sort: `${sort.field},${sort.direction}`,
         });
 
         const trimmedKeyword = keyword.trim();
@@ -63,7 +66,7 @@ export const NetworksTable = ({ keyword }: Props) => {
 
         const mapped = items.map((item: NetworkResponse, index: number) => ({
           id: item.branchId,
-          stt: (currentPage - 1) * pageSize + index + 1,
+          stt: (page - 1) * pageSize + index + 1,
           name: item.name,
         }));
         setData(mapped);
@@ -77,8 +80,26 @@ export const NetworksTable = ({ keyword }: Props) => {
     };
 
     fetchData();
-  }, [page, keyword]);
+  }, [page, keyword, reloadKey, sort]);
 
+  const handleSortChange = (columnKey: string) => {
+    setPage(1);
+
+    setSort((prev) => {
+      const direction =
+        prev.field === columnKey && prev.direction === "asc" ? "desc" : "asc";
+
+      return {
+        field: columnKey === "stt" ? "createdAt" : columnKey,
+        direction,
+      };
+    });
+  };
+
+  useEffect(() => {
+    setPage(1);
+  }, [keyword]);
+  
   const actionItems = useMemo(
     () => [
       {
@@ -157,6 +178,8 @@ export const NetworksTable = ({ keyword }: Props) => {
           onChange: setPage,
           summary: `${totalItems}`,
         }}
+        sort={sort}
+        onSortChange={handleSortChange}
       />
     </>
   );
