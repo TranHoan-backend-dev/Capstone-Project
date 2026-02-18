@@ -27,14 +27,13 @@ public class WaterSupplyNetworkServiceImpl implements WaterSupplyNetworkService 
 
   @Override
   @Transactional(rollbackFor = Exception.class)
-  public WaterSupplyNetworkResponse createNetwork(@NonNull WaterSupplyNetworkRequest request) {
+  public void createNetwork(@NonNull WaterSupplyNetworkRequest request) {
     log.info("Creating new water supply network with name: {}", request.name());
 
     var network = WaterSupplyNetwork.create(builder -> builder
       .name(request.name()));
 
     var saved = networkRepository.save(network);
-    return mapToResponse(saved);
   }
 
   @Override

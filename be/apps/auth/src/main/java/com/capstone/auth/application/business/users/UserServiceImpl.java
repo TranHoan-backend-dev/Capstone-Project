@@ -163,23 +163,37 @@ public class UserServiceImpl implements UserService {
   @Override
   public Page<EmployeeResponse> getAllEmployeesWithStatus(Pageable pageable, FilterUsersRequest request) {
     log.info("Getting all active employees with activate status: {}", request);
+    Page<Users> usersList;
+//    var usersList = request.isEnabled() == null ? repo.findAll(pageable)
+//      : repo.findByIsEnabledTrueAndIsLockedFalse(pageable);
+//
+//    if (request.username() != null) {
+//      content = content.stream()
+//        .filter(c -> c
+//          .username().toLowerCase()
+//          .contains(request.username().toLowerCase()))
+//        .toList();
+//    }
+//    log.info("Found {} employees", content.size());
 
-    var usersList = request.isEnabled() == null ? repo.findAll(pageable)
-      : repo.findByIsEnabledTrueAndIsLockedFalse(pageable);
+    if (request != null) {
+      if (request.isEnabled() != null && request.username() == null) {
+        usersList = repo.findByIsEnabledTrueAndIsLockedFalse(pageable);
+      } else if (request.username() != null && request.isEnabled() == null) {
+        usersList = repo.findByUsernameContainsIgnoreCase(request.username(), pageable);
+      } else if (request.isEnabled() != null) {
+        usersList = repo.findByIsEnabledTrueAndIsLockedFalseOrUsernameContainingIgnoreCase(request.username(), pageable);
+      } else {
+        usersList = repo.findAll(pageable);
+      }
+    } else {
+      usersList = repo.findAll(pageable);
+    }
+
     var content = usersList.getContent().stream().map(c -> new EmployeeResponse(
       c.getUserId(),
       c.getUsername(),
       c.getEmail())).toList();
-
-    if (request.username() != null) {
-      content = content.stream()
-        .filter(c -> c
-          .username().toLowerCase()
-          .contains(request.username().toLowerCase()))
-        .toList();
-    }
-    log.info("Found {} employees", content.size());
-
     return new PageImpl<>(
       content,
       pageable,

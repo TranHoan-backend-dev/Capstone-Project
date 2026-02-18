@@ -10,6 +10,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
@@ -18,9 +19,9 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class DepartmentServiceImplTest {
@@ -109,39 +110,66 @@ class DepartmentServiceImplTest {
       .hasMessage("Department not found");
   }
 
-  // TODO: sua lai
   @Test
-  void getDepartments_returnsPagedResponse() {
-    var department = Department.create(builder -> builder
-      .name("Finance")
-      .phoneNumber("0123456789"));
-    setDepartmentId(department, "dep-3");
+  void should_GetDepartments_When_KeywordNull() {
+    var pageable = PageRequest.of(0, 10);
 
-    var pageable = PageRequest.of(0, 2);
-    when(departmentRepo.findAll(pageable))
-      .thenReturn(new PageImpl<>(List.of(department), pageable, 1));
+    Department entity = Department.create(b -> b.name("HR").phoneNumber("0123"));
+    Page<Department> page = new PageImpl<>(List.of(entity), pageable, 1);
 
-    var response = departmentService.getDepartments(pageable, "");
+    when(departmentRepo.findAll(pageable)).thenReturn(page);
 
-    assertThat(response.items()).hasSize(1);
-    assertThat(response.items().getFirst().departmentId()).isEqualTo("dep-3");
-    assertThat(response.page()).isEqualTo(0);
-    assertThat(response.size()).isEqualTo(2);
-    assertThat(response.totalItems()).isEqualTo(1);
-    assertThat(response.totalPages()).isEqualTo(1);
+    var result = departmentService.getDepartments(pageable, null);
+
+    assertEquals(1, result.items().size());
+    assertEquals("HR", result.items().getFirst().name());
+    assertEquals(0, result.page());
+    assertEquals(10, result.size());
+    assertEquals(1, result.totalItems());
+    assertEquals(1, result.totalPages());
+
+    verify(departmentRepo).findAll(pageable);
+    verifyNoMoreInteractions(departmentRepo);
   }
 
-  // TODO: sua lai
+  // ---------- keyword search ----------
+
   @Test
-  void getDepartments_emptyList_returnsEmptyPagedResponse() {
+  void should_SearchDepartments_When_KeywordProvided() {
     var pageable = PageRequest.of(0, 10);
-    when(departmentRepo.findAll(pageable)).thenReturn(new PageImpl<>(List.of(), pageable, 0));
 
-    var response = departmentService.getDepartments(pageable, "");
+    var entity = Department.create(b -> b.name("IT").phoneNumber("0999"));
+    Page<Department> page = new PageImpl<>(List.of(entity), pageable, 1);
 
-    assertThat(response.items()).isEmpty();
-    assertThat(response.totalItems()).isZero();
-    assertThat(response.totalPages()).isZero();
+    when(departmentRepo
+      .findByDepartmentIdContainsIgnoreCaseOrNameContainsIgnoreCaseOrPhoneNumberContains(
+        any(), any(), any(), eq(pageable)))
+      .thenReturn(page);
+
+    var result = departmentService.getDepartments(pageable, "it");
+
+    assertEquals(1, result.items().size());
+    assertEquals("IT", result.items().getFirst().name());
+
+    verify(departmentRepo)
+      .findByDepartmentIdContainsIgnoreCaseOrNameContainsIgnoreCaseOrPhoneNumberContains(
+        "it", "it", "it", pageable);
+  }
+
+  // ---------- empty result ----------
+
+  @Test
+  void should_ReturnEmptyList_When_NoDepartmentFound() {
+    var pageable = PageRequest.of(0, 10);
+    Page<Department> emptyPage = new PageImpl<>(List.of(), pageable, 0);
+
+    when(departmentRepo.findAll(pageable)).thenReturn(emptyPage);
+
+    var result = departmentService.getDepartments(pageable, null);
+
+    assertTrue(result.items().isEmpty());
+    assertEquals(0, result.totalItems());
+    assertEquals(0, result.totalPages());
   }
 
   private void setDepartmentId(Department department, String id) {

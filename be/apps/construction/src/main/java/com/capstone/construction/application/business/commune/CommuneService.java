@@ -6,7 +6,7 @@ import com.capstone.construction.application.dto.response.PageResponse;
 import org.springframework.data.domain.Pageable;
 
 public interface CommuneService {
-    CommuneResponse createCommune(CommuneRequest request);
+    void createCommune(CommuneRequest request);
 
     CommuneResponse updateCommune(String id, CommuneRequest request);
 

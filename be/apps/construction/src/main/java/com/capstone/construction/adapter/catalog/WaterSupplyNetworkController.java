@@ -50,8 +50,8 @@ public class WaterSupplyNetworkController {
     @Parameter(description = "Thông tin tạo mới mạng lưới", required = true, schema = @Schema(implementation = WaterSupplyNetworkRequest.class))
     @RequestBody @Valid WaterSupplyNetworkRequest request) {
     log.info("REST request to create network: {}", request.name());
-    var response = networkUseCase.createNetwork(request);
-    return Utils.returnCreatedResponse("Network created successfully", response);
+    networkUseCase.createNetwork(request);
+    return Utils.returnCreatedResponse("Network created successfully");
   }
 
   @PutMapping("/{id}")

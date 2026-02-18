@@ -8,6 +8,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
@@ -18,9 +19,9 @@ import org.springframework.stereotype.Component;
 public class NeighborhoodUnitUseCase {
   NeighborhoodUnitService unitService;
 
-  public NeighborhoodUnitResponse createUnit(NeighborhoodUnitRequest request) {
+  public void createUnit(@NonNull NeighborhoodUnitRequest request) {
     log.info("UseCase: Creating unit {}", request.name());
-    return unitService.createUnit(request);
+    unitService.createUnit(request);
   }
 
   public NeighborhoodUnitResponse updateUnit(String id, NeighborhoodUnitRequest request) {

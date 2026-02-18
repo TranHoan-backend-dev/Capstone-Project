@@ -17,4 +17,8 @@ public interface UserRepository extends JpaRepository<Users, String> {
   boolean existsByEmail(String email);
 
   Page<Users> findByIsEnabledTrueAndIsLockedFalse(Pageable pageable);
+
+  Page<Users> findByUsernameContainsIgnoreCase(String username, Pageable pageable);
+
+  Page<Users> findByIsEnabledTrueAndIsLockedFalseOrUsernameContainingIgnoreCase(String username, Pageable pageable);
 }
