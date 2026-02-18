@@ -16,6 +16,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 @AppLog
 @Service
 @RequiredArgsConstructor
@@ -27,7 +30,7 @@ public class WaterPriceServiceImpl implements WaterPriceService {
 
   @Override
   @Transactional(rollbackFor = Exception.class)
-  public WaterPriceResponse createWaterPrice(@NonNull WaterPriceRequest request) {
+  public void createWaterPrice(@NonNull WaterPriceRequest request) {
     log.info("Creating water price for target: {}", request.usageTarget());
 
     var wp = WaterPrice.create(builder -> builder
@@ -38,8 +41,7 @@ public class WaterPriceServiceImpl implements WaterPriceService {
       .description(request.description())
       .expirationDate(request.expirationDate()));
 
-    var saved = waterPriceRepository.save(wp);
-    return mapToResponse(saved);
+    waterPriceRepository.save(wp);
   }
 
   @Override
@@ -79,9 +81,11 @@ public class WaterPriceServiceImpl implements WaterPriceService {
   }
 
   @Override
-  public Page<WaterPriceResponse> getAllWaterPrices(Pageable pageable) {
+  public Page<WaterPriceResponse> getAllWaterPrices(Pageable pageable, LocalDate keyword) {
     log.debug("Fetching all water prices with pagination: {}", pageable);
-    return waterPriceRepository.findAll(pageable).map(this::mapToResponse);
+    var response = keyword == null ? waterPriceRepository.findAll(pageable) :
+      waterPriceRepository.findAllByApplicationPeriodOrExpirationDate(keyword, keyword, pageable);
+    return response.map(this::mapToResponse);
   }
 
   private WaterPriceResponse mapToResponse(WaterPrice wp) {

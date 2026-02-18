@@ -5,6 +5,8 @@ import com.capstone.device.application.dto.response.WaterPriceResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
+
 /**
  * Service interface for managing Water Price operations.
  */
@@ -13,9 +15,8 @@ public interface WaterPriceService {
      * Creates a new water price record.
      *
      * @param request the water price creation request
-     * @return the created water price response
      */
-    WaterPriceResponse createWaterPrice(WaterPriceRequest request);
+    void createWaterPrice(WaterPriceRequest request);
 
     /**
      * Updates an existing water price record.
@@ -45,7 +46,8 @@ public interface WaterPriceService {
      * Retrieves all water prices with pagination.
      *
      * @param pageable pagination information
+     * @param keyword
      * @return a page of water price responses
      */
-    Page<WaterPriceResponse> getAllWaterPrices(Pageable pageable);
+    Page<WaterPriceResponse> getAllWaterPrices(Pageable pageable, LocalDate keyword);
 }
