@@ -1,4 +1,4 @@
-package com.capstone.device.infrastructure.service;
+package com.capstone.organization.service.boundary;
 
 import com.capstone.common.config.FeignAuthInterceptor;
 import com.capstone.common.response.WrapperApiResponse;
@@ -13,5 +13,5 @@ import org.springframework.web.bind.annotation.PathVariable;
 )
 public interface EmployeeService {
   @GetMapping("/{id}/name")
-  WrapperApiResponse getEmployeeName(@PathVariable String id);
+  WrapperApiResponse getEmployeeNameById(@PathVariable String id);
 }

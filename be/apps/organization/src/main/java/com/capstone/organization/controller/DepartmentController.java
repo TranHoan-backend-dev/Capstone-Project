@@ -5,16 +5,16 @@ import com.capstone.common.utils.Utils;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.organization.dto.request.CreateDepartmentRequest;
 import com.capstone.organization.dto.request.UpdateDepartmentRequest;
+import com.capstone.organization.dto.response.DepartmentResponse;
 import com.capstone.organization.service.boundary.DepartmentService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.slf4j.Logger;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -78,28 +78,23 @@ public class DepartmentController {
     @RequestBody @Valid UpdateDepartmentRequest request) {
     log.info("Update department request comes to endpoint: {}", departmentId);
     var response = departmentService.updateDepartment(departmentId, request);
-    return Utils.returnOkResponse(
-      "Update department successfully",
-      response);
+    return Utils.returnOkResponse("Update department successfully", response);
   }
 
+  // TODO: swagger doc, unit test
   @GetMapping
   @Operation(summary = "Liệt kê phòng ban", description = "Lấy danh sách phân trang các phòng ban.")
   @ApiResponses({
-    @ApiResponse(responseCode = "200", description = "Lấy danh sách phòng ban thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "400", description = "Tham số phân trang không hợp lệ", content = @Content),
-    @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
+    @ApiResponse(responseCode = "200", description = "Lấy danh sách phòng ban thành công", content = @Content(schema = @Schema(implementation = DepartmentResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Tham số phân trang không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   public ResponseEntity<WrapperApiResponse> getDepartments(
-    @Parameter(in = ParameterIn.QUERY, description = "Chỉ số trang (bắt đầu từ 0)", schema = @Schema(type = "integer", defaultValue = "0", minimum = "0"))
-    @RequestParam(defaultValue = "0") @PositiveOrZero int page,
-    @Parameter(in = ParameterIn.QUERY, description = "Kích thước trang", schema = @Schema(type = "integer", defaultValue = "20", minimum = "1"))
-    @RequestParam(defaultValue = "20") @Positive int size
+    Pageable pageable,
+    @RequestParam(required = false) String keyword
   ) {
-    var response = departmentService.getDepartments(page, size);
-    return Utils.returnOkResponse(
-      "Get departments successfully",
-      response);
+    var response = departmentService.getDepartments(pageable, keyword);
+    return Utils.returnOkResponse("Get departments successfully", response);
   }
 
   @GetMapping("/exist/{id}")

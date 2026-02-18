@@ -109,6 +109,7 @@ class DepartmentServiceImplTest {
       .hasMessage("Department not found");
   }
 
+  // TODO: sua lai
   @Test
   void getDepartments_returnsPagedResponse() {
     var department = Department.create(builder -> builder
@@ -120,7 +121,7 @@ class DepartmentServiceImplTest {
     when(departmentRepo.findAll(pageable))
       .thenReturn(new PageImpl<>(List.of(department), pageable, 1));
 
-    var response = departmentService.getDepartments(0, 2);
+    var response = departmentService.getDepartments(pageable, "");
 
     assertThat(response.items()).hasSize(1);
     assertThat(response.items().getFirst().departmentId()).isEqualTo("dep-3");
@@ -130,12 +131,13 @@ class DepartmentServiceImplTest {
     assertThat(response.totalPages()).isEqualTo(1);
   }
 
+  // TODO: sua lai
   @Test
   void getDepartments_emptyList_returnsEmptyPagedResponse() {
     var pageable = PageRequest.of(0, 10);
     when(departmentRepo.findAll(pageable)).thenReturn(new PageImpl<>(List.of(), pageable, 0));
 
-    var response = departmentService.getDepartments(0, 10);
+    var response = departmentService.getDepartments(pageable, "");
 
     assertThat(response.items()).isEmpty();
     assertThat(response.totalItems()).isZero();

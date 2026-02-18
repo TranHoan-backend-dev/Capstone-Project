@@ -87,6 +87,7 @@ public class WaterPriceController {
     return Utils.returnOkResponse("Water price retrieved successfully", response);
   }
 
+  // TODO: swagger doc, unit test
   @Operation(summary = "Lấy danh sách các bảng giá nước", description = "Retrieves a paginated list of all water pricing policies", responses = {
     @ApiResponse(responseCode = "200", description = "Water price found", content = @Content(schema = @Schema(implementation = WaterPriceResponse.class))),
     @ApiResponse(responseCode = "404", description = "Water price not found", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
