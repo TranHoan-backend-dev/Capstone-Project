@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link, Chip, Tooltip, Button } from "@heroui/react";
 import NextLink from "next/link";
 
@@ -14,29 +14,106 @@ import {
   RedIconColor,
   TitleDarkColor,
 } from "@/config/chip-and-icon";
+import { INSTALLATION_FORM_NEW_COLUMN } from "@/config/table-columns";
+import { InstallationFormNewItem } from "@/types";
 
-interface RelatedOrdersTableProps {
-  data: any[];
+interface Props {
+  keyword: string;
+  reloadKey: number;
 }
 
-export const RelatedOrdersTable = ({ data }: RelatedOrdersTableProps) => {
-  const columns = [
-    { key: "no", label: "#", width: "40px" },
-    { key: "code", label: "Mã đơn" },
-    { key: "customerName", label: "Tên khách hàng" },
-    { key: "phone", label: "Điện thoại" },
-    { key: "address", label: "Địa chỉ lắp đặt" },
-    { key: "createdDate", label: "Ngày tạo" },
-    { key: "status", label: "Trạng thái", align: "center" as const },
-    { key: "actions", label: "Thao tác", align: "center" as const },
-  ];
+interface InstallationFormNewResponse {
+  formCode: string;
+  formNumber: string;
+  customerName: string;
+  address: string;
+  phoneNumber: string;
+  registrationAt: string;
+  surveyEmployeeName: string;
+  status: {
+    registration: string;
+  };
+}
+
+export const RelatedOrdersTable = ({ keyword, reloadKey }: Props) => {
+  const [data, setData] = useState<InstallationFormNewItem[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [sort, setSort] = useState<{
+    field: string;
+    direction: "asc" | "desc";
+  }>({
+    field: "registrationAt",
+    direction: "desc",
+  });
+
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+
+  useEffect(() => {
+    setLoading(true);
+
+    const fetchData = async () => {
+      try {
+        const params = new URLSearchParams({
+          page: String(page - 1),
+          size: String(pageSize),
+          sort: `${sort.field},${sort.direction}`,
+        });
+
+        const trimmedKeyword = keyword.trim();
+        if (trimmedKeyword) {
+          params.append("keyword", trimmedKeyword);
+        }
+
+        const res = await fetch(
+          `/api/construction/installation-forms?${params.toString()}`,
+        );
+
+        if (!res.ok) {
+          console.error("Fetch failed", res.status);
+          return;
+        }
+
+        const json = await res.json();
+        const pageData = json?.data;
+        const items = pageData?.content ?? [];
+        setTotalItems(pageData?.totalElements ?? 0);
+        setTotalPages(pageData?.totalPages ?? 1);
+
+        const mapped = items.map(
+          (item: InstallationFormNewResponse, index: number) => ({
+            id: item.formCode,
+            stt: (page - 1) * pageSize + index + 1,
+            code: item.formNumber,
+            customerName: item.customerName,
+            phoneNumber: item.phoneNumber,
+            createdAt: item.registrationAt,
+            surveyEmployeeName: item.surveyEmployeeName,
+            status: item.status,
+          }),
+        );
+
+        setData(mapped);
+      } catch (e) {
+        setData([]);
+        setTotalItems(0);
+        setTotalPages(1);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [page, keyword, reloadKey, sort]);
 
   const renderCell = (item: any, columnKey: string) => {
     switch (columnKey) {
-      case "no":
+      case "stt":
         return (
           <span className="font-medium text-black dark:text-white">
-            {data.indexOf(item) + 1}
+            {item.stt}
           </span>
         );
       case "code":
@@ -124,14 +201,14 @@ export const RelatedOrdersTable = ({ data }: RelatedOrdersTableProps) => {
   return (
     <GenericDataTable
       isCollapsible
-      columns={columns}
+      columns={INSTALLATION_FORM_NEW_COLUMN}
       data={data}
-      headerSummary={`${data.length}`}
+      headerSummary={`${totalItems}`}
       paginationProps={{
-        total: 1,
-        initialPage: 1,
-        onChange: (page) => console.log(page),
-        summary: `${data.length}`,
+        total: totalPages,
+        initialPage: page,
+        onChange: setPage,
+        summary: `${totalItems}`,
       }}
       renderCellAction={renderCell}
       title="Danh sách đơn liên quan"

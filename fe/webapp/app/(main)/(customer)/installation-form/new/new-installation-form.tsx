@@ -1,5 +1,5 @@
 "use client";
-
+import React, { useState } from "react";
 import { DocumentPlusIcon } from "@heroicons/react/24/solid";
 
 import { FormActions } from "./components/form-actions";
@@ -12,26 +12,8 @@ import { BillingInfoSection } from "./components/billing-info-section";
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 
 const NewInstallationForm = () => {
-  const relatedOrders = [
-    {
-      id: "1",
-      code: "DH001235",
-      customerName: "Trần Thị B",
-      phone: "0987654321",
-      address: "123 Nguyễn Văn Cừ, Q1",
-      createdDate: "15/12/2024",
-      status: "completed",
-    },
-    {
-      id: "2",
-      code: "DH001236",
-      customerName: "Lê Văn C",
-      phone: "0912345678",
-      address: "456 Lê Lợi, Q3",
-      createdDate: "14/12/2024",
-      status: "installing",
-    },
-  ];
+const [keyword, setKeyword] = useState("");
+const [reloadKey, setReloadKey] = useState(0);
 
   return (
     <>
@@ -50,7 +32,7 @@ const NewInstallationForm = () => {
         <BillingInfoSection />
       </GenericSearchFilter>
 
-      <RelatedOrdersTable data={relatedOrders} />
+      <RelatedOrdersTable keyword={keyword} reloadKey={reloadKey} />
     </>
   );
 };
