@@ -27,7 +27,7 @@ public class NeighborhoodUnitServiceImpl implements NeighborhoodUnitService {
 
   @Override
   @Transactional(rollbackFor = Exception.class)
-  public NeighborhoodUnitResponse createUnit(@NonNull NeighborhoodUnitRequest request) {
+  public void createUnit(@NonNull NeighborhoodUnitRequest request) {
     log.info("Creating new neighborhood unit with name: {}", request.name());
     if (unitRepository.existsByName(request.name())) {
       throw new ExistingItemException("Neighborhood unit with name " + request.name() + " already exists");
@@ -40,8 +40,7 @@ public class NeighborhoodUnitServiceImpl implements NeighborhoodUnitService {
       .name(request.name())
       .commune(commune));
 
-    var saved = unitRepository.save(unit);
-    return mapToResponse(saved);
+    unitRepository.save(unit);
   }
 
   @Override
@@ -51,14 +50,17 @@ public class NeighborhoodUnitServiceImpl implements NeighborhoodUnitService {
     var unit = unitRepository.findById(id)
       .orElseThrow(() -> new IllegalArgumentException("Neighborhood unit not found with id: " + id));
 
-    if (!unit.getName().equals(request.name()) && unitRepository.existsByName(request.name())) {
+    if (unitRepository.existsByNameIgnoreCase(request.name())) {
       throw new ExistingItemException("Neighborhood unit with name " + request.name() + " already exists");
     }
 
     var commune = communeRepository.findById(request.communeId())
       .orElseThrow(() -> new IllegalArgumentException(Constant.PT_26));
 
-    unit.setName(request.name());
+    if (!unit.getName().equalsIgnoreCase(request.name())) {
+      unit.setName(request.name());
+    }
+
     unit.setCommune(commune);
 
     var saved = unitRepository.save(unit);

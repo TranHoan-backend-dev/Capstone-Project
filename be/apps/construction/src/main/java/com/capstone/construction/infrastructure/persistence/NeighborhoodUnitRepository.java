@@ -8,7 +8,13 @@ import java.util.Optional;
 
 @Repository
 public interface NeighborhoodUnitRepository extends JpaRepository<NeighborhoodUnit, String> {
-    Optional<NeighborhoodUnit> findByName(String name);
+  Optional<NeighborhoodUnit> findByName(String name);
 
-    boolean existsByName(String name);
+  boolean existsByName(String name);
+
+  boolean existsByCommune_CommuneId(String communeCommuneId);
+
+  void deleteByCommune_CommuneId(String id);
+
+  boolean existsByNameIgnoreCase(String name);
 }

@@ -8,6 +8,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
@@ -18,9 +19,9 @@ import org.springframework.stereotype.Component;
 public class CommuneUseCase {
   CommuneService communeService;
 
-  public CommuneResponse createCommune(CommuneRequest request) {
+  public void createCommune(@NonNull CommuneRequest request) {
     log.info("UseCase: Creating commune {}", request.name());
-    return communeService.createCommune(request);
+    communeService.createCommune(request);
   }
 
   public CommuneResponse updateCommune(String id, CommuneRequest request) {

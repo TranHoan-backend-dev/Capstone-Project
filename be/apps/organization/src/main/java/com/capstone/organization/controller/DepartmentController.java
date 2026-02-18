@@ -83,14 +83,37 @@ public class DepartmentController {
 
   // TODO: swagger doc, unit test
   @GetMapping
-  @Operation(summary = "Liệt kê phòng ban", description = "Lấy danh sách phân trang các phòng ban.")
+  @Operation(
+    summary = "Liệt kê phòng ban",
+    description = """
+      Lấy danh sách phòng ban có phân trang và hỗ trợ tìm kiếm theo từ khóa.
+
+      - Không thay đổi dữ liệu (read-only)
+      - Idempotent
+      - Hỗ trợ phân trang qua page, size, sort
+      """
+  )
   @ApiResponses({
-    @ApiResponse(responseCode = "200", description = "Lấy danh sách phòng ban thành công", content = @Content(schema = @Schema(implementation = DepartmentResponse.class))),
-    @ApiResponse(responseCode = "400", description = "Tham số phân trang không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+    @ApiResponse(
+      responseCode = "200", description = "Lấy danh sách phòng ban thành công",
+      content = @Content(mediaType = "application/json", schema = @Schema(implementation = DepartmentResponse.class))),
+    @ApiResponse(
+      responseCode = "400", description = "Tham số phân trang không hợp lệ",
+      content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(
+      responseCode = "401", description = "Chưa xác thực",
+      content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(
+      responseCode = "403", description = "Không đủ quyền truy cập",
+      content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(
+      responseCode = "500", description = "Lỗi máy chủ",
+      content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   public ResponseEntity<WrapperApiResponse> getDepartments(
+    @Parameter(description = "Thông tin phân trang")
     Pageable pageable,
+    @Parameter(description = "Từ khóa tìm kiếm theo tên phòng ban", example = "Human")
     @RequestParam(required = false) String keyword
   ) {
     var response = departmentService.getDepartments(pageable, keyword);

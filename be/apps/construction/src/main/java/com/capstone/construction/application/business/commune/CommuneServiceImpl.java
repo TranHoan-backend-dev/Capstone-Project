@@ -3,9 +3,12 @@ package com.capstone.construction.application.business.commune;
 import com.capstone.construction.application.dto.request.catalog.CommuneRequest;
 import com.capstone.construction.application.dto.response.catalog.CommuneResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
+import com.capstone.construction.domain.enumerate.CommuneType;
 import com.capstone.construction.domain.model.Commune;
 import com.capstone.construction.infrastructure.persistence.CommuneRepository;
 import com.capstone.construction.application.exception.ExistingItemException;
+import com.capstone.construction.infrastructure.persistence.HamletRepository;
+import com.capstone.construction.infrastructure.persistence.NeighborhoodUnitRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -21,47 +24,59 @@ import org.springframework.transaction.annotation.Transactional;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CommuneServiceImpl implements CommuneService {
   CommuneRepository communeRepository;
+  HamletRepository hamletRepository;
+  NeighborhoodUnitRepository neighborhoodUnitRepository;
 
   @Override
   @Transactional
-  public CommuneResponse createCommune(@NonNull CommuneRequest request) {
+  public void createCommune(@NonNull CommuneRequest request) {
     log.info("Creating new commune with name: {}", request.name());
-    if (communeRepository.existsByName(request.name())) {
+    if (communeRepository.existsByNameIgnoreCase(request.name())) {
       throw new ExistingItemException("Commune with name " + request.name() + " already exists");
     }
 
     var commune = Commune.create(builder -> builder
       .name(request.name())
-      .type(request.type()));
+      .type(CommuneType.valueOf(request.type()))
+    );
 
-    var saved = communeRepository.save(commune);
-    return mapToResponse(saved);
+    communeRepository.save(commune);
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public CommuneResponse updateCommune(String id, @NonNull CommuneRequest request) {
     log.info("Updating commune with id: {}", id);
     var commune = communeRepository.findById(id)
       .orElseThrow(() -> new IllegalArgumentException("Commune not found with id: " + id));
 
-    if (!commune.getName().equals(request.name()) && communeRepository.existsByName(request.name())) {
+    if (communeRepository.existsByNameIgnoreCase(request.name())) {
       throw new ExistingItemException("Commune with name " + request.name() + " already exists");
     }
 
-    commune.setName(request.name());
-    commune.setType(request.type());
+    if (commune.getType() != CommuneType.valueOf(request.type())) {
+      commune.setType(CommuneType.valueOf(request.type()));
+    }
+    if (!commune.getName().equalsIgnoreCase(request.name())) {
+      commune.setName(request.name());
+    }
 
     var saved = communeRepository.save(commune);
     return mapToResponse(saved);
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public void deleteCommune(String id) {
     log.info("Deleting commune with id: {}", id);
     if (!communeRepository.existsById(id)) {
       throw new IllegalArgumentException("Commune not found with id: " + id);
+    }
+    if (hamletRepository.existsByCommune_CommuneId(id)) {
+      hamletRepository.deleteByCommune_CommuneId(id);
+    }
+    if (neighborhoodUnitRepository.existsByCommune_CommuneId(id)) {
+      neighborhoodUnitRepository.deleteByCommune_CommuneId(id);
     }
     communeRepository.deleteById(id);
   }
@@ -81,11 +96,11 @@ public class CommuneServiceImpl implements CommuneService {
     return PageResponse.fromPage(page, this::mapToResponse);
   }
 
-  private CommuneResponse mapToResponse(@NonNull Commune commune) {
+  private @NonNull CommuneResponse mapToResponse(@NonNull Commune commune) {
     return new CommuneResponse(
       commune.getCommuneId(),
       commune.getName(),
-      commune.getType(),
-      commune.getCreatedAt());
+      commune.getType().toString().toLowerCase(),
+      commune.getCreatedAt().toLocalDate());
   }
 }

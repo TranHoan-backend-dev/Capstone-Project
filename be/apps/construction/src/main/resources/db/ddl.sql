@@ -6,7 +6,10 @@ create table public.commune
   name       varchar(255) not null
     constraint ukn3jywsvnfyd63plqb3hkruu6x
             unique,
-  type       varchar(255) not null,
+  type       varchar(255) not null
+    constraint commune_type_check
+            check ((type)::text = ANY
+                   ((ARRAY ['URBAN_WARD'::character varying, 'RURAL_COMMUNE'::character varying])::text[])),
   updated_at timestamp(6) not null
 );
 
@@ -247,3 +250,4 @@ create table public.roadmap
 
 alter table public.roadmap
   owner to postgres;
+
