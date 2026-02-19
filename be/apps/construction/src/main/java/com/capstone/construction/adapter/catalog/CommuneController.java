@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -37,6 +38,7 @@ public class CommuneController {
     @ApiResponse(responseCode = "", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
+  @PreAuthorize("hasAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> createCommune(@RequestBody @Valid CommuneRequest request) {
     log.info("REST request to create commune: {}", request.name());
     communeUseCase.createCommune(request);
@@ -51,6 +53,7 @@ public class CommuneController {
     @ApiResponse(responseCode = "", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
+  @PreAuthorize("hasAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> updateCommune(
     @PathVariable @Parameter(description = "ID of the commune to update") String id,
     @RequestBody @Valid CommuneRequest request) {
@@ -64,6 +67,7 @@ public class CommuneController {
     @ApiResponse(responseCode = "", description = ""),
     @ApiResponse(responseCode = "", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
+  @PreAuthorize("hasAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> deleteCommune(
     @PathVariable
     @Parameter(description = "ID of the commune to delete") String id

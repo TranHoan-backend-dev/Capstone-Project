@@ -1,0 +1,82 @@
+@uri = http://localhost:9004/api/v1/units
+@keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
+@client_secret=
+
+### get token
+POST {{keycloak}}/token
+Content-Type: application/x-www-form-urlencoded
+Accept: application/json
+
+grant_type=password&
+client_id=&
+client_secret={{client_secret}}&
+username=&
+password=&
+scope=openid
+
+> {%
+  client.global.set("access_token", response.body.access_token);
+  client.global.set("refresh_token", response.body.refresh_token);
+%}
+
+### C
+### happy case
+POST {{uri}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "ueueue",
+  "networkId": "550e8400-e29b-41d4-a716-446655440001"
+}
+
+### blank name
+POST {{uri}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "",
+  "networkId": ""
+}
+
+### blank networkId
+POST {{uri}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "uuss",
+  "networkId": ""
+}
+
+### network does not exist
+POST {{uri}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "adadf",
+  "networkId": "550e8400-e29b-41d4-a716-446655440000"
+}
+
+### duplicated name
+POST {{uri}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "ueueue",
+  "networkId": "550e8400-e29b-41d4-a716-446655440001"
+}
+
+### R
+
+### U
+
+### D
