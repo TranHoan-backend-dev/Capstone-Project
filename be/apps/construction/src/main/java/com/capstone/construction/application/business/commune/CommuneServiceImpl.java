@@ -1,5 +1,6 @@
 package com.capstone.construction.application.business.commune;
 
+import com.capstone.common.annotation.AppLog;
 import com.capstone.construction.application.dto.request.catalog.CommuneRequest;
 import com.capstone.construction.application.dto.response.catalog.CommuneResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
@@ -12,13 +13,14 @@ import com.capstone.construction.infrastructure.persistence.NeighborhoodUnitRepo
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
+@AppLog
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -26,6 +28,8 @@ public class CommuneServiceImpl implements CommuneService {
   CommuneRepository communeRepository;
   HamletRepository hamletRepository;
   NeighborhoodUnitRepository neighborhoodUnitRepository;
+  @NonFinal
+  Logger log;
 
   @Override
   @Transactional

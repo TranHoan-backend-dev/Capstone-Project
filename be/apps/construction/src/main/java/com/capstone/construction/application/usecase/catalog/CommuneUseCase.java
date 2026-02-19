@@ -1,5 +1,6 @@
 package com.capstone.construction.application.usecase.catalog;
 
+import com.capstone.common.annotation.AppLog;
 import com.capstone.construction.application.business.commune.CommuneService;
 import com.capstone.construction.application.dto.request.catalog.CommuneRequest;
 import com.capstone.construction.application.dto.response.catalog.CommuneResponse;
@@ -7,17 +8,20 @@ import com.capstone.construction.application.dto.response.PageResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-@Slf4j
+@AppLog
 @Component
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CommuneUseCase {
   CommuneService communeService;
+  @NonFinal
+  Logger log;
 
   public void createCommune(@NonNull CommuneRequest request) {
     log.info("UseCase: Creating commune {}", request.name());
