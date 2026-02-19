@@ -27,9 +27,6 @@ public class Users {
   @Column(unique = true, nullable = false)
   String email;
 
-  @Column(nullable = false)
-  String password;
-
   @Column(unique = true, nullable = false)
   String username;
 
@@ -58,9 +55,6 @@ public class Users {
   Roles role;
 
   @Column(nullable = false)
-  String jobId;
-
-  @Column(nullable = false)
   String departmentId;
 
   @Column(nullable = false)
@@ -80,9 +74,9 @@ public class Users {
     this.email = email;
   }
 
-  public void setPassword(String password) {
-    requireNonNullAndNotEmpty(password, Constant.PT_04);
-    this.password = password;
+  public void setUserId(String value) {
+    requireNonNullAndNotEmpty(value, Constant.PT_22);
+    this.userId = value;
   }
 
   public void setUsername(String username) {
@@ -100,11 +94,6 @@ public class Users {
     this.role = role;
   }
 
-  public void setJobId(String value) {
-    requireNonNullAndNotEmpty(value, Constant.PT_20);
-    this.jobId = value;
-  }
-
   public void setDepartmentId(String departmentId) {
     requireNonNullAndNotEmpty(departmentId, Constant.PT_19);
     this.departmentId = departmentId;
@@ -120,10 +109,6 @@ public class Users {
     if (value.trim().isEmpty()) {
       throw new IllegalArgumentException(message);
     }
-  }
-
-  public boolean isEnabled() {
-    return isEnabled;
   }
 
   public boolean isAccountNonLocked() {
@@ -144,8 +129,8 @@ public class Users {
       return this;
     }
 
-    public UsersBuilder password(String password) {
-      instance.setPassword(password);
+    public UsersBuilder userId(String id) {
+      instance.setUserId(id);
       return this;
     }
 
@@ -166,11 +151,6 @@ public class Users {
 
     public UsersBuilder departmentId(String departmentId) {
       instance.setDepartmentId(departmentId);
-      return this;
-    }
-
-    public UsersBuilder jobId(String jobId) {
-      instance.setJobId(jobId);
       return this;
     }
 

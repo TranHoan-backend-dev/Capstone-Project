@@ -4,7 +4,6 @@ import com.capstone.organization.dto.request.CreateJobRequest;
 import com.capstone.organization.dto.request.UpdateJobRequest;
 import com.capstone.organization.model.Job;
 import com.capstone.organization.repository.JobRepository;
-import com.capstone.organization.utils.IdEncoder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -40,10 +39,18 @@ class JobServiceImplTest {
 
     var response = jobService.createJob(request);
 
-    assertThat(response.jobId()).isEqualTo(IdEncoder.encode("job-1"));
+    assertThat(response.jobId()).isEqualTo("job-1");
     assertThat(response.name()).isEqualTo("Engineer");
     assertThat(response.createdAt()).isEqualTo(now);
     assertThat(response.updatedAt()).isEqualTo(now);
+  }
+
+  @Test
+  void createJob_emptyName_throws() {
+    var request = new CreateJobRequest("");
+
+    assertThatThrownBy(() -> jobService.createJob(request))
+      .isInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
@@ -57,10 +64,20 @@ class JobServiceImplTest {
 
     var response = jobService.updateJob("job-2", request);
 
-    assertThat(response.jobId()).isEqualTo(IdEncoder.encode("job-2"));
+    assertThat(response.jobId()).isEqualTo("job-2");
     assertThat(response.name()).isEqualTo("Senior Engineer");
     assertThat(response.createdAt()).isEqualTo(createdAt);
     assertThat(response.updatedAt()).isEqualTo(updatedAt);
+  }
+
+  @Test
+  void updateJob_emptyName_throws() {
+    var request = new UpdateJobRequest(" ");
+    var existing = new Job("job-1", "Old", LocalDateTime.now(), LocalDateTime.now());
+    when(jobRepository.findById("job-1")).thenReturn(Optional.of(existing));
+
+    assertThatThrownBy(() -> jobService.updateJob("job-1", request))
+      .isInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
@@ -80,8 +97,7 @@ class JobServiceImplTest {
     var pageRequest = PageRequest.of(0, 2);
     var items = List.of(
       new Job("job-1", "Engineer", createdAt, updatedAt),
-      new Job("job-2", "Designer", createdAt, updatedAt)
-    );
+      new Job("job-2", "Designer", createdAt, updatedAt));
     var page = new PageImpl<>(items, pageRequest, 2);
     when(jobRepository.findAll(pageRequest)).thenReturn(page);
 
@@ -93,5 +109,17 @@ class JobServiceImplTest {
     assertThat(response.totalItems()).isEqualTo(2);
     assertThat(response.totalPages()).isEqualTo(1);
     verify(jobRepository).findAll(pageRequest);
+  }
+
+  @Test
+  void getJobs_emptyList_returnsEmptyPagedResponse() {
+    var pageRequest = PageRequest.of(0, 10);
+    when(jobRepository.findAll(pageRequest)).thenReturn(new PageImpl<>(List.of(), pageRequest, 0));
+
+    var response = jobService.getJobs(0, 10);
+
+    assertThat(response.items()).isEmpty();
+    assertThat(response.totalItems()).isZero();
+    assertThat(response.totalPages()).isZero();
   }
 }

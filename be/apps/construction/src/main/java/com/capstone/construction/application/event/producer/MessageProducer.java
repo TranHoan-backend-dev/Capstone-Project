@@ -13,34 +13,34 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class MessageProducer {
-    @Value("${rabbitmqconfig.exchange_name}")
-    private String exchangeName;
+  @Value("${rabbitmqconfig.exchange_name}")
+  private String exchangeName;
 
-    @Value("${rabbitmqconfig.routing_key}")
-    private String routingKey;
+  @Value("${rabbitmqconfig.routing_key}")
+  private String routingKey;
 
-    private final RabbitTemplate template;
+  private final RabbitTemplate template;
 
-    public void sendInstallationFormCreatedEvent(InstallationFormCreatedEvent message) {
-        send(message);
+  public void sendInstallationFormCreatedEvent(InstallationFormCreatedEvent message) {
+    send(message);
+  }
+
+  private void send(Object message) {
+    log.info("Sending message to exchange: {}, routingKey: {}", exchangeName, routingKey);
+    Map<String, Object> payload = new HashMap<>();
+    payload.put("pattern", routingKey);
+    payload.put("data", message);
+
+    try {
+      template.invoke(t -> {
+        template.convertAndSend(exchangeName, routingKey, payload);
+        return null;
+      });
+      log.info("Message sent successfully to RabbitMQ: {}", message);
+    } catch (Exception e) {
+      log.error("Failed to send message to RabbitMQ: exchange={}, routingKey={}, error={}",
+        exchangeName, routingKey, e.getMessage());
+      throw e;
     }
-
-    private void send(Object message) {
-        log.info("Sending message to exchange: {}, routingKey: {}", exchangeName, routingKey);
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("pattern", routingKey);
-        payload.put("data", message);
-
-        try {
-            template.invoke(t -> {
-                template.convertAndSend(exchangeName, routingKey, payload);
-                return null;
-            });
-            log.info("Message sent successfully to RabbitMQ: {}", message);
-        } catch (Exception e) {
-            log.error("Failed to send message to RabbitMQ: exchange={}, routingKey={}, error={}",
-                    exchangeName, routingKey, e.getMessage());
-            throw e;
-        }
-    }
+  }
 }

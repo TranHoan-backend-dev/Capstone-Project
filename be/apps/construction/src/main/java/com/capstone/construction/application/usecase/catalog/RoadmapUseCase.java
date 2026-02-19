@@ -16,30 +16,30 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RoadmapUseCase {
-    RoadmapService roadmapService;
+  RoadmapService roadmapService;
 
-    public RoadmapResponse createRoadmap(RoadmapRequest request) {
-        log.info("UseCase: Creating roadmap {}", request.name());
-        return roadmapService.createRoadmap(request);
-    }
+  public RoadmapResponse createRoadmap(RoadmapRequest request) {
+    log.info("UseCase: Creating roadmap {}", request.name());
+    return roadmapService.createRoadmap(request);
+  }
 
-    public RoadmapResponse updateRoadmap(String id, RoadmapRequest request) {
-        log.info("UseCase: Updating roadmap {}", id);
-        return roadmapService.updateRoadmap(id, request);
-    }
+  public RoadmapResponse updateRoadmap(String id, RoadmapRequest request) {
+    log.info("UseCase: Updating roadmap {}", id);
+    return roadmapService.updateRoadmap(id, request);
+  }
 
-    public void deleteRoadmap(String id) {
-        log.info("UseCase: Deleting roadmap {}", id);
-        roadmapService.deleteRoadmap(id);
-    }
+  public void deleteRoadmap(String id) {
+    log.info("UseCase: Deleting roadmap {}", id);
+    roadmapService.deleteRoadmap(id);
+  }
 
-    public RoadmapResponse getRoadmapById(String id) {
-        log.info("UseCase: Fetching roadmap {}", id);
-        return roadmapService.getRoadmapById(id);
-    }
+  public RoadmapResponse getRoadmapById(String id) {
+    log.info("UseCase: Fetching roadmap {}", id);
+    return roadmapService.getRoadmapById(id);
+  }
 
-    public PageResponse<RoadmapResponse> getAllRoadmaps(Pageable pageable) {
-        log.info("UseCase: Fetching all roadmaps");
-        return roadmapService.getAllRoadmaps(pageable);
-    }
+  public PageResponse<RoadmapResponse> getAllRoadmaps(Pageable pageable) {
+    log.info("UseCase: Fetching all roadmaps");
+    return roadmapService.getAllRoadmaps(pageable);
+  }
 }

@@ -8,6 +8,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
@@ -16,30 +17,30 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class NeighborhoodUnitUseCase {
-    NeighborhoodUnitService unitService;
+  NeighborhoodUnitService unitService;
 
-    public NeighborhoodUnitResponse createUnit(NeighborhoodUnitRequest request) {
-        log.info("UseCase: Creating unit {}", request.name());
-        return unitService.createUnit(request);
-    }
+  public void createUnit(@NonNull NeighborhoodUnitRequest request) {
+    log.info("UseCase: Creating unit {}", request.name());
+    unitService.createUnit(request);
+  }
 
-    public NeighborhoodUnitResponse updateUnit(String id, NeighborhoodUnitRequest request) {
-        log.info("UseCase: Updating unit {}", id);
-        return unitService.updateUnit(id, request);
-    }
+  public NeighborhoodUnitResponse updateUnit(String id, NeighborhoodUnitRequest request) {
+    log.info("UseCase: Updating unit {}", id);
+    return unitService.updateUnit(id, request);
+  }
 
-    public void deleteUnit(String id) {
-        log.info("UseCase: Deleting unit {}", id);
-        unitService.deleteUnit(id);
-    }
+  public void deleteUnit(String id) {
+    log.info("UseCase: Deleting unit {}", id);
+    unitService.deleteUnit(id);
+  }
 
-    public NeighborhoodUnitResponse getUnitById(String id) {
-        log.info("UseCase: Fetching unit {}", id);
-        return unitService.getUnitById(id);
-    }
+  public NeighborhoodUnitResponse getUnitById(String id) {
+    log.info("UseCase: Fetching unit {}", id);
+    return unitService.getUnitById(id);
+  }
 
-    public PageResponse<NeighborhoodUnitResponse> getAllUnits(Pageable pageable) {
-        log.info("UseCase: Fetching all units");
-        return unitService.getAllUnits(pageable);
-    }
+  public PageResponse<NeighborhoodUnitResponse> getAllUnits(Pageable pageable) {
+    log.info("UseCase: Fetching all units");
+    return unitService.getAllUnits(pageable);
+  }
 }

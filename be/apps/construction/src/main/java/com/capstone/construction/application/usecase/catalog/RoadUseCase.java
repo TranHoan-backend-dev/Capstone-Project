@@ -16,30 +16,30 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RoadUseCase {
-    RoadService roadService;
+  RoadService roadService;
 
-    public RoadResponse createRoad(RoadRequest request) {
-        log.info("UseCase: Creating road {}", request.name());
-        return roadService.createRoad(request);
-    }
+  public RoadResponse createRoad(RoadRequest request) {
+    log.info("UseCase: Creating road {}", request.name());
+    return roadService.createRoad(request);
+  }
 
-    public RoadResponse updateRoad(String id, RoadRequest request) {
-        log.info("UseCase: Updating road {}", id);
-        return roadService.updateRoad(id, request);
-    }
+  public RoadResponse updateRoad(String id, RoadRequest request) {
+    log.info("UseCase: Updating road {}", id);
+    return roadService.updateRoad(id, request);
+  }
 
-    public void deleteRoad(String id) {
-        log.info("UseCase: Deleting road {}", id);
-        roadService.deleteRoad(id);
-    }
+  public void deleteRoad(String id) {
+    log.info("UseCase: Deleting road {}", id);
+    roadService.deleteRoad(id);
+  }
 
-    public RoadResponse getRoadById(String id) {
-        log.info("UseCase: Fetching road {}", id);
-        return roadService.getRoadById(id);
-    }
+  public RoadResponse getRoadById(String id) {
+    log.info("UseCase: Fetching road {}", id);
+    return roadService.getRoadById(id);
+  }
 
-    public PageResponse<RoadResponse> getAllRoads(Pageable pageable) {
-        log.info("UseCase: Fetching all roads");
-        return roadService.getAllRoads(pageable);
-    }
+  public PageResponse<RoadResponse> getAllRoads(Pageable pageable) {
+    log.info("UseCase: Fetching all roads");
+    return roadService.getAllRoads(pageable);
+  }
 }

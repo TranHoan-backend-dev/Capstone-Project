@@ -1,31 +1,41 @@
 package com.capstone.organization.service.impl;
 
+import com.capstone.common.annotation.AppLog;
 import com.capstone.organization.dto.request.CreateBusinessPageRequest;
+import com.capstone.organization.dto.request.FilterBusinessPagesRequest;
 import com.capstone.organization.dto.request.UpdateBusinessPageRequest;
 import com.capstone.organization.dto.response.BusinessPageResponse;
 import com.capstone.organization.dto.response.PagedBusinessPageResponse;
 import com.capstone.organization.model.BusinessPage;
 import com.capstone.organization.repository.BusinessPageRepository;
 import com.capstone.organization.service.boundary.BusinessPageService;
-import com.capstone.organization.utils.IdEncoder;
+import com.capstone.organization.service.boundary.EmployeeService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
-import org.springframework.data.domain.PageRequest;
+import org.slf4j.Logger;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
-@Slf4j
+@AppLog
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BusinessPageServiceImpl implements BusinessPageService {
   BusinessPageRepository businessPageRepository;
+  EmployeeService employeeService;
+  @NonFinal
+  Logger log;
 
   @Override
+  @Transactional(rollbackFor = Exception.class)
   public BusinessPageResponse createBusinessPage(@NonNull CreateBusinessPageRequest request) {
     log.info("Creating business page with name: {}", request.name());
 
@@ -37,16 +47,11 @@ public class BusinessPageServiceImpl implements BusinessPageService {
     );
 
     var saved = businessPageRepository.save(entity);
-    return new BusinessPageResponse(
-      IdEncoder.encode(saved.getPageId()),
-      saved.getName(),
-      saved.getActivate(),
-      saved.getCreator(),
-      saved.getUpdator()
-    );
+    return convert(saved);
   }
 
   @Override
+  @Transactional(rollbackFor = Exception.class)
   public BusinessPageResponse updateBusinessPage(String pageId, @NonNull UpdateBusinessPageRequest request) {
     log.info("Updating business page: {}", pageId);
 
@@ -58,36 +63,59 @@ public class BusinessPageServiceImpl implements BusinessPageService {
     entity.setUpdator(request.updator());
 
     var saved = businessPageRepository.save(entity);
-    return new BusinessPageResponse(
-      IdEncoder.encode(saved.getPageId()),
-      saved.getName(),
-      saved.getActivate(),
-      saved.getCreator(),
-      saved.getUpdator()
-    );
+    return convert(saved);
   }
 
   @Override
-  public PagedBusinessPageResponse getBusinessPages(int page, int size) {
-    log.info("Fetching business pages page: {}, size: {}", page, size);
+  public PagedBusinessPageResponse getBusinessPages(@NonNull Pageable pageable) {
+    log.info("Fetching business pages page: {}, size: {}", pageable.getPageNumber(), pageable.getPageSize());
 
-    var result = businessPageRepository.findAll(PageRequest.of(page, size));
-    var items = result.getContent().stream()
-      .map(pageEntity -> new BusinessPageResponse(
-        IdEncoder.encode(pageEntity.getPageId()),
-        pageEntity.getName(),
-        pageEntity.getActivate(),
-        pageEntity.getCreator(),
-        pageEntity.getUpdator()
-      ))
+    var result = businessPageRepository.findAll(pageable);
+
+    return mapResponse(result);
+  }
+
+  @Override
+  public PagedBusinessPageResponse filterBusinessPagesList(@NonNull FilterBusinessPagesRequest req, @NonNull Pageable pageable) {
+    log.info("Filter business pages by filter: {} and isActive: {} in page {} and size {}", req.filter(), req.isActive(), pageable.getPageNumber(), pageable.getPageSize());
+
+    var result = businessPageRepository.findByNameAndActivate(req.filter(), req.isActive(), pageable);
+
+    return mapResponse(result);
+  }
+
+  @Override
+  public List<String> getAllBusinessPageNamesByIds(List<String> ids) {
+    log.info("Fetching business pages by ids: {}", ids);
+    var result = businessPageRepository.findAllById(ids);
+    return result
+      .stream()
+      .map(BusinessPage::getName)
       .collect(Collectors.toList());
+  }
 
+  private @NonNull PagedBusinessPageResponse mapResponse(@NonNull Page<BusinessPage> list) {
+    var items = list.getContent().stream()
+      .map(this::convert)
+      .collect(Collectors.toList());
     return new PagedBusinessPageResponse(
       items,
-      result.getNumber(),
-      result.getSize(),
-      result.getTotalElements(),
-      result.getTotalPages()
+      list.getNumber(),
+      list.getSize(),
+      list.getTotalElements(),
+      list.getTotalPages()
+    );
+  }
+
+  private @NonNull BusinessPageResponse convert(@NonNull BusinessPage saved) {
+    var creatorName = employeeService.getEmployeeNameById(saved.getCreator()).data();
+    var updatorName = employeeService.getEmployeeNameById(saved.getUpdator()).data();
+    return new BusinessPageResponse(
+      saved.getPageId(),
+      saved.getName(),
+      saved.getActivate(),
+      creatorName.toString(),
+      updatorName.toString()
     );
   }
 }

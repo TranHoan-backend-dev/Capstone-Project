@@ -17,7 +17,18 @@ create table user_roles
       unique
     constraint user_roles_name_check
       check ((name)::text = ANY
-             ((ARRAY ['IT_DEPARTMENT_STAFF'::character varying, 'PLANNING_TECHNICAL_DEPARTMENT_STAFF'::character varying, 'PLANNING_TECHNICAL_DEPARTMENT_HEAD'::character varying, 'CONSTRUCTION_DEPARTMENT_STAFF'::character varying, 'CONSTRUCTION_DEPARTMENT_HEAD'::character varying, 'SALES_DEPARTMENT_STAFF'::character varying, 'SALES_DEPARTMENT_HEAD'::character varying, 'FINANCE_DEPARTMENT'::character varying])::text[]))
+             ((ARRAY [
+               'IT_STAFF'::character varying,
+               'PLANNING_TECHNICAL_DEPARTMENT_HEAD'::character varying,
+               'SURVEY_STAFF'::character varying,
+               'ORDER_RECEIVING_STAFF'::character varying,
+               'FINANCE_DEPARTMENT'::character varying,
+               'CONSTRUCTION_DEPARTMENT_HEAD'::character varying,
+               'CONSTRUCTION_DEPARTMENT_STAFF'::character varying,
+               'BUSINESS_DEPARTMENT_HEAD'::character varying,
+               'METER_INSPECTION_STAFF'::character varying,
+               'COMPANY_LEADERSHIP'::character varying
+               ])::text[]))
 );
 
 alter table user_roles
@@ -38,7 +49,6 @@ create table users
   job_id                  varchar(255) not null,
   locked_at               timestamp(6),
   locked_reason           varchar(255),
-  password                varchar(255) not null,
   updated_at              timestamp(6) not null,
   username                varchar(255) not null
     constraint ukr43af9ap4edm43mmtq01oddj6

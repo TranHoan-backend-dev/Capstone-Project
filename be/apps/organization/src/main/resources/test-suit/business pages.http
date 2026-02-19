@@ -1,0 +1,56 @@
+@keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
+@client_secret=
+
+### username is username
+POST {{keycloak}}/token
+Content-Type: application/x-www-form-urlencoded
+Accept: application/json
+
+grant_type=password&
+client_id=&
+client_secret={{client_secret}}&
+username=&
+password=&
+scope=openid
+
+> {%
+  client.global.set("access_token", response.body.access_token);
+  client.global.set("refresh_token", response.body.refresh_token);
+%}
+
+###
+@uri = http://localhost:9008
+
+# Happy case
+### Get the first page
+GET {{uri}}/api/v1/business-pages?page=0&size=10
+Authorization: Bearer {{access_token}}
+
+### Get the second page without providing page size
+GET {{uri}}/api/v1/business-pages?page=1
+
+### Get the third page
+GET {{uri}}/api/v1/business-pages?page=2
+
+### Get the first page with larger page size
+GET {{uri}}/api/v1/business-pages?page=0&size=20
+
+### Missing page index and page size
+GET {{uri}}/api/v1/business-pages
+
+# Unhappy case
+### Page index is a negative number
+GET {{uri}}/api/v1/business-pages?page=-1
+
+### Page size is a negative number
+GET {{uri}}/api/v1/business-pages?size=-1
+
+### Get page names list by list of ids, full of param's value
+GET {{uri}}/e?id=86088520-f274-4ac2-a94b-b761995abf4a,4c3cdd22-5018-482c-bc34-51331e7167a9,b4758afc-f456-4538-aabe-3d09a4591f34
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Get page names list by list of ids, missing param's value
+GET {{uri}}/e?id=
+Authorization: Bearer {{access_token}}
+Accept: application/json

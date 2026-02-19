@@ -1,14 +1,19 @@
 package com.capstone.auth.application.business.users;
 
 import com.capstone.auth.application.business.dto.UserDTO;
+import com.capstone.auth.application.dto.request.FilterUsersRequest;
+import com.capstone.auth.application.dto.response.EmployeeResponse;
 import com.capstone.auth.domain.model.Roles;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public interface UserService {
-  void createEmployee(String username, String password, String email,
-      Roles role, String jobIds, String businessIds,
-      String departmentId, String waterSupplyNetworkId) throws ExecutionException, InterruptedException;
+  void createEmployee(String username, String email,
+                      Roles role, List<String> jobIds, String departmentId,
+                      String waterSupplyNetworkId, String fullName, String phone) throws ExecutionException, InterruptedException;
 
   void updatePassword(String email, String password, String newPassword);
 
@@ -19,4 +24,8 @@ public interface UserService {
   boolean isUserExists(String id);
 
   UserDTO getUserById(String id);
+
+  UserDTO updateUsername(String id, String username);
+
+  Page<EmployeeResponse> getAllEmployeesWithStatus(Pageable pageable, FilterUsersRequest request);
 }

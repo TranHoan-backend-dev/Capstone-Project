@@ -1,5 +1,6 @@
 package com.capstone.customer.model;
 
+import com.capstone.common.enumerate.UsageTarget;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

@@ -19,14 +19,18 @@ import java.util.function.Consumer;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Department {
   @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
   String departmentId;
 
   @Column(nullable = false, unique = true)
   String name;
 
-  @Column(nullable = false, unique = true)
+  @Column(unique = true)
   String phoneNumber;
+
+  public void setDepartmentId(String departmentId) {
+    requireNonNullAndNotEmpty(departmentId, Constant.ORG_04);
+    this.departmentId = departmentId;
+  }
 
   public void setName(String name) {
     requireNonNullAndNotEmpty(name, Constant.ORG_04);
@@ -56,6 +60,11 @@ public class Department {
 
   public static class DepartmentBuilder {
     private final Department instance = new Department();
+
+    public DepartmentBuilder departmentId(String value) {
+      instance.setDepartmentId(value);
+      return this;
+    }
 
     public DepartmentBuilder name(String name) {
       instance.setName(name);

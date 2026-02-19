@@ -1,0 +1,122 @@
+@uri = http://localhost:9004/api/v1/units
+@keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
+@client_secret=
+
+### C
+### get token
+POST {{keycloak}}/token
+Content-Type: application/x-www-form-urlencoded
+Accept: application/json
+
+grant_type=password&
+client_id=&
+client_secret={{client_secret}}&
+username=&
+password=&
+scope=openid
+
+> {%
+  client.global.set("access_token", response.body.access_token);
+  client.global.set("refresh_token", response.body.refresh_token);
+%}
+
+### Create, happy case
+POST {{uri}}/
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "ehehe",
+  "communeId": "0f1c0a3a-3c3c-4f33-8c24-7a7c0d6a0001"
+}
+
+### Create, blank attributes
+POST {{uri}}/
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "",
+  "communeId": ""
+}
+
+### Create, duplicated name
+POST {{uri}}/
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "ehehe1",
+  "communeId": "0f1c0a3a-3c3c-4f33-8c24-7a7c0d6a0001"
+}
+
+### Create, commune is not existed
+POST {{uri}}/
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "ehehe1",
+  "communeId": "0f1c0a3a-3c3c-4f33-8c24-7a7c0d6a0000"
+}
+
+### R
+### U
+### happy case
+PUT {{uri}}/47f63a1a-43ef-4265-9571-bd87baae0480
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "uhuhu",
+  "communeId": "4e5d1f32-e545-4409-814f-f8d5a381c4ed"
+}
+
+### blank attributes
+PUT {{uri}}/47f63a1a-43ef-4265-9571-bd87baae0480
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "",
+  "communeId": ""
+}
+
+### duplicated name
+PUT {{uri}}/47f63a1a-43ef-4265-9571-bd87baae0480
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "To Dan Pho 15",
+  "communeId": "0f1c0a3a-3c3c-4f33-8c24-7a7c0d6a0001"
+}
+
+### not existing commune
+PUT {{uri}}/47f63a1a-43ef-4265-9571-bd87baae0480
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "to dan pho",
+  "communeId": "0f1c0a3a-3c3c-4f33-8c24-7a7c0d6a0000"
+}
+
+### D
+### happy case
+DELETE {{uri}}/47f63a1a-43ef-4265-9571-bd87baae0480
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### id is not existing
+DELETE {{uri}}/47f63a1a-43ef-4265-9571-bd87baae0480
+Authorization: Bearer {{access_token}}
+Accept: application/json

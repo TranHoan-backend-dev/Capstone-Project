@@ -1,0 +1,96 @@
+@uri = http://localhost:9004/api/v1/communes
+@keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
+@client_secret=
+
+### get token
+POST {{keycloak}}/token
+Content-Type: application/x-www-form-urlencoded
+Accept: application/json
+
+grant_type=password&
+client_id=&
+client_secret={{client_secret}}&
+username=&
+password=&
+scope=openid
+
+> {%
+  client.global.set("access_token", response.body.access_token);
+  client.global.set("refresh_token", response.body.refresh_token);
+%}
+
+### C
+### Create commune, full of keys
+POST {{uri}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "hehe",
+  "type": "RURAL_COMMUNE"
+}
+
+### Create commune, blank keys
+POST {{uri}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "",
+  "type": ""
+}
+
+### Create commune, not existing type
+POST {{uri}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "commune 1",
+  "type": "UUHH"
+}
+
+### U
+### Update commune, blank id
+PUT {{uri}}/
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "hehe",
+  "type": "URBAN_WARD"
+}
+
+### Update commune, not existing name
+PUT {{uri}}/a9405f07-0e16-48f0-8ad2-d381a4702789
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "hehe1",
+  "type": "URBAN_WARD"
+}
+
+### D
+### Delete commune, existing name
+DELETE {{uri}}/a9405f07-0e16-48f0-8ad2-d381a4702789
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "hehe",
+  "type": "URBAN_WARD"
+}
+
+### Delete commune, not existing id
+DELETE {{uri}}/a9405f07-0e16-48f0-8ad2-d381a4702780
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+### R

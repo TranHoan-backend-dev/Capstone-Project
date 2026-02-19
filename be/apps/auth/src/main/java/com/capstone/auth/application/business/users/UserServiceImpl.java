@@ -1,57 +1,92 @@
 package com.capstone.auth.application.business.users;
 
 import com.capstone.auth.application.business.dto.UserDTO;
+import com.capstone.auth.application.dto.request.FilterUsersRequest;
+import com.capstone.auth.application.dto.response.EmployeeResponse;
 import com.capstone.auth.application.exception.ExistingException;
 import com.capstone.auth.application.exception.NotExistingException;
+import com.capstone.auth.domain.model.EmployeeJob;
+import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.domain.model.Roles;
 import com.capstone.auth.domain.model.Users;
-import com.capstone.auth.domain.repository.RoleRepository;
-import com.capstone.auth.domain.repository.UserRepository;
+import com.capstone.auth.domain.model.utils.EmployeeJobId;
+import com.capstone.auth.infrastructure.persistence.BusinessPagesOfEmployeeRepository;
+import com.capstone.auth.infrastructure.persistence.EmployeeJobRepository;
+import com.capstone.auth.infrastructure.persistence.ProfileRepository;
+import com.capstone.auth.infrastructure.persistence.UserRepository;
 import com.capstone.auth.infrastructure.config.Constant;
+import com.capstone.auth.infrastructure.service.NetworkService;
+import com.capstone.auth.infrastructure.service.OrganizationService;
+import com.capstone.common.annotation.AppLog;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
-@Slf4j
+@AppLog
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserServiceImpl implements UserService {
   UserRepository repo;
-  RoleRepository roleRepo;
   PasswordEncoder encoder;
+  BusinessPagesOfEmployeeRepository bpRepo;
+  ProfileRepository profileRepo;
+  EmployeeJobRepository employeeJobRepo;
+  NetworkService netWorkService;
+  OrganizationService organizationService;
+
+  @NonFinal
+  Logger log;
 
   @Override
+  @Transactional(rollbackFor = Exception.class) // rollback neu co loi
   public void createEmployee(
-      String username, String password, String email,
-      Roles role, String jobIds, String businessIds,
-      String departmentId, String waterSupplyNetworkId) throws ExecutionException, InterruptedException {
+    String username, String email, Roles role, @NonNull List<String> jobIds,
+    String departmentId, String waterSupplyNetworkId, String fullName, String phone
+  ) {
     log.info("UsersService is handling the request");
-    var obj = repo.findByEmail(email);
-    if (obj.isPresent()) {
-      throw new ExistingException(Constant.SE_01);
-    }
+    validateNewEmployeeInformation(email, phone, waterSupplyNetworkId, departmentId, jobIds);
 
-    var passwordHash = hashPassword(password).get();
     var user = Users.create(builder -> builder
-        .email(email)
-        .password(passwordHash)
-        .username(username)
-        .role(role)
-        .waterSupplyNetworkId(waterSupplyNetworkId)
-        .departmentId(departmentId));
+      .email(email)
+      .username(username)
+      .role(role)
+      .waterSupplyNetworkId(waterSupplyNetworkId)
+      .isEnabled(true)
+      .isLocked(false)
+      .departmentId(departmentId));
     log.info("New account's information: {}", user);
+    var entity = repo.save(user);
 
-    repo.save(user);
+    var profile = Profile.create(builder -> builder
+      .fullname(fullName)
+      .users(entity)
+      .phoneNumber(phone)
+    );
+
+    var p = profileRepo.save(profile);
+    log.info("New profile's information: {}", p);
+    jobIds.forEach(jid -> {
+      var job = employeeJobRepo.save(EmployeeJob.create(builder -> builder
+        .users(entity)
+        .id(new EmployeeJobId(entity.getUserId(), jid))
+      ));
+      log.info("New employee's job: {}", job);
+    });
   }
 
   @Async("passwordEncoderExecutor")
@@ -60,35 +95,22 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional(rollbackFor = Exception.class)
   public void updatePassword(String email, @NonNull String password, String newPassword) {
     var obj = getUsersByEmail(email);
-    if (encoder.matches(password, obj.getPassword())) {
-      updateUser(obj, newPassword);
-      return;
-    }
+    // if (encoder.matches(password, obj.getPassword())) {
+    // updateUser(obj, newPassword);
+    // return;
+    // }
     log.debug("Old passwords do not match");
     throw new IllegalArgumentException(Constant.SE_03);
   }
 
   @Override
+  @Transactional(rollbackFor = Exception.class)
   public void resetPassword(String email, String newPassword) {
     var obj = getUsersByEmail(email);
     updateUser(obj, newPassword);
-  }
-
-  private @NonNull Users getUsersByEmail(String email) {
-    var obj = repo.findByEmail(email);
-    if (obj.isEmpty()) {
-      throw new NotExistingException(Constant.SE_02);
-    }
-    log.info("Find user by email: {}", obj);
-    return obj.get();
-  }
-
-  private void updateUser(@NonNull Users obj, String password) {
-    obj.setPassword(encoder.encode(password));
-    repo.save(obj);
-    log.info("Password reset successfully");
   }
 
   @Override
@@ -119,16 +141,117 @@ public class UserServiceImpl implements UserService {
   @Override
   public UserDTO getUserById(String id) {
     log.info("Getting user by id: {}", id);
-    var user = repo.findById(id);
-    if (user.isPresent()) {
-      log.info("User found: {}", user.get());
-      return new UserDTO(
-          user.get().getRole().getName().name(),
-          user.get().getUsername(),
-          user.get().getEmail(),
-          user.get().getIsLocked(),
-          user.get().getIsEnabled());
+    var user = repo
+      .findById(id)
+      .orElseThrow(() -> new NotExistingException("User with id does not exist"));
+    log.info("User found: {}", user);
+    return returnUserDTO(user);
+  }
+
+  @Override
+  @Transactional(rollbackFor = Exception.class)
+  public UserDTO updateUsername(String id, String username) {
+    log.info("Saving user: {}", username);
+    var currentUser = repo.findById(id)
+      .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
+
+    currentUser.setUsername(username);
+    repo.save(currentUser);
+    return returnUserDTO(currentUser);
+  }
+
+  @Override
+  public Page<EmployeeResponse> getAllEmployeesWithStatus(Pageable pageable, FilterUsersRequest request) {
+    log.info("Getting all active employees with activate status: {}", request);
+    Page<Users> usersList;
+//    var usersList = request.isEnabled() == null ? repo.findAll(pageable)
+//      : repo.findByIsEnabledTrueAndIsLockedFalse(pageable);
+//
+//    if (request.username() != null) {
+//      content = content.stream()
+//        .filter(c -> c
+//          .username().toLowerCase()
+//          .contains(request.username().toLowerCase()))
+//        .toList();
+//    }
+//    log.info("Found {} employees", content.size());
+
+    if (request != null) {
+      if (request.isEnabled() != null && request.username() == null) {
+        usersList = repo.findByIsEnabledTrueAndIsLockedFalse(pageable);
+      } else if (request.username() != null && request.isEnabled() == null) {
+        usersList = repo.findByUsernameContainsIgnoreCase(request.username(), pageable);
+      } else if (request.isEnabled() != null) {
+        usersList = repo.findByIsEnabledTrueAndIsLockedFalseOrUsernameContainingIgnoreCase(request.username(), pageable);
+      } else {
+        usersList = repo.findAll(pageable);
+      }
+    } else {
+      usersList = repo.findAll(pageable);
     }
-    throw new NotExistingException("User with id does not exist");
+
+    var content = usersList.getContent().stream().map(c -> new EmployeeResponse(
+      c.getUserId(),
+      c.getUsername(),
+      c.getEmail())).toList();
+    return new PageImpl<>(
+      content,
+      pageable,
+      content.size());
+  }
+
+  private @NonNull Users getUsersByEmail(String email) {
+    var obj = repo.findByEmail(email);
+    if (obj.isEmpty()) {
+      throw new NotExistingException(Constant.SE_02);
+    }
+    log.info("Find user by email: {}", obj);
+    return obj.get();
+  }
+
+  private void updateUser(@NonNull Users obj, String password) {
+    // obj.setPassword(encoder.encode(password));
+    // repo.save(obj);
+    // log.info("Password reset successfully");
+  }
+
+  private @NonNull UserDTO returnUserDTO(@NonNull Users currentUser) {
+    var jobIds = bpRepo.findPagesOfEmployeesByUsersUserId(currentUser.getUserId());
+    return new UserDTO(
+      currentUser.getUserId(),
+      currentUser.getRole().getName().name(),
+      currentUser.getUsername(),
+      currentUser.getEmail(),
+      currentUser.getIsLocked(),
+      currentUser.getCreatedAt(),
+      currentUser.getUpdatedAt(),
+      currentUser.getLockedReason(),
+      currentUser.getLockedAt(),
+      jobIds,
+      currentUser.getDepartmentId(),
+      currentUser.getWaterSupplyNetworkId(),
+      currentUser.getElectronicSigningUrl(),
+      currentUser.getIsEnabled());
+  }
+
+  private void validateNewEmployeeInformation(String email, String phone, String networkId, String departmentId, List<String> jobIds) {
+    var obj = repo.findByEmail(email);
+    if (obj.isPresent()) {
+      throw new ExistingException(Constant.SE_01);
+    }
+    if (profileRepo.existsByPhoneNumber(phone)) {
+      throw new ExistingException(Constant.SE_09);
+    }
+    if (!netWorkService.checkExistence(networkId)) {
+      throw new NotExistingException(Constant.SE_10);
+    }
+    if (!organizationService.checkDepartmentExistence(departmentId)) {
+      throw new NotExistingException(Constant.SE_11);
+    }
+    var invalidJobs = jobIds.stream()
+      .filter(jid -> !organizationService.checkJobExistence(jid))
+      .toList();
+    if (!invalidJobs.isEmpty())
+      throw new NotExistingException("Jobs not exist: " + invalidJobs);
   }
 }

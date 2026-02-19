@@ -8,6 +8,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
@@ -16,30 +17,30 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CommuneUseCase {
-    CommuneService communeService;
+  CommuneService communeService;
 
-    public CommuneResponse createCommune(CommuneRequest request) {
-        log.info("UseCase: Creating commune {}", request.name());
-        return communeService.createCommune(request);
-    }
+  public void createCommune(@NonNull CommuneRequest request) {
+    log.info("UseCase: Creating commune {}", request.name());
+    communeService.createCommune(request);
+  }
 
-    public CommuneResponse updateCommune(String id, CommuneRequest request) {
-        log.info("UseCase: Updating commune {}", id);
-        return communeService.updateCommune(id, request);
-    }
+  public CommuneResponse updateCommune(String id, CommuneRequest request) {
+    log.info("UseCase: Updating commune {}", id);
+    return communeService.updateCommune(id, request);
+  }
 
-    public void deleteCommune(String id) {
-        log.info("UseCase: Deleting commune {}", id);
-        communeService.deleteCommune(id);
-    }
+  public void deleteCommune(String id) {
+    log.info("UseCase: Deleting commune {}", id);
+    communeService.deleteCommune(id);
+  }
 
-    public CommuneResponse getCommuneById(String id) {
-        log.info("UseCase: Fetching commune {}", id);
-        return communeService.getCommuneById(id);
-    }
+  public CommuneResponse getCommuneById(String id) {
+    log.info("UseCase: Fetching commune {}", id);
+    return communeService.getCommuneById(id);
+  }
 
-    public PageResponse<CommuneResponse> getAllCommunes(Pageable pageable) {
-        log.info("UseCase: Fetching all communes");
-        return communeService.getAllCommunes(pageable);
-    }
+  public PageResponse<CommuneResponse> getAllCommunes(Pageable pageable) {
+    log.info("UseCase: Fetching all communes");
+    return communeService.getAllCommunes(pageable);
+  }
 }

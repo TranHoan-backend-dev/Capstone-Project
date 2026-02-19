@@ -1,12 +1,13 @@
 package com.capstone.auth.application.business.dto;
 
+import java.time.LocalDate;
+
 public record ProfileDTO(
   String id,
   String fullname,
   String avatarUrl,
   String address,
   String phoneNumber,
-  String gender,
-  String birthday
-) {
+  Boolean gender,
+  LocalDate birthday) {
 }
