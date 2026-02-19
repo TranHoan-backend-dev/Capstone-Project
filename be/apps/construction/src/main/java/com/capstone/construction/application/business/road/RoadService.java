@@ -6,13 +6,13 @@ import com.capstone.construction.application.dto.response.PageResponse;
 import org.springframework.data.domain.Pageable;
 
 public interface RoadService {
-    RoadResponse createRoad(RoadRequest request);
+  RoadResponse createRoad(RoadRequest request);
 
-    RoadResponse updateRoad(String id, RoadRequest request);
+  RoadResponse updateRoad(String id, RoadRequest request);
 
-    void deleteRoad(String id);
+  void deleteRoad(String id);
 
-    RoadResponse getRoadById(String id);
+  RoadResponse getRoadById(String id);
 
-    PageResponse<RoadResponse> getAllRoads(Pageable pageable);
+  PageResponse<RoadResponse> getAllRoads(Pageable pageable);
 }
