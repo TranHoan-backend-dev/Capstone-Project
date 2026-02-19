@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  context: { params: { id: string } },
 ) {
   try {
     const accessToken = getAccessToken(req);
@@ -14,11 +14,11 @@ export async function PUT(
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = context.params;
     const { name, type } = await req.json();
 
     const response = await updateCommune(accessToken, id, name, type);
-    
+
     return NextResponse.json(response.data, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(
@@ -44,7 +44,7 @@ export async function DELETE(
     const { id } = params;
 
     const response = await deleteCommune(accessToken, id);
-    
+
     return NextResponse.json(response.data, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(
