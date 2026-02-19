@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -34,6 +35,7 @@ public class HamletController {
     @ApiResponse(responseCode = "400", description = "Invalid request payload or commune ID"),
     @ApiResponse(responseCode = "409", description = "Hamlet with this name already exists")
   })
+  @PreAuthorize("hasAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> createHamlet(@RequestBody @Valid HamletRequest request) {
     log.info("REST request to create hamlet: {}", request.name());
     var response = hamletUseCase.createHamlet(request);
@@ -47,6 +49,7 @@ public class HamletController {
     @ApiResponse(responseCode = "404", description = "Hamlet or targeted commune not found"),
     @ApiResponse(responseCode = "409", description = "New hamlet name already exists")
   })
+  @PreAuthorize("hasAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> updateHamlet(
     @PathVariable @Parameter(description = "ID of the hamlet to update", required = true) String id,
     @RequestBody @Valid HamletRequest request) {
@@ -61,6 +64,7 @@ public class HamletController {
     @ApiResponse(responseCode = "200", description = "Hamlet deleted successfully"),
     @ApiResponse(responseCode = "404", description = "Hamlet not found")
   })
+  @PreAuthorize("hasAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> deleteHamlet(
     @PathVariable @Parameter(description = "ID of the hamlet to delete", required = true) String id) {
     log.info("REST request to delete hamlet: {}", id);

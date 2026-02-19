@@ -1,35 +1,42 @@
 package com.capstone.construction.application.business.road;
 
+import com.capstone.common.annotation.AppLog;
 import com.capstone.construction.application.dto.request.catalog.RoadRequest;
 import com.capstone.construction.application.dto.response.catalog.RoadResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.domain.model.Road;
+import com.capstone.construction.infrastructure.config.Constant;
 import com.capstone.construction.infrastructure.persistence.RoadRepository;
 import com.capstone.construction.application.exception.ExistingItemException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
+@AppLog
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RoadServiceImpl implements RoadService {
   RoadRepository roadRepository;
+  @NonFinal
+  Logger log;
 
   @Override
   @Transactional(rollbackFor = Exception.class)
   public RoadResponse createRoad(@NonNull RoadRequest request) {
     log.info("Creating new road with name: {}", request.name());
-    if (roadRepository.existsByName(request.name())) {
+    if (roadRepository.existsByNameIgnoreCase(request.name())) {
       throw new ExistingItemException("Road with name " + request.name() + " already exists");
     }
-
+    if (request.name() != null && request.name().isBlank()) {
+      throw new IllegalArgumentException(Constant.PT_72);
+    }
     var road = Road.create(builder -> builder
       .name(request.name()));
 
@@ -44,11 +51,13 @@ public class RoadServiceImpl implements RoadService {
     var road = roadRepository.findById(id)
       .orElseThrow(() -> new IllegalArgumentException("Road not found with id: " + id));
 
-    if (!road.getName().equals(request.name()) && roadRepository.existsByName(request.name())) {
+    if (!road.getName().equalsIgnoreCase(request.name()) && roadRepository.existsByNameIgnoreCase(request.name())) {
       throw new ExistingItemException("Road with name " + request.name() + " already exists");
     }
 
-    road.setName(request.name());
+    if (request.name() != null && !request.name().isBlank()) {
+      road.setName(request.name());
+    }
 
     var saved = roadRepository.save(road);
     return mapToResponse(saved);
@@ -79,7 +88,7 @@ public class RoadServiceImpl implements RoadService {
     return PageResponse.fromPage(page, this::mapToResponse);
   }
 
-  private RoadResponse mapToResponse(@NonNull Road road) {
+  private @NonNull RoadResponse mapToResponse(@NonNull Road road) {
     return new RoadResponse(
       road.getRoadId(),
       road.getName(),

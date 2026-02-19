@@ -20,103 +20,128 @@ scope=openid
 %}
 
 ### C
-### Create, happy case
-POST {{uri}}/
-Content-Type: application/json
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-{
-  "name": "ehehe",
-  "communeId": "0f1c0a3a-3c3c-4f33-8c24-7a7c0d6a0001"
-}
-
-### Create, blank attributes
-POST {{uri}}/
-Content-Type: application/json
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-{
-  "name": "",
-  "communeId": ""
-}
-
-### Create, duplicated name
-POST {{uri}}/
-Content-Type: application/json
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-{
-  "name": "ehehe1",
-  "communeId": "0f1c0a3a-3c3c-4f33-8c24-7a7c0d6a0001"
-}
-
-### Create, commune is not existed
-POST {{uri}}/
-Content-Type: application/json
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-{
-  "name": "ehehe1",
-  "communeId": "0f1c0a3a-3c3c-4f33-8c24-7a7c0d6a0000"
-}
-
-### R
-### U
 ### happy case
-PUT {{uri}}/47f63a1a-43ef-4265-9571-bd87baae0480
+POST {{uri}}
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 Accept: application/json
 
 {
-  "name": "uhuhu",
-  "communeId": "4e5d1f32-e545-4409-814f-f8d5a381c4ed"
+  "name": "ueueue",
+  "networkId": "550e8400-e29b-41d4-a716-446655440001"
 }
 
-### blank attributes
-PUT {{uri}}/47f63a1a-43ef-4265-9571-bd87baae0480
+### blank name
+POST {{uri}}
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 Accept: application/json
 
 {
   "name": "",
-  "communeId": ""
+  "networkId": ""
+}
+
+### blank networkId
+POST {{uri}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "uuss",
+  "networkId": ""
+}
+
+### network does not exist
+POST {{uri}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "adadf",
+  "networkId": "550e8400-e29b-41d4-a716-446655440000"
 }
 
 ### duplicated name
-PUT {{uri}}/47f63a1a-43ef-4265-9571-bd87baae0480
+POST {{uri}}
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 Accept: application/json
 
 {
-  "name": "To Dan Pho 15",
-  "communeId": "0f1c0a3a-3c3c-4f33-8c24-7a7c0d6a0001"
+  "name": "ueueue",
+  "networkId": "550e8400-e29b-41d4-a716-446655440001"
 }
 
-### not existing commune
-PUT {{uri}}/47f63a1a-43ef-4265-9571-bd87baae0480
+### R
+
+### U
+### happy case
+PUT {{uri}}/a36278db-45a3-44a8-86cf-6be81bfac192
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 Accept: application/json
 
 {
-  "name": "to dan pho",
-  "communeId": "0f1c0a3a-3c3c-4f33-8c24-7a7c0d6a0000"
+  "name": "ueueue2",
+  "networkId": "550e8400-e29b-41d4-a716-446655440001"
+}
+
+### blank name
+PUT {{uri}}/a36278db-45a3-44a8-86cf-6be81bfac192
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "",
+  "networkId": ""
+}
+
+### blank networkId
+PUT {{uri}}/a36278db-45a3-44a8-86cf-6be81bfac192
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "uuss",
+  "networkId": ""
+}
+
+### network does not exist
+PUT {{uri}}/a36278db-45a3-44a8-86cf-6be81bfac192
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "adadf",
+  "networkId": "550e8400-e29b-41d4-a716-446655440000"
+}
+
+### duplicated name
+PUT {{uri}}/a36278db-45a3-44a8-86cf-6be81bfac192
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "ueueue",
+  "networkId": "550e8400-e29b-41d4-a716-446655440002"
 }
 
 ### D
 ### happy case
-DELETE {{uri}}/47f63a1a-43ef-4265-9571-bd87baae0480
+DELETE {{uri}}/a36278db-45a3-44a8-86cf-6be81bfac192
+Content-Type: application/json
 Authorization: Bearer {{access_token}}
 Accept: application/json
 
-### id is not existing
-DELETE {{uri}}/47f63a1a-43ef-4265-9571-bd87baae0480
+### id not found
+DELETE {{uri}}/a36278db-45a3-44a8-86cf-6be81bfac193
+Content-Type: application/json
 Authorization: Bearer {{access_token}}
 Accept: application/json

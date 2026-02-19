@@ -6,5 +6,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface OverallWaterMeterRepository extends JpaRepository<OverallWaterMeter, String> {
+    void deleteByLateralId(String lateralId);
+
+  boolean existsByLateralId(String lateralId);
 }
 

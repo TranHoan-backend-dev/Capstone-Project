@@ -8,7 +8,9 @@ import java.util.Optional;
 
 @Repository
 public interface RoadmapRepository extends JpaRepository<Roadmap, String> {
-    Optional<Roadmap> findByName(String name);
+  Optional<Roadmap> findByName(String name);
 
-    boolean existsByName(String name);
+  boolean existsByName(String name);
+
+  boolean existsByNameEqualsIgnoreCase(String name);
 }
