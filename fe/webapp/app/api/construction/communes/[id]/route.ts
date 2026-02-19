@@ -1,11 +1,10 @@
 import { deleteCommune, updateCommune } from "@/services/construction.service";
 import { getAccessToken } from "@/utils/getAccessToken";
-import { NextRequest } from "next/dist/server/web/spec-extension/request";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function PUT(
   req: NextRequest,
-  context: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const accessToken = getAccessToken(req);
@@ -14,7 +13,7 @@ export async function PUT(
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = context.params;
+    const { id } = await params;
     const { name, type } = await req.json();
 
     const response = await updateCommune(accessToken, id, name, type);
