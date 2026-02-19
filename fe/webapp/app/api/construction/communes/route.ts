@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
     const { name, type } = await req.json();
 
     const response = await createCommune(accessToken, name, type);
-    console.log(response);
+
     return NextResponse.json(response.data, { status: 201 });
   } catch (error: any) {
     return NextResponse.json(

@@ -11,6 +11,7 @@ interface Props {
   keyword: string;
   reloadKey: number;
   onEdit: (item: CommuneItem) => void;
+  onDeleted: () => void;
 }
 
 interface CommuneResponse {
@@ -19,7 +20,17 @@ interface CommuneResponse {
   type: string;
 }
 
-export const CommuneTable = ({ keyword, reloadKey, onEdit }: Props) => {
+const typeLabel: Record<string, string> = {
+  URBAN_WARD: "Phường (Đô thị)",
+  RURAL_COMMUNE: "Xã (Nông thôn)",
+};
+
+export const CommuneTable = ({
+  keyword,
+  reloadKey,
+  onEdit,
+  onDeleted,
+}: Props) => {
   const [data, setData] = useState<CommuneItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
@@ -72,7 +83,7 @@ export const CommuneTable = ({ keyword, reloadKey, onEdit }: Props) => {
           id: item.communeId,
           stt: (page - 1) * pageSize + index + 1,
           name: item.name,
-          type: item.type,
+          type: item.type.toUpperCase(),
         }));
         setData(mapped);
       } catch (e) {
@@ -121,10 +132,24 @@ export const CommuneTable = ({ keyword, reloadKey, onEdit }: Props) => {
         content: "Xóa",
         icon: DeleteIcon,
         className: "text-red-500 hover:bg-red-50",
-        onClick: (id: string) => console.log("Xóa:", id),
+        onClick: async (id: string) => {
+          if (!confirm("Bạn có chắc muốn xóa phường/xã này?")) return;
+
+          try {
+            const res = await fetch(`/api/construction/communes/${id}`, {
+              method: "DELETE",
+            });
+
+            if (!res.ok) throw new Error("Delete failed");
+
+            onDeleted();
+          } catch (e) {
+            console.error(e);
+          }
+        },
       },
     ],
-    [],
+    [data, onEdit, onDeleted],
   );
 
   const renderCell = (item: CommuneItem, columnKey: string) => {
@@ -146,7 +171,7 @@ export const CommuneTable = ({ keyword, reloadKey, onEdit }: Props) => {
       case "type":
         return (
           <span className="font-bold text-gray-900 dark:text-foreground">
-            {item.type}
+            {typeLabel[item.type]}
           </span>
         );
 

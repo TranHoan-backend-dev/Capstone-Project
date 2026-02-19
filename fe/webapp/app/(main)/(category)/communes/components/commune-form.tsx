@@ -24,6 +24,7 @@ const typeOptions = [
 export const CommuneForm = ({ initialData, onSuccess }: CommuneFormProps) => {
   const [name, setName] = useState(initialData?.name || "");
   const [type, setType] = useState(initialData?.type || "");
+  const [loading, setLoading] = useState(false);
   const isEdit = !!initialData?.id;
 
   useEffect(() => {
@@ -32,20 +33,33 @@ export const CommuneForm = ({ initialData, onSuccess }: CommuneFormProps) => {
   }, [initialData]);
 
   const handleSubmit = async () => {
+    if (loading) return;
     try {
+      setLoading(true);
       const url = isEdit
         ? `/api/construction/communes/${initialData?.id}`
         : `/api/construction/communes`;
+
       const method = isEdit ? "PUT" : "POST";
+
+      const payload = { name, type };
+
       const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, type }),
+        body: JSON.stringify(payload),
       });
-      if (!response.ok) throw new Error("Save failed");
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Save failed");
+      }
+
       onSuccess();
     } catch (e) {
-      console.error(e);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -60,7 +74,7 @@ export const CommuneForm = ({ initialData, onSuccess }: CommuneFormProps) => {
 
         <div className="px-6 py-5 space-y-5">
           <CustomInput
-            label="Tên chi nhánh"
+            label="Tên phường/xã"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
@@ -79,7 +93,8 @@ export const CommuneForm = ({ initialData, onSuccess }: CommuneFormProps) => {
               className="text-white bg-green-500 hover:bg-green-600 dark:shadow-md dark:shadow-success/40 mr-2"
               startContent={<CheckApprovalIcon className="w-4 h-4" />}
               onPress={handleSubmit}
-              isDisabled={!name.trim()}
+              isDisabled={!name.trim() || !type}
+              isLoading={loading}
             >
               Lưu
             </CustomButton>

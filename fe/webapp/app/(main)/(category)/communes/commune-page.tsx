@@ -44,6 +44,7 @@ const CommunePage = () => {
           setEditingItem(item);
           setShowAddForm(true);
         }}
+        onDeleted={() => setReloadKey((prev) => prev + 1)}
       />
     </>
   );

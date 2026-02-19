@@ -20,7 +20,11 @@ export const getAllCommunes = (
     },
   });
 
-export const createCommune = (accessToken: string, name: string, type: string) => {
+export const createCommune = (
+  accessToken: string,
+  name: string,
+  type: string,
+) => {
   return axios.post(
     `${API_GATEWAY_URL}/construction/communes`,
     { name, type },
@@ -32,5 +36,27 @@ export const createCommune = (accessToken: string, name: string, type: string) =
   );
 };
 
-export const updateCommune = () => {};
-export const deleteCommune = () => {};
+export const updateCommune = (
+  accessToken: string,
+  id: string,
+  name: string,
+  type: string,
+) => {
+  return axios.put(
+    `${API_GATEWAY_URL}/construction/communes/${id}`,
+    { name, type },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+};
+
+export const deleteCommune = (accessToken: string, id: string) => {
+  return axios.delete(`${API_GATEWAY_URL}/construction/communes/${id}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
