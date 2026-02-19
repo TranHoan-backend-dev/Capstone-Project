@@ -24,15 +24,15 @@ import java.time.LocalDateTime;
 @RestController
 @RequestMapping("/roads")
 @RequiredArgsConstructor
-@Tag(name = "Road Management", description = "APIs for managing road infrastructure records")
+@Tag(name = "", description = "")
 public class RoadController {
   private final RoadUseCase roadUseCase;
 
   @PostMapping
-  @Operation(summary = "Create a new road", description = "Adds a new road entry to the system catalog. Road name must be unique.", responses = {
-    @ApiResponse(responseCode = "201", description = "Road created successfully", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "400", description = "Invalid request payload"),
-    @ApiResponse(responseCode = "409", description = "Road with this name already exists")
+  @Operation(summary = "", description = "", responses = {
+    @ApiResponse(responseCode = "201", description = ""),
+    @ApiResponse(responseCode = "", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   public ResponseEntity<WrapperApiResponse> createRoad(@RequestBody @Valid RoadRequest request) {
     log.info("REST request to create road: {}", request.name());
@@ -42,13 +42,13 @@ public class RoadController {
   }
 
   @PutMapping("/{id}")
-  @Operation(summary = "Update an existing road", description = "Updates the name or attributes of an existing road entry.", responses = {
-    @ApiResponse(responseCode = "200", description = "Road updated successfully"),
-    @ApiResponse(responseCode = "404", description = "Road not found"),
-    @ApiResponse(responseCode = "409", description = "New road name already exists")
+  @Operation(summary = "", description = "", responses = {
+    @ApiResponse(responseCode = "200", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "404", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "409", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   public ResponseEntity<WrapperApiResponse> updateRoad(
-    @PathVariable @Parameter(description = "ID of the road to update", required = true) String id,
+    @PathVariable @Parameter(description = "", required = true) String id,
     @RequestBody @Valid RoadRequest request) {
     log.info("REST request to update road: {}", id);
     var response = roadUseCase.updateRoad(id, request);
@@ -57,12 +57,12 @@ public class RoadController {
   }
 
   @DeleteMapping("/{id}")
-  @Operation(summary = "Delete a road", description = "Removes a road record from the system.", responses = {
-    @ApiResponse(responseCode = "200", description = "Road deleted successfully"),
-    @ApiResponse(responseCode = "404", description = "Road not found")
+  @Operation(summary = "Delete a road", description = "", responses = {
+    @ApiResponse(responseCode = "200", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   public ResponseEntity<WrapperApiResponse> deleteRoad(
-    @PathVariable @Parameter(description = "ID of the road to delete", required = true) String id) {
+    @PathVariable @Parameter(description = "", required = true) String id) {
     log.info("REST request to delete road: {}", id);
     roadUseCase.deleteRoad(id);
     return ResponseEntity.ok(new WrapperApiResponse(
@@ -70,12 +70,12 @@ public class RoadController {
   }
 
   @GetMapping("/{id}")
-  @Operation(summary = "Get road by ID", description = "Retrieves information for a specific road by its ID.", responses = {
-    @ApiResponse(responseCode = "200", description = "Road found"),
-    @ApiResponse(responseCode = "404", description = "Road not found")
+  @Operation(summary = "", description = "", responses = {
+    @ApiResponse(responseCode = "200", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "404", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   public ResponseEntity<WrapperApiResponse> getRoadById(
-    @PathVariable @Parameter(description = "ID of the road to retrieve", required = true) String id) {
+    @PathVariable @Parameter(description = "", required = true) String id) {
     log.info("REST request to get road: {}", id);
     var response = roadUseCase.getRoadById(id);
     return ResponseEntity.ok(new WrapperApiResponse(
@@ -83,11 +83,11 @@ public class RoadController {
   }
 
   @GetMapping
-  @Operation(summary = "Get all roads", description = "Returns a paginated list of all roads in the catalog.", responses = {
-    @ApiResponse(responseCode = "200", description = "List of roads retrieved successfully")
+  @Operation(summary = "", description = "", responses = {
+    @ApiResponse(responseCode = "200", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   public ResponseEntity<WrapperApiResponse> getAllRoads(
-    @PageableDefault @Parameter(description = "Pagination parameters") Pageable pageable) {
+    @PageableDefault @Parameter(description = "") Pageable pageable) {
     log.info("REST request to get all roads");
     var response = roadUseCase.getAllRoads(pageable);
     return ResponseEntity.ok(new WrapperApiResponse(

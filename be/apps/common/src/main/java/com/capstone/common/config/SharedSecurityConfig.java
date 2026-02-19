@@ -1,5 +1,6 @@
 package com.capstone.common.config;
 
+import jakarta.ws.rs.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -43,14 +44,14 @@ public class SharedSecurityConfig {
       Map<String, Object> realmAccess = jwt.getClaim("realm_access");
       log.info("realmAccess: {}", realmAccess);
       if (realmAccess == null || realmAccess.isEmpty()) {
-        return List.of();
+        throw new ForbiddenException();
       }
 
       @SuppressWarnings("unchecked")
       List<String> roles = (List<String>) realmAccess.get("roles");
       log.info("roles: {}", roles);
       if (roles == null || roles.isEmpty()) {
-        return List.of();
+        throw new ForbiddenException();
       }
 
       return roles.stream()

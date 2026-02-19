@@ -87,5 +87,6 @@ public final class Constant {
 
   // for service layer
   public static final String SE_01 = "This form number is already in use";
-  public static final String SE_02 = "Email not found";
+  public static final String SE_02 = "Lateral not found";
+  public static final String SE_03 = "Network not found";
 }
