@@ -78,5 +78,70 @@ Accept: application/json
 ### R
 
 ### U
+### happy case
+PUT {{uri}}/a36278db-45a3-44a8-86cf-6be81bfac192
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "ueueue2",
+  "networkId": "550e8400-e29b-41d4-a716-446655440001"
+}
+
+### blank name
+PUT {{uri}}/a36278db-45a3-44a8-86cf-6be81bfac192
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "",
+  "networkId": ""
+}
+
+### blank networkId
+PUT {{uri}}/a36278db-45a3-44a8-86cf-6be81bfac192
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "uuss",
+  "networkId": ""
+}
+
+### network does not exist
+PUT {{uri}}/a36278db-45a3-44a8-86cf-6be81bfac192
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "adadf",
+  "networkId": "550e8400-e29b-41d4-a716-446655440000"
+}
+
+### duplicated name
+PUT {{uri}}/a36278db-45a3-44a8-86cf-6be81bfac192
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "ueueue",
+  "networkId": "550e8400-e29b-41d4-a716-446655440002"
+}
 
 ### D
+### happy case
+DELETE {{uri}}/a36278db-45a3-44a8-86cf-6be81bfac192
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### id not found
+DELETE {{uri}}/a36278db-45a3-44a8-86cf-6be81bfac193
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
