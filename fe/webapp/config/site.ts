@@ -132,6 +132,11 @@ export const siteConfig = {
       label: "Thi công",
       items: [
         {
+          key: "communes",
+          label: "Quản lý Phường/xã",
+          href: "/communes",
+        },
+        {
           key: "settlement-lookup",
           label: "Tra cứu quyết toán",
           href: "/settlement-lookup",

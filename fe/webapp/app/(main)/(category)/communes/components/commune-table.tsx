@@ -10,17 +10,21 @@ import { GenericDataTable } from "@/components/ui/GenericDataTable";
 interface Props {
   keyword: string;
   reloadKey: number;
+  onEdit: (item: CommuneItem) => void;
 }
 
 interface CommuneResponse {
-  branchId: string;
+  communeId: string;
   name: string;
+  type: string;
 }
 
-export const CommuneTable = ({ keyword, reloadKey }: Props) => {
+export const CommuneTable = ({ keyword, reloadKey, onEdit }: Props) => {
   const [data, setData] = useState<CommuneItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+  const [editingItem, setEditingItem] = useState<CommuneItem | null>(null);
+  const [openForm, setOpenForm] = useState(false);
   const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState<{
     field: string;
@@ -50,7 +54,7 @@ export const CommuneTable = ({ keyword, reloadKey }: Props) => {
         }
 
         const res = await fetch(
-          `/api/construction/networks?${params.toString()}`,
+          `/api/construction/communes?${params.toString()}`,
         );
 
         if (!res.ok) {
@@ -65,9 +69,10 @@ export const CommuneTable = ({ keyword, reloadKey }: Props) => {
         setTotalPages(pageData?.totalPages ?? 1);
 
         const mapped = items.map((item: CommuneResponse, index: number) => ({
-          id: item.branchId,
+          id: item.communeId,
           stt: (page - 1) * pageSize + index + 1,
           name: item.name,
+          type: item.type,
         }));
         setData(mapped);
       } catch (e) {
@@ -107,7 +112,10 @@ export const CommuneTable = ({ keyword, reloadKey }: Props) => {
         icon: EditIcon,
         className:
           "text-amber-500 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/30",
-        onClick: (id: string) => console.log("Cập nhật:", id),
+        onClick: (id: string) => {
+          const found = data.find((i) => i.id === id);
+          if (found) onEdit(found);
+        },
       },
       {
         content: "Xóa",
@@ -132,6 +140,13 @@ export const CommuneTable = ({ keyword, reloadKey }: Props) => {
         return (
           <span className="font-bold text-gray-900 dark:text-foreground">
             {item.name}
+          </span>
+        );
+
+      case "type":
+        return (
+          <span className="font-bold text-gray-900 dark:text-foreground">
+            {item.type}
           </span>
         );
 
@@ -166,7 +181,7 @@ export const CommuneTable = ({ keyword, reloadKey }: Props) => {
     <>
       <GenericDataTable
         isLoading={loading}
-        title="Danh sách chi nhánh cấp nước"
+        title="Danh sách Phường/Xã"
         columns={COMMUNE_COLUMN}
         data={data}
         isCollapsible
