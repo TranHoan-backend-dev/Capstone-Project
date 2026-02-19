@@ -2,9 +2,11 @@ import { deleteCommune, updateCommune } from "@/services/construction.service";
 import { getAccessToken } from "@/utils/getAccessToken";
 import { NextRequest, NextResponse } from "next/server";
 
+export const runtime = "nodejs";
+
 export async function PUT(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: { id: string } },
 ) {
   try {
     const accessToken = getAccessToken(req);
@@ -13,7 +15,7 @@ export async function PUT(
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = await params;
+    const { id } = params;
     const { name, type } = await req.json();
 
     const response = await updateCommune(accessToken, id, name, type);
@@ -48,7 +50,7 @@ export async function DELETE(
   } catch (error: any) {
     return NextResponse.json(
       {
-        message: error.response?.data?.message || "Update commune failed",
+        message: error.response?.data?.message || "Delete commune failed",
       },
       { status: error.response?.status || 500 },
     );
