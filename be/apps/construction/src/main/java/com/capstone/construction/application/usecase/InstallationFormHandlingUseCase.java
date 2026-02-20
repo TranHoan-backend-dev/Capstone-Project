@@ -59,7 +59,7 @@ public class InstallationFormHandlingUseCase {
       savedResponse.address(),
       savedResponse.phoneNumber(),
       savedResponse.createdAt());
-    messageProducer.sendInstallationFormCreatedEvent(event);
+    messageProducer.send(event);
 
     log.info("Installation request finished successfully for form: {}", savedResponse.formNumber());
     return savedResponse;

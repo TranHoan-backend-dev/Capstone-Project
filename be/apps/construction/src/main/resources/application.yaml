@@ -47,8 +47,8 @@ springdoc:
   swagger-ui:
     enabled: true
     path: /swagger-ui/index.html
-
-rabbitmqconfig:
-  exchange_name: 'notification_exchange'
-  queue_name: 'notification_queue'
-  routing_key: 'notification_routing_key'
+rabbit-mq-config:
+  update-lateral:
+    exchange_name: 'update_lateral_exchange'
+    queue_name: 'update_lateral_queue'
+    routing_key: 'update_lateral_routing_key'

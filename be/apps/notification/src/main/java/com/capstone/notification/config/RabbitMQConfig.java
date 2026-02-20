@@ -1,25 +1,26 @@
-package com.capstone.auth.infrastructure.config;
+package com.capstone.notification.config;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.support.converter.*;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@FieldDefaults(level = AccessLevel.PUBLIC)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class RabbitMQConfig {
-  @Value("${rabbitmqconfig.exchange_name}")
-  String EXCHANGE_NAME;
-
-  @Value("${rabbitmqconfig.queue_name}")
+  @Value("${rabbit-mq-config.update-lateral.queue_name}")
   String QUEUE_NAME;
 
-  @Value("${rabbitmqconfig.routing_key}")
+  @Value("${rabbit-mq-config.update-lateral.exchange_name}")
+  String EXCHANGE_NAME;
+
+  @Value("${rabbit-mq-config.update-lateral.routing_key}")
   String ROUTING_KEY; // chu ky gan vao tin nhan khi gui den Exchange
 
   // Luu tru tin nhan cho den khi co consumer su dung
@@ -40,8 +41,8 @@ public class RabbitMQConfig {
   @Bean
   public Binding binding(Queue queue, TopicExchange exchange) {
     return BindingBuilder.bind(queue)
-      .to(exchange)
-      .with(ROUTING_KEY);
+        .to(exchange)
+        .with(ROUTING_KEY);
   }
 
   @Bean

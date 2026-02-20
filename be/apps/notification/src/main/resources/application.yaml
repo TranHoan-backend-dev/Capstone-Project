@@ -17,10 +17,6 @@ server:
   port: 9007
   servlet:
     context-path: /api/v1
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:9000/eureka
 springdoc:
   api-docs:
     enabled: true
