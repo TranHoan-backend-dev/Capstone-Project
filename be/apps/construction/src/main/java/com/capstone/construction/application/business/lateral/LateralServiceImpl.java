@@ -85,7 +85,7 @@ public class LateralServiceImpl implements LateralService {
     if (!lateralRepository.existsById(id)) {
       throw new IllegalArgumentException("Lateral not found with id: " + id);
     }
-    metersService.deleteWaterMeter(id);
+//    metersService.deleteWaterMeter(id);
     lateralRepository.deleteById(id);
   }
 
@@ -104,7 +104,7 @@ public class LateralServiceImpl implements LateralService {
     return PageResponse.fromPage(page, this::mapToResponse);
   }
 
-  private LateralResponse mapToResponse(@NonNull Lateral lateral) {
+  private @NonNull LateralResponse mapToResponse(@NonNull Lateral lateral) {
     return new LateralResponse(
       lateral.getId(),
       lateral.getName(),

@@ -17,10 +17,6 @@ server:
   port: 9007
   servlet:
     context-path: /api/v1
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:9000/eureka
 springdoc:
   api-docs:
     enabled: true
@@ -28,6 +24,47 @@ springdoc:
   swagger-ui:
     enabled: true
     path: /swagger-ui/index.html
+rabbit-mq-config:
+  update-lateral:
+    exchange_name: 'update_lateral_exchange'
+    routing_key: 'update_lateral_routing_key'
+    queue_name: 'update_lateral_queue'
+  delete-lateral:
+    exchange_name: 'delete_lateral_exchange'
+    routing_key: 'delete_lateral_routing_key'
+    queue_name: 'delete_lateral_queue'
+
+  update-commune:
+    exchange_name: 'update_commune_exchange'
+    routing_key: 'update_commune_routing_key'
+    queue_name: 'update_commune_queue'
+  delete-commune:
+    exchange_name: 'delete_commune_exchange'
+    routing_key: 'delete_commune_routing_key'
+    queue_name: 'delete_commune_queue'
+
+  update-unit:
+    exchange_name: 'update_unit_exchange'
+    routing_key: 'update_unit_routing_key'
+    queue_name: 'update_unit_queue'
+  delete-unit:
+    exchange_name: 'delete_unit_exchange'
+    routing_key: 'delete_unit_routing_key'
+    queue_name: 'delete_unit_queue'
+
+  update-road:
+    exchange_name: 'update_road_exchange'
+    routing_key: 'update_road_routing_key'
+    queue_name: 'update_road_queue'
+  delete-road:
+    exchange_name: 'delete_road_exchange'
+    routing_key: 'delete_road_routing_key'
+    queue_name: 'delete_road_queue'
 # spring:
 # mongodb:
 # uri: mongodb://guest:guest@mongodb:27017/microservice_db?authSource=admin
+#  rabbitmq:
+#    host: localhost # cua may local
+#    port: 5672
+#    username: guest
+#    password: guest

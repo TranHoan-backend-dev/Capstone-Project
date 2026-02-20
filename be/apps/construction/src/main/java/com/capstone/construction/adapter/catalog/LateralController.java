@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/laterals")
-// TODO: unit test
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Tag(name = "Quản lý Nhánh tổng", description = "Các API quản lý Nhánh tổng cấp nước (Lateral)")
 public class LateralController {
@@ -67,7 +66,11 @@ public class LateralController {
     2. Validate ID và thông tin body (LateralRequest).
     3. Kiểm tra quyền 'IT_STAFF'.
     4. Gọi UseCase để thực hiện cập nhật.
-    5. Trả về kết quả sau khi cập nhật""", parameters = {
+    5. Trả về kết quả sau khi cập nhật
+
+    Sau khi cập nhật thành công, RabbitMQ sẽ bắn sự kiện cho WebSocket xử lý. WebSocket sẽ gửi thông báo đến tất cả
+    các client đang lắng nghe tại /topic/notification. WebSocket kết nối tại /ws
+    """, parameters = {
     @Parameter(name = "id", description = "ID của nhánh tổng cần cập nhật", required = true, example = "550e8400-e29b-41d4-a716-446655440000")
   }, responses = {
     @ApiResponse(responseCode = "200", description = "Cập nhật thành công", content = @Content(schema = @Schema(implementation = LateralResponse.class))),
@@ -89,7 +92,11 @@ public class LateralController {
     **Luồng nghiệp vụ:**
     1. Client gửi request xóa với ID.
     2. Kiểm tra quyền truy cập.
-    3. Gọi UseCase xóa bản ghi""", parameters = {
+    3. Gọi UseCase xóa bản ghi
+
+    Sau khi cập nhật thành công, RabbitMQ sẽ bắn sự kiện cho WebSocket xử lý. WebSocket sẽ gửi thông báo đến tất cả
+    các client đang lắng nghe tại /topic/notification. WebSocket kết nối tại /ws
+    """, parameters = {
     @Parameter(name = "id", description = "ID của nhánh tổng cần xóa", required = true, example = "550e8400-e29b-41d4-a716-446655440000")
   }, responses = {
     @ApiResponse(responseCode = "200", description = "Xóa thành công", content = @Content(schema = @Schema(implementation = LateralResponse.class))),

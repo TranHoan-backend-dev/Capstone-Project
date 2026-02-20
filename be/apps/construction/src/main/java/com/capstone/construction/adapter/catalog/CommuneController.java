@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/communes")
 @RequiredArgsConstructor
-// TODO: unit test
 @Tag(name = "Quản lý Xã/Phường", description = "Các API quản lý danh mục Xã/Phường (Commune)")
 public class CommuneController {
   private final CommuneUseCase communeUseCase;
@@ -61,7 +60,11 @@ public class CommuneController {
     2. Validate ID và thông tin body (CommuneRequest).
     3. Kiểm tra quyền 'IT_STAFF'.
     4. Gọi UseCase để thực hiện cập nhật.
-    5. Trả về kết quả sau khi cập nhật""", parameters = {
+    5. Trả về kết quả sau khi cập nhật
+
+    Sau khi cập nhật thành công, RabbitMQ sẽ bắn sự kiện cho WebSocket xử lý. WebSocket sẽ gửi thông báo đến tất cả
+    các client đang lắng nghe tại /topic/notification. WebSocket kết nối tại /ws
+    """, parameters = {
     @Parameter(name = "id", description = "ID của xã/phường cần cập nhật", required = true, example = "550e8400-e29b-41d4-a716-446655440000")
   }, responses = {
     @ApiResponse(responseCode = "200", description = "Cập nhật thành công", content = @Content(schema = @Schema(implementation = CommuneResponse.class))),
@@ -83,7 +86,11 @@ public class CommuneController {
     **Luồng nghiệp vụ:**
     1. Client gửi request xóa với ID.
     2. Kiểm tra quyền truy cập.
-    3. Gọi UseCase xóa bản ghi""", parameters = {
+    3. Gọi UseCase xóa bản ghi
+
+    Sau khi cập nhật thành công, RabbitMQ sẽ bắn sự kiện cho WebSocket xử lý. WebSocket sẽ gửi thông báo đến tất cả
+    các client đang lắng nghe tại /topic/notification. WebSocket kết nối tại /ws
+    """, parameters = {
     @Parameter(name = "id", description = "ID của xã/phường cần xóa", required = true, example = "550e8400-e29b-41d4-a716-446655440000")
   }, responses = {
     @ApiResponse(responseCode = "200", description = "Xóa thành công"),
