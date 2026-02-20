@@ -1,5 +1,6 @@
 package com.capstone.construction.application.business.hamlet;
 
+import com.capstone.common.annotation.AppLog;
 import com.capstone.construction.application.dto.request.catalog.HamletRequest;
 import com.capstone.construction.application.dto.response.catalog.HamletResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
@@ -11,19 +12,23 @@ import com.capstone.construction.infrastructure.config.Constant;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
+@AppLog
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class HamletServiceImpl implements HamletService {
   HamletRepository hamletRepository;
   CommuneRepository communeRepository;
+  @NonFinal
+  Logger log;
 
   @Override
   @Transactional(rollbackFor = Exception.class)

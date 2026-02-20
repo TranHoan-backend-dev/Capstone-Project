@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/networks")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@Tag(name = "Water Supply Network Management", description = "APIs for managing water supply network records (mạng lưới cấp nước)")
+@Tag(name = "", description = "")
 public class WaterSupplyNetworkController {
   WaterSupplyNetworkUseCase networkUseCase;
   @NonFinal
@@ -55,13 +55,14 @@ public class WaterSupplyNetworkController {
   }
 
   @PutMapping("/{id}")
-  @Operation(summary = "Update an existing water supply network", description = "Updates the attributes of an existing water supply network entry.", responses = {
-    @ApiResponse(responseCode = "200", description = "Network updated successfully"),
-    @ApiResponse(responseCode = "404", description = "Network not found"),
-    @ApiResponse(responseCode = "409", description = "New network name already exists")
+  @Operation(summary = "", description = "", responses = {
+    @ApiResponse(responseCode = "200", description = ""),
+    @ApiResponse(responseCode = "", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
+  @PreAuthorize("hasAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> updateNetwork(
-    @PathVariable @Parameter(description = "ID of the network to update", required = true) String id,
+    @PathVariable @Parameter(description = "", required = true) String id,
     @RequestBody @Valid WaterSupplyNetworkRequest request) {
     log.info("REST request to update network: {}", id);
     var response = networkUseCase.updateNetwork(id, request);
@@ -69,24 +70,25 @@ public class WaterSupplyNetworkController {
   }
 
   @DeleteMapping("/{id}")
-  @Operation(summary = "Delete a water supply network", description = "Removes a water supply network record from the system.", responses = {
-    @ApiResponse(responseCode = "200", description = "Network deleted successfully"),
-    @ApiResponse(responseCode = "404", description = "Network not found")
+  @Operation(summary = "", description = "", responses = {
+    @ApiResponse(responseCode = "200", description = ""),
+    @ApiResponse(responseCode = "", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
+  @PreAuthorize("hasAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> deleteNetwork(
-    @PathVariable @Parameter(description = "ID of the network to delete", required = true) String id) {
+    @PathVariable @Parameter(description = "", required = true) String id) {
     log.info("REST request to delete network: {}", id);
     networkUseCase.deleteNetwork(id);
     return Utils.returnOkResponse("Network deleted successfully", null);
   }
 
   @GetMapping("/{id}")
-  @Operation(summary = "Get water supply network by ID", description = "Retrieves information for a specific water supply network by its branchId.", responses = {
-    @ApiResponse(responseCode = "200", description = "Network found"),
-    @ApiResponse(responseCode = "404", description = "Network not found")
+  @Operation(summary = "", description = "", responses = {
+    @ApiResponse(responseCode = "200", description = ""),
+    @ApiResponse(responseCode = "", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   public ResponseEntity<WrapperApiResponse> getNetworkById(
-    @PathVariable @Parameter(description = "ID of the network to retrieve", required = true) String id) {
+    @PathVariable @Parameter(description = "", required = true) String id) {
     log.info("REST request to get network: {}", id);
     var response = networkUseCase.getNetworkById(id);
     return Utils.returnOkResponse("Network retrieved successfully", response);
