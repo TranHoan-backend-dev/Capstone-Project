@@ -4,43 +4,67 @@ import com.capstone.construction.application.business.unit.NeighborhoodUnitServi
 import com.capstone.construction.application.dto.request.catalog.NeighborhoodUnitRequest;
 import com.capstone.construction.application.dto.response.catalog.NeighborhoodUnitResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
+import com.capstone.construction.application.event.producer.MessageProducer;
+import com.capstone.construction.application.event.producer.unit.DeleteEvent;
+import com.capstone.construction.application.event.producer.unit.UpdateEvent;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class NeighborhoodUnitUseCase {
-  NeighborhoodUnitService unitService;
+  final NeighborhoodUnitService unitService;
+  final MessageProducer producer;
+
+  @Value("${rabbit-mq-config.update-unit.exchange_name}")
+  String UPDATE_EXCHANGE_NAME;
+  @Value("${rabbit-mq-config.update-unit.routing_key}")
+  String UPDATE_ROUTING_KEY;
+
+  @Value("${rabbit-mq-config.delete-unit.exchange_name}")
+  String DELETE_EXCHANGE_NAME;
+  @Value("${rabbit-mq-config.delete-unit.routing_key}")
+  String DELETE_ROUTING_KEY;
 
   public void createUnit(@NonNull NeighborhoodUnitRequest request) {
-    log.info("UseCase: Creating unit {}", request.name());
     unitService.createUnit(request);
   }
 
   public NeighborhoodUnitResponse updateUnit(String id, NeighborhoodUnitRequest request) {
-    log.info("UseCase: Updating unit {}", id);
-    return unitService.updateUnit(id, request);
+    var old = unitService.getUnitById(id);
+    var response = unitService.updateUnit(id, request);
+
+    producer.send(
+      "UPDATE_UNIT",
+      UPDATE_EXCHANGE_NAME, UPDATE_ROUTING_KEY,
+      new UpdateEvent(
+        old.name(), old.communeName(),
+        response.name(), response.communeName()
+      ));
+    return response;
   }
 
   public void deleteUnit(String id) {
-    log.info("UseCase: Deleting unit {}", id);
+    var old = unitService.getUnitById(id);
     unitService.deleteUnit(id);
+
+    producer.send(
+      "DELETE_UNIT",
+      DELETE_EXCHANGE_NAME, DELETE_ROUTING_KEY,
+      new DeleteEvent(old.name(), old.communeName()));
   }
 
   public NeighborhoodUnitResponse getUnitById(String id) {
-    log.info("UseCase: Fetching unit {}", id);
     return unitService.getUnitById(id);
   }
 
   public PageResponse<NeighborhoodUnitResponse> getAllUnits(Pageable pageable) {
-    log.info("UseCase: Fetching all units");
     return unitService.getAllUnits(pageable);
   }
 }

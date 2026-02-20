@@ -20,7 +20,7 @@ public class RabbitMQConfig {
   @Value("${rabbit-mq-config.update-lateral.exchange_name}")
   String EXCHANGE_NAME;
 
-  @Value("${rabbit-mq-config.update-lateral.queue_name}")
+  @Value("${rabbit-mq-config.queue_name}")
   String QUEUE_NAME;
 
   @Value("${rabbit-mq-config.update-lateral.routing_key}")
