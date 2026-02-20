@@ -132,6 +132,11 @@ export const siteConfig = {
       label: "Thi công",
       items: [
         {
+          key: "roadmaps",
+          label: "Quản lý Lộ trình ghi",
+          href: "/roadmaps",
+        },
+        {
           key: "settlement-lookup",
           label: "Tra cứu quyết toán",
           href: "/settlement-lookup",
