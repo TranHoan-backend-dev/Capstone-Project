@@ -132,6 +132,11 @@ export const siteConfig = {
       label: "Thi công",
       items: [
         {
+          key: "laterals",
+          label: "Quản lý Nhánh tổng",
+          href: "/laterals",
+        },
+        {
           key: "settlement-lookup",
           label: "Tra cứu quyết toán",
           href: "/settlement-lookup",
