@@ -27,15 +27,15 @@ import java.time.LocalDateTime;
 @RestController
 @RequestMapping("/units")
 @RequiredArgsConstructor
-@Tag(name = "", description = "")
+@Tag(name = "Đơn vị hành chính (Tổ/Khu/Xóm)", description = "Quản lý đơn vị hành chính nhỏ nhất của thành phố, bao gồm tổ dân phố, khu phố và xóm trực thuộc các phường/xã/thị trấn")
 public class NeighborhoodUnitController {
   private final NeighborhoodUnitUseCase unitUseCase;
 
   @PostMapping
-  @Operation(summary = "", description = "", responses = {
-    @ApiResponse(responseCode = "201", description = ""),
-    @ApiResponse(responseCode = "", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+  @Operation(summary = "Tạo đơn vị hành chính mới", description = "Tạo mới một đơn vị hành chính (tổ/khu/xóm) thuộc phường/xã/thị trấn chỉ định. Yêu cầu quyền IT_STAFF. Thao tác không idempotent.", responses = {
+    @ApiResponse(responseCode = "201", description = "Tạo đơn vị hành chính thành công"),
+    @ApiResponse(responseCode = "400", description = "Dữ liệu đầu vào không hợp lệ (tên hoặc ID phường/xã bị bỏ trống)", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "403", description = "Không có quyền thực hiện thao tác này", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PreAuthorize("hasAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> createUnit(@RequestBody @Valid NeighborhoodUnitRequest request) {
@@ -45,10 +45,15 @@ public class NeighborhoodUnitController {
   }
 
   @PutMapping("/{id}")
-  @Operation(summary = "", description = "", responses = {
-    @ApiResponse(responseCode = "200", description = "", content = @Content(schema = @Schema(implementation = NeighborhoodUnitResponse.class))),
-    @ApiResponse(responseCode = "", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+  @Operation(summary = "Cập nhật đơn vị hành chính", description = """
+    Cập nhật thông tin đơn vị hành chính (tổ/khu/xóm) theo ID. Yêu cầu quyền IT_STAFF. Thao tác idempotent.
+
+    Sau khi cập nhật thành công, RabbitMQ sẽ bắn sự kiện cho WebSocket xử lý. WebSocket sẽ gửi thông báo đến tất cả
+    các client đang lắng nghe tại /topic/notification. WebSocket kết nối tại /ws
+    """, responses = {
+    @ApiResponse(responseCode = "200", description = "Cập nhật đơn vị hành chính thành công", content = @Content(schema = @Schema(implementation = NeighborhoodUnitResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Dữ liệu đầu vào không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy đơn vị hành chính với ID đã cung cấp", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PreAuthorize("hasAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> updateUnit(
@@ -60,22 +65,27 @@ public class NeighborhoodUnitController {
   }
 
   @DeleteMapping("/{id}")
-  @Operation(summary = "", description = "", responses = {
-    @ApiResponse(responseCode = "200", description = ""),
-    @ApiResponse(responseCode = "404", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+  @Operation(summary = "Xóa đơn vị hành chính", description = """
+    Xóa đơn vị hành chính (tổ/khu/xóm) khỏi hệ thống theo ID. Yêu cầu quyền IT_STAFF. Thao tác không thể hoàn tác.
+
+    Sau khi cập nhật thành công, RabbitMQ sẽ bắn sự kiện cho WebSocket xử lý. WebSocket sẽ gửi thông báo đến tất cả
+    các client đang lắng nghe tại /topic/notification. WebSocket kết nối tại /ws
+    """, responses = {
+    @ApiResponse(responseCode = "200", description = "Xóa đơn vị hành chính thành công"),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy đơn vị hành chính với ID đã cung cấp", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PreAuthorize("hasAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> deleteUnit(
-    @PathVariable @Parameter(description = "", required = true) String id) {
+    @PathVariable @Parameter(description = "ID của đơn vị hành chính cần xóa", required = true) String id) {
     log.info("REST request to delete unit: {}", id);
     unitUseCase.deleteUnit(id);
     return Utils.returnOkResponse("Neighborhood unit deleted successfully", null);
   }
 
   @GetMapping("/{id}")
-  @Operation(summary = "", description = "", responses = {
-    @ApiResponse(responseCode = "200", description = ""),
-    @ApiResponse(responseCode = "", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+  @Operation(summary = "Lấy thông tin đơn vị hành chính theo ID", description = "Truy vấn chi tiết một đơn vị hành chính (tổ/khu/xóm) theo ID. Không yêu cầu quyền đặc biệt.", responses = {
+    @ApiResponse(responseCode = "200", description = "Trả về thông tin chi tiết đơn vị hành chính"),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy đơn vị hành chính với ID đã cung cấp", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   public ResponseEntity<WrapperApiResponse> getUnitById(
     @PathVariable @Parameter(description = "ID of the unit to retrieve", required = true) String id) {
@@ -86,8 +96,8 @@ public class NeighborhoodUnitController {
   }
 
   @GetMapping
-  @Operation(summary = "", description = "", responses = {
-    @ApiResponse(responseCode = "200", description = "", content = @Content(schema = @Schema(implementation = NeighborhoodUnitResponse.class)))
+  @Operation(summary = "Lấy danh sách toàn bộ đơn vị hành chính", description = "Truy vấn danh sách tất cả các đơn vị hành chính (tổ/khu/xóm) trong hệ thống, hỗ trợ phân trang. Không yêu cầu quyền đặc biệt.", responses = {
+    @ApiResponse(responseCode = "200", description = "Trả về danh sách đơn vị hành chính theo trang", content = @Content(schema = @Schema(implementation = NeighborhoodUnitResponse.class)))
   })
   public ResponseEntity<WrapperApiResponse> getAllUnits(
     @PageableDefault @Parameter(description = "Pagination parameters") Pageable pageable) {

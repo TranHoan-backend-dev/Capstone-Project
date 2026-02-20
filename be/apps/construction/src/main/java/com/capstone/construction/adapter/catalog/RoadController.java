@@ -67,6 +67,9 @@ public class RoadController {
         3. Kiểm tra quyền 'IT_STAFF'.
         4. Gọi UseCase để thực hiện cập nhật.
         5. Trả về kết quả sau khi cập nhật.
+
+    Sau khi cập nhật thành công, RabbitMQ sẽ bắn sự kiện cho WebSocket xử lý. WebSocket sẽ gửi thông báo đến tất cả
+    các client đang lắng nghe tại /topic/notification. WebSocket kết nối tại /ws
     """, parameters = {
     @Parameter(name = "id", description = "ID của đường phố cần cập nhật", required = true, example = "550e8400-e29b-41d4-a716-446655440000")
   }, responses = {
@@ -90,6 +93,9 @@ public class RoadController {
      1. Client gửi request xóa với ID.
      2. Kiểm tra quyền truy cập.
      3. Gọi UseCase xóa bản ghi.
+
+    Sau khi cập nhật thành công, RabbitMQ sẽ bắn sự kiện cho WebSocket xử lý. WebSocket sẽ gửi thông báo đến tất cả
+    các client đang lắng nghe tại /topic/notification. WebSocket kết nối tại /ws
     """, parameters = {
     @Parameter(name = "id", description = "ID của đường phố cần xóa", required = true, example = "550e8400-e29b-41d4-a716-446655440000")
   }, responses = {
