@@ -76,3 +76,10 @@ rabbit-mq-config:
   delete-road:
     exchange_name: 'delete_road_exchange'
     routing_key: 'delete_road_routing_key'
+
+  update-hamlet:
+    exchange_name: 'update_hamlet_exchange'
+    routing_key: 'update_hamlet_routing_key'
+  delete-hamlet:
+    exchange_name: 'delete_hamlet_exchange'
+    routing_key: 'delete_hamlet_routing_key'

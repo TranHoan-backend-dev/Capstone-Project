@@ -165,6 +165,57 @@ public class RabbitMQConfig {
   }
   // </editor-fold>
 
+  // <editor-fold> desc="Road"
+  // Update
+  @Value("${rabbit-mq-config.update-road.exchange_name}")
+  private String updateRoadExchange;
+  @Value("${rabbit-mq-config.update-road.routing_key}")
+  private String updateRoadRoutingKey;
+  @Value("${rabbit-mq-config.update-road.queue_name}")
+  private String updateRoadQueue;
+
+  // Delete Road
+  @Value("${rabbit-mq-config.delete-road.exchange_name}")
+  private String deleteRoadExchange;
+  @Value("${rabbit-mq-config.delete-road.routing_key}")
+  private String deleteRoadRoutingKey;
+  @Value("${rabbit-mq-config.delete-road.queue_name}")
+  private String deleteRoadQueue;
+
+  // Queue
+  @Bean
+  public Queue updateRoadQueue() {
+    return new Queue(updateRoadQueue, true);
+  }
+
+  @Bean
+  public Queue deleteRoadQueue() {
+    return new Queue(deleteRoadQueue, true);
+  }
+
+  // Exchange
+  @Bean
+  public TopicExchange updateRoadExchange() {
+    return new TopicExchange(updateRoadExchange);
+  }
+
+  @Bean
+  public TopicExchange deleteRoadExchange() {
+    return new TopicExchange(deleteRoadExchange);
+  }
+
+  // Binding
+  @Bean
+  public Binding updateRoadBinding() {
+    return BindingBuilder.bind(updateRoadQueue()).to(updateRoadExchange()).with(updateRoadRoutingKey);
+  }
+
+  @Bean
+  public Binding deleteRoadBinding() {
+    return BindingBuilder.bind(deleteRoadQueue()).to(deleteRoadExchange()).with(deleteRoadRoutingKey);
+  }
+  // </editor-fold>
+
   // Infrastructure
   @Bean
   public MessageConverter converter() {
