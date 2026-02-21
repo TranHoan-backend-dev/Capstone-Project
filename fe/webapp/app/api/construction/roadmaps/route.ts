@@ -12,15 +12,15 @@ export async function GET(req: NextRequest) {
     }
 
     const { searchParams } = new URL(req.url);
-    const page = Number(searchParams.get("page") ?? 0);
-    const size = Number(searchParams.get("size") ?? 10);
+    const page = searchParams.get("page");
+    const size = searchParams.get("size");
     const sort = searchParams.get("sort") || "createdAt,desc";
     const keyword = searchParams.get("keyword") || undefined;
 
     const response = await getAllRoadmaps(
       accessToken,
-      page,
-      size,
+      page ? Number(page) : 0,
+      size ? Number(size) : 1000,
       sort,
       keyword,
     );
@@ -52,9 +52,9 @@ export async function POST(req: NextRequest) {
     if (!accessToken) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
-    const { name, type } = await req.json();
+    const { name, networkId, lateralId } = await req.json();
 
-    const response = await createRoadmap(accessToken, name, type);
+    const response = await createRoadmap(accessToken, name, networkId, lateralId);
 
     return NextResponse.json(response.data, { status: 201 });
   } catch (error: any) {

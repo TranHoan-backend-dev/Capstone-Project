@@ -114,11 +114,12 @@ export const getAllRoadmaps = (
 export const createRoadmap = (
   accessToken: string,
   name: string,
-  type: string,
+  networkId: string,
+  lateralId: string,
 ) => {
   return axios.post(
     `${API_GATEWAY_URL}/construction/roadmaps`,
-    { name, type },
+    { name, networkId, lateralId },
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -131,10 +132,12 @@ export const updateRoadmap = (
   accessToken: string,
   id: string,
   name: string,
+  networkId: string,
+  lateralId: string,
 ) => {
   return axios.put(
     `${API_GATEWAY_URL}/construction/roadmaps/${id}`,
-    { name },
+    { name, networkId, lateralId },
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,

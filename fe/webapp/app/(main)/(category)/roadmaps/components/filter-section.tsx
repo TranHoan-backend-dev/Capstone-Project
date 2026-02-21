@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { SearchIcon } from "@/components/ui/Icons";
@@ -9,50 +9,41 @@ import { AddNewIcon } from "@/config/chip-and-icon";
 import FilterButton from "@/components/ui/FilterButton";
 import { FilterActionButton } from "@/components/ui/FilterActionButton";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
+import { FilterRoadmapProps } from "@/types";
+import { useNetwork } from "@/hooks/useNetworks";
+import { useLateral } from "@/hooks/useLaterals";
 
-interface FilterSectionProps {
-  keyword: string;
-  onSearch: (value: string) => void;
-  onAddNew: () => void;
-}
-const networks = [
-  { label: "A300", value: "A300" },
-  { label: "A600c", value: "A600c" },
-  { label: "B600m", value: "B600m" },
-];
-
-const laterals = [
-  { label: "TP Nam Định", value: "tpnd", network: "A600c" },
-  { label: "Huyện Ý Yên", value: "yy", network: "A600c" },
-  { label: "Huyện Vụ Bản", value: "vb", network: "B600m" },
-];
 export const FilterSection = ({
-  keyword,
+  filter,
   onSearch,
   onAddNew,
-}: FilterSectionProps) => {
-  const [inputValue, setInputValue] = useState(keyword);
+}: FilterRoadmapProps) => {
+  const [code, setCode] = useState(filter.code ?? "");
+  const [name, setName] = useState(filter.name ?? "");
   const [selectedNetwork, setSelectedNetwork] = useState<Set<string>>(
     new Set(),
   );
   const [selectedLateral, setSelectedLateral] = useState<Set<string>>(
     new Set(),
   );
+  const { networkOptions } = useNetwork();
+  const { lateralOptions } = useLateral();
+
   useEffect(() => {
-    setInputValue(keyword);
-  }, [keyword]);
-  const filteredLaterals = useMemo(() => {
-    const network = Array.from(selectedNetwork)[0];
+    setCode(filter.code ?? "");
+    setName(filter.name ?? "");
+    if (filter.networkId) {
+      setSelectedNetwork(new Set([filter.networkId]));
+    } else {
+      setSelectedNetwork(new Set());
+    }
+    if (filter.lateralId) {
+      setSelectedNetwork(new Set([filter.lateralId]));
+    } else {
+      setSelectedNetwork(new Set());
+    }
+  }, [filter]);
 
-    if (!network) return [];
-
-    return laterals
-      .filter((l) => l.network === network)
-      .map((l) => ({
-        label: l.label,
-        value: l.value,
-      }));
-  }, [selectedNetwork]);
   return (
     <GenericSearchFilter
       title="Tìm kiếm"
@@ -68,7 +59,16 @@ export const FilterSection = ({
             label="Thêm mới"
             onPress={onAddNew}
           />
-          <FilterButton onPress={() => onSearch(inputValue)} />
+          <FilterButton
+            onPress={() =>
+              onSearch({
+                code: code.trim(),
+                name: name.trim(),
+                networkId: Array.from(selectedNetwork)[0],
+                lateralId: Array.from(selectedLateral)[0],
+              })
+            }
+          />
         </div>
       }
     >
@@ -77,31 +77,27 @@ export const FilterSection = ({
           <div className="md:col-span-1 flex flex-col gap-4">
             <CustomInput
               label="Mã lộ trình ghi"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
             />
             <CustomInput
               label="Tên lộ trình ghi"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
           </div>
           <div className="md:col-span-1 flex flex-col gap-4">
             <CustomSelect
               label="Nhánh tổng"
-              options={filteredLaterals}
+              options={lateralOptions}
               selectedKeys={selectedLateral}
               onSelectionChange={setSelectedLateral}
-              isDisabled={!selectedNetwork.size}
             />
             <CustomSelect
               label="Chi nhánh"
-              options={networks}
+              options={networkOptions}
               selectedKeys={selectedNetwork}
-              onSelectionChange={(keys) => {
-                setSelectedNetwork(keys);
-                setSelectedLateral(new Set());
-              }}
+              onSelectionChange={setSelectedNetwork}
             />
           </div>
         </div>

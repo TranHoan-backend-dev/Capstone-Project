@@ -2,37 +2,21 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { Tooltip, Button } from "@heroui/react";
-import { DeleteIcon, EditIcon } from "@/config/chip-and-icon";
-import { RoadmapItem } from "@/types";
-import { ROADMAP_COLUMN } from "@/config/table-columns";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-
-interface Props {
-  keyword: string;
-  reloadKey: number;
-  onEdit: (item: RoadmapItem) => void;
-  onDeleted: () => void;
-}
-
-interface RoadmapResponse {
-  roadmapId: string;
-  name: string;
-  type: string;
-  lateralName: string;
-  networkName: string;
-}
+import { CallToast } from "@/components/ui/CallToast";
+import { DeleteIcon, EditIcon } from "@/config/chip-and-icon";
+import { ROADMAP_COLUMN } from "@/config/table-columns";
+import { RoadmapItem, RoadmapResponse, RoadmapTableProps } from "@/types";
 
 export const RoadmapTable = ({
-  keyword,
+  filter,
   reloadKey,
   onEdit,
   onDeleted,
-}: Props) => {
+}: RoadmapTableProps) => {
   const [data, setData] = useState<RoadmapItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const [editingItem, setEditingItem] = useState<RoadmapItem | null>(null);
-  const [openForm, setOpenForm] = useState(false);
   const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState<{
     field: string;
@@ -56,10 +40,10 @@ export const RoadmapTable = ({
           sort: `${sort.field},${sort.direction}`,
         });
 
-        const trimmedKeyword = keyword.trim();
-        if (trimmedKeyword) {
-          params.append("keyword", trimmedKeyword);
-        }
+        if (filter.code) params.append("code", filter.code);
+        if (filter.name) params.append("name", filter.name);
+        if (filter.networkId) params.append("networkId", filter.networkId);
+        if (filter.lateralId) params.append("networkId", filter.lateralId);
 
         const res = await fetch(
           `/api/construction/roadmaps?${params.toString()}`,
@@ -80,7 +64,9 @@ export const RoadmapTable = ({
           id: item.roadmapId,
           stt: (page - 1) * pageSize + index + 1,
           name: item.name,
+          lateralId: item.lateralId,
           lateralName: item.lateralName,
+          networkId: item.networkId,
           networkName: item.networkName,
         }));
         setData(mapped);
@@ -94,7 +80,7 @@ export const RoadmapTable = ({
     };
 
     fetchData();
-  }, [page, keyword, reloadKey, sort]);
+  }, [page, filter, reloadKey, sort]);
 
   const handleSortChange = (columnKey: string) => {
     setPage(1);
@@ -112,7 +98,7 @@ export const RoadmapTable = ({
 
   useEffect(() => {
     setPage(1);
-  }, [keyword]);
+  }, [filter, reloadKey]);
 
   const actionItems = useMemo(
     () => [
@@ -139,10 +125,18 @@ export const RoadmapTable = ({
             });
 
             if (!res.ok) throw new Error("Delete failed");
-
+            CallToast({
+              title: "Thành công",
+              message: "Xóa lộ trình ghi thành công",
+              color: "success",
+            });
             onDeleted();
-          } catch (e) {
-            console.error(e);
+          } catch (e: any) {
+            CallToast({
+              title: "Lỗi",
+              message: e.message || "Có lỗi xảy ra",
+              color: "danger",
+            });
           }
         },
       },

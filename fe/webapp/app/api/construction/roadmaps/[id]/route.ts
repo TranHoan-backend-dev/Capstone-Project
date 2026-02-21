@@ -14,9 +14,9 @@ export async function PUT(
     }
 
     const { id } = await params;
-    const { name } = await req.json();
+    const { name, networkId, lateralId } = await req.json();
 
-    const response = await updateRoadmap(accessToken, id, name);
+    const response = await updateRoadmap(accessToken, id, name, networkId, lateralId);
 
     return NextResponse.json(response.data, { status: 200 });
   } catch (error: any) {

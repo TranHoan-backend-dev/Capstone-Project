@@ -12,7 +12,7 @@ export interface LateralFilter {
   networkId?: string;
 }
 
-export interface FilterSectionProps {
+export interface FilterNetworkProps {
   filter: LateralFilter;
   onSearch: (value: LateralFilter) => void;
   onAddNew: () => void;
