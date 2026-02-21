@@ -17,10 +17,6 @@ server:
   port: 9007
   servlet:
     context-path: /api/v1
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:9000/eureka
 springdoc:
   api-docs:
     enabled: true
@@ -28,6 +24,32 @@ springdoc:
   swagger-ui:
     enabled: true
     path: /swagger-ui/index.html
+keyword:
+  update: update
+  delete: delete
+  exchange: exchange
+  key: routing_key
+  queue: queue
+rabbit-mq-config:
+  entities:
+    - lateral #
+    - commune #
+    - unit #
+    - road #
+    - hamlet #
+    - material_price #
+    - meter_type #
+    - materials_group #
+    - calc_unit #
+    - params #
+    - water_price #
+    - department #
+    - employee #
 # spring:
 # mongodb:
 # uri: mongodb://guest:guest@mongodb:27017/microservice_db?authSource=admin
+#  rabbitmq:
+#    host: localhost # cua may local
+#    port: 5672
+#    username: guest
+#    password: guest

@@ -17,13 +17,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @FieldDefaults(level = AccessLevel.PUBLIC)
 public class RabbitMQConfig {
-  @Value("${rabbitmqconfig.exchange_name}")
+  @Value("${rabbit-mq-config.update-lateral.exchange_name}")
   String EXCHANGE_NAME;
 
-  @Value("${rabbitmqconfig.queue_name}")
+  @Value("${rabbit-mq-config.queue_name}")
   String QUEUE_NAME;
 
-  @Value("${rabbitmqconfig.routing_key}")
+  @Value("${rabbit-mq-config.update-lateral.routing_key}")
   String ROUTING_KEY; // chu ky gan vao tin nhan khi gui den Exchange
 
   // Luu tru tin nhan cho den khi co consumer su dung
@@ -56,6 +56,7 @@ public class RabbitMQConfig {
   @Bean
   public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
     final var rabbitTemplate = new RabbitTemplate(connectionFactory);
+    rabbitTemplate.setChannelTransacted(true);
     rabbitTemplate.setMessageConverter(converter());
     return rabbitTemplate;
   }

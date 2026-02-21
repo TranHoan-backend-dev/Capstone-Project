@@ -15,4 +15,6 @@ public interface HamletRepository extends JpaRepository<Hamlet, String> {
   boolean existsByCommune_CommuneId(String communeCommuneId);
 
   void deleteByCommune_CommuneId(String id);
+
+  boolean existsByNameIgnoreCase(String name);
 }

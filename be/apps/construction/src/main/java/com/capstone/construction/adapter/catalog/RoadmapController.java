@@ -32,7 +32,6 @@ import java.time.LocalDateTime;
 @RequestMapping("/roadmaps")
 @RequiredArgsConstructor
 @Tag(name = "Quản lý Lộ trình ghi", description = "Các API quản lý Lộ trình ghi (Roadmap)")
-// TODO: unit test
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RoadmapController {
   final RoadmapUseCase roadmapUseCase;

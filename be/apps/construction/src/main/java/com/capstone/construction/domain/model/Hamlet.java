@@ -1,5 +1,7 @@
 package com.capstone.construction.domain.model;
 
+import com.capstone.construction.domain.enumerate.CommuneType;
+import com.capstone.construction.domain.enumerate.HamletType;
 import jakarta.persistence.*;
 import com.capstone.construction.infrastructure.config.Constant;
 import lombok.*;
@@ -10,12 +12,12 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+@Table
 @Getter
 @Entity
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Hamlet {
   @Id
@@ -25,8 +27,9 @@ public class Hamlet {
   @Column(nullable = false, unique = true)
   String name;
 
+  @Enumerated(EnumType.STRING)
   @Column(nullable = false)
-  String type;
+  HamletType type;
 
   @Column(nullable = false)
   LocalDateTime createdAt;
@@ -39,25 +42,24 @@ public class Hamlet {
   Commune commune;
 
   public void setName(String name) {
-    requireNonNullAndNotEmpty(name, Constant.PT_24);
+    Objects.requireNonNull(name, Constant.PT_24);
+    if (name.trim().isEmpty()) {
+      throw new IllegalArgumentException(Constant.PT_24);
+    }
     this.name = name;
   }
 
-  public void setType(String type) {
-    requireNonNullAndNotEmpty(type, Constant.PT_25);
+  public void setType(HamletType type) {
+    Objects.requireNonNull(type, Constant.PT_25);
     this.type = type;
   }
 
   public void setCommune(Commune commune) {
     Objects.requireNonNull(commune, Constant.PT_26);
-    this.commune = commune;
-  }
-
-  private void requireNonNullAndNotEmpty(String value, String message) {
-    Objects.requireNonNull(value, message);
-    if (value.trim().isEmpty()) {
-      throw new IllegalArgumentException(message);
+    if (!commune.getType().equals(CommuneType.RURAL_COMMUNE)) {
+      throw new IllegalArgumentException(Constant.PT_07);
     }
+    this.commune = commune;
   }
 
   public static Hamlet create(@NonNull Consumer<HamletBuilder> builder) {
@@ -68,7 +70,7 @@ public class Hamlet {
 
   public static class HamletBuilder {
     private String name;
-    private String type;
+    private HamletType type;
     private Commune commune;
 
     public HamletBuilder name(String name) {
@@ -76,7 +78,7 @@ public class Hamlet {
       return this;
     }
 
-    public HamletBuilder type(String type) {
+    public HamletBuilder type(HamletType type) {
       this.type = type;
       return this;
     }

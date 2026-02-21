@@ -52,6 +52,7 @@ public class RabbitMQConfig {
   @Bean
   public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
     final var rabbitTemplate = new RabbitTemplate(connectionFactory);
+    rabbitTemplate.setChannelTransacted(true);
     rabbitTemplate.setMessageConverter(converter());
     return rabbitTemplate;
   }
