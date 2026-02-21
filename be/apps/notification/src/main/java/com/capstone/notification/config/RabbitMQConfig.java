@@ -216,6 +216,57 @@ public class RabbitMQConfig {
   }
   // </editor-fold>
 
+  // <editor-fold> desc="Hamlet"
+  // Update
+  @Value("${rabbit-mq-config.update-hamlet.exchange_name}")
+  private String updateHamletExchange;
+  @Value("${rabbit-mq-config.update-hamlet.routing_key}")
+  private String updateHamletRoutingKey;
+  @Value("${rabbit-mq-config.update-hamlet.queue_name}")
+  private String updateHamletQueue;
+
+  // Delete Road
+  @Value("${rabbit-mq-config.delete-hamlet.exchange_name}")
+  private String deleteHamletExchange;
+  @Value("${rabbit-mq-config.delete-hamlet.routing_key}")
+  private String deleteHamletRoutingKey;
+  @Value("${rabbit-mq-config.delete-hamlet.queue_name}")
+  private String deleteHamletQueue;
+
+  // Queue
+  @Bean
+  public Queue updateHamletQueue() {
+    return new Queue(updateHamletQueue, true);
+  }
+
+  @Bean
+  public Queue deleteHamletQueue() {
+    return new Queue(deleteHamletQueue, true);
+  }
+
+  // Exchange
+  @Bean
+  public TopicExchange updateHamletExchange() {
+    return new TopicExchange(updateHamletExchange);
+  }
+
+  @Bean
+  public TopicExchange deleteHamletExchange() {
+    return new TopicExchange(deleteHamletExchange);
+  }
+
+  // Binding
+  @Bean
+  public Binding updateHamletBinding() {
+    return BindingBuilder.bind(updateHamletQueue()).to(updateHamletExchange()).with(updateHamletRoutingKey);
+  }
+
+  @Bean
+  public Binding deleteHamletBinding() {
+    return BindingBuilder.bind(deleteHamletQueue()).to(deleteHamletExchange()).with(deleteHamletRoutingKey);
+  }
+  // </editor-fold>
+
   // Infrastructure
   @Bean
   public MessageConverter converter() {

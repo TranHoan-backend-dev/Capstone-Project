@@ -61,17 +61,17 @@ public class HamletServiceImpl implements HamletService {
       throw new ExistingItemException("Hamlet with name " + request.name() + " already exists");
     }
 
-    var commune = communeRepository.findById(request.communeId())
-      .orElseThrow(() -> new IllegalArgumentException(Constant.SE_04));
+    if (!request.communeId().isBlank()) {
+      var commune = communeRepository.findById(request.communeId())
+        .orElseThrow(() -> new IllegalArgumentException(Constant.SE_04));
+      hamlet.setCommune(commune);
+    }
 
     if (request.name() != null && !request.name().isBlank()) {
       hamlet.setName(request.name());
     }
     if (request.type() != null && !request.type().isBlank()) {
       hamlet.setType(HamletType.valueOf(request.type()));
-    }
-    if (!request.communeId().isBlank()) {
-      hamlet.setCommune(commune);
     }
 
     var saved = hamletRepository.save(hamlet);

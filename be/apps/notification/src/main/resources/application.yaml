@@ -60,6 +60,15 @@ rabbit-mq-config:
     exchange_name: 'delete_road_exchange'
     routing_key: 'delete_road_routing_key'
     queue_name: 'delete_road_queue'
+
+  update-hamlet:
+    exchange_name: 'update_hamlet_exchange'
+    routing_key: 'update_hamlet_routing_key'
+    queue_name: 'update_hamlet_queue'
+  delete-hamlet:
+    exchange_name: 'delete_hamlet_exchange'
+    routing_key: 'delete_hamlet_routing_key'
+    queue_name: 'delete_hamlet_queue'
 # spring:
 # mongodb:
 # uri: mongodb://guest:guest@mongodb:27017/microservice_db?authSource=admin
