@@ -1,4 +1,7 @@
-import { createCommune, getAllCommunes } from "@/services/construction.service";
+import {
+  createNeighborhoodUnits,
+  getAllNeighborhoodUnits,
+} from "@/services/construction.service";
 import { getAccessToken } from "@/utils/getAccessToken";
 import { NextRequest } from "next/dist/server/web/spec-extension/request";
 import { NextResponse } from "next/server";
@@ -17,7 +20,7 @@ export async function GET(req: NextRequest) {
     const sort = searchParams.get("sort") || "createdAt,desc";
     const keyword = searchParams.get("keyword") || undefined;
 
-    const response = await getAllCommunes(
+    const response = await getAllNeighborhoodUnits(
       accessToken,
       page ? Number(page) : 0,
       size ? Number(size) : 1000,
@@ -52,9 +55,13 @@ export async function POST(req: NextRequest) {
     if (!accessToken) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
-    const { name, type } = await req.json();
+    const { name, communeId } = await req.json();
 
-    const response = await createCommune(accessToken, name, type);
+    const response = await createNeighborhoodUnits(
+      accessToken,
+      name,
+      communeId,
+    );
 
     return NextResponse.json(response.data, { status: 201 });
   } catch (error: any) {
