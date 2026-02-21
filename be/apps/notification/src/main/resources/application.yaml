@@ -24,51 +24,27 @@ springdoc:
   swagger-ui:
     enabled: true
     path: /swagger-ui/index.html
+keyword:
+  update: update
+  delete: delete
+  exchange: exchange
+  key: routing_key
+  queue: queue
 rabbit-mq-config:
-  update-lateral:
-    exchange_name: 'update_lateral_exchange'
-    routing_key: 'update_lateral_routing_key'
-    queue_name: 'update_lateral_queue'
-  delete-lateral:
-    exchange_name: 'delete_lateral_exchange'
-    routing_key: 'delete_lateral_routing_key'
-    queue_name: 'delete_lateral_queue'
-
-  update-commune:
-    exchange_name: 'update_commune_exchange'
-    routing_key: 'update_commune_routing_key'
-    queue_name: 'update_commune_queue'
-  delete-commune:
-    exchange_name: 'delete_commune_exchange'
-    routing_key: 'delete_commune_routing_key'
-    queue_name: 'delete_commune_queue'
-
-  update-unit:
-    exchange_name: 'update_unit_exchange'
-    routing_key: 'update_unit_routing_key'
-    queue_name: 'update_unit_queue'
-  delete-unit:
-    exchange_name: 'delete_unit_exchange'
-    routing_key: 'delete_unit_routing_key'
-    queue_name: 'delete_unit_queue'
-
-  update-road:
-    exchange_name: 'update_road_exchange'
-    routing_key: 'update_road_routing_key'
-    queue_name: 'update_road_queue'
-  delete-road:
-    exchange_name: 'delete_road_exchange'
-    routing_key: 'delete_road_routing_key'
-    queue_name: 'delete_road_queue'
-
-  update-hamlet:
-    exchange_name: 'update_hamlet_exchange'
-    routing_key: 'update_hamlet_routing_key'
-    queue_name: 'update_hamlet_queue'
-  delete-hamlet:
-    exchange_name: 'delete_hamlet_exchange'
-    routing_key: 'delete_hamlet_routing_key'
-    queue_name: 'delete_hamlet_queue'
+  entities:
+    - lateral #
+    - commune #
+    - unit #
+    - road #
+    - hamlet #
+    - material_price #
+    - meter_type #
+    - materials_group #
+    - calc_unit #
+    - params #
+    - water_price #
+    - department #
+    - employee #
 # spring:
 # mongodb:
 # uri: mongodb://guest:guest@mongodb:27017/microservice_db?authSource=admin

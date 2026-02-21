@@ -1,9 +1,9 @@
-package com.capstone.notification.event.consumer.unit.message;
+package com.capstone.notification.event.consumer.parameter.message;
 
 public record UpdateEventMessage(
   String pattern,
-  UnitEventData data) {
-  public record UnitEventData(
+  LateralEventData data) {
+  public record LateralEventData(
     String oldName,
     String newName,
     String oldNetwork,

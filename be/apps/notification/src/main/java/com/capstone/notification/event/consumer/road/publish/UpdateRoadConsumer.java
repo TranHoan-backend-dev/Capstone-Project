@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class UpdateRoadConsumer extends BaseEventConsumer<UpdateEventMessage> {
 
-  @RabbitListener(queues = "${rabbit-mq-config.update-road.queue_name}")
+  @RabbitListener(queues = "${keyword.update}_${rabbit-mq-config.entities[3]}_${keyword.queue}")
   @Override
   public void handle(UpdateEventMessage event) {
     super.handle(event);

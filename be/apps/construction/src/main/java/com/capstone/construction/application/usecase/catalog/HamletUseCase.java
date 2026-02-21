@@ -42,11 +42,13 @@ public class HamletUseCase {
     var old = hamletService.getHamletById(id);
     var response = hamletService.updateHamlet(id, request);
 
-    producer.send("UPDATE_HAMLET", UPDATE_EXCHANGE_NAME, UPDATE_ROUTING_KEY,
-      new UpdateHamletEvent(
-        old.name(), old.type(), old.communeName(),
-        response.name(), response.type(), response.communeName()
-      ));
+    if (!request.name().isBlank() && !request.type().isBlank() && !request.communeId().isBlank()) {
+      producer.send("UPDATE_HAMLET", UPDATE_EXCHANGE_NAME, UPDATE_ROUTING_KEY,
+        new UpdateHamletEvent(
+          old.name(), old.type(), old.communeName(),
+          response.name(), response.type(), response.communeName()
+        ));
+    }
     return response;
   }
 

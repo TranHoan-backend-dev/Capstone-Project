@@ -42,12 +42,14 @@ public class CommuneUseCase {
     var old = communeService.getCommuneById(id);
     var response = communeService.updateCommune(id, request);
 
-    producer.send("UPDATE_COMMUNE", UPDATE_EXCHANGE_NAME, UPDATE_ROUTING_KEY,
-      new UpdateEvent(
-        old.name(), old.type(),
-        response.name(), response.type()
-      )
-    );
+    if (!request.name().isBlank() && !request.type().isBlank()) {
+      producer.send("UPDATE_COMMUNE", UPDATE_EXCHANGE_NAME, UPDATE_ROUTING_KEY,
+        new UpdateEvent(
+          old.name(), old.type(),
+          response.name(), response.type()
+        )
+      );
+    }
     return response;
   }
 

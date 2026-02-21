@@ -39,10 +39,12 @@ public class RoadUseCase {
     var old = roadService.getRoadById(id);
     var response = roadService.updateRoad(id, request);
 
-    producer.send(
-      "UPDATE_ROAD",
-      UPDATE_EXCHANGE_NAME, UPDATE_ROUTING_KEY,
-      new UpdateEvent(old.name(), response.name()));
+    if (!request.name().isBlank()) {
+      producer.send(
+        "UPDATE_ROAD",
+        UPDATE_EXCHANGE_NAME, UPDATE_ROUTING_KEY,
+        new UpdateEvent(old.name(), response.name()));
+    }
     return response;
   }
 

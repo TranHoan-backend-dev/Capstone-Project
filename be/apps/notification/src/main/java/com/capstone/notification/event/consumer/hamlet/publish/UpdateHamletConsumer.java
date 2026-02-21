@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class UpdateHamletConsumer extends BaseEventConsumer<UpdateEventMessage> {
 
-  @RabbitListener(queues = "${rabbit-mq-config.update-hamlet.queue_name}")
+  @RabbitListener(queues = "${keyword.update}_${rabbit-mq-config.entities[4]}_${keyword.queue}")
   @Override
   public void handle(UpdateEventMessage event) {
     super.handle(event);

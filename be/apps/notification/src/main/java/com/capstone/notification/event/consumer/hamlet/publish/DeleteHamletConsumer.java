@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DeleteHamletConsumer extends BaseEventConsumer<DeleteEventMessage> {
 
-  @RabbitListener(queues = "${rabbit-mq-config.delete-hamlet.queue_name}")
+  @RabbitListener(queues = "${keyword.delete}_${rabbit-mq-config.entities[4]}_${keyword.queue}")
   @Override
   public void handle(DeleteEventMessage event) {
     super.handle(event);
