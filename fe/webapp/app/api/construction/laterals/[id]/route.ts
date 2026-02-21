@@ -2,13 +2,10 @@ import { deleteLateral, updateLateral } from "@/services/construction.service";
 import { getAccessToken } from "@/utils/getAccessToken";
 import { NextRequest, NextResponse } from "next/server";
 
-type Context = {
-  params: {
-    id: string;
-  };
-};
-
-export async function PUT(req: NextRequest, context: Context) {
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
   try {
     const accessToken = getAccessToken(req);
 
@@ -16,7 +13,7 @@ export async function PUT(req: NextRequest, context: Context) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = context.params;
+    const { id } = await params;
     const { name, networkId } = await req.json();
 
     const response = await updateLateral(accessToken, id, name, networkId);
@@ -32,7 +29,10 @@ export async function PUT(req: NextRequest, context: Context) {
   }
 }
 
-export async function DELETE(req: NextRequest, context: Context) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
   try {
     const accessToken = getAccessToken(req);
 
@@ -40,7 +40,7 @@ export async function DELETE(req: NextRequest, context: Context) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = context.params;
+    const { id } = await params;
 
     const response = await deleteLateral(accessToken, id);
 
