@@ -9,6 +9,7 @@ import com.capstone.construction.application.dto.response.catalog.HamletResponse
 import com.capstone.construction.application.usecase.catalog.HamletUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -26,16 +27,18 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/hamlets")
 @RequiredArgsConstructor
-@Tag(name = "", description = "")
+@Tag(name = "Thôn/Làng", description = "Quản lý thôn/làng – đơn vị hành chính thuộc cấp xã")
 public class HamletController {
   private final HamletUseCase hamletUseCase;
   Logger log;
 
   @PostMapping
-  @Operation(summary = "", description = "", responses = {
-    @ApiResponse(responseCode = "201", description = ""),
-    @ApiResponse(responseCode = "", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+  @Operation(summary = "Tạo thôn/làng", description = "Tạo mới một thôn/làng thuộc một xã", responses = {
+    @ApiResponse(responseCode = "201", description = "Tạo thành công"),
+    @ApiResponse(responseCode = "400", description = "Dữ liệu không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "401", description = "Chưa xác thực", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "409", description = "Tên thôn/làng đã tồn tại", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "500", description = "Lỗi hệ thống", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PreAuthorize("hasAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> createHamlet(@RequestBody @Valid CreateHamletRequest request) {
@@ -46,14 +49,16 @@ public class HamletController {
   }
 
   @PutMapping("/{id}")
-  @Operation(summary = "", description = "", responses = {
-    @ApiResponse(responseCode = "200", description = "", content = @Content(schema = @Schema(implementation = HamletResponse.class))),
-    @ApiResponse(responseCode = "404", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "409", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+  @Operation(summary = "Cập nhật thôn/làng", description = "Cập nhật thông tin thôn/làng", responses = {
+    @ApiResponse(responseCode = "200", description = "Cập nhật thành công", content = @Content(schema = @Schema(implementation = HamletResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Dữ liệu không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy thôn/làng", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "409", description = "Tên đã tồn tại", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "500", description = "Lỗi hệ thống", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PreAuthorize("hasAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> updateHamlet(
-    @PathVariable @Parameter(description = "", required = true) String id,
+    @PathVariable @Parameter(description = "ID thôn/làng", in = ParameterIn.PATH, required = true) String id,
     @RequestBody @Valid UpdateHamletRequest request) {
     log.info("REST request to update hamlet: {}", id);
     var response = hamletUseCase.updateHamlet(id, request);
@@ -61,9 +66,11 @@ public class HamletController {
   }
 
   @DeleteMapping("/{id}")
-  @Operation(summary = "", description = "", responses = {
+  @Operation(summary = "Xoá thôn/làng", description = "Xoá thôn/làng theo ID", responses = {
     @ApiResponse(responseCode = "200", description = ""),
-    @ApiResponse(responseCode = "404", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+    @ApiResponse(responseCode = "400", description = "ID không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy thôn/làng", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "500", description = "Lỗi hệ thống", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PreAuthorize("hasAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> deleteHamlet(
