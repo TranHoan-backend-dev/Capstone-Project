@@ -1,0 +1,177 @@
+@uri = http://localhost:9004/api/v1/hamlets
+@keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
+@client_secret=
+
+### get token
+POST {{keycloak}}/token
+Content-Type: application/x-www-form-urlencoded
+Accept: application/json
+
+grant_type=password&
+client_id=&
+client_secret={{client_secret}}&
+username=&
+password=&
+scope=openid
+
+> {%
+  client.global.set("access_token", response.body.access_token);
+  client.global.set("refresh_token", response.body.refresh_token);
+%}
+
+### C
+### happy case
+POST {{uri}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "hamlet1",
+  "type": "VILLAGE",
+  "communeId": "0f1c0a3a-3c3c-4f33-8c24-7a7c0d6a0006"
+}
+
+### blank keys
+POST {{uri}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "",
+  "type": "",
+  "communeId": ""
+}
+
+### duplicated name
+POST {{uri}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "thon 1",
+  "type": "VILLAGE",
+  "communeId": "0f1c0a3a-3c3c-4f33-8c24-7a7c0d6a0006"
+}
+
+### wrong type
+POST {{uri}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "uuee",
+  "type": "VILLAGE1",
+  "communeId": "0f1c0a3a-3c3c-4f33-8c24-7a7c0d6a0006"
+}
+
+### commune not exist
+POST {{uri}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "uuee",
+  "type": "VILLAGE",
+  "communeId": "0f1c0a3a-3c3c-4f33-8c24-7a7c0d6a0000"
+}
+
+### wrong commune
+POST {{uri}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "uuee",
+  "type": "VILLAGE",
+  "communeId": "0f1c0a3a-3c3c-4f33-8c24-7a7c0d6a0001"
+}
+
+### R
+
+### U
+### Blank
+PUT {{uri}}/73d29333-d1c7-4a07-8e36-dd8bebd8ee89
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "",
+  "type": "",
+  "communeId": ""
+}
+
+### duplicated name
+PUT {{uri}}/73d29333-d1c7-4a07-8e36-dd8bebd8ee89
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "thon 1",
+  "type": "",
+  "communeId": ""
+}
+
+### type not found
+PUT {{uri}}/73d29333-d1c7-4a07-8e36-dd8bebd8ee89
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "haha",
+  "type": "VILLAGE1",
+  "communeId": ""
+}
+
+### wrong type of commune
+PUT {{uri}}/73d29333-d1c7-4a07-8e36-dd8bebd8ee89
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "haha",
+  "type": "VILLAGE",
+  "communeId": "0f1c0a3a-3c3c-4f33-8c24-7a7c0d6a0001"
+}
+
+### commune not found
+PUT {{uri}}/73d29333-d1c7-4a07-8e36-dd8bebd8ee89
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "haha",
+  "type": "VILLAGE",
+  "communeId": "0f1c0a3a-3c3c-4f33-8c24-7a7c0d6a0000"
+}
+
+### happy case
+PUT {{uri}}/73d29333-d1c7-4a07-8e36-dd8bebd8ee89
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "haha",
+  "type": "VILLAGE",
+  "communeId": "0f1c0a3a-3c3c-4f33-8c24-7a7c0d6a0008"
+}
+
+### D
+### id not found
+DELETE {{uri}}/73d29333-d1c7-4a07-8e36-dd8bebd8ee88
+Authorization: Bearer {{access_token}}
+
+### happy case
+DELETE {{uri}}/73d29333-d1c7-4a07-8e36-dd8bebd8ee89
+Authorization: Bearer {{access_token}}

@@ -42,13 +42,16 @@ public class LateralUseCase {
     var oldNetwork = waterSupplyNetworkService.getNetworkById(old.networkId());
 
     var response = lateralService.updateLateral(id, request);
-    producer.send(
-      "UPDATE_LATERAL",
-      UPDATE_EXCHANGE_NAME, UPDATE_ROUTING_KEY,
-      new UpdateLateralEvent(
-        old.name(), response.name(),
-        oldNetwork.name(), response.networkName()
-      ));
+
+    if (!request.name().isBlank() && !request.networkId().isBlank()) {
+      producer.send(
+        "UPDATE_LATERAL",
+        UPDATE_EXCHANGE_NAME, UPDATE_ROUTING_KEY,
+        new UpdateLateralEvent(
+          old.name(), response.name(),
+          oldNetwork.name(), response.networkName()
+        ));
+    }
     return response;
   }
 
