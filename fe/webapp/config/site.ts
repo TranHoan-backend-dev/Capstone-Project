@@ -132,6 +132,16 @@ export const siteConfig = {
       label: "Thi công",
       items: [
         {
+          key: "networks",
+          label: "Quản lý Chi nhánh cấp nước",
+          href: "/networks",
+        },
+        {
+          key: "laterals",
+          label: "Quản lý Nhánh tổng",
+          href: "/laterals",
+        },
+        {
           key: "roadmaps",
           label: "Quản lý Lộ trình ghi",
           href: "/roadmaps",
