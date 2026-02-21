@@ -3,34 +3,20 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Tooltip, Button } from "@heroui/react";
 import { DeleteIcon, EditIcon } from "@/config/chip-and-icon";
-import { LateralItem } from "@/types";
+import { LateralItem, LateralResponse, LateralTableProps } from "@/types";
 import { LATERAL_COLUMN } from "@/config/table-columns";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-
-interface Props {
-  keyword: string;
-  reloadKey: number;
-  onEdit: (item: LateralItem) => void;
-  onDeleted: () => void;
-}
-
-interface LateralResponse {
-  id: string;
-  name: string;
-  networkName: string;
-}
+import { CallToast } from "@/components/ui/CallToast";
 
 export const LateralTable = ({
-  keyword,
+  filter,
   reloadKey,
   onEdit,
   onDeleted,
-}: Props) => {
+}: LateralTableProps) => {
   const [data, setData] = useState<LateralItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const [editingItem, setEditingItem] = useState<LateralItem | null>(null);
-  const [openForm, setOpenForm] = useState(false);
   const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState<{
     field: string;
@@ -54,10 +40,9 @@ export const LateralTable = ({
           sort: `${sort.field},${sort.direction}`,
         });
 
-        const trimmedKeyword = keyword.trim();
-        if (trimmedKeyword) {
-          params.append("keyword", trimmedKeyword);
-        }
+        if (filter.code) params.append("code", filter.code);
+        if (filter.name) params.append("name", filter.name);
+        if (filter.networkId) params.append("networkId", filter.networkId);
 
         const res = await fetch(
           `/api/construction/laterals?${params.toString()}`,
@@ -78,6 +63,7 @@ export const LateralTable = ({
           id: item.id,
           stt: (page - 1) * pageSize + index + 1,
           name: item.name,
+          networkId: item.networkId,
           networkName: item.networkName,
         }));
         setData(mapped);
@@ -91,7 +77,7 @@ export const LateralTable = ({
     };
 
     fetchData();
-  }, [page, keyword, reloadKey, sort]);
+  }, [page, filter, reloadKey, sort]);
 
   const handleSortChange = (columnKey: string) => {
     setPage(1);
@@ -109,7 +95,7 @@ export const LateralTable = ({
 
   useEffect(() => {
     setPage(1);
-  }, [keyword]);
+  }, [filter, reloadKey]);
 
   const actionItems = useMemo(
     () => [
@@ -136,10 +122,18 @@ export const LateralTable = ({
             });
 
             if (!res.ok) throw new Error("Delete failed");
-
+            CallToast({
+              title: "Thành công",
+              message: "Xóa nhánh tổng thành công",
+              color: "success",
+            });
             onDeleted();
-          } catch (e) {
-            console.error(e);
+          } catch (e: any) {
+            CallToast({
+              title: "Lỗi",
+              message: e.message || "Có lỗi xảy ra",
+              color: "danger",
+            });
           }
         },
       },

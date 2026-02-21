@@ -6,47 +6,56 @@ import { Spinner } from "@heroui/react";
 import { LateralTable } from "./components/lateral-table";
 import { FilterSection } from "./components/filter-section";
 import { LateralForm } from "./components/lateral-form";
-import { LateralItem } from "@/types";
+import { LateralFilter, LateralItem } from "@/types";
 
 const LateralPage = () => {
-  const [keyword, setKeyword] = useState("");
+  const [filter, setFilter] = useState<LateralFilter>({});
   const [showAddForm, setShowAddForm] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
   const [editingItem, setEditingItem] = useState<LateralItem | null>(null);
+  const handleReload = () => setReloadKey((prev) => prev + 1);
   const handleAddNew = () => {
     setEditingItem(null);
     setShowAddForm(true);
   };
 
+  const handleEdit = (item: LateralItem) => {
+    setEditingItem(item);
+    setShowAddForm(true);
+  };
+
+  const handleCloseForm = () => {
+    setShowAddForm(false);
+    setEditingItem(null);
+  };
+
+  const handleSuccess = () => {
+    handleReload();
+    handleCloseForm();
+  };
+
   return (
     <>
       <FilterSection
-        keyword={keyword}
-        onSearch={setKeyword}
+        filter={filter}
+        onSearch={setFilter}
         onAddNew={handleAddNew}
       />
 
       {showAddForm && (
         <LateralForm
+          key={editingItem?.id || "create"}
           initialData={editingItem || undefined}
-          onSuccess={() => {
-            setReloadKey((prev) => prev + 1);
-          }}
-          onClose={() => {
-            setShowAddForm(false);
-            setEditingItem(null);
-          }}
+          onSuccess={handleSuccess}
+          onClose={handleCloseForm}
         />
       )}
 
       <LateralTable
-        keyword={keyword}
+        filter={filter}
         reloadKey={reloadKey}
-        onEdit={(item) => {
-          setEditingItem(item);
-          setShowAddForm(true);
-        }}
-        onDeleted={() => setReloadKey((prev) => prev + 1)}
+        onEdit={handleEdit}
+        onDeleted={handleReload}
       />
     </>
   );

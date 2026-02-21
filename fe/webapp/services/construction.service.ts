@@ -3,9 +3,9 @@ import axios from "axios";
 
 export const getAllNetworks = (
   accessToken: string,
-  page: number,
-  size: number,
-  sort: string,
+  page?: number,
+  size?: number,
+  sort?: string,
   keyword?: string | null,
 ) =>
   axios.get(`${API_GATEWAY_URL}/construction/networks`, {
@@ -54,11 +54,11 @@ export const getAllLaterals = (
 export const createLateral = (
   accessToken: string,
   name: string,
-  type: string,
+  networkId: string,
 ) => {
   return axios.post(
     `${API_GATEWAY_URL}/construction/laterals`,
-    { name, type },
+    { name, networkId },
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -71,10 +71,11 @@ export const updateLateral = (
   accessToken: string,
   id: string,
   name: string,
+  networkId: string,
 ) => {
   return axios.put(
     `${API_GATEWAY_URL}/construction/laterals/${id}`,
-    { name },
+    { name, networkId },
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,

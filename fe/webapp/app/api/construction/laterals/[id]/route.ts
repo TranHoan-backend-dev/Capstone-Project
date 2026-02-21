@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: { id: string } },
 ) {
   try {
     const accessToken = getAccessToken(req);
@@ -13,10 +13,10 @@ export async function PUT(
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = await params;
-    const { name } = await req.json();
+    const { id } = params;
+    const { name, networkId } = await req.json();
 
-    const response = await updateLateral(accessToken, id, name);
+    const response = await updateLateral(accessToken, id, name, networkId);
 
     return NextResponse.json(response.data, { status: 200 });
   } catch (error: any) {
@@ -31,7 +31,7 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: { id: string } },
 ) {
   try {
     const accessToken = getAccessToken(req);
@@ -40,7 +40,7 @@ export async function DELETE(
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = await params;
+    const { id } = params;
 
     const response = await deleteLateral(accessToken, id);
 
@@ -48,7 +48,7 @@ export async function DELETE(
   } catch (error: any) {
     return NextResponse.json(
       {
-        message: error.response?.data?.message || "Update lateral failed",
+        message: error.response?.data?.message || "Delete lateral failed",
       },
       { status: error.response?.status || 500 },
     );

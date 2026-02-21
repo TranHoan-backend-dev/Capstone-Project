@@ -1,7 +1,6 @@
 import { createLateral, getAllLaterals } from "@/services/construction.service";
 import { getAccessToken } from "@/utils/getAccessToken";
-import { NextRequest } from "next/dist/server/web/spec-extension/request";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
@@ -52,9 +51,9 @@ export async function POST(req: NextRequest) {
     if (!accessToken) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
-    const { name, type } = await req.json();
+    const { name, networkId } = await req.json();
 
-    const response = await createLateral(accessToken, name, type);
+    const response = await createLateral(accessToken, name, networkId);
 
     return NextResponse.json(response.data, { status: 201 });
   } catch (error: any) {
