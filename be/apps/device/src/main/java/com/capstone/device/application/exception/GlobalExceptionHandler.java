@@ -1,5 +1,6 @@
 package com.capstone.device.application.exception;
 
+import com.capstone.common.exception.ExistingException;
 import com.capstone.common.exception.InternalServerException;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
@@ -39,6 +40,11 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(DisabledException.class)
   public ResponseEntity<WrapperApiResponse> handleDisabledException(@NonNull DisabledException ex) {
     return Utils.returnUnAuthorizedResponse(ex.getMessage(), null);
+  }
+
+  @ExceptionHandler(ExistingException.class)
+  public ResponseEntity<WrapperApiResponse> handleExistingException(@NonNull ExistingException ex) {
+    return Utils.returnBadRequestResponse(ex.getMessage(), null);
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)

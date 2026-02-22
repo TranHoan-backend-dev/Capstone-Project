@@ -7,4 +7,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MaterialsOfCostEstimateRepository extends JpaRepository<MaterialsOfCostEstimate, MaterialsOfCostEstimateId> {
+  boolean existsByMaterial_MaterialId(String materialId);
+
+  void deleteByMaterial_MaterialId(String materialMaterialId);
 }

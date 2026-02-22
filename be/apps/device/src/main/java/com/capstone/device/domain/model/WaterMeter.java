@@ -34,7 +34,7 @@ public class WaterMeter {
   WaterMeterType type;
 
   public void setInstallationDate(LocalDate installationDate) {
-    this.installationDate = Objects.requireNonNull(installationDate, Constant.ENT_10);
+    this.installationDate = Objects.requireNonNull(installationDate, Constant.ENT_18);
   }
 
   public void setSize(Integer size) {
