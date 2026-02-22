@@ -16,6 +16,7 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -23,27 +24,25 @@ import org.springframework.stereotype.Component;
 public class HamletUseCase {
   final HamletService hamletService;
   final MessageProducer producer;
+  final String prefix = ".hamlet.";
 
-  @Value("${rabbit-mq-config.update-hamlet.exchange_name}")
-  String UPDATE_EXCHANGE_NAME;
-  @Value("${rabbit-mq-config.update-hamlet.routing_key}")
+  @Value("${rabbit-mq-config.queue_name}" + prefix + "${rabbit-mq-config.update}")
   String UPDATE_ROUTING_KEY;
 
-  @Value("${rabbit-mq-config.delete-hamlet.exchange_name}")
-  String DELETE_EXCHANGE_NAME;
-  @Value("${rabbit-mq-config.delete-hamlet.routing_key}")
+  @Value("${rabbit-mq-config.queue_name}" + prefix + "${rabbit-mq-config.delete}")
   String DELETE_ROUTING_KEY;
 
   public HamletResponse createHamlet(@NonNull CreateHamletRequest request) {
     return hamletService.createHamlet(request.name(), HamletType.valueOf(request.type()), request.communeId());
   }
 
+  @Transactional(rollbackFor = Exception.class)
   public HamletResponse updateHamlet(String id, UpdateHamletRequest request) {
     var old = hamletService.getHamletById(id);
     var response = hamletService.updateHamlet(id, request);
 
     if (!request.name().isBlank() && !request.type().isBlank() && !request.communeId().isBlank()) {
-      producer.send("UPDATE_HAMLET", UPDATE_EXCHANGE_NAME, UPDATE_ROUTING_KEY,
+      producer.send(UPDATE_ROUTING_KEY,
         new UpdateHamletEvent(
           old.name(), old.type(), old.communeName(),
           response.name(), response.type(), response.communeName()
@@ -52,11 +51,12 @@ public class HamletUseCase {
     return response;
   }
 
+  @Transactional(rollbackFor = Exception.class)
   public void deleteHamlet(String id) {
     var old = hamletService.getHamletById(id);
     hamletService.deleteHamlet(id);
 
-    producer.send("DELETE_HAMLET", DELETE_EXCHANGE_NAME, DELETE_ROUTING_KEY,
+    producer.send(DELETE_ROUTING_KEY,
       new DeleteHamletEvent(old.name(), old.type(), old.communeName()));
   }
 
