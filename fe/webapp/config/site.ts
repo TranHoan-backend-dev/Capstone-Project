@@ -11,6 +11,24 @@ export const siteConfig = {
       href: "/home",
     },
 
+    // Danh mục
+    {
+      key: "category",
+      label: "Danh mục",
+      items: [
+        {
+          key: "communes",
+          label: "Quản lý Phường/xã",
+          href: "/communes",
+        },
+        {
+          key: "hamlets",
+          label: "Quản lý Thôn/làng",
+          href: "/hamlets",
+        },
+      ],
+    },
+
     // Hợp đồng
     {
       key: "contract",
@@ -131,11 +149,6 @@ export const siteConfig = {
       key: "construction",
       label: "Thi công",
       items: [
-        {
-          key: "communes",
-          label: "Quản lý Phường/xã",
-          href: "/communes",
-        },
         {
           key: "settlement-lookup",
           label: "Tra cứu quyết toán",

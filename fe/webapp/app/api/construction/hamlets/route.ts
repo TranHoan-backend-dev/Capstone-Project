@@ -1,4 +1,4 @@
-import { createCommune, getAllCommunes } from "@/services/construction.service";
+import { createHamlet, getAllHamlets } from "@/services/construction.service";
 import { getAccessToken } from "@/utils/getAccessToken";
 import { NextRequest } from "next/dist/server/web/spec-extension/request";
 import { NextResponse } from "next/server";
@@ -12,15 +12,15 @@ export async function GET(req: NextRequest) {
     }
 
     const { searchParams } = new URL(req.url);
-    const page = searchParams.get("page");
-    const size = searchParams.get("size");
+    const page = Number(searchParams.get("page") ?? 0);
+    const size = Number(searchParams.get("size") ?? 10);
     const sort = searchParams.get("sort") || "createdAt,desc";
     const keyword = searchParams.get("keyword") || undefined;
 
-    const response = await getAllCommunes(
+    const response = await getAllHamlets(
       accessToken,
-      page ? Number(page) : 0,
-      size ? Number(size) : 1000,
+      page,
+      size,
       sort,
       keyword,
     );
@@ -52,9 +52,9 @@ export async function POST(req: NextRequest) {
     if (!accessToken) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
-    const { name, type } = await req.json();
+    const { name, type, communeId } = await req.json();
 
-    const response = await createCommune(accessToken, name, type);
+    const response = await createHamlet(accessToken, name, type, communeId);
 
     return NextResponse.json(response.data, { status: 201 });
   } catch (error: any) {
