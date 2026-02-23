@@ -1,0 +1,5 @@
+export const UNIT_COLUMN = [
+  { key: "stt", label: "STT", width: "40px", align: "center" as const },
+  { key: "name", label: "Đơn vị tính", sortable: true },
+  { key: "actions", label: "Hoạt động", align: "center" as const },
+];
