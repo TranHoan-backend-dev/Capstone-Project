@@ -1,1 +1,1 @@
-export * from "./material-column";
+export * from "./device/index";

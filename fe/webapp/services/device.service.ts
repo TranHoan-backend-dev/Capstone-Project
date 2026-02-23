@@ -6,7 +6,7 @@ export const getAllMaterials = (
   page: number,
   size: number,
 ) =>
-  axios.get(`${API_GATEWAY_URL}/device/materials`, {
+  axios.get(`${API_GATEWAY_URL}/d/materials`, {
     params: {
       page,
       size,

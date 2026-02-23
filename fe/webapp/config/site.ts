@@ -13,8 +13,8 @@ export const siteConfig = {
 
     //Danh mục
     {
-      key: "categories",
-      label: "Danh mục",
+      key: "device",
+      label: "Thiết bị",
       items: [
         {
           key: "materials-group",
