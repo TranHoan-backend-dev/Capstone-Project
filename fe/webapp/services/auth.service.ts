@@ -37,11 +37,13 @@ export const forgotPasswordService = async (email: string): Promise<void> => {
   await axiosBase.post(`/auth/forgot-password`, { email });
 };
 
-export const verifyOtpService = async (
-  email: string,
-  otp: string,
-): Promise<void> => {
-  await axiosBase.post(`/auth/verify-otp`, { email, otp });
+export const verifyOtpService = async (email: string, otp: string) => {
+  const res = await axios.post(`${API_GATEWAY_URL}/auth/auth/verify-otp`, {
+    email,
+    otp,
+  });
+
+  return res.data;
 };
 
 export const resendOtpService = async (email: string): Promise<void> => {
@@ -50,12 +52,16 @@ export const resendOtpService = async (email: string): Promise<void> => {
 
 export const resetPasswordService = async (
   email: string,
+  otp: string,
   newPassword: string,
-): Promise<void> => {
-  await axiosBase.post(`/auth/reset-password`, {
+) => {
+  const res = await axios.post(`${API_GATEWAY_URL}/auth/auth/reset-password`, {
     email,
+    otp,
     newPassword,
   });
+
+  return res.data;
 };
 
 export const getProfileEmployee = async (
@@ -102,13 +108,31 @@ export const updateAvatar = async (file: File, accessToken: string) => {
   return response.data;
 };
 
+export const checkExistenceService = async (
+  email: string,
+): Promise<boolean> => {
+  const res = await axios.post(`${API_GATEWAY_URL}/auth/auth/check-existence`, {
+    value: email,
+  });
+
+  return res.data.data;
+};
+
+export const sendOtpService = async (email: string) => {
+  const res = await axios.post(`${API_GATEWAY_URL}/auth/auth/send-otp`, {
+    email,
+  });
+
+  return res.data;
+};
+
 export const changePasswordService = async (
   accessToken: string,
   oldPassword: string,
   newPassword: string,
   confirmPassword: string,
-): Promise<void> => {
-  await axios.post(
+) => {
+  const res = await axios.post(
     `${API_GATEWAY_URL}/auth/auth/change-password`,
     {
       oldPassword,
@@ -121,4 +145,6 @@ export const changePasswordService = async (
       },
     },
   );
+
+  return res.data;
 };
