@@ -4,42 +4,62 @@ import com.capstone.construction.application.business.unit.NeighborhoodUnitServi
 import com.capstone.construction.application.dto.request.catalog.NeighborhoodUnitRequest;
 import com.capstone.construction.application.dto.response.catalog.NeighborhoodUnitResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
+import com.capstone.construction.application.event.producer.MessageProducer;
+import com.capstone.construction.application.event.producer.unit.DeleteEvent;
+import com.capstone.construction.application.event.producer.unit.UpdateEvent;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class NeighborhoodUnitUseCase {
-    NeighborhoodUnitService unitService;
+  final NeighborhoodUnitService unitService;
+  final MessageProducer producer;
+  final String prefix = ".neighborhood-unit.";
 
-    public NeighborhoodUnitResponse createUnit(NeighborhoodUnitRequest request) {
-        log.info("UseCase: Creating unit {}", request.name());
-        return unitService.createUnit(request);
-    }
+  @Value("${rabbit-mq-config.queue_name}" + prefix + "${rabbit-mq-config.update}")
+  String UPDATE_ROUTING_KEY; // chu ky gan vao tin nhan khi gui den Exchange
 
-    public NeighborhoodUnitResponse updateUnit(String id, NeighborhoodUnitRequest request) {
-        log.info("UseCase: Updating unit {}", id);
-        return unitService.updateUnit(id, request);
-    }
+  @Value("${rabbit-mq-config.queue_name}" + prefix + "${rabbit-mq-config.delete}")
+  String DELETE_ROUTING_KEY;
 
-    public void deleteUnit(String id) {
-        log.info("UseCase: Deleting unit {}", id);
-        unitService.deleteUnit(id);
-    }
+  public void createUnit(@NonNull NeighborhoodUnitRequest request) {
+    unitService.createUnit(request);
+  }
 
-    public NeighborhoodUnitResponse getUnitById(String id) {
-        log.info("UseCase: Fetching unit {}", id);
-        return unitService.getUnitById(id);
-    }
+  @Transactional(rollbackFor = Exception.class)
+  public NeighborhoodUnitResponse updateUnit(String id, NeighborhoodUnitRequest request) {
+    var old = unitService.getUnitById(id);
+    var response = unitService.updateUnit(id, request);
 
-    public PageResponse<NeighborhoodUnitResponse> getAllUnits(Pageable pageable) {
-        log.info("UseCase: Fetching all units");
-        return unitService.getAllUnits(pageable);
-    }
+    producer.send(UPDATE_ROUTING_KEY,
+      new UpdateEvent(
+        old.name(), old.communeName(),
+        response.name(), response.communeName()
+      ));
+    return response;
+  }
+
+  @Transactional(rollbackFor = Exception.class)
+  public void deleteUnit(String id) {
+    var old = unitService.getUnitById(id);
+    unitService.deleteUnit(id);
+
+    producer.send(DELETE_ROUTING_KEY, new DeleteEvent(old.name(), old.communeName()));
+  }
+
+  public NeighborhoodUnitResponse getUnitById(String id) {
+    return unitService.getUnitById(id);
+  }
+
+  public PageResponse<NeighborhoodUnitResponse> getAllUnits(Pageable pageable) {
+    return unitService.getAllUnits(pageable);
+  }
 }

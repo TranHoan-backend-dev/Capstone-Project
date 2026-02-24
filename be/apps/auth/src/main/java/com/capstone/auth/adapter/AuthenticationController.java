@@ -1,17 +1,13 @@
 package com.capstone.auth.adapter;
 
-import com.capstone.auth.application.dto.request.ChangePasswordRequest;
-import com.capstone.auth.application.dto.request.CheckExistenceRequest;
-import com.capstone.auth.application.dto.request.ResetPasswordRequest;
-import com.capstone.auth.application.dto.request.SendOtpRequest;
-import com.capstone.auth.application.dto.request.SignupRequest;
-import com.capstone.auth.application.dto.request.VerifyOtpRequest;
+import com.capstone.auth.application.dto.request.*;
 import com.capstone.auth.application.dto.response.UserProfileResponse;
-import com.capstone.auth.application.dto.response.WrapperApiResponse;
+import com.capstone.common.annotation.AppLog;
+import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.auth.application.usecase.AuthUseCase;
 import com.capstone.auth.application.usecase.OtpUseCase;
 
-import com.capstone.auth.infrastructure.utils.Utils;
+import com.capstone.common.utils.Utils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -22,21 +18,21 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import lombok.experimental.NonFinal;
+import org.slf4j.Logger;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-@Slf4j
+@AppLog
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
@@ -46,29 +42,25 @@ import java.util.concurrent.ExecutionException;
 public class AuthenticationController {
   AuthUseCase authUC;
   OtpUseCase otpUC;
+  @NonFinal
+  Logger log;
 
   @Operation(summary = "Đăng ký tài khoản mới", description = "Đăng ký tài khoản người dùng mới với thông tin nhân viên bao gồm vai trò, phòng ban và mạng lưới cấp nước. Trả về WrapperApiResponse với data là null.")
-  @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Thông tin chi tiết cho tài khoản người dùng mới", required = true, content = @Content(schema = @Schema(implementation = SignupRequest.class)))
+  @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Thông tin chi tiết cho tài khoản người dùng mới", required = true, content = @Content(schema = @Schema(implementation = NewUserRequest.class)))
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Đăng ký thành công", content = @Content(mediaType = "application/json")),
     @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ - Xác thực thất bại hoặc tài khoản đã tồn tại", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "500", description = "Lỗi máy chủ nội bộ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PostMapping("/signup")
-  public ResponseEntity<?> signup(@RequestBody @Valid SignupRequest request)
+  @PreAuthorize("hasAuthority('IT_STAFF')")
+  public ResponseEntity<?> signup(@RequestBody @Valid NewUserRequest request)
     throws ExecutionException, InterruptedException {
     log.info("Signup request comes to endpoint: {}", request);
 
-    authUC.register(
-      request.username(), request.password(),
-      request.email(), request.roleId(), request.fullname(),
-      request.jobId(), request.businessPageIds(),
-      request.departmentId(), request.waterSupplyNetworkId());
+    authUC.register(request);
 
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
-      "Create account successfully",
-      null);
+    return Utils.returnOkResponse("Create account successfully", null);
   }
 
   // <editor-fold> desc="Forgot password"
@@ -80,10 +72,7 @@ public class AuthenticationController {
   @PostMapping("/check-existence")
   public ResponseEntity<?> checkExistence(
     @RequestBody @Valid CheckExistenceRequest request) {
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
-      "Check existence successfully",
-      authUC.checkExistence(request.value()));
+    return Utils.returnOkResponse("Check existence successfully", authUC.checkExistence(request.value()));
   }
 
   @Operation(summary = "Gửi OTP qua email", description = "Gửi mã OTP đến email được cung cấp để xác minh hoặc đặt lại mật khẩu. Data response rỗng.")
@@ -95,11 +84,7 @@ public class AuthenticationController {
   @PostMapping("/send-otp")
   public ResponseEntity<?> sendOtp(@RequestBody @Valid SendOtpRequest request) {
     otpUC.sendOtp(request.email());
-    return ResponseEntity.ok(new WrapperApiResponse(
-      HttpStatus.OK.value(),
-      "Send OTP successfully",
-      null,
-      LocalDateTime.now()));
+    return Utils.returnOkResponse("Send OTP successfully", null);
   }
 
   @Operation(summary = "Xác minh mã OTP", description = "Xác minh tính hợp lệ của mã OTP được gửi qua email. Data response rỗng.")
@@ -116,10 +101,7 @@ public class AuthenticationController {
     // exception for expiry/not found.
     // Let's handle the boolean false case.
 
-    return Utils.returnResponse(
-      !isValid ? HttpStatus.BAD_REQUEST.value() : HttpStatus.OK.value(),
-      !isValid ? "Invalid OTP" : "Verify OTP successfully",
-      null);
+    return Utils.returnOkResponse(!isValid ? "Invalid OTP" : "Verify OTP successfully", null);
   }
   // </editor-fold>
 
@@ -132,10 +114,7 @@ public class AuthenticationController {
   @PostMapping("/reset-password")
   public ResponseEntity<?> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
     otpUC.resetPasswordWithOtp(request.email(), request.otp(), request.newPassword());
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
-      "Reset password successfully",
-      null);
+    return Utils.returnOkResponse("Reset password successfully", null);
   }
 
   @Operation(summary = "Đổi mật khẩu (Đã xác thực)", description = "Thay đổi mật khẩu cho người dùng hiện đang đăng nhập. Yêu cầu mật khẩu cũ và mật khẩu mới. Data response rỗng.")
@@ -155,10 +134,7 @@ public class AuthenticationController {
     authUC.changePassword(jwt.getSubject(), email.toString(), request.oldPassword(), request.newPassword(),
       request.confirmPassword());
 
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
-      "Change password successfully",
-      null);
+    return Utils.returnOkResponse("Change password successfully", null);
   }
 
   @Operation(summary = "Đăng nhập bằng JWT", description = "Xác thực người dùng sử dụng token JWT từ header Authorization. "
@@ -177,12 +153,9 @@ public class AuthenticationController {
     var id = jwt.getSubject();
     Map<String, Object> claims = jwt.getClaims(); // username, prefered_username, realm_access->roles
 
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
-      "Login successfully",
-      authUC.login(
-        id,
-        claims.get("email").toString(),
-        claims.get("preferred_username").toString()));
+    return Utils.returnOkResponse("Login successfully", authUC.login(
+      id,
+      claims.get("email").toString(),
+      claims.get("preferred_username").toString()));
   }
 }

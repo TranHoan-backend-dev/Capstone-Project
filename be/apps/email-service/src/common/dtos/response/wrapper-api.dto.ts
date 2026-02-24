@@ -1,15 +1,15 @@
-import { ApiProperty } from "@nestjs/swagger";
+import {ApiProperty} from "@nestjs/swagger";
 
 export class WrapperApiDto {
-    @ApiProperty()
-    status!: number;
+  @ApiProperty()
+  status!: number;
 
-    @ApiProperty()
-    message!: string;
+  @ApiProperty()
+  message!: string;
 
-    @ApiProperty({ required: false })
-    data?: any;
+  @ApiProperty({required: false})
+  data?: any;
 
-    @ApiProperty()
-    timestamp!: Date;
+  @ApiProperty()
+  timestamp!: Date;
 }

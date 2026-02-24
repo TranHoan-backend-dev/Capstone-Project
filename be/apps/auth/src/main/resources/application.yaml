@@ -108,5 +108,5 @@ sending_mail:
 #  password:
 #  token-uri: ${keycloak.server-url}/realms/${keycloak.realms}/protocol/openid-connect/token
 #  client-id:
-#  client-secret:
-#  scope: openid profile email
+#  client-secret-admin: client admin rieng
+#  client-id-admin:

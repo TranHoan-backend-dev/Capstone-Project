@@ -1,6 +1,7 @@
 package com.capstone.common.config;
 
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
@@ -15,7 +16,7 @@ public class AuthorizedPartyValidator implements OAuth2TokenValidator<Jwt> {
   }
 
   @Override
-  public OAuth2TokenValidatorResult validate(Jwt token) {
+  public OAuth2TokenValidatorResult validate(@NonNull Jwt token) {
     log.info("Validating azp for client id: {}", clientId);
     var azp = token.getClaimAsString("azp");
     if (clientId.equals(azp)) {

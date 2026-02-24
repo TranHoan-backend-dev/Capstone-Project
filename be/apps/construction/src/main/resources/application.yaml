@@ -47,8 +47,37 @@ springdoc:
   swagger-ui:
     enabled: true
     path: /swagger-ui/index.html
-
-rabbitmqconfig:
-  exchange_name: 'notification_exchange'
-  queue_name: 'notification_queue'
-  routing_key: 'notification_routing_key'
+rabbit-mq-config:
+  queue_name: construction_queue
+  update: update
+  delete: delete
+  exchange: exchange
+  entities:
+    - commune
+    - hamlet
+    - lateral
+    - neighborhood-unit
+    - road
+  actions:
+    - update
+    - delete
+#spring:
+#  datasource:
+#    driver-class-name: org.postgresql.Driver
+#    url: jdbc:postgresql://localhost:5432/construction
+#    username:
+#    password:
+#  rabbitmq:
+#    host:
+#    port:
+#    username:
+#    password:
+#keycloak:
+#  server-url: http://localhost:8080
+#  issuer-uri: ${keycloak.server-url}/realms/${keycloak.realms}
+#  aud:
+#  realms:
+#  username:
+#  password:
+#  token-uri: ${keycloak.server-url}/realms/${keycloak.realms}/protocol/openid-connect/token
+#  client-id:

@@ -1,13 +1,22 @@
 package com.capstone.construction.infrastructure.service;
 
-import com.capstone.construction.application.dto.response.WrapperApiResponse;
+import com.capstone.common.config.FeignAuthInterceptor;
+import com.capstone.common.response.WrapperApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
-@Service
-@FeignClient(name = "device", path = "/api/v1")
+@FeignClient(
+  name = "device",
+  path = "/api/v1",
+  configuration = FeignAuthInterceptor.class
+)
 public interface OverallWaterMeterService {
-  @GetMapping("/meters/{id}")
-  WrapperApiResponse isMeterExisting(String id);
+  @GetMapping("/water-meters/{id}/exists")
+  WrapperApiResponse isMeterExisting(@PathVariable String id);
+
+  @DeleteMapping("/overall/lateral")
+  WrapperApiResponse deleteWaterMeter(@RequestParam String id);
 }

@@ -10,12 +10,14 @@ import lombok.Builder;
 @Builder
 @Schema(description = "Request object for resetting the password using OTP")
 public record ResetPasswordRequest(
-        @Schema(description = "Email address of the user", example = "user@example.com", requiredMode = Schema.RequiredMode.REQUIRED)
-        @NotBlank(message = Constant.PT_01) @Email(message = Constant.PT_01) String email,
+  @Schema(description = "Email address of the user", example = "user@example.com", requiredMode = Schema.RequiredMode.REQUIRED)
+  @NotBlank(message = Constant.PT_01)
+  @Email(message = Constant.PT_01) String email,
 
-        @Schema(description = "One-Time Password (OTP) received via email", example = "123456", requiredMode = Schema.RequiredMode.REQUIRED)
-        @NotBlank(message = "OTP cannot be empty") String otp,
+  @Schema(description = "One-Time Password (OTP) received via email", example = "123456", requiredMode = Schema.RequiredMode.REQUIRED)
+  @NotBlank(message = "OTP cannot be empty") String otp,
 
-        @Schema(description = "New password to set (must meet complexity requirements)", example = "NewPass789!", requiredMode = Schema.RequiredMode.REQUIRED)
-        @Pattern(regexp = Constant.PASSWORD_PATTERN, message = Constant.PT_02) String newPassword) {
+  @Schema(description = "New password to set (must meet complexity requirements)", example = "NewPass789!", requiredMode = Schema.RequiredMode.REQUIRED)
+  @Pattern(regexp = Constant.PASSWORD_PATTERN, message = Constant.PT_02)
+  String newPassword) {
 }

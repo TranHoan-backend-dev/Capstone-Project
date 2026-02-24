@@ -1,33 +1,350 @@
-@uri = http://localhost:8080
+@uri = http://localhost:8000
+@keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
+@client_secret=
 
-### Register new account for customer, happy case
+### get token
+POST {{keycloak}}/token
+Content-Type: application/x-www-form-urlencoded
+Accept: application/json
+
+grant_type=password&
+client_id=&
+client_secret={{client_secret}}&
+username=&
+password=&
+scope=openid
+
+> {%
+  client.global.set("access_token", response.body.access_token);
+  client.global.set("refresh_token", response.body.refresh_token);
+%}
+
+### full of params
 POST {{uri}}/auth/signup
+Authorization: Bearer {{access_token}}
 Content-Type: application/json
 Accept: application/json
 
 {
   "username": "hoantxhe",
-  "email": "@gmail.com",
-  "fullName": "",
-  "password": "@",
-  "status": false
+  "password": "",
+  "fullName": "Trần Xuân Hoàn",
+  "email": "",
+  "phoneNumber": "",
+  "role": "ORDER_RECEIVING_STAFF",
+  "jobIds": [
+    "66332255-7744-4455-8844-551122336699",
+    "55221144-8855-4422-7711-663322558800",
+    "44115599-6633-4411-2288-112233445566"
+  ],
+  "departmentId": "29f12d88-7517-482a-9f44-8d9124443183",
+  "waterSupplyNetworkId": "fe7b6c2e-3401-4cb7-8b07-6a65de654094"
 }
 
-### Register new account for customer, unhappy case (wrong email format)
+### wrong email format
 POST {{uri}}/auth/signup
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "hoantxhe",
+  "password": "",
+  "fullName": "Trần Xuân Hoàn",
+  "email": "",
+  "phoneNumber": "",
+  "role": "ORDER_RECEIVING_STAFF",
+  "jobIds": [
+    "66332255-7744-4455-8844-551122336699",
+    "55221144-8855-4422-7711-663322558800",
+    "44115599-6633-4411-2288-112233445566"
+  ],
+  "departmentId": "29f12d88-7517-482a-9f44-8d9124443183",
+  "waterSupplyNetworkId": "fe7b6c2e-3401-4cb7-8b07-6a65de654094"
+}
+
+### username is existing
+POST {{uri}}/auth/signup
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "test",
+  "password": "",
+  "fullName": "Trần Xuân Hoàn",
+  "email": "",
+  "phoneNumber": "",
+  "role": "ORDER_RECEIVING_STAFF",
+  "jobIds": [
+    "66332255-7744-4455-8844-551122336699",
+    "55221144-8855-4422-7711-663322558800",
+    "44115599-6633-4411-2288-112233445566"
+  ],
+  "departmentId": "29f12d88-7517-482a-9f44-8d9124443183",
+  "waterSupplyNetworkId": "fe7b6c2e-3401-4cb7-8b07-6a65de654094"
+}
+
+### password does not contains full of characters
+POST {{uri}}/auth/signup
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "hoantxhe",
+  "password": "",
+  "fullName": "Trần Xuân Hoàn",
+  "email": "",
+  "phoneNumber": "",
+  "role": "ORDER_RECEIVING_STAFF",
+  "jobIds": [
+    "66332255-7744-4455-8844-551122336699",
+    "55221144-8855-4422-7711-663322558800",
+    "44115599-6633-4411-2288-112233445566"
+  ],
+  "departmentId": "29f12d88-7517-482a-9f44-8d9124443183",
+  "waterSupplyNetworkId": "fe7b6c2e-3401-4cb7-8b07-6a65de654094"
+}
+
+### password contains unfamiliar characters
+POST {{uri}}/auth/signup
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "hoantxhe",
+  "password": "",
+  "fullName": "Trần Xuân Hoàn",
+  "email": "",
+  "phoneNumber": "",
+  "role": "ORDER_RECEIVING_STAFF",
+  "jobIds": [
+    "66332255-7744-4455-8844-551122336699",
+    "55221144-8855-4422-7711-663322558800",
+    "44115599-6633-4411-2288-112233445566"
+  ],
+  "departmentId": "29f12d88-7517-482a-9f44-8d9124443183",
+  "waterSupplyNetworkId": "fe7b6c2e-3401-4cb7-8b07-6a65de654094"
+}
+
+### password does not contain digits
+POST {{uri}}/auth/signup
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "hoantxhe",
+  "password": "",
+  "fullName": "Trần Xuân Hoàn",
+  "email": "",
+  "phoneNumber": "",
+  "role": "ORDER_RECEIVING_STAFF",
+  "jobIds": [
+    "66332255-7744-4455-8844-551122336699",
+    "55221144-8855-4422-7711-663322558800",
+    "44115599-6633-4411-2288-112233445566"
+  ],
+  "departmentId": "29f12d88-7517-482a-9f44-8d9124443183",
+  "waterSupplyNetworkId": "fe7b6c2e-3401-4cb7-8b07-6a65de654094"
+}
+
+### Blank params
+POST {{uri}}/auth/signup
+Authorization: Bearer {{access_token}}
 Content-Type: application/json
 Accept: application/json
 
 {
   "username": "",
-  "email": ".com",
+  "password": "",
   "fullName": "",
-  "password": "@",
-  "status": false
+  "email": "",
+  "phoneNumber": "",
+  "role": "",
+  "jobIds": [
+    ""
+  ],
+  "departmentId": "",
+  "waterSupplyNetworkId": ""
+}
+
+### Nullable params
+POST {{uri}}/auth/signup
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "null",
+  "password": "null",
+  "fullName": "null",
+  "email": "null",
+  "phoneNumber": "null",
+  "role": "null",
+  "jobIds": [
+    ""
+  ],
+  "departmentId": "null",
+  "waterSupplyNetworkId": "null"
+}
+
+### Blank fullname
+POST {{uri}}/auth/signup
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "hoantxhe",
+  "password": "",
+  "fullName": "",
+  "email": "",
+  "phoneNumber": "",
+  "role": "ORDER_RECEIVING_STAFF",
+  "jobIds": [
+    "66332255-7744-4455-8844-551122336699",
+    "55221144-8855-4422-7711-663322558800",
+    "44115599-6633-4411-2288-112233445566"
+  ],
+  "departmentId": "29f12d88-7517-482a-9f44-8d9124443183",
+  "waterSupplyNetworkId": "fe7b6c2e-3401-4cb7-8b07-6a65de654094"
+}
+
+### Phone number does not contain full of digits
+POST {{uri}}/auth/signup
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "hoantxhe",
+  "password": "",
+  "fullName": "Trần Xuân Hoàn",
+  "email": "",
+  "phoneNumber": "",
+  "role": "ORDER_RECEIVING_STAFF",
+  "jobIds": [
+    "66332255-7744-4455-8844-551122336699",
+    "55221144-8855-4422-7711-663322558800",
+    "44115599-6633-4411-2288-112233445566"
+  ],
+  "departmentId": "29f12d88-7517-482a-9f44-8d9124443183",
+  "waterSupplyNetworkId": "fe7b6c2e-3401-4cb7-8b07-6a65de654094"
+}
+
+### Existing phone number
+POST {{uri}}/auth/signup
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "hoantxhe",
+  "password": "",
+  "fullName": "Trần Xuân Hoàn",
+  "email": "",
+  "phoneNumber": "",
+  "role": "ORDER_RECEIVING_STAFF",
+  "jobIds": [
+    "66332255-7744-4455-8844-551122336699",
+    "55221144-8855-4422-7711-663322558800",
+    "44115599-6633-4411-2288-112233445566"
+  ],
+  "departmentId": "29f12d88-7517-482a-9f44-8d9124443183",
+  "waterSupplyNetworkId": "fe7b6c2e-3401-4cb7-8b07-6a65de654094"
+}
+
+### Blank role
+POST {{uri}}/auth/signup
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "hoantxhe",
+  "password": "",
+  "fullName": "Trần Xuân Hoàn",
+  "email": "",
+  "phoneNumber": "",
+  "role": "",
+  "jobIds": [
+    "66332255-7744-4455-8844-551122336699",
+    "55221144-8855-4422-7711-663322558800",
+    "44115599-6633-4411-2288-112233445566"
+  ],
+  "departmentId": "29f12d88-7517-482a-9f44-8d9124443183",
+  "waterSupplyNetworkId": "fe7b6c2e-3401-4cb7-8b07-6a65de654094"
+}
+
+### Not existing role
+POST {{uri}}/auth/signup
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "hoantxhe",
+  "password": "",
+  "fullName": "Trần Xuân Hoàn",
+  "email": "",
+  "phoneNumber": "",
+  "role": "STAFF",
+  "jobIds": [
+    "66332255-7744-4455-8844-551122336699",
+    "55221144-8855-4422-7711-663322558800",
+    "44115599-6633-4411-2288-112233445566"
+  ],
+  "departmentId": "29f12d88-7517-482a-9f44-8d9124443183",
+  "waterSupplyNetworkId": "fe7b6c2e-3401-4cb7-8b07-6a65de654094"
+}
+
+### Blank foreign key
+POST {{uri}}/auth/signup
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "hoantxhe",
+  "password": "",
+  "fullName": "Trần Xuân Hoàn",
+  "email": "",
+  "phoneNumber": "",
+  "role": "ORDER_RECEIVING_STAFF",
+  "jobIds": [
+    ""
+  ],
+  "departmentId": "",
+  "waterSupplyNetworkId": ""
+}
+
+### Foreign keys do not exist
+POST {{uri}}/auth/signup
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "hoantxhe",
+  "password": "",
+  "fullName": "Trần Xuân Hoàn",
+  "email": "",
+  "phoneNumber": "",
+  "role": "ORDER_RECEIVING_STAFF",
+  "jobIds": [
+    "66332255-7744-4455-8844-551122336600",
+    "55221144-8855-4422-7711-663322558801",
+    "44115599-6633-4411-2288-112233445567"
+  ],
+  "departmentId": "29f12d88-7517-482a-9f44-8d9124443184",
+  "waterSupplyNetworkId": "fe7b6c2e-3401-4cb7-8b07-6a65de654095"
 }
 
 ### Swagger UI
 GET http://localhost:8000/auth/v3/api-docs
 
 ### Health check
-GET http://localhost:8000/auth/health
+GET http://localhost:9003/api/v1/health

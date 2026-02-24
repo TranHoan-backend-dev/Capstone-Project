@@ -1,7 +1,8 @@
 package com.capstone.construction.application.event.producer;
 
+import com.capstone.common.annotation.AppLog;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -9,38 +10,27 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;
 
-@Slf4j
+@AppLog
 @Service
 @RequiredArgsConstructor
 public class MessageProducer {
-    @Value("${rabbitmqconfig.exchange_name}")
-    private String exchangeName;
+  @Value("${rabbit-mq-config.exchange}")
+  String EXCHANGE_NAME;
 
-    @Value("${rabbitmqconfig.routing_key}")
-    private String routingKey;
+  Logger log;
 
-    private final RabbitTemplate template;
+  private final RabbitTemplate template;
 
-    public void sendInstallationFormCreatedEvent(InstallationFormCreatedEvent message) {
-        send(message);
-    }
+  public void send(String routingKey, Object message) {
+    log.info("Sending message to exchange: {}, routingKey: {}", EXCHANGE_NAME, routingKey);
+    Map<String, Object> payload = new HashMap<>();
+    payload.put("pattern", routingKey);
+    payload.put("data", message);
 
-    private void send(Object message) {
-        log.info("Sending message to exchange: {}, routingKey: {}", exchangeName, routingKey);
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("pattern", routingKey);
-        payload.put("data", message);
-
-        try {
-            template.invoke(t -> {
-                template.convertAndSend(exchangeName, routingKey, payload);
-                return null;
-            });
-            log.info("Message sent successfully to RabbitMQ: {}", message);
-        } catch (Exception e) {
-            log.error("Failed to send message to RabbitMQ: exchange={}, routingKey={}, error={}",
-                    exchangeName, routingKey, e.getMessage());
-            throw e;
-        }
-    }
+    template.invoke(t -> {
+      template.convertAndSend(EXCHANGE_NAME, routingKey, payload);
+      return null;
+    });
+    log.info("Message sent successfully to RabbitMQ: {}", message);
+  }
 }

@@ -6,13 +6,13 @@ import com.capstone.construction.application.dto.response.PageResponse;
 import org.springframework.data.domain.Pageable;
 
 public interface CommuneService {
-    CommuneResponse createCommune(CommuneRequest request);
+  void createCommune(CommuneRequest request);
 
-    CommuneResponse updateCommune(String id, CommuneRequest request);
+  CommuneResponse updateCommune(String id, CommuneRequest request);
 
-    void deleteCommune(String id);
+  void deleteCommune(String id);
 
-    CommuneResponse getCommuneById(String id);
+  CommuneResponse getCommuneById(String id);
 
-    PageResponse<CommuneResponse> getAllCommunes(Pageable pageable);
+  PageResponse<CommuneResponse> getAllCommunes(Pageable pageable);
 }

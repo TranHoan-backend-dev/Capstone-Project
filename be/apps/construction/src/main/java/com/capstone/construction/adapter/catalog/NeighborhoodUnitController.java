@@ -1,7 +1,9 @@
 package com.capstone.construction.adapter.catalog;
 
+import com.capstone.common.response.WrapperApiResponse;
+import com.capstone.common.utils.Utils;
 import com.capstone.construction.application.dto.request.catalog.NeighborhoodUnitRequest;
-import com.capstone.construction.application.dto.response.WrapperApiResponse;
+import com.capstone.construction.application.dto.response.catalog.NeighborhoodUnitResponse;
 import com.capstone.construction.application.usecase.catalog.NeighborhoodUnitUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -24,73 +27,83 @@ import java.time.LocalDateTime;
 @RestController
 @RequestMapping("/units")
 @RequiredArgsConstructor
-@Tag(name = "Neighborhood Unit Management", description = "APIs for managing residential neighborhood units (tổ dân phố)")
+@Tag(name = "Đơn vị hành chính (Tổ/Khu/Xóm)", description = "Quản lý đơn vị hành chính nhỏ nhất của thành phố, bao gồm tổ dân phố, khu phố và xóm trực thuộc các phường/xã/thị trấn")
 public class NeighborhoodUnitController {
-    private final NeighborhoodUnitUseCase unitUseCase;
+  private final NeighborhoodUnitUseCase unitUseCase;
 
-    @PostMapping
-    @Operation(summary = "Create a new neighborhood unit", description = "Adds a new neighborhood unit linked to a commune. Name must be unique.", responses = {
-            @ApiResponse(responseCode = "201", description = "Neighborhood unit created successfully", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Invalid request payload or commune ID"),
-            @ApiResponse(responseCode = "409", description = "Unit with this name already exists")
-    })
-    public ResponseEntity<WrapperApiResponse> createUnit(@RequestBody @Valid NeighborhoodUnitRequest request) {
-        log.info("REST request to create unit: {}", request.name());
-        var response = unitUseCase.createUnit(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new WrapperApiResponse(
-                HttpStatus.CREATED.value(), "Neighborhood unit created successfully", response, LocalDateTime.now()));
-    }
+  @PostMapping
+  @Operation(summary = "Tạo đơn vị hành chính mới", description = "Tạo mới một đơn vị hành chính (tổ/khu/xóm) thuộc phường/xã/thị trấn chỉ định. Yêu cầu quyền IT_STAFF. Thao tác không idempotent.", responses = {
+    @ApiResponse(responseCode = "201", description = "Tạo đơn vị hành chính thành công"),
+    @ApiResponse(responseCode = "400", description = "Dữ liệu đầu vào không hợp lệ (tên hoặc ID phường/xã bị bỏ trống)", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "403", description = "Không có quyền thực hiện thao tác này", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+  })
+  @PreAuthorize("hasAuthority('IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> createUnit(@RequestBody @Valid NeighborhoodUnitRequest request) {
+    log.info("REST request to create unit: {}", request.name());
+    unitUseCase.createUnit(request);
+    return Utils.returnCreatedResponse("Neighborhood unit created successfully");
+  }
 
-    @PutMapping("/{id}")
-    @Operation(summary = "Update an existing neighborhood unit", description = "Updates the name or associated commune of an existing unit entry.", responses = {
-            @ApiResponse(responseCode = "200", description = "Unit updated successfully"),
-            @ApiResponse(responseCode = "404", description = "Unit or targeted commune not found"),
-            @ApiResponse(responseCode = "409", description = "New unit name already exists")
-    })
-    public ResponseEntity<WrapperApiResponse> updateUnit(
-            @PathVariable @Parameter(description = "ID of the unit to update", required = true) String id,
-            @RequestBody @Valid NeighborhoodUnitRequest request) {
-        log.info("REST request to update unit: {}", id);
-        var response = unitUseCase.updateUnit(id, request);
-        return ResponseEntity.ok(new WrapperApiResponse(
-                HttpStatus.OK.value(), "Neighborhood unit updated successfully", response, LocalDateTime.now()));
-    }
+  @PutMapping("/{id}")
+  @Operation(summary = "Cập nhật đơn vị hành chính", description = """
+    Cập nhật thông tin đơn vị hành chính (tổ/khu/xóm) theo ID. Yêu cầu quyền IT_STAFF. Thao tác idempotent.
 
-    @DeleteMapping("/{id}")
-    @Operation(summary = "Delete a neighborhood unit", description = "Removes a neighborhood unit from the system.", responses = {
-            @ApiResponse(responseCode = "200", description = "Unit deleted successfully"),
-            @ApiResponse(responseCode = "404", description = "Unit not found")
-    })
-    public ResponseEntity<WrapperApiResponse> deleteUnit(
-            @PathVariable @Parameter(description = "ID of the unit to delete", required = true) String id) {
-        log.info("REST request to delete unit: {}", id);
-        unitUseCase.deleteUnit(id);
-        return ResponseEntity.ok(new WrapperApiResponse(
-                HttpStatus.OK.value(), "Neighborhood unit deleted successfully", null, LocalDateTime.now()));
-    }
+    Sau khi cập nhật thành công, RabbitMQ sẽ bắn sự kiện cho WebSocket xử lý. WebSocket sẽ gửi thông báo đến tất cả
+    các client đang lắng nghe tại /topic/notification. WebSocket kết nối tại /ws
+    """, responses = {
+    @ApiResponse(responseCode = "200", description = "Cập nhật đơn vị hành chính thành công", content = @Content(schema = @Schema(implementation = NeighborhoodUnitResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Dữ liệu đầu vào không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy đơn vị hành chính với ID đã cung cấp", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+  })
+  @PreAuthorize("hasAuthority('IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> updateUnit(
+    @PathVariable @Parameter(description = "ID of the unit to update", required = true) String id,
+    @RequestBody @Valid NeighborhoodUnitRequest request) {
+    log.info("REST request to update unit: {}", id);
+    var response = unitUseCase.updateUnit(id, request);
+    return Utils.returnOkResponse("Neighborhood unit updated successfully", response);
+  }
 
-    @GetMapping("/{id}")
-    @Operation(summary = "Get unit by ID", description = "Retrieves information for a single neighborhood unit.", responses = {
-            @ApiResponse(responseCode = "200", description = "Unit found"),
-            @ApiResponse(responseCode = "404", description = "Unit not found")
-    })
-    public ResponseEntity<WrapperApiResponse> getUnitById(
-            @PathVariable @Parameter(description = "ID of the unit to retrieve", required = true) String id) {
-        log.info("REST request to get unit: {}", id);
-        var response = unitUseCase.getUnitById(id);
-        return ResponseEntity.ok(new WrapperApiResponse(
-                HttpStatus.OK.value(), "Neighborhood unit retrieved successfully", response, LocalDateTime.now()));
-    }
+  @DeleteMapping("/{id}")
+  @Operation(summary = "Xóa đơn vị hành chính", description = """
+    Xóa đơn vị hành chính (tổ/khu/xóm) khỏi hệ thống theo ID. Yêu cầu quyền IT_STAFF. Thao tác không thể hoàn tác.
 
-    @GetMapping
-    @Operation(summary = "Get all neighborhood units", description = "Returns a paginated list of all neighborhood units recorded in the system.", responses = {
-            @ApiResponse(responseCode = "200", description = "List of units retrieved successfully")
-    })
-    public ResponseEntity<WrapperApiResponse> getAllUnits(
-            @PageableDefault(size = 10) @Parameter(description = "Pagination parameters") Pageable pageable) {
-        log.info("REST request to get all units");
-        var response = unitUseCase.getAllUnits(pageable);
-        return ResponseEntity.ok(new WrapperApiResponse(
-                HttpStatus.OK.value(), "Neighborhood units retrieved successfully", response, LocalDateTime.now()));
-    }
+    Sau khi cập nhật thành công, RabbitMQ sẽ bắn sự kiện cho WebSocket xử lý. WebSocket sẽ gửi thông báo đến tất cả
+    các client đang lắng nghe tại /topic/notification. WebSocket kết nối tại /ws
+    """, responses = {
+    @ApiResponse(responseCode = "200", description = "Xóa đơn vị hành chính thành công"),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy đơn vị hành chính với ID đã cung cấp", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+  })
+  @PreAuthorize("hasAuthority('IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> deleteUnit(
+    @PathVariable @Parameter(description = "ID của đơn vị hành chính cần xóa", required = true) String id) {
+    log.info("REST request to delete unit: {}", id);
+    unitUseCase.deleteUnit(id);
+    return Utils.returnOkResponse("Neighborhood unit deleted successfully", null);
+  }
+
+  @GetMapping("/{id}")
+  @Operation(summary = "Lấy thông tin đơn vị hành chính theo ID", description = "Truy vấn chi tiết một đơn vị hành chính (tổ/khu/xóm) theo ID. Không yêu cầu quyền đặc biệt.", responses = {
+    @ApiResponse(responseCode = "200", description = "Trả về thông tin chi tiết đơn vị hành chính"),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy đơn vị hành chính với ID đã cung cấp", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+  })
+  public ResponseEntity<WrapperApiResponse> getUnitById(
+    @PathVariable @Parameter(description = "ID of the unit to retrieve", required = true) String id) {
+    log.info("REST request to get unit: {}", id);
+    var response = unitUseCase.getUnitById(id);
+    return ResponseEntity.ok(new WrapperApiResponse(
+      HttpStatus.OK.value(), "Neighborhood unit retrieved successfully", response, LocalDateTime.now()));
+  }
+
+  @GetMapping
+  @Operation(summary = "Lấy danh sách toàn bộ đơn vị hành chính", description = "Truy vấn danh sách tất cả các đơn vị hành chính (tổ/khu/xóm) trong hệ thống, hỗ trợ phân trang. Không yêu cầu quyền đặc biệt.", responses = {
+    @ApiResponse(responseCode = "200", description = "Trả về danh sách đơn vị hành chính theo trang", content = @Content(schema = @Schema(implementation = NeighborhoodUnitResponse.class)))
+  })
+  public ResponseEntity<WrapperApiResponse> getAllUnits(
+    @PageableDefault @Parameter(description = "Pagination parameters") Pageable pageable) {
+    log.info("REST request to get all units");
+    var response = unitUseCase.getAllUnits(pageable);
+    return ResponseEntity.ok(new WrapperApiResponse(
+      HttpStatus.OK.value(), "Neighborhood units retrieved successfully", response, LocalDateTime.now()));
+  }
 }

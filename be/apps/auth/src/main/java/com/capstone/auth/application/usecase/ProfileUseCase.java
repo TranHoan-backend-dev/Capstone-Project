@@ -10,15 +10,16 @@ import com.capstone.auth.application.exception.IncompatibleAvatarException;
 import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.infrastructure.config.Constant;
 import com.capstone.auth.infrastructure.service.GcsService;
-import com.capstone.auth.infrastructure.utils.Utils;
-import com.capstone.auth.infrastructure.utils.IdEncoder;
+import com.capstone.auth.infrastructure.utils.AuthUtils;
+import com.capstone.common.annotation.AppLog;
+import com.capstone.common.utils.Utils;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
-import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.keycloak.admin.client.Keycloak;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.stereotype.Component;
@@ -27,7 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-@Slf4j
+@AppLog
 @Component
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -36,6 +37,8 @@ public class ProfileUseCase {
   ProfileService pSrv;
   Keycloak keycloak;
   GcsService gcsSrv;
+  @NonFinal
+  Logger log;
 
   @Value("${keycloak.realms}")
   @NonFinal
@@ -45,7 +48,7 @@ public class ProfileUseCase {
     log.info("Check status and get profile by id: {}", id);
     var user = getNonLockedUserById(id);
 
-    Utils.validateCredentials(user, email, username);
+    AuthUtils.validateCredentials(user, email, username);
 
     var profile = pSrv.getProfileById(id);
 
@@ -101,7 +104,7 @@ public class ProfileUseCase {
     if (request.birthdate() != null &&
       !request.birthdate().isEmpty() &&
       !request.birthdate().isBlank()) {
-      if (!Utils.isLocalDate(request.birthdate(), DateTimeFormatter.ISO_LOCAL_DATE)) {
+      if (Utils.isLocalDate(request.birthdate(), DateTimeFormatter.ISO_LOCAL_DATE)) {
         throw new IllegalArgumentException(Constant.PT_25);
       }
       newProfile.setBirthday(
@@ -116,7 +119,7 @@ public class ProfileUseCase {
       !request.address().equalsIgnoreCase(profile.address())) ? request.address() : profile.address());
 
     newProfile.setGender(request.gender() != null ? request.gender() : profile.gender());
-    newProfile.setProfileId(IdEncoder.decode(profile.id()));
+    newProfile.setProfileId(profile.id());
 
     return returnUserProfile(pSrv.updateProfile(newProfile), user);
   }
@@ -180,6 +183,11 @@ public class ProfileUseCase {
       }
       throw new IllegalArgumentException("Failed to update username on Keycloak: " + e.getMessage(), e);
     }
+  }
+
+  public String getFullNameById(@NonNull String id) {
+    log.info("getFullNameById is handling the request");
+    return pSrv.getProfileById(id).fullname();
   }
 
   private UserProfileResponse returnUserProfile(@NonNull ProfileDTO profile, @NonNull UserDTO user) {

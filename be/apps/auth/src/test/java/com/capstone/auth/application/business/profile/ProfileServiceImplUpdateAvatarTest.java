@@ -2,8 +2,7 @@ package com.capstone.auth.application.business.profile;
 
 import com.capstone.auth.application.exception.NotExistingException;
 import com.capstone.auth.domain.model.Profile;
-import com.capstone.auth.domain.repository.ProfileRepository;
-import com.capstone.auth.infrastructure.utils.IdEncoder;
+import com.capstone.auth.infrastructure.persistence.ProfileRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -45,7 +44,7 @@ class ProfileServiceImplUpdateAvatarTest {
     var dto = profileService.updateAvatar(id, avatarUrl);
 
     assertNotNull(dto);
-    assertEquals(IdEncoder.encode(id), dto.id());
+    assertEquals(id, dto.id());
     assertEquals("Nguyen Van A", dto.fullname());
     assertEquals(avatarUrl, dto.avatarUrl());
     assertEquals("Hanoi", dto.address());
@@ -197,7 +196,7 @@ class ProfileServiceImplUpdateAvatarTest {
 
     assertNotNull(dto);
     assertNotEquals(rawId, dto.id());
-    assertEquals(IdEncoder.encode(rawId), dto.id());
+    assertEquals(rawId, dto.id());
   }
 
   @Test
@@ -220,7 +219,7 @@ class ProfileServiceImplUpdateAvatarTest {
     var dto = profileService.updateAvatar(id, avatarUrl);
 
     assertNotNull(dto);
-    assertEquals(IdEncoder.encode(id), dto.id());
+    assertEquals(id, dto.id());
     assertEquals("Complete User", dto.fullname());
     assertEquals(avatarUrl, dto.avatarUrl());
     assertEquals("123 Full Address, City", dto.address());

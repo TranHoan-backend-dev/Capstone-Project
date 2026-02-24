@@ -1,0 +1,50 @@
+@uri = http://localhost:9006/api/v1/water-prices
+@keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
+@client_secret=
+
+### get token
+POST {{keycloak}}/token
+Content-Type: application/x-www-form-urlencoded
+Accept: application/json
+
+grant_type=password&
+client_id=&
+client_secret={{client_secret}}&
+username=&
+password=&
+scope=openid
+
+> {%
+  client.global.set("access_token", response.body.access_token);
+  client.global.set("refresh_token", response.body.refresh_token);
+%}
+
+### get all, missing all params
+GET {{uri}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+### get all, pageable
+GET {{uri}}?page=0&size=15
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+### get all, filter
+GET {{uri}}?keyword=2025
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+### get all, filter
+GET {{uri}}?keyword=2025-10-10
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+### get all, pageable and filter
+GET {{uri}}?page=0&size=15&keyword=2025
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json

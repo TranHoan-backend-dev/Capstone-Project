@@ -63,3 +63,24 @@ export const keycloakLogout = async (refreshToken?: string) => {
     },
   );
 };
+
+export const keycloakRefreshToken = async (
+  refreshToken: string,
+): Promise<KeycloakLoginResponse> => {
+  const params = new URLSearchParams();
+  params.append("grant_type", "refresh_token");
+  params.append("client_id", CLIENT_ID);
+  params.append("client_secret", KEYCLOAK_CLIENT_SECRET!);
+  params.append("refresh_token", refreshToken);
+
+  const res = await axios.post(
+    `${NEXT_KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/token`,
+    params,
+    {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    },
+  );
+  return res.data;
+};

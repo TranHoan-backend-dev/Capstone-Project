@@ -10,6 +10,9 @@ import com.capstone.auth.application.business.verification.VerificationService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.capstone.common.annotation.AppLog;
+import lombok.experimental.NonFinal;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
 import com.capstone.auth.application.business.verification.VerificationService;
@@ -18,16 +21,18 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+@AppLog
 @Component
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class OtpUseCase {
-  private static final Logger log = LoggerFactory.getLogger(OtpUseCase.class);
   VerificationService vSrv;
+  @NonFinal
+  Logger log;
   Keycloak keycloak;
   UserService uSrv;
 
-  @Value("${keycloak.realms:master}")
+  @Value("${keycloak.realms}")
   @NonFinal
   String realm;
 

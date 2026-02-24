@@ -3,6 +3,7 @@ package com.capstone.common.config;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
@@ -16,7 +17,7 @@ public class AudienceValidator implements OAuth2TokenValidator<Jwt> {
   List<String> audiences;
 
   @Override
-  public OAuth2TokenValidatorResult validate(Jwt token) {
+  public OAuth2TokenValidatorResult validate(@NonNull Jwt token) {
     boolean matched = token.getAudience()
       .stream()
       .anyMatch(audiences::contains);

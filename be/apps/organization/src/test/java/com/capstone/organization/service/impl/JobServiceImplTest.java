@@ -4,7 +4,6 @@ import com.capstone.organization.dto.request.CreateJobRequest;
 import com.capstone.organization.dto.request.UpdateJobRequest;
 import com.capstone.organization.model.Job;
 import com.capstone.organization.repository.JobRepository;
-import com.capstone.organization.utils.IdEncoder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -40,7 +39,7 @@ class JobServiceImplTest {
 
     var response = jobService.createJob(request);
 
-    assertThat(response.jobId()).isEqualTo(IdEncoder.encode("job-1"));
+    assertThat(response.jobId()).isEqualTo("job-1");
     assertThat(response.name()).isEqualTo("Engineer");
     assertThat(response.createdAt()).isEqualTo(now);
     assertThat(response.updatedAt()).isEqualTo(now);
@@ -65,7 +64,7 @@ class JobServiceImplTest {
 
     var response = jobService.updateJob("job-2", request);
 
-    assertThat(response.jobId()).isEqualTo(IdEncoder.encode("job-2"));
+    assertThat(response.jobId()).isEqualTo("job-2");
     assertThat(response.name()).isEqualTo("Senior Engineer");
     assertThat(response.createdAt()).isEqualTo(createdAt);
     assertThat(response.updatedAt()).isEqualTo(updatedAt);

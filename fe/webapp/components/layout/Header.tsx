@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Avatar,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -22,6 +23,7 @@ import Sidebar from "./sidebar";
 import NotificationDropdown from "./NotificationDropdown";
 import { CallToast } from "../ui/CallToast";
 import axios from "axios";
+import { useEmployeeProfile } from "@/hooks/useEmployeeProfile";
 
 export interface SubMenuItemChild {
   key: string;
@@ -45,16 +47,17 @@ export interface MenuItem {
 
 interface NavigationProps {
   menuItems: MenuItem[];
-  userName?: string;
+  fullname?: string;
   onUserMenuAction?: (key: string) => void;
 }
 
-const Header = ({ menuItems, userName }: NavigationProps) => {
+const Header = ({ menuItems }: NavigationProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
-  const [mounted, setMounted] = useState(false);
+  const { profile, loading } = useEmployeeProfile();
+
   const isMenuItemActive = (item: MenuItem) => {
     if (item.href && pathname === item.href) {
       return true;
@@ -126,14 +129,14 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
             <Bars3Icon className="w-6 h-6 text-primary" />
           </button>
           <NavbarBrand className="ml-2">
-            <span className="text-lg font-bold">CRM</span>
+            <span className="text-lg font-bold">CMSN</span>
           </NavbarBrand>
         </NavbarContent>
 
         <NavbarContent className="hidden md:flex flex-1 gap-8" justify="start">
           <NavbarBrand className="px-4">
             <Bars3Icon className="w-8 h-8 text-primary" />
-            <span className="text-xl font-bold ml-2">CRM</span>
+            <span className="text-xl font-bold ml-2">CMSN</span>
           </NavbarBrand>
 
           <div className="hidden md:flex items-center gap-6 font-bold">
@@ -167,30 +170,39 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
         </NavbarContent>
 
         <NavbarContent as="div" className="flex-none gap-4" justify="end">
-          {userName && (
+          {profile?.fullname && (
             <>
               <ThemeSwitch />
               <NotificationDropdown />
 
-              {/* Desktop version */}
-              <Dropdown className="hidden md:block" placement="bottom-end">
+              <Dropdown placement="bottom-end">
                 <DropdownTrigger>
-                  <div className="flex items-center gap-1 px-3 py-2 cursor-pointer rounded-lg transition-colors hover:bg-default-100">
+                  <div className="flex items-center gap-2 px-2 py-2 cursor-pointer rounded-lg transition-colors hover:bg-default-100">
                     <Tooltip
                       className="max-w-xs"
-                      content={userName}
+                      content={profile.fullname}
                       delay={500}
                       placement="bottom"
                     >
-                      <div className="flex flex-col items-center max-w-[120px]">
-                        <span className="text-foreground text-sm truncate w-full font-bold">
-                          {userName}
-                        </span>
-                      </div>
+                      <span className="hidden md:block text-sm font-bold max-w-[120px] truncate">
+                        {profile.fullname}
+                      </span>
                     </Tooltip>
-                    <ChevronDownIcon className="w-4 h-4 text-default-500 flex-shrink-0" />
+
+                    <Avatar
+                      src={profile.avatarUrl}
+                      name={profile.fullname}
+                      size="sm"
+                      className="bg-primary-100 text-primary-600"
+                      fallback={
+                        <span className="font-semibold">
+                          {profile.fullname.charAt(0).toUpperCase()}
+                        </span>
+                      }
+                    />
                   </div>
                 </DropdownTrigger>
+
                 <DropdownMenu
                   aria-label="User menu"
                   variant="flat"
@@ -202,14 +214,15 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
                     key="profile"
                     as={Link}
                     className={`${
-                      pathname === "/profile"
+                      pathname === "/profile-employee"
                         ? "bg-primary-100 text-primary-800 dark:text-primary-200"
                         : ""
                     }`}
-                    href="/profile"
+                    href="/profile-employee"
                   >
                     Thông tin cá nhân
                   </DropdownItem>
+
                   <DropdownItem
                     key="change-password"
                     as={Link}
@@ -222,6 +235,7 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
                   >
                     Đổi mật khẩu
                   </DropdownItem>
+
                   <DropdownItem
                     key="logout"
                     className="text-danger"
@@ -231,60 +245,6 @@ const Header = ({ menuItems, userName }: NavigationProps) => {
                   </DropdownItem>
                 </DropdownMenu>
               </Dropdown>
-
-              {/* Mobile version */}
-              <div className="md:hidden flex items-center">
-                <Dropdown placement="bottom-end">
-                  <DropdownTrigger>
-                    <div className="min-w-10 p-1 cursor-pointer rounded-full hover:bg-primary-50 transition-colors">
-                      <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
-                        <span className="text-primary-600 font-semibold text-sm">
-                          {userName.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
-                    </div>
-                  </DropdownTrigger>
-                  <DropdownMenu
-                    aria-label="User menu"
-                    variant="flat"
-                    onAction={(key) => {
-                      if (key === "logout") handleLogout();
-                    }}
-                  >
-                    <DropdownItem
-                      key="profile"
-                      as={Link}
-                      className={`${
-                        pathname === "/profile"
-                          ? "bg-primary-100 text-primary-800 dark:text-primary-200"
-                          : ""
-                      }`}
-                      href="/profile"
-                    >
-                      Thông tin cá nhân
-                    </DropdownItem>
-                    <DropdownItem
-                      key="change-password"
-                      as={Link}
-                      className={`${
-                        pathname === "/change-password"
-                          ? "bg-primary-100 text-primary-800 dark:text-primary-200"
-                          : ""
-                      }`}
-                      href="/change-password"
-                    >
-                      Đổi mật khẩu
-                    </DropdownItem>
-                    <DropdownItem
-                      key="logout"
-                      className="text-danger"
-                      color="danger"
-                    >
-                      Đăng xuất
-                    </DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-              </div>
             </>
           )}
         </NavbarContent>

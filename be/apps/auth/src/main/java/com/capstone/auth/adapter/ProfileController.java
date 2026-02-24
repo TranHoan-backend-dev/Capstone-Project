@@ -2,9 +2,10 @@ package com.capstone.auth.adapter;
 
 import com.capstone.auth.application.dto.request.UpdateProfileRequest;
 import com.capstone.auth.application.dto.response.UserProfileResponse;
-import com.capstone.auth.application.dto.response.WrapperApiResponse;
+import com.capstone.common.annotation.AppLog;
+import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.auth.application.usecase.ProfileUseCase;
-import com.capstone.auth.infrastructure.utils.Utils;
+import com.capstone.common.utils.Utils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,9 +16,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
-import org.springframework.http.HttpStatus;
+import org.slf4j.Logger;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,7 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
-@Slf4j
+@AppLog
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/me")
@@ -36,6 +37,8 @@ import java.util.Map;
 @Tag(name = "Authentication", description = "Các hoạt động lấy và chỉnh sửa hồ sơ người dùng.")
 public class ProfileController {
   ProfileUseCase profileUC;
+  @NonFinal
+  Logger log;
 
   @Operation(summary = "Lấy hồ sơ người dùng hiện tại", description = """
     Truy xuất hồ sơ của người dùng hiện đang được xác thực dựa trên token JWT truyền về trong header Authorization.
@@ -54,13 +57,10 @@ public class ProfileController {
     Map<String, Object> claims = jwt.getClaims();
     log.info("Get profile request comes to endpoint: {}", id);
 
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
-      "Get profile successfully",
-      profileUC.getMe(
-        id,
-        claims.get("email").toString(),
-        claims.get("preferred_username").toString())
+    return Utils.returnOkResponse("Get profile successfully", profileUC.getMe(
+      id,
+      claims.get("email").toString(),
+      claims.get("preferred_username").toString())
     );
   }
 
@@ -77,7 +77,7 @@ public class ProfileController {
     @ApiResponse(responseCode = "401", description = "Không được phép - Token JWT hợp lệ bị thiếu hoặc đã hết hạn", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "403", description = "Bị cấm - Tài khoản người dùng bị khóa hoặc vô hiệu hóa", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "500", description = "Lỗi máy chủ nội bộ - Đã xảy ra lỗi không mong muốn", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))})
-  @PostMapping()
+  @PatchMapping()
   public ResponseEntity<WrapperApiResponse> updateProfile(
     @AuthenticationPrincipal Jwt jwt,
     @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Thông tin hồ sơ cập nhật", required = true, content = @Content(schema = @Schema(implementation = UpdateProfileRequest.class)))
@@ -89,10 +89,7 @@ public class ProfileController {
     log.info("User's id: {}", id);
     var response = profileUC.updateProfile(id, request);
 
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
-      "Update profile successfully",
-      response);
+    return Utils.returnOkResponse("Update profile successfully", response);
   }
 
   @Operation(summary = "Cập nhật ảnh đại diện người dùng", description = """
@@ -108,7 +105,7 @@ public class ProfileController {
     """)
   @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "File ảnh đại diện của người dùng", required = true, content = @Content(schema = @Schema(implementation = MultipartFile.class)))
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Ảnh đại diện đã được cập nhật thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserProfileResponse.class))), @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ - Định dạng tệp không hợp lệ hoặc tải lên tệp thất bại", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))), @ApiResponse(responseCode = "401", description = "Không được phép - Token JWT hợp lệ bị thiếu hoặc đã hết hạn", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))), @ApiResponse(responseCode = "403", description = "Bị cấm - Tài khoản người dùng bị khóa hoặc vô hiệu hóa", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))), @ApiResponse(responseCode = "500", description = "Lỗi máy chủ nội bộ - Đã xảy ra lỗi không mong muốn trong quá trình tải lên ảnh đại diện", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))})
-  @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PatchMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<WrapperApiResponse> updateAvatar(
     @AuthenticationPrincipal
     Jwt jwt,
@@ -121,9 +118,6 @@ public class ProfileController {
     var id = jwt.getSubject();
     log.info("Update avatar of user that has id: {}", id);
 
-    return Utils.returnResponse(
-      HttpStatus.OK.value(),
-      "Update avatar successfully",
-      profileUC.updateAvatar(id, file));
+    return Utils.returnOkResponse("Update avatar successfully", profileUC.updateAvatar(id, file));
   }
 }
