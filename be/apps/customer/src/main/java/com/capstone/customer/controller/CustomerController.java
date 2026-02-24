@@ -34,7 +34,7 @@ public class CustomerController {
   public ResponseEntity<WrapperApiResponse> createCustomer(@RequestBody @Valid CustomerRequest request) {
     log.info("REST request to create customer: {}", request.email());
     var response = customerService.createCustomer(request);
-    return Utils.returnCreatedResponse("Customer created successfully", response);
+    return Utils.returnCreatedResponse("Customer created successfully");
   }
 
   @Operation(summary = "Update a customer", description = "Updates details of an existing customer", responses = {

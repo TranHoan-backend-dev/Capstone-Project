@@ -34,7 +34,7 @@ public class BillController {
   public ResponseEntity<WrapperApiResponse> createBill(@RequestBody @Valid BillRequest request) {
     log.info("REST request to create bill for customer: {}", request.customerId());
     BillResponse response = billService.createBill(request);
-    return Utils.returnCreatedResponse("Bill created successfully", response);
+    return Utils.returnCreatedResponse("Bill created successfully");
   }
 
   @Operation(summary = "Update a bill", description = "Updates details of an existing bill record", responses = {

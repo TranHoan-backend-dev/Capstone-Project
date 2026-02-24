@@ -57,8 +57,6 @@ class WaterSupplyNetworkControllerTest {
     var expectedResponse = new WaterSupplyNetworkResponse("uuid-123", "Trạm bơm số 1",
       LocalDateTime.now());
 
-    when(networkUseCase.createNetwork(any(WaterSupplyNetworkRequest.class))).thenReturn(expectedResponse);
-
     // Act
     ResponseEntity<WrapperApiResponse> responseEntity = networkController.createNetwork(request);
 
