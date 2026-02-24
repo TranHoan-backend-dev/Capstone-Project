@@ -21,7 +21,7 @@ package com.capstone.notification.event.consumer.materialsgroup.publish;//packag
 //    return """
 //      Phòng IT vừa cập nhật một nhánh tổng:
 //      Cũ: %s thuộc chi nhánh %s
-//      Mới: %s thuộc chi nhánh %s""".formatted(data.oldName(), data.oldNetwork(), data.newName(),
-//      data.newNetwork());
+//      Mới: %s thuộc chi nhánh %s""".formatted(data.oldName(), data.oldCommune(), data.newName(),
+//      data.newCommune());
 //  }
 //}

@@ -15,6 +15,7 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @AppLog
 @Component
@@ -23,42 +24,36 @@ import org.springframework.stereotype.Component;
 public class CommuneUseCase {
   final CommuneService communeService;
   final MessageProducer producer;
+  final String prefix = ".commune.";
 
-  @Value("${rabbit-mq-config.update-commune.exchange_name}")
-  String UPDATE_EXCHANGE_NAME;
-  @Value("${rabbit-mq-config.update-commune.routing_key}")
+  @Value("${rabbit-mq-config.queue_name}" + prefix + "${rabbit-mq-config.actions[0]}")
   String UPDATE_ROUTING_KEY;
 
-  @Value("${rabbit-mq-config.delete-commune.exchange_name}")
-  String DELETE_EXCHANGE_NAME;
-  @Value("${rabbit-mq-config.delete-commune.routing_key}")
+  @Value("${rabbit-mq-config.queue_name}" + prefix + "${rabbit-mq-config.actions[1]}")
   String DELETE_ROUTING_KEY;
 
   public void createCommune(@NonNull CommuneRequest request) {
     communeService.createCommune(request);
   }
 
+  @Transactional(rollbackFor = Exception.class)
   public CommuneResponse updateCommune(String id, CommuneRequest request) {
     var old = communeService.getCommuneById(id);
     var response = communeService.updateCommune(id, request);
 
     if (!request.name().isBlank() && !request.type().isBlank()) {
-      producer.send("UPDATE_COMMUNE", UPDATE_EXCHANGE_NAME, UPDATE_ROUTING_KEY,
-        new UpdateEvent(
-          old.name(), old.type(),
-          response.name(), response.type()
-        )
-      );
+      producer.send(UPDATE_ROUTING_KEY,
+          new UpdateEvent(old.name(), response.name(), old.type(), response.type()));
     }
     return response;
   }
 
+  @Transactional(rollbackFor = Exception.class)
   public void deleteCommune(String id) {
     var old = communeService.getCommuneById(id);
     communeService.deleteCommune(id);
 
-    producer.send("DELETE_COMMUNE", DELETE_EXCHANGE_NAME, DELETE_ROUTING_KEY,
-      new DeleteEvent(old.name(), old.type()));
+    producer.send(DELETE_ROUTING_KEY, new DeleteEvent(old.name(), old.type()));
   }
 
   public CommuneResponse getCommuneById(String id) {
