@@ -93,15 +93,32 @@ export const updateAvatar = async (file: File, accessToken: string) => {
   const formData = new FormData();
   formData.append("avatar", file);
 
-  const response = await axios.put(
-    `${API_GATEWAY_URL}/auth/me`,
-    formData,
+  const response = await axios.put(`${API_GATEWAY_URL}/auth/me`, formData, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  return response.data;
+};
+
+export const changePasswordService = async (
+  accessToken: string,
+  oldPassword: string,
+  newPassword: string,
+  confirmPassword: string,
+): Promise<void> => {
+  await axios.post(
+    `${API_GATEWAY_URL}/auth/auth/change-password`,
+    {
+      oldPassword,
+      newPassword,
+      confirmPassword,
+    },
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     },
   );
-
-  return response.data;
 };
