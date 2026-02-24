@@ -11,6 +11,19 @@ export const siteConfig = {
       href: "/home",
     },
 
+    // Thiết bị
+    {
+      key: "device",
+      label: "Thiết bị",
+      items: [
+        {
+          key: "parameters",
+          label: "Quản lý Tham số kĩ thuật",
+          href: "/parameters",
+        },
+      ],
+    },
+
     // Hợp đồng
     {
       key: "contract",
