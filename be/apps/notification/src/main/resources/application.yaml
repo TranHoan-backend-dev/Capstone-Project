@@ -3,6 +3,16 @@ spring:
     name: notification
   profiles:
     active: dev
+  rabbitmq:
+    listener:
+      simple:
+        missing-queues-fatal: false
+        auto-startup: true
+        retry:
+          enabled: true
+          initial-interval: 1000
+          max-attempts: 999999
+          max-interval: 5000
 management:
   endpoints:
     web:
@@ -17,10 +27,6 @@ server:
   port: 9007
   servlet:
     context-path: /api/v1
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:9000/eureka
 springdoc:
   api-docs:
     enabled: true
@@ -28,6 +34,36 @@ springdoc:
   swagger-ui:
     enabled: true
     path: /swagger-ui/index.html
+rabbit-mq-config:
+  update: update
+  delete: delete
+  exchange: exchange
+  queue: construction_queue
+  entities:
+    - lateral
+    - commune
+    - neighborhood-unit
+    - road
+    - hamlet
+    - material-price
+    - meter-type
+    - materials-group
+    - calculation-unit
+    - params
+    - water-price
+    - department
+    - employee
+  actions:
+    - update
+    - delete
+  auth-routingKey: auth.individual-notification.create
+  auth-queue: auth.individual-notification.queue
 # spring:
+# data:
 # mongodb:
 # uri: mongodb://guest:guest@mongodb:27017/microservice_db?authSource=admin
+#  rabbitmq:
+#    host: localhost # cua may local
+#    port: 5672
+#    username: guest
+#    password: guest

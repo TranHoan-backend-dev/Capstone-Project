@@ -1,0 +1,175 @@
+@uri = http://localhost:9004/api/v1/roadmaps
+@keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
+@client_secret=
+
+### get token
+POST {{keycloak}}/token
+Content-Type: application/x-www-form-urlencoded
+Accept: application/json
+
+grant_type=password&
+client_id=&
+client_secret={{client_secret}}&
+username=&
+password=&
+scope=openid
+
+> {%
+  client.global.set("access_token", response.body.access_token);
+  client.global.set("refresh_token", response.body.refresh_token);
+%}
+
+### C
+### happy case
+POST {{uri}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "eueu",
+  "lateralId": "4d5e6f70-3000-4ddd-9eee-dddddddd0001",
+  "networkId": "550e8400-e29b-41d4-a716-446655440001"
+}
+
+### blank keys
+POST {{uri}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "",
+  "lateralId": "",
+  "networkId": ""
+}
+
+### duplicated name
+POST {{uri}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "roadmap 1",
+  "lateralId": "4d5e6f70-3000-4ddd-9eee-dddddddd0001",
+  "networkId": "550e8400-e29b-41d4-a716-446655440001"
+}
+
+### not existing lateral
+POST {{uri}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "êuue",
+  "lateralId": "4d5e6f70-3000-4ddd-9eee-dddddddd0000",
+  "networkId": "550e8400-e29b-41d4-a716-446655440001"
+}
+
+### not existing network
+POST {{uri}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "êuue",
+  "lateralId": "4d5e6f70-3000-4ddd-9eee-dddddddd0001",
+  "networkId": "550e8400-e29b-41d4-a716-446655440000"
+}
+
+### R
+
+### U
+### happy case
+PUT {{uri}}/e3e701d6-5fda-4adf-ad5e-2033a2ae1706
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "eueu1",
+  "lateralId": "4d5e6f70-3000-4ddd-9eee-dddddddd0001",
+  "networkId": "550e8400-e29b-41d4-a716-446655440001"
+}
+
+### blank keys
+PUT {{uri}}/
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "eueu",
+  "lateralId": "4d5e6f70-3000-4ddd-9eee-dddddddd0001",
+  "networkId": "550e8400-e29b-41d4-a716-446655440001"
+}
+
+### blank param
+PUT {{uri}}/e3e701d6-5fda-4adf-ad5e-2033a2ae1706
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "",
+  "lateralId": "",
+  "networkId": ""
+}
+
+### duplicated name
+PUT {{uri}}/e3e701d6-5fda-4adf-ad5e-2033a2ae1706
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "roadmap 1",
+  "lateralId": "4d5e6f70-3000-4ddd-9eee-dddddddd0001",
+  "networkId": "550e8400-e29b-41d4-a716-446655440001"
+}
+
+### not existing lateral
+PUT {{uri}}/e3e701d6-5fda-4adf-ad5e-2033a2ae1706
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "êuue1",
+  "lateralId": "4d5e6f70-3000-4ddd-9eee-dddddddd0000",
+  "networkId": "550e8400-e29b-41d4-a716-446655440001"
+}
+
+### not existing network
+PUT {{uri}}/e3e701d6-5fda-4adf-ad5e-2033a2ae1706
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "êuue1",
+  "lateralId": "4d5e6f70-3000-4ddd-9eee-dddddddd0001",
+  "networkId": "550e8400-e29b-41d4-a716-446655440000"
+}
+
+### D
+### happy case
+DELETE {{uri}}/e3e701d6-5fda-4adf-ad5e-2033a2ae1706
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### empty id
+DELETE {{uri}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### not existing id
+DELETE {{uri}}/e3e701d6-5fda-4adf-ad5e-2033a2ae1707
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json

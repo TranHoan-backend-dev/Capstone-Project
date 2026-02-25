@@ -39,8 +39,8 @@ public class BusinessPageServiceImpl implements BusinessPageService {
     return orgSrv.getPagesByIds(string).data();
   }
 
-  @Transactional
   @Override
+  @Transactional(rollbackFor = Exception.class)
   public void updatePagesOfEmployee(String employeeId, Set<String> pageIds) {
     log.info("Updating pages of employee with id: {}", employeeId);
 

@@ -1,7 +1,6 @@
 package com.capstone.organization.service.impl;
 
 import com.capstone.common.annotation.AppLog;
-import com.capstone.common.utils.IdEncoder;
 import com.capstone.organization.dto.request.CreateBusinessPageRequest;
 import com.capstone.organization.dto.request.FilterBusinessPagesRequest;
 import com.capstone.organization.dto.request.UpdateBusinessPageRequest;
@@ -10,6 +9,7 @@ import com.capstone.organization.dto.response.PagedBusinessPageResponse;
 import com.capstone.organization.model.BusinessPage;
 import com.capstone.organization.repository.BusinessPageRepository;
 import com.capstone.organization.service.boundary.BusinessPageService;
+import com.capstone.organization.service.boundary.EmployeeService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -30,10 +30,12 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BusinessPageServiceImpl implements BusinessPageService {
   BusinessPageRepository businessPageRepository;
+  EmployeeService employeeService;
   @NonFinal
   Logger log;
 
   @Override
+  @Transactional(rollbackFor = Exception.class)
   public BusinessPageResponse createBusinessPage(@NonNull CreateBusinessPageRequest request) {
     log.info("Creating business page with name: {}", request.name());
 
@@ -45,17 +47,11 @@ public class BusinessPageServiceImpl implements BusinessPageService {
     );
 
     var saved = businessPageRepository.save(entity);
-    return new BusinessPageResponse(
-      IdEncoder.encode(saved.getPageId()),
-      saved.getName(),
-      saved.getActivate(),
-      saved.getCreator(),
-      saved.getUpdator()
-    );
+    return convert(saved);
   }
 
-  @Transactional(rollbackFor = Exception.class)
   @Override
+  @Transactional(rollbackFor = Exception.class)
   public BusinessPageResponse updateBusinessPage(String pageId, @NonNull UpdateBusinessPageRequest request) {
     log.info("Updating business page: {}", pageId);
 
@@ -67,13 +63,7 @@ public class BusinessPageServiceImpl implements BusinessPageService {
     entity.setUpdator(request.updator());
 
     var saved = businessPageRepository.save(entity);
-    return new BusinessPageResponse(
-      IdEncoder.encode(saved.getPageId()),
-      saved.getName(),
-      saved.getActivate(),
-      saved.getCreator(),
-      saved.getUpdator()
-    );
+    return convert(saved);
   }
 
   @Override
@@ -106,13 +96,7 @@ public class BusinessPageServiceImpl implements BusinessPageService {
 
   private @NonNull PagedBusinessPageResponse mapResponse(@NonNull Page<BusinessPage> list) {
     var items = list.getContent().stream()
-      .map(pageEntity -> new BusinessPageResponse(
-        IdEncoder.encode(pageEntity.getPageId()),
-        pageEntity.getName(),
-        pageEntity.getActivate(),
-        pageEntity.getCreator(),
-        pageEntity.getUpdator()
-      ))
+      .map(this::convert)
       .collect(Collectors.toList());
     return new PagedBusinessPageResponse(
       items,
@@ -120,6 +104,18 @@ public class BusinessPageServiceImpl implements BusinessPageService {
       list.getSize(),
       list.getTotalElements(),
       list.getTotalPages()
+    );
+  }
+
+  private @NonNull BusinessPageResponse convert(@NonNull BusinessPage saved) {
+    var creatorName = employeeService.getEmployeeNameById(saved.getCreator()).data();
+    var updatorName = employeeService.getEmployeeNameById(saved.getUpdator()).data();
+    return new BusinessPageResponse(
+      saved.getPageId(),
+      saved.getName(),
+      saved.getActivate(),
+      creatorName.toString(),
+      updatorName.toString()
     );
   }
 }

@@ -1,6 +1,6 @@
 package com.capstone.auth.infrastructure.service;
 
-import com.capstone.auth.infrastructure.config.FeignAuthInterceptor;
+import com.capstone.common.config.FeignAuthInterceptor;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

@@ -1,7 +1,6 @@
 package com.capstone.organization.service.impl;
 
 import com.capstone.common.annotation.AppLog;
-import com.capstone.common.utils.IdEncoder;
 import com.capstone.organization.dto.request.CreateDepartmentRequest;
 import com.capstone.organization.dto.request.UpdateDepartmentRequest;
 import com.capstone.organization.dto.response.DepartmentResponse;
@@ -15,8 +14,9 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.stream.Collectors;
 
@@ -30,6 +30,7 @@ public class DepartmentServiceImpl implements DepartmentService {
   Logger log;
 
   @Override
+  @Transactional(rollbackFor = Exception.class)
   public DepartmentResponse createDepartment(@NonNull CreateDepartmentRequest request) {
     log.info("Creating department with name: {}", request.name());
 
@@ -39,14 +40,11 @@ public class DepartmentServiceImpl implements DepartmentService {
     );
 
     var saved = departmentRepo.save(entity);
-    return new DepartmentResponse(
-      IdEncoder.encode(saved.getDepartmentId()),
-      saved.getName(),
-      saved.getPhoneNumber()
-    );
+    return convert(saved);
   }
 
   @Override
+  @Transactional(rollbackFor = Exception.class)
   public DepartmentResponse updateDepartment(String departmentId, @NonNull UpdateDepartmentRequest request) {
     log.info("Updating department: {}", departmentId);
 
@@ -57,24 +55,19 @@ public class DepartmentServiceImpl implements DepartmentService {
     entity.setPhoneNumber(request.phoneNumber());
 
     var saved = departmentRepo.save(entity);
-    return new DepartmentResponse(
-      IdEncoder.encode(saved.getDepartmentId()),
-      saved.getName(),
-      saved.getPhoneNumber()
-    );
+    return convert(saved);
   }
 
   @Override
-  public PagedDepartmentResponse getDepartments(int page, int size) {
-    log.info("Fetching departments page: {}, size: {}", page, size);
+  public PagedDepartmentResponse getDepartments(@NonNull Pageable pageable, String keyword) {
+    log.info("Fetching departments page: {}, size: {}", pageable.getPageNumber(), pageable.getPageSize());
 
-    var result = departmentRepo.findAll(PageRequest.of(page, size));
+    var result = keyword == null ? departmentRepo.findAll(pageable) :
+      departmentRepo.findByDepartmentIdContainsIgnoreCaseOrNameContainsIgnoreCaseOrPhoneNumberContains(
+        keyword, keyword,
+        keyword, pageable);
     var items = result.getContent().stream()
-      .map(department -> new DepartmentResponse(
-        IdEncoder.encode(department.getDepartmentId()),
-        department.getName(),
-        department.getPhoneNumber()
-      ))
+      .map(this::convert)
       .collect(Collectors.toList());
 
     return new PagedDepartmentResponse(
@@ -89,5 +82,13 @@ public class DepartmentServiceImpl implements DepartmentService {
   @Override
   public boolean checkIfDepartmentExists(String departmentId) {
     return departmentRepo.existsById(departmentId);
+  }
+
+  private @NonNull DepartmentResponse convert(@NonNull Department department) {
+    return new DepartmentResponse(
+      department.getDepartmentId(),
+      department.getName(),
+      department.getPhoneNumber()
+    );
   }
 }

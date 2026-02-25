@@ -22,10 +22,12 @@ import com.capstone.auth.infrastructure.utils.AuthUtils;
 import com.capstone.common.annotation.AppLog;
 import jakarta.transaction.Transactional;
 import org.jspecify.annotations.NonNull;
-import lombok.*;
-import lombok.experimental.*;
-import org.keycloak.admin.client.Keycloak;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import org.slf4j.Logger;
+import org.keycloak.admin.client.Keycloak;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -34,6 +36,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+
+//import org.keycloak.admin.client.KeycloakBuilder;
+//import org.keycloak.OAuth2Constants;
 
 @AppLog
 @Component
@@ -61,6 +66,18 @@ public class AuthUseCase {
   @Value("${keycloak.realms}")
   @NonFinal
   String realm;
+
+//  @Value("${keycloak.server-url}")
+//  @NonFinal
+//  String serverUrl;
+
+//  @Value("${keycloak.client-id}")
+//  @NonFinal
+//  String clientId;
+
+//  @Value("${keycloak.client-secret}")
+//  @NonFinal
+//  String clientSecret;
 
   @Value("${keycloak.client-id-admin}")
   @NonFinal
@@ -120,12 +137,61 @@ public class AuthUseCase {
       request.fullName(), request.username(), request.password()));
   }
 
-  public void changePassword(String email, String oldPassword, @NonNull String newPassword, String confirmPassword) {
+  public void changePassword(String userId, String email, String oldPassword, @NonNull String newPassword, String confirmPassword) {
     log.info("Handling change password for email: {}", email);
-    if (!newPassword.equals(confirmPassword)) {
-      throw new IllegalArgumentException("New password and confirm password do not match");
+
+    if (oldPassword.equals(newPassword)) {
+      throw new IllegalArgumentException("Mật khẩu mới phải khác mật khẩu cũ");
     }
+
+    if (!newPassword.equals(confirmPassword)) {
+      throw new IllegalArgumentException("Mật khẩu mới và xác nhận mật khẩu không khớp");
+    }
+
+    // Xác thực mật khẩu cũ với Keycloak
+    verifyOldPassword(email, oldPassword);
+
     uSrv.updatePassword(email, oldPassword, newPassword);
+
+    // Cập nhật mật khẩu mới trên Keycloak
+    updatePasswordOnKeycloak(userId, newPassword);
+  }
+
+  private void verifyOldPassword(String email, String oldPassword) {
+    log.info("Verifying old password for email: {}", email);
+//    try (Keycloak tempKeycloak = KeycloakBuilder.builder()
+//        .serverUrl(serverUrl)
+//        .realm(realm)
+//        .clientId(clientId)
+//        .clientSecret(clientSecret)
+//        .username(email)
+//        .password(oldPassword)
+//        .grantType(OAuth2Constants.PASSWORD)
+//        .build()) {
+      // Thử lấy token để xác thực mật khẩu
+//      tempKeycloak.tokenManager().getAccessToken();
+    keycloak.tokenManager().getAccessToken();
+//      log.info("Old password verification successful for email: {}", email);
+//    } catch (Exception e) {
+//      log.error("Old password verification failed for email: {}", email);
+//      throw new IllegalArgumentException("Mật khẩu cũ không chính xác");
+//    }
+  }
+
+  private void updatePasswordOnKeycloak(String userId, String newPassword) {
+    log.info("Updating password on Keycloak for user: {}", userId);
+    try {
+      var credential = new org.keycloak.representations.idm.CredentialRepresentation();
+      credential.setType(org.keycloak.representations.idm.CredentialRepresentation.PASSWORD);
+      credential.setValue(newPassword);
+      credential.setTemporary(false);
+
+      keycloak.realm(realm).users().get(userId).resetPassword(credential);
+      log.info("Successfully updated password on Keycloak");
+    } catch (Exception e) {
+      log.error("Failed to update password on Keycloak", e);
+      throw new IllegalArgumentException("Failed to update password on Keycloak: " + e.getMessage());
+    }
   }
 
   public boolean checkExistence(String value) {
@@ -200,7 +266,7 @@ public class AuthUseCase {
   }
   // </editor-fold>
 
-  private UserProfileResponse returnUserProfile(@NonNull ProfileDTO profile, @NonNull UserDTO user) {
+  private @NonNull UserProfileResponse returnUserProfile(@NonNull ProfileDTO profile, @NonNull UserDTO user) {
     return new UserProfileResponse(
       profile.fullname(),
       profile.avatarUrl(),

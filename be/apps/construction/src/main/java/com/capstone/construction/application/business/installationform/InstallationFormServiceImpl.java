@@ -42,8 +42,8 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   @NonFinal
   Logger log;
 
-  @Transactional(rollbackFor = Exception.class)
   @Override
+  @Transactional(rollbackFor = Exception.class)
   public NewInstallationFormResponse createNewInstallationForm(@NonNull NewOrderRequest request) {
     log.info("Service is creating new installation form: {}", request.formNumber());
 

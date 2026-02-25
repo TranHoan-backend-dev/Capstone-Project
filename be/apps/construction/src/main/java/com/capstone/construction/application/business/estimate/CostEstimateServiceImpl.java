@@ -1,5 +1,6 @@
 package com.capstone.construction.application.business.estimate;
 
+import com.capstone.common.annotation.AppLog;
 import com.capstone.construction.application.dto.request.estimate.CostEstimateRequest;
 import com.capstone.construction.application.dto.response.estimate.CostEstimateResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
@@ -8,21 +9,24 @@ import com.capstone.construction.infrastructure.persistence.CostEstimateReposito
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
+@AppLog
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CostEstimateServiceImpl implements CostEstimateService {
   CostEstimateRepository estimateRepository;
+  @NonFinal
+  Logger log;
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public CostEstimateResponse createEstimate(@NonNull CostEstimateRequest request) {
     log.info("Creating new cost estimate for customer: {}", request.customerName());
 
@@ -54,7 +58,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public CostEstimateResponse updateEstimate(String id, @NonNull CostEstimateRequest request) {
     log.info("Updating cost estimate with id: {}", id);
     var estimate = estimateRepository.findById(id)
@@ -87,7 +91,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public void deleteEstimate(String id) {
     log.info("Deleting cost estimate with id: {}", id);
     if (!estimateRepository.existsById(id)) {

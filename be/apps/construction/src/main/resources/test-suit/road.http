@@ -1,0 +1,96 @@
+@uri = http://localhost:9004/api/v1/units
+@keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
+@client_secret=
+
+### get token
+POST {{keycloak}}/token
+Content-Type: application/x-www-form-urlencoded
+Accept: application/json
+
+grant_type=password&
+client_id=&
+client_secret={{client_secret}}&
+username=&
+password=&
+scope=openid
+
+> {%
+  client.global.set("access_token", response.body.access_token);
+  client.global.set("refresh_token", response.body.refresh_token);
+%}
+
+### C
+### duplicated name
+POST {{uri}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "uhuhu1"
+}
+
+### blank key
+POST {{uri}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": ""
+}
+
+### happy case
+POST {{uri}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "aaa"
+}
+
+### R
+
+### U
+### name does not change
+PUT {{uri}}/380c3ca6-5ef3-4f5b-afd2-9bf711673e64
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "uhuhu"
+}
+
+### name is changed
+PUT {{uri}}/380c3ca6-5ef3-4f5b-afd2-9bf711673e64
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "uhuhu1"
+}
+
+### blank key
+PUT {{uri}}/380c3ca6-5ef3-4f5b-afd2-9bf711673e64
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": ""
+}
+
+### duplicated key
+PUT {{uri}}/380c3ca6-5ef3-4f5b-afd2-9bf711673e64
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "name": "tran Hung Dao"
+}
+
+### D
