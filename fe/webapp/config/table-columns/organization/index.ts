@@ -1,1 +1,1 @@
-export * from "./business-page-column"
+export * from "./business-page-column";
