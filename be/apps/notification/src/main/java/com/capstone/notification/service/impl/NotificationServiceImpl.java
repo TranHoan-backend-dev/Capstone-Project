@@ -12,7 +12,6 @@ import lombok.experimental.FieldDefaults;
 import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,39 +24,38 @@ public class NotificationServiceImpl implements NotificationService {
   @Override
   public NotificationResponse createNotification(@NonNull CreateNotificationRequest request) {
     var entity = Notification.builder()
+      .title(request.title())
       .message(request.message())
       .link(request.link())
       .status(false)
-      .createdAt(LocalDateTime.now())
       .build();
 
     var saved = notificationRepo.save(entity);
-    return new NotificationResponse(
-      saved.getNotificationId(),
-      saved.getLink(),
-      saved.getMessage(),
-      saved.getStatus(),
-      saved.getCreatedAt()
-    );
+    return convert(saved);
   }
 
   @Override
   public NotificationBatchResponse getNotificationsByIds(List<String> notificationIds, int size) {
     var result = notificationRepo.findAllById(notificationIds);
     var items = result.stream()
-      .map(notification -> new NotificationResponse(
-        notification.getNotificationId(),
-        notification.getLink(),
-        notification.getMessage(),
-        notification.getStatus(),
-        notification.getCreatedAt()
-      ))
+      .map(this::convert)
       .collect(Collectors.toList());
 
     return new NotificationBatchResponse(
       items,
       size,
       items.size()
+    );
+  }
+
+  private @NonNull NotificationResponse convert(@NonNull Notification notification) {
+    return new NotificationResponse(
+      notification.getNotificationId(),
+      notification.getTitle(),
+      notification.getLink(),
+      notification.getMessage(),
+      notification.getStatus(),
+      notification.getCreatedAt()
     );
   }
 }

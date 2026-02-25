@@ -2,9 +2,9 @@ package com.capstone.notification.event.consumer.commune.message;
 
 public record UpdateEventMessage(
   String pattern,
-  LateralEventData data
+  CommuneEventData data
 ) {
-  public record LateralEventData(
+  public record CommuneEventData(
     String oldName,
     String newName,
     String oldType,

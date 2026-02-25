@@ -1,4 +1,4 @@
-package com.capstone.notification.config.rabbitmq;
+package com.capstone.notification.config;
 
 import com.capstone.common.config.RabbitTopologyProperties;
 import lombok.AccessLevel;

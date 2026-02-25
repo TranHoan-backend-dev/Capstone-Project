@@ -1,22 +1,27 @@
 package com.capstone.notification.event.consumer.commune.publish;
 
-import com.capstone.notification.event.consumer.BaseEventConsumer;
+import com.capstone.common.annotation.AppLog;
+import com.capstone.notification.event.websocket.GeneralEventConsumer;
 import com.capstone.notification.event.consumer.commune.message.DeleteEventMessage;
 
-import lombok.extern.slf4j.Slf4j;
+import com.capstone.notification.event.websocket.Topic;
 
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
-@Slf4j
+import java.util.List;
+
+@AppLog
 @Component
-public class DeleteCommuneConsumer extends BaseEventConsumer<DeleteEventMessage> {
+public class DeleteCommuneConsumer extends GeneralEventConsumer<DeleteEventMessage> {
+  Logger log;
 
   @RabbitListener(queues = "${rabbit-mq-config.queue}.commune.delete")
   @Override
-  public void handle(DeleteEventMessage event) {
-    super.handle(event);
+  public void handle(DeleteEventMessage event, @NonNull List<String> topics, String title) {
+    super.handle(event, List.of(Topic.getTopic(Topic.GENERAL)), "Xóa đơn vị hành chính thành phố");
   }
 
   @Override

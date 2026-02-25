@@ -1,22 +1,25 @@
 package com.capstone.notification.event.consumer.hamlet.publish;
 
 import com.capstone.common.annotation.AppLog;
-import com.capstone.notification.event.consumer.BaseEventConsumer;
+import com.capstone.notification.event.websocket.GeneralEventConsumer;
 import com.capstone.notification.event.consumer.hamlet.message.UpdateEventMessage;
+import com.capstone.notification.event.websocket.Topic;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @AppLog
 @Component
-public class UpdateHamletConsumer extends BaseEventConsumer<UpdateEventMessage> {
+public class UpdateHamletConsumer extends GeneralEventConsumer<UpdateEventMessage> {
   Logger log;
 
   @RabbitListener(queues = "${rabbit-mq-config.queue}.hamlet.update")
   @Override
-  public void handle(UpdateEventMessage event) {
-    super.handle(event);
+  public void handle(UpdateEventMessage event, @NonNull List<String> topics, String title) {
+    super.handle(event, List.of(Topic.getTopic(Topic.GENERAL)), "Cập nhật đơn vị hành chính xã");
   }
 
   @Override
