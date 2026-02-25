@@ -3,10 +3,14 @@ package com.capstone.device.adapter;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
-import com.capstone.device.application.business.boundary.WaterPriceService;
-import com.capstone.device.application.dto.request.WaterPriceRequest;
+import com.capstone.device.application.dto.request.price.CreateRequest;
+import com.capstone.device.application.dto.request.price.UpdateRequest;
+import com.capstone.device.application.dto.response.WaterPriceResponse;
+import com.capstone.device.application.usecase.WaterPriceUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -17,73 +21,92 @@ import lombok.experimental.NonFinal;
 import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 @AppLog
+@Validated
 @RestController
 @RequestMapping("/water-prices")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@Tag(name = "Water Price Management", description = "Endpoints for managing water pricing policies and usage targets")
+@Tag(name = "", description = "")
 public class WaterPriceController {
-  WaterPriceService waterPriceService;
+  WaterPriceUseCase useCase;
   @NonFinal
   Logger log;
 
-  @Operation(summary = "Create a new water price", description = "Adds a new water pricing policy to the system", responses = {
-    @ApiResponse(responseCode = "201", description = "Water price created successfully"),
-    @ApiResponse(responseCode = "400", description = "Invalid input data")
+  @Operation(summary = "", description = "", responses = {
+    @ApiResponse(responseCode = "201", description = ""),
+    @ApiResponse(responseCode = "", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PostMapping
-  public ResponseEntity<WrapperApiResponse> createWaterPrice(@RequestBody @Valid WaterPriceRequest request) {
+  @PreAuthorize("hasAuthority('IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> createWaterPrice(@RequestBody @Valid CreateRequest request) {
     log.info("REST request to create water price for target: {}", request.usageTarget());
-    var response = waterPriceService.createWaterPrice(request);
-    return Utils.returnCreatedResponse("Water price created successfully", response);
+    var response = useCase.createWaterPrice(request);
+    log.info(response.toString());
+    return Utils.returnCreatedResponse("Water price created successfully");
   }
 
-  @Operation(summary = "Update a water price", description = "Updates details of an existing water pricing policy", responses = {
-    @ApiResponse(responseCode = "200", description = "Water price updated successfully"),
-    @ApiResponse(responseCode = "404", description = "Water price not found")
+  @Operation(summary = "", description = "", responses = {
+    @ApiResponse(responseCode = "200", description = "", content = @Content(schema = @Schema(implementation = WaterPriceResponse.class))),
+    @ApiResponse(responseCode = "", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PutMapping("/{id}")
+  @PreAuthorize("hasAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> updateWaterPrice(
-    @PathVariable @Parameter(description = "Water Price ID") String id,
-    @RequestBody @Valid WaterPriceRequest request) {
+    @PathVariable @Parameter(description = "") String id,
+    @RequestBody @Valid UpdateRequest request) {
     log.info("REST request to update water price: {}", id);
-    var response = waterPriceService.updateWaterPrice(id, request);
+    var response = useCase.updateWaterPrice(id, request);
     return Utils.returnOkResponse("Water price updated successfully", response);
   }
 
-  @Operation(summary = "Delete a water price", description = "Removes a water pricing policy from the system", responses = {
-    @ApiResponse(responseCode = "200", description = "Water price deleted successfully"),
-    @ApiResponse(responseCode = "404", description = "Water price not found")
+  @Operation(summary = "", description = "", responses = {
+    @ApiResponse(responseCode = "200", description = ""),
+    @ApiResponse(responseCode = "", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @DeleteMapping("/{id}")
+  @PreAuthorize("hasAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> deleteWaterPrice(
-    @PathVariable @Parameter(description = "Water Price ID") String id) {
+    @PathVariable @Parameter(description = "") String id) {
     log.info("REST request to delete water price: {}", id);
-    waterPriceService.deleteWaterPrice(id);
+    useCase.deleteWaterPrice(id);
     return Utils.returnOkResponse("Water price deleted successfully", null);
   }
 
-  @Operation(summary = "Get water price by ID", description = "Fetches detailed information of a water pricing policy", responses = {
-    @ApiResponse(responseCode = "200", description = "Water price found"),
-    @ApiResponse(responseCode = "404", description = "Water price not found")
+  @Operation(summary = "", description = "", responses = {
+    @ApiResponse(responseCode = "200", description = ""),
+    @ApiResponse(responseCode = "", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @GetMapping("/{id}")
   public ResponseEntity<WrapperApiResponse> getWaterPriceById(
-    @PathVariable @Parameter(description = "Water Price ID") String id) {
+    @PathVariable @Parameter(description = "") String id) {
     log.info("REST request to get water price: {}", id);
-    var response = waterPriceService.getWaterPriceById(id);
+    var response = useCase.getWaterPriceById(id);
     return Utils.returnOkResponse("Water price retrieved successfully", response);
   }
 
-  @Operation(summary = "Get all water prices", description = "Retrieves a paginated list of all water pricing policies")
+  // TODO: swagger doc, unit test
+  @Operation(summary = "Lấy danh sách các bảng giá nước", description = "", responses = {
+    @ApiResponse(responseCode = "200", description = "", content = @Content(schema = @Schema(implementation = WaterPriceResponse.class))),
+    @ApiResponse(responseCode = "404", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+  })
   @GetMapping
-  public ResponseEntity<WrapperApiResponse> getAllWaterPrices(@PageableDefault Pageable pageable) {
+  public ResponseEntity<WrapperApiResponse> getAllWaterPrices(
+    @PageableDefault Pageable pageable,
+    @RequestParam(value = "keyword", required = false)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @Valid LocalDate applicationPeriod
+  ) {
     log.info("REST request to get all water prices with pagination: {}", pageable);
-    var response = waterPriceService.getAllWaterPrices(pageable);
+    var response = useCase.getPricesList(pageable, applicationPeriod);
     return Utils.returnOkResponse("Water prices retrieved successfully", response);
   }
 }

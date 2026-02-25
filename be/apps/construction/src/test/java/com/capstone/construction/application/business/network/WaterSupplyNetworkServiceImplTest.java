@@ -1,6 +1,5 @@
 package com.capstone.construction.application.business.network;
 
-import com.capstone.common.utils.IdEncoder;
 import com.capstone.construction.application.dto.request.catalog.WaterSupplyNetworkRequest;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.application.dto.response.catalog.WaterSupplyNetworkResponse;
@@ -54,17 +53,14 @@ class WaterSupplyNetworkServiceImplTest {
     var request = new WaterSupplyNetworkRequest(networkName);
 
     var savedNetwork = new WaterSupplyNetwork("id-1", networkName, LocalDateTime.now(),
-      LocalDateTime.now());
+        LocalDateTime.now());
 
     when(networkRepository.save(any(WaterSupplyNetwork.class))).thenReturn(savedNetwork);
 
     // Act
-    var response = networkService.createNetwork(request);
+    networkService.createNetwork(request);
 
     // Assert
-    assertNotNull(response);
-    assertEquals(networkName, response.name());
-    assertEquals(IdEncoder.encode("id-1"), response.branchId());
     verify(networkRepository, times(1)).save(any(WaterSupplyNetwork.class));
   }
 
@@ -78,9 +74,9 @@ class WaterSupplyNetworkServiceImplTest {
     var request = new WaterSupplyNetworkRequest(newName);
 
     var existingNetwork = new WaterSupplyNetwork(id, oldName, LocalDateTime.now(),
-      LocalDateTime.now());
+        LocalDateTime.now());
     var updatedNetwork = new WaterSupplyNetwork(id, newName, existingNetwork.getCreatedAt(),
-      LocalDateTime.now());
+        LocalDateTime.now());
 
     when(networkRepository.findById(id)).thenReturn(Optional.of(existingNetwork));
     when(networkRepository.save(any(WaterSupplyNetwork.class))).thenReturn(updatedNetwork);
@@ -91,7 +87,7 @@ class WaterSupplyNetworkServiceImplTest {
     // Assert
     assertNotNull(response);
     assertEquals(newName, response.name());
-    assertEquals(IdEncoder.encode(id), response.branchId());
+    assertEquals(id, response.branchId());
 
     verify(networkRepository, times(1)).findById(id);
     verify(networkRepository, times(1)).save(existingNetwork);
@@ -153,7 +149,7 @@ class WaterSupplyNetworkServiceImplTest {
     // Assert
     assertNotNull(response);
     assertEquals(network.getName(), response.name());
-    assertEquals(IdEncoder.encode(id), response.branchId());
+    assertEquals(id, response.branchId());
   }
 
   @Test
@@ -174,7 +170,7 @@ class WaterSupplyNetworkServiceImplTest {
     var pageable = PageRequest.of(0, 10);
     String keyword = null;
     var network = new WaterSupplyNetwork("id-1", "Network 1", LocalDateTime.now(),
-      LocalDateTime.now());
+        LocalDateTime.now());
     Page<WaterSupplyNetwork> page = new PageImpl<>(List.of(network));
 
     when(networkRepository.findAll(pageable)).thenReturn(page);
@@ -185,7 +181,7 @@ class WaterSupplyNetworkServiceImplTest {
     // Assert
     assertNotNull(response);
     assertEquals(1, response.totalElements());
-    assertEquals("Network 1", response.content().getFirst().name());
+    assertEquals("Network 1", response.content().get(0).name());
     verify(networkRepository, times(1)).findAll(pageable);
     verify(networkRepository, never()).findAllByNameContainsIgnoreCase(anyString(), any(Pageable.class));
   }
@@ -197,7 +193,7 @@ class WaterSupplyNetworkServiceImplTest {
     var pageable = PageRequest.of(0, 10);
     var keyword = "Test";
     var network = new WaterSupplyNetwork("id-1", "Test Network", LocalDateTime.now(),
-      LocalDateTime.now());
+        LocalDateTime.now());
     Page<WaterSupplyNetwork> page = new PageImpl<>(List.of(network));
 
     when(networkRepository.findAllByNameContainsIgnoreCase(keyword, pageable)).thenReturn(page);
@@ -211,5 +207,35 @@ class WaterSupplyNetworkServiceImplTest {
     assertEquals("Test Network", response.content().get(0).name());
     verify(networkRepository, times(1)).findAllByNameContainsIgnoreCase(keyword, pageable);
     verify(networkRepository, never()).findAll(pageable);
+  }
+
+  @Test
+  @DisplayName("should_ReturnTrue_When_NetworkExists")
+  void should_ReturnTrue_When_NetworkExists() {
+    // Arrange
+    var id = "id-1";
+    when(networkRepository.existsById(id)).thenReturn(true);
+
+    // Act
+    var result = networkService.networkExists(id);
+
+    // Assert
+    assertTrue(result);
+    verify(networkRepository).existsById(id);
+  }
+
+  @Test
+  @DisplayName("should_ReturnFalse_When_NetworkDoesNotExist")
+  void should_ReturnFalse_When_NetworkDoesNotExist() {
+    // Arrange
+    var id = "invalid-id";
+    when(networkRepository.existsById(id)).thenReturn(false);
+
+    // Act
+    var result = networkService.networkExists(id);
+
+    // Assert
+    assertFalse(result);
+    verify(networkRepository).existsById(id);
   }
 }

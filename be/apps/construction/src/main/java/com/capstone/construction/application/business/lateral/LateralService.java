@@ -6,13 +6,13 @@ import com.capstone.construction.application.dto.response.PageResponse;
 import org.springframework.data.domain.Pageable;
 
 public interface LateralService {
-    LateralResponse createLateral(LateralRequest request);
+  LateralResponse createLateral(LateralRequest request);
 
-    LateralResponse updateLateral(String id, LateralRequest request);
+  LateralResponse updateLateral(String id, LateralRequest request);
 
-    void deleteLateral(String id);
+  void deleteLateral(String id);
 
-    LateralResponse getLateralById(String id);
+  LateralResponse getLateralById(String id);
 
-    PageResponse<LateralResponse> getAllLaterals(Pageable pageable);
+  PageResponse<LateralResponse> getAllLaterals(Pageable pageable);
 }

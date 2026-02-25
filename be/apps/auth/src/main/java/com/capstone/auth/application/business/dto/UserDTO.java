@@ -1,6 +1,7 @@
 package com.capstone.auth.application.business.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record UserDTO(
   String userId,
@@ -12,7 +13,7 @@ public record UserDTO(
   LocalDateTime updatedAt,
   String lockedReason,
   LocalDateTime lockedAt,
-  String jobId,
+  List<String> jobId,
   String departmentId,
   String waterSupplyNetworkId,
   String electronicSigningUrl,

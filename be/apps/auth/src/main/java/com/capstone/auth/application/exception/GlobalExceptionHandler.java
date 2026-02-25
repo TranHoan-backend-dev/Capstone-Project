@@ -1,5 +1,6 @@
 package com.capstone.auth.application.exception;
 
+import com.capstone.common.exception.ExistingException;
 import com.capstone.common.exception.InternalServerException;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
@@ -77,8 +78,18 @@ public class GlobalExceptionHandler {
     return Utils.returnInternalServerErrorResponse(ex.getMessage(), null);
   }
 
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<WrapperApiResponse> handleIIllegalArgumentException(@NonNull IllegalArgumentException ex) {
+    return Utils.returnBadRequestResponse(ex.getMessage(), null);
+  }
+
+  @ExceptionHandler(InternalServerError.class)
+  public ResponseEntity<WrapperApiResponse> handleInternalServerError(@NonNull InternalServerError ex) {
+    return Utils.returnInternalServerErrorResponse(ex.getMessage(), null);
+  }
+
   @ExceptionHandler({InterruptedException.class, ExecutionException.class})
-  public ResponseEntity<WrapperApiResponse> handleInterruptedAndExecutionException(@NonNull Exception ex) {
+  public ResponseEntity<WrapperApiResponse> handleInternalServerError(@NonNull Exception ex) {
     return Utils.returnInternalServerErrorResponse(ex.getMessage(), null);
   }
 }

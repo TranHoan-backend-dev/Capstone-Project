@@ -19,9 +19,9 @@ import org.springframework.stereotype.Component;
 public class WaterSupplyNetworkUseCase {
   WaterSupplyNetworkService networkService;
 
-  public WaterSupplyNetworkResponse createNetwork(@NonNull WaterSupplyNetworkRequest request) {
+  public void createNetwork(@NonNull WaterSupplyNetworkRequest request) {
     log.info("UseCase: Creating network {}", request.name());
-    return networkService.createNetwork(request);
+    networkService.createNetwork(request);
   }
 
   public WaterSupplyNetworkResponse updateNetwork(String id, WaterSupplyNetworkRequest request) {
@@ -42,5 +42,12 @@ public class WaterSupplyNetworkUseCase {
   public PageResponse<WaterSupplyNetworkResponse> getAllNetworks(Pageable pageable, String keyword) {
     log.info("UseCase: Fetching all networks");
     return networkService.getAllNetworks(pageable, keyword);
+  }
+
+  public boolean checkExistenceOfNetwork(String id) {
+    log.info("UseCase: Checking existence of network {}", id);
+    var response = networkService.networkExists(id);
+    log.info("Network {} {}", id, response ? "exists" : "does not exist");
+    return response;
   }
 }

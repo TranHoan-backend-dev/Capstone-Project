@@ -1,9 +1,10 @@
 package com.capstone.auth.infrastructure.service;
 
+import com.capstone.common.config.FeignAuthInterceptor;
 import com.capstone.common.response.WrapperApiResponse;
-import com.capstone.auth.infrastructure.config.FeignAuthInterceptor;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(
@@ -14,4 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface OrganizationService {
   @GetMapping(value = "/business-pages/e")
   WrapperApiResponse getPagesByIds(@RequestParam("id") String id);
+
+  @GetMapping("/departments/exist/{id}")
+  Boolean checkDepartmentExistence(@PathVariable String id);
+
+  @GetMapping("/jobs/exist/{id}")
+  Boolean checkJobExistence(@PathVariable String id);
 }

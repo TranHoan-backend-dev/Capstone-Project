@@ -59,7 +59,7 @@ public class InstallationFormController {
 
     log.info("Successfully created installation form: {}", response.formNumber());
 
-    return Utils.returnCreatedResponse("Installation form created successfully", response);
+    return Utils.returnCreatedResponse("Installation form created successfully");
   }
 
   @Operation(summary = "Lấy danh sách đơn lắp đặt (có phân trang & lọc)", description = "API này cho phép lấy danh sách các đơn lắp đặt nước. Hỗ trợ phân trang và lọc theo từ khóa (tên khách hàng, địa chỉ) hoặc khoảng thời gian.", responses = {

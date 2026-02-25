@@ -1,12 +1,16 @@
 package com.capstone.auth.domain.model;
 
 import com.capstone.auth.domain.model.utils.EmployeeJobId;
+import com.capstone.auth.infrastructure.config.Constant;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Table
+import java.util.Objects;
+import java.util.function.Consumer;
+
 @Getter
+@Table
 @Entity
 @ToString
 @NoArgsConstructor
@@ -19,4 +23,38 @@ public class EmployeeJob {
   @ManyToOne(fetch = FetchType.EAGER)
   @MapsId("empId")
   Users users;
+
+  public void setId(EmployeeJobId id) {
+    Objects.requireNonNull(id, Constant.PT_22);
+    this.id = id;
+  }
+
+  public void setUsers(Users users) {
+    Objects.requireNonNull(users, Constant.PT_04);
+    this.users = users;
+  }
+
+  public static EmployeeJob create(Consumer<EmployeeJobBuilder> consumer) {
+    var builder = new EmployeeJobBuilder();
+    consumer.accept(builder);
+    return builder.build();
+  }
+
+  public static class EmployeeJobBuilder {
+    private final EmployeeJob unit = new EmployeeJob();
+
+    public EmployeeJobBuilder id(EmployeeJobId id) {
+      unit.setId(id);
+      return this;
+    }
+
+    public EmployeeJobBuilder users(Users users) {
+      unit.setUsers(users);
+      return this;
+    }
+
+    public EmployeeJob build() {
+      return unit;
+    }
+  }
 }

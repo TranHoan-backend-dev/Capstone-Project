@@ -77,7 +77,7 @@ public class ProfileController {
     @ApiResponse(responseCode = "401", description = "Không được phép - Token JWT hợp lệ bị thiếu hoặc đã hết hạn", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "403", description = "Bị cấm - Tài khoản người dùng bị khóa hoặc vô hiệu hóa", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "500", description = "Lỗi máy chủ nội bộ - Đã xảy ra lỗi không mong muốn", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))})
-  @PostMapping()
+  @PatchMapping()
   public ResponseEntity<WrapperApiResponse> updateProfile(
     @AuthenticationPrincipal Jwt jwt,
     @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Thông tin hồ sơ cập nhật", required = true, content = @Content(schema = @Schema(implementation = UpdateProfileRequest.class)))
@@ -105,7 +105,7 @@ public class ProfileController {
     """)
   @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "File ảnh đại diện của người dùng", required = true, content = @Content(schema = @Schema(implementation = MultipartFile.class)))
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Ảnh đại diện đã được cập nhật thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserProfileResponse.class))), @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ - Định dạng tệp không hợp lệ hoặc tải lên tệp thất bại", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))), @ApiResponse(responseCode = "401", description = "Không được phép - Token JWT hợp lệ bị thiếu hoặc đã hết hạn", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))), @ApiResponse(responseCode = "403", description = "Bị cấm - Tài khoản người dùng bị khóa hoặc vô hiệu hóa", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))), @ApiResponse(responseCode = "500", description = "Lỗi máy chủ nội bộ - Đã xảy ra lỗi không mong muốn trong quá trình tải lên ảnh đại diện", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))})
-  @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PatchMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<WrapperApiResponse> updateAvatar(
     @AuthenticationPrincipal
     Jwt jwt,

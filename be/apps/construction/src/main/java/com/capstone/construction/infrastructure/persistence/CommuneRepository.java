@@ -8,7 +8,9 @@ import java.util.Optional;
 
 @Repository
 public interface CommuneRepository extends JpaRepository<Commune, String> {
-    Optional<Commune> findByName(String name);
+  Optional<Commune> findByName(String name);
 
-    boolean existsByName(String name);
+  boolean existsByName(String name);
+
+  boolean existsByNameIgnoreCase(String name);
 }

@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface WaterMeterTypeRepository extends JpaRepository<WaterMeterType, String> {
+    boolean existsByNameIgnoreCase(String name);
 }
-

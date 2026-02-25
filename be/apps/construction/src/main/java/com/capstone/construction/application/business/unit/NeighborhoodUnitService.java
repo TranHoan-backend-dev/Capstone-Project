@@ -6,13 +6,13 @@ import com.capstone.construction.application.dto.response.PageResponse;
 import org.springframework.data.domain.Pageable;
 
 public interface NeighborhoodUnitService {
-    NeighborhoodUnitResponse createUnit(NeighborhoodUnitRequest request);
+  void createUnit(NeighborhoodUnitRequest request);
 
-    NeighborhoodUnitResponse updateUnit(String id, NeighborhoodUnitRequest request);
+  NeighborhoodUnitResponse updateUnit(String id, NeighborhoodUnitRequest request);
 
-    void deleteUnit(String id);
+  void deleteUnit(String id);
 
-    NeighborhoodUnitResponse getUnitById(String id);
+  NeighborhoodUnitResponse getUnitById(String id);
 
-    PageResponse<NeighborhoodUnitResponse> getAllUnits(Pageable pageable);
+  PageResponse<NeighborhoodUnitResponse> getAllUnits(Pageable pageable);
 }

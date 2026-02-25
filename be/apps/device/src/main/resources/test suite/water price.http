@@ -1,0 +1,140 @@
+@uri = http://localhost:9006/api/v1/water-prices
+@keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
+@client_secret=
+
+### get token
+POST {{keycloak}}/token
+Content-Type: application/x-www-form-urlencoded
+Accept: application/json
+
+grant_type=password&
+client_id=&
+client_secret={{client_secret}}&
+username=&
+password=&
+scope=openid
+
+> {%
+  client.global.set("access_token", response.body.access_token);
+  client.global.set("refresh_token", response.body.refresh_token);
+%}
+
+### C
+### Case 1: Tạo mới bảng giá nước thành công
+POST {{uri}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "usageTarget": "DOMESTIC",
+  "tax": 5.0,
+  "environmentPrice": 1000.00,
+  "applicationPeriod": "2024-01-01",
+  "expirationDate": "2024-12-31",
+  "description": "Giá nước sinh hoạt năm 2024"
+}
+
+### Case 2: Tạo thất bại - Thiếu thông tin bắt buộc (usageTarget, tax)
+POST {{uri}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "environmentPrice": 1000.00,
+  "applicationPeriod": "2024-01-01"
+}
+
+### Case 3: Tạo thất bại - Giá trị âm không hợp lệ (tax < 0)
+POST {{uri}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "usageTarget": "INDUSTRIAL",
+  "tax": -1.0,
+  "environmentPrice": 2000.00,
+  "applicationPeriod": "2024-01-01",
+  "expirationDate": "2024-12-31"
+}
+
+### Case 4: Tạo thất bại - Không hợp lệ format ngày tháng
+POST {{uri}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "usageTarget": "COMMERCIAL",
+  "tax": 10.0,
+  "environmentPrice": 1500.00,
+  "applicationPeriod": "01-01-2024",
+  "expirationDate": "2024/12/31"
+}
+
+### U
+@priceId = 00000000-0000-0000-0000-B00000000001
+
+### Case 1: Cập nhật thành công
+PUT {{uri}}/{{priceId}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "usageTarget": "DOMESTIC",
+  "tax": 8.0,
+  "description": "Giá nước sinh hoạt năm 2024 (Đã điều chỉnh thuế)"
+}
+
+### Case 2: Cập nhật thất bại - ID không tồn tại
+PUT {{uri}}/invalid-uuid-price
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "tax": 10.0
+}
+
+### D
+### Case 1: Xóa thành công
+DELETE {{uri}}/{{priceId}}
+Authorization: Bearer {{access_token}}
+
+### Case 2: Xóa thất bại - ID không tồn tại
+DELETE {{uri}}/invalid-price-id
+Authorization: Bearer {{access_token}}
+
+### R
+### get all, missing all params
+GET {{uri}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+### get all, pageable
+GET {{uri}}?page=0&size=15
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+### get all, filter
+GET {{uri}}?keyword=2025
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+### get all, filter
+GET {{uri}}?keyword=2025-10-10
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+### get all, pageable and filter
+GET {{uri}}?page=0&size=15&keyword=2025
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+### Lấy chi tiết theo ID
+GET {{uri}}/{{priceId}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json

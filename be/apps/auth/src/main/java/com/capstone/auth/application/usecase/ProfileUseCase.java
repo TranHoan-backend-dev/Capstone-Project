@@ -12,7 +12,6 @@ import com.capstone.auth.infrastructure.config.Constant;
 import com.capstone.auth.infrastructure.service.GcsService;
 import com.capstone.auth.infrastructure.utils.AuthUtils;
 import com.capstone.common.annotation.AppLog;
-import com.capstone.common.utils.IdEncoder;
 import com.capstone.common.utils.Utils;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -120,7 +119,7 @@ public class ProfileUseCase {
       !request.address().equalsIgnoreCase(profile.address())) ? request.address() : profile.address());
 
     newProfile.setGender(request.gender() != null ? request.gender() : profile.gender());
-    newProfile.setProfileId(IdEncoder.decode(profile.id()));
+    newProfile.setProfileId(profile.id());
 
     return returnUserProfile(pSrv.updateProfile(newProfile), user);
   }
