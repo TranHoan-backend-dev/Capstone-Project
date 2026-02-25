@@ -10,6 +10,7 @@ import CustomSelect from "@/components/ui/custom/CustomSelect";
 import { ROLE_META } from "@/config/role.config";
 import { Role } from "@/constants/roles";
 import { CallToast } from "@/components/ui/CallToast";
+import { formatDateProfile } from "@/utils/format";
 
 interface EmployeeProfileProps {
   data: EmployeeProfileData;
@@ -36,16 +37,16 @@ const EmployeeProfile = ({ data }: EmployeeProfileProps) => {
   const handleSave = async () => {
     try {
       const payload = {
-        fullname: formData.fullname,
+        fullName: formData.fullname,
         phoneNumber: formData.phoneNumber,
-        avatarUrl: formData.avatarUrl,
-        gender: formData.gender,
-        birthday: formData.birthday,
+        gender: formData.gender === "true",
+        birthdate: formatDateProfile(formData.birthday),
         address: formData.address,
       };
 
+      console.log("payload date: " + payload.birthdate);
       const res = await fetch("/api/auth/me", {
-        method: "POST",
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
@@ -103,7 +104,7 @@ const EmployeeProfile = ({ data }: EmployeeProfileProps) => {
       formDataUpload.append("avatar", file);
 
       const res = await fetch("/api/auth/avatar", {
-        method: "PUT",
+        method: "PATCH",
         body: formDataUpload,
       });
 

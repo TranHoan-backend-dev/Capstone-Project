@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAccessToken } from "@/utils/getAccessToken";
 import { updateAvatar } from "@/services/auth.service";
 
-export async function PUT(req: NextRequest) {
+export async function PATCH(req: NextRequest) {
   try {
     const accessToken = getAccessToken(req);
     if (!accessToken) {

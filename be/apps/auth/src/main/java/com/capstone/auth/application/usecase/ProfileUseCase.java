@@ -104,7 +104,7 @@ public class ProfileUseCase {
     if (request.birthdate() != null &&
       !request.birthdate().isEmpty() &&
       !request.birthdate().isBlank()) {
-      if (Utils.isLocalDate(request.birthdate(), DateTimeFormatter.ISO_LOCAL_DATE)) {
+      if (!Utils.isLocalDate(request.birthdate(), DateTimeFormatter.ISO_LOCAL_DATE)) {
         throw new IllegalArgumentException(Constant.PT_25);
       }
       newProfile.setBirthday(

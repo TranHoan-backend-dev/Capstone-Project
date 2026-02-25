@@ -6,3 +6,8 @@ export const formatVND = (value: number | string) => {
 
   return `${number.toLocaleString("en-US")} VND`;
 };
+
+export const formatDateProfile = (date: string) => {
+  if (!date) return null;
+  return new Date(date).toISOString().split("T")[0];
+};

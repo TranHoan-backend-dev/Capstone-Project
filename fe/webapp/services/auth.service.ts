@@ -1,5 +1,6 @@
 import axiosBase from "@/lib/axios/axios-base";
 import axios from "axios";
+import FormData from "form-data";
 import { API_GATEWAY_URL } from "@/utils/constraints";
 import {
   ApiResponse,
@@ -83,7 +84,7 @@ export const updateProfileEmployee = async (
   payload: Partial<EmployeeProfileUpdatePayload>,
   accessToken: string,
 ): Promise<EmployeeProfileUpdatePayload> => {
-  const response = await axios.post<ApiResponse<EmployeeProfileUpdatePayload>>(
+  const response = await axios.patch<ApiResponse<EmployeeProfileUpdatePayload>>(
     `${API_GATEWAY_URL}/auth/me`,
     payload,
     {
@@ -96,12 +97,16 @@ export const updateProfileEmployee = async (
 };
 
 export const updateAvatar = async (file: File, accessToken: string) => {
-  const formData = new FormData();
-  formData.append("avatar", file);
+  const bytes = await file.arrayBuffer();
+  const buffer = Buffer.from(bytes);
 
-  const response = await axios.put(`${API_GATEWAY_URL}/auth/me`, formData, {
+  const formData = new FormData();
+  formData.append("avatar", buffer, file.name);
+
+  const response = await axios.patch(`${API_GATEWAY_URL}/auth/me`, formData, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "multipart/form-data",
     },
   });
 

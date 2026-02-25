@@ -1,4 +1,7 @@
-import { getProfileEmployee, updateProfileEmployee } from "@/services/auth.service";
+import {
+  getProfileEmployee,
+  updateProfileEmployee,
+} from "@/services/auth.service";
 import { keycloakRefreshToken } from "@/services/keycloak.service";
 import { getAccessToken } from "@/utils/getAccessToken";
 import { getRefreshToken } from "@/utils/getRefreshToken";
@@ -8,14 +11,13 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   try {
     const accessToken = getAccessToken(req);
-   
+
     if (!accessToken) {
       return NextResponse.json(
         { message: "Không có access token" },
-        { status: 401 }
+        { status: 401 },
       );
     }
-
 
     try {
       const profile = await getProfileEmployee(accessToken);
@@ -23,45 +25,41 @@ export async function GET(req: NextRequest) {
     } catch (error: any) {
       if (error?.response?.status === 401) {
         const refreshToken = getRefreshToken(req);
-       
+
         if (refreshToken) {
           try {
             const tokenRes = await keycloakRefreshToken(refreshToken);
-           
+
             const profile = await getProfileEmployee(tokenRes.access_token);
-           
+
             const response = NextResponse.json(profile);
             setAuthCookies(response, tokenRes);
-           
+
             return response;
           } catch (refreshError) {
             return NextResponse.json(
               { message: "Refresh token expired" },
-              { status: 401 }
+              { status: 401 },
             );
           }
         }
       }
-     
+
       throw error;
     }
   } catch (error) {
-    return NextResponse.json(
-      { message: "Lỗi hệ thống" },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Lỗi hệ thống" }, { status: 500 });
   }
 }
 
-export async function POST(req: NextRequest) {
+export async function PATCH(req: NextRequest) {
   try {
     const body = await req.json();
     const allowedPayload = {
-      avatarUrl: body.avatarUrl,
-      fullName: body.fullname,
+      fullName: body.fullName,
       phoneNumber: body.phoneNumber,
       gender: body.gender,
-      birthdate: body.birthday,
+      birthdate: body.birthdate,
       address: body.address,
     };
 
