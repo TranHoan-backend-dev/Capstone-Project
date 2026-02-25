@@ -1,0 +1,117 @@
+@uri = http://localhost:9006/api/v1/materials
+@keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
+@client_secret=
+
+### get token
+POST {{keycloak}}/token
+Content-Type: application/x-www-form-urlencoded
+Accept: application/json
+
+grant_type=password&
+client_id=&
+client_secret={{client_secret}}&
+username=&
+password=&
+scope=openid
+
+> {%
+  client.global.set("access_token", response.body.access_token);
+  client.global.set("refresh_token", response.body.refresh_token);
+%}
+
+### C
+### Case 1: Tạo vật tư mới thành công
+POST {{uri}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "laborCode": "MAT-001",
+  "jobContent": "Đào đất bằng thủ công lớp đất II",
+  "price": 150000.00,
+  "laborPrice": 120000.00,
+  "laborPriceAtRuralCommune": 110000.00,
+  "constructionMachineryPrice": 50000.00,
+  "constructionMachineryPriceAtRuralCommune": 45000.00,
+  "groupId": "00000000-0000-0000-0000-200000000001",
+  "unitId": "00000000-0000-0000-0000-300000000001"
+}
+
+### Case 2: Tạo vật tư thất bại - Thiếu thông tin bắt buộc (laborCode, jobContent)
+POST {{uri}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "price": 150000.00,
+  "groupId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "unitId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+}
+
+### Case 3: Tạo vật tư thất bại - Giá không hợp lệ (price < 1)
+POST {{uri}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "laborCode": "MAT-002",
+  "jobContent": "Đào đất bằng thủ công",
+  "price": -100,
+  "laborPrice": 120000.00,
+  "laborPriceAtRuralCommune": 110000.00,
+  "constructionMachineryPrice": 50000.00,
+  "constructionMachineryPriceAtRuralCommune": 45000.00,
+  "groupId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "unitId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+}
+
+### Case 4: Tạo vật tư thất bại - GroupId hoặc UnitId không tồn tại
+POST {{uri}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "laborCode": "MAT-003",
+  "jobContent": "Đào đất bằng thủ công",
+  "price": 100000,
+  "laborPrice": 80000,
+  "laborPriceAtRuralCommune": 75000,
+  "constructionMachineryPrice": 20000,
+  "constructionMachineryPriceAtRuralCommune": 18000,
+  "groupId": "non-existent-id",
+  "unitId": "non-existent-id"
+}
+
+### R
+
+### U
+### Case 1: Cập nhật vật tư thành công
+@materialId = c27cdb9b-0192-4396-9555-e428b5b32fc2
+PUT {{uri}}/{{materialId}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "jobContent": "Đào đất bằng thủ công lớp đất III (Updated)",
+  "price": 160000.00,
+  "laborPrice": 130000.00
+}
+
+### Case 2: Cập nhật vật tư thất bại - ID không tồn tại
+PUT {{uri}}/invalid-id
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "jobContent": "Test update not found",
+  "price": 160000.00
+}
+
+### D
+### Case 1: Xóa vật tư thành công
+DELETE {{uri}}/{{materialId}}
+Authorization: Bearer {{access_token}}
+
+### Case 2: Xóa vật tư thất bại - ID không tồn tại
+DELETE {{uri}}/invalid-id
+Authorization: Bearer {{access_token}}

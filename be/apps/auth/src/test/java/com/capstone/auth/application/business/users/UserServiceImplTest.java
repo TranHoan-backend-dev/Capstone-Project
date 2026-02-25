@@ -2,7 +2,7 @@ package com.capstone.auth.application.business.users;
 
 import com.capstone.auth.application.dto.request.FilterUsersRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
-import com.capstone.auth.application.exception.ExistingException;
+import com.capstone.common.exception.ExistingException;
 import com.capstone.auth.application.exception.NotExistingException;
 import com.capstone.auth.domain.model.EmployeeJob;
 import com.capstone.auth.domain.model.Profile;
@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Collections;
