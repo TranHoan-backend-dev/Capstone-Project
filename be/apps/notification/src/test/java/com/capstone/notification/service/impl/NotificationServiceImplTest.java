@@ -28,14 +28,13 @@ class NotificationServiceImplTest {
   void createNotification_savesAndReturnsResponse() {
     var request = new CreateNotificationRequest(
       "Payment received",
+      "",
       "/payments/123"
     );
 
-    when(notificationRepo.save(any(Notification.class))).thenAnswer(invocation -> {
-      var saved = (Notification) invocation.getArgument(0);
-      saved.setNotificationId("noti-1");
-      return saved;
-    });
+    when(notificationRepo.save(any(Notification.class))).thenAnswer(invocation ->
+      invocation.getArgument(0)
+    );
 
     var response = notificationService.createNotification(request);
 
@@ -58,7 +57,6 @@ class NotificationServiceImplTest {
   @Test
   void getNotificationsByIds_returnsBatchResponse() {
     var notification = Notification.builder()
-      .notificationId("noti-1")
       .message("Message 1")
       .link("/link-1")
       .status(false)

@@ -2,7 +2,6 @@ package com.capstone.auth.application.event.producer;
 
 import com.capstone.common.annotation.AppLog;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;

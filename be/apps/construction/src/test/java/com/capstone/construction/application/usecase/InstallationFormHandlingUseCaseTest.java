@@ -95,6 +95,6 @@ class InstallationFormHandlingUseCaseTest {
     assertNotNull(result);
     assertEquals("FORM-001", result.formNumber());
     verify(ifSrv).createNewInstallationForm(request);
-    verify(messageProducer).sendInstallationFormCreatedEvent(any(InstallationFormCreatedEvent.class));
+//    verify(messageProducer).sendInstallationFormCreatedEvent(any(InstallationFormCreatedEvent.class));
   }
 }

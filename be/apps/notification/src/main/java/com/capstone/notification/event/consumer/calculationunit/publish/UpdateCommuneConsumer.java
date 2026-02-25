@@ -1,6 +1,6 @@
 //package com.capstone.notification.event.consumer.calculationunit.publish;
 //
-//import com.capstone.notification.event.consumer.BaseEventConsumer;
+//import com.capstone.notification.event.websocket.BaseEventConsumer;
 //import com.capstone.notification.event.consumer.calculationunit.message.UpdateEventMessage;
 //import org.jspecify.annotations.NonNull;
 //import org.springframework.amqp.rabbit.annotation.RabbitListener;

@@ -18,10 +18,14 @@ import java.util.function.Consumer;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+// đơn giá vật tư
 public class Material {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  String labor_code; // ma hieu nhan cong
+  String materialId;
+
+  @Column(nullable = false)
+  String laborCode; // ma hieu nhan cong
 
   @Column(nullable = false)
   String jobContent;
@@ -67,15 +71,23 @@ public class Material {
   }
 
   public void setJobContent(String jobContent) {
-    Objects.requireNonNull(jobContent, Constant.ENT_04);
+    Objects.requireNonNull(jobContent, Constant.ENT_05);
     if (jobContent.trim().isEmpty()) {
-      throw new IllegalArgumentException(Constant.ENT_04);
+      throw new IllegalArgumentException(Constant.ENT_05);
     }
     this.jobContent = jobContent;
   }
 
+  public void setLaborCode(String value) {
+    Objects.requireNonNull(value, Constant.ENT_47);
+    if (value.trim().isEmpty()) {
+      throw new IllegalArgumentException(Constant.ENT_47);
+    }
+    this.laborCode = value;
+  }
+
   public void setPrice(BigDecimal price) {
-    requireNonNullAndNotEmpty(price, Constant.ENT_05);
+    requireNonNullAndNotEmpty(price, Constant.ENT_04);
     this.price = price;
   }
 
@@ -85,17 +97,17 @@ public class Material {
   }
 
   public void setLaborPriceAtRuralCommune(BigDecimal laborPriceAtRuralCommune) {
-    requireNonNullAndNotEmpty(laborPriceAtRuralCommune, Constant.ENT_07);
+    requireNonNullAndNotEmpty(laborPriceAtRuralCommune, Constant.ENT_08);
     this.laborPriceAtRuralCommune = laborPriceAtRuralCommune;
   }
 
   public void setConstructionMachineryPrice(BigDecimal constructionMachineryPrice) {
-    requireNonNullAndNotEmpty(constructionMachineryPrice, Constant.ENT_08);
+    requireNonNullAndNotEmpty(constructionMachineryPrice, Constant.ENT_10);
     this.constructionMachineryPrice = constructionMachineryPrice;
   }
 
   public void setConstructionMachineryPriceAtRuralCommune(BigDecimal constructionMachineryPriceAtRuralCommune) {
-    requireNonNullAndNotEmpty(constructionMachineryPriceAtRuralCommune, Constant.ENT_09);
+    requireNonNullAndNotEmpty(constructionMachineryPriceAtRuralCommune, Constant.ENT_21);
     this.constructionMachineryPriceAtRuralCommune = constructionMachineryPriceAtRuralCommune;
   }
 
@@ -122,6 +134,11 @@ public class Material {
 
   public static class SupplyBuilder {
     private final Material material = new Material();
+
+    public SupplyBuilder laborCode(String value) {
+      material.setLaborCode(value);
+      return this;
+    }
 
     public SupplyBuilder jobContent(String jobContent) {
       material.setJobContent(jobContent);

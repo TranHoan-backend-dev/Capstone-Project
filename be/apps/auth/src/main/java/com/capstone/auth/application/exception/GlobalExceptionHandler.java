@@ -1,5 +1,6 @@
 package com.capstone.auth.application.exception;
 
+import com.capstone.common.exception.ExistingException;
 import com.capstone.common.exception.InternalServerException;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
