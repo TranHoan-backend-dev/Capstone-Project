@@ -16,6 +16,8 @@ export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [mounted, setMounted] = useState(false);
   const [otp, setOtp] = useState("");
+  const STORAGE_KEY = "forgot_data";
+  const EXPIRE_TIME = 5 * 60 * 1000;
 
   const handleEmailSubmit = (submittedEmail: string) => {
     setEmail(submittedEmail);
@@ -28,25 +30,51 @@ export default function ForgotPasswordPage() {
   };
 
   useEffect(() => {
-    const navigationType = performance.getEntriesByType(
+    const nav = performance.getEntriesByType(
       "navigation",
     )[0] as PerformanceNavigationTiming;
 
-    if (navigationType?.type === "reload") {
-      const savedStep = localStorage.getItem(
-        "forgot_step",
-      ) as ForgotStep | null;
-      const savedEmail = localStorage.getItem("forgot_email");
+    if (nav?.type === "reload") {
+      const raw = localStorage.getItem(STORAGE_KEY);
 
-      if (savedStep) setStep(savedStep);
-      if (savedEmail) setEmail(savedEmail);
+      if (raw) {
+        const data = JSON.parse(raw);
+
+        const isExpired = Date.now() - data.time > EXPIRE_TIME;
+
+        if (!isExpired) {
+          setStep(data.step);
+          setEmail(data.email);
+          setOtp(data.otp || "");
+        } else {
+          localStorage.removeItem(STORAGE_KEY);
+        }
+      }
     } else {
-      localStorage.removeItem("forgot_step");
-      localStorage.removeItem("forgot_email");
+      localStorage.removeItem(STORAGE_KEY);
     }
 
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
+    const payload = {
+      step,
+      email,
+      otp,
+      time: Date.now(),
+    };
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+  }, [step, email, mounted]);
+
+  useEffect(() => {
+    if (step === "email") {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  }, [step]);
 
   useEffect(() => {
     if (step === "otp" && !email) {
@@ -57,24 +85,7 @@ export default function ForgotPasswordPage() {
       setStep("email");
     }
   }, [step, email, otp]);
-
-  useEffect(() => {
-    if (!mounted) return;
-    localStorage.setItem("forgot_step", step);
-  }, [step, mounted]);
-
-  useEffect(() => {
-    if (!mounted) return;
-    if (email) localStorage.setItem("forgot_email", email);
-  }, [email, mounted]);
-
-  useEffect(() => {
-    if (step === "email") {
-      localStorage.removeItem("forgot_step");
-      localStorage.removeItem("forgot_email");
-    }
-  }, [step]);
-
+  
   if (!mounted) {
     return (
       <div className="min-h-screen flex items-center justify-center">
