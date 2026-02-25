@@ -43,11 +43,11 @@ public abstract class GeneralEventConsumer<T> {
   /**
    * Entry point called by each subclass's {@code @RabbitListener} method.
    */
-  protected void handle(T event, @NonNull List<String> topics, String title) {
+  protected void handle(T event, @NonNull List<String> topics, String title, String link) {
     log.info("[{}] Received event: {}", getClass().getSimpleName(), event);
 
     var message = buildMessage(event);
-    var request = new CreateNotificationRequest(title, message, null);
+    var request = new CreateNotificationRequest(title, message, link);
     var content = notificationService.createNotification(request);
     log.info("[{}] Sending notification: {}", getClass().getSimpleName(), content);
 
