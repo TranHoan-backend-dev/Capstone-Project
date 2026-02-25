@@ -3,18 +3,18 @@
 import React, { useEffect, useMemo, useState } from "react";
 
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import { AccessRightsRecord } from "@/types";
-import { ACCESS_RIGHTS_COLUMNS } from "@/config/table-colum";
+import { AccessRightsItem } from "@/types";
 import { UserPermissionPanel } from "./user-permission-panel";
 import { Button, Tooltip } from "@heroui/react";
 import { DeleteIcon } from "@/config/chip-and-icon";
+import { ACCESS_RIGHTS_COLUMNS } from "@/config/table-columns";
 
 interface Props {
   username: string;
 }
 
 export const AccessRightsTable = ({ username }: Props) => {
-  const [data, setData] = useState<AccessRightsRecord[]>([]);
+  const [data, setData] = useState<AccessRightsItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [page, setPage] = useState(1);
@@ -92,7 +92,7 @@ export const AccessRightsTable = ({ username }: Props) => {
     fetchData();
   }, [page, formData, username]);
 
-  const handleSelectUser = (item: AccessRightsRecord) => {
+  const handleSelectUser = (item: AccessRightsItem) => {
     setSelectedUser((prev) =>
       prev?.id === item.id ? null : { id: item.id, username: item.username },
     );
@@ -109,7 +109,7 @@ export const AccessRightsTable = ({ username }: Props) => {
     ],
     [],
   );
-  const renderCell = (item: AccessRightsRecord, columnKey: string) => {
+  const renderCell = (item: AccessRightsItem, columnKey: string) => {
     switch (columnKey) {
       case "stt":
         return <span>{item.stt}</span>;

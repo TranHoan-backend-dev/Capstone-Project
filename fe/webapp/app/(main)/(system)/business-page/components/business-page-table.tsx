@@ -5,11 +5,11 @@ import React, { useEffect, useMemo, useState } from "react";
 
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import { DarkGreenChip, DarkRedChip, DeleteIcon } from "@/config/chip-and-icon";
-import { BusinessPageRecord } from "@/types";
-import { BUSINESS_PAGES_COLUMNS } from "@/config/table-colum";
+import { BusinessPageItem } from "@/types";
+import { BUSINESS_PAGES_COLUMNS } from "@/config/table-columns";
 
 export const BusinessPageTable = () => {
-  const [data, setData] = useState<BusinessPageRecord[]>([]);
+  const [data, setData] = useState<BusinessPageItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [page, setPage] = useState(1);
   const pageSize = 10;
@@ -42,7 +42,7 @@ export const BusinessPageTable = () => {
           items.map((item: any, index: number) => ({
             stt: (page - 1) * pageSize + index + 1,
             id: item.pageId,
-            nameBusinessPage: item.name,
+            name: item.name,
             status: item.activate ? "Hoạt động" : "Không hoạt động",
             creator: item.creator,
             updator: item.updator,
@@ -69,13 +69,13 @@ export const BusinessPageTable = () => {
     [],
   );
 
-  const renderCell = (item: BusinessPageRecord, columnKey: string) => {
+  const renderCell = (item: BusinessPageItem, columnKey: string) => {
     switch (columnKey) {
       case "stt":
         return <span>{item.stt}</span>;
 
       case "nameBusinessPage":
-        return <span className="font-semibold">{item.nameBusinessPage}</span>;
+        return <span className="font-semibold">{item.name}</span>;
 
       case "status": {
         const isActive = item.status === "Hoạt động";

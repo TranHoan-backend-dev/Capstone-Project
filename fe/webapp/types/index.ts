@@ -1,5 +1,6 @@
 import { SVGProps } from "react";
-
+export * from "./auth/index";
+export * from "./organization/index"
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
@@ -38,22 +39,6 @@ export interface EmployeeProfileUpdatePayload {
   phoneNumber: string;
   gender: string;
   birthdate: string;
-}
-
-export interface BusinessPageRecord {
-  id: string;
-  stt: number;
-  nameBusinessPage: string;
-  status: string;
-  creator: string;
-  updator: string;
-}
-
-export interface AccessRightsRecord {
-  id: string;
-  stt: number;
-  username: string;
-  fullname: string;
 }
 
 export interface EstimateItem {
@@ -210,4 +195,3 @@ export type FormField =
 export type OrderStage = "register" | "estimate" | "contract" | "construction";
 
 export type OrderStatus = "processing" | "pending" | "approved" | "rejected";
-
