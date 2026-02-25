@@ -19,6 +19,9 @@ import org.slf4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Objects;
 
 @AppLog
 @Component
@@ -35,6 +38,7 @@ public class InstallationFormHandlingUseCase {
     return ifSrv.getInstallationForms(pageable, request);
   }
 
+  @Transactional(rollbackFor = Exception.class)
   public NewInstallationFormResponse createNewInstallationRequest(@NonNull NewOrderRequest request) {
     log.info("UseCase is processing new installation request for form number: {}", request.formNumber());
 
@@ -43,16 +47,19 @@ public class InstallationFormHandlingUseCase {
       throw new ExistingItemException(Constant.SE_01);
     }
 
+    Objects.requireNonNull(request.numberOfHousehold(), Constant.PT_56);
+    Objects.requireNonNull(request.householdRegistrationNumber(), Constant.PT_57);
+
     var savedResponse = ifSrv.createNewInstallationForm(request);
 
     // Send notification event using the DTO data
-    var event = new InstallationFormCreatedEvent(
-      savedResponse.formNumber(),
-      savedResponse.customerName(),
-      savedResponse.address(),
-      savedResponse.phoneNumber(),
-      savedResponse.createdAt());
-    messageProducer.sendInstallationFormCreatedEvent(event);
+//    var event = new InstallationFormCreatedEvent(
+//      savedResponse.formNumber(),
+//      savedResponse.customerName(),
+//      savedResponse.address(),
+//      savedResponse.phoneNumber(),
+//      savedResponse.createdAt());
+//    messageProducer.send(event);
 
     log.info("Installation request finished successfully for form: {}", savedResponse.formNumber());
     return savedResponse;

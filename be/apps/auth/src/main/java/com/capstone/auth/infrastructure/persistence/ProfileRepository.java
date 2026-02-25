@@ -15,11 +15,13 @@ public interface ProfileRepository extends JpaRepository<Profile, String> {
 
   Optional<Profile> findByUsersUsername(String value);
 
+  boolean existsByPhoneNumber(String phoneNumber);
+
   @Modifying
   @Query("""
     update Profile
     set avatarUrl = :avatarUrl
     where profileId = :id
     """)
-  int updateAvatarByProfileId(@Param("id") String id, @Param("avatarUrl") String avatarUrl);
+  void updateAvatarByProfileId(@Param("id") String id, @Param("avatarUrl") String avatarUrl);
 }

@@ -1,11 +1,6 @@
 package com.capstone.auth.adapter;
 
-import com.capstone.auth.application.dto.request.ChangePasswordRequest;
-import com.capstone.auth.application.dto.request.CheckExistenceRequest;
-import com.capstone.auth.application.dto.request.ResetPasswordRequest;
-import com.capstone.auth.application.dto.request.SendOtpRequest;
-import com.capstone.auth.application.dto.request.SignupRequest;
-import com.capstone.auth.application.dto.request.VerifyOtpRequest;
+import com.capstone.auth.application.dto.request.*;
 import com.capstone.auth.application.dto.response.UserProfileResponse;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
@@ -26,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.NonFinal;
 import org.slf4j.Logger;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
@@ -50,22 +46,19 @@ public class AuthenticationController {
   Logger log;
 
   @Operation(summary = "Đăng ký tài khoản mới", description = "Đăng ký tài khoản người dùng mới với thông tin nhân viên bao gồm vai trò, phòng ban và mạng lưới cấp nước. Trả về WrapperApiResponse với data là null.")
-  @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Thông tin chi tiết cho tài khoản người dùng mới", required = true, content = @Content(schema = @Schema(implementation = SignupRequest.class)))
+  @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Thông tin chi tiết cho tài khoản người dùng mới", required = true, content = @Content(schema = @Schema(implementation = NewUserRequest.class)))
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Đăng ký thành công", content = @Content(mediaType = "application/json")),
     @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ - Xác thực thất bại hoặc tài khoản đã tồn tại", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "500", description = "Lỗi máy chủ nội bộ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PostMapping("/signup")
-  public ResponseEntity<?> signup(@RequestBody @Valid SignupRequest request)
+  @PreAuthorize("hasAuthority('IT_STAFF')")
+  public ResponseEntity<?> signup(@RequestBody @Valid NewUserRequest request)
     throws ExecutionException, InterruptedException {
     log.info("Signup request comes to endpoint: {}", request);
 
-    authUC.register(
-      request.username(), request.password(),
-      request.email(), request.roleId(), request.fullname(),
-      request.jobId(), request.businessPageIds(),
-      request.departmentId(), request.waterSupplyNetworkId());
+    authUC.register(request);
 
     return Utils.returnOkResponse("Create account successfully", null);
   }
@@ -138,7 +131,7 @@ public class AuthenticationController {
     @RequestBody @Valid ChangePasswordRequest request) {
     log.info("Change password request comes to endpoint: {}", jwt);
     var email = jwt.getClaim("email");
-    authUC.changePassword(email.toString(), request.oldPassword(), request.newPassword(),
+    authUC.changePassword(jwt.getSubject(), email.toString(), request.oldPassword(), request.newPassword(),
       request.confirmPassword());
 
     return Utils.returnOkResponse("Change password successfully", null);

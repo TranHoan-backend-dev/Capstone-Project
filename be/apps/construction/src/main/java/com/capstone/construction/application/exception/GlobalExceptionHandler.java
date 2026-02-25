@@ -32,6 +32,12 @@ public class GlobalExceptionHandler {
     return Utils.returnBadRequestResponse(ex.getMessage(), null);
   }
 
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<WrapperApiResponse> handleIllegalArgumentException(@NonNull IllegalArgumentException ex) {
+    log.error("Bad request error: {}", ex.getMessage());
+    return Utils.returnBadRequestResponse(ex.getMessage(), null);
+  }
+
   @ExceptionHandler(BadCredentialsException.class)
   public ResponseEntity<WrapperApiResponse> handleBadCredentialsException(@NonNull BadCredentialsException ex) {
     log.error("Auth error: {}", ex.getMessage());
@@ -53,7 +59,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<WrapperApiResponse> handleGlobalException(@NonNull Exception ex) {
-    log.error("Unexpected error occurred: ", ex);
+    log.error("Unexpected error occurred: {}", ex.getMessage());
     return Utils.returnInternalServerErrorResponse(ex.getMessage(), null);
   }
 

@@ -1,0 +1,34 @@
+@keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
+@client_secret=
+
+### get token
+POST {{keycloak}}/token
+Content-Type: application/x-www-form-urlencoded
+Accept: application/json
+
+grant_type=password&
+client_id=cmsn&
+client_secret={{client_secret}}&
+username=&
+password=&
+scope=openid
+
+> {%
+  client.global.set("access_token", response.body.access_token);
+  client.global.set("refresh_token", response.body.refresh_token);
+%}
+
+###
+@uri = http://localhost:9008/api/v1/departments
+
+# Happy case
+### Get the first page
+GET {{uri}}
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+# Happy case
+### Get the first page
+GET {{uri}}?keyword=02
+Authorization: Bearer {{access_token}}
+Accept: application/json

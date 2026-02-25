@@ -15,25 +15,48 @@ export default function ForgotPasswordPage() {
   const [step, setStep] = useState<ForgotStep>("email");
   const [email, setEmail] = useState("");
   const [mounted, setMounted] = useState(false);
+  const [otp, setOtp] = useState("");
 
   const handleEmailSubmit = (submittedEmail: string) => {
     setEmail(submittedEmail);
     setStep("otp");
   };
 
-  const handleOTPSubmit = () => {
+  const handleOTPSubmit = (verifiedOtp: string) => {
+    setOtp(verifiedOtp);
     setStep("password");
   };
 
   useEffect(() => {
-    const savedStep = localStorage.getItem("forgot_step") as ForgotStep | null;
-    const savedEmail = localStorage.getItem("forgot_email");
+    const navigationType = performance.getEntriesByType(
+      "navigation",
+    )[0] as PerformanceNavigationTiming;
 
-    if (savedStep) setStep(savedStep);
-    if (savedEmail) setEmail(savedEmail);
+    if (navigationType?.type === "reload") {
+      const savedStep = localStorage.getItem(
+        "forgot_step",
+      ) as ForgotStep | null;
+      const savedEmail = localStorage.getItem("forgot_email");
+
+      if (savedStep) setStep(savedStep);
+      if (savedEmail) setEmail(savedEmail);
+    } else {
+      localStorage.removeItem("forgot_step");
+      localStorage.removeItem("forgot_email");
+    }
 
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (step === "otp" && !email) {
+      setStep("email");
+    }
+
+    if (step === "password" && (!email || !otp)) {
+      setStep("email");
+    }
+  }, [step, email, otp]);
 
   useEffect(() => {
     if (!mounted) return;
@@ -44,6 +67,13 @@ export default function ForgotPasswordPage() {
     if (!mounted) return;
     if (email) localStorage.setItem("forgot_email", email);
   }, [email, mounted]);
+  
+  useEffect(() => {
+    if (step === "email") {
+      localStorage.removeItem("forgot_step");
+      localStorage.removeItem("forgot_email");
+    }
+  }, [step]);
 
   if (!mounted) {
     return (
@@ -86,7 +116,7 @@ export default function ForgotPasswordPage() {
               onSuccessAction={handleOTPSubmit}
             />
           )}
-          {step === "password" && <ResetPasswordForm email={email} />}
+          {step === "password" && <ResetPasswordForm email={email} otp={otp} />}
         </div>
 
         <div className="mt-6 text-center">

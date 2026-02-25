@@ -1,13 +1,13 @@
 package com.capstone.auth.adapter;
 
 import com.capstone.auth.application.dto.request.FilterUsersRequest;
+import com.capstone.auth.application.dto.request.NewUserRequest;
 import com.capstone.auth.application.dto.request.UpdateBusinessPageNamesRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.auth.application.usecase.ProfileUseCase;
 import com.capstone.auth.application.usecase.UsersUseCase;
-import com.capstone.common.utils.IdEncoder;
 import com.capstone.common.utils.Utils;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -64,14 +64,13 @@ public class AuthorizationController {
   @GetMapping("/employees")
   public ResponseEntity<WrapperApiResponse> getAllEmployees(
     @ParameterObject Pageable pageable,
-
-    @Parameter(description = "Filter criteria for users (isEnabled, username)")
-    FilterUsersRequest request
+    @Parameter(description = "Filter criteria for users (isEnabled, username)") FilterUsersRequest request
   ) {
     log.info("Getting all employees with page index {} and page size {}", pageable.getPageNumber(),
       pageable.getPageSize());
 
-    return Utils.returnOkResponse("Get all employees successfully", usersUseCase.getPaginatedListOfEmployees(pageable, request));
+    return Utils.returnOkResponse("Get all employees successfully",
+      usersUseCase.getPaginatedListOfEmployees(pageable, request));
   }
 
   @Operation(summary = "Lấy các trang web nghiệp vụ được ủy quyền cho nhân viên", description = """
@@ -79,7 +78,7 @@ public class AuthorizationController {
 
     API này được sử dụng để lấy các trang web/trang mà nhân viên có quyền truy cập.
 
-    Truy vấn bằng ID nhân viên (đã mã hóa).
+    Truy vấn bằng ID nhân viên.
     """)
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", description = "Đã truy xuất thành công danh sách các trang web nghiệp vụ được ủy quyền", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Object.class))),
@@ -88,13 +87,9 @@ public class AuthorizationController {
   })
   @GetMapping("/employees/{empId}/pages")
   public ResponseEntity<WrapperApiResponse> getBusinessPageNamesOfEmployees(
-    @Parameter(description = "ID được mã hóa của nhân viên", required = true)
-    @PathVariable
-    String empId
+    @Parameter(description = "ID của nhân viên", required = true) @PathVariable String empId
   ) {
     log.info("Getting pages of employee with id {}", empId);
-    empId = IdEncoder.decode(empId);
-
     return Utils.returnOkResponse("Get pages successfully", usersUseCase.getListOfPagesByEmployeeId(empId));
   }
 
@@ -119,8 +114,7 @@ public class AuthorizationController {
   @PutMapping("employees/pages")
   public ResponseEntity<WrapperApiResponse> updateBusinessPageNamesOfEmployees(
     @Parameter(description = "Danh sách các yêu cầu cập nhật chứa ID nhân viên và bộ ID trang được ủy quyền mới của họ.", required = true)
-    @RequestBody
-    List<UpdateBusinessPageNamesRequest> request
+    @RequestBody List<UpdateBusinessPageNamesRequest> request
   ) {
     log.info("Updating pages of employees");
     usersUseCase.updateBusinessPagesListOfEmployees(request);
@@ -134,18 +128,37 @@ public class AuthorizationController {
     @PathVariable @NotBlank @NotEmpty @NotNull String id
   ) {
     log.info("Fetching employee name by id: {}", id);
-    if (!Utils.isUUID(id)) {
-      id = IdEncoder.decode(id);
-    }
     return Utils.returnOkResponse("Get name of current employee successfully", profileUseCase.getFullNameById(id));
   }
 
+  @Operation(summary = "Kiểm tra sự tồn tại của nhân viên", description = """
+    Kiểm tra xem nhân viên có tồn tại trong hệ thống hay không thông qua ID.
+
+    Kết quả trả về là một giá trị boolean được bao bọc trong đối tượng WrapperApiResponse.
+
+    Yêu cầu quyền hạn: 'IT_STAFF' hoặc 'ORDER_RECEIVING_STAFF'.
+    """)
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Kiểm tra thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Boolean.class))),
+    @ApiResponse(responseCode = "401", description = "Không được phép - Người dùng chưa đăng nhập", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "403", description = "Truy cập bị từ chối - Không đủ quyền hạn", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "500", description = "Lỗi hệ thống", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
+  })
   @GetMapping("/employees/{authorId}")
-  public ResponseEntity<?> checkAuthorExisting(@PathVariable String authorId) {
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF')")
+  public ResponseEntity<WrapperApiResponse> checkAuthorExisting(
+    @Parameter(description = "ID của nhân viên cần kiểm tra", required = true)
+    @PathVariable String authorId
+  ) {
     log.info("Verifying existence of employee: {}", authorId);
-    if (!Utils.isUUID(authorId)) {
-      authorId = IdEncoder.decode(authorId);
-    }
-    return Utils.returnNoContentResponse("Check employee successfully", usersUseCase.checkIfEmployeeExists(authorId));
+    return Utils.returnOkResponse("Check employee successfully", usersUseCase.checkIfEmployeeExists(authorId));
+  }
+
+  @PostMapping("/employees/new")
+  public ResponseEntity<WrapperApiResponse> createNewEmployee(
+    @RequestBody NewUserRequest request
+  ) {
+    log.info("Creating new employee");
+    return Utils.returnCreatedResponse("Create new employee successfully");
   }
 }

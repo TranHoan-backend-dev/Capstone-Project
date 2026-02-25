@@ -23,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -42,13 +43,14 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   Logger log;
 
   @Override
+  @Transactional(rollbackFor = Exception.class)
   public NewInstallationFormResponse createNewInstallationForm(@NonNull NewOrderRequest request) {
     log.info("Service is creating new installation form: {}", request.formNumber());
 
     if (!checkAuthorExisting(request.createdBy())) {
       throw new IllegalArgumentException(Constant.PT_61);
-    } else if (!checkMeterExisting(request.overallWaterMeterId())) {
-      throw new IllegalArgumentException(Constant.PT_62);
+//    } else if (!checkMeterExisting(request.overallWaterMeterId())) {
+//      throw new IllegalArgumentException(Constant.PT_62);
     }
 
     var entity = InstallationForm.create(builder -> builder
@@ -128,7 +130,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       entity.getPhoneNumber(),
       entity.getScheduleSurveyAt() == null ? null : entity.getScheduleSurveyAt().toString(),
       entity.getCreatedAt().toString(),
-      fullName.data().toString(),
+      (fullName != null && fullName.data() != null) ? fullName.data().toString() : "Unknown",
       entity.getStatus()
     );
   }

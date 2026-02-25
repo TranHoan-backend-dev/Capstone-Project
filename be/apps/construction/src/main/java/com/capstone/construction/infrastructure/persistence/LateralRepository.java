@@ -8,7 +8,9 @@ import java.util.Optional;
 
 @Repository
 public interface LateralRepository extends JpaRepository<Lateral, String> {
-    Optional<Lateral> findByName(String name);
+  Optional<Lateral> findByName(String name);
 
-    boolean existsByName(String name);
+  boolean existsByName(String name);
+
+  boolean existsByNameIgnoreCase(String name);
 }

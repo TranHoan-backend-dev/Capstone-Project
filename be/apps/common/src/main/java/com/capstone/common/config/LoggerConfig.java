@@ -7,9 +7,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class LoggerConfig {
 
-    @Bean
-    @ConditionalOnMissingBean
-    public static LoggerPostProcessor loggerPostProcessor() {
-        return new LoggerPostProcessor();
-    }
+  @Bean
+  @ConditionalOnMissingBean
+  public static LoggerPostProcessor loggerPostProcessor() {
+    return new LoggerPostProcessor();
+  }
 }

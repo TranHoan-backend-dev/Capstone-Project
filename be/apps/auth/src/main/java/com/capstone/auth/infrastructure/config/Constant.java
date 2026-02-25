@@ -9,7 +9,7 @@ public final class Constant {
   public static final String PT_01 = "Email must follow the format <name>@<domain>";
   public static final String PT_02 = "Invalid password. Password must contain at least one number, one uppercase letter, one lowercase letter, one special character, and be at least 8 characters long";
   public static final String PT_03 = "Email must not be null or empty";
-  public static final String PT_04 = "Password must not be null or empty";
+  public static final String PT_04 = "Entity cannot be null";
   public static final String PT_05 = "Username must not be null or empty";
   public static final String PT_06 = "Role cannot be null or empty";
   public static final String PT_07 = "Role name cannot be null or empty";
@@ -41,4 +41,7 @@ public final class Constant {
   public static final String SE_06 = "Profile of this account is not initialized";
   public static final String SE_07 = "User is locked";
   public static final String SE_08 = "Role not found";
+  public static final String SE_09 = "Phone number is existing";
+  public static final String SE_10 = "Network is not existing";
+  public static final String SE_11 = "Department is not existing";
 }

@@ -6,13 +6,13 @@ import com.capstone.construction.application.dto.response.PageResponse;
 import org.springframework.data.domain.Pageable;
 
 public interface RoadmapService {
-    RoadmapResponse createRoadmap(RoadmapRequest request);
+  RoadmapResponse createRoadmap(RoadmapRequest request);
 
-    RoadmapResponse updateRoadmap(String id, RoadmapRequest request);
+  RoadmapResponse updateRoadmap(String id, RoadmapRequest request);
 
-    void deleteRoadmap(String id);
+  void deleteRoadmap(String id);
 
-    RoadmapResponse getRoadmapById(String id);
+  RoadmapResponse getRoadmapById(String id);
 
-    PageResponse<RoadmapResponse> getAllRoadmaps(Pageable pageable);
+  PageResponse<RoadmapResponse> getAllRoadmaps(Pageable pageable);
 }

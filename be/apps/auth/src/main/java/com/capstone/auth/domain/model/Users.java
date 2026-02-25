@@ -55,9 +55,6 @@ public class Users {
   Roles role;
 
   @Column(nullable = false)
-  String jobId;
-
-  @Column(nullable = false)
   String departmentId;
 
   @Column(nullable = false)
@@ -95,11 +92,6 @@ public class Users {
   public void setRole(Roles role) {
     Objects.requireNonNull(role, Constant.PT_06);
     this.role = role;
-  }
-
-  public void setJobId(String value) {
-    requireNonNullAndNotEmpty(value, Constant.PT_20);
-    this.jobId = value;
   }
 
   public void setDepartmentId(String departmentId) {
@@ -159,11 +151,6 @@ public class Users {
 
     public UsersBuilder departmentId(String departmentId) {
       instance.setDepartmentId(departmentId);
-      return this;
-    }
-
-    public UsersBuilder jobId(String jobId) {
-      instance.setJobId(jobId);
       return this;
     }
 

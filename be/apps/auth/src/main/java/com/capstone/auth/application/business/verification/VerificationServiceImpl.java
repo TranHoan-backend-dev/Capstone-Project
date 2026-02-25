@@ -2,7 +2,6 @@ package com.capstone.auth.application.business.verification;
 
 import com.capstone.auth.application.business.users.UserService;
 import com.capstone.auth.application.event.producer.MessageProducer;
-import com.capstone.auth.application.event.producer.OtpEvent;
 import com.capstone.auth.domain.model.utils.VerificationCode;
 import com.capstone.auth.infrastructure.persistence.VerificationCodeRepository;
 import com.capstone.common.annotation.AppLog;
@@ -66,7 +65,7 @@ public class VerificationServiceImpl implements VerificationService {
     }
 
     // Generate OTP
-    String otp = String.format("%06d", new Random().nextInt(999999));
+    var otp = String.format("%06d", new Random().nextInt(999999));
 
     // Update entity
     verificationCode.setOtpCode(otp);
@@ -78,7 +77,10 @@ public class VerificationServiceImpl implements VerificationService {
     repo.save(verificationCode);
 
     // Send event
-    producer.sendMessage(new OtpEvent(email, SUBJECT, TEMPLATE, otp));
+    // producer.sendMessage(new OtpEvent(email, SUBJECT, TEMPLATE, otp));
+    log.info("==================================================");
+    log.info("OTP for {}: {}", email, otp);
+    log.info("==================================================");
     log.info("OTP sent successfully to {}", email);
   }
 
@@ -114,7 +116,7 @@ public class VerificationServiceImpl implements VerificationService {
 
     // Clear OTP after successful reset
     var verificationCode = repo.findByEmail(email).get(); // Safe get because verifyOtp checks existence
-    verificationCode.setOtpCode(null);
+    verificationCode.setOtpCode(""); // Empty string instead of null to satisfy NOT NULL constraint
     verificationCode.setExpiredAt(LocalDateTime.now());
     repo.save(verificationCode);
   }

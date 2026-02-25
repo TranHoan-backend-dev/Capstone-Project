@@ -2,9 +2,8 @@ package com.capstone.device.adapter;
 
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
-import com.capstone.common.utils.IdEncoder;
 import com.capstone.common.utils.Utils;
-import com.capstone.device.application.business.boundary.MaterialService;
+import com.capstone.device.application.business.material.MaterialService;
 import com.capstone.device.application.dto.request.MaterialRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -37,8 +36,8 @@ public class MaterialController {
   @PostMapping
   public ResponseEntity<WrapperApiResponse> createMaterial(@RequestBody @Valid MaterialRequest request) {
     log.info("REST request to create material: {}", request.jobContent());
-    var response = materialService.createMaterial(request);
-    return Utils.returnCreatedResponse("Material created successfully", response);
+    materialService.createMaterial(request);
+    return Utils.returnCreatedResponse("Material created successfully");
   }
 
   @Operation(summary = "Update a material", description = "Updates details of an existing material record", responses = {
@@ -89,9 +88,6 @@ public class MaterialController {
   @GetMapping("/exist")
   public ResponseEntity<?> checkExistence(@RequestParam String id) {
     log.info("REST request to check existence of water meter: {}", id);
-    if (!Utils.isUUID(id)) {
-      id = IdEncoder.decode(id);
-    }
     return Utils.returnNoContentResponse("Check material id successfully", materialService.materialExists(id));
   }
 }

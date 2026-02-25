@@ -8,4 +8,6 @@ public interface NotificationService {
   NotificationResponse createNotification(CreateNotificationRequest request);
 
   NotificationBatchResponse getNotificationsByIds(java.util.List<String> notificationIds, int size);
+
+  NotificationResponse createBroadcastNotification(CreateNotificationRequest request);
 }

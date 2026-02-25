@@ -84,7 +84,7 @@ public class InstallationForm {
   FormProcessingStatus status;
 
   @Enumerated(EnumType.STRING)
-  @Column(nullable = false, columnDefinition = "jsonb")
+  @Column(nullable = false)
   CustomerType customerType;
 
   @ManyToOne(fetch = FetchType.EAGER)

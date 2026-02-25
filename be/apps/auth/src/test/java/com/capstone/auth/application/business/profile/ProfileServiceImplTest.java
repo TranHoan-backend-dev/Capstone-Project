@@ -3,7 +3,6 @@ package com.capstone.auth.application.business.profile;
 import com.capstone.auth.application.exception.NotExistingException;
 import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.infrastructure.persistence.ProfileRepository;
-import com.capstone.common.utils.IdEncoder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -29,27 +28,27 @@ class ProfileServiceImplTest {
   void getProfileById_returns_profile_dto_when_exists() {
     var id = "4f321e7e-3a04-4afa-82e5-4e54e005febe";
     var profile = new Profile(
-      id,
-      null,
-      "Nguyen Van A",
-      "avatar.png",
-      "Hanoi",
-      "0912345678",
-      true,
-      LocalDate.of(1990, 1, 1));
+        id,
+        null,
+        "Nguyen Van A",
+        "avatar.png",
+        "Hanoi",
+        "0912345678",
+        true,
+        LocalDate.of(1990, 1, 1));
 
     when(profileRepository.findById(id)).thenReturn(Optional.of(profile));
 
     var dto = profileService.getProfileById(id);
 
     assertNotNull(dto);
-    assertEquals(IdEncoder.encode(id), dto.id());
+    assertEquals(id, dto.id());
     assertEquals("Nguyen Van A", dto.fullname());
     assertEquals("avatar.png", dto.avatarUrl());
     assertEquals("Hanoi", dto.address());
     assertEquals("0912345678", dto.phoneNumber());
-    assertEquals("true", dto.gender());
-    assertEquals("1990-01-01", dto.birthday());
+    assertEquals(true, dto.gender());
+    assertEquals("1990-01-01", dto.birthday().toString());
   }
 
   @Test
@@ -64,14 +63,14 @@ class ProfileServiceImplTest {
   void getProfileByCredentials_calls_repo_by_email_when_email_pattern_matches() {
     var email = "test@example.com";
     var profile = new Profile(
-      "id-1",
-      null,
-      "Name",
-      null,
-      null,
-      "0912345678",
-      true,
-      null);
+        "id-1",
+        null,
+        "Name",
+        null,
+        null,
+        "0912345678",
+        true,
+        null);
 
     when(profileRepository.findByUsersEmail(email)).thenReturn(Optional.of(profile));
 
@@ -85,14 +84,14 @@ class ProfileServiceImplTest {
   void getProfileByCredentials_calls_repo_by_username_when_not_email() {
     var username = "testuser";
     var profile = new Profile(
-      "id-1",
-      null,
-      "Name",
-      null,
-      null,
-      "0912345678",
-      true,
-      null);
+        "id-1",
+        null,
+        "Name",
+        null,
+        null,
+        "0912345678",
+        true,
+        null);
 
     when(profileRepository.findByUsersUsername(username)).thenReturn(Optional.of(profile));
 
@@ -113,8 +112,8 @@ class ProfileServiceImplTest {
 
     assertEquals("", dto.avatarUrl());
     assertEquals("", dto.address());
-    assertEquals("", dto.gender());
-    assertEquals("", dto.birthday());
+    assertEquals("", dto.gender().toString());
+    assertEquals("", dto.birthday().toString());
   }
 
   @Test

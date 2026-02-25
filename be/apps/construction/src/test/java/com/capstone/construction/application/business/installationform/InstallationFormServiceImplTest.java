@@ -29,94 +29,94 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class InstallationFormServiceImplTest {
 
-    @Mock
-    private InstallationFormRepository ifRepo;
-    @Mock
-    private EmployeeService empSrv;
+  @Mock
+  private InstallationFormRepository ifRepo;
+  @Mock
+  private EmployeeService empSrv;
 
-    @InjectMocks
-    private InstallationFormServiceImpl service;
+  @InjectMocks
+  private InstallationFormServiceImpl service;
 
-    @Test
-    @DisplayName("should_ReturnAll_When_NoFilterProvided")
-    void should_ReturnAll_When_NoFilterProvided() {
-        // Given
-        var pageable = Pageable.unpaged();
-        var request = new FilterFormRequest(null, null, null);
+  @Test
+  @DisplayName("should_ReturnAll_When_NoFilterProvided")
+  void should_ReturnAll_When_NoFilterProvided() {
+    // Given
+    var pageable = Pageable.unpaged();
+    var request = new FilterFormRequest(null, null, null);
 
-        var entity = mock(InstallationForm.class);
-        when(entity.getCreatedBy()).thenReturn("user-id");
-        when(entity.getCreatedAt()).thenReturn(LocalDateTime.now());
-        when(entity.getScheduleSurveyAt()).thenReturn(LocalDate.now());
+    var entity = mock(InstallationForm.class);
+    when(entity.getCreatedBy()).thenReturn("user-id");
+    when(entity.getCreatedAt()).thenReturn(LocalDateTime.now());
+    when(entity.getScheduleSurveyAt()).thenReturn(LocalDate.now());
 
-        // Mock employee service response
-        when(empSrv.getEmployeeNameById("user-id")).thenReturn(
-                new WrapperApiResponse(200, "OK", "Employee Name", LocalDateTime.now()));
+    // Mock employee service response
+    when(empSrv.getEmployeeNameById("user-id")).thenReturn(
+      new WrapperApiResponse(200, "OK", "Employee Name", LocalDateTime.now()));
 
-        Page<InstallationForm> page = new PageImpl<>(List.of(entity));
-        when(ifRepo.findAll(pageable)).thenReturn(page);
+    Page<InstallationForm> page = new PageImpl<>(List.of(entity));
+    when(ifRepo.findAll(pageable)).thenReturn(page);
 
-        // When
-        Page<InstallationFormListResponse> result = service.getInstallationForms(pageable, request);
+    // When
+    Page<InstallationFormListResponse> result = service.getInstallationForms(pageable, request);
 
-        // Then
-        assertNotNull(result);
-        assertEquals(1, result.getTotalElements());
-        verify(ifRepo).findAll(pageable);
-        verify(ifRepo, never()).findAll(any(Specification.class), any(Pageable.class));
-    }
+    // Then
+    assertNotNull(result);
+    assertEquals(1, result.getTotalElements());
+    verify(ifRepo).findAll(pageable);
+    verify(ifRepo, never()).findAll(any(Specification.class), any(Pageable.class));
+  }
 
-    @Test
-    @DisplayName("should_ReturnFiltered_When_KeywordProvided")
-    void should_ReturnFiltered_When_KeywordProvided() {
-        // Given
-        var pageable = Pageable.unpaged();
-        var request = new FilterFormRequest("keyword", null, null);
+  @Test
+  @DisplayName("should_ReturnFiltered_When_KeywordProvided")
+  void should_ReturnFiltered_When_KeywordProvided() {
+    // Given
+    var pageable = Pageable.unpaged();
+    var request = new FilterFormRequest("keyword", null, null);
 
-        var entity = mock(InstallationForm.class);
-        when(entity.getCreatedBy()).thenReturn("user-id");
-        when(entity.getCreatedAt()).thenReturn(LocalDateTime.now());
-        when(entity.getScheduleSurveyAt()).thenReturn(LocalDate.now());
+    var entity = mock(InstallationForm.class);
+    when(entity.getCreatedBy()).thenReturn("user-id");
+    when(entity.getCreatedAt()).thenReturn(LocalDateTime.now());
+    when(entity.getScheduleSurveyAt()).thenReturn(LocalDate.now());
 
-        when(empSrv.getEmployeeNameById("user-id")).thenReturn(
-                new WrapperApiResponse(200, "OK", "Employee Name", LocalDateTime.now()));
+    when(empSrv.getEmployeeNameById("user-id")).thenReturn(
+      new WrapperApiResponse(200, "OK", "Employee Name", LocalDateTime.now()));
 
-        Page<InstallationForm> page = new PageImpl<>(List.of(entity));
-        when(ifRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(page);
+    Page<InstallationForm> page = new PageImpl<>(List.of(entity));
+    when(ifRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(page);
 
-        // When
-        Page<InstallationFormListResponse> result = service.getInstallationForms(pageable, request);
+    // When
+    Page<InstallationFormListResponse> result = service.getInstallationForms(pageable, request);
 
-        // Then
-        assertNotNull(result);
-        assertEquals(1, result.getTotalElements());
-        verify(ifRepo).findAll(any(Specification.class), eq(pageable));
-    }
+    // Then
+    assertNotNull(result);
+    assertEquals(1, result.getTotalElements());
+    verify(ifRepo).findAll(any(Specification.class), eq(pageable));
+  }
 
-    @Test
-    @DisplayName("should_ReturnFiltered_When_DatesProvided")
-    void should_ReturnFiltered_When_DatesProvided() {
-        // Given
-        var pageable = Pageable.unpaged();
-        var request = new FilterFormRequest(null, "2023-01-01", "2023-01-31");
+  @Test
+  @DisplayName("should_ReturnFiltered_When_DatesProvided")
+  void should_ReturnFiltered_When_DatesProvided() {
+    // Given
+    var pageable = Pageable.unpaged();
+    var request = new FilterFormRequest(null, "2023-01-01", "2023-01-31");
 
-        var entity = mock(InstallationForm.class);
-        when(entity.getCreatedBy()).thenReturn("user-id");
-        when(entity.getCreatedAt()).thenReturn(LocalDateTime.now());
-        when(entity.getScheduleSurveyAt()).thenReturn(LocalDate.now());
+    var entity = mock(InstallationForm.class);
+    when(entity.getCreatedBy()).thenReturn("user-id");
+    when(entity.getCreatedAt()).thenReturn(LocalDateTime.now());
+    when(entity.getScheduleSurveyAt()).thenReturn(LocalDate.now());
 
-        when(empSrv.getEmployeeNameById("user-id")).thenReturn(
-                new WrapperApiResponse(200, "OK", "Employee Name", LocalDateTime.now()));
+    when(empSrv.getEmployeeNameById("user-id")).thenReturn(
+      new WrapperApiResponse(200, "OK", "Employee Name", LocalDateTime.now()));
 
-        Page<InstallationForm> page = new PageImpl<>(List.of(entity));
-        when(ifRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(page);
+    Page<InstallationForm> page = new PageImpl<>(List.of(entity));
+    when(ifRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(page);
 
-        // When
-        Page<InstallationFormListResponse> result = service.getInstallationForms(pageable, request);
+    // When
+    Page<InstallationFormListResponse> result = service.getInstallationForms(pageable, request);
 
-        // Then
-        assertNotNull(result);
-        assertEquals(1, result.getTotalElements());
-        verify(ifRepo).findAll(any(Specification.class), eq(pageable));
-    }
+    // Then
+    assertNotNull(result);
+    assertEquals(1, result.getTotalElements());
+    verify(ifRepo).findAll(any(Specification.class), eq(pageable));
+  }
 }

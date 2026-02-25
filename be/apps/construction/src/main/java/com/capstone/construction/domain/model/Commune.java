@@ -1,5 +1,6 @@
 package com.capstone.construction.domain.model;
 
+import com.capstone.construction.domain.enumerate.CommuneType;
 import jakarta.persistence.*;
 import com.capstone.construction.infrastructure.config.Constant;
 import lombok.*;
@@ -24,8 +25,9 @@ public class Commune {
   @Column(nullable = false, unique = true)
   String name;
 
+  @Enumerated(EnumType.STRING)
   @Column(nullable = false)
-  String type;
+  CommuneType type;
 
   @Column(nullable = false)
   LocalDateTime createdAt;
@@ -45,20 +47,16 @@ public class Commune {
   }
 
   public void setName(String name) {
-    requireNonNullAndNotEmpty(name, Constant.PT_21);
+    Objects.requireNonNull(name, Constant.PT_21);
+    if (name.trim().isEmpty()) {
+      throw new IllegalArgumentException(Constant.PT_21);
+    }
     this.name = name;
   }
 
-  public void setType(String type) {
-    requireNonNullAndNotEmpty(type, Constant.PT_22);
+  public void setType(CommuneType type) {
+    Objects.requireNonNull(type, Constant.PT_22);
     this.type = type;
-  }
-
-  private void requireNonNullAndNotEmpty(String value, String message) {
-    Objects.requireNonNull(value, message);
-    if (value.trim().isEmpty()) {
-      throw new IllegalArgumentException(message);
-    }
   }
 
   public static Commune create(Consumer<CommuneBuilder> builder) {
@@ -75,7 +73,7 @@ public class Commune {
       return this;
     }
 
-    public CommuneBuilder type(String type) {
+    public CommuneBuilder type(CommuneType type) {
       instance.setType(type);
       return this;
     }

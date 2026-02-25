@@ -31,10 +31,10 @@ import java.time.format.DateTimeFormatter;
 
 @AppLog
 @RestController
-@RequestMapping("/installation-forms")
 @RequiredArgsConstructor
-@Tag(name = "Installation Form", description = "Endpoints for managing installation forms")
+@RequestMapping("/installation-forms")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Installation Form", description = "Endpoints for managing installation forms")
 public class InstallationFormController {
   InstallationFormHandlingUseCase installationFormHandlingUseCase;
   @NonFinal
@@ -59,7 +59,7 @@ public class InstallationFormController {
 
     log.info("Successfully created installation form: {}", response.formNumber());
 
-    return Utils.returnCreatedResponse("Installation form created successfully", response);
+    return Utils.returnCreatedResponse("Installation form created successfully");
   }
 
   @Operation(summary = "Lấy danh sách đơn lắp đặt (có phân trang & lọc)", description = "API này cho phép lấy danh sách các đơn lắp đặt nước. Hỗ trợ phân trang và lọc theo từ khóa (tên khách hàng, địa chỉ) hoặc khoảng thời gian.", responses = {

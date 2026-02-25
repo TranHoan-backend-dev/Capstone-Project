@@ -1,5 +1,6 @@
 package com.capstone.construction.application.business.network;
 
+import com.capstone.common.annotation.AppLog;
 import com.capstone.construction.application.dto.request.catalog.WaterSupplyNetworkRequest;
 import com.capstone.construction.application.dto.response.catalog.WaterSupplyNetworkResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
@@ -8,46 +9,50 @@ import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRe
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
+@AppLog
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class WaterSupplyNetworkServiceImpl implements WaterSupplyNetworkService {
   WaterSupplyNetworkRepository networkRepository;
+  @NonFinal
+  Logger log;
 
   @Override
-  @Transactional
-  public WaterSupplyNetworkResponse createNetwork(@NonNull WaterSupplyNetworkRequest request) {
+  @Transactional(rollbackFor = Exception.class)
+  public void createNetwork(@NonNull WaterSupplyNetworkRequest request) {
     log.info("Creating new water supply network with name: {}", request.name());
 
     var network = WaterSupplyNetwork.create(builder -> builder
       .name(request.name()));
 
-    var saved = networkRepository.save(network);
-    return mapToResponse(saved);
+    networkRepository.save(network);
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public WaterSupplyNetworkResponse updateNetwork(String id, @NonNull WaterSupplyNetworkRequest request) {
     log.info("Updating water supply network with id: {}", id);
     var network = networkRepository.findById(id)
       .orElseThrow(() -> new IllegalArgumentException("Network not found with id: " + id));
 
-    network.setName(request.name());
+    if (request.name() != null && !request.name().isBlank()) {
+      network.setName(request.name());
+    }
 
     var saved = networkRepository.save(network);
     return mapToResponse(saved);
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public void deleteNetwork(String id) {
     log.info("Deleting water supply network with id: {}", id);
     if (!networkRepository.existsById(id)) {
@@ -65,10 +70,16 @@ public class WaterSupplyNetworkServiceImpl implements WaterSupplyNetworkService 
   }
 
   @Override
-  public PageResponse<WaterSupplyNetworkResponse> getAllNetworks(Pageable pageable) {
+  public PageResponse<WaterSupplyNetworkResponse> getAllNetworks(Pageable pageable, String keyword) {
     log.info("Fetching all water supply networks with pageable: {}", pageable);
-    var page = networkRepository.findAll(pageable);
+    var page = keyword == null ? networkRepository.findAll(pageable)
+      : networkRepository.findAllByNameContainsIgnoreCase(keyword, pageable);
     return PageResponse.fromPage(page, this::mapToResponse);
+  }
+
+  @Override
+  public boolean networkExists(String id) {
+    return networkRepository.existsById(id);
   }
 
   private WaterSupplyNetworkResponse mapToResponse(@NonNull WaterSupplyNetwork network) {

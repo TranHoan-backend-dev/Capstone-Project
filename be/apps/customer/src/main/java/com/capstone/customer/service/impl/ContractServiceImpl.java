@@ -26,7 +26,7 @@ public class ContractServiceImpl implements ContractService {
 
   @Override
   @Transactional
-  public ContractResponse createContract(ContractRequest request) {
+  public ContractResponse createContract(@NonNull ContractRequest request) {
     log.info("Creating contract with ID: {}", request.contractId());
     var customer = customerRepository.findById(request.customerId())
       .orElseThrow(() -> new IllegalArgumentException("Customer not found with ID: " + request.customerId()));
