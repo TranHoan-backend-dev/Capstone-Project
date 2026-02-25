@@ -56,7 +56,10 @@ rabbit-mq-config:
   actions:
     - update
     - delete
+  auth-routingKey: auth.individual-notification.create
+  auth-queue: auth.individual-notification.queue
 # spring:
+# data:
 # mongodb:
 # uri: mongodb://guest:guest@mongodb:27017/microservice_db?authSource=admin
 #  rabbitmq:

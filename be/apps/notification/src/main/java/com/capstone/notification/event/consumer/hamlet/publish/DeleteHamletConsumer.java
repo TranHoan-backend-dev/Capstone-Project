@@ -1,6 +1,7 @@
 package com.capstone.notification.event.consumer.hamlet.publish;
 
 import com.capstone.common.annotation.AppLog;
+import com.capstone.notification.event.producer.MessageProducer;
 import com.capstone.notification.event.websocket.GeneralEventConsumer;
 import com.capstone.notification.event.consumer.hamlet.message.DeleteEventMessage;
 import com.capstone.notification.event.websocket.Topic;
@@ -16,9 +17,12 @@ import java.util.List;
 public class DeleteHamletConsumer extends GeneralEventConsumer<DeleteEventMessage> {
   Logger log;
 
+  public DeleteHamletConsumer(MessageProducer producer) {
+    super(producer);
+  }
+
   @RabbitListener(queues = "${rabbit-mq-config.queue}.hamlet.delete")
-  @Override
-  public void handle(DeleteEventMessage event, @NonNull List<String> topics, String title) {
+  public void handle(DeleteEventMessage event) {
     super.handle(event, List.of(Topic.getTopic(Topic.GENERAL)), "Xóa đơn vị hành chính xã");
   }
 
@@ -26,9 +30,9 @@ public class DeleteHamletConsumer extends GeneralEventConsumer<DeleteEventMessag
   protected String buildMessage(@NonNull DeleteEventMessage event) {
     var data = event.data();
     var response = "Phòng IT vừa xóa đơn vị hành chính tuyến xã: %s %s, xã %s".formatted(
-      data.type().equals("hamlet") ? "Thôn" : "Làng",
-      data.name(),
-      data.commune());
+        data.type().equals("hamlet") ? "Thôn" : "Làng",
+        data.name(),
+        data.commune());
     log.info(response);
     return response;
   }

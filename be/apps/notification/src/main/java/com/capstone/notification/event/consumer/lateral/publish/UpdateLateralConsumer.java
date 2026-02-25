@@ -1,6 +1,7 @@
 package com.capstone.notification.event.consumer.lateral.publish;
 
 import com.capstone.common.annotation.AppLog;
+import com.capstone.notification.event.producer.MessageProducer;
 import com.capstone.notification.event.websocket.GeneralEventConsumer;
 import com.capstone.notification.event.consumer.lateral.message.UpdateEventMessage;
 import com.capstone.notification.event.websocket.Topic;
@@ -16,9 +17,12 @@ import java.util.List;
 public class UpdateLateralConsumer extends GeneralEventConsumer<UpdateEventMessage> {
   Logger log;
 
+  public UpdateLateralConsumer(MessageProducer producer) {
+    super(producer);
+  }
+
   @RabbitListener(queues = "${rabbit-mq-config.queue}.lateral.update")
-  @Override
-  public void handle(UpdateEventMessage event, @NonNull List<String> topics, String title) {
+  public void handle(UpdateEventMessage event) {
     super.handle(event, List.of(Topic.getTopic(Topic.GENERAL)), "Cập nhật nhánh tổng");
   }
 

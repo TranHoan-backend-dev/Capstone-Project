@@ -37,8 +37,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
-import org.keycloak.admin.client.KeycloakBuilder;
-import org.keycloak.OAuth2Constants;
+//import org.keycloak.admin.client.KeycloakBuilder;
+//import org.keycloak.OAuth2Constants;
 
 @AppLog
 @Component
@@ -63,29 +63,29 @@ public class AuthUseCase {
   @Value("${sending_mail.account_creation.template}")
   String TEMPLATE;
 
-  @Value("${keycloak.realms:master}")
+  @Value("${keycloak.realms}")
   @NonFinal
   String realm;
 
-  @Value("${keycloak.server-url}")
-  @NonFinal
-  String serverUrl;
+//  @Value("${keycloak.server-url}")
+//  @NonFinal
+//  String serverUrl;
 
-  @Value("${keycloak.client-id}")
+//  @Value("${keycloak.client-id}")
+//  @NonFinal
+//  String clientId;
+
+//  @Value("${keycloak.client-secret}")
+//  @NonFinal
+//  String clientSecret;
+
+  @Value("${keycloak.client-id-admin}")
   @NonFinal
   String clientId;
 
-  @Value("${keycloak.client-secret}")
+  @Value("${keycloak.client-secret-admin}")
   @NonFinal
   String clientSecret;
-
-//  @Value("${keycloak.client-id-admin}")
-//  @NonFinal
-//  String clientId;
-//
-//  @Value("${keycloak.client-secret-admin}")
-//  @NonFinal
-//  String clientSecret;
 
   public UserProfileResponse login(String userId, String email, String username) {
     log.info("Handling login business with userId={} and email={}", userId, email);
@@ -159,22 +159,23 @@ public class AuthUseCase {
 
   private void verifyOldPassword(String email, String oldPassword) {
     log.info("Verifying old password for email: {}", email);
-    try (Keycloak tempKeycloak = KeycloakBuilder.builder()
-        .serverUrl(serverUrl)
-        .realm(realm)
-        .clientId(clientId)
-        .clientSecret(clientSecret)
-        .username(email)
-        .password(oldPassword)
-        .grantType(OAuth2Constants.PASSWORD)
-        .build()) {
+//    try (Keycloak tempKeycloak = KeycloakBuilder.builder()
+//        .serverUrl(serverUrl)
+//        .realm(realm)
+//        .clientId(clientId)
+//        .clientSecret(clientSecret)
+//        .username(email)
+//        .password(oldPassword)
+//        .grantType(OAuth2Constants.PASSWORD)
+//        .build()) {
       // Thử lấy token để xác thực mật khẩu
-      tempKeycloak.tokenManager().getAccessToken();
-      log.info("Old password verification successful for email: {}", email);
-    } catch (Exception e) {
-      log.error("Old password verification failed for email: {}", email);
-      throw new IllegalArgumentException("Mật khẩu cũ không chính xác");
-    }
+//      tempKeycloak.tokenManager().getAccessToken();
+    keycloak.tokenManager().getAccessToken();
+//      log.info("Old password verification successful for email: {}", email);
+//    } catch (Exception e) {
+//      log.error("Old password verification failed for email: {}", email);
+//      throw new IllegalArgumentException("Mật khẩu cũ không chính xác");
+//    }
   }
 
   private void updatePasswordOnKeycloak(String userId, String newPassword) {
@@ -265,7 +266,7 @@ public class AuthUseCase {
   }
   // </editor-fold>
 
-  private UserProfileResponse returnUserProfile(@NonNull ProfileDTO profile, @NonNull UserDTO user) {
+  private @NonNull UserProfileResponse returnUserProfile(@NonNull ProfileDTO profile, @NonNull UserDTO user) {
     return new UserProfileResponse(
       profile.fullname(),
       profile.avatarUrl(),

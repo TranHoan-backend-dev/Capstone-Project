@@ -1,6 +1,7 @@
 package com.capstone.notification.event.consumer.road.publish;
 
 import com.capstone.common.annotation.AppLog;
+import com.capstone.notification.event.producer.MessageProducer;
 import com.capstone.notification.event.websocket.GeneralEventConsumer;
 import com.capstone.notification.event.consumer.road.message.DeleteEventMessage;
 import com.capstone.notification.event.websocket.Topic;
@@ -16,9 +17,12 @@ import java.util.List;
 public class DeleteRoadConsumer extends GeneralEventConsumer<DeleteEventMessage> {
   Logger log;
 
+  public DeleteRoadConsumer(MessageProducer producer) {
+    super(producer);
+  }
+
   @RabbitListener(queues = "${rabbit-mq-config.queue}.road.delete")
-  @Override
-  public void handle(DeleteEventMessage event, @NonNull List<String> topics, String title) {
+  public void handle(DeleteEventMessage event) {
     super.handle(event, List.of(Topic.getTopic(Topic.GENERAL)), "Xóa đường phố");
   }
 

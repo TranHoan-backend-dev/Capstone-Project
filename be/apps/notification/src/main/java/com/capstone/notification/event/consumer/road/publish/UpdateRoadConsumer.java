@@ -1,6 +1,7 @@
 package com.capstone.notification.event.consumer.road.publish;
 
 import com.capstone.common.annotation.AppLog;
+import com.capstone.notification.event.producer.MessageProducer;
 import com.capstone.notification.event.websocket.GeneralEventConsumer;
 import com.capstone.notification.event.consumer.road.message.UpdateEventMessage;
 import com.capstone.notification.event.websocket.Topic;
@@ -16,9 +17,12 @@ import java.util.List;
 public class UpdateRoadConsumer extends GeneralEventConsumer<UpdateEventMessage> {
   Logger log;
 
+  public UpdateRoadConsumer(MessageProducer producer) {
+    super(producer);
+  }
+
   @RabbitListener(queues = "${rabbit-mq-config.queue}.road.update")
-  @Override
-  public void handle(UpdateEventMessage event, @NonNull List<String> topics, String title) {
+  public void handle(UpdateEventMessage event) {
     super.handle(event, List.of(Topic.getTopic(Topic.GENERAL)), "Cập nhật đường phố");
   }
 
@@ -26,9 +30,9 @@ public class UpdateRoadConsumer extends GeneralEventConsumer<UpdateEventMessage>
   protected String buildMessage(@NonNull UpdateEventMessage event) {
     var data = event.data();
     var response = """
-      Phòng IT vừa cập nhật một tên đường:
-      Cũ: %s
-      Mới: %s""".formatted(data.oldName(), data.newName());
+        Phòng IT vừa cập nhật một tên đường:
+        Cũ: %s
+        Mới: %s""".formatted(data.oldName(), data.newName());
     log.info(response);
     return response;
   }
