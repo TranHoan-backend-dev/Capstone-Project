@@ -1,5 +1,6 @@
 package com.capstone.notification.controller;
 
+import com.capstone.common.annotation.AppLog;
 import com.capstone.notification.dto.request.CreateNotificationRequest;
 import com.capstone.notification.dto.response.WrapperApiResponse;
 import com.capstone.notification.service.boundary.NotificationService;
@@ -10,7 +11,8 @@ import jakarta.validation.constraints.Positive;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import lombok.experimental.NonFinal;
+import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -24,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Slf4j
+@AppLog
 @RestController
 @Validated
 @RequiredArgsConstructor
@@ -32,6 +34,8 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class NotificationController {
   NotificationService notificationService;
+  @NonFinal
+  Logger log;
 
   @PostMapping("/notifications")
   public ResponseEntity<WrapperApiResponse> createNotification(
