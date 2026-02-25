@@ -38,8 +38,8 @@ public class RabbitMQConfig {
     List<Declarable> declarables = new ArrayList<>();
     declarables.add(exchange);
 
-    for (String entity : props.getEntities()) {
-      for (String action : props.getActions()) {
+    for (var entity : props.getEntities()) {
+      for (var action : props.getActions()) {
         Queue queue = new Queue(String.join(".", QUEUE_NAME, entity, action), true);
         declarables.add(queue);
         String routingKey = String.join(".", QUEUE_NAME, entity, action);
@@ -71,26 +71,4 @@ public class RabbitMQConfig {
   public RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
     return new RabbitAdmin(connectionFactory);
   }
-
-  // Luu tru tin nhan cho den khi co consumer su dung
-  // @Bean
-  // public Queue queue() {
-  // // duration false => tin nhan se mat neu khoi dong ung dung
-  // // duration true => tin nhan se ton tai vinh vien tren o dia cua rabbitmq
-  // return new Queue(QUEUE_NAME, false);
-  // }
-  //
-  // // dinh nghia diem gui tin nhan
-  // @Bean
-  // public TopicExchange exchange() {
-  // return new TopicExchange(EXCHANGE_NAME);
-  // }
-
-  // Lien ket Queue va Exchange dua tren routing key
-  // @Bean
-  // public Binding binding(Queue queue, TopicExchange exchange) {
-  // return BindingBuilder.bind(queue)
-  // .to(exchange)
-  // .with(ROUTING_KEY);
-  // }
 }
