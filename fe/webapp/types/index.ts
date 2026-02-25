@@ -1,4 +1,5 @@
 import { SVGProps } from "react";
+export * from "./organization/index"
 
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
@@ -38,15 +39,6 @@ export interface EmployeeProfileUpdatePayload {
   phoneNumber: string;
   gender: string;
   birthdate: string;
-}
-
-export interface BusinessPageRecord {
-  id: string;
-  stt: number;
-  nameBusinessPage: string;
-  status: string;
-  creator: string;
-  updator: string;
 }
 
 export interface EstimateItem {

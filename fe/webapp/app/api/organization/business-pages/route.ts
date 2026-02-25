@@ -14,7 +14,19 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const page = Number(searchParams.get("page") ?? 0);
     const size = Number(searchParams.get("size") ?? 10);
-    const response = await ViewBusinessPageService(accessToken, page, size);
+    const filter = searchParams.get("filter") ?? "";
+    const isActiveParam = searchParams.get("isActive");
+
+    const isActive =
+      isActiveParam === null ? undefined : isActiveParam === "true";
+
+    const response = await ViewBusinessPageService(
+      accessToken,
+      page,
+      size,
+      filter,
+      isActive,
+    );
 
     return NextResponse.json(
       {

@@ -4,81 +4,141 @@ import { Button, Chip, Tooltip } from "@heroui/react";
 import React, { useEffect, useMemo, useState } from "react";
 
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import { DarkGreenChip, DarkRedChip, DeleteIcon } from "@/config/chip-and-icon";
-import { BusinessPageRecord } from "@/types";
-import { BUSINESS_PAGES_COLUMNS } from "@/config/table-colum";
+import {
+  DarkGreenChip,
+  DarkRedChip,
+  DeleteIcon,
+  EditIcon,
+} from "@/config/chip-and-icon";
+import {
+  BusinessPageItem,
+  BusinessPageResponse,
+  BusinessPageTableProps,
+} from "@/types";
+import { BUSINESS_PAGES_COLUMNS } from "@/config/table-columns";
 
-export const BusinessPageTable = () => {
-  const [data, setData] = useState<BusinessPageRecord[]>([]);
+export const BusinessPageTable = ({
+  filter,
+  isActive,
+  reloadKey,
+  onEdit,
+  onDelete,
+}: BusinessPageTableProps) => {
+  const [data, setData] = useState<BusinessPageItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [editingItem, setEditingItem] = useState<BusinessPageItem | null>(null);
+  const [openForm, setOpenForm] = useState(false);
+  const [loading, setLoading] = useState(true);
+
   const [page, setPage] = useState(1);
   const pageSize = 10;
-  const totalPages = Math.ceil(totalItems / pageSize);
-
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
 
     const fetchData = async () => {
       try {
+        const params = new URLSearchParams({
+          page: String(page - 1),
+          size: String(pageSize),
+        });
+
+        const trimmedKeyword = filter.trim();
+        if (trimmedKeyword) {
+          params.append("filter", trimmedKeyword);
+        }
+
+        if (isActive !== undefined && isActive !== null) {
+          params.append("isActive", String(isActive));
+        }
         const res = await fetch(
-          `/api/organization/business-pages?page=${page - 1}&size=${pageSize}`,
+          `/api/organization/business-pages?${params.toString()}`,
         );
+
         if (!res.ok) {
           console.error("Fetch failed", res.status);
           return;
         }
+
         const json = await res.json();
         const pageData = json?.data;
-        const items = json?.data?.items;
-        if (!Array.isArray(items)) {
-          setData([]);
-          return;
-        }
+        const items = pageData?.items ?? [];
+        setTotalItems(pageData?.totalItems ?? 0);
+        setTotalPages(pageData?.totalPages ?? 1);
 
-        setTotalItems(pageData.totalItems);
-        setData(
-          items.map((item: any, index: number) => ({
-            stt: (page - 1) * pageSize + index + 1,
+        const mapped = items.map(
+          (item: BusinessPageResponse, index: number) => ({
             id: item.pageId,
-            nameBusinessPage: item.name,
-            status: item.activate ? "Hoạt động" : "Không hoạt động",
+            stt: (page - 1) * pageSize + index + 1,
+            name: item.name,
+            status: item.activate,
             creator: item.creator,
             updator: item.updator,
-          })),
+          }),
         );
+        setData(mapped);
       } catch (e) {
         setData([]);
+        setTotalItems(0);
+        setTotalPages(1);
       } finally {
         setLoading(false);
       }
     };
     fetchData();
-  }, [page]);
+  }, [page, filter, isActive, reloadKey]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [filter, isActive]);
 
   const actionItems = useMemo(
     () => [
       {
+        content: "Chỉnh sửa",
+        icon: EditIcon,
+        className:
+          "text-amber-500 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/30",
+        onClick: (id: string) => {
+          const found = data.find((i) => i.id === id);
+          if (found) onEdit(found);
+        },
+      },
+      {
         content: "Xóa",
         icon: DeleteIcon,
         className: "text-red-500 hover:bg-red-50",
-        onClick: (id: string) => console.log("Xóa:", id),
+        onClick: async (id: string) => {
+          if (!confirm("Bạn có chắc muốn xóa trang này?")) return;
+
+          try {
+            const res = await fetch(`/api///${id}`, {
+              method: "DELETE",
+            });
+
+            if (!res.ok) throw new Error("Delete failed");
+
+            onDelete();
+          } catch (e) {
+            console.error(e);
+          }
+        },
       },
     ],
-    [],
+    [data, onEdit, onDelete],
   );
 
-  const renderCell = (item: BusinessPageRecord, columnKey: string) => {
+  const renderCell = (item: BusinessPageItem, columnKey: string) => {
     switch (columnKey) {
       case "stt":
         return <span>{item.stt}</span>;
 
-      case "nameBusinessPage":
-        return <span className="font-semibold">{item.nameBusinessPage}</span>;
+      case "name":
+        return <span className="font-semibold">{item.name}</span>;
 
       case "status": {
-        const isActive = item.status === "Hoạt động";
+        const isActive = item.status;
         if (isActive) {
           return (
             <Chip
@@ -136,12 +196,12 @@ export const BusinessPageTable = () => {
       data={data}
       isCollapsible
       renderCellAction={renderCell}
-      headerSummary={`${data.length}`}
+      headerSummary={`${totalItems}`}
       paginationProps={{
         total: totalPages,
         initialPage: page,
         onChange: setPage,
-        summary: `${totalItems}`,
+        summary: `${data.length}`,
       }}
     />
   );
