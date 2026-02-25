@@ -8,12 +8,7 @@ import CustomInput from "@/components/ui/custom/CustomInput";
 import { AddNewIcon } from "@/config/chip-and-icon";
 import FilterButton from "@/components/ui/FilterButton";
 import { FilterActionButton } from "@/components/ui/FilterActionButton";
-
-interface FilterSectionProps {
-  keyword: string;
-  onSearch: (value: string) => void;
-  onAddNew: () => void;
-}
+import { FilterSectionProps } from "@/types";
 
 export const FilterSection = ({
   keyword,

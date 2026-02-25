@@ -3,22 +3,9 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Tooltip, Button } from "@heroui/react";
 import { DeleteIcon, EditIcon } from "@/config/chip-and-icon";
-import { CommuneItem } from "@/types";
+import { CommuneItem, CommuneResponse, CommuneTableProps } from "@/types";
 import { COMMUNE_COLUMN } from "@/config/table-columns";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-
-interface Props {
-  keyword: string;
-  reloadKey: number;
-  onEdit: (item: CommuneItem) => void;
-  onDeleted: () => void;
-}
-
-interface CommuneResponse {
-  communeId: string;
-  name: string;
-  type: string;
-}
 
 const typeLabel: Record<string, string> = {
   URBAN_WARD: "Phường (Đô thị)",
@@ -30,7 +17,7 @@ export const CommuneTable = ({
   reloadKey,
   onEdit,
   onDeleted,
-}: Props) => {
+}: CommuneTableProps) => {
   const [data, setData] = useState<CommuneItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
@@ -211,7 +198,7 @@ export const CommuneTable = ({
         data={data}
         isCollapsible
         renderCellAction={renderCell}
-        headerSummary={`${totalItems}`}
+        headerSummary={`${data.length}`}
         paginationProps={{
           total: totalPages,
           initialPage: page,

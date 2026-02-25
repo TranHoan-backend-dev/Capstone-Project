@@ -6,15 +6,7 @@ import CustomInput from "@/components/ui/custom/CustomInput";
 import { CheckApprovalIcon } from "@/config/chip-and-icon";
 import { Card, CardBody } from "@heroui/react";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
-
-interface CommuneFormProps {
-  initialData?: {
-    id?: string;
-    name: string;
-    type?: string;
-  };
-  onSuccess: () => void;
-}
+import { CommuneFormProps } from "@/types";
 
 const typeOptions = [
   { label: "Phường (Đô thị)", value: "URBAN_WARD" },
