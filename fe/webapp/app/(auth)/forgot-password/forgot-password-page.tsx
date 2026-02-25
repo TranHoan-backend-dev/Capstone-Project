@@ -67,7 +67,7 @@ export default function ForgotPasswordPage() {
     if (!mounted) return;
     if (email) localStorage.setItem("forgot_email", email);
   }, [email, mounted]);
-  
+
   useEffect(() => {
     if (step === "email") {
       localStorage.removeItem("forgot_step");
