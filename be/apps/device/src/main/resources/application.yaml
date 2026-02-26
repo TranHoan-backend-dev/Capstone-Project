@@ -52,7 +52,7 @@ rabbit-mq-config:
   queue: construction_queue
   entities:
     - material-price
-    - meter_type
+    - meter-type
     - materials-group
     - calculation-unit
     - params

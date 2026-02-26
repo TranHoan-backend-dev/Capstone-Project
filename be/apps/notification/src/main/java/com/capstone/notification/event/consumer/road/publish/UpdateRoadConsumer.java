@@ -23,16 +23,21 @@ public class UpdateRoadConsumer extends GeneralEventConsumer<UpdateEventMessage>
 
   @RabbitListener(queues = "${rabbit-mq-config.queue}.road.update")
   public void handle(UpdateEventMessage event) {
-    super.handle(event, List.of(Topic.getTopic(Topic.GENERAL)), "Cập nhật đường phố");
+    super.handle(
+      event,
+      List.of(Topic.getTopic(Topic.GENERAL)),
+      "Cập nhật đường phố",
+      null
+    );
   }
 
   @Override
   protected String buildMessage(@NonNull UpdateEventMessage event) {
     var data = event.data();
     var response = """
-        Phòng IT vừa cập nhật một tên đường:
-        Cũ: %s
-        Mới: %s""".formatted(data.oldName(), data.newName());
+      Phòng IT vừa cập nhật một tên đường:
+      Cũ: %s
+      Mới: %s""".formatted(data.oldName(), data.newName());
     log.info(response);
     return response;
   }

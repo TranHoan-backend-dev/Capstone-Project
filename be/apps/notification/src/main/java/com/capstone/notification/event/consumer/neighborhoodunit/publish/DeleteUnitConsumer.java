@@ -23,7 +23,12 @@ public class DeleteUnitConsumer extends GeneralEventConsumer<DeleteEventMessage>
 
   @RabbitListener(queues = "${rabbit-mq-config.queue}.neighborhood-unit.delete")
   public void handle(DeleteEventMessage event) {
-    super.handle(event, List.of(Topic.getTopic(Topic.GENERAL)), "Xóa tổ/khu/xóm");
+    super.handle(
+      event,
+      List.of(Topic.getTopic(Topic.GENERAL)),
+      "Xóa tổ/khu/xóm",
+      null
+    );
   }
 
   @Override

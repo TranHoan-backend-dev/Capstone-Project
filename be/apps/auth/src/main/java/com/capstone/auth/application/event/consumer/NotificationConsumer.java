@@ -28,64 +28,57 @@ public class NotificationConsumer {
       log = org.slf4j.LoggerFactory.getLogger(NotificationConsumer.class);
     }
 
-    try {
-      log.info("Received notification create event: {}", message);
-      if (message == null || message.data() == null) {
-        log.warn("Invalid notification message: message or data is null. Message: {}", message);
-        return;
-      }
-
-      var notificationId = message.data().notificationId();
-      List<String> topics = message.data().topics();
-
-      if (notificationId == null || topics == null) {
-        log.warn("Invalid notification message: notificationId or topics is null in data: {}", message.data());
-        return;
-      }
-
-      Set<RoleName> targetRoles = new HashSet<>();
-      for (String topic : topics) {
-        List<RoleName> roles = mapTopicToRoles(topic);
-        if (roles != null) {
-          targetRoles.addAll(roles);
-        }
-      }
-
-      if (targetRoles.isEmpty()) {
-        log.warn("No target roles found for topics: {}", topics);
-        return;
-      }
-
-      List<Users> targetUsers = userRepository.findByRoleNameIn(new ArrayList<>(targetRoles));
-      if (targetUsers == null || targetUsers.isEmpty()) {
-        log.info("No users found for roles corresponding to topics: {}", topics);
-        return;
-      }
-
-      log.info("Found {} users for notification {}", targetUsers.size(), notificationId);
-
-      List<IndividualNotification> individualNotifications = targetUsers.stream()
-          .map(user -> new IndividualNotification(notificationId, user.getUserId(), false))
-          .toList();
-
-      individualNotificationRepository.saveAll(individualNotifications);
-      log.info("Saved {} individual notifications", individualNotifications.size());
-    } catch (Exception e) {
-      log.error("Error processing notification event: " + e.getMessage(), e);
-      // We catch ALL exceptions here to prevent infinite RabbitMQ retry loops
-      // by acknowledging the message (implicit return) even if processing failed.
+    log.info("Received notification create event: {}", message);
+    if (message == null || message.data() == null) {
+      log.warn("Invalid notification message: message or data is null. Message: {}", message);
+      return;
     }
+
+    var notificationId = message.data().notificationId();
+    List<String> topics = message.data().topics();
+
+    if (notificationId == null || topics == null) {
+      log.warn("Invalid notification message: notificationId or topics is null in data: {}", message.data());
+      return;
+    }
+
+    Set<RoleName> targetRoles = new HashSet<>();
+    for (String topic : topics) {
+      List<RoleName> roles = mapTopicToRoles(topic);
+      if (roles != null) {
+        targetRoles.addAll(roles);
+      }
+    }
+
+    if (targetRoles.isEmpty()) {
+      log.warn("No target roles found for topics: {}", topics);
+      return;
+    }
+
+    List<Users> targetUsers = userRepository.findByRoleNameIn(new ArrayList<>(targetRoles));
+    if (targetUsers == null || targetUsers.isEmpty()) {
+      log.info("No users found for roles corresponding to topics: {}", topics);
+      return;
+    }
+
+    log.info("Found {} users for notification {}", targetUsers.size(), notificationId);
+
+    List<IndividualNotification> individualNotifications = targetUsers.stream()
+      .map(user -> new IndividualNotification(notificationId, user.getUserId(), false))
+      .toList();
+
+    individualNotificationRepository.saveAll(individualNotifications);
+    log.info("Saved {} individual notifications", individualNotifications.size());
   }
 
   private List<RoleName> mapTopicToRoles(@NonNull String topic) {
     return switch (topic) {
       case "/notification" -> List.of(RoleName.values());
       case "/technical" -> List.of(
-          RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD,
-          RoleName.SURVEY_STAFF,
-          RoleName.ORDER_RECEIVING_STAFF);
-      case "/construction" ->
-        List.of(RoleName.CONSTRUCTION_DEPARTMENT_HEAD, RoleName.CONSTRUCTION_DEPARTMENT_STAFF);
+        RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD,
+        RoleName.SURVEY_STAFF,
+        RoleName.ORDER_RECEIVING_STAFF);
+      case "/construction" -> List.of(RoleName.CONSTRUCTION_DEPARTMENT_HEAD, RoleName.CONSTRUCTION_DEPARTMENT_STAFF);
       case "/business" -> List.of(RoleName.BUSINESS_DEPARTMENT_HEAD, RoleName.METER_INSPECTION_STAFF);
       case "/it" -> List.of(RoleName.IT_STAFF);
       case "/finance" -> List.of(RoleName.FINANCE_DEPARTMENT);

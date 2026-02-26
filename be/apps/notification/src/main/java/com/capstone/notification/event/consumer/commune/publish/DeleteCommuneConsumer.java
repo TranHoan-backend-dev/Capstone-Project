@@ -25,7 +25,12 @@ public class DeleteCommuneConsumer extends GeneralEventConsumer<DeleteEventMessa
 
   @RabbitListener(queues = "${rabbit-mq-config.queue}.commune.delete")
   public void handle(DeleteEventMessage event) {
-    super.handle(event, List.of(Topic.getTopic(Topic.GENERAL)), "Xóa đơn vị hành chính thành phố");
+    super.handle(
+      event,
+      List.of(Topic.getTopic(Topic.GENERAL)),
+      "Xóa đơn vị hành chính thành phố",
+      null
+    );
   }
 
   @Override

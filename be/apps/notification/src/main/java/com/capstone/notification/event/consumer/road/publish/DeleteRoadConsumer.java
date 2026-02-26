@@ -23,7 +23,12 @@ public class DeleteRoadConsumer extends GeneralEventConsumer<DeleteEventMessage>
 
   @RabbitListener(queues = "${rabbit-mq-config.queue}.road.delete")
   public void handle(DeleteEventMessage event) {
-    super.handle(event, List.of(Topic.getTopic(Topic.GENERAL)), "Xóa đường phố");
+    super.handle(
+      event,
+      List.of(Topic.getTopic(Topic.GENERAL)),
+      "Xóa đường phố",
+      null
+    );
   }
 
   @Override
