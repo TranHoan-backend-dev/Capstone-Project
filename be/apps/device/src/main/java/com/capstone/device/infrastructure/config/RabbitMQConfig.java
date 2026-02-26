@@ -33,7 +33,7 @@ public class RabbitMQConfig {
 
   @Bean
   public Declarables rabbitDeclarables() {
-    TopicExchange exchange = new TopicExchange(EXCHANGE_NAME);
+    var exchange = new TopicExchange(EXCHANGE_NAME);
 
     List<Declarable> declarables = new ArrayList<>();
     declarables.add(exchange);
@@ -41,6 +41,7 @@ public class RabbitMQConfig {
     for (var entity : props.getEntities()) {
       for (var action : props.getActions()) {
         Queue queue = new Queue(String.join(".", QUEUE_NAME, entity, action), true);
+        System.out.println(queue.getName());
         declarables.add(queue);
         var routingKey = String.join(".", QUEUE_NAME, entity, action);
 

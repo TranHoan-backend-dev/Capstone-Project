@@ -46,7 +46,7 @@ rabbit-mq-config:
     - road
     - hamlet
     - material-price
-    - meter_type
+    - meter-type
     - materials-group
     - calculation-unit
     - params

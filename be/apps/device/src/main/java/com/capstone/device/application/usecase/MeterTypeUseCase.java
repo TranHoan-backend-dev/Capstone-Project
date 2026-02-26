@@ -23,12 +23,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class MeterTypeUseCase {
   final MeterTypeService meterTypeService;
   final MessageProducer producer;
-  final String prefix = ".meter-type.";
+  static final String PREFIX = ".meter-type.";
 
-  @Value("${rabbit-mq-config.queue}" + prefix + "${rabbit-mq-config.actions[0]}")
+  @Value("${rabbit-mq-config.queue}" + PREFIX + "${rabbit-mq-config.actions[0]}")
   String UPDATE_ROUTING_KEY;
 
-  @Value("${rabbit-mq-config.queue}" + prefix + "${rabbit-mq-config.actions[1]}")
+  @Value("${rabbit-mq-config.queue}" + PREFIX + "${rabbit-mq-config.actions[1]}")
   String DELETE_ROUTING_KEY;
 
   public WaterMeterTypeResponse createMeterType(@NonNull CreateRequest request) {
@@ -41,10 +41,10 @@ public class MeterTypeUseCase {
     var n = meterTypeService.updateMeterType(id, request);
 
     producer.send(UPDATE_ROUTING_KEY, new UpdateEvent(
-      old.name(), old.origin(), old.meterModel(), old.size(), old.maxIndex(),
-      old.qn(), old.qt(), old.qmin(), old.diameter(),
-      n.name(), n.origin(), n.meterModel(), n.size(), n.maxIndex(),
-      n.qn(), n.qt(), n.qmin(), n.diameter()));
+        old.name(), old.origin(), old.meterModel(), old.size(), old.maxIndex(),
+        old.qn(), old.qt(), old.qmin(), old.diameter(),
+        n.name(), n.origin(), n.meterModel(), n.size(), n.maxIndex(),
+        n.qn(), n.qt(), n.qmin(), n.diameter()));
     return n;
   }
 
@@ -54,8 +54,8 @@ public class MeterTypeUseCase {
     meterTypeService.deleteMeterType(id);
 
     producer.send(DELETE_ROUTING_KEY, new DeleteEvent(
-      old.name(), old.origin(), old.meterModel(), old.size(), old.maxIndex(),
-      old.qn(), old.qt(), old.qmin(), old.diameter()));
+        old.name(), old.origin(), old.meterModel(), old.size(), old.maxIndex(),
+        old.qn(), old.qt(), old.qmin(), old.diameter()));
   }
 
   public WaterMeterTypeResponse getMeterTypeById(String id) {

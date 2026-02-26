@@ -23,7 +23,12 @@ public class UpdateLateralConsumer extends GeneralEventConsumer<UpdateEventMessa
 
   @RabbitListener(queues = "${rabbit-mq-config.queue}.lateral.update")
   public void handle(UpdateEventMessage event) {
-    super.handle(event, List.of(Topic.getTopic(Topic.GENERAL)), "Cập nhật nhánh tổng");
+    super.handle(
+      event,
+      List.of(Topic.getTopic(Topic.GENERAL)),
+      "Cập nhật nhánh tổng",
+      null
+    );
   }
 
   @Override
