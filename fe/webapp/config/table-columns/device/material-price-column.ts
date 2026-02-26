@@ -1,6 +1,6 @@
 export const MATERIAL_PRICE_COLUMN = [
   { key: "stt", label: "STT", width: "40px", align: "center" as const },
-  { key: "id", label: "Mã vật tư", align: "center" as const },
+  { key: "laborCode", label: "Mã nhân công", align: "center" as const },
   { key: "unitName", label: "Tên đơn vị", align: "center" as const },
   { key: "groupName", label: "Tên nhóm", align: "center" as const },
   { key: "jobContent", label: "Nội dung", align: "center" as const },

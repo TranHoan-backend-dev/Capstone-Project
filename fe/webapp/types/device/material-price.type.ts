@@ -1,6 +1,7 @@
 export interface MaterialPriceItem {
   stt: string;
   id: string;
+  laborCode: string;
   unitName: string;
   groupName: number;
   jobContent: string;
@@ -35,6 +36,7 @@ export interface MaterialPriceTableProps {
 
 export interface MaterialPriceResponse {
   id: string;
+  laborCode: string;
   unitName: string;
   groupName: number;
   jobContent: string;

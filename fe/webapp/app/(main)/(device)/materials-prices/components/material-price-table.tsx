@@ -68,6 +68,7 @@ export const MaterialPriceTable = ({
           (item: MaterialPriceResponse, index: number) => ({
             id: item.id,
             stt: (page - 1) * pageSize + index + 1,
+            laborCode: item.laborCode,
             unitName: item.unitName,
             groupName: item.groupName,
             jobContent: item.jobContent,
@@ -163,10 +164,10 @@ export const MaterialPriceTable = ({
           </span>
         );
 
-      case "name":
+      case "laborCode":
         return (
           <span className="font-bold text-gray-900 dark:text-foreground">
-            {item.id}
+            {item.laborCode}
           </span>
         );
 
