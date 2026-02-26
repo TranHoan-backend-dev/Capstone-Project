@@ -124,6 +124,7 @@ public class MaterialServiceImpl implements MaterialService {
 
   private @NonNull MaterialResponse mapToResponse(@NonNull Material material) {
     return new MaterialResponse(
+      material.getMaterialId(),
       material.getLaborCode(),
       material.getJobContent(),
       material.getPrice(),
