@@ -130,14 +130,14 @@ export const MaterialPriceTable = ({
           if (!confirm("Bạn có chắc muốn xóa tham số này?")) return;
 
           try {
-            const res = await fetch(`/api/device/parameters/${id}`, {
+            const res = await fetch(`/api/device/materials-prices/${id}`, {
               method: "DELETE",
             });
 
             if (!res.ok) throw new Error("Delete failed");
             CallToast({
               title: "Thành công",
-              message: "Xóa nhánh tổng thành công",
+              message: "Xóa giá vật tư thành công",
               color: "success",
             });
             onDeleted();
