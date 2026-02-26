@@ -129,15 +129,15 @@ public class AuthUseCase {
       request.phoneNumber()
     );
 
-    var id = uploadNewUserToKeycloak(request.username(), request.password(), request.role(), request.email());
-    log.info("User id: {}", id);
+//    var id = uploadNewUserToKeycloak(request.username(), request.password(), request.role(), request.email());
+//    log.info("User id: {}", id);
 
     log.info("User has been registered successfully");
     template.sendMessage(new AccountCreationEvent(request.email(), SUBJECT, TEMPLATE,
       request.fullName(), request.username(), request.password()));
   }
 
-  public void changePassword(String userId, String email, String oldPassword, @NonNull String newPassword, String confirmPassword) {
+  public void changePassword(String userId, String email, @NonNull String oldPassword, @NonNull String newPassword, String confirmPassword) {
     log.info("Handling change password for email: {}", email);
 
     if (oldPassword.equals(newPassword)) {
