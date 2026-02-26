@@ -78,22 +78,21 @@ public class MaterialController {
     return Utils.returnOkResponse("Material deleted successfully", null);
   }
 
-  @Operation(summary = "Lấy thông tin vật tư theo ID", description = "Tìm kiếm và trả về thông tin chi tiết của một vật tư dựa trên ID cung cấp.", responses = {
-      @ApiResponse(responseCode = "200", description = "Tìm thấy thông tin vật tư", content = @Content(schema = @Schema(implementation = MaterialResponse.class))),
-      @ApiResponse(responseCode = "404", description = "Không tìm thấy vật tư với ID tương ứng", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+  @Operation(summary = "", description = "", responses = {
+      @ApiResponse(responseCode = "200", description = ""),
+      @ApiResponse(responseCode = "", description = "")
   })
   @GetMapping("/{id}")
   public ResponseEntity<WrapperApiResponse> getMaterialById(
-      @PathVariable @Parameter(description = "ID của vật tư cần lấy thông tin", example = "VL001") String id) {
+      @PathVariable @Parameter(description = "") String id) {
     log.info("REST request to get material: {}", id);
     var response = mUseCase.get(id);
     return Utils.returnOkResponse("Material retrieved successfully", response);
   }
 
-  @Operation(summary = "Lấy danh sách tất cả vật tư", description = "Trả về danh sách các vật tư trong hệ thống với hỗ trợ phân trang.")
+  @Operation(summary = "", description = "")
   @GetMapping
-  public ResponseEntity<WrapperApiResponse> getAllMaterials(
-      @PageableDefault @Parameter(description = "Thông tin phân trang") Pageable pageable) {
+  public ResponseEntity<WrapperApiResponse> getAllMaterials(@PageableDefault Pageable pageable) {
     log.info("REST request to get all materials with pagination: {}", pageable);
     var response = mUseCase.getAll(pageable);
     return Utils.returnOkResponse("Materials retrieved successfully", response);
