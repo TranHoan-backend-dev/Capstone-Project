@@ -34,7 +34,7 @@ public class ContractController {
   public ResponseEntity<WrapperApiResponse> createContract(@RequestBody @Valid ContractRequest request) {
     log.info("REST request to create contract: {}", request.contractId());
     var response = contractService.createContract(request);
-    return Utils.returnCreatedResponse("Contract created successfully", response);
+    return Utils.returnCreatedResponse("Contract created successfully");
   }
 
   @Operation(summary = "Update a contract", description = "Updates details of an existing water usage contract", responses = {

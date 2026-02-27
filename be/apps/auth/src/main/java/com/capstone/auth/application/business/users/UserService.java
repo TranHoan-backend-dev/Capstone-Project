@@ -27,5 +27,7 @@ public interface UserService {
 
   UserDTO updateUsername(String id, String username);
 
+  UserDTO getUserByEmail(String email);
+
   Page<EmployeeResponse> getAllEmployeesWithStatus(Pageable pageable, FilterUsersRequest request);
 }

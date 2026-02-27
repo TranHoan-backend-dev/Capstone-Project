@@ -31,7 +31,7 @@ public class WaterSupplyNetworkServiceImpl implements WaterSupplyNetworkService 
     log.info("Creating new water supply network with name: {}", request.name());
 
     var network = WaterSupplyNetwork.create(builder -> builder
-        .name(request.name()));
+      .name(request.name()));
 
     networkRepository.save(network);
   }
@@ -41,9 +41,11 @@ public class WaterSupplyNetworkServiceImpl implements WaterSupplyNetworkService 
   public WaterSupplyNetworkResponse updateNetwork(String id, @NonNull WaterSupplyNetworkRequest request) {
     log.info("Updating water supply network with id: {}", id);
     var network = networkRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("Network not found with id: " + id));
+      .orElseThrow(() -> new IllegalArgumentException("Network not found with id: " + id));
 
-    network.setName(request.name());
+    if (request.name() != null && !request.name().isBlank()) {
+      network.setName(request.name());
+    }
 
     var saved = networkRepository.save(network);
     return mapToResponse(saved);
@@ -63,15 +65,15 @@ public class WaterSupplyNetworkServiceImpl implements WaterSupplyNetworkService 
   public WaterSupplyNetworkResponse getNetworkById(String id) {
     log.info("Fetching water supply network with id: {}", id);
     return networkRepository.findById(id)
-        .map(this::mapToResponse)
-        .orElseThrow(() -> new IllegalArgumentException("Network not found with id: " + id));
+      .map(this::mapToResponse)
+      .orElseThrow(() -> new IllegalArgumentException("Network not found with id: " + id));
   }
 
   @Override
   public PageResponse<WaterSupplyNetworkResponse> getAllNetworks(Pageable pageable, String keyword) {
     log.info("Fetching all water supply networks with pageable: {}", pageable);
     var page = keyword == null ? networkRepository.findAll(pageable)
-        : networkRepository.findAllByNameContainsIgnoreCase(keyword, pageable);
+      : networkRepository.findAllByNameContainsIgnoreCase(keyword, pageable);
     return PageResponse.fromPage(page, this::mapToResponse);
   }
 
@@ -82,8 +84,8 @@ public class WaterSupplyNetworkServiceImpl implements WaterSupplyNetworkService 
 
   private WaterSupplyNetworkResponse mapToResponse(@NonNull WaterSupplyNetwork network) {
     return new WaterSupplyNetworkResponse(
-        network.getBranchId(),
-        network.getName(),
-        network.getCreatedAt());
+      network.getBranchId(),
+      network.getName(),
+      network.getCreatedAt());
   }
 }

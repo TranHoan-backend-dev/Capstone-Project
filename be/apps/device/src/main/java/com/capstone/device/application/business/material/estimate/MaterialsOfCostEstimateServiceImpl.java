@@ -10,5 +10,5 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class MaterialsOfCostEstimateServiceImpl {
+public class MaterialsOfCostEstimateServiceImpl implements MaterialsOfCostEstimateService {
 }

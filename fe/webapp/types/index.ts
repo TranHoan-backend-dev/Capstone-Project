@@ -5,6 +5,14 @@ export * from "./construction/networks.type"
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
+export interface ForgotPasswordFormProps {
+  onSuccessAction: (email: string) => void;
+}
+
+export interface ResetPasswordFormProps {
+  email: string;
+  otp: string;
+}
 
 export interface ApiResponse<T> {
   status: number;
