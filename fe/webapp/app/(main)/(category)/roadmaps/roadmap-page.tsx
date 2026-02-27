@@ -7,6 +7,7 @@ import { RoadmapTable } from "./components/roadmap-table";
 import { FilterSection } from "./components/filter-section";
 import { RoadmapForm } from "./components/roadmap-form";
 import { RoadmapFilter, RoadmapItem } from "@/types";
+import { Modal, ModalContent } from "@heroui/react";
 
 const RoadmapPage = () => {
   const [filter, setFilter] = useState<RoadmapFilter>({});
@@ -42,14 +43,22 @@ const RoadmapPage = () => {
         onAddNew={handleAddNew}
       />
 
-      {showAddForm && (
-        <RoadmapForm
-          key={editingItem?.id || "create"}
-          initialData={editingItem || undefined}
-          onSuccess={handleSuccess}
-          onClose={handleCloseForm}
-        />
-      )}
+      <Modal
+        isOpen={showAddForm}
+        onClose={handleCloseForm}
+        size="2xl"
+        placement="top-center"
+        scrollBehavior="inside"
+      >
+        <ModalContent>
+          <RoadmapForm
+            key={editingItem?.id || "create"}
+            initialData={editingItem || undefined}
+            onSuccess={handleSuccess}
+            onClose={handleCloseForm}
+          />
+        </ModalContent>
+      </Modal>
 
       <RoadmapTable
         filter={filter}

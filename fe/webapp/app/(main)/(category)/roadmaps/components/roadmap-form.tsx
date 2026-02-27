@@ -147,7 +147,7 @@ export const RoadmapForm = ({
               />
             </div>
           </div>
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-3">
             <CustomButton variant="light" onPress={onClose}>
               Huỷ
             </CustomButton>
