@@ -1,22 +1,33 @@
 package com.capstone.auth.domain.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.io.Serializable;
 
 @Getter
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table
+@Table(name = "individual_notification")
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@IdClass(IndividualNotification.IndividualNotificationId.class)
 public class IndividualNotification {
   @Id
   String notificationId;
 
+  @Id
+  String userId;
+
   @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
-  Boolean isRead;
+  Boolean isRead = false;
+
+  @Data
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class IndividualNotificationId implements Serializable {
+    private String notificationId;
+    private String userId;
+  }
 }

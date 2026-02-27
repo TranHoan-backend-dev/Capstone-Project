@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/hamlets")
 @RequiredArgsConstructor
+// TODO: delete openapi
 @Tag(name = "Thôn/Làng", description = "Quản lý thôn/làng – đơn vị hành chính thuộc cấp xã")
 public class HamletController {
   private final HamletUseCase hamletUseCase;

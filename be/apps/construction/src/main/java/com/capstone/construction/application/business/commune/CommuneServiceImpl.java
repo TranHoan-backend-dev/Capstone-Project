@@ -54,7 +54,7 @@ public class CommuneServiceImpl implements CommuneService {
     var commune = communeRepository.findById(id)
       .orElseThrow(() -> new IllegalArgumentException("Commune not found with id: " + id));
 
-    if (communeRepository.existsByNameIgnoreCase(request.name())) {
+    if (!commune.getName().equalsIgnoreCase(request.name()) && communeRepository.existsByNameIgnoreCase(request.name())) {
       throw new ExistingItemException("Commune with name " + request.name() + " already exists");
     }
 

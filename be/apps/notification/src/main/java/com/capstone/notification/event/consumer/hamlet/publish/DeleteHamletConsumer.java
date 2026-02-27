@@ -1,26 +1,44 @@
 package com.capstone.notification.event.consumer.hamlet.publish;
 
-import com.capstone.notification.event.consumer.BaseEventConsumer;
+import com.capstone.common.annotation.AppLog;
+import com.capstone.notification.event.producer.MessageProducer;
+import com.capstone.notification.event.websocket.GeneralEventConsumer;
 import com.capstone.notification.event.consumer.hamlet.message.DeleteEventMessage;
+import com.capstone.notification.event.websocket.Topic;
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
-@Component
-public class DeleteHamletConsumer extends BaseEventConsumer<DeleteEventMessage> {
+import java.util.List;
 
-  @RabbitListener(queues = "${keyword.delete}_${rabbit-mq-config.entities[4]}_${keyword.queue}")
-  @Override
+@AppLog
+@Component
+public class DeleteHamletConsumer extends GeneralEventConsumer<DeleteEventMessage> {
+  Logger log;
+
+  public DeleteHamletConsumer(MessageProducer producer) {
+    super(producer);
+  }
+
+  @RabbitListener(queues = "${rabbit-mq-config.queue}.hamlet.delete")
   public void handle(DeleteEventMessage event) {
-    super.handle(event);
+    super.handle(
+      event,
+      List.of(Topic.getTopic(Topic.GENERAL)),
+      "Xóa đơn vị hành chính xã",
+      null
+    );
   }
 
   @Override
   protected String buildMessage(@NonNull DeleteEventMessage event) {
     var data = event.data();
-    return "Phòng IT vừa xóa đơn vị hành chính tuyến xã: %s %s, xã %s".formatted(
+    var response = "Phòng IT vừa xóa đơn vị hành chính tuyến xã: %s %s, xã %s".formatted(
       data.type().equals("hamlet") ? "Thôn" : "Làng",
       data.name(),
       data.commune());
+    log.info(response);
+    return response;
   }
 }

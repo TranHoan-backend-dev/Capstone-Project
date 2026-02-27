@@ -2,9 +2,9 @@ package com.capstone.notification.event.consumer.commune.message;
 
 public record DeleteEventMessage(
   String pattern,
-  LateralEventData data
+  CommuneEventData data
 ) {
-  public record LateralEventData(
+  public record CommuneEventData(
     String name,
     String type
   ) {
