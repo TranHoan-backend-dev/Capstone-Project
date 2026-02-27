@@ -7,6 +7,7 @@ import { LateralTable } from "./components/lateral-table";
 import { FilterSection } from "./components/filter-section";
 import { LateralForm } from "./components/lateral-form";
 import { LateralFilter, LateralItem } from "@/types";
+import { Modal, ModalContent } from "@heroui/react";
 
 const LateralPage = () => {
   const [filter, setFilter] = useState<LateralFilter>({});
@@ -42,14 +43,22 @@ const LateralPage = () => {
         onAddNew={handleAddNew}
       />
 
-      {showAddForm && (
-        <LateralForm
-          key={editingItem?.id || "create"}
-          initialData={editingItem || undefined}
-          onSuccess={handleSuccess}
-          onClose={handleCloseForm}
-        />
-      )}
+      <Modal
+        isOpen={showAddForm}
+        onClose={handleCloseForm}
+        size="2xl"
+        placement="top-center"
+        scrollBehavior="inside"
+      >
+        <ModalContent>
+          <LateralForm
+            key={editingItem?.id || "create"}
+            initialData={editingItem || undefined}
+            onSuccess={handleSuccess}
+            onClose={handleCloseForm}
+          />
+        </ModalContent>
+      </Modal>
 
       <LateralTable
         filter={filter}

@@ -25,7 +25,6 @@ export const LateralTable = ({
     field: "createdAt",
     direction: "desc",
   });
-
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
