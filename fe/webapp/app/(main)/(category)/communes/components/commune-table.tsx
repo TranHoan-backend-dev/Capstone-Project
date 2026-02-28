@@ -13,7 +13,7 @@ const typeLabel: Record<string, string> = {
 };
 
 export const CommuneTable = ({
-  keyword,
+  filter,
   reloadKey,
   onEdit,
   onDeleted,
@@ -46,9 +46,16 @@ export const CommuneTable = ({
           sort: `${sort.field},${sort.direction}`,
         });
 
-        const trimmedKeyword = keyword.trim();
-        if (trimmedKeyword) {
-          params.append("keyword", trimmedKeyword);
+        if (filter.name) {
+          params.append("keyword", filter.name);
+        }
+
+        if (filter.code) {
+          params.append("code", filter.code);
+        }
+
+        if (filter.type) {
+          params.append("type", filter.type);
         }
 
         const res = await fetch(
@@ -83,7 +90,7 @@ export const CommuneTable = ({
     };
 
     fetchData();
-  }, [page, keyword, reloadKey, sort]);
+  }, [page, filter, reloadKey, sort]);
 
   const handleSortChange = (columnKey: string) => {
     setPage(1);
@@ -101,7 +108,7 @@ export const CommuneTable = ({
 
   useEffect(() => {
     setPage(1);
-  }, [keyword]);
+  }, [filter]);
 
   const actionItems = useMemo(
     () => [

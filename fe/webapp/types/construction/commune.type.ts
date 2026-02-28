@@ -1,27 +1,36 @@
 export interface CommuneItem {
   id: string;
   stt: string;
+  code: string;
   name: string;
   type: string;
 }
 
+export type CommuneFilter = {
+  code: string;
+  name: string;
+  type?: string;
+};
+
 export interface FilterSectionProps {
-  keyword: string;
-  onSearch: (value: string) => void;
+  keyword: CommuneFilter;
+  onSearch: (value: CommuneFilter) => void;
   onAddNew: () => void;
 }
 
 export interface CommuneFormProps {
   initialData?: {
     id?: string;
+    code: string;
     name: string;
     type?: string;
   };
   onSuccess: () => void;
+  onClose: () => void;
 }
 
 export interface CommuneTableProps {
-  keyword: string;
+  filter: CommuneFilter;
   reloadKey: number;
   onEdit: (item: CommuneItem) => void;
   onDeleted: () => void;

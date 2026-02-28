@@ -9,16 +9,21 @@ import { AddNewIcon } from "@/config/chip-and-icon";
 import FilterButton from "@/components/ui/FilterButton";
 import { FilterActionButton } from "@/components/ui/FilterActionButton";
 import { FilterSectionProps } from "@/types";
+import CustomSelect from "@/components/ui/custom/CustomSelect";
+
+const typeOptions = [
+  { label: "Phường (Đô thị)", value: "URBAN_WARD" },
+  { label: "Xã (Nông thôn)", value: "RURAL_COMMUNE" },
+];
 
 export const FilterSection = ({
   keyword,
   onSearch,
   onAddNew,
 }: FilterSectionProps) => {
-  const [inputValue, setInputValue] = useState(keyword);
-  useEffect(() => {
-    setInputValue(keyword);
-  }, [keyword]);
+  const [code, setCode] = useState("");
+  const [name, setName] = useState("");
+  const [type, setType] = useState<string | undefined>();
 
   return (
     <GenericSearchFilter
@@ -29,25 +34,45 @@ export const FilterSection = ({
       actions={
         <div className="flex justify-end gap-3">
           <FilterActionButton
-            className="bg-green-500 hover:bg-green-600 dark:shadow-md dark:shadow-success/40 mr-2"
+            className="bg-green-500 hover:bg-green-600 mr-2"
             color="success"
             icon={<AddNewIcon className="w-4 h-4" />}
             label="Thêm mới"
             onPress={onAddNew}
           />
-          <FilterButton onPress={() => onSearch(inputValue)} />
+          <FilterButton
+            onPress={() =>
+              onSearch({
+                code,
+                name,
+                type,
+              })
+            }
+          />
         </div>
       }
     >
       <section className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-          <div className="md:col-span-1">
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <CustomInput
-              label="Từ khóa"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
+              label="Mã phường/xã"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+            />
+
+            <CustomInput
+              label="Tên phường/xã"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
           </div>
+          <CustomSelect
+            label="Loại"
+            selectedKeys={type ? [type] : []}
+            onSelectionChange={(keys) => setType(Array.from(keys)[0] as string)}
+            options={typeOptions}
+          />
         </div>
       </section>
     </GenericSearchFilter>
