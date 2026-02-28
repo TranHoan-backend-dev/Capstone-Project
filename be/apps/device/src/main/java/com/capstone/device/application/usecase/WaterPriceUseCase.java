@@ -25,12 +25,12 @@ import java.time.LocalDate;
 public class WaterPriceUseCase {
   final WaterPriceService waterPriceService;
   final MessageProducer producer;
-  final String prefix = ".water-prices.";
+  static final String PREFIX = ".water-price.";
 
-  @Value("${rabbit-mq-config.queue}" + prefix + "${rabbit-mq-config.actions[0]}")
+  @Value("${rabbit-mq-config.queue}" + PREFIX + "${rabbit-mq-config.actions[0]}")
   String UPDATE_ROUTING_KEY;
 
-  @Value("${rabbit-mq-config.queue}" + prefix + "${rabbit-mq-config.actions[1]}")
+  @Value("${rabbit-mq-config.queue}" + PREFIX + "${rabbit-mq-config.actions[1]}")
   String DELETE_ROUTING_KEY;
 
   public Page<WaterPriceResponse> getPricesList(@NonNull Pageable pageable, LocalDate filter) {
@@ -47,10 +47,10 @@ public class WaterPriceUseCase {
     var n = waterPriceService.updateWaterPrice(id, request);
 
     producer.send(UPDATE_ROUTING_KEY, new UpdateEvent(
-      old.usageTarget(), old.tax(), old.environmentPrice(), old.applicationPeriod(),
-      old.expirationDate(), old.description(),
-      n.usageTarget(), n.tax(), n.environmentPrice(), n.applicationPeriod(),
-      n.expirationDate(), n.description()));
+        old.usageTarget(), old.tax(), old.environmentPrice(), old.applicationPeriod(),
+        old.expirationDate(), old.description(),
+        n.usageTarget(), n.tax(), n.environmentPrice(), n.applicationPeriod(),
+        n.expirationDate(), n.description()));
     return n;
   }
 
@@ -60,8 +60,8 @@ public class WaterPriceUseCase {
     waterPriceService.deleteWaterPrice(id);
 
     producer.send(DELETE_ROUTING_KEY, new DeleteEvent(
-      old.usageTarget(), old.tax(), old.environmentPrice(), old.applicationPeriod(),
-      old.expirationDate(), old.description()));
+        old.usageTarget(), old.tax(), old.environmentPrice(), old.applicationPeriod(),
+        old.expirationDate(), old.description()));
   }
 
   public WaterPriceResponse getWaterPriceById(@NonNull String id) {

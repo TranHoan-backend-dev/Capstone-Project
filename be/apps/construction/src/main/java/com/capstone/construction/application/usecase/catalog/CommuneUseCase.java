@@ -8,6 +8,7 @@ import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.application.event.producer.MessageProducer;
 import com.capstone.construction.application.event.producer.commune.DeleteEvent;
 import com.capstone.construction.application.event.producer.commune.UpdateEvent;
+import com.capstone.construction.domain.enumerate.CommuneType;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -42,8 +43,10 @@ public class CommuneUseCase {
     var response = communeService.updateCommune(id, request);
 
     if (!request.name().isBlank() && !request.type().isBlank()) {
+      var newCommuneType = CommuneType.valueOf(request.type()).equals(CommuneType.URBAN_WARD) ? "Phường" : "Xã";
+      var oldCommuneType = CommuneType.valueOf(old.type()).equals(CommuneType.URBAN_WARD) ? "Phường" : "Xã";
       producer.send(UPDATE_ROUTING_KEY,
-          new UpdateEvent(old.name(), response.name(), old.type(), response.type()));
+          new UpdateEvent(old.name(), response.name(), oldCommuneType, newCommuneType));
     }
     return response;
   }

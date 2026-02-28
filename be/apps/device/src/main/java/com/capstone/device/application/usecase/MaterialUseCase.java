@@ -23,12 +23,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class MaterialUseCase {
   final MaterialService mService;
   final MessageProducer producer;
-  final String prefix = ".material.";
+  static final String PREFIX = ".material-price.";
 
-  @Value("${rabbit-mq-config.queue}" + prefix + "${rabbit-mq-config.actions[0]}")
+  @Value("${rabbit-mq-config.queue}" + PREFIX + "${rabbit-mq-config.actions[0]}")
   String UPDATE_ROUTING_KEY;
 
-  @Value("${rabbit-mq-config.queue}" + prefix + "${rabbit-mq-config.actions[1]}")
+  @Value("${rabbit-mq-config.queue}" + PREFIX + "${rabbit-mq-config.actions[1]}")
   String DELETE_ROUTING_KEY;
 
   public MaterialResponse create(@NonNull CreateRequest request) {
@@ -56,9 +56,9 @@ public class MaterialUseCase {
     mService.deleteMaterial(id);
 
     producer.send(DELETE_ROUTING_KEY, new DeleteEvent(
-      old.jobContent(), old.price(), old.laborPrice(),
-      old.laborPriceAtRuralCommune(), old.constructionMachineryPrice(),
-      old.constructionMachineryPriceAtRuralCommune(), old.groupName(), old.unitName()));
+        old.jobContent(), old.price(), old.laborPrice(),
+        old.laborPriceAtRuralCommune(), old.constructionMachineryPrice(),
+        old.constructionMachineryPriceAtRuralCommune(), old.groupName(), old.unitName()));
   }
 
   public MaterialResponse get(String id) {

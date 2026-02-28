@@ -92,7 +92,7 @@ public class WaterMeterTypeController {
   }
 
   @GetMapping("/{id}")
-  @Operation(summary = "Lấy chi tiết loại đồng hồ", description = "Truy xuất thông tin chi tiết của một loại đồng hồ theo ID", responses = {
+  @Operation(summary = "Lấy thông tin chi tiết loại đồng hồ", description = "Truy xuất thông tin chi tiết của một loại đồng hồ theo ID", responses = {
       @ApiResponse(responseCode = "200", description = "Lấy thông tin thành công", content = @Content(schema = @Schema(implementation = WaterMeterTypeResponse.class))),
       @ApiResponse(responseCode = "404", description = "Không tìm thấy loại đồng hồ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })

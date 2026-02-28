@@ -1,4 +1,4 @@
-package com.capstone.customer.config;
+package com.capstone.notification.config;
 
 import com.capstone.common.config.SharedSecurityConfig;
 import lombok.AccessLevel;
@@ -16,7 +16,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Component;
 import org.springframework.web.cors.CorsConfiguration;
@@ -26,10 +25,10 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
-@RequiredArgsConstructor
-@Import(SharedSecurityConfig.class)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequiredArgsConstructor
+@EnableMethodSecurity
+@Import(SharedSecurityConfig.class)
 public class SecurityConfig {
   @Component
   @ConfigurationProperties(prefix = "cors")
@@ -39,7 +38,6 @@ public class SecurityConfig {
     private List<String> allowedOrigins;
   }
 
-  JwtAuthenticationConverter converter;
   CorsProperties corsProperties;
   JwtDecoder decoder;
   final String[] PUBLIC_URLS = {
@@ -67,11 +65,7 @@ public class SecurityConfig {
           response.setStatus(HttpStatus.FORBIDDEN.value());
           response.getWriter().write("{\"error\": \"Access denied\"}");
         }))
-      .oauth2ResourceServer(oauth2 -> oauth2
-        .jwt(jwt -> jwt
-          .decoder(decoder)
-          .jwtAuthenticationConverter(converter))
-      )
+      .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(decoder)))
       .build();
   }
 

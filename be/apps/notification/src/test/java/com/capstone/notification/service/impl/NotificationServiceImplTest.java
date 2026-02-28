@@ -5,15 +5,15 @@ import com.capstone.notification.model.Notification;
 import com.capstone.notification.repository.NotificationRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
+
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,29 +26,25 @@ class NotificationServiceImplTest {
 
   @Test
   void createNotification_savesAndReturnsResponse() {
+    // Given
     var request = new CreateNotificationRequest(
-      "Payment received",
-      "",
-      "/payments/123"
-    );
+      "Payment title",
+      "Payment message",
+      "/payments/123");
 
-    when(notificationRepo.save(any(Notification.class))).thenAnswer(invocation ->
-      invocation.getArgument(0)
-    );
+    when(notificationRepo.save(any(Notification.class))).thenAnswer(invocation -> {
+      Notification n = invocation.getArgument(0);
+      ReflectionTestUtils.setField(n, "notificationId", "noti-1");
+      return n;
+    });
 
+    // When
     var response = notificationService.createNotification(request);
 
-    var captor = ArgumentCaptor.forClass(Notification.class);
-    verify(notificationRepo).save(captor.capture());
-
-    var saved = captor.getValue();
-    assertThat(saved.getMessage()).isEqualTo("Payment received");
-    assertThat(saved.getLink()).isEqualTo("/payments/123");
-    assertThat(saved.getStatus()).isFalse();
-    assertThat(saved.getCreatedAt()).isNotNull();
-
+    // Then
     assertThat(response.notificationId()).isEqualTo("noti-1");
-    assertThat(response.message()).isEqualTo("Payment received");
+    assertThat(response.title()).isEqualTo("Payment title");
+    assertThat(response.message()).isEqualTo("Payment message");
     assertThat(response.link()).isEqualTo("/payments/123");
     assertThat(response.status()).isFalse();
     assertThat(response.createdAt()).isNotNull();
@@ -56,20 +52,26 @@ class NotificationServiceImplTest {
 
   @Test
   void getNotificationsByIds_returnsBatchResponse() {
+    // Given
     var notification = Notification.builder()
+      .title("Title 1")
       .message("Message 1")
       .link("/link-1")
       .status(false)
       .build();
+    ReflectionTestUtils.setField(notification, "notificationId", "noti-1");
+
     var ids = List.of("noti-1", "noti-2");
 
     when(notificationRepo.findAllById(ids))
       .thenReturn(List.of(notification));
 
+    // When
     var response = notificationService.getNotificationsByIds(ids, 2);
 
+    // Then
     assertThat(response.items()).hasSize(1);
-    assertThat(response.items().get(0).notificationId()).isEqualTo("noti-1");
+    assertThat(response.items().getFirst().notificationId()).isEqualTo("noti-1");
     assertThat(response.requestedSize()).isEqualTo(2);
     assertThat(response.totalFound()).isEqualTo(1);
   }

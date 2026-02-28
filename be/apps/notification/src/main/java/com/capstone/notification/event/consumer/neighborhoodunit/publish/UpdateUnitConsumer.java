@@ -23,7 +23,12 @@ public class UpdateUnitConsumer extends GeneralEventConsumer<UpdateEventMessage>
 
   @RabbitListener(queues = "${rabbit-mq-config.queue}.neighborhood-unit.update")
   public void handle(UpdateEventMessage event) {
-    super.handle(event, List.of(Topic.getTopic(Topic.GENERAL)), "Cập nhật tổ/khu/xóm");
+    super.handle(
+      event,
+      List.of(Topic.getTopic(Topic.GENERAL)),
+      "Cập nhật tổ/khu/xóm",
+      null
+    );
   }
 
   @Override
