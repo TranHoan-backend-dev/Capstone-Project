@@ -7,6 +7,7 @@ import { FilterSection } from "./components/filter-section";
 import { NeighborhoodUnitFilter, NeighborhoodUnitItem } from "@/types";
 import { NeighborhoodUnitForm } from "./components/neighborhood-unit-form";
 import { NeighborhoodUnitTable } from "./components/neighborhood-unit-table";
+import { Modal, ModalContent } from "@heroui/react";
 
 const NeighborhoodUnitPage = () => {
   const [filter, setFilter] = useState<NeighborhoodUnitFilter>({});
@@ -44,14 +45,22 @@ const NeighborhoodUnitPage = () => {
         onAddNew={handleAddNew}
       />
 
-      {showAddForm && (
-        <NeighborhoodUnitForm
-          key={editingItem?.id || "create"}
-          initialData={editingItem || undefined}
-          onSuccess={handleSuccess}
-          onClose={handleCloseForm}
-        />
-      )}
+      <Modal
+        isOpen={showAddForm}
+        onClose={handleCloseForm}
+        size="3xl"
+        placement="top-center"
+        scrollBehavior="inside"
+      >
+        <ModalContent>
+          <NeighborhoodUnitForm
+            key={editingItem?.id || "create"}
+            initialData={editingItem || undefined}
+            onSuccess={handleSuccess}
+            onClose={handleCloseForm}
+          />
+        </ModalContent>
+      </Modal>
 
       <NeighborhoodUnitTable
         filter={filter}
