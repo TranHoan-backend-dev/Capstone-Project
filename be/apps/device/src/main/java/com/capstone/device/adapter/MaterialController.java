@@ -6,9 +6,12 @@ import com.capstone.common.utils.Utils;
 import com.capstone.device.application.business.material.MaterialService;
 import com.capstone.device.application.dto.request.material.CreateRequest;
 import com.capstone.device.application.dto.request.material.UpdateRequest;
+import com.capstone.device.application.dto.response.MaterialResponse;
 import com.capstone.device.application.usecase.MaterialUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -35,8 +38,8 @@ public class MaterialController {
 
   @Operation(summary = "Tạo mới đơn giá vật tư", description = "Cho phép nhân viên IT tạo mới một bản ghi đơn giá vật tư vào hệ thống. Yêu cầu quyền IT_STAFF.", responses = {
       @ApiResponse(responseCode = "201", description = "Tạo mới thành công"),
-      @ApiResponse(responseCode = "400", description = "Dữ liệu đầu vào không hợp lệ"),
-      @ApiResponse(responseCode = "403", description = "Không có quyền thực hiện thao tác này")
+      @ApiResponse(responseCode = "400", description = "Dữ liệu đầu vào không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+      @ApiResponse(responseCode = "403", description = "Không có quyền thực hiện thao tác này", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PostMapping
   @PreAuthorize("hasAuthority('IT_STAFF')")
@@ -48,9 +51,9 @@ public class MaterialController {
   }
 
   @Operation(summary = "Cập nhật đơn giá vật tư", description = "Cập nhật thông tin đơn giá vật tư dựa trên ID. Sau khi cập nhật thành công, một sự kiện sẽ được gửi đến RabbitMQ để thông báo cho Notification Service.", responses = {
-      @ApiResponse(responseCode = "200", description = "Cập nhật thành công"),
-      @ApiResponse(responseCode = "400", description = "Dữ liệu không hợp lệ hoặc không tìm thấy ID vật tư tương ứng"),
-      @ApiResponse(responseCode = "403", description = "Không có quyền thực hiện")
+      @ApiResponse(responseCode = "200", description = "Cập nhật thành công", content = @Content(schema = @Schema(implementation = MaterialResponse.class))),
+      @ApiResponse(responseCode = "400", description = "Dữ liệu không hợp lệ hoặc không tìm thấy ID vật tư tương ứng", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+      @ApiResponse(responseCode = "403", description = "Không có quyền thực hiện", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PutMapping("/{id}")
   @PreAuthorize("hasAuthority('IT_STAFF')")
@@ -64,7 +67,7 @@ public class MaterialController {
 
   @Operation(summary = "Xóa đơn giá vật tư", description = "Xóa bản ghi vật tư khỏi hệ thống dựa trên ID. Thao tác này sẽ kích hoạt sự kiện xóa gửi đến các dịch vụ liên quan.", responses = {
       @ApiResponse(responseCode = "200", description = "Xóa thành công"),
-      @ApiResponse(responseCode = "400", description = "Không tìm thấy ID vật tư để xóa")
+      @ApiResponse(responseCode = "400", description = "Không tìm thấy ID vật tư để xóa", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @DeleteMapping("/{id}")
   @PreAuthorize("hasAuthority('IT_STAFF')")
@@ -96,6 +99,7 @@ public class MaterialController {
   }
 
   // internal api, do not expose
+  @Operation(hidden = true)
   @GetMapping("/exist")
   public ResponseEntity<?> checkExistence(@RequestParam String id) {
     log.info("REST request to check existence of water meter: {}", id);
