@@ -7,6 +7,7 @@ import CustomInput from "@/components/ui/custom/CustomInput";
 import { CheckApprovalIcon } from "@/config/chip-and-icon";
 import { Card, CardBody } from "@heroui/react";
 import { RoadFormProps } from "@/types";
+import { authFetch } from "@/utils/authFetch";
 
 export const RoadForm = ({
   initialData,
@@ -34,13 +35,11 @@ export const RoadForm = ({
 
       const method = isEdit ? "PUT" : "POST";
 
-      const payload = { name };
+      const payload = {
+        name: !isEdit || name !== initialData?.name ? name.trim() : "",
+      };
 
-      if (!isEdit || name !== initialData?.name) {
-        payload.name = name;
-      }
-
-      const response = await fetch(url, {
+      const response = await authFetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

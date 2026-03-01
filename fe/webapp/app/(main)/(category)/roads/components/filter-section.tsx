@@ -41,9 +41,14 @@ export const FilterSection = ({
     >
       <section className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-          <div className="md:col-span-1">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <CustomInput
-              label="Từ khóa"
+              label="Mã đường phố"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+            />
+            <CustomInput
+              label="Tên đường phố"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
             />

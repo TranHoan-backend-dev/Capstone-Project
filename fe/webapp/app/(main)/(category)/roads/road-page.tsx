@@ -7,6 +7,7 @@ import { FilterSection } from "./components/filter-section";
 import { RoadForm } from "./components/road-form";
 import { RoadTable } from "./components/road-table";
 import { RoadItem } from "@/types";
+import { Modal, ModalContent } from "@heroui/react";
 
 const RoadPage = () => {
   const [keyword, setKeyword] = useState("");
@@ -42,14 +43,22 @@ const RoadPage = () => {
         onAddNew={handleAddNew}
       />
 
-      {showAddForm && (
-        <RoadForm
-          key={editingItem?.id || "create"}
-          initialData={editingItem || undefined}
-          onSuccess={handleSuccess}
-          onClose={handleCloseForm}
-        />
-      )}
+      <Modal
+        isOpen={showAddForm}
+        onClose={handleCloseForm}
+        size="3xl"
+        placement="top-center"
+        scrollBehavior="inside"
+      >
+        <ModalContent>
+          <RoadForm
+            key={editingItem?.id || "create"}
+            initialData={editingItem || undefined}
+            onSuccess={handleSuccess}
+            onClose={handleCloseForm}
+          />
+        </ModalContent>
+      </Modal>
 
       <RoadTable
         keyword={keyword}

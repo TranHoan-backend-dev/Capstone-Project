@@ -7,6 +7,7 @@ import { RoadItem, RoadResponse, RoadTableProps } from "@/types";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import { ROAD_COLUMN } from "@/config/table-columns";
 import { CallToast } from "@/components/ui/CallToast";
+import { authFetch } from "@/utils/authFetch";
 
 export const RoadTable = ({
   keyword,
@@ -45,7 +46,7 @@ export const RoadTable = ({
           params.append("keyword", trimmedKeyword);
         }
 
-        const res = await fetch(`/api/construction/roads?${params.toString()}`);
+        const res = await authFetch(`/api/construction/roads?${params.toString()}`);
 
         if (!res.ok) {
           console.error("Fetch failed", res.status);
@@ -114,7 +115,7 @@ export const RoadTable = ({
           if (!confirm("Bạn có chắc muốn xóa đường phố này?")) return;
 
           try {
-            const res = await fetch(`/api/construction/roads/${id}`, {
+            const res = await authFetch(`/api/construction/roads/${id}`, {
               method: "DELETE",
             });
 
@@ -193,7 +194,7 @@ export const RoadTable = ({
         headerSummary={`${totalItems}`}
         paginationProps={{
           total: totalPages,
-          initialPage: page,
+          page: page,
           onChange: setPage,
           summary: `${totalItems}`,
         }}
