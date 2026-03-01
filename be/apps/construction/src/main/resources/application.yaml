@@ -40,6 +40,8 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:9000/eureka
+  instance:
+    prefer-ip-address: true
 springdoc:
   api-docs:
     enabled: true
@@ -48,38 +50,36 @@ springdoc:
     enabled: true
     path: /swagger-ui/index.html
 rabbit-mq-config:
-  queue_name: 'construction_queue'
-  update-lateral:
-    exchange_name: 'update_lateral_exchange'
-    routing_key: 'update_lateral_routing_key'
-  delete-lateral:
-    exchange_name: 'delete_lateral_exchange'
-    routing_key: 'delete_lateral_routing_key'
-
-  update-commune:
-    exchange_name: 'update_commune_exchange'
-    routing_key: 'update_commune_routing_key'
-  delete-commune:
-    exchange_name: 'delete_commune_exchange'
-    routing_key: 'delete_commune_routing_key'
-
-  update-unit:
-    exchange_name: 'update_unit_exchange'
-    routing_key: 'update_unit_routing_key'
-  delete-unit:
-    exchange_name: 'delete_unit_exchange'
-    routing_key: 'delete_unit_routing_key'
-
-  update-road:
-    exchange_name: 'update_road_exchange'
-    routing_key: 'update_road_routing_key'
-  delete-road:
-    exchange_name: 'delete_road_exchange'
-    routing_key: 'delete_road_routing_key'
-
-  update-hamlet:
-    exchange_name: 'update_hamlet_exchange'
-    routing_key: 'update_hamlet_routing_key'
-  delete-hamlet:
-    exchange_name: 'delete_hamlet_exchange'
-    routing_key: 'delete_hamlet_routing_key'
+  queue_name: construction_queue
+  update: update
+  delete: delete
+  exchange: exchange
+  entities:
+    - commune
+    - hamlet
+    - lateral
+    - neighborhood-unit
+    - road
+  actions:
+    - update
+    - delete
+#spring:
+#  datasource:
+#    driver-class-name: org.postgresql.Driver
+#    url: jdbc:postgresql://localhost:5432/construction
+#    username:
+#    password:
+#  rabbitmq:
+#    host:
+#    port:
+#    username:
+#    password:
+#keycloak:
+#  server-url: http://localhost:8080
+#  issuer-uri: ${keycloak.server-url}/realms/${keycloak.realms}
+#  aud:
+#  realms:
+#  username:
+#  password:
+#  token-uri: ${keycloak.server-url}/realms/${keycloak.realms}/protocol/openid-connect/token
+#  client-id:

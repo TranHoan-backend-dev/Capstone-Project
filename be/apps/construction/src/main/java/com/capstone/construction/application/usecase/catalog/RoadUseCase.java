@@ -13,6 +13,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -20,41 +21,35 @@ import org.springframework.stereotype.Component;
 public class RoadUseCase {
   final RoadService roadService;
   final MessageProducer producer;
+  final String prefix = ".road.";
 
-  @Value("${rabbit-mq-config.update-road.exchange_name}")
-  String UPDATE_EXCHANGE_NAME;
-  @Value("${rabbit-mq-config.update-road.routing_key}")
-  String UPDATE_ROUTING_KEY;
+  @Value("${rabbit-mq-config.queue_name}" + prefix + "${rabbit-mq-config.update}")
+  String UPDATE_ROUTING_KEY; // chu ky gan vao tin nhan khi gui den Exchange
 
-  @Value("${rabbit-mq-config.delete-road.exchange_name}")
-  String DELETE_EXCHANGE_NAME;
-  @Value("${rabbit-mq-config.delete-road.routing_key}")
+  @Value("${rabbit-mq-config.queue_name}" + prefix + "${rabbit-mq-config.delete}")
   String DELETE_ROUTING_KEY;
 
   public RoadResponse createRoad(RoadRequest request) {
     return roadService.createRoad(request);
   }
 
+  @Transactional(rollbackFor = Exception.class)
   public RoadResponse updateRoad(String id, RoadRequest request) {
     var old = roadService.getRoadById(id);
     var response = roadService.updateRoad(id, request);
 
     if (!request.name().isBlank()) {
-      producer.send(
-        "UPDATE_ROAD",
-        UPDATE_EXCHANGE_NAME, UPDATE_ROUTING_KEY,
-        new UpdateEvent(old.name(), response.name()));
+      producer.send(UPDATE_ROUTING_KEY, new UpdateEvent(old.name(), response.name()));
     }
     return response;
   }
 
+  @Transactional(rollbackFor = Exception.class)
   public void deleteRoad(String id) {
     var old = roadService.getRoadById(id);
     roadService.deleteRoad(id);
 
-    producer.send(
-      "DELETE_ROAD",
-      DELETE_EXCHANGE_NAME, DELETE_ROUTING_KEY, new DeleteEvent(old.name()));
+    producer.send(DELETE_ROUTING_KEY, new DeleteEvent(old.name()));
   }
 
   public RoadResponse getRoadById(String id) {

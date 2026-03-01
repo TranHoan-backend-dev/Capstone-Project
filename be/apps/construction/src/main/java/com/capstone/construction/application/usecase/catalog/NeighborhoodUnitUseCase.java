@@ -14,6 +14,7 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -21,28 +22,24 @@ import org.springframework.stereotype.Component;
 public class NeighborhoodUnitUseCase {
   final NeighborhoodUnitService unitService;
   final MessageProducer producer;
+  final String prefix = ".neighborhood-unit.";
 
-  @Value("${rabbit-mq-config.update-unit.exchange_name}")
-  String UPDATE_EXCHANGE_NAME;
-  @Value("${rabbit-mq-config.update-unit.routing_key}")
-  String UPDATE_ROUTING_KEY;
+  @Value("${rabbit-mq-config.queue_name}" + prefix + "${rabbit-mq-config.update}")
+  String UPDATE_ROUTING_KEY; // chu ky gan vao tin nhan khi gui den Exchange
 
-  @Value("${rabbit-mq-config.delete-unit.exchange_name}")
-  String DELETE_EXCHANGE_NAME;
-  @Value("${rabbit-mq-config.delete-unit.routing_key}")
+  @Value("${rabbit-mq-config.queue_name}" + prefix + "${rabbit-mq-config.delete}")
   String DELETE_ROUTING_KEY;
 
   public void createUnit(@NonNull NeighborhoodUnitRequest request) {
     unitService.createUnit(request);
   }
 
+  @Transactional(rollbackFor = Exception.class)
   public NeighborhoodUnitResponse updateUnit(String id, NeighborhoodUnitRequest request) {
     var old = unitService.getUnitById(id);
     var response = unitService.updateUnit(id, request);
 
-    producer.send(
-      "UPDATE_UNIT",
-      UPDATE_EXCHANGE_NAME, UPDATE_ROUTING_KEY,
+    producer.send(UPDATE_ROUTING_KEY,
       new UpdateEvent(
         old.name(), old.communeName(),
         response.name(), response.communeName()
@@ -50,14 +47,12 @@ public class NeighborhoodUnitUseCase {
     return response;
   }
 
+  @Transactional(rollbackFor = Exception.class)
   public void deleteUnit(String id) {
     var old = unitService.getUnitById(id);
     unitService.deleteUnit(id);
 
-    producer.send(
-      "DELETE_UNIT",
-      DELETE_EXCHANGE_NAME, DELETE_ROUTING_KEY,
-      new DeleteEvent(old.name(), old.communeName()));
+    producer.send(DELETE_ROUTING_KEY, new DeleteEvent(old.name(), old.communeName()));
   }
 
   public NeighborhoodUnitResponse getUnitById(String id) {

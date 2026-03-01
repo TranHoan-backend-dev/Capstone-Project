@@ -3,17 +3,13 @@
 import { z } from "zod";
 import { useEffect, useState } from "react";
 import { DocumentIcon } from "@/config/chip-and-icon";
-import PasswordRequirements from "./PasswordRequirements";
 import PasswordInput from "@/components/ui/PasswordInput";
 import CustomButton from "@/components/ui/custom/CustomButton";
 import { passwordSchema } from "@/schemas/password.schema";
-import { resetPasswordService } from "@/services/auth.service";
+import { CallToast } from "@/components/ui/CallToast";
+import { ResetPasswordFormProps } from "@/types";
 
-interface ResetPasswordFormProps {
-  email: string;
-}
-
-const ResetPasswordForm = ({ email }: ResetPasswordFormProps) => {
+const ResetPasswordForm = ({ email, otp }: ResetPasswordFormProps) => {
   const resetPasswordSchema = z
     .object({
       newPassword: passwordSchema,
@@ -24,17 +20,23 @@ const ResetPasswordForm = ({ email }: ResetPasswordFormProps) => {
       path: ["confirmPassword"],
     });
 
-  const [formData, setFormData] = useState({
+  type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
+
+  const [formData, setFormData] = useState<ResetPasswordFormData>({
     newPassword: "",
     confirmPassword: "",
   });
+
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState<{
+    newPassword?: string;
+    confirmPassword?: string;
+  }>({});
   const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setErrors({});
 
     const result = resetPasswordSchema.safeParse({
       newPassword: formData.newPassword,
@@ -42,24 +44,71 @@ const ResetPasswordForm = ({ email }: ResetPasswordFormProps) => {
     });
 
     if (!result.success) {
-      setError(result.error.issues[0].message);
+      const fieldErrors: Record<string, string> = {};
+
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0] as string;
+        if (!fieldErrors[field]) {
+          fieldErrors[field] = issue.message;
+        }
+      });
+
+      setErrors(fieldErrors);
       return;
     }
 
     setIsLoading(true);
     try {
-      await resetPasswordService(email, formData.newPassword);
+      const res = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          otp,
+          newPassword: formData.newPassword,
+        }),
+      });
+
+      if (!res.ok) {
+        CallToast({
+          title: "Thất bại",
+          message: "Đặt lại mật khẩu thất bại",
+          color: "danger",
+        });
+        return;
+      }
 
       setSuccess(true);
       setTimeout(() => {
         window.location.href = "/login";
       }, 2000);
-    } catch {
-      setError("Có lỗi xảy ra. Vui lòng thử lại.");
+    } catch (err) {
+      CallToast({
+        title: "Thất bại",
+        message: "Không thể kết nối tới server",
+        color: "danger",
+      });
     } finally {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!otp) {
+      localStorage.removeItem("forgot_step");
+      localStorage.removeItem("forgot_email");
+
+      CallToast({
+        title: "Phiên hết hạn",
+        message: "Vui lòng nhập lại email để tiếp tục.",
+        color: "danger",
+      });
+
+      setTimeout(() => {
+        window.location.href = "/forgot-password";
+      }, 1500);
+    }
+  }, [otp]);
 
   useEffect(() => {
     if (success) {
@@ -97,12 +146,15 @@ const ResetPasswordForm = ({ email }: ResetPasswordFormProps) => {
           isRequired
           label="Nhập mật khẩu mới"
           value={formData.newPassword}
-          onChange={(e) =>
+          isInvalid={!!errors.newPassword}
+          errorMessage={errors.newPassword}
+          onChange={(e) => {
             setFormData({
               ...formData,
               newPassword: e.target.value,
-            })
-          }
+            });
+            setErrors((prev) => ({ ...prev, newPassword: undefined }));
+          }}
         />
       </div>
 
@@ -111,16 +163,17 @@ const ResetPasswordForm = ({ email }: ResetPasswordFormProps) => {
           isRequired
           label="Nhập lại mật khẩu mới"
           value={formData.confirmPassword}
-          onChange={(e) =>
+          isInvalid={!!errors.confirmPassword}
+          errorMessage={errors.confirmPassword}
+          onChange={(e) => {
             setFormData({
               ...formData,
               confirmPassword: e.target.value,
-            })
-          }
+            });
+            setErrors((prev) => ({ ...prev, confirmPassword: undefined }));
+          }}
         />
       </div>
-
-      <PasswordRequirements password={formData.newPassword} />
 
       <div className="flex justify-end space-x-4 pt-4 border-t border-gray-100 dark:border-zinc-800 mt-8">
         <CustomButton

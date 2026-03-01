@@ -1,23 +1,41 @@
 package com.capstone.notification.event.consumer.lateral.publish;
 
-import com.capstone.notification.event.consumer.BaseEventConsumer;
+import com.capstone.common.annotation.AppLog;
+import com.capstone.notification.event.producer.MessageProducer;
+import com.capstone.notification.event.websocket.GeneralEventConsumer;
 import com.capstone.notification.event.consumer.lateral.message.DeleteEventMessage;
+import com.capstone.notification.event.websocket.Topic;
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
-@Component
-public class DeleteLateralConsumer extends BaseEventConsumer<DeleteEventMessage> {
+import java.util.List;
 
-  @RabbitListener(queues = "${keyword.delete}_${rabbit-mq-config.entities[0]}_${keyword.queue}")
-  @Override
+@AppLog
+@Component
+public class DeleteLateralConsumer extends GeneralEventConsumer<DeleteEventMessage> {
+  Logger log;
+
+  public DeleteLateralConsumer(MessageProducer producer) {
+    super(producer);
+  }
+
+  @RabbitListener(queues = "${rabbit-mq-config.queue}.lateral.delete")
   public void handle(DeleteEventMessage event) {
-    super.handle(event);
+    super.handle(
+      event,
+      List.of(Topic.getTopic(Topic.GENERAL)),
+      "Xóa nhánh tổng",
+      null
+    );
   }
 
   @Override
   protected String buildMessage(@NonNull DeleteEventMessage event) {
     var data = event.data();
-    return "Phòng IT vừa xóa nhánh tổng %s thuộc chi nhánh %s".formatted(data.name(), data.network());
+    var response = "Phòng IT vừa xóa nhánh tổng %s thuộc chi nhánh %s".formatted(data.name(), data.network());
+    log.info(response);
+    return response;
   }
 }
