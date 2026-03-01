@@ -97,7 +97,7 @@ const CustomModalWithTable = ({
 
       {isPagination && (
         <div className="mt-4">
-          <CustomPagination initialPage={1} summary="1-10 của 481" total={49} />
+          <CustomPagination page={1} summary="1-10 của 481" total={49} />
         </div>
       )}
     </BaseModal>
