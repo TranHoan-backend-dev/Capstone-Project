@@ -9,6 +9,7 @@ import { CheckApprovalIcon } from "@/config/chip-and-icon";
 import { Card, CardBody } from "@heroui/react";
 import { useNetwork } from "@/hooks/useNetworks";
 import { LateralFormProps } from "@/types";
+import { authFetch } from "@/utils/authFetch";
 
 export const LateralForm = ({
   initialData,
@@ -42,27 +43,28 @@ export const LateralForm = ({
 
   const handleSubmit = async () => {
     if (submitLoading) return;
+
     try {
       setSubmitLoading(true);
+
       const url = isEdit
         ? `/api/construction/laterals/${initialData?.id}`
         : `/api/construction/laterals`;
 
       const method = isEdit ? "PUT" : "POST";
 
-      const payload: any = {};
+      const selectedNetworkId = Array.from(selectedNetwork)[0] || "";
 
-      if (!isEdit || name !== initialData?.name) {
-        payload.name = name;
-      }
+      const payload = {
+        name: !isEdit || name !== initialData?.name ? name.trim() : "",
 
-      const selectedNetworkId = Array.from(selectedNetwork)[0];
+        networkId:
+          !isEdit || selectedNetworkId !== initialData?.networkId
+            ? selectedNetworkId
+            : "",
+      };
 
-      if (!isEdit || selectedNetworkId !== initialData?.networkId) {
-        payload.networkId = selectedNetworkId;
-      }
-
-      const response = await fetch(url, {
+      const response = await authFetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -133,7 +135,9 @@ export const LateralForm = ({
                 submitLoading ? null : <CheckApprovalIcon className="w-4 h-4" />
               }
               onPress={handleSubmit}
-              isDisabled={!name.trim() || networkLoading}
+              isDisabled={
+                !name.trim() || selectedNetwork.size === 0 || networkLoading
+              }
               isLoading={submitLoading}
             >
               {submitLoading ? "Đang lưu..." : "Lưu"}
