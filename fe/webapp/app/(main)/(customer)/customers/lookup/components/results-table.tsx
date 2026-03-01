@@ -201,7 +201,7 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
         }
         paginationProps={{
           total: 1,
-          initialPage: 1,
+          page: 1,
           summary: `${data.length}`,
         }}
         renderCellAction={renderCell}

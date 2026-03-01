@@ -125,7 +125,7 @@ const ConsumptionHistoryPage = () => {
         isCollapsible={false}
         paginationProps={{
           total: 10,
-          initialPage: 1,
+          page: 1,
           summary: `1-20 của ${historyData.length}`,
         }}
         renderCellAction={renderCell}
