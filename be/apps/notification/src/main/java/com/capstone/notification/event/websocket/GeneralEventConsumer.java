@@ -1,11 +1,19 @@
-package com.capstone.notification.event.consumer;
+package com.capstone.notification.event.websocket;
 
+import com.capstone.common.annotation.AppLog;
 import com.capstone.notification.dto.request.CreateNotificationRequest;
+import com.capstone.notification.event.producer.MessageProducer;
+import com.capstone.notification.event.producer.NotificationCreatedEvent;
 import com.capstone.notification.service.boundary.NotificationService;
+import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Base class for all RabbitMQ event consumers.
@@ -16,9 +24,13 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
  *
  * @param <T> the event message type this consumer handles
  */
-public abstract class BaseEventConsumer<T> {
+@AppLog
+@RequiredArgsConstructor
+public abstract class GeneralEventConsumer<T> {
+  private final MessageProducer producer;
 
-  private static final String NOTIFICATION_TOPIC = "/topic/notification";
+  @Value("${rabbit-mq-config.auth-routingKey}")
+  String AUTH_ROUTING_KEY;
 
   @Autowired
   protected NotificationService notificationService;
@@ -26,20 +38,26 @@ public abstract class BaseEventConsumer<T> {
   @Autowired
   protected SimpMessagingTemplate messagingTemplate;
 
-  private final Logger log = LoggerFactory.getLogger(getClass());
+  Logger log;
 
   /**
    * Entry point called by each subclass's {@code @RabbitListener} method.
    */
-  protected void handle(T event) {
+  protected void handle(T event, @NonNull List<String> topics, String title, String link) {
     log.info("[{}] Received event: {}", getClass().getSimpleName(), event);
 
     var message = buildMessage(event);
-    var request = new CreateNotificationRequest(message, null);
+    var request = new CreateNotificationRequest(title, message, link);
     var content = notificationService.createNotification(request);
+    log.info("[{}] Sending notification: {}", getClass().getSimpleName(), content);
 
-    log.info("[{}] Broadcasting notification: {}", getClass().getSimpleName(), content);
-    messagingTemplate.convertAndSend(NOTIFICATION_TOPIC, content);
+    topics.forEach(topic -> {
+      messagingTemplate.convertAndSend(topic, content);
+    });
+
+    // Bắn ngược sự kiện lại cho auth service để người dùng lưu vào
+    // IndividualNotification
+    producer.send(AUTH_ROUTING_KEY, new NotificationCreatedEvent(content.notificationId(), topics));
   }
 
   /**

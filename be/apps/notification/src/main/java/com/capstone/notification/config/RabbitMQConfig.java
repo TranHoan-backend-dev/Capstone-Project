@@ -1,9 +1,10 @@
-package com.capstone.notification.config.rabbitmq;
+package com.capstone.notification.config;
 
 import com.capstone.common.config.RabbitTopologyProperties;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.jspecify.annotations.NonNull;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -32,6 +33,12 @@ public class RabbitMQConfig {
   @Value("${rabbit-mq-config.exchange}")
   String EXCHANGE;
 
+  @Value("${rabbit-mq-config.auth-queue}")
+  String AUTH_QUEUE;
+
+  @Value("${rabbit-mq-config.auth-routingKey}")
+  String AUTH_ROUTING_KEY;
+
   @Bean
   public MessageConverter converter() {
     return new Jackson2JsonMessageConverter();
@@ -46,8 +53,7 @@ public class RabbitMQConfig {
   }
 
   @Bean
-  public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
-    ConnectionFactory connectionFactory) {
+  public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
     var factory = new SimpleRabbitListenerContainerFactory();
     factory.setConnectionFactory(connectionFactory);
     factory.setMessageConverter(converter());
@@ -56,17 +62,16 @@ public class RabbitMQConfig {
 
   @Bean
   public Declarables rabbitDeclarables() {
-    TopicExchange exchange = new TopicExchange(EXCHANGE);
+    var exchange = new TopicExchange(EXCHANGE);
 
     List<Declarable> declarables = new ArrayList<>();
-    // declarables.add(queue);
     declarables.add(exchange);
 
-    for (String entity : props.getEntities()) {
-      for (String action : props.getActions()) {
+    for (var entity : props.getEntities()) {
+      for (var action : props.getActions()) {
         Queue queue = new Queue(String.join(".", QUEUE, entity, action), true);
         declarables.add(queue);
-        String routingKey = String.join(".", QUEUE, entity, action);
+        var routingKey = String.join(".", QUEUE, entity, action);
 
         declarables.add(
           BindingBuilder.bind(queue)
@@ -74,6 +79,8 @@ public class RabbitMQConfig {
             .with(routingKey));
       }
     }
+
+    declarables.add(buildQueueForAuth(exchange));
 
     return new Declarables(declarables);
   }
@@ -83,5 +90,12 @@ public class RabbitMQConfig {
     var admin = new RabbitAdmin(connectionFactory);
     admin.setAutoStartup(true);
     return admin;
+  }
+
+  private @NonNull Binding buildQueueForAuth(@NonNull TopicExchange exchange) {
+    var queue = new Queue(AUTH_QUEUE, true);
+    return BindingBuilder.bind(queue)
+      .to(exchange)
+      .with(AUTH_ROUTING_KEY);
   }
 }

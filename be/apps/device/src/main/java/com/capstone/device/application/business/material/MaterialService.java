@@ -1,6 +1,7 @@
 package com.capstone.device.application.business.material;
 
-import com.capstone.device.application.dto.request.MaterialRequest;
+import com.capstone.device.application.dto.request.material.CreateRequest;
+import com.capstone.device.application.dto.request.material.UpdateRequest;
 import com.capstone.device.application.dto.response.MaterialResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,7 +13,7 @@ public interface MaterialService {
      * @param request the material creation request
      * @return the created material response
      */
-    MaterialResponse createMaterial(MaterialRequest request);
+    MaterialResponse createMaterial(CreateRequest request);
 
     /**
      * Updates an existing material record.
@@ -21,7 +22,7 @@ public interface MaterialService {
      * @param request the material update request
      * @return the updated material response
      */
-    MaterialResponse updateMaterial(String id, MaterialRequest request);
+    MaterialResponse updateMaterial(String id, UpdateRequest request);
 
     /**
      * Deletes a material record by ID.
