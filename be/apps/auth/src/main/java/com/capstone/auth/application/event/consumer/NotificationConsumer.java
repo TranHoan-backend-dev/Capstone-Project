@@ -1,11 +1,12 @@
 package com.capstone.auth.application.event.consumer;
 
-import com.capstone.auth.domain.enumerate.RoleName;
 import com.capstone.auth.domain.model.IndividualNotification;
 import com.capstone.auth.domain.model.Users;
 import com.capstone.auth.infrastructure.persistence.IndividualNotificationRepository;
 import com.capstone.auth.infrastructure.persistence.UserRepository;
 import com.capstone.common.annotation.AppLog;
+import com.capstone.common.enumerate.RoleName;
+
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
@@ -64,8 +65,8 @@ public class NotificationConsumer {
     log.info("Found {} users for notification {}", targetUsers.size(), notificationId);
 
     List<IndividualNotification> individualNotifications = targetUsers.stream()
-      .map(user -> new IndividualNotification(notificationId, user.getUserId(), false))
-      .toList();
+        .map(user -> new IndividualNotification(notificationId, user.getUserId(), false))
+        .toList();
 
     individualNotificationRepository.saveAll(individualNotifications);
     log.info("Saved {} individual notifications", individualNotifications.size());
@@ -75,9 +76,9 @@ public class NotificationConsumer {
     return switch (topic) {
       case "/notification" -> List.of(RoleName.values());
       case "/technical" -> List.of(
-        RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD,
-        RoleName.SURVEY_STAFF,
-        RoleName.ORDER_RECEIVING_STAFF);
+          RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD,
+          RoleName.SURVEY_STAFF,
+          RoleName.ORDER_RECEIVING_STAFF);
       case "/construction" -> List.of(RoleName.CONSTRUCTION_DEPARTMENT_HEAD, RoleName.CONSTRUCTION_DEPARTMENT_STAFF);
       case "/business" -> List.of(RoleName.BUSINESS_DEPARTMENT_HEAD, RoleName.METER_INSPECTION_STAFF);
       case "/it" -> List.of(RoleName.IT_STAFF);
