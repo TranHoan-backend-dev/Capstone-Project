@@ -109,6 +109,7 @@ public class WaterSupplyNetworkController {
     return Utils.returnOkResponse("Lấy danh sách mạng lưới thành công", response);
   }
 
+  // internal api, do not expose
   @GetMapping("/exist/{id}")
   @PreAuthorize("hasAuthority('IT_STAFF')")
   public Boolean checkExistence(@PathVariable String id) {

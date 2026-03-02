@@ -6,7 +6,7 @@ public record UpdateEventMessage(
   public record UnitEventData(
     String oldName,
     String newName,
-    String oldNetwork,
-    String newNetwork) {
+    String oldCommune,
+    String newCommune) {
   }
 }

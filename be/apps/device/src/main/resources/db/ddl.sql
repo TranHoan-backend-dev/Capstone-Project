@@ -1,20 +1,3 @@
-create table public.parameters
-(
-  param_id   varchar(255)   not null
-    primary key,
-  created_at timestamp(6)   not null,
-  creator    varchar(255)   not null,
-  name       varchar(255)   not null
-    constraint uk103wr298mpbr2vhx5tr7ila1o
-            unique,
-  updated_at timestamp(6)   not null,
-  updator    varchar(255)   not null,
-  value      numeric(38, 2) not null
-);
-
-alter table public.parameters
-  owner to postgres;
-
 create table public.materials_group
 (
   group_id   varchar(255) not null
@@ -40,6 +23,23 @@ create table public.overall_water_meter
 );
 
 alter table public.overall_water_meter
+  owner to postgres;
+
+create table public.parameters
+(
+  param_id   varchar(255)   not null
+    primary key,
+  created_at timestamp(6)   not null,
+  creator    varchar(255)   not null,
+  name       varchar(255)   not null
+    constraint uk103wr298mpbr2vhx5tr7ila1o
+            unique,
+  updated_at timestamp(6)   not null,
+  updator    varchar(255)   not null,
+  value      numeric(38, 2) not null
+);
+
+alter table public.parameters
   owner to postgres;
 
 create table public.price_type
@@ -69,12 +69,13 @@ alter table public.unit
 
 create table public.material
 (
-  labor_code                                    varchar(255)   not null
+  material_id                                   varchar(255)   not null
     primary key,
   construction_machinery_price                  numeric(19, 2) not null,
   construction_machinery_price_at_rural_commune numeric(19, 2) not null,
   created_at                                    timestamp(6)   not null,
   job_content                                   varchar(255)   not null,
+  labor_code                                    varchar(255)   not null,
   labor_price                                   numeric(19, 2) not null,
   labor_price_at_rural_commune                  numeric(19, 2) not null,
   price                                         numeric(19, 2) not null,
@@ -92,14 +93,14 @@ alter table public.material
 
 create table public.materials_of_cost_estimate
 (
-  cost_est_id         varchar(255) not null,
-  labor_cost          varchar(255) not null,
-  material_cost       varchar(255) not null,
-  note                varchar(255),
-  material_labor_code varchar(255) not null
-    constraint fkq87bxwf7tvyd861dbmd8dfecg
+  cost_est_id          varchar(255) not null,
+  labor_cost           varchar(255) not null,
+  material_cost        varchar(255) not null,
+  note                 varchar(255),
+  material_material_id varchar(255) not null
+    constraint fk8hlrkyr0pdjjk5yooog6ewvin
             references public.material,
-  primary key (cost_est_id, material_labor_code)
+  primary key (cost_est_id, material_material_id)
 );
 
 alter table public.materials_of_cost_estimate
@@ -107,14 +108,14 @@ alter table public.materials_of_cost_estimate
 
 create table public.materials_of_settlement
 (
-  settlement_id       varchar(255) not null,
-  labor_cost          varchar(255) not null,
-  material_cost       varchar(255) not null,
-  note                varchar(255),
-  material_labor_code varchar(255) not null
-    constraint fkph0g0tsrfbni1ui315akw28ng
+  settlement_id        varchar(255) not null,
+  labor_cost           varchar(255) not null,
+  material_cost        varchar(255) not null,
+  note                 varchar(255),
+  material_material_id varchar(255) not null
+    constraint fkaueyvhmdiruotg5pccb1bpaou
             references public.material,
-  primary key (material_labor_code, settlement_id)
+  primary key (material_material_id, settlement_id)
 );
 
 alter table public.materials_of_settlement

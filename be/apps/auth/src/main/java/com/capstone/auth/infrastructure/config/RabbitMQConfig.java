@@ -3,6 +3,7 @@ package com.capstone.auth.infrastructure.config;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.amqp.core.*;
+import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.*;
@@ -36,12 +37,24 @@ public class RabbitMQConfig {
     return new TopicExchange(EXCHANGE_NAME);
   }
 
+  @Bean
+  public Queue individualNotificationQueue() {
+    return new Queue("auth.individual-notification.queue", true);
+  }
+
+  @Bean
+  public Binding individualNotificationBinding(Queue individualNotificationQueue, TopicExchange exchange) {
+    return BindingBuilder.bind(individualNotificationQueue)
+        .to(exchange)
+        .with("auth.individual-notification.create");
+  }
+
   // Lien ket Queue va Exchange dua tren routing key
   @Bean
   public Binding binding(Queue queue, TopicExchange exchange) {
     return BindingBuilder.bind(queue)
-      .to(exchange)
-      .with(ROUTING_KEY);
+        .to(exchange)
+        .with(ROUTING_KEY);
   }
 
   @Bean
@@ -55,5 +68,13 @@ public class RabbitMQConfig {
     rabbitTemplate.setChannelTransacted(true);
     rabbitTemplate.setMessageConverter(converter());
     return rabbitTemplate;
+  }
+
+  @Bean
+  public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
+    var factory = new SimpleRabbitListenerContainerFactory();
+    factory.setConnectionFactory(connectionFactory);
+    factory.setMessageConverter(converter());
+    return factory;
   }
 }
