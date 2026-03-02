@@ -120,9 +120,9 @@ jobs:
           restore-keys: "${{ runner.os }}-gradle"
 
       - name: Build Image
-        working-directory: apps
+        working-directory: be/apps
         run: |
-          .be/apps/gradlew clean bootBuildImage --imageName=app:latest
+          ./gradlew clean bootBuildImage --imageName=app:latest
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
