@@ -40,7 +40,7 @@ export const UnitTable = ({
           sort: `${sort.field},${sort.direction}`,
         });
 
-        const trimmedFilter = filter.trim();
+        const trimmedFilter = filter.name?.trim() || filter.code?.trim() ? JSON.stringify(filter) : "";
         if (trimmedFilter) {
           params.append("filter", trimmedFilter);
         }

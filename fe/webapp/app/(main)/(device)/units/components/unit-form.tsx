@@ -15,6 +15,7 @@ export const UnitForm = ({
 }: UnitFormProps) => {
   const isEdit = !!initialData?.id;
 
+  const [code, setCode] = useState(initialData?.code || "");
   const [name, setName] = useState(initialData?.name || "");
   const [submitLoading, setSubmitLoading] = useState(false);
 
@@ -80,7 +81,12 @@ export const UnitForm = ({
         <div className="px-6 py-5 space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <CustomInput
-              label="Tên đường phố"
+              label="Mã đơn vị"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+            />
+            <CustomInput
+              label="Tên đơn vị"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />

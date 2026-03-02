@@ -14,10 +14,8 @@ export const FilterSection = ({
   onSearch,
   onAddNew,
 }: FilterSectionUnitProps) => {
-  const [inputValue, setInputValue] = useState(filter);
-  useEffect(() => {
-    setInputValue(filter);
-  }, [filter]);
+  const [code, setCode] = useState(filter.code ?? "");
+  const [name, setName] = useState(filter.name ?? "");
 
   return (
     <GenericSearchFilter
@@ -34,19 +32,24 @@ export const FilterSection = ({
             label="Thêm mới"
             onPress={onAddNew}
           />
-          <FilterButton onPress={() => onSearch(inputValue)} />
+          <FilterButton
+            onPress={() => onSearch({ code: code.trim(), name: name.trim() })}
+          />
         </div>
       }
     >
       <section className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-          <div className="md:col-span-1">
-            <CustomInput
-              label="Từ khóa"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-            />
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <CustomInput
+            label="Mã đơn vị"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+          />
+          <CustomInput
+            label="Tên đơn vị"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
         </div>
       </section>
     </GenericSearchFilter>

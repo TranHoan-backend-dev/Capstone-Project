@@ -6,10 +6,11 @@ import { Spinner } from "@heroui/react";
 import { FilterSection } from "./components/filter-section";
 import { UnitForm } from "./components/unit-form";
 import { UnitTable } from "./components/unit-table";
-import { UnitItem } from "@/types";
+import { UnitFilter, UnitItem } from "@/types";
+import { Modal, ModalContent } from "@heroui/react";
 
 const UnitPage = () => {
-  const [filter, setFilter] = useState("");
+  const [filter, setFilter] = useState<UnitFilter>({});
   const [showAddForm, setShowAddForm] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
   const [editingItem, setEditingItem] = useState<UnitItem | null>(null);
@@ -42,14 +43,22 @@ const UnitPage = () => {
         onAddNew={handleAddNew}
       />
 
-      {showAddForm && (
-        <UnitForm
-          key={editingItem?.id || "create"}
-          initialData={editingItem || undefined}
-          onSuccess={handleSuccess}
-          onClose={handleCloseForm}
-        />
-      )}
+      <Modal
+        isOpen={showAddForm}
+        onClose={handleCloseForm}
+        size="2xl"
+        placement="top-center"
+        scrollBehavior="inside"
+      >
+        <ModalContent>
+          <UnitForm
+            key={editingItem?.id || "create"}
+            initialData={editingItem || undefined}
+            onSuccess={handleSuccess}
+            onClose={handleCloseForm}
+          />
+        </ModalContent>
+      </Modal>
 
       <UnitTable
         filter={filter}

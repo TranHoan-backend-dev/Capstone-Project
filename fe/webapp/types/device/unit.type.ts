@@ -4,9 +4,15 @@ export interface UnitItem {
   name: string;
 }
 
+export interface UnitFilter {
+  code?: string;
+  name?: string;
+}
+
 export interface UnitFormProps {
   initialData?: {
     id?: string;
+    code?: string;
     name?: string;
   };
   onSuccess: () => void;
@@ -14,13 +20,13 @@ export interface UnitFormProps {
 }
 
 export interface FilterSectionUnitProps {
-  filter: string;
-  onSearch: (value: string) => void;
+  filter: UnitFilter;
+  onSearch: (value: UnitFilter) => void;
   onAddNew: () => void;
 }
 
 export interface UnitTableProps {
-  filter: string;
+  filter: UnitFilter;
   reloadKey: number;
   onEdit: (item: UnitItem) => void;
   onDeleted: () => void;
