@@ -43,7 +43,6 @@ public class SecurityConfig {
   CorsProperties corsProperties;
   JwtDecoder decoder;
   final String[] PUBLIC_URLS = {
-    "/auth/**",
     "/actuator/**",
     "/v3/api-docs/**",
     "/swagger-ui/**",

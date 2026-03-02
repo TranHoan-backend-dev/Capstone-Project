@@ -1,4 +1,4 @@
-package com.capstone.construction.infrastructure.config.rabbitmq;
+package com.capstone.device.infrastructure.config;
 
 import com.capstone.common.config.RabbitTopologyProperties;
 import lombok.AccessLevel;
@@ -28,21 +28,22 @@ public class RabbitMQConfig {
   @Value("${rabbit-mq-config.exchange}")
   String EXCHANGE_NAME;
 
-  @Value("${rabbit-mq-config.queue_name}")
+  @Value("${rabbit-mq-config.queue}")
   String QUEUE_NAME;
 
   @Bean
   public Declarables rabbitDeclarables() {
-    TopicExchange exchange = new TopicExchange(EXCHANGE_NAME);
+    var exchange = new TopicExchange(EXCHANGE_NAME);
 
     List<Declarable> declarables = new ArrayList<>();
     declarables.add(exchange);
 
-    for (String entity : props.getEntities()) {
-      for (String action : props.getActions()) {
+    for (var entity : props.getEntities()) {
+      for (var action : props.getActions()) {
         Queue queue = new Queue(String.join(".", QUEUE_NAME, entity, action), true);
+        System.out.println(queue.getName());
         declarables.add(queue);
-        String routingKey = String.join(".", QUEUE_NAME, entity, action);
+        var routingKey = String.join(".", QUEUE_NAME, entity, action);
 
         declarables.add(
           BindingBuilder.bind(queue)

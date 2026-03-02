@@ -48,9 +48,7 @@ $$
       '0684277b-7b06-4475-8162-817651877607', '36526154-1296-4660-8488-842230006322',
       '06085521-1221-4470-8255-888461741517', '96336688-2122-4462-8114-118833989911',
       '55266155-5221-4471-8963-229944118822', '44115599-2288-4433-7744-996633221144',
-      '88552211-1144-4477-8855-663322114477', '77441122-8855-4466-9966-332211445588',
-      '66332255-7744-4455-8844-551122336699', '55221144-8855-4422-7711-663322558800',
-      '44115599-6633-4411-2288-112233445566', '33224488-5522-4433-1177-889966554433'
+      '88552211-1144-4477-8855-663322114477'
       ];
     user_ids  uuid[]    := ARRAY [user_id1, user_id2, u3, u4, u5, u6, u7, u8, u9, u10];
     p_id      uuid;
@@ -71,26 +69,24 @@ $$
 
     insert into users
     values (user_id1, '2025-09-14', 'koofdf', 'efsdf', 'ndd1032003@gmail.com', true, false,
-            ARRAY ['asdasd', 'asdasd', 'asdasd'], now(), 'dont know',
-            '2025-09-20', 'test', 'sdfsdfs', role_id1),
+            null, null, now(), 'test', 'sdfsdfs', role_id1),
            (user_id2, '2024-03-24', 'hetyhj', 'argear', 'b@gmail.com', false, false,
-            ARRAY ['asdasd', 'asdasd', 'asdasd'], now(), 'eh',
-            '2025-03-12', 'username2', 'sdfsdfs', role_id2),
-           (u3, now(), 'DEP03', null, 'user03@mail.com', true, false, 'JOB03', null, null, now(), 'user03', 'WS02',
+            now(), 'eh', '2025-03-12', 'username2', 'sdfsdfs', role_id2),
+           (u3, now(), 'DEP03', null, 'user03@mail.com', true, false, null, null, now(), 'user03', 'WS02',
             role_id3),
-           (u4, now(), 'DEP04', null, 'user04@mail.com', true, false, 'JOB04', null, null, now(), 'user04', 'WS02',
+           (u4, now(), 'DEP04', null, 'user04@mail.com', true, false, null, null, now(), 'user04', 'WS02',
             role_id4),
-           (u5, now(), 'DEP05', null, 'user05@mail.com', true, false, 'JOB05', null, null, now(), 'user05', 'WS03',
+           (u5, now(), 'DEP05', null, 'user05@mail.com', true, false, null, null, now(), 'user05', 'WS03',
             role_id5),
-           (u6, now(), 'DEP06', null, 'user06@mail.com', true, false, 'JOB06', null, null, now(), 'user06', 'WS03',
+           (u6, now(), 'DEP06', null, 'user06@mail.com', true, false, null, null, now(), 'user06', 'WS03',
             role_id6),
-           (u7, now(), 'DEP07', null, 'user07@mail.com', true, false, 'JOB07', null, null, now(), 'user07', 'WS04',
+           (u7, now(), 'DEP07', null, 'user07@mail.com', true, false, null, null, now(), 'user07', 'WS04',
             role_id7),
-           (u8, now(), 'DEP08', null, 'user08@mail.com', true, false, 'JOB08', null, null, now(), 'user08', 'WS04',
+           (u8, now(), 'DEP08', null, 'user08@mail.com', true, false, null, null, now(), 'user08', 'WS04',
             role_id8),
-           (u9, now(), 'DEP09', null, 'user09@mail.com', true, false, 'JOB09', null, null, now(), 'user09', 'WS05',
+           (u9, now(), 'DEP09', null, 'user09@mail.com', true, false, null, null, now(), 'user09', 'WS05',
             role_id9),
-           (u10, now(), 'DEP10', null, 'user10@mail.com', true, false, 'JOB10', null, null, now(), 'user10', 'WS05',
+           (u10, now(), 'DEP10', null, 'user10@mail.com', true, false, null, null, now(), 'user10', 'WS05',
             role_id10);
 
     insert into profile
