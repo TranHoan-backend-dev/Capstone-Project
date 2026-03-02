@@ -56,21 +56,16 @@ export const HamletForm = ({
 
       const method = isEdit ? "PUT" : "POST";
 
-      const payload: any = {};
+      const selectedCommuneId = Array.from(selectedCommune)[0] || "";
 
-      if (!isEdit || name !== initialData?.name) {
-        payload.name = name;
-      }
-
-      if (!isEdit || type !== initialData?.type) {
-        payload.type = type;
-      }
-
-      const selectedCommuneId = Array.from(selectedCommune)[0];
-
-      if (!isEdit || selectedCommuneId !== initialData?.communeId) {
-        payload.communeId = selectedCommuneId;
-      }
+      const payload = {
+        name: !isEdit || name !== initialData?.name ? name.trim() : "",
+        type: !isEdit || type !== initialData?.type ? type : "",
+        communeId:
+          !isEdit || selectedCommuneId !== initialData?.communeId
+            ? selectedCommuneId
+            : "",
+      };
 
       const response = await fetch(url, {
         method,

@@ -7,6 +7,13 @@ export interface HamletItem {
   type: string;
 }
 
+export interface HamletFilter {
+  code?: string;
+  name?: string;
+  communeId?: string;
+  type?: string;
+}
+
 export interface HamletFormProps {
   initialData?: {
     id?: string;
@@ -20,13 +27,13 @@ export interface HamletFormProps {
 }
 
 export interface FilterSectionProps {
-  keyword: string;
-  onSearch: (value: string) => void;
+  filter: HamletFilter;
+  onSearch: (value: HamletFilter) => void;
   onAddNew: () => void;
 }
 
 export interface HamletTableProps {
-  keyword: string;
+  filter: HamletFilter;
   reloadKey: number;
   onEdit: (item: HamletItem) => void;
   onDeleted: () => void;

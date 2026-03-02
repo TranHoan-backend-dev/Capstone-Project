@@ -15,7 +15,7 @@ const typeLabel: Record<string, string> = {
 };
 
 export const HamletTable = ({
-  keyword,
+  filter,
   reloadKey,
   onEdit,
   onDeleted,
@@ -46,7 +46,7 @@ export const HamletTable = ({
           sort: `${sort.field},${sort.direction}`,
         });
 
-        const trimmedKeyword = keyword.trim();
+        const trimmedKeyword = filter.name?.trim() || "";
         if (trimmedKeyword) {
           params.append("keyword", trimmedKeyword);
         }
@@ -85,7 +85,7 @@ export const HamletTable = ({
     };
 
     fetchData();
-  }, [page, keyword, reloadKey, sort]);
+  }, [page, filter, reloadKey, sort]);
 
   const handleSortChange = (columnKey: string) => {
     setPage(1);
@@ -103,7 +103,7 @@ export const HamletTable = ({
 
   useEffect(() => {
     setPage(1);
-  }, [keyword]);
+  }, [filter]);
 
   const actionItems = useMemo(
     () => [
@@ -203,7 +203,7 @@ export const HamletTable = ({
         headerSummary={`${totalItems}`}
         paginationProps={{
           total: totalPages,
-          initialPage: page,
+          page: page,
           onChange: setPage,
           summary: `${totalItems}`,
         }}

@@ -6,10 +6,11 @@ import { Spinner } from "@heroui/react";
 import { FilterSection } from "./components/filter-section";
 import { HamletForm } from "./components/hamlet-form";
 import { HamletTable } from "./components/hamlet-table";
-import { HamletItem } from "@/types";
+import { HamletFilter, HamletItem } from "@/types";
+import { Modal, ModalContent } from "@heroui/react";
 
 const HamletPage = () => {
-  const [keyword, setKeyword] = useState("");
+  const [filter, setFilter] = useState<HamletFilter>({});
   const [showAddForm, setShowAddForm] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
   const [editingItem, setEditingItem] = useState<HamletItem | null>(null);
@@ -37,22 +38,30 @@ const HamletPage = () => {
   return (
     <>
       <FilterSection
-        keyword={keyword}
-        onSearch={setKeyword}
+        filter={filter}
+        onSearch={setFilter}
         onAddNew={handleAddNew}
       />
 
-      {showAddForm && (
-        <HamletForm
-          key={editingItem?.id || "create"}
-          initialData={editingItem || undefined}
-          onSuccess={handleSuccess}
-          onClose={handleCloseForm}
-        />
-      )}
+      <Modal
+        isOpen={showAddForm}
+        onClose={handleCloseForm}
+        size="3xl"
+        placement="top-center"
+        scrollBehavior="inside"
+      >
+        <ModalContent>
+          <HamletForm
+            key={editingItem?.id || "create"}
+            initialData={editingItem || undefined}
+            onSuccess={handleSuccess}
+            onClose={handleCloseForm}
+          />
+        </ModalContent>
+      </Modal>
 
       <HamletTable
-        keyword={keyword}
+        filter={filter}
         reloadKey={reloadKey}
         onEdit={handleEdit}
         onDeleted={handleReload}

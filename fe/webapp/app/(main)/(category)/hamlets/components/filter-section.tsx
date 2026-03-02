@@ -8,16 +8,36 @@ import CustomInput from "@/components/ui/custom/CustomInput";
 import FilterButton from "@/components/ui/FilterButton";
 import { AddNewIcon } from "@/config/chip-and-icon";
 import { FilterSectionProps } from "@/types";
+import { useCommune } from "@/hooks/useCommunes";
+import CustomSelect from "@/components/ui/custom/CustomSelect";
+
+const typeOptions = [
+  { label: "Thôn", value: "HAMLET" },
+  { label: "Làng", value: "VILLAGE" },
+];
 
 export const FilterSection = ({
-  keyword,
+  filter,
   onSearch,
   onAddNew,
 }: FilterSectionProps) => {
-  const [inputValue, setInputValue] = useState(keyword);
+  const [code, setCode] = useState(filter.code ?? "");
+  const [name, setName] = useState(filter.name ?? "");
+    const [type, setType] = useState(filter?.type || "");
+  const [selectedCommune, setSelectedCommune] = useState<Set<string>>(
+    new Set(),
+  );
+  const { communeOptions } = useCommune();
+
   useEffect(() => {
-    setInputValue(keyword);
-  }, [keyword]);
+    setCode(filter.code ?? "");
+    setName(filter.name ?? "");
+    if (filter.communeId) {
+      setSelectedCommune(new Set([filter.communeId]));
+    } else {
+      setSelectedCommune(new Set());
+    }
+  }, [filter]);
 
   return (
     <GenericSearchFilter
@@ -34,17 +54,46 @@ export const FilterSection = ({
             label="Thêm mới"
             onPress={onAddNew}
           />
-          <FilterButton onPress={() => onSearch(inputValue)} />
+          <FilterButton
+            onPress={() =>
+              onSearch({
+                code: code.trim(),
+                name: name.trim(),
+                communeId: Array.from(selectedCommune)[0],
+              })
+            }
+          />
         </div>
       }
     >
       <section className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-          <div className="md:col-span-1">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="md:col-span-1 flex flex-col gap-4">
             <CustomInput
-              label="Từ khóa"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
+              label="Mã thôn/làng"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+            />
+            <CustomInput
+              label="Tên thôn/làng"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </div>
+          <div className="md:col-span-1 flex flex-col gap-4">
+            <CustomSelect
+              label="Phường/xã"
+              options={communeOptions}
+              selectedKeys={selectedCommune}
+              onSelectionChange={setSelectedCommune}
+            />
+            <CustomSelect
+              label="Loại"
+              selectedKeys={type ? [type] : []}
+              onSelectionChange={(keys) =>
+                setType(Array.from(keys)[0] as string)
+              }
+              options={typeOptions}
             />
           </div>
         </div>
