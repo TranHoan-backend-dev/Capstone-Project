@@ -44,7 +44,7 @@ export const MaterialPriceTable = ({
           sort: `${sort.field},${sort.direction}`,
         });
 
-        const trimmedFilter = filter.trim();
+        const trimmedFilter = filter.name?.trim();
         if (trimmedFilter) {
           params.append("filter", trimmedFilter);
         }

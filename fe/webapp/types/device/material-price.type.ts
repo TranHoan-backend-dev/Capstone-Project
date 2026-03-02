@@ -21,14 +21,27 @@ export interface MaterialPriceFormProps {
   onClose: () => void;
 }
 
+export interface MaterialPriceFilter {
+  materialCode?: string;
+  symbol?: string;
+  name?: string;
+  unit?: string;
+  group?: string;
+  price?: string;
+  laborPrice?: string;
+  laborPriceDistrict?: string;
+  machinePrice?: string;
+  machinePriceDistrict?: string;
+}
+
 export interface FilterSectionMaterialPriceProps {
-  filter: string;
-  onSearch: (value: string) => void;
+  filter: MaterialPriceFilter;
+  onSearch: (filter: MaterialPriceFilter) => void;
   onAddNew: () => void;
 }
 
 export interface MaterialPriceTableProps {
-  filter: string;
+  filter: MaterialPriceFilter;
   reloadKey: number;
   onEdit: (item: MaterialPriceItem) => void;
   onDeleted: () => void;

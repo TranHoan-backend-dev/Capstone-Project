@@ -6,11 +6,12 @@ import { Spinner } from "@heroui/react";
 import { useEmployeeProfile } from "@/hooks/useEmployeeProfile";
 import { MaterialPriceTable } from "./components/material-price-table";
 import { FilterSection } from "./components/filter-section";
-import { MaterialPriceItem } from "@/types";
+import { MaterialPriceFilter, MaterialPriceItem } from "@/types";
 import { MaterialPriceForm } from "./components/material-price-form";
+import { Modal, ModalContent } from "@heroui/react";
 
 const MaterialPricePage = () => {
-  const [filter, setFilter] = useState("");
+  const [filter, setFilter] = useState<MaterialPriceFilter>({});
   const [showAddForm, setShowAddForm] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
   const [editingItem, setEditingItem] = useState<MaterialPriceItem | null>(
@@ -58,14 +59,22 @@ const MaterialPricePage = () => {
         onSearch={setFilter}
         onAddNew={handleAddNew}
       />
-      {showAddForm && (
+      <Modal
+        isOpen={showAddForm}
+        onClose={handleCloseForm}
+        size="2xl"
+        placement="top-center"
+        scrollBehavior="inside"
+      >
+        <ModalContent>
         <MaterialPriceForm
           key={editingItem?.id || "create"}
           initialData={editingItem || undefined}
           onSuccess={handleSuccess}
           onClose={handleCloseForm}
         />
-      )}
+        </ModalContent>
+      </Modal>
       <MaterialPriceTable
         filter={filter}
         reloadKey={reloadKey}
