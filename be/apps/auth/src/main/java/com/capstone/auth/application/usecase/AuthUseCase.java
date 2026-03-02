@@ -129,8 +129,8 @@ public class AuthUseCase {
       request.phoneNumber()
     );
 
-//    var id = uploadNewUserToKeycloak(request.username(), request.password(), request.role(), request.email());
-//    log.info("User id: {}", id);
+    var id = uploadNewUserToKeycloak(request.username(), request.password(), request.role(), request.email());
+    log.info("User id: {}", id);
 
     log.info("User has been registered successfully");
     template.sendMessage(new AccountCreationEvent(request.email(), SUBJECT, TEMPLATE,
