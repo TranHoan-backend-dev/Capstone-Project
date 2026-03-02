@@ -2,13 +2,13 @@ package com.capstone.auth.application.business.users;
 
 import com.capstone.auth.application.dto.request.FilterUsersRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
+import com.capstone.common.enumerate.RoleName;
 import com.capstone.common.exception.ExistingException;
 import com.capstone.auth.application.exception.NotExistingException;
 import com.capstone.auth.domain.model.EmployeeJob;
 import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.domain.model.Roles;
 import com.capstone.auth.domain.model.Users;
-import com.capstone.auth.domain.enumerate.RoleName;
 import com.capstone.auth.infrastructure.persistence.BusinessPagesOfEmployeeRepository;
 import com.capstone.auth.infrastructure.persistence.EmployeeJobRepository;
 import com.capstone.auth.infrastructure.persistence.ProfileRepository;

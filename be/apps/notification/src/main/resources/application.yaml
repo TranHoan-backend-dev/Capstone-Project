@@ -78,9 +78,11 @@ rabbit-mq-config:
     - water-price
     - department
     - employee
+    - installation-form
   actions:
     - update
     - delete
+    - create
   auth-routingKey: auth.individual-notification.create
   auth-queue: auth.individual-notification.queue
 # spring:
