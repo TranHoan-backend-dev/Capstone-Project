@@ -15,7 +15,7 @@ import com.capstone.auth.application.event.producer.MessageProducer;
 import com.capstone.auth.application.exception.AccountBlockedException;
 import com.capstone.auth.application.exception.NotExistingException;
 
-import com.capstone.auth.domain.enumerate.RoleName;
+import com.capstone.common.enumerate.RoleName;
 import com.capstone.auth.infrastructure.config.Constant;
 import com.capstone.auth.infrastructure.service.KeycloakService;
 import com.capstone.auth.infrastructure.utils.AuthUtils;
