@@ -18,8 +18,8 @@ export const FilterSection = ({
   onSearch,
   onAddNew,
 }: FilterRoadmapProps) => {
-  const [code, setCode] = useState(filter.code ?? "");
-  const [name, setName] = useState(filter.name ?? "");
+  const [keyword, setKeyword] = useState(filter.keyword ?? "");
+  
   const [selectedNetwork, setSelectedNetwork] = useState<Set<string>>(
     new Set(),
   );
@@ -30,17 +30,16 @@ export const FilterSection = ({
   const { lateralOptions } = useLateral();
 
   useEffect(() => {
-    setCode(filter.code ?? "");
-    setName(filter.name ?? "");
+    setKeyword(filter.keyword ?? "");
     if (filter.networkId) {
       setSelectedNetwork(new Set([filter.networkId]));
     } else {
       setSelectedNetwork(new Set());
     }
     if (filter.lateralId) {
-      setSelectedNetwork(new Set([filter.lateralId]));
+      setSelectedLateral(new Set([filter.lateralId]));
     } else {
-      setSelectedNetwork(new Set());
+      setSelectedLateral(new Set());
     }
   }, [filter]);
 
@@ -62,8 +61,7 @@ export const FilterSection = ({
           <FilterButton
             onPress={() =>
               onSearch({
-                code: code.trim(),
-                name: name.trim(),
+                keyword: keyword.trim(),
                 networkId: Array.from(selectedNetwork)[0],
                 lateralId: Array.from(selectedLateral)[0],
               })
@@ -76,14 +74,9 @@ export const FilterSection = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="md:col-span-1 flex flex-col gap-4">
             <CustomInput
-              label="Mã lộ trình ghi"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-            />
-            <CustomInput
               label="Tên lộ trình ghi"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
             />
           </div>
           <div className="md:col-span-1 flex flex-col gap-4">

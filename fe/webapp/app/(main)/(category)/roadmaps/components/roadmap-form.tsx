@@ -19,7 +19,6 @@ export const RoadmapForm = ({
   const isEdit = !!initialData?.id;
 
   const [name, setName] = useState(initialData?.name || "");
-  const [code, setCode] = useState(initialData?.code || "");
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const [selectedNetwork, setSelectedNetwork] = useState<Set<string>>(
@@ -121,11 +120,6 @@ export const RoadmapForm = ({
         <div className="px-6 py-5 space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="md:col-span-1 flex flex-col gap-4">
-              <CustomInput
-                label="Mã lộ trình ghi"
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-              />
               <CustomInput
                 label="Tên lộ trình ghi"
                 value={name}

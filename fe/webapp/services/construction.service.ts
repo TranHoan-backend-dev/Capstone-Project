@@ -96,14 +96,16 @@ export const getAllRoadmaps = (
   accessToken: string,
   page: number,
   size: number,
-  sort: string,
+  networkId?: string,
+  lateralId?: string,
   keyword?: string | null,
 ) =>
   axios.get(`${API_GATEWAY_URL}/construction/roadmaps`, {
     params: {
       page,
       size,
-      sort,
+      networkId,
+      lateralId,
       keyword,
     },
     headers: {

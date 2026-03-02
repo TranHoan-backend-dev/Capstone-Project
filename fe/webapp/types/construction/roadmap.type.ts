@@ -9,8 +9,7 @@ export interface RoadmapItem {
 }
 
 export interface RoadmapFilter {
-  code?: string;
-  name?: string;
+  keyword?: string;
   lateralId?: string;
   networkId?: string;
 }
@@ -24,7 +23,6 @@ export interface FilterRoadmapProps {
 export interface RoadmapFormProps {
   initialData?: {
     id?: string;
-    code?: string;
     name?: string;
     lateralId?: string;
     networkId?: string;

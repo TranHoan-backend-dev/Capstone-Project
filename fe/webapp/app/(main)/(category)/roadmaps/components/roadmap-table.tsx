@@ -37,13 +37,11 @@ export const RoadmapTable = ({
         const params = new URLSearchParams({
           page: String(page - 1),
           size: String(pageSize),
-          sort: `${sort.field},${sort.direction}`,
         });
 
-        if (filter.code) params.append("code", filter.code);
-        if (filter.name) params.append("name", filter.name);
+        if (filter.keyword) params.append("keyword", filter.keyword);
         if (filter.networkId) params.append("networkId", filter.networkId);
-        if (filter.lateralId) params.append("networkId", filter.lateralId);
+        if (filter.lateralId) params.append("lateralId", filter.lateralId);
 
         const res = await fetch(
           `/api/construction/roadmaps?${params.toString()}`,
