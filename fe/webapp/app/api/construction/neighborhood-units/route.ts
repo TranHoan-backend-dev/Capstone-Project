@@ -19,6 +19,7 @@ export async function GET(req: NextRequest) {
     const size = searchParams.get("size");
     const sort = searchParams.get("sort") || "createdAt,desc";
     const keyword = searchParams.get("keyword") || undefined;
+    const communeId = searchParams.get("communeId") || undefined;
 
     const response = await getAllNeighborhoodUnits(
       accessToken,
@@ -26,6 +27,7 @@ export async function GET(req: NextRequest) {
       size ? Number(size) : 1000,
       sort,
       keyword,
+      communeId,
     );
 
     return NextResponse.json(

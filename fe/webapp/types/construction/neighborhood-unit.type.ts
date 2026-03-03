@@ -7,7 +7,6 @@ export interface NeighborhoodUnitItem {
 }
 
 export interface NeighborhoodUnitFilter {
-  code?: string;
   name?: string;
   communeId?: string;
 }
@@ -22,7 +21,6 @@ export interface NeighborhoodUnitFormProps {
   initialData?: {
     id?: string;
     name?: string;
-    code?: string;
     communeId?: string;
   };
   onSuccess: () => void;

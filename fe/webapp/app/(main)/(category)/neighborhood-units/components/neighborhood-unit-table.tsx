@@ -5,7 +5,11 @@ import { Tooltip, Button } from "@heroui/react";
 import { DeleteIcon, EditIcon } from "@/config/chip-and-icon";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import { NEIGHBORHOOD_UNIT_COLUMN } from "@/config/table-columns";
-import { NeighborhoodTableProps, NeighborhoodUnitItem, NeighborhoodUnitResponse } from "@/types";
+import {
+  NeighborhoodTableProps,
+  NeighborhoodUnitItem,
+  NeighborhoodUnitResponse,
+} from "@/types";
 
 export const NeighborhoodUnitTable = ({
   filter,
@@ -39,6 +43,14 @@ export const NeighborhoodUnitTable = ({
           sort: `${sort.field},${sort.direction}`,
         });
 
+        if (filter?.name) {
+          params.append("keyword", filter.name);
+        }
+
+        if (filter?.communeId) {
+          params.append("communeId", filter.communeId);
+        }
+        
         const res = await fetch(
           `/api/construction/neighborhood-units?${params.toString()}`,
         );
@@ -111,7 +123,7 @@ export const NeighborhoodUnitTable = ({
         icon: DeleteIcon,
         className: "text-red-500 hover:bg-red-50",
         onClick: async (id: string) => {
-          if (!confirm("Bạn có chắc muốn xóa phường/xã này?")) return;
+          if (!confirm("Bạn có chắc muốn xóa tổ/khu phố này?")) return;
 
           try {
             const res = await fetch(

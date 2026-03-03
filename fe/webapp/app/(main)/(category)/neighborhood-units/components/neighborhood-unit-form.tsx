@@ -17,7 +17,6 @@ export const NeighborhoodUnitForm = ({
 }: NeighborhoodUnitFormProps) => {
   const isEdit = !!initialData?.id;
 
-  const [code, setCode] = useState(initialData?.code || "");
   const [name, setName] = useState(initialData?.name || "");
   const [submitLoading, setSubmitLoading] = useState(false);
 
@@ -28,7 +27,6 @@ export const NeighborhoodUnitForm = ({
   const { communeOptions, loading: communeLoading } = useCommune();
 
   useEffect(() => {
-    setCode(initialData?.code || "");
     setName(initialData?.name || "");
   }, [initialData]);
 
@@ -50,17 +48,12 @@ export const NeighborhoodUnitForm = ({
 
       const method = isEdit ? "PUT" : "POST";
 
-      const payload: any = {};
-
-      if (!isEdit || name !== initialData?.name) {
-        payload.name = name;
-      }
-
       const selectedCommuneId = Array.from(selectedCommune)[0];
 
-      if (!isEdit || selectedCommuneId !== initialData?.communeId) {
-        payload.communeId = selectedCommuneId;
-      }
+      const payload = {
+        name: name.trim(),
+        communeId: selectedCommuneId,
+      };
 
       const response = await fetch(url, {
         method,
@@ -102,27 +95,18 @@ export const NeighborhoodUnitForm = ({
         </div>
 
         <div className="px-6 py-5 space-y-5">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="md:col-span-1 flex flex-col gap-4">
-              <CustomInput
-                label="Mã tổ/khu phố"
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-              />
-              <CustomInput
-                label="Tên tổ/khu phố"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
-            <div className="md:col-span-1 flex flex-col gap-4">
-              <CustomSelect
-                label="Phường/xã"
-                options={communeOptions}
-                selectedKeys={selectedCommune}
-                onSelectionChange={(keys) => setSelectedCommune(keys)}
-              />
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <CustomInput
+              label="Tên tổ/khu phố"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <CustomSelect
+              label="Phường/xã"
+              options={communeOptions}
+              selectedKeys={selectedCommune}
+              onSelectionChange={(keys) => setSelectedCommune(keys)}
+            />
           </div>
 
           <div className="flex justify-end gap-4">

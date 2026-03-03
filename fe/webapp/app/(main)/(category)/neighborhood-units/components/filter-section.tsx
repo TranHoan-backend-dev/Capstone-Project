@@ -17,7 +17,6 @@ export const FilterSection = ({
   onSearch,
   onAddNew,
 }: FilterSectionProps) => {
-  const [code, setCode] = useState(filter.code ?? "");
   const [name, setName] = useState(filter.name ?? "");
   const [selectedCommune, setSelectedCommune] = useState<Set<string>>(
     new Set(),
@@ -26,7 +25,6 @@ export const FilterSection = ({
   const { communeOptions } = useCommune();
 
   useEffect(() => {
-    setCode(filter.code ?? "");
     setName(filter.name ?? "");
     if (filter.communeId) {
       setSelectedCommune(new Set([filter.communeId]));
@@ -53,7 +51,6 @@ export const FilterSection = ({
           <FilterButton
             onPress={() =>
               onSearch({
-                code: code.trim(),
                 name: name.trim(),
                 communeId: Array.from(selectedCommune)[0],
               })
@@ -63,27 +60,18 @@ export const FilterSection = ({
       }
     >
       <section className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="md:col-span-1 flex flex-col gap-4">
-            <CustomInput
-              label="Mã tổ/khu xóm"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-            />
-            <CustomInput
-              label="Tên tổ/khu xóm"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
-          <div className="md:col-span-1 flex flex-col gap-4">
-            <CustomSelect
-              label="Phường/xã"
-              options={communeOptions}
-              selectedKeys={selectedCommune}
-              onSelectionChange={setSelectedCommune}
-            />
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <CustomInput
+            label="Tên tổ/khu xóm"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <CustomSelect
+            label="Phường/xã"
+            options={communeOptions}
+            selectedKeys={selectedCommune}
+            onSelectionChange={setSelectedCommune}
+          />
         </div>
       </section>
     </GenericSearchFilter>

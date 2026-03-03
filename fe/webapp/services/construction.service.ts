@@ -67,6 +67,7 @@ export const getAllNeighborhoodUnits = (
   size: number,
   sort: string,
   keyword?: string | null,
+  communeId?: string | null,
 ) =>
   axios.get(`${API_GATEWAY_URL}/construction/units`, {
     params: {
@@ -74,6 +75,7 @@ export const getAllNeighborhoodUnits = (
       size,
       sort,
       keyword,
+      communeId,
     },
     headers: {
       Authorization: `Bearer ${accessToken}`,
