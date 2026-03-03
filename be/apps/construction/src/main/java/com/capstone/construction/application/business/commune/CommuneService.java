@@ -14,5 +14,5 @@ public interface CommuneService {
 
   CommuneResponse getCommuneById(String id);
 
-  PageResponse<CommuneResponse> getAllCommunes(Pageable pageable);
+  PageResponse<CommuneResponse> getAllCommunes(Pageable pageable, String search, String type);
 }
