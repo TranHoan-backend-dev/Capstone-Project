@@ -114,7 +114,7 @@ Authorization: Bearer {{access_token}}
 Accept: application/json
 
 ### List communes - search by name
-GET {{uri}}?search=hehe&page=0&size=10
+GET {{uri}}?search=nam&page=0&size=10
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 Accept: application/json
