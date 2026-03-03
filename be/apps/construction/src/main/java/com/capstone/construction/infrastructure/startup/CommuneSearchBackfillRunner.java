@@ -17,17 +17,10 @@ public class CommuneSearchBackfillRunner implements ApplicationRunner {
   @Override
   @Transactional
   public void run(ApplicationArguments args) {
-    // Ensure existing rows (before nameSearch column existed) can be searched immediately.
-    var communes = communeRepository.findAll();
-    var toUpdate = communes.stream()
-      .filter(c -> c.getNameSearch() == null || c.getNameSearch().isBlank())
-      .toList();
-
-    if (toUpdate.isEmpty()) return;
-
-    toUpdate.forEach(c -> c.setName(c.getName()));
-    communeRepository.saveAll(toUpdate);
-    log.info("Backfilled nameSearch for {} commune(s)", toUpdate.size());
+    // NOTE:
+    // The current Commune schema/entity does NOT include a `nameSearch` field/column,
+    // so there is nothing to backfill here. This runner is intentionally a no-op.
+    log.debug("CommuneSearchBackfillRunner skipped (nameSearch not present in current schema).");
   }
 }
 
