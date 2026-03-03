@@ -40,8 +40,7 @@ export const LateralTable = ({
           sort: `${sort.field},${sort.direction}`,
         });
 
-        if (filter.code) params.append("code", filter.code);
-        if (filter.name) params.append("name", filter.name);
+        if (filter.keyword) params.append("keyword", filter.keyword);
         if (filter.networkId) params.append("networkId", filter.networkId);
 
         const res = await authFetch(

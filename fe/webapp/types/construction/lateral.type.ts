@@ -7,8 +7,7 @@ export interface LateralItem {
 }
 
 export interface LateralFilter {
-  code?: string;
-  name?: string;
+  keyword?: string;
   networkId?: string;
 }
 
@@ -21,7 +20,6 @@ export interface FilterSectionProps {
 export interface LateralFormProps {
   initialData?: {
     id?: string;
-    code?: string;
     name?: string;
     networkId?: string;
   };

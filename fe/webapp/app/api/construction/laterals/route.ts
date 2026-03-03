@@ -13,14 +13,12 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const page = Number(searchParams.get("page") ?? 0);
     const size = Number(searchParams.get("size") ?? 10);
-    const sort = searchParams.get("sort") || "createdAt,desc";
     const keyword = searchParams.get("keyword") || undefined;
 
     const response = await getAllLaterals(
       accessToken,
       page,
       size,
-      sort,
       keyword,
     );
 
