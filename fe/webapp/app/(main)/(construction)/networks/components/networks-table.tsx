@@ -4,20 +4,18 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Tooltip, Button } from "@heroui/react";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import { DeleteIcon, EditIcon } from "@/config/chip-and-icon";
-import { NetworksItem } from "@/types";
+import { NetworksItem, NetworksResponse, NetworksTableProps } from "@/types";
 import { NETWORKS_COLUMN } from "@/config/table-columns";
+import { CallToast } from "@/components/ui/CallToast";
+import { useIsITStaff } from "@/hooks/useHasRole";
 
-interface Props {
-  keyword: string;
-  reloadKey: number;
-}
-
-interface NetworkResponse {
-  branchId: string;
-  name: string;
-}
-
-export const NetworksTable = ({ keyword, reloadKey }: Props) => {
+export const NetworksTable = ({
+  keyword,
+  reloadKey,
+  onEdit,
+  onDeleted,
+}: NetworksTableProps) => {
+  const { isITStaff } = useIsITStaff();
   const [data, setData] = useState<NetworksItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
@@ -44,7 +42,7 @@ export const NetworksTable = ({ keyword, reloadKey }: Props) => {
           sort: `${sort.field},${sort.direction}`,
         });
 
-        const trimmedKeyword = keyword.trim();
+        const trimmedKeyword = keyword.name?.trim();
         if (trimmedKeyword) {
           params.append("keyword", trimmedKeyword);
         }
@@ -64,7 +62,7 @@ export const NetworksTable = ({ keyword, reloadKey }: Props) => {
         setTotalItems(pageData?.totalElements ?? 0);
         setTotalPages(pageData?.totalPages ?? 1);
 
-        const mapped = items.map((item: NetworkResponse, index: number) => ({
+        const mapped = items.map((item: NetworksResponse, index: number) => ({
           id: item.branchId,
           stt: (page - 1) * pageSize + index + 1,
           name: item.name,
@@ -99,25 +97,52 @@ export const NetworksTable = ({ keyword, reloadKey }: Props) => {
   useEffect(() => {
     setPage(1);
   }, [keyword]);
-  
-  const actionItems = useMemo(
-    () => [
+
+  const actionItems = useMemo(() => {
+    // Chỉ hiển thị action buttons nếu user là IT_STAFF
+    if (!isITStaff) return [];
+
+    return [
       {
         content: "Chỉnh sửa",
         icon: EditIcon,
         className:
           "text-amber-500 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/30",
-        onClick: (id: string) => console.log("Cập nhật:", id),
+        onClick: (id: string) => {
+          const found = data.find((i) => i.id === id);
+          if (found) onEdit(found);
+        },
       },
       {
         content: "Xóa",
         icon: DeleteIcon,
         className: "text-red-500 hover:bg-red-50",
-        onClick: (id: string) => console.log("Xóa:", id),
+        onClick: async (id: string) => {
+          if (!confirm("Bạn có chắc muốn xóa chi nhánh cấp nước này?")) return;
+
+          try {
+            const res = await fetch(`/api/construction/networks/${id}`, {
+              method: "DELETE",
+            });
+
+            if (!res.ok) throw new Error("Delete failed");
+            CallToast({
+              title: "Thành công",
+              message: "Xóa chi nhánh cấp nước thành công",
+              color: "success",
+            });
+            onDeleted();
+          } catch (e: any) {
+            CallToast({
+              title: "Lỗi",
+              message: e.message || "Có lỗi xảy ra",
+              color: "danger",
+            });
+          }
+        },
       },
-    ],
-    [],
-  );
+    ];
+  }, [data, onEdit, onDeleted, isITStaff]);
 
   const renderCell = (item: NetworksItem, columnKey: string) => {
     switch (columnKey) {
@@ -176,7 +201,7 @@ export const NetworksTable = ({ keyword, reloadKey }: Props) => {
           total: totalPages,
           initialPage: page,
           onChange: setPage,
-          summary: `${totalItems}`,
+          summary: `${data.length}`,
         }}
         sort={sort}
         onSortChange={handleSortChange}
