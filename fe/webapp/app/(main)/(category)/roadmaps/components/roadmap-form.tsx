@@ -58,24 +58,19 @@ export const RoadmapForm = ({
         : `/api/construction/roadmaps`;
 
       const method = isEdit ? "PUT" : "POST";
-
-      const payload: any = {};
-
-      if (!isEdit || name !== initialData?.name) {
-        payload.name = name;
-      }
-
       const selectedNetworkId = Array.from(selectedNetwork)[0];
-
-      if (!isEdit || selectedNetworkId !== initialData?.networkId) {
-        payload.networkId = selectedNetworkId;
-      }
-
       const selectedLateralId = Array.from(selectedLateral)[0];
-
-      if (!isEdit || selectedLateralId !== initialData?.lateralId) {
-        payload.lateralId = selectedLateralId;
-      }
+      const payload = {
+        name: !isEdit || name !== initialData?.name ? name.trim() : "",
+        networkId:
+          !isEdit || selectedNetworkId !== initialData?.networkId
+            ? selectedNetworkId
+            : "",
+        lateralId:
+          !isEdit || selectedLateralId !== initialData?.lateralId
+            ? selectedLateralId
+            : "",
+      };
 
       const response = await fetch(url, {
         method,
