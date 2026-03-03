@@ -9,8 +9,8 @@ import CustomSelect from "@/components/ui/custom/CustomSelect";
 import { CommuneFormProps } from "@/types";
 
 const typeOptions = [
-  { label: "Phường (Đô thị)", value: "URBAN_WARD" },
-  { label: "Xã (Nông thôn)", value: "RURAL_COMMUNE" },
+  { label: "Phường", value: "URBAN_WARD" },
+  { label: "Xã", value: "RURAL_COMMUNE" },
 ];
 
 export const CommuneForm = ({
@@ -18,7 +18,6 @@ export const CommuneForm = ({
   onSuccess,
   onClose,
 }: CommuneFormProps) => {
-  const [code, setCode] = useState(initialData?.code || "");
   const [name, setName] = useState(initialData?.name || "");
   const [type, setType] = useState(initialData?.type || "");
   const [loading, setLoading] = useState(false);
@@ -39,7 +38,10 @@ export const CommuneForm = ({
 
       const method = isEdit ? "PUT" : "POST";
 
-      const payload = { name, type };
+      const payload = {
+        name: !isEdit || name !== initialData?.name ? name.trim() : "",
+        type: !isEdit || type !== initialData?.type ? type : "",
+      };
 
       const response = await fetch(url, {
         method,
@@ -72,17 +74,10 @@ export const CommuneForm = ({
         <div className="px-6 py-5 space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <CustomInput
-              label="Mã phường/xã"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-            />
-            <CustomInput
               label="Tên phường/xã"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
-          </div>
-          <div className="md:col-span-2">
             <CustomSelect
               label="Loại"
               selectedKeys={type ? [type] : []}

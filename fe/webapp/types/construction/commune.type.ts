@@ -1,13 +1,11 @@
 export interface CommuneItem {
   id: string;
   stt: string;
-  code: string;
   name: string;
   type: string;
 }
 
 export type CommuneFilter = {
-  code: string;
   name: string;
   type?: string;
 };
@@ -21,7 +19,6 @@ export interface FilterSectionProps {
 export interface CommuneFormProps {
   initialData?: {
     id?: string;
-    code: string;
     name: string;
     type?: string;
   };

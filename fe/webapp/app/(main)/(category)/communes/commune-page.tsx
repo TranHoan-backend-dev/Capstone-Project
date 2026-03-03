@@ -11,7 +11,6 @@ import { Modal, ModalContent } from "@heroui/react";
 
 const CommunePage = () => {
   const [keyword, setKeyword] = useState<CommuneFilter>({
-    code: "",
     name: "",
     type: "",
   });

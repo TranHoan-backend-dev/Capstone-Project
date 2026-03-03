@@ -15,14 +15,16 @@ export async function GET(req: NextRequest) {
     const page = Number(searchParams.get("page") ?? 0);
     const size = Number(searchParams.get("size") ?? 10);
     const sort = searchParams.get("sort") || "createdAt,desc";
-    const keyword = searchParams.get("keyword") || undefined;
+    const search = searchParams.get("search") || undefined;
+    const type = searchParams.get("type") || undefined;
 
     const response = await getAllCommunes(
       accessToken,
       page,
       size,
       sort,
-      keyword,
+      search,
+      type,
     );
 
     return NextResponse.json(

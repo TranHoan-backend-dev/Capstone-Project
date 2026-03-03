@@ -8,8 +8,8 @@ import { COMMUNE_COLUMN } from "@/config/table-columns";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 
 const typeLabel: Record<string, string> = {
-  URBAN_WARD: "Phường (Đô thị)",
-  RURAL_COMMUNE: "Xã (Nông thôn)",
+  URBAN_WARD: "Phường",
+  RURAL_COMMUNE: "Xã",
 };
 
 export const CommuneTable = ({
@@ -47,11 +47,7 @@ export const CommuneTable = ({
         });
 
         if (filter.name) {
-          params.append("keyword", filter.name);
-        }
-
-        if (filter.code) {
-          params.append("code", filter.code);
+          params.append("search", filter.name);
         }
 
         if (filter.type) {

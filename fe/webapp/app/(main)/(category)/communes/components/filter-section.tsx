@@ -12,8 +12,8 @@ import { FilterSectionProps } from "@/types";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
 
 const typeOptions = [
-  { label: "Phường (Đô thị)", value: "URBAN_WARD" },
-  { label: "Xã (Nông thôn)", value: "RURAL_COMMUNE" },
+  { label: "Phường", value: "URBAN_WARD" },
+  { label: "Xã", value: "RURAL_COMMUNE" },
 ];
 
 export const FilterSection = ({
@@ -21,10 +21,14 @@ export const FilterSection = ({
   onSearch,
   onAddNew,
 }: FilterSectionProps) => {
-  const [code, setCode] = useState("");
   const [name, setName] = useState("");
   const [type, setType] = useState<string | undefined>();
 
+  useEffect(() => {
+    setName(keyword.name || "");
+    setType(keyword.type || undefined);
+  }, [keyword]);
+  
   return (
     <GenericSearchFilter
       title="Tìm kiếm"
@@ -43,7 +47,6 @@ export const FilterSection = ({
           <FilterButton
             onPress={() =>
               onSearch({
-                code,
                 name,
                 type,
               })
@@ -53,20 +56,12 @@ export const FilterSection = ({
       }
     >
       <section className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <CustomInput
-              label="Mã phường/xã"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-            />
-
-            <CustomInput
-              label="Tên phường/xã"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <CustomInput
+            label="Tên phường/xã"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
           <CustomSelect
             label="Loại"
             selectedKeys={type ? [type] : []}

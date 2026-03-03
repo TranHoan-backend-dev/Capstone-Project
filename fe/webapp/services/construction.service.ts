@@ -6,14 +6,16 @@ export const getAllCommunes = (
   page: number,
   size: number,
   sort: string,
-  keyword?: string | null,
+  search?: string | null,
+  type?: string | null,
 ) =>
   axios.get(`${API_GATEWAY_URL}/construction/communes`, {
     params: {
       page,
       size,
       sort,
-      keyword,
+      search,
+      type,
     },
     headers: {
       Authorization: `Bearer ${accessToken}`,
