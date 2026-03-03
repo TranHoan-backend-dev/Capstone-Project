@@ -94,3 +94,46 @@ Content-Type: application/json
 Authorization: Bearer {{access_token}}
 Accept: application/json
 ### R
+### Get commune by id - existing
+GET {{uri}}/a9405f07-0e16-48f0-8ad2-d381a4702789
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Get commune by id - not existing
+GET {{uri}}/a9405f07-0e16-48f0-8ad2-d381a4702780
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### L
+### List communes - basic pagination
+GET {{uri}}?page=0&size=10
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### List communes - search by name
+GET {{uri}}?search=hehe&page=0&size=10
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### List communes - search by name (accent-insensitive)
+### Example: create a commune name "Hòa Bình", then search "hoa binh" should match
+GET {{uri}}?search=hoa%20binh&page=0&size=10
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### List communes - filter by type (URBAN_WARD | RURAL_COMMUNE)
+GET {{uri}}?type=URBAN_WARD&page=0&size=10&sort=name,asc
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### List communes - sort by name ascending
+GET {{uri}}?page=0&size=10&sort=name,asc
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json

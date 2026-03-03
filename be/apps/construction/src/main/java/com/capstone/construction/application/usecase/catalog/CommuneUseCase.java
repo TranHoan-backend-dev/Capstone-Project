@@ -63,7 +63,7 @@ public class CommuneUseCase {
     return communeService.getCommuneById(id);
   }
 
-  public PageResponse<CommuneResponse> getAllCommunes(Pageable pageable) {
-    return communeService.getAllCommunes(pageable);
+  public PageResponse<CommuneResponse> getAllCommunes(Pageable pageable, String search, String type) {
+    return communeService.getAllCommunes(pageable, search, type);
   }
 }
