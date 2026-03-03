@@ -9,6 +9,7 @@ import com.capstone.organization.dto.response.PagedBusinessPageResponse;
 import com.capstone.organization.model.BusinessPage;
 import com.capstone.organization.repository.BusinessPageRepository;
 import com.capstone.organization.service.boundary.BusinessPageService;
+import com.capstone.organization.service.boundary.EmployeeService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BusinessPageServiceImpl implements BusinessPageService {
   BusinessPageRepository businessPageRepository;
+  EmployeeService employeeService;
   @NonFinal
   Logger log;
 
@@ -105,14 +107,15 @@ public class BusinessPageServiceImpl implements BusinessPageService {
     );
   }
 
-  // TODO: lay employee name
-  private BusinessPageResponse convert(@NonNull BusinessPage saved) {
+  private @NonNull BusinessPageResponse convert(@NonNull BusinessPage saved) {
+    var creatorName = employeeService.getEmployeeNameById(saved.getCreator()).data();
+    var updatorName = employeeService.getEmployeeNameById(saved.getUpdator()).data();
     return new BusinessPageResponse(
       saved.getPageId(),
       saved.getName(),
       saved.getActivate(),
-      saved.getCreator(),
-      saved.getUpdator()
+      creatorName.toString(),
+      updatorName.toString()
     );
   }
 }

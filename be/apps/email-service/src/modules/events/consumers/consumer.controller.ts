@@ -1,6 +1,6 @@
 import { Controller, Logger } from '@nestjs/common';
 import { EventPattern, Payload } from '@nestjs/microservices';
-import { MailServiceImpl } from '../../api/mail.service';
+import { MailServiceImpl } from '../../../service/mail.service';
 import { SendMailDto } from '../../../common/dtos/request/send-mail.dto';
 import { AccountCreationContext, MailInformation } from '../../../infrastructure/model/mail.entity';
 

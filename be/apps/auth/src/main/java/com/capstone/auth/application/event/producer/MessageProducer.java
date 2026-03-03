@@ -1,7 +1,8 @@
 package com.capstone.auth.application.event.producer;
 
+import com.capstone.common.annotation.AppLog;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;
 
-@Slf4j
+@AppLog
 @Service
 @RequiredArgsConstructor
 public class MessageProducer {
@@ -21,6 +22,8 @@ public class MessageProducer {
 
   @Value("${rabbitmqconfig.routing_key}")
   public String ROUTING_KEY;
+
+  Logger log;
 
   private final RabbitTemplate template;
 

@@ -3,6 +3,7 @@ package com.capstone.device.application.business.watermeter;
 import com.capstone.device.application.dto.request.WaterMeterRequest;
 import com.capstone.device.application.dto.response.WaterMeterResponse;
 import com.capstone.device.domain.model.WaterMeter;
+import com.capstone.device.infrastructure.persistence.OverallWaterMeterRepository;
 import com.capstone.device.infrastructure.persistence.WaterMeterRepository;
 import com.capstone.device.infrastructure.persistence.WaterMeterTypeRepository;
 import lombok.AccessLevel;
@@ -22,9 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class WaterMeterServiceImpl implements WaterMeterService {
   WaterMeterRepository waterMeterRepository;
   WaterMeterTypeRepository waterMeterTypeRepository;
+  OverallWaterMeterRepository overallWaterMeterRepository;
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public WaterMeterResponse createWaterMeter(@NonNull WaterMeterRequest request) {
     log.info("Creating water meter with size: {}", request.size());
 
@@ -88,7 +90,15 @@ public class WaterMeterServiceImpl implements WaterMeterService {
     return waterMeterRepository.existsById(id);
   }
 
-  private WaterMeterResponse mapToResponse(WaterMeter meter) {
+  @Override
+  public void deleteOverallWaterMeterByLateralId(String id) {
+    log.info("Deleting overall water meter with lateral ID: {}", id);
+    if (overallWaterMeterRepository.existsByLateralId(id)) {
+      overallWaterMeterRepository.deleteByLateralId(id);
+    }
+  }
+
+  private @NonNull WaterMeterResponse mapToResponse(@NonNull WaterMeter meter) {
     return new WaterMeterResponse(
       meter.getId(),
       meter.getInstallationDate(),

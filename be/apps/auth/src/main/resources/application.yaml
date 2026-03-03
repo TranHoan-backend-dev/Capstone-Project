@@ -63,8 +63,8 @@ springdoc:
     path: /swagger-ui/index.html
 sending_mail:
   account_creation:
-    subject: ehehe
-    template: huhu
+    subject: 'Tạo tài khoản mới'
+    template: account-creation
   otp_verification:
     subject: 'Mã xác thực OTP'
     template: 'verify-otp'

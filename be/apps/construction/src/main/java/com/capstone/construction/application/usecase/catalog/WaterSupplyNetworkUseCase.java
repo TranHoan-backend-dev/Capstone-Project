@@ -19,9 +19,9 @@ import org.springframework.stereotype.Component;
 public class WaterSupplyNetworkUseCase {
   WaterSupplyNetworkService networkService;
 
-  public WaterSupplyNetworkResponse createNetwork(@NonNull WaterSupplyNetworkRequest request) {
+  public void createNetwork(@NonNull WaterSupplyNetworkRequest request) {
     log.info("UseCase: Creating network {}", request.name());
-    return networkService.createNetwork(request);
+    networkService.createNetwork(request);
   }
 
   public WaterSupplyNetworkResponse updateNetwork(String id, WaterSupplyNetworkRequest request) {

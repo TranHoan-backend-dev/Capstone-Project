@@ -27,14 +27,13 @@ public class WaterSupplyNetworkServiceImpl implements WaterSupplyNetworkService 
 
   @Override
   @Transactional(rollbackFor = Exception.class)
-  public WaterSupplyNetworkResponse createNetwork(@NonNull WaterSupplyNetworkRequest request) {
+  public void createNetwork(@NonNull WaterSupplyNetworkRequest request) {
     log.info("Creating new water supply network with name: {}", request.name());
 
     var network = WaterSupplyNetwork.create(builder -> builder
       .name(request.name()));
 
-    var saved = networkRepository.save(network);
-    return mapToResponse(saved);
+    networkRepository.save(network);
   }
 
   @Override
@@ -44,7 +43,9 @@ public class WaterSupplyNetworkServiceImpl implements WaterSupplyNetworkService 
     var network = networkRepository.findById(id)
       .orElseThrow(() -> new IllegalArgumentException("Network not found with id: " + id));
 
-    network.setName(request.name());
+    if (request.name() != null && !request.name().isBlank()) {
+      network.setName(request.name());
+    }
 
     var saved = networkRepository.save(network);
     return mapToResponse(saved);
@@ -71,7 +72,8 @@ public class WaterSupplyNetworkServiceImpl implements WaterSupplyNetworkService 
   @Override
   public PageResponse<WaterSupplyNetworkResponse> getAllNetworks(Pageable pageable, String keyword) {
     log.info("Fetching all water supply networks with pageable: {}", pageable);
-    var page = keyword == null ? networkRepository.findAll(pageable) : networkRepository.findAllByNameContainsIgnoreCase(keyword, pageable);
+    var page = keyword == null ? networkRepository.findAll(pageable)
+      : networkRepository.findAllByNameContainsIgnoreCase(keyword, pageable);
     return PageResponse.fromPage(page, this::mapToResponse);
   }
 

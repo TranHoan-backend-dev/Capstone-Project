@@ -11,7 +11,7 @@ public final class Constant {
   public static final String PT_04 = "Registration date cannot be null or empty";
   public static final String PT_05 = "Invalid date format";
   public static final String PT_06 = "Customer type cannot be null or empty";
-  public static final String PT_07 = "";
+  public static final String PT_07 = "Hamlet must belong to a rural commune";
   public static final String PT_08 = "";
   public static final String PT_09 = "";
   public static final String PT_10 = "";
@@ -87,5 +87,7 @@ public final class Constant {
 
   // for service layer
   public static final String SE_01 = "This form number is already in use";
-  public static final String SE_02 = "Email not found";
+  public static final String SE_02 = "Lateral not found";
+  public static final String SE_03 = "Network not found";
+  public static final String SE_04 = "Commune not found";
 }

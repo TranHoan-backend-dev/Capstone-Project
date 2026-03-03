@@ -1,51 +1,57 @@
 package com.capstone.construction.infrastructure.config;
 
+import com.capstone.common.config.RabbitTopologyProperties;
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Configuration
-@FieldDefaults(level = AccessLevel.PUBLIC)
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@EnableConfigurationProperties(RabbitTopologyProperties.class)
 public class RabbitMQConfig {
-  @Value("${rabbitmqconfig.exchange_name}")
+  final RabbitTopologyProperties props;
+
+  @Value("${rabbit-mq-config.exchange}")
   String EXCHANGE_NAME;
 
-  @Value("${rabbitmqconfig.queue_name}")
+  @Value("${rabbit-mq-config.queue_name}")
   String QUEUE_NAME;
 
-  @Value("${rabbitmqconfig.routing_key}")
-  String ROUTING_KEY; // chu ky gan vao tin nhan khi gui den Exchange
-
-  // Luu tru tin nhan cho den khi co consumer su dung
   @Bean
-  public Queue queue() {
-    // duration false => tin nhan se mat neu khoi dong ung dung
-    // duration true => tin nhan se ton tai vinh vien tren o dia cua rabbitmq
-    return new Queue(QUEUE_NAME, false);
-  }
+  public Declarables rabbitDeclarables() {
+    TopicExchange exchange = new TopicExchange(EXCHANGE_NAME);
 
-  // dinh nghia diem gui tin nhan
-  @Bean
-  public TopicExchange exchange() {
-    return new TopicExchange(EXCHANGE_NAME);
-  }
+    List<Declarable> declarables = new ArrayList<>();
+    declarables.add(exchange);
 
-  // Lien ket Queue va Exchange dua tren routing key
-  @Bean
-  public Binding binding(Queue queue, TopicExchange exchange) {
-    return BindingBuilder.bind(queue)
-      .to(exchange)
-      .with(ROUTING_KEY);
+    for (var entity : props.getEntities()) {
+      for (var action : props.getActions()) {
+        Queue queue = new Queue(String.join(".", QUEUE_NAME, entity, action), true);
+        declarables.add(queue);
+        String routingKey = String.join(".", QUEUE_NAME, entity, action);
+
+        declarables.add(
+          BindingBuilder.bind(queue)
+            .to(exchange)
+            .with(routingKey));
+      }
+    }
+
+    return new Declarables(declarables);
   }
 
   @Bean
@@ -56,7 +62,13 @@ public class RabbitMQConfig {
   @Bean
   public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
     final var rabbitTemplate = new RabbitTemplate(connectionFactory);
+    rabbitTemplate.setChannelTransacted(true);
     rabbitTemplate.setMessageConverter(converter());
     return rabbitTemplate;
+  }
+
+  @Bean
+  public RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
+    return new RabbitAdmin(connectionFactory);
   }
 }

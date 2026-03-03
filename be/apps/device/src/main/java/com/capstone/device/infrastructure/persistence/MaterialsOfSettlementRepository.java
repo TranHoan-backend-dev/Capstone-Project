@@ -7,4 +7,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MaterialsOfSettlementRepository extends JpaRepository<MaterialsOfSettlement, MaterialsOfSettlementId> {
+  boolean existsByMaterial_MaterialId(String materialId);
+
+  void deleteByMaterial_MaterialId(String materialMaterialId);
 }

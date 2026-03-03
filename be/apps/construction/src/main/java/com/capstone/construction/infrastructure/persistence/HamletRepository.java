@@ -8,7 +8,13 @@ import java.util.Optional;
 
 @Repository
 public interface HamletRepository extends JpaRepository<Hamlet, String> {
-    Optional<Hamlet> findByName(String name);
+  Optional<Hamlet> findByName(String name);
 
-    boolean existsByName(String name);
+  boolean existsByName(String name);
+
+  boolean existsByCommune_CommuneId(String communeCommuneId);
+
+  void deleteByCommune_CommuneId(String id);
+
+  boolean existsByNameIgnoreCase(String name);
 }

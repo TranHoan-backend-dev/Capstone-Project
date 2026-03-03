@@ -8,7 +8,9 @@ import java.util.Optional;
 
 @Repository
 public interface RoadRepository extends JpaRepository<Road, String> {
-    Optional<Road> findByName(String name);
+  Optional<Road> findByName(String name);
 
-    boolean existsByName(String name);
+  boolean existsByName(String name);
+
+  boolean existsByNameIgnoreCase(String name);
 }

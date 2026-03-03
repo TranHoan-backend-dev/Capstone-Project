@@ -14,7 +14,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,10 +59,13 @@ public class DepartmentServiceImpl implements DepartmentService {
   }
 
   @Override
-  public PagedDepartmentResponse getDepartments(int page, int size) {
-    log.info("Fetching departments page: {}, size: {}", page, size);
+  public PagedDepartmentResponse getDepartments(@NonNull Pageable pageable, String keyword) {
+    log.info("Fetching departments page: {}, size: {}", pageable.getPageNumber(), pageable.getPageSize());
 
-    var result = departmentRepo.findAll(PageRequest.of(page, size));
+    var result = keyword == null ? departmentRepo.findAll(pageable) :
+      departmentRepo.findByDepartmentIdContainsIgnoreCaseOrNameContainsIgnoreCaseOrPhoneNumberContains(
+        keyword, keyword,
+        keyword, pageable);
     var items = result.getContent().stream()
       .map(this::convert)
       .collect(Collectors.toList());
@@ -81,7 +84,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     return departmentRepo.existsById(departmentId);
   }
 
-  private DepartmentResponse convert(@NonNull Department department) {
+  private @NonNull DepartmentResponse convert(@NonNull Department department) {
     return new DepartmentResponse(
       department.getDepartmentId(),
       department.getName(),
