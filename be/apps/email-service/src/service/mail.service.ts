@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { MailerService } from '@nestjs-modules/mailer';
-import { AccountCreationContext, MailInformation, PasswordResetContext } from "../../infrastructure/model/mail.entity";
+import { AccountCreationContext, MailInformation, PasswordResetContext } from "../infrastructure/model/mail.entity";
 
 @Injectable()
 export class MailServiceImpl {

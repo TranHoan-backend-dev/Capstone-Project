@@ -1,5 +1,6 @@
 package com.capstone.notification.event.websocket;
 
+import com.capstone.common.enumerate.RoleName;
 import org.jspecify.annotations.NonNull;
 
 public enum Topic {
@@ -13,9 +14,6 @@ public enum Topic {
 
   public static @NonNull String getTopic(@NonNull Topic topic) {
     switch (topic) {
-      case GENERAL -> {
-        return "/notification";
-      }
       case PLANNING_TECHNICAL -> {
         return "/technical";
       }
@@ -34,7 +32,23 @@ public enum Topic {
       case LEADERSHIP -> {
         return "/leadership";
       }
+      default -> {
+        return "/notification";
+      }
     }
-    return "/notification";
+  }
+
+  public static @NonNull String getTopicOfPlanningTechnicalDepartment(@NonNull RoleName roleName) {
+    switch (roleName) {
+      case ORDER_RECEIVING_STAFF -> {
+        return "/technical/order-receiving-staff";
+      }
+      case SURVEY_STAFF -> {
+        return "/technical/survey-staff";
+      }
+      default -> {
+        return "/technical/head";
+      }
+    }
   }
 }

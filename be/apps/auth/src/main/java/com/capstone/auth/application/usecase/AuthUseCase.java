@@ -15,7 +15,7 @@ import com.capstone.auth.application.event.producer.MessageProducer;
 import com.capstone.auth.application.exception.AccountBlockedException;
 import com.capstone.auth.application.exception.NotExistingException;
 
-import com.capstone.auth.domain.enumerate.RoleName;
+import com.capstone.common.enumerate.RoleName;
 import com.capstone.auth.infrastructure.config.Constant;
 import com.capstone.auth.infrastructure.service.KeycloakService;
 import com.capstone.auth.infrastructure.utils.AuthUtils;
@@ -137,7 +137,7 @@ public class AuthUseCase {
       request.fullName(), request.username(), request.password()));
   }
 
-  public void changePassword(String userId, String email, String oldPassword, @NonNull String newPassword, String confirmPassword) {
+  public void changePassword(String userId, String email, @NonNull String oldPassword, @NonNull String newPassword, String confirmPassword) {
     log.info("Handling change password for email: {}", email);
 
     if (oldPassword.equals(newPassword)) {

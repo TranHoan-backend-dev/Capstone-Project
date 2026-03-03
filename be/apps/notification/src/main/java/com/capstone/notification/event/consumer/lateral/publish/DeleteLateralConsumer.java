@@ -23,7 +23,12 @@ public class DeleteLateralConsumer extends GeneralEventConsumer<DeleteEventMessa
 
   @RabbitListener(queues = "${rabbit-mq-config.queue}.lateral.delete")
   public void handle(DeleteEventMessage event) {
-    super.handle(event, List.of(Topic.getTopic(Topic.GENERAL)), "Xóa nhánh tổng");
+    super.handle(
+      event,
+      List.of(Topic.getTopic(Topic.GENERAL)),
+      "Xóa nhánh tổng",
+      null
+    );
   }
 
   @Override
