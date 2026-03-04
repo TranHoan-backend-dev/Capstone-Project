@@ -214,7 +214,7 @@ export const CommuneTable = ({
         headerSummary={`${totalItems}`}
         paginationProps={{
           total: totalPages,
-          initialPage: page,
+          page: page,
           onChange: setPage,
           summary: `${totalItems}`,
         }}
