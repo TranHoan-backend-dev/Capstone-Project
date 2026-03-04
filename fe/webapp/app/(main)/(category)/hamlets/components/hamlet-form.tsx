@@ -9,6 +9,7 @@ import { CheckApprovalIcon } from "@/config/chip-and-icon";
 import { Card, CardBody } from "@heroui/react";
 import { useCommune } from "@/hooks/useCommunes";
 import { HamletFormProps } from "@/types";
+import { authFetch } from "@/utils/authFetch";
 
 const typeOptions = [
   { label: "Thôn", value: "HAMLET" },
@@ -65,7 +66,7 @@ export const HamletForm = ({
             : "",
       };
 
-      const response = await fetch(url, {
+      const response = await authFetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -140,7 +141,9 @@ export const HamletForm = ({
                 submitLoading ? null : <CheckApprovalIcon className="w-4 h-4" />
               }
               onPress={handleSubmit}
-              isDisabled={!name.trim() || communeLoading}
+              isDisabled={
+                !name.trim() || communeLoading || !type || !selectedCommune.size
+              }
               isLoading={submitLoading}
             >
               {submitLoading ? "Đang lưu..." : "Lưu"}

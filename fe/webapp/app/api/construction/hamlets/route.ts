@@ -15,7 +15,9 @@ export async function GET(req: NextRequest) {
     const page = Number(searchParams.get("page") ?? 0);
     const size = Number(searchParams.get("size") ?? 10);
     const sort = searchParams.get("sort") || "createdAt,desc";
-    const keyword = searchParams.get("keyword") || undefined;
+    const keyword = searchParams.get("keyword") || "";
+    const communeId = searchParams.get("communeId") || "";
+    const type = searchParams.get("type") || "";
 
     const response = await getAllHamlets(
       accessToken,
@@ -27,7 +29,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(
       {
-        message: "Lấy danh sách chi nhánh cấp nước thành công",
+        message: "Lấy danh sách thôn làng thành công",
         data: response.data.data,
       },
       { status: 200 },
@@ -60,7 +62,7 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     return NextResponse.json(
       {
-        message: error.response?.data?.message || "Create network failed",
+        message: error.response?.data?.message || "Thêm thôn làng thất bại",
       },
       { status: error.response?.status || 500 },
     );

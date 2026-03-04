@@ -22,7 +22,7 @@ export const FilterSection = ({
   onAddNew,
 }: FilterSectionHamletProps) => {
   const [name, setName] = useState(filter.name ?? "");
-    const [type, setType] = useState(filter?.type || "");
+  const [type, setType] = useState(filter?.type || "");
   const [selectedCommune, setSelectedCommune] = useState<Set<string>>(
     new Set(),
   );
@@ -30,6 +30,7 @@ export const FilterSection = ({
 
   useEffect(() => {
     setName(filter.name ?? "");
+    setType(filter.type ?? "");
     if (filter.communeId) {
       setSelectedCommune(new Set([filter.communeId]));
     } else {
@@ -56,6 +57,7 @@ export const FilterSection = ({
             onPress={() =>
               onSearch({
                 name: name.trim(),
+                type: type,
                 communeId: Array.from(selectedCommune)[0],
               })
             }

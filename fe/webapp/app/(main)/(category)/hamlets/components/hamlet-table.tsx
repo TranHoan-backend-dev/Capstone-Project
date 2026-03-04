@@ -1,11 +1,14 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { Tooltip, Button } from "@heroui/react";
+import { Tooltip, Button, Modal, ModalContent } from "@heroui/react";
 import { DeleteIcon, EditIcon } from "@/config/chip-and-icon";
 import { HamletItem, HamletResponse, HamletTableProps } from "@/types";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import { HAMLET_COLUMN } from "@/config/table-columns";
+import { CallToast } from "@/components/ui/CallToast";
+import { authFetch } from "@/utils/authFetch";
+import { ConfirmDialog } from "@/components/ui/modal/ConfirmDialog";
 
 const typeLabel: Record<string, string> = {
   URBAN_WARD: "Phường (Đô thị)",
@@ -31,7 +34,8 @@ export const HamletTable = ({
     field: "createdAt",
     direction: "desc",
   });
-
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
@@ -46,12 +50,19 @@ export const HamletTable = ({
           sort: `${sort.field},${sort.direction}`,
         });
 
-        const trimmedKeyword = filter.name?.trim() || "";
-        if (trimmedKeyword) {
-          params.append("keyword", trimmedKeyword);
+        if (filter.name?.trim()) {
+          params.append("keyword", filter.name.trim());
         }
 
-        const res = await fetch(
+        if (filter.communeId) {
+          params.append("communeId", filter.communeId);
+        }
+
+        if (filter.type) {
+          params.append("type", filter.type);
+        }
+
+        const res = await authFetch(
           `/api/construction/hamlets?${params.toString()}`,
         );
 
@@ -71,8 +82,8 @@ export const HamletTable = ({
           stt: (page - 1) * pageSize + index + 1,
           name: item.name,
           communeName: item.communeName,
-          communeId:item.communeId,
-          type: item.type.toUpperCase(),
+          communeId: item.communeId,
+          type: item.type?.toUpperCase() || "",
         }));
         setData(mapped);
       } catch (e) {
@@ -101,6 +112,37 @@ export const HamletTable = ({
     });
   };
 
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return;
+
+    try {
+      setDeleteLoading(true);
+
+      const res = await authFetch(`/api/construction/hamlets/${deleteId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Delete failed");
+
+      CallToast({
+        title: "Thành công",
+        message: "Xóa thôn/làng thành công",
+        color: "success",
+      });
+
+      setDeleteId(null);
+      onDeleted();
+    } catch (e: any) {
+      CallToast({
+        title: "Lỗi",
+        message: e.message || "Có lỗi xảy ra",
+        color: "danger",
+      });
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
   useEffect(() => {
     setPage(1);
   }, [filter]);
@@ -121,24 +163,12 @@ export const HamletTable = ({
         content: "Xóa",
         icon: DeleteIcon,
         className: "text-red-500 hover:bg-red-50",
-        onClick: async (id: string) => {
-          if (!confirm("Bạn có chắc muốn xóa thôn/làng này?")) return;
-
-          try {
-            const res = await fetch(`/api/construction/hamlets/${id}`, {
-              method: "DELETE",
-            });
-
-            if (!res.ok) throw new Error("Delete failed");
-
-            onDeleted();
-          } catch (e) {
-            console.error(e);
-          }
+        onClick: (id: string) => {
+          setDeleteId(id);
         },
       },
     ],
-    [data, onEdit, onDeleted],
+    [data, onEdit],
   );
 
   const renderCell = (item: HamletItem, columnKey: string) => {
@@ -205,10 +235,20 @@ export const HamletTable = ({
           total: totalPages,
           page: page,
           onChange: setPage,
-          summary: `${totalItems}`,
+          summary: `${data.length}`,
         }}
         sort={sort}
         onSortChange={handleSortChange}
+      />
+      <ConfirmDialog
+        isOpen={!!deleteId}
+        title="Xác nhận xoá"
+        message="Bạn có chắc muốn xoá thôn/làng này không?"
+        confirmText="Xoá"
+        confirmColor="danger"
+        isLoading={deleteLoading}
+        onClose={() => setDeleteId(null)}
+        onConfirm={handleConfirmDelete}
       />
     </>
   );
