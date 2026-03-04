@@ -18,14 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -59,9 +52,7 @@ public class DepartmentController {
     @RequestBody @Valid CreateDepartmentRequest request) {
     log.info("Create department request comes to endpoint: {}", request);
     var response = departmentService.createDepartment(request);
-    return Utils.returnOkResponse(
-      "Create department successfully",
-      response);
+    return Utils.returnOkResponse("Create department successfully", response);
   }
 
   @PutMapping("/{departmentId}")
@@ -81,7 +72,6 @@ public class DepartmentController {
     return Utils.returnOkResponse("Update department successfully", response);
   }
 
-  // TODO: swagger doc, unit test
   @GetMapping
   @Operation(
     summary = "Liệt kê phòng ban",
@@ -126,5 +116,12 @@ public class DepartmentController {
     var response = departmentService.checkIfDepartmentExists(departmentId);
     log.info("Department is {}", response ? "existing" : "not existing");
     return response;
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<?> deleteDepartment(@PathVariable String id) {
+    log.info("Delete department {}", id);
+    departmentService.deleteDepartment(id);
+    return Utils.returnOkResponse("Delete successfully", null);
   }
 }

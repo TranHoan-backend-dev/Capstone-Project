@@ -1,5 +1,6 @@
 package com.capstone.organization.exception;
 
+import com.capstone.common.exception.ExistingException;
 import com.capstone.common.exception.InternalServerException;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
@@ -19,5 +20,10 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(InternalServerException.class)
   public ResponseEntity<WrapperApiResponse> handleInternalServerException(@NonNull InternalServerException ex) {
     return Utils.returnInternalServerErrorResponse(ex.getMessage(), null);
+  }
+
+  @ExceptionHandler(ExistingException.class)
+  public ResponseEntity<WrapperApiResponse> handleExistingException(@NonNull ExistingException ex) {
+    return Utils.returnBadRequestResponse(ex.getMessage(), null);
   }
 }
