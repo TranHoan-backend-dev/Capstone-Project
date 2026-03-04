@@ -44,7 +44,7 @@ public class InstallationFormHandlingUseCase {
 
   @Transactional(rollbackFor = Exception.class)
   public NewInstallationFormResponse createNewInstallationRequest(@NonNull NewOrderRequest request) {
-    String routingKey = QUEUE_NAME + PREFIX + ACTION;
+    var routingKey = QUEUE_NAME + PREFIX + ACTION;
     if (ifSrv.isInstallationFormExisting(request.formNumber(), request.formCode())) {
       throw new ExistingItemException(Constant.SE_01);
     }

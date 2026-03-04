@@ -1,10 +1,13 @@
 package com.capstone.construction.application.business.network;
 
 import com.capstone.common.annotation.AppLog;
-import com.capstone.construction.application.dto.request.catalog.WaterSupplyNetworkRequest;
+import com.capstone.common.utils.SharedConstant;
+import com.capstone.construction.application.dto.request.branch.CreateRequest;
+import com.capstone.construction.application.dto.request.branch.UpdateRequest;
 import com.capstone.construction.application.dto.response.catalog.WaterSupplyNetworkResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.domain.model.WaterSupplyNetwork;
+import com.capstone.construction.infrastructure.config.Constant;
 import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +18,8 @@ import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Arrays;
 
 @AppLog
 @Service
@@ -27,7 +32,7 @@ public class WaterSupplyNetworkServiceImpl implements WaterSupplyNetworkService 
 
   @Override
   @Transactional(rollbackFor = Exception.class)
-  public void createNetwork(@NonNull WaterSupplyNetworkRequest request) {
+  public void createNetwork(@NonNull CreateRequest request) {
     log.info("Creating new water supply network with name: {}", request.name());
 
     var network = WaterSupplyNetwork.create(builder -> builder
@@ -38,13 +43,17 @@ public class WaterSupplyNetworkServiceImpl implements WaterSupplyNetworkService 
 
   @Override
   @Transactional(rollbackFor = Exception.class)
-  public WaterSupplyNetworkResponse updateNetwork(String id, @NonNull WaterSupplyNetworkRequest request) {
+  public WaterSupplyNetworkResponse updateNetwork(String id, @NonNull UpdateRequest request) {
     log.info("Updating water supply network with id: {}", id);
     var network = networkRepository.findById(id)
       .orElseThrow(() -> new IllegalArgumentException("Network not found with id: " + id));
 
-    if (request.name() != null && !request.name().isBlank()) {
-      network.setName(request.name());
+    var name = request.name();
+    if (name != null && !name.isBlank()) {
+      if (networkRepository.existsByNameIgnoreCase(name) && !network.getName().equalsIgnoreCase(name)) {
+        throw new IllegalArgumentException(Constant.SE_05);
+      }
+      network.setName(name);
     }
 
     var saved = networkRepository.save(network);
@@ -82,7 +91,7 @@ public class WaterSupplyNetworkServiceImpl implements WaterSupplyNetworkService 
     return networkRepository.existsById(id);
   }
 
-  private WaterSupplyNetworkResponse mapToResponse(@NonNull WaterSupplyNetwork network) {
+  private @NonNull WaterSupplyNetworkResponse mapToResponse(@NonNull WaterSupplyNetwork network) {
     return new WaterSupplyNetworkResponse(
       network.getBranchId(),
       network.getName(),

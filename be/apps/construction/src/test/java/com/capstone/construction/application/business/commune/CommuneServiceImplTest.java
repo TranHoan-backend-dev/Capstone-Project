@@ -1,6 +1,7 @@
 package com.capstone.construction.application.business.commune;
 
-import com.capstone.construction.application.dto.request.catalog.CommuneRequest;
+import com.capstone.construction.application.dto.request.commune.CreateRequest;
+import com.capstone.construction.application.dto.request.commune.UpdateRequest;
 import com.capstone.construction.application.exception.ExistingItemException;
 import com.capstone.common.utils.TextNormalizer;
 import com.capstone.construction.domain.enumerate.CommuneType;
@@ -8,12 +9,14 @@ import com.capstone.construction.domain.model.Commune;
 import com.capstone.construction.infrastructure.persistence.CommuneRepository;
 import com.capstone.construction.infrastructure.persistence.HamletRepository;
 import com.capstone.construction.infrastructure.persistence.NeighborhoodUnitRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -46,10 +49,15 @@ class CommuneServiceImplTest {
   @InjectMocks
   CommuneServiceImpl communeService;
 
+  @BeforeEach
+  void setUp() {
+    ReflectionTestUtils.setField(communeService, "log", LoggerFactory.getLogger(CommuneServiceImpl.class));
+  }
+
   @Test
   void should_CreateCommune_When_RequestIsValid() {
     // Given
-    var request = new CommuneRequest("Xa Test", "XA");
+    var request = new CreateRequest("Xa Test", CommuneType.RURAL_COMMUNE);
     when(communeRepository.existsByNameIgnoreCase(request.name())).thenReturn(false);
 
     // When
@@ -63,7 +71,7 @@ class CommuneServiceImplTest {
   @Test
   void should_ThrowException_When_CreateNameExists() {
     // Given
-    var request = new CommuneRequest("Xa Test", "XA");
+    var request = new CreateRequest("Xa Test", CommuneType.RURAL_COMMUNE);
     when(communeRepository.existsByNameIgnoreCase(request.name())).thenReturn(true);
 
     // When & Then
@@ -78,7 +86,7 @@ class CommuneServiceImplTest {
   void should_UpdateCommune_When_RequestIsValid() {
     // Given
     var id = "commune-id";
-    var request = new CommuneRequest("Xa Updated", "PHUONG");
+    var request = new UpdateRequest("Xa Updated", CommuneType.URBAN_WARD);
 
     var existingCommune = Commune.create(builder -> builder.name("Xa Old").type(CommuneType.RURAL_COMMUNE));
     ReflectionTestUtils.setField(existingCommune, "communeId", id);
@@ -94,7 +102,7 @@ class CommuneServiceImplTest {
 
     // Then
     assertThat(response.name()).isEqualTo("Xa Updated");
-    assertThat(response.type()).isEqualTo("phuong");
+    assertThat(response.type()).isEqualTo(CommuneType.URBAN_WARD);
     verify(communeRepository).save(existingCommune);
   }
 
@@ -102,7 +110,7 @@ class CommuneServiceImplTest {
   void should_ThrowException_When_UpdateNotFound() {
     // Given
     var id = "non-existent-id";
-    var request = new CommuneRequest("Xa Updated", "PHUONG");
+    var request = new UpdateRequest("Xa Updated", CommuneType.URBAN_WARD);
     when(communeRepository.findById(id)).thenReturn(Optional.empty());
 
     // When & Then
@@ -117,7 +125,7 @@ class CommuneServiceImplTest {
   void should_ThrowException_When_UpdateNameAlreadyExists() {
     // Given
     var id = "commune-id";
-    var request = new CommuneRequest("Xa Existing", "XA");
+    var request = new UpdateRequest("Xa Existing", CommuneType.RURAL_COMMUNE);
     var existingCommune = Commune.create(builder -> builder.name("Xa Old").type(CommuneType.URBAN_WARD));
     ReflectionTestUtils.setField(existingCommune, "communeId", id);
     ReflectionTestUtils.setField(existingCommune, "createdAt", LocalDateTime.now());
@@ -134,20 +142,24 @@ class CommuneServiceImplTest {
   }
 
   @Test
-  void should_ThrowException_When_UpdateDataIsSameWithNameCheckPasses() {
+  void should_NotThrowException_When_UpdateNameIsSame() {
     // Given
     var id = "commune-id";
-    var request = new CommuneRequest("Xa Old", "XA");
+    var request = new UpdateRequest("Xa Old", CommuneType.RURAL_COMMUNE);
     var existingCommune = Commune.create(builder -> builder.name("Xa Old").type(CommuneType.RURAL_COMMUNE));
     ReflectionTestUtils.setField(existingCommune, "communeId", id);
     ReflectionTestUtils.setField(existingCommune, "createdAt", LocalDateTime.now());
 
     when(communeRepository.findById(id)).thenReturn(Optional.of(existingCommune));
-    when(communeRepository.existsByNameIgnoreCase(request.name())).thenReturn(true);
+    when(communeRepository.save(any(Commune.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-    // When & Then
-    assertThatThrownBy(() -> communeService.updateCommune(id, request))
-        .isInstanceOf(ExistingItemException.class);
+    // When
+    var response = communeService.updateCommune(id, request);
+
+    // Then
+    assertThat(response.name()).isEqualTo("Xa Old");
+    verify(communeRepository, never()).existsByNameIgnoreCase(any());
+    verify(communeRepository).save(existingCommune);
   }
 
   @Test
@@ -155,6 +167,8 @@ class CommuneServiceImplTest {
     // Given
     var id = "commune-id";
     when(communeRepository.existsById(id)).thenReturn(true);
+    when(hamletRepository.existsByCommune_CommuneId(id)).thenReturn(true);
+    when(neighborhoodUnitRepository.existsByCommune_CommuneId(id)).thenReturn(true);
 
     // When
     communeService.deleteCommune(id);
@@ -194,7 +208,7 @@ class CommuneServiceImplTest {
 
     // Then
     assertThat(response.name()).isEqualTo("Xa Test");
-    assertThat(response.type()).isEqualTo("xa");
+    assertThat(response.type()).isEqualTo(CommuneType.RURAL_COMMUNE);
   }
 
   @Test

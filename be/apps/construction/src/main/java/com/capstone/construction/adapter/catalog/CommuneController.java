@@ -2,7 +2,8 @@ package com.capstone.construction.adapter.catalog;
 
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
-import com.capstone.construction.application.dto.request.catalog.CommuneRequest;
+import com.capstone.construction.application.dto.request.commune.CreateRequest;
+import com.capstone.construction.application.dto.request.commune.UpdateRequest;
 import com.capstone.construction.application.dto.response.catalog.CommuneResponse;
 import com.capstone.construction.application.usecase.catalog.CommuneUseCase;
 import io.swagger.v3.oas.annotations.Operation;
@@ -47,7 +48,7 @@ public class CommuneController {
     @ApiResponse(responseCode = "500", description = "Lỗi nội bộ hệ thống", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PreAuthorize("hasAuthority('IT_STAFF')")
-  public ResponseEntity<WrapperApiResponse> createCommune(@RequestBody @Valid CommuneRequest request) {
+  public ResponseEntity<WrapperApiResponse> createCommune(@RequestBody @Valid CreateRequest request) {
     log.info("REST request to create commune: {}", request.name());
     communeUseCase.createCommune(request);
     return Utils.returnCreatedResponse("Commune created successfully");
@@ -75,7 +76,7 @@ public class CommuneController {
   @PreAuthorize("hasAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> updateCommune(
     @PathVariable @Parameter(description = "ID của xã/phường cần cập nhật") String id,
-    @RequestBody @Valid CommuneRequest request) {
+    @RequestBody @Valid UpdateRequest request) {
     log.info("REST request to update commune: {}", id);
     var response = communeUseCase.updateCommune(id, request);
     return Utils.returnOkResponse("Commune updated successfully", response);
