@@ -1,4 +1,4 @@
-package com.capstone.auth.domain.enumerate;
+package com.capstone.common.enumerate;
 
 public enum RoleName {
   IT_STAFF,

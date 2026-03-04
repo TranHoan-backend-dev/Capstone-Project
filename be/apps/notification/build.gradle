@@ -23,7 +23,6 @@ dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
   implementation 'org.springframework.boot:spring-boot-starter-websocket'
   implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
-  runtimeOnly 'org.springframework.boot:spring-boot-devtools'
   testImplementation 'org.springframework.security:spring-security-test'
   implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
