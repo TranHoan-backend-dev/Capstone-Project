@@ -56,7 +56,7 @@ public class RoadUseCase {
     return roadService.getRoadById(id);
   }
 
-  public PageResponse<RoadResponse> getAllRoads(Pageable pageable) {
-    return roadService.getAllRoads(pageable);
+  public PageResponse<RoadResponse> getAllRoads(Pageable pageable, String keyword) {
+    return roadService.getAllRoads(pageable, keyword);
   }
 }
