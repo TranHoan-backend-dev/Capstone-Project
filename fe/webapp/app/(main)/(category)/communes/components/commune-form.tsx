@@ -8,6 +8,7 @@ import { Card, CardBody } from "@heroui/react";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
 import { CommuneFormProps } from "@/types";
 import { CallToast } from "@/components/ui/CallToast";
+import { authFetch } from "@/utils/authFetch";
 
 const typeOptions = [
   { label: "Phường", value: "URBAN_WARD" },
@@ -44,7 +45,7 @@ export const CommuneForm = ({
         type: type.toUpperCase(),
       };
 
-      const response = await fetch(url, {
+      const response = await authFetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

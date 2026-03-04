@@ -7,6 +7,7 @@ import { CommuneItem, CommuneResponse, CommuneTableProps } from "@/types";
 import { COMMUNE_COLUMN } from "@/config/table-columns";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import { CallToast } from "@/components/ui/CallToast";
+import { authFetch } from "@/utils/authFetch";
 
 const typeLabel: Record<string, string> = {
   URBAN_WARD: "Phường",
@@ -55,7 +56,7 @@ export const CommuneTable = ({
           params.append("type", filter.type);
         }
 
-        const res = await fetch(
+        const res = await authFetch(
           `/api/construction/communes?${params.toString()}`,
         );
 
@@ -127,7 +128,7 @@ export const CommuneTable = ({
           if (!confirm("Bạn có chắc muốn xóa phường/xã này?")) return;
 
           try {
-            const res = await fetch(`/api/construction/communes/${id}`, {
+            const res = await authFetch(`/api/construction/communes/${id}`, {
               method: "DELETE",
             });
 
@@ -213,7 +214,7 @@ export const CommuneTable = ({
         headerSummary={`${totalItems}`}
         paginationProps={{
           total: totalPages,
-          initialPage: page,
+          page: page,
           onChange: setPage,
           summary: `${data.length}`,
         }}
