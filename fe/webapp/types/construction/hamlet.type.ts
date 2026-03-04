@@ -26,7 +26,7 @@ export interface HamletFormProps {
   onClose: () => void;
 }
 
-export interface FilterSectionProps {
+export interface FilterSectionHamletProps {
   filter: HamletFilter;
   onSearch: (value: HamletFilter) => void;
   onAddNew: () => void;

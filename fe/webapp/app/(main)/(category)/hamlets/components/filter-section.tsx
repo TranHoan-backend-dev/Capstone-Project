@@ -7,7 +7,7 @@ import { SearchIcon } from "@/components/ui/Icons";
 import CustomInput from "@/components/ui/custom/CustomInput";
 import FilterButton from "@/components/ui/FilterButton";
 import { AddNewIcon } from "@/config/chip-and-icon";
-import { FilterSectionProps } from "@/types";
+import { FilterSectionHamletProps } from "@/types";
 import { useCommune } from "@/hooks/useCommunes";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
 
@@ -20,7 +20,7 @@ export const FilterSection = ({
   filter,
   onSearch,
   onAddNew,
-}: FilterSectionProps) => {
+}: FilterSectionHamletProps) => {
   const [code, setCode] = useState(filter.code ?? "");
   const [name, setName] = useState(filter.name ?? "");
     const [type, setType] = useState(filter?.type || "");
