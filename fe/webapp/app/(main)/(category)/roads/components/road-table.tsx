@@ -197,7 +197,7 @@ export const RoadTable = ({
           total: totalPages,
           page: page,
           onChange: setPage,
-          summary: `${totalItems}`,
+          summary: `${data.length}`,
         }}
         sort={sort}
         onSortChange={handleSortChange}

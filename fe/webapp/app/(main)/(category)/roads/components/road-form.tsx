@@ -77,7 +77,7 @@ export const RoadForm = ({
         </div>
 
         <div className="px-6 py-5 space-y-5">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
             <CustomInput
               label="Tên đường phố"
               value={name}
