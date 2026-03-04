@@ -212,10 +212,44 @@ class RoadServiceImplTest {
     when(roadRepository.findAll(pageable)).thenReturn(page);
 
     // When
-    var result = roadService.getAllRoads(pageable);
+    var result = roadService.getAllRoads(pageable, null);
 
     // Then
     assertThat(result.content()).hasSize(1);
     assertThat(result.content().getFirst().name()).isEqualTo("Road Test");
+  }
+
+  @Test
+  void should_UseFindAll_When_KeywordIsBlank() {
+    // Given
+    var pageable = Pageable.unpaged();
+    var road = new Road("id", "Road Test", LocalDateTime.now(), LocalDateTime.now());
+    var page = new PageImpl<>(List.of(road));
+    when(roadRepository.findAll(pageable)).thenReturn(page);
+
+    // When
+    var result = roadService.getAllRoads(pageable, "   ");
+
+    // Then
+    assertThat(result.content()).hasSize(1);
+    verify(roadRepository).findAll(pageable);
+    verify(roadRepository, never()).searchByNameIgnoreAccent(any(), any());
+  }
+
+  @Test
+  void should_UseSearch_When_KeywordProvided() {
+    // Given
+    var pageable = Pageable.unpaged();
+    var road = new Road("id", "Trần Hưng Đạo", LocalDateTime.now(), LocalDateTime.now());
+    var page = new PageImpl<>(List.of(road));
+    when(roadRepository.searchByNameIgnoreAccent("tran", pageable)).thenReturn(page);
+
+    // When
+    var result = roadService.getAllRoads(pageable, " tran ");
+
+    // Then
+    assertThat(result.content()).hasSize(1);
+    assertThat(result.content().getFirst().name()).isEqualTo("Trần Hưng Đạo");
+    verify(roadRepository).searchByNameIgnoreAccent("tran", pageable);
   }
 }
