@@ -2,6 +2,7 @@ package com.capstone.construction.domain.model;
 
 import com.capstone.common.enumerate.CustomerType;
 import com.capstone.common.enumerate.ProcessingStatus;
+import com.capstone.common.utils.SharedConstant;
 import com.capstone.construction.domain.model.utils.FormProcessingStatus;
 import com.capstone.construction.domain.model.utils.Representative;
 import com.capstone.common.enumerate.UsageTarget;
@@ -151,7 +152,7 @@ public class InstallationForm {
 
   public void setPhoneNumber(String phoneNumber) {
     requireNonNullAndNotEmpty(phoneNumber, Constant.PT_15);
-    if (!phoneNumber.matches(Constant.PHONE_PATTERN)) {
+    if (!phoneNumber.matches(SharedConstant.PHONE_PATTERN)) {
       throw new IllegalArgumentException(Constant.PT_14);
     }
     this.phoneNumber = phoneNumber;

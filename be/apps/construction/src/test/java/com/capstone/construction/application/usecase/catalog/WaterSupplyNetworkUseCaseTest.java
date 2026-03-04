@@ -1,7 +1,8 @@
 package com.capstone.construction.application.usecase.catalog;
 
 import com.capstone.construction.application.business.network.WaterSupplyNetworkService;
-import com.capstone.construction.application.dto.request.catalog.WaterSupplyNetworkRequest;
+import com.capstone.construction.application.dto.request.branch.CreateRequest;
+import com.capstone.construction.application.dto.request.branch.UpdateRequest;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.application.dto.response.catalog.WaterSupplyNetworkResponse;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,7 @@ class WaterSupplyNetworkUseCaseTest {
   @Test
   void should_CallServiceCreate_When_CreateNetwork() {
     // Given
-    var request = new WaterSupplyNetworkRequest("Test Network");
+    var request = new CreateRequest("Test Network");
 
     // When
     networkUseCase.createNetwork(request);
@@ -43,7 +44,7 @@ class WaterSupplyNetworkUseCaseTest {
   void should_CallServiceUpdate_When_UpdateNetwork() {
     // Given
     var id = "id-1";
-    var request = new WaterSupplyNetworkRequest("Updated Network");
+    var request = new UpdateRequest("Updated Network");
     var expectedResponse = new WaterSupplyNetworkResponse(id, "Updated Network",
         LocalDateTime.now());
 

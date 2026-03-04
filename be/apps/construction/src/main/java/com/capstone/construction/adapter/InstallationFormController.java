@@ -40,8 +40,8 @@ public class InstallationFormController {
   @NonFinal
   Logger log;
 
-  @Operation(summary = "Create a new installation form", description = "Initializes a new installation request and triggers notification event", responses = {
-    @ApiResponse(responseCode = "201", description = "Form created successfully", content = @Content(schema = @Schema(implementation = NewInstallationFormResponse.class))),
+  @Operation(summary = "", description = "", responses = {
+    @ApiResponse(responseCode = "201", description = "Form created successfully"),
     @ApiResponse(responseCode = "409", description = "Form already exists", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
@@ -88,8 +88,6 @@ public class InstallationFormController {
 
     var response = installationFormHandlingUseCase.getPaginatedInstallationForms(pageable, request);
 
-    return Utils.returnOkResponse(
-      "Installation forms retrieved successfully",
-      response);
+    return Utils.returnOkResponse("Installation forms retrieved successfully",response);
   }
 }

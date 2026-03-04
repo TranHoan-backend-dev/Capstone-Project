@@ -1,4 +1,6 @@
 import { SVGProps } from "react";
+export * from "./construction/index"
+export * from "./construction/networks.type"
 
 export * from "./construction/index";
 
