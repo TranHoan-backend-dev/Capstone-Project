@@ -57,7 +57,31 @@ class WaterSupplyNetworkServiceImplTest {
     networkService.createNetwork(request);
 
     // Then
-    verify(networkRepository, times(1)).save(any(WaterSupplyNetwork.class));
+    verify(networkRepository, times(1)).save(argThat(network -> network.getName().equals(networkName)));
+  }
+
+  @Test
+  void should_ThrowException_When_CreateNameIsNull() {
+    // Given
+    var request = new CreateRequest(null);
+
+    // When & Then
+    assertThatThrownBy(() -> networkService.createNetwork(request))
+        .isExactlyInstanceOf(NullPointerException.class);
+
+    verify(networkRepository, never()).save(any());
+  }
+
+  @Test
+  void should_ThrowException_When_CreateNameIsBlank() {
+    // Given
+    var request = new CreateRequest("   ");
+
+    // When & Then
+    assertThatThrownBy(() -> networkService.createNetwork(request))
+        .isExactlyInstanceOf(IllegalArgumentException.class);
+
+    verify(networkRepository, never()).save(any());
   }
 
   @Test
@@ -74,6 +98,7 @@ class WaterSupplyNetworkServiceImplTest {
         LocalDateTime.now());
 
     when(networkRepository.findById(id)).thenReturn(Optional.of(existingNetwork));
+    when(networkRepository.existsByNameIgnoreCase(newName)).thenReturn(false);
     when(networkRepository.save(any(WaterSupplyNetwork.class))).thenReturn(updatedNetwork);
 
     // When
@@ -86,6 +111,89 @@ class WaterSupplyNetworkServiceImplTest {
 
     verify(networkRepository, times(1)).findById(id);
     verify(networkRepository, times(1)).save(existingNetwork);
+  }
+
+  @Test
+  void should_ThrowException_When_UpdateNameAlreadyExists() {
+    // Given
+    var id = "id-1";
+    var existingName = "Existing Network";
+    var request = new UpdateRequest(existingName);
+
+    var currentNetwork = new WaterSupplyNetwork(id, "Other Name", LocalDateTime.now(),
+        LocalDateTime.now());
+
+    when(networkRepository.findById(id)).thenReturn(Optional.of(currentNetwork));
+    when(networkRepository.existsByNameIgnoreCase(existingName)).thenReturn(true);
+
+    // When & Then
+    assertThatThrownBy(() -> networkService.updateNetwork(id, request))
+        .isExactlyInstanceOf(IllegalArgumentException.class);
+
+    verify(networkRepository, never()).save(any());
+  }
+
+  @Test
+  void should_NotUpdateName_When_UpdateNameIsNull() {
+    // Given
+    var id = "id-1";
+    var oldName = "Old Name";
+    var request = new UpdateRequest(null);
+
+    var existingNetwork = new WaterSupplyNetwork(id, oldName, LocalDateTime.now(),
+        LocalDateTime.now());
+
+    when(networkRepository.findById(id)).thenReturn(Optional.of(existingNetwork));
+    when(networkRepository.save(any(WaterSupplyNetwork.class))).thenReturn(existingNetwork);
+
+    // When
+    var response = networkService.updateNetwork(id, request);
+
+    // Then
+    assertThat(response.name()).isEqualTo(oldName);
+    verify(networkRepository).save(existingNetwork);
+  }
+
+  @Test
+  void should_NotUpdateName_When_UpdateNameIsBlank() {
+    // Given
+    var id = "id-1";
+    var oldName = "Old Name";
+    var request = new UpdateRequest("  ");
+
+    var existingNetwork = new WaterSupplyNetwork(id, oldName, LocalDateTime.now(),
+        LocalDateTime.now());
+
+    when(networkRepository.findById(id)).thenReturn(Optional.of(existingNetwork));
+    when(networkRepository.save(any(WaterSupplyNetwork.class))).thenReturn(existingNetwork);
+
+    // When
+    var response = networkService.updateNetwork(id, request);
+
+    // Then
+    assertThat(response.name()).isEqualTo(oldName);
+    verify(networkRepository).save(existingNetwork);
+  }
+
+  @Test
+  void should_UpdateNetwork_When_NameIsSameIgnoreCase() {
+    // Given
+    var id = "id-1";
+    var name = "Network Name";
+    var request = new UpdateRequest(name.toLowerCase());
+
+    var existingNetwork = new WaterSupplyNetwork(id, name, LocalDateTime.now(),
+        LocalDateTime.now());
+
+    when(networkRepository.findById(id)).thenReturn(Optional.of(existingNetwork));
+    when(networkRepository.existsByNameIgnoreCase(name.toLowerCase())).thenReturn(true);
+    when(networkRepository.save(any(WaterSupplyNetwork.class))).thenReturn(existingNetwork);
+
+    // When
+    var response = networkService.updateNetwork(id, request);
+
+    // Then
+    assertThat(response.name()).isEqualTo(name.toLowerCase());
   }
 
   @Test
