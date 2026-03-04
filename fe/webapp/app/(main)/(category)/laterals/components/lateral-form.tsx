@@ -9,6 +9,7 @@ import { CheckApprovalIcon } from "@/config/chip-and-icon";
 import { Card, CardBody } from "@heroui/react";
 import { useNetwork } from "@/hooks/useNetworks";
 import { LateralFormProps } from "@/types";
+import { authFetch } from "@/utils/authFetch";
 
 export const LateralForm = ({
   initialData,
@@ -17,7 +18,6 @@ export const LateralForm = ({
 }: LateralFormProps) => {
   const isEdit = !!initialData?.id;
 
-  const [code, setCode] = useState(initialData?.code || "");
   const [name, setName] = useState(initialData?.name || "");
   const [submitLoading, setSubmitLoading] = useState(false);
 
@@ -28,7 +28,6 @@ export const LateralForm = ({
   const { networkOptions, loading: networkLoading } = useNetwork();
 
   useEffect(() => {
-    setCode(initialData?.code || "");
     setName(initialData?.name || "");
   }, [initialData]);
 
@@ -42,27 +41,28 @@ export const LateralForm = ({
 
   const handleSubmit = async () => {
     if (submitLoading) return;
+
     try {
       setSubmitLoading(true);
+
       const url = isEdit
         ? `/api/construction/laterals/${initialData?.id}`
         : `/api/construction/laterals`;
 
       const method = isEdit ? "PUT" : "POST";
 
-      const payload: any = {};
+      const selectedNetworkId = Array.from(selectedNetwork)[0] || "";
 
-      if (!isEdit || name !== initialData?.name) {
-        payload.name = name;
-      }
+      const payload = {
+        name: !isEdit || name !== initialData?.name ? name.trim() : "",
 
-      const selectedNetworkId = Array.from(selectedNetwork)[0];
+        networkId:
+          !isEdit || selectedNetworkId !== initialData?.networkId
+            ? selectedNetworkId
+            : "",
+      };
 
-      if (!isEdit || selectedNetworkId !== initialData?.networkId) {
-        payload.networkId = selectedNetworkId;
-      }
-
-      const response = await fetch(url, {
+      const response = await authFetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -102,26 +102,17 @@ export const LateralForm = ({
         </div>
         <div className="px-6 py-5 space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="md:col-span-1 flex flex-col gap-4">
-              <CustomInput
-                label="Mã nhánh tổng"
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-              />
               <CustomInput
                 label="Tên nhánh tổng"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
-            </div>
-            <div className="md:col-span-1 flex flex-col gap-4">
               <CustomSelect
                 label="Chi nhánh"
                 options={networkOptions}
                 selectedKeys={selectedNetwork}
                 onSelectionChange={(keys) => setSelectedNetwork(keys)}
               />
-            </div>
           </div>
           <div className="flex justify-end">
             <CustomButton variant="light" onPress={onClose}>
@@ -133,7 +124,9 @@ export const LateralForm = ({
                 submitLoading ? null : <CheckApprovalIcon className="w-4 h-4" />
               }
               onPress={handleSubmit}
-              isDisabled={!name.trim() || networkLoading}
+              isDisabled={
+                !name.trim() || selectedNetwork.size === 0 || networkLoading
+              }
               isLoading={submitLoading}
             >
               {submitLoading ? "Đang lưu..." : "Lưu"}

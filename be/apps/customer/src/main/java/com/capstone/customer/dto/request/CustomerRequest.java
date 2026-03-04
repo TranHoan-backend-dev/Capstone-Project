@@ -1,6 +1,7 @@
 package com.capstone.customer.dto.request;
 
 import com.capstone.common.enumerate.UsageTarget;
+import com.capstone.common.utils.SharedConstant;
 import com.capstone.customer.config.Constant;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
@@ -19,7 +20,7 @@ public record CustomerRequest(
 
   @Schema(description = "Customer phone number", example = "0901234567")
   @NotBlank(message = Constant.ENT_05)
-  @Pattern(regexp = Constant.PHONE_PATTERN, message = Constant.ENT_15)
+  @Pattern(regexp = SharedConstant.PHONE_PATTERN, message = Constant.ENT_15)
   String phoneNumber,
 
   @Schema(description = "Customer type", example = "INDIVIDUAL")

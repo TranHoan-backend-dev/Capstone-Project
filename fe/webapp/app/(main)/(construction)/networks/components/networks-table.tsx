@@ -174,7 +174,7 @@ export const NetworksTable = ({ keyword, reloadKey }: Props) => {
         headerSummary={`${totalItems}`}
         paginationProps={{
           total: totalPages,
-          initialPage: page,
+          page: page,
           onChange: setPage,
           summary: `${totalItems}`,
         }}

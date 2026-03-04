@@ -1,4 +1,4 @@
-@uri = http://localhost:9004/api/v1/lateral
+@uri = http://localhost:9004/api/v1/laterals
 @keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
 @client_secret=
 
@@ -76,6 +76,36 @@ Accept: application/json
 }
 
 ### R
+
+### R - get all laterals (no filter)
+GET {{uri}}?page=0&size=10
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### R - search laterals by keyword (name or network name)
+GET {{uri}}?page=0&size=10&keyword=A300
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### R - filter laterals by networkId
+GET {{uri}}?page=0&size=10&networkId=550e8400-e29b-41d4-a716-446655440001
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### R - filter laterals with assigned network only
+GET {{uri}}?page=0&size=10&networkAssigned=true
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### R - filter laterals with no network assigned
+GET {{uri}}?page=0&size=10&networkAssigned=false
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### R - combine keyword + networkId + assigned filter
+GET {{uri}}?page=0&size=10&keyword=A300&networkId=550e8400-e29b-41d4-a716-446655440001&networkAssigned=true
+Authorization: Bearer {{access_token}}
+Accept: application/json
 
 ### U
 ### happy case

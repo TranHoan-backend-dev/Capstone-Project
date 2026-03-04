@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface WaterSupplyNetworkRepository extends JpaRepository<WaterSupplyNetwork, String> {
   Page<WaterSupplyNetwork> findAllByNameContainsIgnoreCase(String name, Pageable pageable);
+
+  boolean existsByNameIgnoreCase(String name);
 }

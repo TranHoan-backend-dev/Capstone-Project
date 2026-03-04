@@ -38,6 +38,7 @@ export const getAllLaterals = (
   size: number,
   sort: string,
   keyword?: string | null,
+  networkId?: string | null,
 ) =>
   axios.get(`${API_GATEWAY_URL}/construction/laterals`, {
     params: {
@@ -45,6 +46,7 @@ export const getAllLaterals = (
       size,
       sort,
       keyword,
+      networkId,
     },
     headers: {
       Authorization: `Bearer ${accessToken}`,

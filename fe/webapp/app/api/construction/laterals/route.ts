@@ -14,15 +14,10 @@ export async function GET(req: NextRequest) {
     const page = Number(searchParams.get("page") ?? 0);
     const size = Number(searchParams.get("size") ?? 10);
     const sort = searchParams.get("sort") || "createdAt,desc";
-    const keyword = searchParams.get("keyword") || undefined;
+    const keyword = searchParams.get("keyword") || "";
+    const networkId = searchParams.get("networkId") || "";
 
-    const response = await getAllLaterals(
-      accessToken,
-      page,
-      size,
-      sort,
-      keyword,
-    );
+    const response = await getAllLaterals(accessToken, page, size, sort, keyword, networkId);
 
     return NextResponse.json(
       {

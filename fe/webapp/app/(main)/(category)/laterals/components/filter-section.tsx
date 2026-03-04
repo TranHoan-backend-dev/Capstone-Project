@@ -16,17 +16,15 @@ export const FilterSection = ({
   filter,
   onSearch,
   onAddNew,
-}: FilterNetworkProps) => {
-  const [code, setCode] = useState(filter.code ?? "");
-  const [name, setName] = useState(filter.name ?? "");
+}: FilterSectionProps) => {
+  const [keyword, setKeyword] = useState(filter.keyword ?? "");
   const [selectedNetwork, setSelectedNetwork] = useState<Set<string>>(
     new Set(),
   );
   const { networkOptions } = useNetwork();
 
   useEffect(() => {
-    setCode(filter.code ?? "");
-    setName(filter.name ?? "");
+    setKeyword(filter.keyword ?? "");
 
     if (filter.networkId) {
       setSelectedNetwork(new Set([filter.networkId]));
@@ -53,8 +51,7 @@ export const FilterSection = ({
           <FilterButton
             onPress={() =>
               onSearch({
-                code: code.trim(),
-                name: name.trim(),
+                keyword: keyword.trim(),
                 networkId: Array.from(selectedNetwork)[0],
               })
             }
@@ -64,19 +61,11 @@ export const FilterSection = ({
     >
       <section className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="md:col-span-1 flex flex-col gap-4">
-            <CustomInput
-              label="Mã nhánh tổng"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-            />
             <CustomInput
               label="Tên nhánh tổng"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
             />
-          </div>
-          <div className="md:col-span-1 flex flex-col gap-4">
             <CustomSelect
               label="Chi nhánh"
               options={networkOptions}
@@ -84,7 +73,6 @@ export const FilterSection = ({
               onSelectionChange={setSelectedNetwork}
             />
           </div>
-        </div>
       </section>
     </GenericSearchFilter>
   );

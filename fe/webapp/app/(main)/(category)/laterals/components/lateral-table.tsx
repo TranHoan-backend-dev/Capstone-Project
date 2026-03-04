@@ -7,6 +7,7 @@ import { LateralItem, LateralResponse, LateralTableProps } from "@/types";
 import { LATERAL_COLUMN } from "@/config/table-columns";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import { CallToast } from "@/components/ui/CallToast";
+import { authFetch } from "@/utils/authFetch";
 
 export const LateralTable = ({
   filter,
@@ -25,7 +26,6 @@ export const LateralTable = ({
     field: "createdAt",
     direction: "desc",
   });
-
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
@@ -40,18 +40,14 @@ export const LateralTable = ({
           sort: `${sort.field},${sort.direction}`,
         });
 
-        if (filter.code) params.append("code", filter.code);
-        if (filter.name) params.append("name", filter.name);
+        if (filter.keyword?.trim()) {
+          params.append("keyword", filter.keyword.trim());
+        }
         if (filter.networkId) params.append("networkId", filter.networkId);
 
-        const res = await fetch(
+        const res = await authFetch(
           `/api/construction/laterals?${params.toString()}`,
         );
-
-        if (!res.ok) {
-          console.error("Fetch failed", res.status);
-          return;
-        }
 
         const json = await res.json();
         const pageData = json?.data;
@@ -117,7 +113,7 @@ export const LateralTable = ({
           if (!confirm("Bạn có chắc muốn xóa nhánh tổng này?")) return;
 
           try {
-            const res = await fetch(`/api/construction/laterals/${id}`, {
+            const res = await authFetch(`/api/construction/laterals/${id}`, {
               method: "DELETE",
             });
 
@@ -196,9 +192,9 @@ export const LateralTable = ({
         headerSummary={`${totalItems}`}
         paginationProps={{
           total: totalPages,
-          initialPage: page,
+          page: page,
           onChange: setPage,
-          summary: `${totalItems}`,
+          summary: `${data.length}`,
         }}
         sort={sort}
         onSortChange={handleSortChange}
