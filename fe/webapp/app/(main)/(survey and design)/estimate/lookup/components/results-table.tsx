@@ -150,7 +150,7 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
       headerSummary={`${data.length}`}
       paginationProps={{
         total: 5,
-        initialPage: 1,
+        page: 1,
         summary: `${data.length}`,
       }}
       renderCellAction={renderCell}
