@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
     const sort = searchParams.get("sort") || "createdAt,desc";
     const networkId = searchParams.get("networkId") || undefined;
     const lateralId = searchParams.get("lateralId") || undefined;
-    const keyword = searchParams.get("keyword") || undefined;
+    const keyword = searchParams.get("keyword") || "";
 
     const response = await getAllRoadmaps(
       accessToken,
