@@ -98,6 +98,7 @@ export const getAllRoadmaps = (
   accessToken: string,
   page: number,
   size: number,
+  sort: string,
   networkId?: string,
   lateralId?: string,
   keyword?: string | null,
@@ -106,6 +107,7 @@ export const getAllRoadmaps = (
     params: {
       page,
       size,
+      sort,
       networkId,
       lateralId,
       keyword,

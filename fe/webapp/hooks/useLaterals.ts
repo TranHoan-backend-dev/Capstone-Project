@@ -9,7 +9,7 @@ export const useLateral = () => {
 
   useEffect(() => {
     axiosBase
-      .get("/api/construction/laterals", { withCredentials: true })
+      .get("/api/construction/laterals?page=0&size=1000", { withCredentials: true })
       .then((res) =>
         setLateralOptions(
           res.data.data.content.map((item: any) => ({

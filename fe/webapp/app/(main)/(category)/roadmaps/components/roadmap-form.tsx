@@ -10,6 +10,7 @@ import { CheckApprovalIcon } from "@/config/chip-and-icon";
 import { useNetwork } from "@/hooks/useNetworks";
 import { useLateral } from "@/hooks/useLaterals";
 import { RoadmapFormProps } from "@/types";
+import { authFetch } from "@/utils/authFetch";
 
 export const RoadmapForm = ({
   initialData,
@@ -72,7 +73,7 @@ export const RoadmapForm = ({
             : "",
       };
 
-      const response = await fetch(url, {
+      const response = await authFetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -113,7 +114,7 @@ export const RoadmapForm = ({
         </div>
 
         <div className="px-6 py-5 space-y-5">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-1 flex flex-col gap-4">
               <CustomInput
                 label="Tên lộ trình ghi"

@@ -23,6 +23,7 @@ export async function GET(req: NextRequest) {
       accessToken,
       page ? Number(page) : 0,
       size ? Number(size) : 1000,
+      sort,
       networkId,
       lateralId,
       keyword,

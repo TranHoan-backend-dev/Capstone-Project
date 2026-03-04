@@ -7,6 +7,7 @@ import { CallToast } from "@/components/ui/CallToast";
 import { DeleteIcon, EditIcon } from "@/config/chip-and-icon";
 import { ROADMAP_COLUMN } from "@/config/table-columns";
 import { RoadmapItem, RoadmapResponse, RoadmapTableProps } from "@/types";
+import { authFetch } from "@/utils/authFetch";
 
 export const RoadmapTable = ({
   filter,
@@ -37,13 +38,14 @@ export const RoadmapTable = ({
         const params = new URLSearchParams({
           page: String(page - 1),
           size: String(pageSize),
+          sort: `${sort.field},${sort.direction}`,
         });
 
         if (filter.keyword) params.append("keyword", filter.keyword);
         if (filter.networkId) params.append("networkId", filter.networkId);
         if (filter.lateralId) params.append("lateralId", filter.lateralId);
 
-        const res = await fetch(
+        const res = await authFetch(
           `/api/construction/roadmaps?${params.toString()}`,
         );
 
@@ -118,7 +120,7 @@ export const RoadmapTable = ({
           if (!confirm("Bạn có chắc muốn xóa lộ trình ghi này?")) return;
 
           try {
-            const res = await fetch(`/api/construction/roadmaps/${id}`, {
+            const res = await authFetch(`/api/construction/roadmaps/${id}`, {
               method: "DELETE",
             });
 
@@ -197,9 +199,9 @@ export const RoadmapTable = ({
         headerSummary={`${totalItems}`}
         paginationProps={{
           total: totalPages,
-          initialPage: page,
+          page: page,
           onChange: setPage,
-          summary: `${totalItems}`,
+          summary: `${data.length}`,
         }}
         sort={sort}
         onSortChange={handleSortChange}
