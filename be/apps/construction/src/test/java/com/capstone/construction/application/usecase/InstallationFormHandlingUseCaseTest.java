@@ -94,4 +94,11 @@ class InstallationFormHandlingUseCaseTest {
     assertThat(result.formNumber()).isEqualTo("FORM-001");
     verify(ifSrv).createNewInstallationForm(request);
   }
+
+  @Test
+  @org.junit.jupiter.api.DisplayName("Should throw NPE when request is null")
+  void should_ThrowException_When_RequestIsNull() {
+    assertThatThrownBy(() -> useCase.createNewInstallationRequest(null))
+        .isInstanceOf(NullPointerException.class);
+  }
 }
