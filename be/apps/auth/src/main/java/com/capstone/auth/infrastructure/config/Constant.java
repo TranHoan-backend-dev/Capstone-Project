@@ -1,10 +1,6 @@
 package com.capstone.auth.infrastructure.config;
 
 public final class Constant {
-  public static final String EMAIL_PATTERN = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
-  public static final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
-  public static final String PHONE_PATTERN = "^[0-9]{10}$";
-
   // for dto and entity layer
   public static final String PT_01 = "Email must follow the format <name>@<domain>";
   public static final String PT_02 = "Invalid password. Password must contain at least one number, one uppercase letter, one lowercase letter, one special character, and be at least 8 characters long";
@@ -26,7 +22,7 @@ public final class Constant {
   public static final String PT_18 = "Branch id cannot be null or empty";
   public static final String PT_19 = "Department id cannot be null or empty";
   public static final String PT_20 = "Job id cannot be null or empty";
-  public static final String PT_21 = "Business page ids cannot be null or empty";
+  public static final String PT_21 = "";
   public static final String PT_22 = "Id cannot be null or empty";
   public static final String PT_23 = "Role id cannot be null or empty";
   public static final String PT_24 = "Electronic signing url cannot be null or empty";
@@ -35,7 +31,7 @@ public final class Constant {
   // for service layer
   public static final String SE_01 = "Email has been existing";
   public static final String SE_02 = "Email not found";
-  public static final String SE_03 = "2 passwords do not match";
+  public static final String SE_03 = "";
   public static final String SE_04 = "User is null";
   public static final String SE_05 = "This credential is not existing";
   public static final String SE_06 = "Profile of this account is not initialized";

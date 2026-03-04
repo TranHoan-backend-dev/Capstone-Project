@@ -1,17 +1,14 @@
 package com.capstone.customer.config;
 
 public final class Constant {
-  public static final String EMAIL_PATTERN = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
-  public static final String PHONE_PATTERN = "^[0-9]{10}$";
-
   public static final String ENT_01 = "Name cannot be null or empty";
-  public static final String ENT_02 = "Address cannot be null or empty";
+  public static final String ENT_02 = "";
   public static final String ENT_03 = "Export address cannot be null or empty";
-  public static final String ENT_04 = "Contract cannot be null or empty";
+  public static final String ENT_04 = "";
   public static final String ENT_05 = "Phone number cannot be null or empty";
   public static final String ENT_06 = "Customer ID cannot be null or empty";
   public static final String ENT_07 = "Type cannot be null or empty";
-  public static final String ENT_08 = "Person in charge cannot be null or empty";
+  public static final String ENT_08 = "";
   public static final String ENT_09 = "Installation form id cannot be null or empty";
   public static final String ENT_10 = "Note cannot be null or empty";
   public static final String ENT_11 = "Customer cannot be null or empty";
@@ -38,10 +35,10 @@ public final class Constant {
   public static final String ENT_32 = "MonthlyRent cannot be null or empty";
   public static final String ENT_33 = "CommuneId cannot be null or empty";
   public static final String ENT_34 = "HamletId cannot be null or empty";
-  public static final String ENT_35 = "RoadmapId cannot be null or empty";
-  public static final String ENT_36 = "RoadId cannot be null or empty";
+  public static final String ENT_35 = "";
+  public static final String ENT_36 = "";
   public static final String ENT_37 = "WaterProceId cannot be null or empty";
-  public static final String ENT_38 = "BranchId cannot be null or empty";
+  public static final String ENT_38 = "";
   public static final String ENT_39 = "M3 Sale cannot be null or empty";
   public static final String ENT_40 = "Fix rate cannot be null or empty";
   public static final String ENT_41 = "Deduction Period cannot be null or empty";

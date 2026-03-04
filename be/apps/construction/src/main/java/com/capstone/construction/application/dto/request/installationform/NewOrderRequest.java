@@ -1,5 +1,6 @@
 package com.capstone.construction.application.dto.request.installationform;
 
+import com.capstone.common.utils.SharedConstant;
 import com.capstone.construction.domain.model.utils.Representative;
 import com.capstone.construction.infrastructure.config.Constant;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -35,7 +36,7 @@ public record NewOrderRequest(
 
   @Schema(description = "Customer phone number", example = "0901234567")
   @NotBlank(message = Constant.PT_15)
-  @Pattern(regexp = Constant.PHONE_PATTERN, message = Constant.PT_14)
+  @Pattern(regexp = SharedConstant.PHONE_PATTERN, message = Constant.PT_14)
   String phoneNumber,
 
   @Schema(description = "Tax identification code", example = "8001234567")
