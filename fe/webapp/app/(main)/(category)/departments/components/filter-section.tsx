@@ -10,14 +10,26 @@ import { AddNewIcon } from "@/config/chip-and-icon";
 import { FilterSectionDepartmentProps } from "@/types";
 
 export const FilterSection = ({
-  keyword,
+  filter,
   onSearch,
   onAddNew,
 }: FilterSectionDepartmentProps) => {
-  const [inputValue, setInputValue] = useState(keyword);
+  const [keyword, setKeyword] = useState(filter.keyword ?? "");
+  const [phone, setPhone] = useState(filter.phoneNumber ?? "");
   useEffect(() => {
-    setInputValue(keyword);
-  }, [keyword]);
+    setKeyword(filter.keyword ?? "");
+  }, [filter.keyword]);
+
+  useEffect(() => {
+    setPhone(filter.phoneNumber ?? "");
+  }, [filter.phoneNumber]);
+
+  const handleSearch = () => {
+    onSearch({
+      keyword: keyword.trim() || undefined,
+      phoneNumber: phone.trim() || undefined,
+    });
+  };
 
   return (
     <GenericSearchFilter
@@ -34,17 +46,24 @@ export const FilterSection = ({
             label="Thêm mới"
             onPress={onAddNew}
           />
-          <FilterButton onPress={() => onSearch(inputValue)} />
+          <FilterButton onPress={handleSearch} />
         </div>
       }
     >
       <section className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-1">
             <CustomInput
-              label="Từ khóa"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
+              label="Tên phòng ban"
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+            />
+          </div>
+          <div className="md:col-span-1">
+            <CustomInput
+              label="Số điện thoại"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
             />
           </div>
         </div>

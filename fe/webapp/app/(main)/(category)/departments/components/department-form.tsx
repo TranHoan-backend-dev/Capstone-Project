@@ -73,14 +73,19 @@ export const DepartmentForm = ({
       <CardBody className="p-0">
         <div className="flex items-center justify-between px-6 py-4 border-b border-divider">
           <h2 className="text-base font-semibold text-foreground">
-            {isEdit ? "Cập nhật Đường phố" : "Thêm mới Đường phố"}
+            {isEdit ? "Cập nhật Phòng ban" : "Thêm mới Phòng ban"}
           </h2>
         </div>
 
         <div className="px-6 py-5 space-y-5">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <CustomInput
-              label="Tên đường phố"
+              label="Tên phòng ban"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <CustomInput
+              label="Số điện thoại"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />

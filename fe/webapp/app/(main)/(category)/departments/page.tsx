@@ -16,7 +16,7 @@ const Department = () => {
       <CustomBreadcrumb
         items={[
           { label: "Trang chủ", href: "/home" },
-          { label: "Quản lý Đường phố", isCurrent: true },
+          { label: "Quản lý Phòng ban", isCurrent: true },
         ]}
       />
 

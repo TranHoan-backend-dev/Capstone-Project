@@ -13,14 +13,19 @@ export interface DepartmentFormProps {
   onClose: () => void;
 }
 
+export interface DepartmentFilter {
+  keyword?: string;
+  phoneNumber?: string;
+}
+
 export interface FilterSectionDepartmentProps {
-  keyword: string;
-  onSearch: (value: string) => void;
+  filter: DepartmentFilter;
+  onSearch: (value: DepartmentFilter) => void;
   onAddNew: () => void;
 }
 
 export interface DepartmentTableProps {
-  keyword: string;
+  keyword: DepartmentFilter;
   reloadKey: number;
   onEdit: (item: DepartmentItem) => void;
   onDeleted: () => void;

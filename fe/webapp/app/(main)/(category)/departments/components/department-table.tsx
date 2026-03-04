@@ -36,7 +36,7 @@ export const DepartmentTable = ({
           size: String(pageSize),
         });
 
-        const trimmedKeyword = keyword.trim();
+        const trimmedKeyword = keyword?.keyword?.trim();
         if (trimmedKeyword) {
           params.append("keyword", trimmedKeyword);
         }
@@ -170,7 +170,7 @@ export const DepartmentTable = ({
     <>
       <GenericDataTable
         isLoading={loading}
-        title="Danh sách Đường phố"
+        title="Danh sách Phòng ban"
         columns={DEPARTMENT_COLUMN}
         data={data}
         isCollapsible

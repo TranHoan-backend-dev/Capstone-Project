@@ -6,10 +6,14 @@ import { Spinner } from "@heroui/react";
 import { FilterSection } from "./components/filter-section";
 import { DepartmentForm } from "./components/department-form";
 import { DepartmentTable } from "./components/department-table";
-import { DepartmentItem } from "@/types";
+import { DepartmentFilter, DepartmentItem } from "@/types";
+import { Modal, ModalContent } from "@heroui/react";
 
 const DepartmentPage = () => {
-  const [keyword, setKeyword] = useState("");
+  const [filter, setFilter] = useState<DepartmentFilter>({
+    keyword: "",
+    phoneNumber: "",
+  });
   const [showAddForm, setShowAddForm] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
   const [editingItem, setEditingItem] = useState<DepartmentItem | null>(null);
@@ -37,22 +41,30 @@ const DepartmentPage = () => {
   return (
     <>
       <FilterSection
-        keyword={keyword}
-        onSearch={setKeyword}
+        filter={filter}
+        onSearch={setFilter}
         onAddNew={handleAddNew}
       />
 
-      {showAddForm && (
-        <DepartmentForm
-          key={editingItem?.id || "create"}
-          initialData={editingItem || undefined}
-          onSuccess={handleSuccess}
-          onClose={handleCloseForm}
-        />
-      )}
+      <Modal
+        isOpen={showAddForm}
+        onClose={handleCloseForm}
+        size="3xl"
+        placement="top-center"
+        scrollBehavior="inside"
+      >
+        <ModalContent>
+          <DepartmentForm
+            key={editingItem?.id || "create"}
+            initialData={editingItem || undefined}
+            onSuccess={handleSuccess}
+            onClose={handleCloseForm}
+          />
+        </ModalContent>
+      </Modal>
 
       <DepartmentTable
-        keyword={keyword}
+        keyword={filter}
         reloadKey={reloadKey}
         onEdit={handleEdit}
         onDeleted={handleReload}
