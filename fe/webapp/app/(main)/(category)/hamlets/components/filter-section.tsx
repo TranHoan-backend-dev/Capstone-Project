@@ -21,7 +21,6 @@ export const FilterSection = ({
   onSearch,
   onAddNew,
 }: FilterSectionHamletProps) => {
-  const [code, setCode] = useState(filter.code ?? "");
   const [name, setName] = useState(filter.name ?? "");
     const [type, setType] = useState(filter?.type || "");
   const [selectedCommune, setSelectedCommune] = useState<Set<string>>(
@@ -30,7 +29,6 @@ export const FilterSection = ({
   const { communeOptions } = useCommune();
 
   useEffect(() => {
-    setCode(filter.code ?? "");
     setName(filter.name ?? "");
     if (filter.communeId) {
       setSelectedCommune(new Set([filter.communeId]));
@@ -57,7 +55,6 @@ export const FilterSection = ({
           <FilterButton
             onPress={() =>
               onSearch({
-                code: code.trim(),
                 name: name.trim(),
                 communeId: Array.from(selectedCommune)[0],
               })
@@ -69,11 +66,6 @@ export const FilterSection = ({
       <section className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-1 flex flex-col gap-4">
-            <CustomInput
-              label="Mã thôn/làng"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-            />
             <CustomInput
               label="Tên thôn/làng"
               value={name}

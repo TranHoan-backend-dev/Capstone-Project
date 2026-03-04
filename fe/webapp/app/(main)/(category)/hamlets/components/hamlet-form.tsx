@@ -22,7 +22,6 @@ export const HamletForm = ({
 }: HamletFormProps) => {
   const isEdit = !!initialData?.id;
 
-  const [code, setCode] = useState(initialData?.code || "");
   const [name, setName] = useState(initialData?.name || "");
   const [type, setType] = useState(initialData?.type || "");
   const [submitLoading, setSubmitLoading] = useState(false);
@@ -34,7 +33,6 @@ export const HamletForm = ({
   const { communeOptions, loading: communeLoading } = useCommune();
 
   useEffect(() => {
-    setCode(initialData?.code || "");
     setName(initialData?.name || "");
   }, [initialData]);
 
@@ -109,11 +107,6 @@ export const HamletForm = ({
         <div className="px-6 py-5 space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="md:col-span-1 flex flex-col gap-4">
-              <CustomInput
-                label="Mã thôn/làng"
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-              />
               <CustomInput
                 label="Tên thôn/làng"
                 value={name}
