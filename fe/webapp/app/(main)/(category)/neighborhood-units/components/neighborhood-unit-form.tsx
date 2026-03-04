@@ -9,6 +9,7 @@ import { CallToast } from "@/components/ui/CallToast";
 import { NeighborhoodUnitFormProps } from "@/types";
 import { CheckApprovalIcon } from "@/config/chip-and-icon";
 import { useCommune } from "@/hooks/useCommunes";
+import { authFetch } from "@/utils/authFetch";
 
 export const NeighborhoodUnitForm = ({
   initialData,
@@ -55,7 +56,7 @@ export const NeighborhoodUnitForm = ({
         communeId: selectedCommuneId,
       };
 
-      const response = await fetch(url, {
+      const response = await authFetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

@@ -10,6 +10,7 @@ import {
   NeighborhoodUnitItem,
   NeighborhoodUnitResponse,
 } from "@/types";
+import { authFetch } from "@/utils/authFetch";
 
 export const NeighborhoodUnitTable = ({
   filter,
@@ -51,7 +52,7 @@ export const NeighborhoodUnitTable = ({
           params.append("communeId", filter.communeId);
         }
         
-        const res = await fetch(
+        const res = await authFetch(
           `/api/construction/neighborhood-units?${params.toString()}`,
         );
 
@@ -126,7 +127,7 @@ export const NeighborhoodUnitTable = ({
           if (!confirm("Bạn có chắc muốn xóa tổ/khu phố này?")) return;
 
           try {
-            const res = await fetch(
+            const res = await authFetch(
               `/api/construction/neighborhood-units/${id}`,
               {
                 method: "DELETE",
@@ -200,9 +201,9 @@ export const NeighborhoodUnitTable = ({
         headerSummary={`${totalItems}`}
         paginationProps={{
           total: totalPages,
-          initialPage: page,
+          page: page,
           onChange: setPage,
-          summary: `${totalItems}`,
+          summary: `${data.length}`,
         }}
         sort={sort}
         onSortChange={handleSortChange}

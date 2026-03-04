@@ -11,7 +11,7 @@ export interface NeighborhoodUnitFilter {
   communeId?: string;
 }
 
-export interface FilterSectionProps {
+export interface FilterSectionNeighborhoodUnitProps {
   filter: NeighborhoodUnitFilter;
   onSearch: (value: NeighborhoodUnitFilter) => void;
   onAddNew: () => void;

@@ -10,13 +10,13 @@ import CustomInput from "@/components/ui/custom/CustomInput";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
 import { useCommune } from "@/hooks/useCommunes";
 import { AddNewIcon } from "@/config/chip-and-icon";
-import { FilterSectionProps } from "@/types";
+import { FilterSectionNeighborhoodUnitProps } from "@/types";
 
 export const FilterSection = ({
   filter,
   onSearch,
   onAddNew,
-}: FilterSectionProps) => {
+}: FilterSectionNeighborhoodUnitProps) => {
   const [name, setName] = useState(filter.name ?? "");
   const [selectedCommune, setSelectedCommune] = useState<Set<string>>(
     new Set(),
