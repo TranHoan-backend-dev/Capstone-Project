@@ -7,6 +7,7 @@ import { CheckApprovalIcon } from "@/config/chip-and-icon";
 import { Card, CardBody } from "@heroui/react";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
 import { CommuneFormProps } from "@/types";
+import { CallToast } from "@/components/ui/CallToast";
 
 const typeOptions = [
   { label: "Phường", value: "URBAN_WARD" },
@@ -20,7 +21,7 @@ export const CommuneForm = ({
 }: CommuneFormProps) => {
   const [name, setName] = useState(initialData?.name || "");
   const [type, setType] = useState(initialData?.type || "");
-  const [loading, setLoading] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
   const isEdit = !!initialData?.id;
 
   useEffect(() => {
@@ -29,9 +30,9 @@ export const CommuneForm = ({
   }, [initialData]);
 
   const handleSubmit = async () => {
-    if (loading) return;
+    if (submitLoading) return;
     try {
-      setLoading(true);
+      setSubmitLoading(true);
       const url = isEdit
         ? `/api/construction/communes/${initialData?.id}`
         : `/api/construction/communes`;
@@ -54,11 +55,22 @@ export const CommuneForm = ({
       if (!response.ok) {
         throw new Error(data.message || "Save failed");
       }
-
+      CallToast({
+        title: "Thành công",
+        message: isEdit
+          ? "Cập nhật thành công!"
+          : "Thêm mới phường/xã thành công!",
+        color: "success",
+      });
       onSuccess();
     } catch (e) {
+      CallToast({
+        title: "Lỗi",
+        message: "Có lỗi xảy ra khi lưu thông tin!",
+        color: "danger",
+      });
     } finally {
-      setLoading(false);
+      setSubmitLoading(false);
     }
   };
 
@@ -93,12 +105,14 @@ export const CommuneForm = ({
             </CustomButton>
             <CustomButton
               className="text-white bg-green-500 hover:bg-green-600 dark:shadow-md dark:shadow-success/40 mr-2"
-              startContent={<CheckApprovalIcon className="w-4 h-4" />}
+              startContent={
+                submitLoading ? null : <CheckApprovalIcon className="w-4 h-4" />
+              }
               onPress={handleSubmit}
               isDisabled={!name.trim() || !type}
-              isLoading={loading}
+              isLoading={submitLoading}
             >
-              Lưu
+              {submitLoading ? "Đang lưu..." : "Lưu"}
             </CustomButton>
           </div>
         </div>

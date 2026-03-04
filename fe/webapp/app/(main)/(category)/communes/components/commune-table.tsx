@@ -6,6 +6,7 @@ import { DeleteIcon, EditIcon } from "@/config/chip-and-icon";
 import { CommuneItem, CommuneResponse, CommuneTableProps } from "@/types";
 import { COMMUNE_COLUMN } from "@/config/table-columns";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
+import { CallToast } from "@/components/ui/CallToast";
 
 const typeLabel: Record<string, string> = {
   URBAN_WARD: "Phường",
@@ -131,10 +132,18 @@ export const CommuneTable = ({
             });
 
             if (!res.ok) throw new Error("Delete failed");
-
+            CallToast({
+              title: "Thành công",
+              message: "Xóa phường/xã thành công!",
+              color: "success",
+            });
             onDeleted();
-          } catch (e) {
-            console.error(e);
+          } catch (e: any) {
+            CallToast({
+              title: "Lỗi",
+              message: e.message || "Xóa phường/xã thất bại!",
+              color: "danger",
+            });
           }
         },
       },
