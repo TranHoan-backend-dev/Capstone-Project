@@ -48,7 +48,7 @@ public class AuthenticationController {
   @Operation(summary = "Đăng ký tài khoản mới", description = "Đăng ký tài khoản người dùng mới với thông tin nhân viên bao gồm vai trò, phòng ban và mạng lưới cấp nước. Trả về WrapperApiResponse với data là null.")
   @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Thông tin chi tiết cho tài khoản người dùng mới", required = true, content = @Content(schema = @Schema(implementation = NewUserRequest.class)))
   @ApiResponses(value = {
-    @ApiResponse(responseCode = "200", description = "Đăng ký thành công", content = @Content(mediaType = "application/json")),
+    @ApiResponse(responseCode = "200", description = "Đăng ký thành công"),
     @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ - Xác thực thất bại hoặc tài khoản đã tồn tại", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "500", description = "Lỗi máy chủ nội bộ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })

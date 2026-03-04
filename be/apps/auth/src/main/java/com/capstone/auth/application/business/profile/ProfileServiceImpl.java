@@ -60,7 +60,7 @@ public class ProfileServiceImpl implements ProfileService {
     return convertToResponse(repo.findById(id));
   }
 
-  private ProfileDTO convertToResponse(@NonNull Optional<Profile> profile) {
+  private @NonNull ProfileDTO convertToResponse(@NonNull Optional<Profile> profile) {
     if (profile.isEmpty()) {
       throw new NotExistingException("Profile does not exist");
     }
