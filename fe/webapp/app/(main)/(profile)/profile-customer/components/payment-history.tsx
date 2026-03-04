@@ -71,7 +71,7 @@ const PaymentHistory = () => {
         headerSummary={`${paymentHistoryData.length}`}
         paginationProps={{
           total: 1,
-          initialPage: 1,
+          page: 1,
           summary: `${paymentHistoryData.length}`,
         }}
         renderCellAction={renderCell}
