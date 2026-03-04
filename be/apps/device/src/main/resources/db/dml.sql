@@ -1,3 +1,17 @@
+DELETE FROM parameters;
+DELETE FROM materials_of_cost_estimate;
+DELETE FROM materials_of_settlement;
+DELETE FROM material;
+DELETE FROM materials_group;
+DELETE FROM unit;
+DELETE FROM overall_water_meter;
+DELETE FROM water_price_price_types;
+DELETE FROM price_type;
+DELETE FROM usage_history;
+DELETE FROM water_meter;
+DELETE FROM water_meter_type;
+DELETE FROM water_price;
+
 INSERT INTO public.parameters (param_id, created_at, creator, name, updated_at, updator, value) VALUES
 ('00000000-0000-0000-0000-100000000001', NOW(), '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20', 'Param 1', NOW(), '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20', 101),
 ('00000000-0000-0000-0000-100000000002', NOW(), '14c5879c-a6c4-45a6-846b-39d2b9d8c961', 'Param 2', NOW(), '14c5879c-a6c4-45a6-846b-39d2b9d8c961', 102),

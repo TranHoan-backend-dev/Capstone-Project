@@ -6,13 +6,14 @@ import com.capstone.auth.application.business.profile.ProfileService;
 import com.capstone.auth.application.business.users.UserService;
 import com.capstone.auth.application.dto.request.UpdateProfileRequest;
 import com.capstone.auth.application.dto.response.UserProfileResponse;
-import com.capstone.auth.application.exception.IncompatibleAvatarException;
+import com.capstone.auth.application.exception.InternalServerError;
 import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.infrastructure.config.Constant;
 import com.capstone.auth.infrastructure.service.GcsService;
 import com.capstone.auth.infrastructure.utils.AuthUtils;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.utils.Utils;
+import jakarta.ws.rs.BadRequestException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -132,9 +133,6 @@ public class ProfileUseCase {
     var avatarUrl = gcsSrv.upload(file);
 
     var profile = pSrv.updateAvatar(id, avatarUrl);
-    if (!avatarUrl.equals(profile.avatarUrl())) {
-      throw new IncompatibleAvatarException();
-    }
     return returnUserProfile(profile, user);
   }
 
@@ -173,7 +171,7 @@ public class ProfileUseCase {
     try {
       userResource.update(user);
       log.info("Successfully updated username on Keycloak");
-    } catch (jakarta.ws.rs.BadRequestException e) {
+    } catch (BadRequestException e) {
       log.error("Keycloak BadRequest error: {}", e.getMessage());
       var response = e.getResponse();
       if (response != null) {
@@ -181,7 +179,7 @@ public class ProfileUseCase {
         var entity = response.readEntity(String.class);
         log.error("Keycloak response body: {}", entity);
       }
-      throw new IllegalArgumentException("Failed to update username on Keycloak: " + e.getMessage(), e);
+      throw new InternalServerError("Failed to update username on Keycloak: " + e.getMessage());
     }
   }
 
@@ -190,7 +188,7 @@ public class ProfileUseCase {
     return pSrv.getProfileById(id).fullname();
   }
 
-  private UserProfileResponse returnUserProfile(@NonNull ProfileDTO profile, @NonNull UserDTO user) {
+  private @NonNull UserProfileResponse returnUserProfile(@NonNull ProfileDTO profile, @NonNull UserDTO user) {
     return new UserProfileResponse(
       profile.fullname(),
       profile.avatarUrl(),
