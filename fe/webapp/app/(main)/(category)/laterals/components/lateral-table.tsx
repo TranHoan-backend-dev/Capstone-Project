@@ -40,7 +40,9 @@ export const LateralTable = ({
           sort: `${sort.field},${sort.direction}`,
         });
 
-        if (filter.keyword) params.append("keyword", filter.keyword);
+        if (filter.keyword?.trim()) {
+          params.append("keyword", filter.keyword.trim());
+        }
         if (filter.networkId) params.append("networkId", filter.networkId);
 
         const res = await authFetch(
@@ -192,7 +194,7 @@ export const LateralTable = ({
           total: totalPages,
           page: page,
           onChange: setPage,
-          summary: `${totalItems}`,
+          summary: `${data.length}`,
         }}
         sort={sort}
         onSortChange={handleSortChange}
