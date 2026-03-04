@@ -7,13 +7,13 @@ import { SearchIcon } from "@/components/ui/Icons";
 import CustomInput from "@/components/ui/custom/CustomInput";
 import FilterButton from "@/components/ui/FilterButton";
 import { AddNewIcon } from "@/config/chip-and-icon";
-import { FilterSectionProps } from "@/types";
+import { FilterSectionRoadProps } from "@/types";
 
 export const FilterSection = ({
   keyword,
   onSearch,
   onAddNew,
-}: FilterSectionProps) => {
+}: FilterSectionRoadProps) => {
   const [inputValue, setInputValue] = useState(keyword);
   useEffect(() => {
     setInputValue(keyword);

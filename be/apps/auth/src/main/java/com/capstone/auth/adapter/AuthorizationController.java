@@ -1,7 +1,6 @@
 package com.capstone.auth.adapter;
 
 import com.capstone.auth.application.dto.request.FilterUsersRequest;
-import com.capstone.auth.application.dto.request.NewUserRequest;
 import com.capstone.auth.application.dto.request.UpdateBusinessPageNamesRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
 import com.capstone.common.annotation.AppLog;
@@ -112,12 +111,12 @@ public class AuthorizationController {
     @ApiResponse(responseCode = "500", description = "Lỗi máy chủ nội bộ - Đã xảy ra lỗi không mong muốn trong quá trình cập nhật", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PutMapping("employees/pages")
-  public ResponseEntity<WrapperApiResponse> updateBusinessPageNamesOfEmployees(
+  public ResponseEntity<WrapperApiResponse> updateBusinessPageNamesOfEmployee(
     @Parameter(description = "Danh sách các yêu cầu cập nhật chứa ID nhân viên và bộ ID trang được ủy quyền mới của họ.", required = true)
     @RequestBody List<UpdateBusinessPageNamesRequest> request
   ) {
     log.info("Updating pages of employees");
-    usersUseCase.updateBusinessPagesListOfEmployees(request);
+    usersUseCase.updateBusinessPagesListOfEmployee(request);
 
     return Utils.returnOkResponse("Update pages successfully", null);
   }
@@ -152,13 +151,5 @@ public class AuthorizationController {
   ) {
     log.info("Verifying existence of employee: {}", authorId);
     return Utils.returnOkResponse("Check employee successfully", usersUseCase.checkIfEmployeeExists(authorId));
-  }
-
-  @PostMapping("/employees/new")
-  public ResponseEntity<WrapperApiResponse> createNewEmployee(
-    @RequestBody NewUserRequest request
-  ) {
-    log.info("Creating new employee");
-    return Utils.returnCreatedResponse("Create new employee successfully");
   }
 }

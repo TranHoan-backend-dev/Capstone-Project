@@ -13,7 +13,7 @@ export interface RoadFormProps {
   onClose: () => void;
 }
 
-export interface FilterSectionProps {
+export interface FilterSectionRoadProps {
   keyword: string;
   onSearch: (value: string) => void;
   onAddNew: () => void;
