@@ -175,3 +175,19 @@ Authorization: Bearer {{access_token}}
 ### happy case
 DELETE {{uri}}/73d29333-d1c7-4a07-8e36-dd8bebd8ee89
 Authorization: Bearer {{access_token}}
+
+### R - search hamlets by name (accent-insensitive)
+### get all hamlets (no keyword)
+GET {{uri}}?page=0&size=10
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### search by name with accents
+GET {{uri}}?keyword=Th%C3%B4n%20B%E1%BB%91n&page=0&size=10
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### search by name without accents (should still match \"Thôn Bốn\")
+GET {{uri}}?keyword=thon%20bon&page=0&size=10
+Authorization: Bearer {{access_token}}
+Accept: application/json

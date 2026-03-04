@@ -98,9 +98,10 @@ public class HamletController {
     @ApiResponse(responseCode = "200", description = "", content = @Content(schema = @Schema(implementation = HamletResponse.class)))
   })
   public ResponseEntity<WrapperApiResponse> getAllHamlets(
-    @PageableDefault @Parameter(description = "") Pageable pageable) {
-    log.info("REST request to get all hamlets");
-    var response = hamletUseCase.getAllHamlets(pageable);
+    @PageableDefault @Parameter(description = "") Pageable pageable,
+    @RequestParam(required = false) @Parameter(description = "Keyword tìm kiếm theo tên thôn/làng (có thể không dấu)") String keyword) {
+    log.info("REST request to get all hamlets, keyword={}", keyword);
+    var response = hamletUseCase.searchHamletsByName(keyword, pageable);
     return Utils.returnOkResponse("Hamlets retrieved successfully", response);
   }
 }

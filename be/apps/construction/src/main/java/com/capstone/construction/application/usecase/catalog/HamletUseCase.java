@@ -70,4 +70,8 @@ public class HamletUseCase {
   public PageResponse<HamletResponse> getAllHamlets(Pageable pageable) {
     return hamletService.getAllHamlets(pageable);
   }
+
+  public PageResponse<HamletResponse> searchHamletsByName(String keyword, Pageable pageable) {
+    return hamletService.searchHamletsByName(keyword, pageable);
+  }
 }

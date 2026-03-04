@@ -16,4 +16,6 @@ public interface HamletService {
   HamletResponse getHamletById(String id);
 
   PageResponse<HamletResponse> getAllHamlets(Pageable pageable);
+
+  PageResponse<HamletResponse> searchHamletsByName(String keyword, Pageable pageable);
 }
