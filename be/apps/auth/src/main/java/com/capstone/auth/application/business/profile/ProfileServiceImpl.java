@@ -6,6 +6,7 @@ import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.infrastructure.persistence.ProfileRepository;
 import com.capstone.auth.infrastructure.config.Constant;
 import com.capstone.common.annotation.AppLog;
+import com.capstone.common.utils.SharedConstant;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -39,7 +40,7 @@ public class ProfileServiceImpl implements ProfileService {
   public ProfileDTO getProfileByCredentials(String value) {
     log.info("Getting profile by credentials: {}", value);
     Objects.requireNonNull(value, "id cannot be null");
-    var profile = value.matches(Constant.EMAIL_PATTERN) ? repo.findByUsersEmail(value) : repo.findByUsersUsername(value);
+    var profile = value.matches(SharedConstant.EMAIL_PATTERN) ? repo.findByUsersEmail(value) : repo.findByUsersUsername(value);
     return convertToResponse(profile);
   }
 

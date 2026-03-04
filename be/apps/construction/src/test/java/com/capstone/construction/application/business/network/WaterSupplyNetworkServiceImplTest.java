@@ -1,6 +1,7 @@
 package com.capstone.construction.application.business.network;
 
-import com.capstone.construction.application.dto.request.catalog.WaterSupplyNetworkRequest;
+import com.capstone.construction.application.dto.request.branch.CreateRequest;
+import com.capstone.construction.application.dto.request.branch.UpdateRequest;
 import com.capstone.construction.domain.model.WaterSupplyNetwork;
 import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,7 +47,7 @@ class WaterSupplyNetworkServiceImplTest {
   void should_CreateNetwork_When_RequestIsValid() {
     // Given
     var networkName = "New Network";
-    var request = new WaterSupplyNetworkRequest(networkName);
+    var request = new CreateRequest(networkName);
     var savedNetwork = new WaterSupplyNetwork("id-1", networkName, LocalDateTime.now(),
         LocalDateTime.now());
 
@@ -65,7 +66,7 @@ class WaterSupplyNetworkServiceImplTest {
     var id = "id-1";
     var oldName = "Old Name";
     var newName = "Updated Name";
-    var request = new WaterSupplyNetworkRequest(newName);
+    var request = new UpdateRequest(newName);
 
     var existingNetwork = new WaterSupplyNetwork(id, oldName, LocalDateTime.now(),
         LocalDateTime.now());
@@ -91,7 +92,7 @@ class WaterSupplyNetworkServiceImplTest {
   void should_ThrowException_When_UpdateNetworkNotFound() {
     // Given
     var id = "invalid-id";
-    var request = new WaterSupplyNetworkRequest("Any Name");
+    var request = new UpdateRequest("Any Name");
 
     when(networkRepository.findById(id)).thenReturn(Optional.empty());
 
