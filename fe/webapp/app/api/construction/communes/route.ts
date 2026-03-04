@@ -1,7 +1,6 @@
 import { createCommune, getAllCommunes } from "@/services/construction.service";
 import { getAccessToken } from "@/utils/getAccessToken";
-import { NextRequest } from "next/dist/server/web/spec-extension/request";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {

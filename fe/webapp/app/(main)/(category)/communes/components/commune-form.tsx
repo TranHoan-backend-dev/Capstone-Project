@@ -40,8 +40,8 @@ export const CommuneForm = ({
       const method = isEdit ? "PUT" : "POST";
 
       const payload = {
-        name: !isEdit || name !== initialData?.name ? name.trim() : "",
-        type: !isEdit || type !== initialData?.type ? type : "",
+        name: name.trim(),
+        type: type.toUpperCase(),
       };
 
       const response = await fetch(url, {
@@ -63,10 +63,10 @@ export const CommuneForm = ({
         color: "success",
       });
       onSuccess();
-    } catch (e) {
+    } catch (e: any) {
       CallToast({
         title: "Lỗi",
-        message: "Có lỗi xảy ra khi lưu thông tin!",
+        message: e?.message || "Có lỗi xảy ra khi lưu thông tin!",
         color: "danger",
       });
     } finally {

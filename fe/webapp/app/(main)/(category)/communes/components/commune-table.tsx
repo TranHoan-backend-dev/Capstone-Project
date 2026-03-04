@@ -210,12 +210,12 @@ export const CommuneTable = ({
         data={data}
         isCollapsible
         renderCellAction={renderCell}
-        headerSummary={`${data.length}`}
+        headerSummary={`${totalItems}`}
         paginationProps={{
           total: totalPages,
           initialPage: page,
           onChange: setPage,
-          summary: `${totalItems}`,
+          summary: `${data.length}`,
         }}
         sort={sort}
         onSortChange={handleSortChange}
