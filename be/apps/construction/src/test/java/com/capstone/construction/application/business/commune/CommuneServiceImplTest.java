@@ -2,6 +2,7 @@ package com.capstone.construction.application.business.commune;
 
 import com.capstone.construction.application.dto.request.catalog.CommuneRequest;
 import com.capstone.construction.application.exception.ExistingItemException;
+import com.capstone.common.utils.TextNormalizer;
 import com.capstone.construction.domain.enumerate.CommuneType;
 import com.capstone.construction.domain.model.Commune;
 import com.capstone.construction.infrastructure.persistence.CommuneRepository;
@@ -13,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -210,7 +212,7 @@ class CommuneServiceImplTest {
   @Test
   void should_ReturnPage_When_GetAllCommunes() {
     // Given
-    var pageable = Pageable.unpaged();
+    var pageable = PageRequest.of(0, 10);
     var commune = Commune.create(builder -> builder.name("Xa Test").type(CommuneType.URBAN_WARD));
     ReflectionTestUtils.setField(commune, "communeId", "id");
     ReflectionTestUtils.setField(commune, "createdAt", LocalDateTime.now());
@@ -219,10 +221,61 @@ class CommuneServiceImplTest {
     when(communeRepository.findAll(pageable)).thenReturn(page);
 
     // When
-    var result = communeService.getAllCommunes(pageable);
+    var result = communeService.getAllCommunes(pageable, null, null);
 
     // Then
     assertThat(result.content()).hasSize(1);
     assertThat(result.content().getFirst().name()).isEqualTo("Xa Test");
+  }
+
+  @Test
+  void should_SearchAccentInsensitive_When_SearchByName() {
+    // Given
+    var pageable = PageRequest.of(0, 10);
+    var search = "hoa binh";
+    var normalized = TextNormalizer.normalizeForSearch(search);
+
+    var commune = Commune.create(builder -> builder.name("Hòa Bình").type(CommuneType.RURAL_COMMUNE));
+    ReflectionTestUtils.setField(commune, "communeId", "id");
+    ReflectionTestUtils.setField(commune, "createdAt", LocalDateTime.now());
+
+    var page = new PageImpl<>(List.of(commune));
+    when(communeRepository.findAllByNameSearchContains(normalized, pageable)).thenReturn(page);
+
+    // When
+    var result = communeService.getAllCommunes(pageable, search, null);
+
+    // Then
+    assertThat(result.content()).hasSize(1);
+    assertThat(result.content().getFirst().name()).isEqualTo("Hòa Bình");
+    verify(communeRepository, times(1)).findAllByNameSearchContains(normalized, pageable);
+    verify(communeRepository, never()).findAllByNameSearchContainsAndType(anyString(), any(), any());
+  }
+
+  @Test
+  void should_SearchAccentInsensitive_WithTypeFilter_When_SearchByNameAndType() {
+    // Given
+    var pageable = PageRequest.of(0, 10);
+    var search = "hoa binh";
+    var normalized = TextNormalizer.normalizeForSearch(search);
+    var type = "RURAL_COMMUNE";
+
+    var commune = Commune.create(builder -> builder.name("Hòa Bình").type(CommuneType.RURAL_COMMUNE));
+    ReflectionTestUtils.setField(commune, "communeId", "id");
+    ReflectionTestUtils.setField(commune, "createdAt", LocalDateTime.now());
+
+    var page = new PageImpl<>(List.of(commune));
+    when(communeRepository.findAllByNameSearchContainsAndType(normalized, CommuneType.RURAL_COMMUNE, pageable))
+      .thenReturn(page);
+
+    // When
+    var result = communeService.getAllCommunes(pageable, search, type);
+
+    // Then
+    assertThat(result.content()).hasSize(1);
+    assertThat(result.content().getFirst().name()).isEqualTo("Hòa Bình");
+    verify(communeRepository, times(1))
+      .findAllByNameSearchContainsAndType(normalized, CommuneType.RURAL_COMMUNE, pageable);
+    verify(communeRepository, never()).findAllByNameSearchContains(anyString(), any());
   }
 }

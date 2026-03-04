@@ -70,7 +70,7 @@ class UsersUseCaseTest {
 
   @Test
   @DisplayName("Should update business pages for list of employees successfully")
-  void updateBusinessPagesListOfEmployees_Success() {
+  void updateBusinessPagesListOfEmployee_Success() {
     // Arrange
     var request1 = new UpdateBusinessPageNamesRequest("emp1",
         java.util.Set.of("p1", "p2"));
@@ -79,7 +79,7 @@ class UsersUseCaseTest {
     var requests = List.of(request1, request2);
 
     // Act
-    usersUseCase.updateBusinessPagesListOfEmployees(requests);
+    usersUseCase.updateBusinessPagesListOfEmployee(requests);
 
     // Assert
     verify(bpService).updatePagesOfEmployee("emp1", java.util.Set.of("p1", "p2"));
@@ -94,7 +94,7 @@ class UsersUseCaseTest {
     List<UpdateBusinessPageNamesRequest> requests = Collections.emptyList();
 
     // Act
-    usersUseCase.updateBusinessPagesListOfEmployees(requests);
+    usersUseCase.updateBusinessPagesListOfEmployee(requests);
 
     // Assert
     verifyNoInteractions(bpService);
@@ -102,7 +102,7 @@ class UsersUseCaseTest {
 
   @Test
   @DisplayName("Should propagate exception when service fails")
-  void updateBusinessPagesListOfEmployees_ServiceException() {
+  void updateBusinessPagesListOfEmployee_ServiceException() {
     // Arrange
     var request = new UpdateBusinessPageNamesRequest("emp1",
         java.util.Set.of("p1"));
@@ -111,7 +111,7 @@ class UsersUseCaseTest {
     doThrow(new RuntimeException("Service Error")).when(bpService).updatePagesOfEmployee(anyString(), anySet());
 
     // Act & Assert
-    assertThrows(RuntimeException.class, () -> usersUseCase.updateBusinessPagesListOfEmployees(requests));
+    assertThrows(RuntimeException.class, () -> usersUseCase.updateBusinessPagesListOfEmployee(requests));
     verify(bpService).updatePagesOfEmployee("emp1", java.util.Set.of("p1"));
   }
 }

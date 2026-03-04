@@ -1,10 +1,10 @@
 package com.capstone.construction.application.business.commune;
 
-import com.capstone.common.utils.TextNormalizer;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.construction.application.dto.request.catalog.CommuneRequest;
 import com.capstone.construction.application.dto.response.catalog.CommuneResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
+import com.capstone.common.utils.TextNormalizer;
 import com.capstone.construction.domain.enumerate.CommuneType;
 import com.capstone.construction.domain.model.Commune;
 import com.capstone.construction.infrastructure.persistence.CommuneRepository;
@@ -98,13 +98,13 @@ public class CommuneServiceImpl implements CommuneService {
   public PageResponse<CommuneResponse> getAllCommunes(Pageable pageable, String search, String type) {
     log.info("Fetching all communes with pageable: {}, search: {}, type: {}", pageable, search, type);
 
-    var normalizedSearch = TextNormalizer.normalizeForSearch(search);
     CommuneType communeType = null;
     if (type != null && !type.isBlank()) {
       communeType = CommuneType.valueOf(type.trim());
     }
 
-    var page = normalizedSearch == null
+    var normalizedSearch = TextNormalizer.normalizeForSearch(search);
+    var page = normalizedSearch == null || normalizedSearch.isBlank()
       ? (communeType == null
         ? communeRepository.findAll(pageable)
         : communeRepository.findAllByType(communeType, pageable))
