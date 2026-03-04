@@ -7,7 +7,6 @@ export interface RoadItem {
 export interface RoadFormProps {
   initialData?: {
     id?: string;
-    code?: string;
     name?: string;
   };
   onSuccess: () => void;

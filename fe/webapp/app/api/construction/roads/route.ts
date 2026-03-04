@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
     const sort = searchParams.get("sort") || "createdAt,desc";
     const keyword = searchParams.get("keyword") || undefined;
 
-    const response = await getAllRoads(accessToken, page, size, sort, keyword);
+    const response = await getAllRoads(accessToken, page, size, keyword);
 
     return NextResponse.json(
       {

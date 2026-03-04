@@ -16,12 +16,10 @@ export const RoadForm = ({
 }: RoadFormProps) => {
   const isEdit = !!initialData?.id;
 
-  const [code, setCode] = useState(initialData?.code || "");
   const [name, setName] = useState(initialData?.name || "");
   const [submitLoading, setSubmitLoading] = useState(false);
 
   useEffect(() => {
-    setCode(initialData?.code || "");
     setName(initialData?.name || "");
   }, [initialData]);
 
@@ -80,11 +78,6 @@ export const RoadForm = ({
 
         <div className="px-6 py-5 space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <CustomInput
-              label="Mã đường phố"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-            />
             <CustomInput
               label="Tên đường phố"
               value={name}

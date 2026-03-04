@@ -41,12 +41,13 @@ export const RoadTable = ({
           sort: `${sort.field},${sort.direction}`,
         });
 
-        const trimmedKeyword = keyword.trim();
-        if (trimmedKeyword) {
-          params.append("keyword", trimmedKeyword);
+        if (keyword?.trim()) {
+          params.append("keyword", keyword.trim());
         }
 
-        const res = await authFetch(`/api/construction/roads?${params.toString()}`);
+        const res = await authFetch(
+          `/api/construction/roads?${params.toString()}`,
+        );
 
         if (!res.ok) {
           console.error("Fetch failed", res.status);

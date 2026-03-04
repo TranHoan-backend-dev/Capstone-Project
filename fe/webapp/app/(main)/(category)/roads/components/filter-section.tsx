@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -41,18 +40,11 @@ export const FilterSection = ({
     >
       <section className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <CustomInput
-              label="Mã đường phố"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-            />
-            <CustomInput
-              label="Tên đường phố"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-            />
-          </div>
+          <CustomInput
+            label="Tên đường phố"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+          />
         </div>
       </section>
     </GenericSearchFilter>

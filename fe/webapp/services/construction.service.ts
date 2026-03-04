@@ -127,14 +127,12 @@ export const getAllRoads = (
   accessToken: string,
   page: number,
   size: number,
-  sort: string,
   keyword?: string | null,
 ) =>
   axios.get(`${API_GATEWAY_URL}/construction/roads`, {
     params: {
       page,
       size,
-      sort,
       keyword,
     },
     headers: {

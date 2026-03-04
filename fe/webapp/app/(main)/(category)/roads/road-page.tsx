@@ -39,7 +39,9 @@ const RoadPage = () => {
     <>
       <FilterSection
         keyword={keyword}
-        onSearch={setKeyword}
+        onSearch={(value) => {
+          setKeyword(value);
+        }}
         onAddNew={handleAddNew}
       />
 
