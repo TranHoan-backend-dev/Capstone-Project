@@ -1,7 +1,7 @@
 package com.capstone.auth.infrastructure.persistence;
 
 import com.capstone.auth.domain.model.Roles;
-import com.capstone.auth.domain.enumerate.RoleName;
+import com.capstone.common.enumerate.RoleName;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

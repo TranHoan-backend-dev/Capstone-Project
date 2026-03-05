@@ -2,15 +2,14 @@
 
 import { z } from "zod";
 import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { RestoreIcon } from "@/config/chip-and-icon";
 import CustomButton from "../ui/custom/CustomButton";
 import CustomInput from "../ui/custom/CustomInput";
-import { resendOtpService, verifyOtpService } from "@/services/auth.service";
+import { CallToast } from "../ui/CallToast";
 
 interface OTPFormProps {
   email: string;
-  onSuccessAction: () => void;
+  onSuccessAction: (otp: string) => void;
   onBackAction: () => void;
 }
 
@@ -18,11 +17,7 @@ const OTP_LENGTH = 6;
 
 const OTP_REGEX = new RegExp(`^\\d{${OTP_LENGTH}}$`);
 
-export default function OTPForm({
-  email,
-  onSuccessAction,
-  onBackAction,
-}: OTPFormProps) {
+export default function OTPForm({ email, onSuccessAction }: OTPFormProps) {
   const otpSchema = z.object({
     otp: z
       .string()
@@ -31,10 +26,10 @@ export default function OTPForm({
   });
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(""));
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [verifying, setVerifying] = useState(false);
+  const [resending, setResending] = useState(false);
   const [countdown, setCountdown] = useState(60);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const router = useRouter();
 
   useEffect(() => {
     if (countdown > 0) {
@@ -111,7 +106,7 @@ export default function OTPForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    setVerifying(true);
     setError("");
 
     const otpString = otp.join("");
@@ -120,18 +115,37 @@ export default function OTPForm({
 
     if (!result.success) {
       setError(result.error.issues[0].message);
-      setLoading(false);
+      setVerifying(false);
       return;
     }
 
     try {
-      await verifyOtpService(email, otpString);
+      const res = await fetch("/api/auth/verify-otp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, otpString }),
+      });
 
-      onSuccessAction();
+      if (!res.ok) {
+        CallToast({
+          title: "Sai thông tin",
+          message: "Mã OTP không hợp lệ. Vui lòng thử lại.",
+          color: "danger",
+        });
+        return;
+      }
+
+      onSuccessAction(otpString);
     } catch (err) {
-      setError("Mã OTP không hợp lệ. Vui lòng thử lại.");
+      CallToast({
+        title: "Thất bại",
+        message: "Mã OTP không hợp lệ. Vui lòng thử lại.",
+        color: "danger",
+      });
     } finally {
-      setLoading(false);
+      setVerifying(false);
     }
   };
 
@@ -147,16 +161,42 @@ export default function OTPForm({
 
   const handleResend = async () => {
     try {
-      setLoading(true);
-      await resendOtpService(email);
+      setResending(true);
+      const res = await fetch("/api/auth/check-existence", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+
+      if (!res.ok || data.data === false) {
+        CallToast({
+          title: "Thất bại",
+          message: data.message || "Không thể gửi lại mã OTP",
+          color: "danger",
+        });
+        return;
+      }
+      CallToast({
+        title: "Thành công",
+        message: "Mã OTP mới đã được gửi",
+        color: "success",
+      });
+
       setCountdown(60);
       setOtp(Array(OTP_LENGTH).fill(""));
       setError("");
       inputRefs.current[0]?.focus();
     } catch {
-      setError("Không thể gửi lại mã OTP");
+      CallToast({
+        title: "Thất bại",
+        message: "Không thể gửi lại mã OTP",
+        color: "danger",
+      });
     } finally {
-      setLoading(false);
+      setResending(false);
     }
   };
 
@@ -200,7 +240,7 @@ export default function OTPForm({
                     bg-primary-50 dark:bg-primary-900/10
                   `,
                 }}
-                isDisabled={loading}
+                isDisabled={verifying}
                 maxLength={1}
                 radius="lg"
                 type="text"
@@ -221,11 +261,11 @@ export default function OTPForm({
         <CustomButton
           className="w-full font-medium py-3 text-base"
           color="primary"
-          isDisabled={loading || otp.join("").length !== OTP_LENGTH}
-          isLoading={loading}
+          isDisabled={verifying || otp.join("").length !== OTP_LENGTH}
+          isLoading={verifying}
           type="submit"
         >
-          {loading ? "Đang xác nhận..." : "Xác nhận"}
+          {verifying ? "Đang xác nhận..." : "Xác nhận"}
         </CustomButton>
       </form>
 
@@ -239,7 +279,7 @@ export default function OTPForm({
           <button
             className="text-sm text-blue-600 hover:text-blue-700 font-medium 
                  flex items-center gap-1 transition-colors disabled:opacity-50"
-            disabled={loading}
+            disabled={resending}
             type="button"
             onClick={handleResend}
           >

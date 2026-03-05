@@ -1,10 +1,18 @@
 package com.capstone.notification.event.consumer.materialprices.message;
 
+import java.math.BigDecimal;
+
 public record DeleteEventMessage(
   String pattern,
-  LateralEventData data) {
-  public record LateralEventData(
-    String name,
-    String network) {
+  MaterialEventData data) {
+  public record MaterialEventData(
+    String jobContent,
+    BigDecimal price,
+    BigDecimal laborPrice,
+    BigDecimal laborPriceAtRuralCommune,
+    BigDecimal constructionMachineryPrice,
+    BigDecimal constructionMachineryPriceAtRuralCommune,
+    String groupName,
+    String unitName) {
   }
 }

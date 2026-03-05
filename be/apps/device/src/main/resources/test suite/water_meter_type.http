@@ -1,0 +1,120 @@
+@uri = http://localhost:9006/api/v1/meter-types
+@keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
+@client_secret=
+
+### get token
+POST {{keycloak}}/token
+Content-Type: application/x-www-form-urlencoded
+Accept: application/json
+
+grant_type=password&
+client_id=&
+client_secret={{client_secret}}&
+username=&
+password=&
+scope=openid
+
+> {%
+  client.global.set("access_token", response.body.access_token);
+  client.global.set("refresh_token", response.body.refresh_token);
+%}
+
+### C
+### Case 1: Tạo mới loại đồng hồ thành công
+POST {{uri}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "name": "Đồng hồ nước lạnh siêu sạch",
+  "origin": "Đức",
+  "meterModel": "DE-2024",
+  "size": 20,
+  "maxIndex": "999999",
+  "qn": "2.5",
+  "qt": "0.20",
+  "qmin": "0.05",
+  "diameter": 27.0
+}
+
+### Case 2: Tạo thất bại - Thiếu thông tin bắt buộc (name, origin)
+POST {{uri}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "meterModel": "DE-2024",
+  "size": 20,
+  "maxIndex": "999999"
+}
+
+### Case 3: Tạo thất bại - Kích cỡ không hợp lệ (size <= 0)
+POST {{uri}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "name": "Đồng hồ lỗi",
+  "origin": "Việt Nam",
+  "meterModel": "ERR-1",
+  "size": -15,
+  "maxIndex": "99999",
+  "qn": "1.5",
+  "qt": "0.12",
+  "qmin": "0.03",
+  "diameter": 21.0
+}
+
+### Case 4: Tạo thất bại - Tên đã tồn tại (400)
+POST {{uri}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "name": "Type 1",
+  "origin": "Việt Nam",
+  "meterModel": "EXIST-1",
+  "size": 15,
+  "maxIndex": "9999",
+  "qn": "1",
+  "qt": "0.1",
+  "qmin": "0.01",
+  "diameter": 21.0
+}
+
+### U
+@typeId = 727baff0-6be3-481d-b856-6c713fcc8260
+@typeInUseId = 00000000-0000-0000-0000-900000000001
+
+### Case 1: Cập nhật thành công
+PUT {{uri}}/{{typeId}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "name": "Đồng hồ nước lạnh siêu sạch (Updated)",
+  "origin": "CHLB Đức",
+  "diameter": 28.5
+}
+
+### Case 2: Cập nhật thất bại - ID không tồn tại (400 - do IllegalArgumentException)
+PUT {{uri}}/invalid-uuid-format
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "name": "Cập nhật lỗi"
+}
+
+### D
+### Case 1: Xóa thành công
+DELETE {{uri}}/{{typeId}}
+Authorization: Bearer {{access_token}}
+
+### Case 2: Xóa thất bại - ID không tồn tại (400)
+DELETE {{uri}}/invalid-id
+Authorization: Bearer {{access_token}}
+
+### Case 3: Xóa thất bại - Loại đồng hồ đang được sử dụng (400 - ExistingException)
+DELETE {{uri}}/{{typeInUseId}}
+Authorization: Bearer {{access_token}}

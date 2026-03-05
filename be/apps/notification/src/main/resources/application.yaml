@@ -13,6 +13,21 @@ spring:
           initial-interval: 1000
           max-attempts: 999999
           max-interval: 5000
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  datasource:
+    hikari:
+      maximum-pool-size: 5 # nang core khi co nhieu truy van song song
+      minimum-idle: 3 # So ket noi idle luon co san
+      connection-timeout: 2000 # Cho ket noi toi da 3s
+      max-lifetime: 600000 # Ket noi song toi da 30p
+      idle-timeout: 30000 # Dong idle sau 30s neu khong su dung
 management:
   endpoints:
     web:
@@ -27,6 +42,16 @@ server:
   port: 9007
   servlet:
     context-path: /api/v1
+web-frontend-url: ${WEB_FRONTEND_URL:http://localhost:3000}
+cors:
+  allowed-origins:
+    - ${web-frontend-url}
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:9000/eureka
+  instance:
+    prefer-ip-address: true
 springdoc:
   api-docs:
     enabled: true
@@ -46,17 +71,22 @@ rabbit-mq-config:
     - road
     - hamlet
     - material-price
-    - meter_type
+    - meter-type
     - materials-group
     - calculation-unit
     - params
     - water-price
     - department
     - employee
+    - installation-form
   actions:
     - update
     - delete
+    - create
+  auth-routingKey: auth.individual-notification.create
+  auth-queue: auth.individual-notification.queue
 # spring:
+# data:
 # mongodb:
 # uri: mongodb://guest:guest@mongodb:27017/microservice_db?authSource=admin
 #  rabbitmq:

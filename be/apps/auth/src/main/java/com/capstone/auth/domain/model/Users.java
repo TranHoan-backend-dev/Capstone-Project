@@ -1,6 +1,7 @@
 package com.capstone.auth.domain.model;
 
 import com.capstone.auth.infrastructure.config.Constant;
+import com.capstone.common.utils.SharedConstant;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -68,7 +69,7 @@ public class Users {
 
   public void setEmail(String email) {
     requireNonNullAndNotEmpty(email, Constant.PT_03);
-    if (!email.matches(Constant.EMAIL_PATTERN)) {
+    if (!email.matches(SharedConstant.EMAIL_PATTERN)) {
       throw new IllegalArgumentException(Constant.PT_01);
     }
     this.email = email;
