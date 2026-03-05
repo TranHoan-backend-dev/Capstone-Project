@@ -178,7 +178,7 @@ export const DepartmentTable = ({
         headerSummary={`${totalItems}`}
         paginationProps={{
           total: totalPages,
-          initialPage: page,
+          page: page,
           onChange: setPage,
           summary: `${totalItems}`,
         }}
