@@ -1,7 +1,6 @@
 package com.capstone.construction.application.business.installationform;
 
 import com.capstone.common.annotation.AppLog;
-import com.capstone.common.enumerate.CustomerType;
 import com.capstone.construction.application.dto.request.installationform.FilterFormRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
@@ -45,12 +44,14 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   @Override
   @Transactional(rollbackFor = Exception.class)
   public NewInstallationFormResponse createNewInstallationForm(@NonNull NewOrderRequest request) {
-    log.info("Service is creating new installation form: {}", request.formNumber());
+    log.info("Creating new installation form with number: {}", request.formNumber());
 
     if (!checkAuthorExisting(request.createdBy())) {
       throw new IllegalArgumentException(Constant.PT_61);
-//    } else if (!checkMeterExisting(request.overallWaterMeterId())) {
-//      throw new IllegalArgumentException(Constant.PT_62);
+    }
+
+    if (!checkMeterExisting(request.overallWaterMeterId())) {
+      throw new IllegalArgumentException(Constant.SE_06);
     }
 
     var entity = InstallationForm.create(builder -> builder
@@ -58,7 +59,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       .formNumber(request.formNumber())
       .customerName(request.customerName())
       .address(request.address())
-      .customerType(CustomerType.valueOf(request.customerType()))
+      .customerType(request.customerType())
       .citizenIdentificationNumber(request.citizenIdentificationNumber())
       .citizenIdentificationProvideDate(request.citizenIdentificationProvideDate())
       .citizenIdentificationProvideLocation(request.citizenIdentificationProvideLocation())
@@ -71,19 +72,24 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       .scheduleSurveyAt(LocalDate.parse(request.scheduleSurveyAt()))
       .numberOfHousehold(request.numberOfHousehold())
       .householdRegistrationNumber(request.householdRegistrationNumber())
-      .representative(request.representative())
       .network(getNetwork(request.networkId()))
       .createdBy(request.createdBy())
       .overallWaterMeterId(request.overallWaterMeterId()));
+    if (request.representative() != null) {
+      entity.setRepresentative(request.representative());
+    }
+    if (request.taxCode() != null) {
+      entity.setTaxCode(request.taxCode());
+    }
 
     var saved = ifRepo.save(entity);
-    log.info("Installation form with form number: {} is created successfully", request.formNumber());
+    log.info("Installation form created successfully: {}", saved.getFormNumber());
 
     return new NewInstallationFormResponse(
-      saved.getFormCode(),
+      saved.getFormNumber(),
       saved.getCustomerName(),
-      saved.getAddress(),
-      saved.getPhoneNumber(),
+      saved.getFormCode(),
+      saved.getCreatedBy(),
       saved.getCreatedAt());
   }
 
@@ -116,8 +122,9 @@ public class InstallationFormServiceImpl implements InstallationFormService {
 
   @Override
   public boolean isInstallationFormExisting(String formNumber, String formCode) {
-    log.info("Checking existence of installation form with form number: {}", formNumber);
-    return ifRepo.existsByFormNumberAndFormCode(formNumber, formCode);
+    var status = ifRepo.existsByFormNumberOrFormCode(formNumber, formCode);
+    log.info("Installation form with form number: {} and form code {} is exist: {}", formNumber, formCode, status);
+    return status;
   }
 
   private @NonNull InstallationFormListResponse mapToResponse(@NonNull InstallationForm entity) {
@@ -131,8 +138,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       entity.getScheduleSurveyAt() == null ? null : entity.getScheduleSurveyAt().toString(),
       entity.getCreatedAt().toString(),
       (fullName != null && fullName.data() != null) ? fullName.data().toString() : "Unknown",
-      entity.getStatus()
-    );
+      entity.getStatus());
   }
 
   private WaterSupplyNetwork getNetwork(String networkId) {

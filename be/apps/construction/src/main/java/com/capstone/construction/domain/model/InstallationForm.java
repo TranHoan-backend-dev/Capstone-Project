@@ -32,7 +32,7 @@ public class InstallationForm {
   @Id
   String formCode;
 
-  @Column(length = 36, unique = true)
+  @Column(length = 36, unique = true, nullable = false)
   String formNumber;
 
   @Column(nullable = false)
@@ -41,7 +41,7 @@ public class InstallationForm {
   @Column(nullable = false)
   String address;
 
-  @Column(length = 12, unique = true, nullable = false)
+  @Column(length = 12, nullable = false)
   String citizenIdentificationNumber;
 
   @Column(nullable = false)
@@ -173,9 +173,9 @@ public class InstallationForm {
     this.bankAccountProviderLocation = bankAccountProviderLocation;
   }
 
-  public void setUsageTarget(String usageTarget) {
+  public void setUsageTarget(UsageTarget usageTarget) {
     Objects.requireNonNull(usageTarget, Constant.PT_54);
-    this.usageTarget = UsageTarget.valueOf(usageTarget.trim().toUpperCase());
+    this.usageTarget = usageTarget;
   }
 
   public void setReceivedFormAt(LocalDate receivedFormAt) {
@@ -309,7 +309,7 @@ public class InstallationForm {
       return this;
     }
 
-    public InstallationFormBuilder usageTarget(String usageTarget) {
+    public InstallationFormBuilder usageTarget(UsageTarget usageTarget) {
       instance.setUsageTarget(usageTarget);
       return this;
     }

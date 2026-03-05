@@ -70,23 +70,33 @@ Tài liệu này mô tả đầy đủ các kịch bản kiểm thử (unit test
 
 | ID | Trường hợp test | Đầu vào | Kỳ vọng đầu ra | Điều kiện tiên quyết |
 |:---|:---|:---|:---|:---|
-| UC-18 | Tạo form thành công | NewOrderRequest hợp lệ | Lưu DB và trả về response | Nhân viên, mạng lưới tồn tại |
-| UC-19 | Nhân viên không tồn tại | createdBy không hợp lệ | Ném `IllegalArgumentException` (PT_61) | - |
-| UC-20 | Mạng lưới không tồn tại | networkId không hợp lệ | Ném `IllegalArgumentException` (PT_59) | - |
+| UC-18 | Tạo form thành công | NewOrderRequest hợp lệ | Lưu DB và trả về response | Nhân viên, mạng lưới, đồng hồ tổng tồn tại |
+| UC-19 | Tạo form thành công (không có người đại diện) | representative = null | Lưu DB bình thường | - |
+| UC-20 | Nhân viên không tồn tại | createdBy không hợp lệ | Ném `IllegalArgumentException` (PT_61) | - |
+| UC-21 | Mạng lưới không tồn tại | networkId không hợp lệ | Ném `IllegalArgumentException` (PT_59) | - |
+| UC-22 | Đồng hồ tổng không tồn tại | overallWaterMeterId không hợp lệ | Ném `IllegalArgumentException` (SE_06) | - |
+| UC-23 | Dữ liệu đầu vào null | request = null | Ném `NullPointerException` | - |
 
 ### Phương thức: `getInstallationForms`
 
 | ID | Trường hợp test | Đầu vào | Kỳ vọng đầu ra | Điều kiện tiên quyết |
 |:---|:---|:---|:---|:---|
-| UC-21 | Lấy danh sách không lọc | Request trống | Trả về toàn bộ danh sách | - |
-| UC-22 | Lọc theo từ khóa | keyword | Trả về danh sách khớp từ khóa | - |
-| UC-23 | Lọc theo ngày | from, to | Trả về danh sách trong khoảng ngày | - |
+| UC-24 | Lấy danh sách không lọc | Request rỗng (null các trường) | Trả về toàn bộ danh sách | Dùng `findAll(pageable)` |
+| UC-25 | Lọc theo từ khóa | keyword có giá trị | Trả về danh sách khớp từ khóa | Dùng `findAll(Specification, Pageable)` |
+| UC-26 | Lọc theo từ khóa (khoảng trắng) | keyword = "   " | Trả về toàn bộ danh sách | Coi như không lọc |
+| UC-27 | Lọc theo khoảng ngày | from, to đầy đủ | Trả về danh sách trong khoảng ngày | - |
+| UC-28 | Chỉ truyền ngày bắt đầu | from có, to null | Trả về toàn bộ danh sách | Logic yêu cầu cả 2 ngày |
+| UC-29 | Chỉ truyền ngày kết thúc | from null, to có | Trả về toàn bộ danh sách | Logic yêu cầu cả 2 ngày |
+| UC-30 | Dữ liệu filter là null | request = null | Ném `NullPointerException` | - |
+| UC-31 | Xử lý khi thông tin nhân viên null | Nhân viên không tìm thấy tên | Trả về "Unknown" trong response | Repo trả về dữ liệu |
+| UC-32 | Xử lý khi ngày hẹn khảo sát null | scheduleSurveyAt = null | Response trả về null cho trường này | - |
 
 ### Phương thức: `isInstallationFormExisting`
 
 | ID | Trường hợp test | Đầu vào | Kỳ vọng đầu ra | Điều kiện tiên quyết |
 |:---|:---|:---|:---|:---|
-| UC-24 | Kiểm tra tồn tại | formNumber, formCode | Trả về true/false | - |
+| UC-33 | Kiểm tra tồn tại - Có | formNumber hoặc formCode tồn tại | Trả về `true` | - |
+| UC-34 | Kiểm tra tồn tại - Không | Cả 2 đều không tồn tại | Trả về `false` | - |
 
 ---
 
@@ -96,40 +106,40 @@ Tài liệu này mô tả đầy đủ các kịch bản kiểm thử (unit test
 
 | ID | Trường hợp test | Đầu vào | Kỳ vọng đầu ra | Điều kiện tiên quyết |
 |:---|:---|:---|:---|:---|
-| UC-25 | Tạo tuyến nhánh thành công | LateralRequest hợp lệ | Trả về LateralResponse | Tên chưa tồn tại, mạng lưới tồn tại |
-| UC-26 | Tên đã tồn tại | Tên trùng | Ném `ExistingItemException` | - |
-| UC-27 | Mạng lưới không tồn tại | networkId sai | Ném `IllegalArgumentException` | - |
-| UC-28 | Thiếu tên hoặc mạng lưới | Tên/Mạng lưới null | Ném `NullPointerException` (PT_70 / PT_59) | - |
+| UC-35 | Tạo tuyến nhánh thành công | LateralRequest hợp lệ | Trả về LateralResponse | Tên chưa tồn tại, mạng lưới tồn tại |
+| UC-36 | Tên đã tồn tại | Tên trùng | Ném `ExistingItemException` | - |
+| UC-37 | Mạng lưới không tồn tại | networkId sai | Ném `IllegalArgumentException` | - |
+| UC-38 | Thiếu tên hoặc mạng lưới | Tên/Mạng lưới null | Ném `NullPointerException` (PT_70 / PT_59) | - |
 
 ### Phương thức: `updateLateral`
 
 | ID | Trường hợp test | Đầu vào | Kỳ vọng đầu ra | Điều kiện tiên quyết |
 |:---|:---|:---|:---|:---|
-| UC-29 | Cập nhật thành công | id hợp lệ, request đầy đủ | Trả về LateralResponse mới | - |
-| UC-30 | Cập nhật chỉ tên | networkId null | Chỉ cập nhật tên | - |
-| UC-31 | Tuyến nhánh không tồn tại | id sai | Ném `IllegalArgumentException` | - |
-| UC-32 | Tên mới đã tồn tại | Tên trùng tuyến khác | Ném `ExistingItemException` | - |
-| UC-33 | Mạng lưới mới không tồn tại | networkId sai | Ném `IllegalArgumentException` | - |
+| UC-39 | Cập nhật thành công | id hợp lệ, request đầy đủ | Trả về LateralResponse mới | - |
+| UC-40 | Cập nhật chỉ tên | networkId null | Chỉ cập nhật tên | - |
+| UC-41 | Tuyến nhánh không tồn tại | id sai | Ném `IllegalArgumentException` | - |
+| UC-42 | Tên mới đã tồn tại | Tên trùng tuyến khác | Ném `ExistingItemException` | - |
+| UC-43 | Mạng lưới mới không tồn tại | networkId sai | Ném `IllegalArgumentException` | - |
 
 ### Phương thức: `deleteLateral`
 
 | ID | Trường hợp test | Đầu vào | Kỳ vọng đầu ra | Điều kiện tiên quyết |
 |:---|:---|:---|:---|:---|
-| UC-34 | Xóa thành công | id tồn tại | Xóa khỏi DB | - |
-| UC-35 | Xóa không tồn tại | id sai | Ném `IllegalArgumentException` | - |
+| UC-44 | Xóa thành công | id tồn tại | Xóa khỏi DB | - |
+| UC-45 | Xóa không tồn tại | id sai | Ném `IllegalArgumentException` | - |
 
 ### Phương thức: `getLateralById`
 
 | ID | Trường hợp test | Đầu vào | Kỳ vọng đầu ra | Điều kiện tiên quyết |
 |:---|:---|:---|:---|:---|
-| UC-36 | Lấy thông tin thành công | id tồn tại | Trả về LateralResponse | - |
-| UC-37 | Không tìm thấy | id sai | Ném `IllegalArgumentException` | - |
+| UC-46 | Lấy thông tin thành công | id tồn tại | Trả về LateralResponse | - |
+| UC-47 | Không tìm thấy | id sai | Ném `IllegalArgumentException` | - |
 
 ### Phương thức: `getAllLaterals`
 
 | ID | Trường hợp test | Đầu vào | Kỳ vọng đầu ra | Điều kiện tiên quyết |
 |:---|:---|:---|:---|:---|
-| UC-38 | Lấy tất cả / Lọc | Pageable, keyword, networkId | Trả về danh sách phân trang | - |
+| UC-48 | Lấy tất cả / Lọc | Pageable, keyword, networkId | Trả về danh sách phân trang | - |
 
 ---
 
@@ -139,44 +149,44 @@ Tài liệu này mô tả đầy đủ các kịch bản kiểm thử (unit test
 
 | ID | Trường hợp test | Đầu vào | Kỳ vọng đầu ra | Điều kiện tiên quyết |
 |:---|:---|:---|:---|:---|
-| UC-39 | Tạo mạng lưới thành công | CreateRequest hợp lệ | Lưu vào DB | - |
-| UC-40 | Tên bị null | name = null | Ném `NullPointerException` | - |
-| UC-41 | Tên trống | name = "" | Ném `IllegalArgumentException` | - |
+| UC-49 | Tạo mạng lưới thành công | CreateRequest hợp lệ | Lưu vào DB | - |
+| UC-50 | Tên bị null | name = null | Ném `NullPointerException` | - |
+| UC-51 | Tên trống | name = "" | Ném `IllegalArgumentException` | - |
 
 ### Phương thức: `updateNetwork`
 
 | ID | Trường hợp test | Đầu vào | Kỳ vọng đầu ra | Điều kiện tiên quyết |
 |:---|:---|:---|:---|:---|
-| UC-42 | Cập nhật thành công | id hợp lệ, UpdateRequest | Trả về response mới | Mạng lưới tồn tại |
-| UC-43 | Tên đã tồn tại | Tên trùng mạng lưới khác | Ném `IllegalArgumentException` (SE_05) | - |
-| UC-44 | Không tìm thấy | id sai | Ném `IllegalArgumentException` | - |
-| UC-45 | Tên null hoặc trống | name = null/"" | Không cập nhật tên | - |
+| UC-52 | Cập nhật thành công | id hợp lệ, UpdateRequest | Trả về response mới | Mạng lưới tồn tại |
+| UC-53 | Tên đã tồn tại | Tên trùng mạng lưới khác | Ném `IllegalArgumentException` (SE_05) | - |
+| UC-54 | Không tìm thấy | id sai | Ném `IllegalArgumentException` | - |
+| UC-55 | Tên null hoặc trống | name = null/"" | Không cập nhật tên | - |
 
 ### Phương thức: `deleteNetwork`
 
 | ID | Trường hợp test | Đầu vào | Kỳ vọng đầu ra | Điều kiện tiên quyết |
 |:---|:---|:---|:---|:---|
-| UC-46 | Xóa thành công | id tồn tại | Xóa khỏi DB | - |
-| UC-47 | Xóa không tồn tại | id sai | Ném `IllegalArgumentException` | - |
+| UC-56 | Xóa thành công | id tồn tại | Xóa khỏi DB | - |
+| UC-57 | Xóa không tồn tại | id sai | Ném `IllegalArgumentException` | - |
 
 ### Phương thức: `getNetworkById`
 
 | ID | Trường hợp test | Đầu vào | Kỳ vọng đầu ra | Điều kiện tiên quyết |
 |:---|:---|:---|:---|:---|
-| UC-48 | Lấy thông tin thành công | id tồn tại | Trả về response | - |
-| UC-49 | Không tìm thấy | id sai | Ném `IllegalArgumentException` | - |
+| UC-58 | Lấy thông tin thành công | id tồn tại | Trả về response | - |
+| UC-59 | Không tìm thấy | id sai | Ném `IllegalArgumentException` | - |
 
 ### Phương thức: `getAllNetworks`
 
 | ID | Trường hợp test | Đầu vào | Kỳ vọng đầu ra | Điều kiện tiên quyết |
 |:---|:---|:---|:---|:---|
-| UC-50 | Lấy tất cả / Lọc | Pageable, keyword | Trả về PageResponse | - |
+| UC-60 | Lấy tất cả / Lọc | Pageable, keyword | Trả về PageResponse | - |
 
 ### Phương thức: `networkExists`
 
 | ID | Trường hợp test | Đầu vào | Kỳ vọng đầu ra | Điều kiện tiên quyết |
 |:---|:---|:---|:---|:---|
-| UC-51 | Kiểm tra tồn tại | id | Trả về true/false | - |
+| UC-61 | Kiểm tra tồn tại | id | Trả về true/false | - |
 
 ---
 
@@ -186,38 +196,38 @@ Tài liệu này mô tả đầy đủ các kịch bản kiểm thử (unit test
 
 | ID | Trường hợp test | Đầu vào | Kỳ vọng đầu ra | Điều kiện tiên quyết |
 |:---|:---|:---|:---|:---|
-| UC-52 | Tạo đường thành công | RoadRequest hợp lệ | Trả về RoadResponse | Tên chưa tồn tại |
-| UC-53 | Tên đã tồn tại | Tên trùng | Ném `ExistingItemException` | - |
-| UC-54 | Tên trống | name = "" | Ném `IllegalArgumentException` | - |
-| UC-55 | Tên bị null | name = null | Ném `NullPointerException` | - |
+| UC-62 | Tạo đường thành công | RoadRequest hợp lệ | Trả về RoadResponse | Tên chưa tồn tại |
+| UC-63 | Tên đã tồn tại | Tên trùng | Ném `ExistingItemException` | - |
+| UC-64 | Tên trống | name = "" | Ném `IllegalArgumentException` | - |
+| UC-65 | Tên bị null | name = null | Ném `NullPointerException` | - |
 
 ### Phương thức: `updateRoad`
 
 | ID | Trường hợp test | Đầu vào | Kỳ vọng đầu ra | Điều kiện tiên quyết |
 |:---|:---|:---|:---|:---|
-| UC-56 | Cập nhật thành công | id hợp lệ, request | Trả về response mới | - |
-| UC-57 | Không tìm thấy | id sai | Ném `IllegalArgumentException` | - |
-| UC-58 | Tên mới đã tồn tại | Tên trùng đường khác | Ném `ExistingItemException` | - |
+| UC-66 | Cập nhật thành công | id hợp lệ, request | Trả về response mới | - |
+| UC-67 | Không tìm thấy | id sai | Ném `IllegalArgumentException` | - |
+| UC-68 | Tên mới đã tồn tại | Tên trùng đường khác | Ném `ExistingItemException` | - |
 
 ### Phương thức: `deleteRoad`
 
 | ID | Trường hợp test | Đầu vào | Kỳ vọng đầu ra | Điều kiện tiên quyết |
 |:---|:---|:---|:---|:---|
-| UC-59 | Xóa thành công | id tồn tại | Xóa khỏi DB | - |
-| UC-60 | Xóa không tồn tại | id sai | Ném `IllegalArgumentException` | - |
+| UC-69 | Xóa thành công | id tồn tại | Xóa khỏi DB | - |
+| UC-70 | Xóa không tồn tại | id sai | Ném `IllegalArgumentException` | - |
 
 ### Phương thức: `getRoadById`
 
 | ID | Trường hợp test | Đầu vào | Kỳ vọng đầu ra | Điều kiện tiên quyết |
 |:---|:---|:---|:---|:---|
-| UC-61 | Lấy thông tin thành công | id tồn tại | Trả về response | - |
-| UC-62 | Không tìm thấy | id sai | Ném `IllegalArgumentException` | - |
+| UC-71 | Lấy thông tin thành công | id tồn tại | Trả về response | - |
+| UC-72 | Không tìm thấy | id sai | Ném `IllegalArgumentException` | - |
 
 ### Phương thức: `getAllRoads`
 
 | ID | Trường hợp test | Đầu vào | Kỳ vọng đầu ra | Điều kiện tiên quyết |
 |:---|:---|:---|:---|:---|
-| UC-63 | Lấy tất cả thành công | Pageable | Trả về PageResponse | - |
+| UC-73 | Lấy tất cả thành công | Pageable | Trả về PageResponse | - |
 
 ---
 
@@ -227,36 +237,36 @@ Tài liệu này mô tả đầy đủ các kịch bản kiểm thử (unit test
 
 | ID | Trường hợp test | Đầu vào | Kỳ vọng đầu ra | Điều kiện tiên quyết |
 |:---|:---|:---|:---|:---|
-| UC-64 | Tạo lộ trình thành công | RoadmapRequest hợp lệ | Trả về RoadmapResponse | Các ID liên quan tồn tại |
-| UC-65 | Tên đã tồn tại | Tên trùng | Ném `ExistingItemException` | - |
-| UC-66 | Tuyến nhánh không tồn tại | lateralId sai | Ném `IllegalArgumentException` (SE_02) | - |
-| UC-67 | Mạng lưới không tồn tại | networkId sai | Ném `IllegalArgumentException` (SE_03) | - |
-| UC-68 | Tên bị null | name = null | Ném `NullPointerException` (PT_73) | - |
+| UC-74 | Tạo lộ trình thành công | RoadmapRequest hợp lệ | Trả về RoadmapResponse | Các ID liên quan tồn tại |
+| UC-75 | Tên đã tồn tại | Tên trùng | Ném `ExistingItemException` | - |
+| UC-76 | Tuyến nhánh không tồn tại | lateralId sai | Ném `IllegalArgumentException` (SE_02) | - |
+| UC-77 | Mạng lưới không tồn tại | networkId sai | Ném `IllegalArgumentException` (SE_03) | - |
+| UC-78 | Tên bị null | name = null | Ném `NullPointerException` (PT_73) | - |
 
 ### Phương thức: `updateRoadmap`
 
 | ID | Trường hợp test | Đầu vào | Kỳ vọng đầu ra | Điều kiện tiên quyết |
 |:---|:---|:---|:---|:---|
-| UC-69 | Cập nhật thành công | id hợp lệ, request đầy đủ | Trả về response mới | - |
-| UC-70 | Cập nhật chỉ tên | ID liên quan null/trống | Chỉ cập nhật tên | - |
-| UC-71 | Tuyến nhánh mới không tồn tại | lateralId sai | Ném `IllegalArgumentException` | - |
-| UC-72 | Mạng lưới mới không tồn tại | networkId sai | Ném `IllegalArgumentException` | - |
-| UC-73 | Không tìm thấy | id sai | Ném `IllegalArgumentException` | - |
-| UC-74 | Tên mới đã tồn tại | Tên trùng lộ trình khác | Ném `ExistingItemException` | - |
+| UC-79 | Cập nhật thành công | id hợp lệ, request đầy đủ | Trả về response mới | - |
+| UC-80 | Cập nhật chỉ tên | ID liên quan null/trống | Chỉ cập nhật tên | - |
+| UC-81 | Tuyến nhánh mới không tồn tại | lateralId sai | Ném `IllegalArgumentException` | - |
+| UC-82 | Mạng lưới mới không tồn tại | networkId sai | Ném `IllegalArgumentException` | - |
+| UC-83 | Không tìm thấy | id sai | Ném `IllegalArgumentException` | - |
+| UC-84 | Tên mới đã tồn tại | Tên trùng lộ trình khác | Ném `ExistingItemException` | - |
 
 ### Phương thức: `deleteRoadmap`
 
 | ID | Trường hợp test | Đầu vào | Kỳ vọng đầu ra | Điều kiện tiên quyết |
 |:---|:---|:---|:---|:---|
-| UC-75 | Xóa thành công | id tồn tại | Xóa khỏi DB | - |
-| UC-76 | Xóa không tồn tại | id sai | Ném `IllegalArgumentException` | - |
+| UC-85 | Xóa thành công | id tồn tại | Xóa khỏi DB | - |
+| UC-86 | Xóa không tồn tại | id sai | Ném `IllegalArgumentException` | - |
 
 ### Phương thức: `getRoadmapById`
 
 | ID | Trường hợp test | Đầu vào | Kỳ vọng đầu ra | Điều kiện tiên quyết |
 |:---|:---|:---|:---|:---|
-| UC-77 | Lấy thông tin thành công | id tồn tại | Trả về response | - |
-| UC-78 | Không tìm thấy | id sai | Ném `IllegalArgumentException` | - |
+| UC-87 | Lấy thông tin thành công | id tồn tại | Trả về response | - |
+| UC-88 | Không tìm thấy | id sai | Ném `IllegalArgumentException` | - |
 
 ---
 
@@ -266,30 +276,30 @@ Tài liệu này mô tả đầy đủ các kịch bản kiểm thử (unit test
 
 | ID | Trường hợp test | Đầu vào | Kỳ vọng đầu ra | Điều kiện tiên quyết |
 |:---|:---|:---|:---|:---|
-| UC-79 | Tạo tổ dân phố thành công | NeighborhoodUnitRequest hợp lệ | Lưu vào DB | Tên chưa có, xã tồn tại |
-| UC-80 | Tên đã tồn tại | Tên trùng | Ném `ExistingItemException` | - |
-| UC-81 | Xã không tồn tại | communeId sai | Ném `IllegalArgumentException` (PT_26) | - |
-| UC-82 | Tên bị null | name = null | Ném `NullPointerException` | - |
+| UC-89 | Tạo tổ dân phố thành công | NeighborhoodUnitRequest hợp lệ | Lưu vào DB | Tên chưa có, xã tồn tại |
+| UC-90 | Tên đã tồn tại | Tên trùng | Ném `ExistingItemException` | - |
+| UC-91 | Xã không tồn tại | communeId sai | Ném `IllegalArgumentException` (PT_26) | - |
+| UC-92 | Tên bị null | name = null | Ném `NullPointerException` | - |
 
 ### Phương thức: `updateUnit`
 
 | ID | Trường hợp test | Đầu vào | Kỳ vọng đầu ra | Điều kiện tiên quyết |
 |:---|:---|:---|:---|:---|
-| UC-83 | Cập nhật thành công | id hợp lệ, request | Trả về response mới | - |
-| UC-84 | Không tìm thấy | id sai | Ném `IllegalArgumentException` | - |
-| UC-85 | Tên mới đã tồn tại | Tên trùng tổ khác | Ném `ExistingItemException` | - |
-| UC-86 | Xã mới không tồn tại | communeId sai | Ném `IllegalArgumentException` | - |
+| UC-93 | Cập nhật thành công | id hợp lệ, request | Trả về response mới | - |
+| UC-94 | Không tìm thấy | id sai | Ném `IllegalArgumentException` | - |
+| UC-95 | Tên mới đã tồn tại | Tên trùng tổ khác | Ném `ExistingItemException` | - |
+| UC-96 | Xã mới không tồn tại | communeId sai | Ném `IllegalArgumentException` | - |
 
 ### Phương thức: `deleteUnit`
 
 | ID | Trường hợp test | Đầu vào | Kỳ vọng đầu ra | Điều kiện tiên quyết |
 |:---|:---|:---|:---|:---|
-| UC-87 | Xóa thành công | id tồn tại | Xóa khỏi DB | - |
-| UC-88 | Xóa không tồn tại | id sai | Ném `IllegalArgumentException` | - |
+| UC-97 | Xóa thành công | id tồn tại | Xóa khỏi DB | - |
+| UC-98 | Xóa không tồn tại | id sai | Ném `IllegalArgumentException` | - |
 
 ### Phương thức: `getUnitById`
 
 | ID | Trường hợp test | Đầu vào | Kỳ vọng đầu ra | Điều kiện tiên quyết |
 |:---|:---|:---|:---|:---|
-| UC-89 | Lấy thông tin thành công | id tồn tại | Trả về response | - |
-| UC-90 | Không tìm thấy | id sai | Ném `IllegalArgumentException` | - |
+| UC-99 | Lấy thông tin thành công | id tồn tại | Trả về response | - |
+| UC-100 | Không tìm thấy | id sai | Ném `IllegalArgumentException` | - |

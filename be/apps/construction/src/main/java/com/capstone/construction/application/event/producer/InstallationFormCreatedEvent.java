@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 public record InstallationFormCreatedEvent(
   String formNumber,
   String customerName,
-  String address,
-  String phoneNumber,
+  String formCode,
+  String creator,
   LocalDateTime createdAt) {
 }

@@ -12,15 +12,12 @@ import com.capstone.construction.infrastructure.config.Constant;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -55,8 +52,8 @@ public class InstallationFormHandlingUseCase {
     var event = new InstallationFormCreatedEvent(
       savedResponse.formNumber(),
       savedResponse.customerName(),
-      savedResponse.address(),
-      savedResponse.phoneNumber(),
+      savedResponse.formCode(),
+      savedResponse.creator(),
       savedResponse.createdAt());
     messageProducer.send(routingKey, event);
 

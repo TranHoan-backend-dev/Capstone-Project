@@ -74,6 +74,7 @@ public class NotificationConsumer {
 
   private List<RoleName> mapTopicToRoles(@NonNull String topic) {
     return switch (topic) {
+      // for department
       case "/notification" -> List.of(RoleName.values());
       case "/technical" -> List.of(
           RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD,
@@ -84,6 +85,11 @@ public class NotificationConsumer {
       case "/it" -> List.of(RoleName.IT_STAFF);
       case "/finance" -> List.of(RoleName.FINANCE_DEPARTMENT);
       case "/leadership" -> List.of(RoleName.COMPANY_LEADERSHIP);
+
+      // for individual of the planning-technical department
+      case "/technical/head" -> List.of(RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD);
+      case "/technical/survey-staff" -> List.of(RoleName.SURVEY_STAFF);
+      case "/technical/order-receiving-staff" -> List.of(RoleName.ORDER_RECEIVING_STAFF);
       default -> Collections.emptyList();
     };
   }
