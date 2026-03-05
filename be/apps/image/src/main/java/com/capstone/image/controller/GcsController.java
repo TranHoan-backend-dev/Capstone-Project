@@ -40,6 +40,7 @@ public class GcsController {
   public ResponseEntity<?> download(@PathVariable("file") String fileName) {
     log.info("Downloading file: {}", fileName);
 //    var file = storageService.download(fileName);
+    byte[] file = null;
     return ResponseEntity.ok()
       .contentType(MediaType.IMAGE_JPEG)
       .body(file);
