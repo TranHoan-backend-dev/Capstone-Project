@@ -9,11 +9,11 @@ public final class Constant {
   public static final String PT_05 = "Invalid date format";
   public static final String PT_06 = "Customer type cannot be null or empty";
   public static final String PT_07 = "Hamlet must belong to a rural commune";
-  public static final String PT_08 = "";
+  public static final String PT_08 = "Form code cannot be null or empty";
   public static final String PT_09 = "";
   public static final String PT_10 = "";
   public static final String PT_11 = "";
-  public static final String PT_12 = "";
+  public static final String PT_12 = "Address cannot be null or empty";
   public static final String PT_13 = "";
   public static final String PT_14 = "Phone number must be numberic and 10 digits long";
   public static final String PT_15 = "Phone number cannot be null or empty";
@@ -83,9 +83,10 @@ public final class Constant {
   public static final String PT_79 = "The staff in the Planning-Technical Department who will handle the installation form cannot be null";
 
   // for service layer
-  public static final String SE_01 = "This form number is already in use";
+  public static final String SE_01 = "This form number or form code is already in use";
   public static final String SE_02 = "Lateral not found";
   public static final String SE_03 = "Network not found";
   public static final String SE_04 = "Commune not found";
   public static final String SE_05 = "Network name already exists";
+  public static final String SE_06 = "Overall water meter not found";
 }

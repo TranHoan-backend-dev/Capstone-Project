@@ -2,6 +2,7 @@ package com.capstone.construction.infrastructure.persistence;
 
 import com.capstone.construction.domain.model.InstallationForm;
 import jakarta.persistence.criteria.Predicate;
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -15,7 +16,7 @@ import java.util.*;
 @Repository
 public interface InstallationFormRepository extends JpaRepository<InstallationForm, String>,
   JpaSpecificationExecutor<InstallationForm> {
-  boolean existsByFormNumberAndFormCode(String formNumber, String formCode);
+  boolean existsByFormNumberOrFormCode(String formNumber, String formCode);
 
   Page<InstallationForm> findByHandoverByIsNull(Pageable pageable);
 
@@ -34,7 +35,7 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
    * @param end
    * @return
    */
-  static Specification<InstallationForm> search(String keyword, LocalDateTime start, LocalDateTime end) {
+  static @NonNull Specification<InstallationForm> search(String keyword, LocalDateTime start, LocalDateTime end) {
     return (root, query, cb) -> {
       // tao danh sach cac dieu kien
       List<Predicate> predicates = new ArrayList<>();
