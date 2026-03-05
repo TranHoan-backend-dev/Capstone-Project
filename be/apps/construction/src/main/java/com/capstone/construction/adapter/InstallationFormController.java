@@ -6,7 +6,6 @@ import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.construction.application.dto.request.installationform.FilterFormRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
-import com.capstone.construction.application.dto.response.installationform.NewInstallationFormResponse;
 import com.capstone.construction.application.usecase.InstallationFormHandlingUseCase;
 import com.capstone.construction.infrastructure.config.Constant;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,16 +33,16 @@ import java.time.format.DateTimeFormatter;
 @RequiredArgsConstructor
 @RequestMapping("/installation-forms")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@Tag(name = "Installation Form", description = "Endpoints for managing installation forms")
+@Tag(name = "Installation Form", description = "Quản lý đơn lắp đặt (Tiếp nhận và xử lý hồ sơ lắp đặt nước)")
 public class InstallationFormController {
   InstallationFormHandlingUseCase installationFormHandlingUseCase;
   @NonFinal
   Logger log;
 
-  @Operation(summary = "", description = "", responses = {
-    @ApiResponse(responseCode = "201", description = "Form created successfully"),
-    @ApiResponse(responseCode = "409", description = "Form already exists", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+  @Operation(summary = "Tạo mới đơn lắp đặt", description = "API này cho phép nhân viên tiếp nhận hồ sơ tạo mới một đơn yêu cầu lắp đặt nước. Hồ sơ bao gồm thông tin khách hàng, mục đích sử dụng và các thông tin liên quan khác.", responses = {
+    @ApiResponse(responseCode = "201", description = "Tạo đơn lắp đặt thành công"),
+    @ApiResponse(responseCode = "409", description = "Lỗi xung đột: Số hồ sơ hoặc mã biểu mẫu đã tồn tại trong hệ thống", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Lỗi dữ liệu: Định dạng ngày không hợp lệ hoặc thiếu thông tin bắt buộc", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PostMapping
   @PreAuthorize("hasAnyAuthority('ORDER_RECEIVING_STAFF', 'IT_STAFF')")
@@ -70,11 +69,9 @@ public class InstallationFormController {
   @GetMapping
   @PreAuthorize("hasAnyAuthority('PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF', 'IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> getInstallationForms(
-    @Parameter(description = "Thông tin phân trang (page, size, sort)", schema = @Schema(implementation = Pageable.class))
-    Pageable pageable,
+    @Parameter(description = "Thông tin phân trang (page, size, sort)", schema = @Schema(implementation = Pageable.class)) Pageable pageable,
 
-    @Parameter(description = "Thông tin lọc (từ khóa, khoảng thời gian)")
-    FilterFormRequest request) {
+    @Parameter(description = "Thông tin lọc (từ khóa, khoảng thời gian)") FilterFormRequest request) {
     log.info("Received request to fetch grouped installation forms");
 
     if (request.from() != null && request.to() != null) {
@@ -88,6 +85,6 @@ public class InstallationFormController {
 
     var response = installationFormHandlingUseCase.getPaginatedInstallationForms(pageable, request);
 
-    return Utils.returnOkResponse("Installation forms retrieved successfully",response);
+    return Utils.returnOkResponse("Installation forms retrieved successfully", response);
   }
 }
