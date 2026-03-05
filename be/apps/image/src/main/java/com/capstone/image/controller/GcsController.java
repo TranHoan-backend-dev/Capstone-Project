@@ -30,8 +30,8 @@ public class GcsController {
     if (file.isEmpty()) {
       return ResponseEntity.badRequest().body("Failed to upload empty file");
     }
-//    var avatarUrl = "haha";
-    var avatarUrl = storageService.upload(file, FOLDER_NAME);
+    var avatarUrl = "haha";
+//    var avatarUrl = storageService.upload(file, FOLDER_NAME);
 
     return ResponseEntity.ok(avatarUrl);
   }
@@ -39,7 +39,7 @@ public class GcsController {
   @GetMapping(value = "/download/{file}")
   public ResponseEntity<?> download(@PathVariable("file") String fileName) {
     log.info("Downloading file: {}", fileName);
-    var file = storageService.download(fileName);
+//    var file = storageService.download(fileName);
     return ResponseEntity.ok()
       .contentType(MediaType.IMAGE_JPEG)
       .body(file);
