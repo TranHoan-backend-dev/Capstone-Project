@@ -2,6 +2,7 @@ package com.capstone.construction.domain.model;
 
 import com.capstone.common.enumerate.CustomerType;
 import com.capstone.common.enumerate.ProcessingStatus;
+import com.capstone.common.utils.SharedConstant;
 import com.capstone.construction.domain.model.utils.FormProcessingStatus;
 import com.capstone.construction.domain.model.utils.Representative;
 import com.capstone.common.enumerate.UsageTarget;
@@ -31,7 +32,7 @@ public class InstallationForm {
   @Id
   String formCode;
 
-  @Column(length = 36, unique = true)
+  @Column(length = 36, unique = true, nullable = false)
   String formNumber;
 
   @Column(nullable = false)
@@ -40,7 +41,7 @@ public class InstallationForm {
   @Column(nullable = false)
   String address;
 
-  @Column(length = 12, unique = true, nullable = false)
+  @Column(length = 12, nullable = false)
   String citizenIdentificationNumber;
 
   @Column(nullable = false)
@@ -151,7 +152,7 @@ public class InstallationForm {
 
   public void setPhoneNumber(String phoneNumber) {
     requireNonNullAndNotEmpty(phoneNumber, Constant.PT_15);
-    if (!phoneNumber.matches(Constant.PHONE_PATTERN)) {
+    if (!phoneNumber.matches(SharedConstant.PHONE_PATTERN)) {
       throw new IllegalArgumentException(Constant.PT_14);
     }
     this.phoneNumber = phoneNumber;
@@ -172,9 +173,9 @@ public class InstallationForm {
     this.bankAccountProviderLocation = bankAccountProviderLocation;
   }
 
-  public void setUsageTarget(String usageTarget) {
+  public void setUsageTarget(UsageTarget usageTarget) {
     Objects.requireNonNull(usageTarget, Constant.PT_54);
-    this.usageTarget = UsageTarget.valueOf(usageTarget.trim().toUpperCase());
+    this.usageTarget = usageTarget;
   }
 
   public void setReceivedFormAt(LocalDate receivedFormAt) {
@@ -308,7 +309,7 @@ public class InstallationForm {
       return this;
     }
 
-    public InstallationFormBuilder usageTarget(String usageTarget) {
+    public InstallationFormBuilder usageTarget(UsageTarget usageTarget) {
       instance.setUsageTarget(usageTarget);
       return this;
     }

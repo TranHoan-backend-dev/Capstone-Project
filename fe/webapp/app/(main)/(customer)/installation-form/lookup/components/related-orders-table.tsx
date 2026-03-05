@@ -197,7 +197,7 @@ console.log(status)
       columns={NEW_INSTALLATION_LOOKUP_COLUMN}
       isCollapsible
       data={data}
-      paginationProps={{ total: 3, initialPage: 1 }}
+      paginationProps={{ total: 3, page: 1 }}
       renderCellAction={renderCell}
       title="Danh sách đơn"
     />

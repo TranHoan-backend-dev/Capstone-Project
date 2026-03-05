@@ -1,5 +1,6 @@
 package com.capstone.construction.application.business.lateral;
 
+import com.capstone.common.annotation.AppLog;
 import com.capstone.construction.application.dto.request.catalog.LateralRequest;
 import com.capstone.construction.application.dto.response.catalog.LateralResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
@@ -8,33 +9,42 @@ import com.capstone.construction.infrastructure.persistence.LateralRepository;
 import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRepository;
 import com.capstone.construction.application.exception.ExistingItemException;
 import com.capstone.construction.infrastructure.config.Constant;
+import com.capstone.construction.infrastructure.service.OverallWaterMeterService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
+import java.util.Objects;
+
+@AppLog
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class LateralServiceImpl implements LateralService {
+  @NonFinal
+  Logger log;
   LateralRepository lateralRepository;
   WaterSupplyNetworkRepository networkRepository;
+  OverallWaterMeterService metersService;
 
   @Override
   @Transactional(rollbackFor = Exception.class)
   public LateralResponse createLateral(@NonNull LateralRequest request) {
     log.info("Creating new lateral with name: {}", request.name());
-    if (lateralRepository.existsByName(request.name())) {
+    Objects.requireNonNull(request.name(), Constant.PT_70);
+    if (lateralRepository.existsByNameIgnoreCase(request.name())) {
       throw new ExistingItemException("Lateral with name " + request.name() + " already exists");
     }
+    Objects.requireNonNull(request.networkId(), Constant.PT_59);
 
     var network = networkRepository.findById(request.networkId())
-      .orElseThrow(() -> new IllegalArgumentException(Constant.PT_59));
+      .orElseThrow(() -> new IllegalArgumentException(Constant.SE_03));
 
     var lateral = Lateral.create(builder -> builder
       .name(request.name())
@@ -51,15 +61,18 @@ public class LateralServiceImpl implements LateralService {
     var lateral = lateralRepository.findById(id)
       .orElseThrow(() -> new IllegalArgumentException("Lateral not found with id: " + id));
 
-    if (!lateral.getName().equals(request.name()) && lateralRepository.existsByName(request.name())) {
+    if (lateralRepository.existsByNameIgnoreCase(request.name())) {
       throw new ExistingItemException("Lateral with name " + request.name() + " already exists");
     }
 
-    var network = networkRepository.findById(request.networkId())
-      .orElseThrow(() -> new IllegalArgumentException(Constant.PT_59));
-
-    lateral.setName(request.name());
-    lateral.setNetwork(network);
+    if (request.networkId() != null && !request.networkId().isBlank()) {
+      var network = networkRepository.findById(request.networkId())
+        .orElseThrow(() -> new IllegalArgumentException(Constant.PT_59));
+      lateral.setNetwork(network);
+    }
+    if (request.name() != null && !request.name().isBlank()) {
+      lateral.setName(request.name());
+    }
 
     var saved = lateralRepository.save(lateral);
     return mapToResponse(saved);
@@ -72,6 +85,7 @@ public class LateralServiceImpl implements LateralService {
     if (!lateralRepository.existsById(id)) {
       throw new IllegalArgumentException("Lateral not found with id: " + id);
     }
+//    metersService.deleteWaterMeter(id);
     lateralRepository.deleteById(id);
   }
 
@@ -84,18 +98,27 @@ public class LateralServiceImpl implements LateralService {
   }
 
   @Override
-  public PageResponse<LateralResponse> getAllLaterals(Pageable pageable) {
-    log.info("Fetching all laterals with pageable: {}", pageable);
-    var page = lateralRepository.findAll(pageable);
+  public PageResponse<LateralResponse> getAllLaterals(Pageable pageable,
+                                                      String keyword,
+                                                      String networkId,
+                                                      Boolean networkAssigned) {
+    log.info("Fetching all laterals with pageable: {}, keyword: {}, networkId: {}, networkAssigned: {}",
+      pageable, keyword, networkId, networkAssigned);
+
+    var normalizedKeyword = (keyword == null || keyword.isBlank()) ? null : keyword.trim();
+    var page = (normalizedKeyword == null || normalizedKeyword.isEmpty())
+      ? lateralRepository.searchLateralsWithoutKeyword(networkId, networkAssigned, pageable)
+      : lateralRepository.searchLateralsWithKeyword(normalizedKeyword, networkId, networkAssigned, pageable);
     return PageResponse.fromPage(page, this::mapToResponse);
   }
 
-  private LateralResponse mapToResponse(@NonNull Lateral lateral) {
+  private @NonNull LateralResponse mapToResponse(@NonNull Lateral lateral) {
+    var network = lateral.getNetwork();
     return new LateralResponse(
       lateral.getId(),
       lateral.getName(),
-      lateral.getNetwork().getBranchId(),
-      lateral.getNetwork().getName(),
+      network == null ? null : network.getBranchId(),
+      network == null ? null : network.getName(),
       lateral.getCreatedAt());
   }
 }

@@ -140,7 +140,7 @@ export const ResultsTable = ({ data }: ResultsTableProps) => {
         data={data}
         paginationProps={{
           total: 5,
-          initialPage: 1,
+          page: 1,
           summary: "1-5 của 25",
         }}
         renderCellAction={renderCell}

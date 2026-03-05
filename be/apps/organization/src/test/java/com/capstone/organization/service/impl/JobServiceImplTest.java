@@ -50,7 +50,7 @@ class JobServiceImplTest {
     var request = new CreateJobRequest("");
 
     assertThatThrownBy(() -> jobService.createJob(request))
-      .isInstanceOf(IllegalArgumentException.class);
+        .isInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
@@ -77,7 +77,7 @@ class JobServiceImplTest {
     when(jobRepository.findById("job-1")).thenReturn(Optional.of(existing));
 
     assertThatThrownBy(() -> jobService.updateJob("job-1", request))
-      .isInstanceOf(IllegalArgumentException.class);
+        .isInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
@@ -86,8 +86,8 @@ class JobServiceImplTest {
     when(jobRepository.findById("missing")).thenReturn(Optional.empty());
 
     assertThatThrownBy(() -> jobService.updateJob("missing", request))
-      .isInstanceOf(IllegalArgumentException.class)
-      .hasMessage("Job not found");
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("Job not found");
   }
 
   @Test
@@ -96,8 +96,8 @@ class JobServiceImplTest {
     var updatedAt = LocalDateTime.of(2026, 1, 31, 10, 0);
     var pageRequest = PageRequest.of(0, 2);
     var items = List.of(
-      new Job("job-1", "Engineer", createdAt, updatedAt),
-      new Job("job-2", "Designer", createdAt, updatedAt));
+        new Job("job-1", "Engineer", createdAt, updatedAt),
+        new Job("job-2", "Designer", createdAt, updatedAt));
     var page = new PageImpl<>(items, pageRequest, 2);
     when(jobRepository.findAll(pageRequest)).thenReturn(page);
 
@@ -121,5 +121,17 @@ class JobServiceImplTest {
     assertThat(response.items()).isEmpty();
     assertThat(response.totalItems()).isZero();
     assertThat(response.totalPages()).isZero();
+  }
+
+  @Test
+  void checkExistence_returnsTrueWhenExists() {
+    when(jobRepository.existsById("job-1")).thenReturn(true);
+    assertThat(jobService.checkExistence("job-1")).isTrue();
+  }
+
+  @Test
+  void checkExistence_returnsFalseWhenNotExists() {
+    when(jobRepository.existsById("unknown")).thenReturn(false);
+    assertThat(jobService.checkExistence("unknown")).isFalse();
   }
 }

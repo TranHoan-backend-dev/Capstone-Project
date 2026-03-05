@@ -1,8 +1,17 @@
 import { SVGProps } from "react";
 export * from "./construction/index"
+
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
+export interface ForgotPasswordFormProps {
+  onSuccessAction: (email: string) => void;
+}
+
+export interface ResetPasswordFormProps {
+  email: string;
+  otp: string;
+}
 
 export interface ApiResponse<T> {
   status: number;

@@ -21,8 +21,8 @@ dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-security'
   implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
   implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+  implementation 'org.springframework.boot:spring-boot-starter-amqp'
   implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
-  runtimeOnly 'org.springframework.boot:spring-boot-devtools'
   testImplementation 'org.springframework.security:spring-security-test'
   testImplementation 'org.springframework.boot:spring-boot-starter-test'
 

@@ -102,7 +102,7 @@ export const ContractTable = () => {
       isCollapsible={false}
       paginationProps={{
         total: 3,
-        initialPage: 1,
+        page: 1,
         summary: `${mockData.length}`,
       }}
       headerSummary={`${mockData.length}`}

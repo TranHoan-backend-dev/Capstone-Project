@@ -1,6 +1,7 @@
 package com.capstone.customer.model;
 
 import com.capstone.common.enumerate.UsageTarget;
+import com.capstone.common.utils.SharedConstant;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -134,7 +135,7 @@ public class Customer {
     if (email.trim().isEmpty()) {
       throw new IllegalArgumentException(Constant.ENT_13);
     }
-    if (!email.matches(Constant.EMAIL_PATTERN)) {
+    if (!email.matches(SharedConstant.EMAIL_PATTERN)) {
       throw new IllegalArgumentException(Constant.ENT_14);
     }
     this.email = email;
@@ -145,7 +146,7 @@ public class Customer {
     if (phoneNumber.trim().isEmpty()) {
       throw new IllegalArgumentException(Constant.ENT_05);
     }
-    if (!phoneNumber.matches(Constant.PHONE_PATTERN)) {
+    if (!phoneNumber.matches(SharedConstant.PHONE_PATTERN)) {
       throw new IllegalArgumentException(Constant.ENT_15);
     }
     this.phoneNumber = phoneNumber;

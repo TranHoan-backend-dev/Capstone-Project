@@ -2,7 +2,6 @@
 @keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
 @client_secret=
 
-### C
 ### get token
 POST {{keycloak}}/token
 Content-Type: application/x-www-form-urlencoded
@@ -20,6 +19,7 @@ scope=openid
   client.global.set("refresh_token", response.body.refresh_token);
 %}
 
+### C
 ### Create, happy case
 POST {{uri}}/
 Content-Type: application/json
@@ -65,6 +65,7 @@ Accept: application/json
 }
 
 ### R
+
 ### U
 ### happy case
 PUT {{uri}}/47f63a1a-43ef-4265-9571-bd87baae0480

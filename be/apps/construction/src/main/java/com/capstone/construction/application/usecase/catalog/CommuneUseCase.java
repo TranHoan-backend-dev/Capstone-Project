@@ -1,46 +1,70 @@
 package com.capstone.construction.application.usecase.catalog;
 
+import com.capstone.common.annotation.AppLog;
 import com.capstone.construction.application.business.commune.CommuneService;
-import com.capstone.construction.application.dto.request.catalog.CommuneRequest;
+import com.capstone.construction.application.dto.request.commune.CreateRequest;
+import com.capstone.construction.application.dto.request.commune.UpdateRequest;
 import com.capstone.construction.application.dto.response.catalog.CommuneResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
+import com.capstone.construction.application.event.producer.MessageProducer;
+import com.capstone.construction.application.event.producer.commune.DeleteEvent;
+import com.capstone.construction.application.event.producer.commune.UpdateEvent;
+import com.capstone.construction.domain.enumerate.CommuneType;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
+@AppLog
 @Component
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CommuneUseCase {
-  CommuneService communeService;
+  final CommuneService communeService;
+  final MessageProducer producer;
+  final String prefix = ".commune.";
 
-  public void createCommune(@NonNull CommuneRequest request) {
-    log.info("UseCase: Creating commune {}", request.name());
+  @Value("${rabbit-mq-config.queue_name}" + prefix + "${rabbit-mq-config.actions[0]}")
+  String UPDATE_ROUTING_KEY;
+
+  @Value("${rabbit-mq-config.queue_name}" + prefix + "${rabbit-mq-config.actions[1]}")
+  String DELETE_ROUTING_KEY;
+
+  public void createCommune(@NonNull CreateRequest request) {
     communeService.createCommune(request);
   }
 
-  public CommuneResponse updateCommune(String id, CommuneRequest request) {
-    log.info("UseCase: Updating commune {}", id);
-    return communeService.updateCommune(id, request);
+  @Transactional(rollbackFor = Exception.class)
+  public CommuneResponse updateCommune(String id, UpdateRequest request) {
+    var old = communeService.getCommuneById(id);
+    var response = communeService.updateCommune(id, request);
+
+    if (!request.name().isBlank() && request.type() != null) {
+      var newCommuneType = request.type().equals(CommuneType.URBAN_WARD) ? "Phường" : "Xã";
+      var oldCommuneType = old.type().equals(CommuneType.URBAN_WARD) ? "Phường" : "Xã";
+      producer.send(UPDATE_ROUTING_KEY,
+          new UpdateEvent(old.name(), response.name(), oldCommuneType, newCommuneType));
+    }
+    return response;
   }
 
+  @Transactional(rollbackFor = Exception.class)
   public void deleteCommune(String id) {
-    log.info("UseCase: Deleting commune {}", id);
+    var old = communeService.getCommuneById(id);
     communeService.deleteCommune(id);
+
+    producer.send(DELETE_ROUTING_KEY, new DeleteEvent(old.name(), old.type().toString()));
   }
 
   public CommuneResponse getCommuneById(String id) {
-    log.info("UseCase: Fetching commune {}", id);
     return communeService.getCommuneById(id);
   }
 
   public PageResponse<CommuneResponse> getAllCommunes(Pageable pageable) {
-    log.info("UseCase: Fetching all communes");
     return communeService.getAllCommunes(pageable);
   }
 }
