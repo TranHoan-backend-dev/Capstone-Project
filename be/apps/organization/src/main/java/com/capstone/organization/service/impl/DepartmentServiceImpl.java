@@ -109,9 +109,10 @@ public class DepartmentServiceImpl implements DepartmentService {
   @Transactional(rollbackFor = Exception.class)
   public void deleteDepartment(String departmentId) {
     log.info("Deleting department with id: {}", departmentId);
-    if (departmentRepo.existsById(departmentId)) {
-      departmentRepo.deleteById(departmentId);
+    if (!departmentRepo.existsById(departmentId)) {
+      throw new IllegalArgumentException("Department not found");
     }
+    departmentRepo.deleteById(departmentId);
   }
 
   private @NonNull DepartmentResponse convert(@NonNull Department department) {

@@ -26,6 +26,11 @@ public class GlobalExceptionHandler {
     return Utils.returnInternalServerErrorResponse(ex.getMessage(), null);
   }
 
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<WrapperApiResponse> handleIllegalArgumentException(@NonNull IllegalArgumentException ex) {
+    return Utils.returnBadRequestResponse(ex.getMessage(), null);
+  }
+
   @ExceptionHandler(ExistingException.class)
   public ResponseEntity<WrapperApiResponse> handleExistingException(@NonNull ExistingException ex) {
     return Utils.returnBadRequestResponse(ex.getMessage(), null);
