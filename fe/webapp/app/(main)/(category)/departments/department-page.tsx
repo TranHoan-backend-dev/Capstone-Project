@@ -12,7 +12,6 @@ import { Modal, ModalContent } from "@heroui/react";
 const DepartmentPage = () => {
   const [filter, setFilter] = useState<DepartmentFilter>({
     keyword: "",
-    phoneNumber: "",
   });
   const [showAddForm, setShowAddForm] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);

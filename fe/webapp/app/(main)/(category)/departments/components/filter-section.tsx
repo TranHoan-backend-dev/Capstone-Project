@@ -15,19 +15,13 @@ export const FilterSection = ({
   onAddNew,
 }: FilterSectionDepartmentProps) => {
   const [keyword, setKeyword] = useState(filter.keyword ?? "");
-  const [phone, setPhone] = useState(filter.phoneNumber ?? "");
   useEffect(() => {
     setKeyword(filter.keyword ?? "");
   }, [filter.keyword]);
 
-  useEffect(() => {
-    setPhone(filter.phoneNumber ?? "");
-  }, [filter.phoneNumber]);
-
   const handleSearch = () => {
     onSearch({
-      keyword: keyword.trim() || undefined,
-      phoneNumber: phone.trim() || undefined,
+      keyword: keyword.trim() || "",
     });
   };
 
@@ -51,19 +45,15 @@ export const FilterSection = ({
       }
     >
       <section className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
           <div className="md:col-span-1">
             <CustomInput
               label="Tên phòng ban"
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
-            />
-          </div>
-          <div className="md:col-span-1">
-            <CustomInput
-              label="Số điện thoại"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSearch();
+              }}
             />
           </div>
         </div>

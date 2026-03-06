@@ -2,12 +2,13 @@ export interface DepartmentItem {
   id: string;
   stt: string;
   name: string;
-  phone: string;
+  phoneNumber: string;
 }
 export interface DepartmentFormProps {
   initialData?: {
     id?: string;
     name?: string;
+    phoneNumber?: string;
   };
   onSuccess: () => void;
   onClose: () => void;
@@ -15,7 +16,6 @@ export interface DepartmentFormProps {
 
 export interface DepartmentFilter {
   keyword?: string;
-  phoneNumber?: string;
 }
 
 export interface FilterSectionDepartmentProps {

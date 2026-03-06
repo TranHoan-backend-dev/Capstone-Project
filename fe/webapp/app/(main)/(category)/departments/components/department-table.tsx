@@ -11,6 +11,8 @@ import {
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import { DEPARTMENT_COLUMN } from "@/config/table-columns";
 import { CallToast } from "@/components/ui/CallToast";
+import { authFetch } from "@/utils/authFetch";
+import { ConfirmDialog } from "@/components/ui/modal/ConfirmDialog";
 
 export const DepartmentTable = ({
   keyword,
@@ -22,7 +24,15 @@ export const DepartmentTable = ({
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
-
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [sort, setSort] = useState<{
+    field: string;
+    direction: "asc" | "desc";
+  }>({
+    field: "name",
+    direction: "desc",
+  });
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
@@ -34,6 +44,7 @@ export const DepartmentTable = ({
         const params = new URLSearchParams({
           page: String(page - 1),
           size: String(pageSize),
+          sort: `${sort.field},${sort.direction}`,
         });
 
         const trimmedKeyword = keyword?.keyword?.trim();
@@ -41,12 +52,16 @@ export const DepartmentTable = ({
           params.append("keyword", trimmedKeyword);
         }
 
-        const res = await fetch(
+        const res = await authFetch(
           `/api/organization/departments?${params.toString()}`,
         );
 
         if (!res.ok) {
-          console.error("Fetch failed", res.status);
+          CallToast({
+            title: "Lỗi",
+            message: "Không thể tải danh sách phòng ban",
+            color: "danger",
+          });
           return;
         }
 
@@ -60,7 +75,7 @@ export const DepartmentTable = ({
           id: item.departmentId,
           stt: (page - 1) * pageSize + index + 1,
           name: item.name,
-          phone: item.phoneNumber,
+          phoneNumber: item.phoneNumber,
         }));
         setData(mapped);
       } catch (e) {
@@ -73,11 +88,42 @@ export const DepartmentTable = ({
     };
 
     fetchData();
-  }, [page, keyword, reloadKey]);
+  }, [page, keyword, reloadKey, sort]);
+
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return;
+
+    try {
+      setDeleteLoading(true);
+
+      const res = await authFetch(`/api/organization/departments/${deleteId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Delete failed");
+
+      CallToast({
+        title: "Thành công",
+        message: "Xóa phòng ban thành công",
+        color: "success",
+      });
+
+      setDeleteId(null);
+      onDeleted();
+    } catch (e: any) {
+      CallToast({
+        title: "Lỗi",
+        message: e.message || "Có lỗi xảy ra",
+        color: "danger",
+      });
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
 
   useEffect(() => {
     setPage(1);
-  }, [keyword]);
+  }, [keyword.keyword]);
 
   const actionItems = useMemo(
     () => [
@@ -95,32 +141,12 @@ export const DepartmentTable = ({
         content: "Xóa",
         icon: DeleteIcon,
         className: "text-red-500 hover:bg-red-50",
-        onClick: async (id: string) => {
-          if (!confirm("Bạn có chắc muốn xóa đường phố này?")) return;
-
-          try {
-            const res = await fetch(`/api/organization/departments/${id}`, {
-              method: "DELETE",
-            });
-
-            if (!res.ok) throw new Error("Delete failed");
-            CallToast({
-              title: "Thành công",
-              message: "Xóa đường phố thành công!",
-              color: "success",
-            });
-            onDeleted();
-          } catch (e: any) {
-            CallToast({
-              title: "Lỗi",
-              message: e.message || "Có lỗi xảy ra",
-              color: "danger",
-            });
-          }
+        onClick: (id: string) => {
+          setDeleteId(id);
         },
       },
     ],
-    [data, onEdit, onDeleted],
+    [onEdit],
   );
 
   const renderCell = (item: DepartmentItem, columnKey: string) => {
@@ -180,8 +206,18 @@ export const DepartmentTable = ({
           total: totalPages,
           page: page,
           onChange: setPage,
-          summary: `${totalItems}`,
+          summary: `${data.length}`,
         }}
+      />
+      <ConfirmDialog
+        isOpen={!!deleteId}
+        title="Xác nhận xoá"
+        message="Bạn có chắc muốn xoá phòng ban này không?"
+        confirmText="Xoá"
+        confirmColor="danger"
+        isLoading={deleteLoading}
+        onClose={() => setDeleteId(null)}
+        onConfirm={handleConfirmDelete}
       />
     </>
   );

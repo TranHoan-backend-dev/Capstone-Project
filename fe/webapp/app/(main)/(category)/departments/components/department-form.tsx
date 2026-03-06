@@ -7,6 +7,7 @@ import CustomInput from "@/components/ui/custom/CustomInput";
 import { CheckApprovalIcon } from "@/config/chip-and-icon";
 import { Card, CardBody } from "@heroui/react";
 import { DepartmentFormProps } from "@/types";
+import { authFetch } from "@/utils/authFetch";
 
 export const DepartmentForm = ({
   initialData,
@@ -16,29 +17,42 @@ export const DepartmentForm = ({
   const isEdit = !!initialData?.id;
 
   const [name, setName] = useState(initialData?.name || "");
+  const [phoneNumber, setPhoneNumber] = useState(
+    initialData?.phoneNumber || "",
+  );
   const [submitLoading, setSubmitLoading] = useState(false);
 
   useEffect(() => {
     setName(initialData?.name || "");
+    setPhoneNumber(initialData?.phoneNumber || "");
   }, [initialData]);
 
   const handleSubmit = async () => {
     if (submitLoading) return;
     try {
       setSubmitLoading(true);
+      const phoneRegex = /^0[0-9]{9}$/;
+
+      if (!phoneRegex.test(phoneNumber)) {
+        CallToast({
+          title: "Lỗi",
+          message: "Số điện thoại phải bắt đầu bằng 0 và gồm đúng 10 chữ số",
+          color: "danger",
+        });
+        return;
+      }
       const url = isEdit
         ? `/api/organization/departments/${initialData?.id}`
         : `/api/organization/departments`;
 
       const method = isEdit ? "PUT" : "POST";
 
-      const payload = { name };
+      const payload = {
+        name,
+        phoneNumber,
+      };
 
-      if (!isEdit || name !== initialData?.name) {
-        payload.name = name;
-      }
-
-      const response = await fetch(url, {
+      const response = await authFetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -53,14 +67,22 @@ export const DepartmentForm = ({
         title: "Thành công",
         message: isEdit
           ? "Cập nhật thành công!"
-          : "Thêm mới đường phố thành công!",
+          : "Thêm mới phòng ban thành công!",
         color: "success",
       });
       onSuccess();
     } catch (e: any) {
+      let message = e.message || "Có lỗi xảy ra";
+      if (message === "Phone number already exists") {
+        message = "Số điện thoại đã tồn tại";
+      }
+
+      if (message === "Name already exists") {
+        message = "Tên phòng ban đã tồn tại";
+      }
       CallToast({
         title: "Lỗi",
-        message: e.message || "Có lỗi xảy ra",
+        message: message,
         color: "danger",
       });
     } finally {
@@ -86,8 +108,8 @@ export const DepartmentForm = ({
             />
             <CustomInput
               label="Số điện thoại"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
             />
           </div>
           <div className="flex justify-end gap-4">
@@ -100,7 +122,7 @@ export const DepartmentForm = ({
                 submitLoading ? null : <CheckApprovalIcon className="w-4 h-4" />
               }
               onPress={handleSubmit}
-              isDisabled={!name.trim()}
+              isDisabled={!name.trim() || !phoneNumber.trim() || submitLoading}
               isLoading={submitLoading}
             >
               {submitLoading ? "Đang lưu..." : "Lưu"}
