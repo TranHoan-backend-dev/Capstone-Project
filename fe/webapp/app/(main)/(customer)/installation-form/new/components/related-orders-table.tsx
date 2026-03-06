@@ -129,7 +129,7 @@ export const RelatedOrdersTable = ({ data }: RelatedOrdersTableProps) => {
       headerSummary={`${data.length}`}
       paginationProps={{
         total: 1,
-        initialPage: 1,
+        page: 1,
         onChange: (page) => console.log(page),
         summary: `${data.length}`,
       }}

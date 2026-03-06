@@ -187,6 +187,38 @@ class RoadmapServiceImplTest {
   }
 
   @Test
+  void should_ThrowException_When_UpdateLateralNotFound() {
+    // Given
+    var id = "roadmap-id";
+    var request = new RoadmapRequest("Name", "non-existent", null);
+    var lateral = new Lateral("old-lat", "Old", null, null, null);
+    var network = new WaterSupplyNetwork("old-net", "Old", null, null);
+    var existingRoadmap = new Roadmap(id, "Old", lateral, network, null, null);
+    when(roadmapRepository.findById(id)).thenReturn(Optional.of(existingRoadmap));
+    when(lateralRepository.findById("non-existent")).thenReturn(Optional.empty());
+
+    // When & Then
+    assertThatThrownBy(() -> roadmapService.updateRoadmap(id, request))
+        .isExactlyInstanceOf(IllegalArgumentException.class);
+  }
+
+  @Test
+  void should_ThrowException_When_UpdateNetworkNotFound() {
+    // Given
+    var id = "roadmap-id";
+    var request = new RoadmapRequest("Name", null, "non-existent");
+    var lateral = new Lateral("old-lat", "Old", null, null, null);
+    var network = new WaterSupplyNetwork("old-net", "Old", null, null);
+    var existingRoadmap = new Roadmap(id, "Old", lateral, network, null, null);
+    when(roadmapRepository.findById(id)).thenReturn(Optional.of(existingRoadmap));
+    when(networkRepository.findById("non-existent")).thenReturn(Optional.empty());
+
+    // When & Then
+    assertThatThrownBy(() -> roadmapService.updateRoadmap(id, request))
+        .isExactlyInstanceOf(IllegalArgumentException.class);
+  }
+
+  @Test
   void should_ThrowException_When_UpdateNotFound() {
     // Given
     var id = "non-existent-id";

@@ -15,7 +15,7 @@ import {
   ClipboardDocumentCheckIcon,
   DocumentMagnifyingGlassIcon,
   PhotoIcon,
-  XMarkIcon
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import {
   ArrowPathIcon,
@@ -32,6 +32,8 @@ import {
   InformationCircleIcon,
   BellIcon,
   DocumentTextIcon,
+  ChevronUpIcon,
+  ChevronDownIcon,
 } from "@heroicons/react/24/solid";
 
 export const DarkGreenChip = "dark:bg-green-900 dark:text-white";
@@ -74,7 +76,8 @@ export const PictureIcon = PhotoIcon;
 export const BellsIcon = BellIcon;
 export const PencilIcon = PencilSquareIcon;
 export const CancelIcon = XMarkIcon;
-
+export const SortAscIcon = ChevronUpIcon;
+export const SortDescIcon = ChevronDownIcon;
 const BaseColor = "w-5 h-5 cursor-pointer transition-colors";
 
 export const RedIconColor = `${BaseColor} text-red-500 dark:text-danger hover:text-red-600 dark:hover:text-danger-400`;

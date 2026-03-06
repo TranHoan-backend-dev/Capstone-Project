@@ -1,6 +1,7 @@
 package com.capstone.auth.domain.model;
 
 import com.capstone.auth.infrastructure.config.Constant;
+import com.capstone.common.utils.SharedConstant;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
@@ -79,7 +80,7 @@ public class Profile {
     if (phoneNumber.isBlank()) {
       throw new IllegalArgumentException(Constant.PT_15);
     }
-    if (!phoneNumber.matches(Constant.PHONE_PATTERN)) {
+    if (!phoneNumber.matches(SharedConstant.PHONE_PATTERN)) {
       throw new IllegalArgumentException(Constant.PT_14);
     }
     this.phoneNumber = phoneNumber;

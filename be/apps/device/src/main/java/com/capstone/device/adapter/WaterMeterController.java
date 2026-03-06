@@ -104,12 +104,13 @@ public class WaterMeterController {
   }
 
   @Operation(summary = "", description = "")
-  @GetMapping("/{id}/exists")
-  public ResponseEntity<WrapperApiResponse> checkWaterMeterExisting(
+  @GetMapping("/overall/{id}/exists")
+  public ResponseEntity<WrapperApiResponse> checkOverallWaterMeterExisting(
     @PathVariable @Parameter(description = "") String id
   ) {
     log.info("REST request to check existence of water meter: {}", id);
-    return Utils.returnOkResponse("Check water meter existence successfully",
-      waterMeterService.isWaterMeterExisting(id));
+    var response = waterMeterService.isOverallWaterMeterExisting(id);
+    log.info("Meter is existed? {}", response);
+    return Utils.returnOkResponse("Check water meter existence successfully", response);
   }
 }
