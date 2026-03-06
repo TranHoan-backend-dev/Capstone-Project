@@ -39,7 +39,12 @@ public class InstallationFormController {
   @NonFinal
   Logger log;
 
-  @Operation(summary = "Tạo mới đơn lắp đặt", description = "API này cho phép nhân viên tiếp nhận hồ sơ tạo mới một đơn yêu cầu lắp đặt nước. Hồ sơ bao gồm thông tin khách hàng, mục đích sử dụng và các thông tin liên quan khác.", responses = {
+  @Operation(summary = "Tạo mới đơn lắp đặt", description = """
+    API này cho phép nhân viên tiếp nhận hồ sơ tạo mới một đơn yêu cầu lắp đặt nước. <br/>
+    Hồ sơ bao gồm thông tin khách hàng, mục đích sử dụng và các thông tin liên quan khác.
+    Sau khi đơn được tạo thành công, hệ thống sẽ gửi thông báo cho trường phòng KH-KT tại cổng /technical/head,
+    đồng thời hệ thống cũng gửi sự kiện tại cổng /create-new-order để tự động cập nhật danh sách
+    """, responses = {
     @ApiResponse(responseCode = "201", description = "Tạo đơn lắp đặt thành công"),
     @ApiResponse(responseCode = "409", description = "Lỗi xung đột: Số hồ sơ hoặc mã biểu mẫu đã tồn tại trong hệ thống", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "400", description = "Lỗi dữ liệu: Định dạng ngày không hợp lệ hoặc thiếu thông tin bắt buộc", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
