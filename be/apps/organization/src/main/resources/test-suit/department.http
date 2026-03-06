@@ -32,3 +32,59 @@ Accept: application/json
 GET {{uri}}?keyword=02
 Authorization: Bearer {{access_token}}
 Accept: application/json
+
+### U
+### Happy case
+POST {{uri}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Name 1",
+  "phoneNumber": "0949279204"
+}
+
+### Blank
+POST {{uri}}
+Authorization: Bearer {{access_token}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "",
+  "phoneNumber": ""
+}
+
+### duplicated name
+POST {{uri}}
+Authorization: Bearer {{access_token}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "Phòng Kế hoạch Kỹ Thuật",
+  "phoneNumber": "0949279205"
+}
+
+### duplicated phone number
+POST {{uri}}
+Authorization: Bearer {{access_token}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "shgdfh",
+  "phoneNumber": "02283636681"
+}
+
+### D
+### duplicated phone number
+DELETE {{uri}}/hkggkgf
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### duplicated phone number
+DELETE {{uri}}/e9fd7aa6-f047-4034-9835-b6020db944ef
+Authorization: Bearer {{access_token}}
+Accept: application/json
