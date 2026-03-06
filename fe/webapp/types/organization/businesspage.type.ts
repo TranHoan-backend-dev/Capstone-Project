@@ -13,12 +13,20 @@ export interface FilterSectionBusinessPageProps {
   onAddNew: () => void;
 }
 
+export interface BusinessPageFormProps {
+  initialData?: {
+    id?: string;
+    name?: string;
+    phone?: string;
+  };
+  onSuccess: () => void;
+  onClose: () => void;
+}
+
 export interface BusinessPageTableProps {
-  filter: string;
   isActive?: boolean | null;
-  reloadKey?: number;
   onEdit: (item: BusinessPageItem) => void;
-  onDelete: () => void;
+  onDeleted: () => void;
 }
 
 export interface BusinessPageResponse {

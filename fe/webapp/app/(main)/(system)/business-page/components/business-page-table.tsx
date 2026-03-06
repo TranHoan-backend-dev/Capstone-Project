@@ -16,13 +16,14 @@ import {
   BusinessPageTableProps,
 } from "@/types";
 import { BUSINESS_PAGES_COLUMNS } from "@/config/table-columns";
+import { CallToast } from "@/components/ui/CallToast";
+import { authFetch } from "@/utils/authFetch";
+import { ConfirmDialog } from "@/components/ui/modal/ConfirmDialog";
 
 export const BusinessPageTable = ({
-  filter,
   isActive,
-  reloadKey,
   onEdit,
-  onDelete,
+  onDeleted,
 }: BusinessPageTableProps) => {
   const [data, setData] = useState<BusinessPageItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
@@ -30,7 +31,8 @@ export const BusinessPageTable = ({
   const [editingItem, setEditingItem] = useState<BusinessPageItem | null>(null);
   const [openForm, setOpenForm] = useState(false);
   const [loading, setLoading] = useState(true);
-
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
@@ -43,11 +45,6 @@ export const BusinessPageTable = ({
           page: String(page - 1),
           size: String(pageSize),
         });
-
-        const trimmedKeyword = filter.trim();
-        if (trimmedKeyword) {
-          params.append("filter", trimmedKeyword);
-        }
 
         if (isActive !== undefined && isActive !== null) {
           params.append("isActive", String(isActive));
@@ -87,11 +84,45 @@ export const BusinessPageTable = ({
       }
     };
     fetchData();
-  }, [page, filter, isActive, reloadKey]);
+  }, [page, isActive]);
+
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return;
+
+    try {
+      setDeleteLoading(true);
+
+      const res = await authFetch(
+        `/api/organization/business-pages/${deleteId}`,
+        {
+          method: "DELETE",
+        },
+      );
+
+      if (!res.ok) throw new Error("Delete failed");
+
+      CallToast({
+        title: "Thành công",
+        message: "Xóa trang doanh nghiệp thành công",
+        color: "success",
+      });
+
+      setDeleteId(null);
+      onDeleted();
+    } catch (e: any) {
+      CallToast({
+        title: "Lỗi",
+        message: e.message || "Có lỗi xảy ra",
+        color: "danger",
+      });
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
 
   useEffect(() => {
     setPage(1);
-  }, [filter, isActive]);
+  }, [isActive]);
 
   const actionItems = useMemo(
     () => [
@@ -109,24 +140,12 @@ export const BusinessPageTable = ({
         content: "Xóa",
         icon: DeleteIcon,
         className: "text-red-500 hover:bg-red-50",
-        onClick: async (id: string) => {
-          if (!confirm("Bạn có chắc muốn xóa trang này?")) return;
-
-          try {
-            const res = await fetch(`/api///${id}`, {
-              method: "DELETE",
-            });
-
-            if (!res.ok) throw new Error("Delete failed");
-
-            onDelete();
-          } catch (e) {
-            console.error(e);
-          }
+        onClick: (id: string) => {
+          setDeleteId(id);
         },
       },
     ],
-    [data, onEdit, onDelete],
+    [data, onEdit, onDeleted],
   );
 
   const renderCell = (item: BusinessPageItem, columnKey: string) => {
@@ -189,20 +208,32 @@ export const BusinessPageTable = ({
   };
 
   return (
-    <GenericDataTable
-      isLoading={loading}
-      title="Danh sách trang doanh nghiệp"
-      columns={BUSINESS_PAGES_COLUMNS}
-      data={data}
-      isCollapsible
-      renderCellAction={renderCell}
-      headerSummary={`${totalItems}`}
-      paginationProps={{
-        total: totalPages,
-        initialPage: page,
-        onChange: setPage,
-        summary: `${data.length}`,
-      }}
-    />
+    <>
+      <GenericDataTable
+        isLoading={loading}
+        title="Danh sách trang doanh nghiệp"
+        columns={BUSINESS_PAGES_COLUMNS}
+        data={data}
+        isCollapsible
+        renderCellAction={renderCell}
+        headerSummary={`${totalItems}`}
+        paginationProps={{
+          total: totalPages,
+          page: page,
+          onChange: setPage,
+          summary: `${data.length}`,
+        }}
+      />
+      <ConfirmDialog
+        isOpen={!!deleteId}
+        title="Xác nhận xoá"
+        message="Bạn có chắc muốn xoá thôn/làng này không?"
+        confirmText="Xoá"
+        confirmColor="danger"
+        isLoading={deleteLoading}
+        onClose={() => setDeleteId(null)}
+        onConfirm={handleConfirmDelete}
+      />
+    </>
   );
 };
