@@ -12,6 +12,7 @@ import com.capstone.auth.infrastructure.config.Constant;
 import com.capstone.auth.infrastructure.service.GcsService;
 import com.capstone.auth.infrastructure.utils.AuthUtils;
 import com.capstone.common.annotation.AppLog;
+import com.capstone.common.utils.SharedConstant;
 import com.capstone.common.utils.Utils;
 import jakarta.ws.rs.BadRequestException;
 import lombok.AccessLevel;
@@ -90,7 +91,7 @@ public class ProfileUseCase {
       !request.phoneNumber().isEmpty() &&
       !request.phoneNumber().isBlank() &&
       !request.phoneNumber().equalsIgnoreCase(profile.phoneNumber())) {
-      if (!request.phoneNumber().matches(Constant.PHONE_PATTERN)) {
+      if (!request.phoneNumber().matches(SharedConstant.PHONE_PATTERN)) {
         throw new IllegalArgumentException(Constant.PT_14);
       }
       if (!request.phoneNumber().equals(profile.phoneNumber())) {

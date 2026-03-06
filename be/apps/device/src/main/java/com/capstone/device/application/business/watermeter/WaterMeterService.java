@@ -57,5 +57,7 @@ public interface WaterMeterService {
    */
   boolean isWaterMeterExisting(String id);
 
+  boolean isOverallWaterMeterExisting(String id);
+
   void deleteOverallWaterMeterByLateralId(String id);
 }
