@@ -13,4 +13,6 @@ public interface InstallationFormService {
   boolean isInstallationFormExisting(String formNumber, String formCode);
 
   Page<InstallationFormListResponse> getInstallationForms(Pageable pageable, FilterFormRequest request);
+
+  void approveAndAssignInstallationForm(String formNumber, String formCode, Boolean status);
 }

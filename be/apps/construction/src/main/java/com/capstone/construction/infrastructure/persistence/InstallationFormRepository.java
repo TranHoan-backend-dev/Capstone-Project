@@ -1,6 +1,7 @@
 package com.capstone.construction.infrastructure.persistence;
 
 import com.capstone.construction.domain.model.InstallationForm;
+import com.capstone.construction.domain.model.utils.InstallationFormId;
 import jakarta.persistence.criteria.Predicate;
 import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Page;
@@ -14,9 +15,9 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Repository
-public interface InstallationFormRepository extends JpaRepository<InstallationForm, String>,
+public interface InstallationFormRepository extends JpaRepository<InstallationForm, InstallationFormId>,
   JpaSpecificationExecutor<InstallationForm> {
-  boolean existsByFormNumberOrFormCode(String formNumber, String formCode);
+  boolean existsById_FormNumberOrId_FormCode(String formNumber, String formCode);
 
   Page<InstallationForm> findByHandoverByIsNull(Pageable pageable);
 
