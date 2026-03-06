@@ -61,7 +61,7 @@ public final class Constant {
   public static final String PT_57 = "Household registration number cannot be null";
   public static final String PT_58 = "";
   public static final String PT_59 = "Network cannot be null or empty";
-  public static final String PT_60 = "";
+  public static final String PT_60 = "This employee does not exist";
   public static final String PT_61 = "The staff in the Planning-Technical Department who will create the installation form cannot be null";
   public static final String PT_62 = "Overall water meter ID cannot be null or empty";
   public static final String PT_63 = "Contract ID cannot be null or empty";

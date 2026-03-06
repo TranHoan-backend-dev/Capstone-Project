@@ -11,6 +11,7 @@ public record InstallationFormListResponse(
   String scheduleSurveyAt,
   String registrationAt,
   String surveyEmployeeName,
+  String creator,
   FormProcessingStatus status
 ) {
 }

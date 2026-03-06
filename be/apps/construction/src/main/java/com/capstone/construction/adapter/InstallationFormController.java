@@ -3,6 +3,7 @@ package com.capstone.construction.adapter;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.utils.Utils;
 import com.capstone.common.response.WrapperApiResponse;
+import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
 import com.capstone.construction.application.dto.request.installationform.FilterFormRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
@@ -66,12 +67,10 @@ public class InstallationFormController {
     return Utils.returnCreatedResponse("Installation form created successfully");
   }
 
-  @PatchMapping("/approve/{id}")
-  public ResponseEntity<?> approveInstallationForm(
-    @PathVariable("id") String orderId,
-    @RequestParam String status
-  ) {
-    log.info("Received request to approve installation form: {}", orderId);
+  @PatchMapping("/approve")
+  public ResponseEntity<?> approveInstallationForm(@RequestBody ApproveRequest request) {
+    log.info("Received request to approve installation form: {}", request.formCode());
+    installationFormHandlingUseCase.approveInstallationForm(request);
     return Utils.returnOkResponse("Change status successfully", null);
   }
 

@@ -15,6 +15,11 @@ public interface EmployeeService {
   @GetMapping("/employees/{authorId}")
   WrapperApiResponse isEmployeeExisting(@PathVariable("authorId") String id);
 
+  /**
+   * Kiem tra xem id cua nhan vien co ton tai trong he thong thay khong
+   * @param id id cua nhan vien
+   * @return tra ve true hoac false
+   */
   @GetMapping("/employees/{id}/name")
   WrapperApiResponse getEmployeeNameById(@PathVariable String id);
 }

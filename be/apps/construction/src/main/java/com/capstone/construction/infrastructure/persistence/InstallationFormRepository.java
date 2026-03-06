@@ -62,4 +62,6 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
       return cb.and(predicates.toArray(new Predicate[0]));
     };
   }
+
+  Optional<InstallationForm> findById_FormCodeAndId_FormNumber(String idFormCode, String idFormNumber);
 }

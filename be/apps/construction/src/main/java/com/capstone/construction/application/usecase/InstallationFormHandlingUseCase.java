@@ -1,10 +1,12 @@
 package com.capstone.construction.application.usecase;
 
 import com.capstone.construction.application.business.installationform.InstallationFormService;
+import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
 import com.capstone.construction.application.dto.request.installationform.FilterFormRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import com.capstone.construction.application.dto.response.installationform.NewInstallationFormResponse;
+import com.capstone.construction.application.event.producer.order.ApproveEvent;
 import com.capstone.construction.application.event.producer.order.CreatedEvent;
 import com.capstone.construction.application.event.producer.MessageProducer;
 import com.capstone.construction.application.exception.ExistingItemException;
@@ -52,22 +54,40 @@ public class InstallationFormHandlingUseCase {
     }
 
     var savedResponse = ifSrv.createNewInstallationForm(request);
-    var empName = empSrv.getEmployeeNameById(savedResponse.creator());
 
     // Send notification event using the DTO data
     var event = new CreatedEvent(
       savedResponse.formNumber(),
       savedResponse.customerName(),
       savedResponse.formCode(),
-      empName.data().toString(),
-      savedResponse.createdAt());
+      getCreatorName(savedResponse.creator()),
+      savedResponse.createdAt().toLocalDate().toString());
     messageProducer.send(routingKey, event);
 
     return savedResponse;
   }
 
-  public void approveInstallationForm(String id, Boolean status) {
-    var routingKey = QUEUE_NAME + PREFIX + APPROVE_ACTION;
-    messageProducer.send(routingKey, null);
+  public void approveInstallationForm(ApproveRequest request) {
+    ifSrv.approveAndAssignInstallationForm(request);
+    var order = ifSrv.getByFormCodeAndFormNumber(request.formCode(), request.formNumber());
+
+    if (request.status()) {
+      // gui su kien cho nhan vien khao sat
+      var routingKey = QUEUE_NAME + PREFIX + APPROVE_ACTION;
+      messageProducer.send(routingKey, new ApproveEvent(
+        request.empId(),
+        order.formCode(),
+        order.formNumber(),
+        order.creator(),
+        order.customerName(),
+        order.registrationAt()
+      ));
+    }
+
+  }
+
+  private String getCreatorName(String creator) {
+    var empName = empSrv.getEmployeeNameById(creator);
+    return empName.data().toString();
   }
 }

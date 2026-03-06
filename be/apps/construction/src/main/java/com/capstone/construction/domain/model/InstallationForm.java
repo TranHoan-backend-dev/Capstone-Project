@@ -107,8 +107,12 @@ public class InstallationForm {
   void onCreate() {
     this.createdAt = LocalDateTime.now();
     this.updatedAt = this.createdAt;
-    this.status = new FormProcessingStatus();
-    status.setRegistration(ProcessingStatus.PROCESSING);
+    this.status = new FormProcessingStatus(
+      ProcessingStatus.PROCESSING,
+      ProcessingStatus.PROCESSING,
+      ProcessingStatus.PROCESSING,
+      ProcessingStatus.PROCESSING
+    );
   }
 
   @PreUpdate
@@ -132,6 +136,11 @@ public class InstallationForm {
   public void setCustomerName(String customerName) {
     requireNonNullAndNotEmpty(customerName, Constant.PT_27);
     this.customerName = customerName;
+  }
+
+  public void setStatus(FormProcessingStatus status) {
+    Objects.requireNonNull(status, Constant.PT_27);
+    this.status = status;
   }
 
   public void setRepresentative(List<Representative> representative) {
@@ -235,7 +244,6 @@ public class InstallationForm {
   }
 
   public void setFormCode(String value) {
-    System.out.println("Value: " + value);
     requireNonNullAndNotEmpty(value, Constant.PT_01);
     this.id.setFormCode(value);
   }
@@ -258,13 +266,11 @@ public class InstallationForm {
 
     public InstallationFormBuilder formNumber(String formNumber) {
       instance.setFormNumber(formNumber);
-      System.out.println(instance.id);
       return this;
     }
 
     public InstallationFormBuilder formCode(String value) {
       instance.setFormCode(value);
-      System.out.println(instance.id);
       return this;
     }
 
