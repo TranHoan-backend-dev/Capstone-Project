@@ -11,6 +11,7 @@ import { ROLE_META } from "@/config/role.config";
 import { Role } from "@/constants/roles";
 import { CallToast } from "@/components/ui/CallToast";
 import { formatDateProfile } from "@/utils/format";
+import { validateProfile } from "@/utils/profileValidation";
 
 interface EmployeeProfileProps {
   data: EmployeeProfileData;
@@ -44,7 +45,15 @@ const EmployeeProfile = ({ data }: EmployeeProfileProps) => {
         address: formData.address,
       };
 
-      console.log("payload date: " + payload.birthdate);
+      const error = validateProfile(payload);
+      if (error) {
+        CallToast({
+          title: "Lỗi",
+          message: error,
+          color: "danger",
+        });
+        return;
+      }
       const res = await fetch("/api/auth/me", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },

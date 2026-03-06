@@ -5,6 +5,7 @@ import {
 import { keycloakRefreshToken } from "@/services/keycloak.service";
 import { getAccessToken } from "@/utils/getAccessToken";
 import { getRefreshToken } from "@/utils/getRefreshToken";
+import { validateProfile } from "@/utils/profileValidation";
 import { setAuthCookies } from "@/utils/setAuthCookies";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -72,6 +73,11 @@ export async function PATCH(req: NextRequest) {
         { message: "Không có dữ liệu để cập nhật" },
         { status: 400 },
       );
+    }
+    const validationError = validateProfile(payload);
+
+    if (validationError) {
+      return NextResponse.json({ message: validationError }, { status: 400 });
     }
 
     const accessToken = getAccessToken(req);
