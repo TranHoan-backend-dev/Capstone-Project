@@ -4,6 +4,7 @@ import com.capstone.common.enumerate.CustomerType;
 import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.common.utils.SharedConstant;
 import com.capstone.construction.domain.model.utils.FormProcessingStatus;
+import com.capstone.construction.domain.model.utils.InstallationFormId;
 import com.capstone.construction.domain.model.utils.Representative;
 import com.capstone.common.enumerate.UsageTarget;
 import jakarta.persistence.*;
@@ -29,11 +30,8 @@ import org.jspecify.annotations.NonNull;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InstallationForm {
-  @Id
-  String formCode;
-
-  @Column(length = 36, unique = true, nullable = false)
-  String formNumber;
+  @EmbeddedId
+  InstallationFormId id = new InstallationFormId();
 
   @Column(nullable = false)
   String customerName;
@@ -118,9 +116,17 @@ public class InstallationForm {
     this.updatedAt = LocalDateTime.now();
   }
 
+  public String getFormNumber() {
+    return id.getFormNumber();
+  }
+
+  public String getFormCode() {
+    return id.getFormCode();
+  }
+
   public void setFormNumber(String formNumber) {
     requireNonNullAndNotEmpty(formNumber, Constant.PT_44);
-    this.formNumber = formNumber;
+    this.id.setFormNumber(formNumber);
   }
 
   public void setCustomerName(String customerName) {
@@ -229,8 +235,9 @@ public class InstallationForm {
   }
 
   public void setFormCode(String value) {
+    System.out.println("Value: " + value);
     requireNonNullAndNotEmpty(value, Constant.PT_01);
-    this.formCode = value;
+    this.id.setFormCode(value);
   }
 
   private void requireNonNullAndNotEmpty(String value, String message) {
@@ -251,11 +258,13 @@ public class InstallationForm {
 
     public InstallationFormBuilder formNumber(String formNumber) {
       instance.setFormNumber(formNumber);
+      System.out.println(instance.id);
       return this;
     }
 
     public InstallationFormBuilder formCode(String value) {
       instance.setFormCode(value);
+      System.out.println(instance.id);
       return this;
     }
 

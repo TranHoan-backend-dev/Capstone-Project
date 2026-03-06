@@ -1,8 +1,8 @@
-package com.capstone.construction.application.event.producer;
+package com.capstone.construction.application.event.producer.order;
 
 import java.time.LocalDateTime;
 
-public record InstallationFormCreatedEvent(
+public record CreatedEvent(
   String formNumber,
   String customerName,
   String formCode,

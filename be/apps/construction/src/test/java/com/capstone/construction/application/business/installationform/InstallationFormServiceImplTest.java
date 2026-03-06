@@ -299,7 +299,7 @@ class InstallationFormServiceImplTest {
   @Test
   void should_ReturnTrue_When_FormExistsByNumberOrCode() {
     // When
-    when(ifRepo.existsByFormNumberOrFormCode("NUM", "CODE")).thenReturn(true);
+    when(ifRepo.existsById_FormNumberOrId_FormCode("NUM", "CODE")).thenReturn(true);
     var result = service.isInstallationFormExisting("NUM", "CODE");
 
     // Then
@@ -309,7 +309,7 @@ class InstallationFormServiceImplTest {
   @Test
   void should_ReturnFalse_When_FormDoesNotExist() {
     // When
-    when(ifRepo.existsByFormNumberOrFormCode("NUM", "CODE")).thenReturn(false);
+    when(ifRepo.existsById_FormNumberOrId_FormCode("NUM", "CODE")).thenReturn(false);
     var result = service.isInstallationFormExisting("NUM", "CODE");
 
     // Then
