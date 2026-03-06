@@ -89,7 +89,7 @@ export const SurveyAssignmentTable = ({ data }: Props) => {
       isCollapsible={false}
       paginationProps={{
         total: data.length,
-        initialPage: 1,
+        page: 1,
         summary: `1-${data.length} của ${data.length}`,
       }}
       renderCellAction={renderCell}

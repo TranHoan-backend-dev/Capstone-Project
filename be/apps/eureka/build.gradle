@@ -19,7 +19,6 @@ dependencies {
   // Exclude swagger / springdoc from Eureka server
   configurations.configureEach {
     exclude group: 'org.springdoc'
-    exclude group: 'org.springframework.boot', module: 'spring-boot-devtools'
     exclude group: 'org.springframework.boot', module: 'spring-boot-starter-security'
   }
   implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'

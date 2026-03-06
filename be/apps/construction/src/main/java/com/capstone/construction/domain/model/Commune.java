@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import com.capstone.construction.infrastructure.config.Constant;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.jspecify.annotations.NonNull;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -59,7 +60,7 @@ public class Commune {
     this.type = type;
   }
 
-  public static Commune create(Consumer<CommuneBuilder> builder) {
+  public static Commune create(@NonNull Consumer<CommuneBuilder> builder) {
     var instance = new CommuneBuilder();
     builder.accept(instance);
     return instance.build();

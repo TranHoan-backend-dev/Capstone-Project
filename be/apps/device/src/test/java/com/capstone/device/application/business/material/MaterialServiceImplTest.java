@@ -29,254 +29,276 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class MaterialServiceImplTest {
 
-    @Mock
-    MaterialRepository mRepo;
-    @Mock
-    MaterialsGroupRepository gRepo;
-    @Mock
-    UnitRepository uRepo;
-    @Mock
-    MaterialsOfCostEstimateRepository mceRepo;
-    @Mock
-    MaterialsOfSettlementRepository msRepo;
-    @Mock
-    Logger log;
+  @Mock
+  MaterialRepository mRepo;
+  @Mock
+  MaterialsGroupRepository gRepo;
+  @Mock
+  UnitRepository uRepo;
+  @Mock
+  MaterialsOfCostEstimateRepository mceRepo;
+  @Mock
+  MaterialsOfSettlementRepository msRepo;
+  @Mock
+  Logger log;
 
-    @InjectMocks
-    MaterialServiceImpl materialService;
+  @InjectMocks
+  MaterialServiceImpl materialService;
 
-    @BeforeEach
-    void setUp() {
-        ReflectionTestUtils.setField(materialService, "log", log);
-    }
+  @BeforeEach
+  void setUp() {
+    ReflectionTestUtils.setField(materialService, "log", log);
+  }
 
-    @Test
-    void should_CreateMaterial_When_RequestIsValid() {
-        // Given
-        var request = new CreateRequest(
-                "AB.11111", "Đào đất", BigDecimal.valueOf(100000), BigDecimal.valueOf(50000),
-                BigDecimal.valueOf(45000), BigDecimal.valueOf(20000), BigDecimal.valueOf(18000),
-                "group-id", "unit-id");
+  @Test
+  void should_CreateMaterial_When_RequestIsValid() {
+    // Given
+    var request = new CreateRequest(
+        "AB.11111", "Đào đất",
+        BigDecimal.valueOf(100000), BigDecimal.valueOf(50000),
+        BigDecimal.valueOf(45000), BigDecimal.valueOf(20000),
+        BigDecimal.valueOf(18000), "group-id", "unit-id");
 
-        var group = new MaterialsGroup();
-        ReflectionTestUtils.setField(group, "name", "Group Name");
-        var unit = new Unit();
-        ReflectionTestUtils.setField(unit, "name", "Unit Name");
+    var group = new MaterialsGroup();
+    ReflectionTestUtils.setField(group, "name", "Group Name");
+    var unit = new Unit();
+    ReflectionTestUtils.setField(unit, "name", "Unit Name");
 
-        when(gRepo.findById("group-id")).thenReturn(Optional.of(group));
-        when(uRepo.findById("unit-id")).thenReturn(Optional.of(unit));
-        when(mRepo.save(any(Material.class))).thenAnswer(invocation -> {
-            Material saved = invocation.getArgument(0);
-            ReflectionTestUtils.setField(saved, "materialId", "generated-id");
-            return saved;
-        });
+    when(gRepo.findById("group-id")).thenReturn(Optional.of(group));
+    when(uRepo.findById("unit-id")).thenReturn(Optional.of(unit));
+    when(mRepo.save(any(Material.class))).thenAnswer(invocation -> {
+      Material saved = invocation.getArgument(0);
+      ReflectionTestUtils.setField(saved, "materialId", "generated-id");
+      return saved;
+    });
 
-        // When
-        var response = materialService.createMaterial(request);
+    // When
+    var response = materialService.createMaterial(request);
 
-        // Then
-        assertThat(response.id()).isEqualTo("generated-id");
-        assertThat(response.jobContent()).isEqualTo("Đào đất");
-        assertThat(response.groupName()).isEqualTo("Group Name");
-        assertThat(response.unitName()).isEqualTo("Unit Name");
-        verify(mRepo).save(any(Material.class));
-    }
+    // Then
+    assertThat(response.id()).isEqualTo("generated-id");
+    assertThat(response.jobContent()).isEqualTo("Đào đất");
+    assertThat(response.groupName()).isEqualTo("Group Name");
+    assertThat(response.unitName()).isEqualTo("Unit Name");
+    verify(mRepo).save(any(Material.class));
+  }
 
-    @Test
-    void should_ThrowException_When_GroupNotFoundDuringCreation() {
-        // Given
-        var request = new CreateRequest(
-                "LAB001", "Job", BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
-                "not-found", "unit");
-        when(gRepo.findById("not-found")).thenReturn(Optional.empty());
+  @Test
+  void should_ThrowException_When_CreateRequestIsNull() {
+    assertThatThrownBy(() -> materialService.createMaterial(null))
+        .isInstanceOf(NullPointerException.class);
+  }
 
-        // When & Then
-        assertThatThrownBy(() -> materialService.createMaterial(request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Material group not found");
-    }
+  @Test
+  void should_ThrowException_When_GroupNotFoundDuringCreation() {
+    // Given
+    var request = new CreateRequest(
+        "LAB001", "Job",
+        BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
+        BigDecimal.ONE, BigDecimal.ONE, "not-found", "unit");
+    when(gRepo.findById("not-found")).thenReturn(Optional.empty());
 
-    @Test
-    void should_ThrowException_When_UnitNotFoundDuringCreation() {
-        // Given
-        var request = new CreateRequest(
-                "LAB001", "Job", BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
-                "group", "not-found");
-        when(gRepo.findById("group")).thenReturn(Optional.of(new MaterialsGroup()));
-        when(uRepo.findById("not-found")).thenReturn(Optional.empty());
+    // When & Then
+    assertThatThrownBy(() -> materialService.createMaterial(request))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("Material group not found");
+  }
 
-        // When & Then
-        assertThatThrownBy(() -> materialService.createMaterial(request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Unit not found");
-    }
+  @Test
+  void should_ThrowException_When_UnitNotFoundDuringCreation() {
+    // Given
+    var request = new CreateRequest(
+        "LAB001", "Job",
+        BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
+        BigDecimal.ONE, BigDecimal.ONE, "group", "not-found");
+    when(gRepo.findById("group")).thenReturn(Optional.of(new MaterialsGroup()));
+    when(uRepo.findById("not-found")).thenReturn(Optional.empty());
 
-    @Test
-    void should_UpdateMaterial_When_MaterialExists() {
-        // Given
-        var id = "material-id";
-        var request = new UpdateRequest(
-                "Updated Job", BigDecimal.valueOf(200000), BigDecimal.valueOf(60000),
-                BigDecimal.valueOf(55000), BigDecimal.valueOf(30000), BigDecimal.valueOf(25000),
-                null, null);
+    // When & Then
+    assertThatThrownBy(() -> materialService.createMaterial(request))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("Unit not found");
+  }
 
-        var material = new Material();
-        ReflectionTestUtils.setField(material, "materialId", id);
-        ReflectionTestUtils.setField(material, "jobContent", "Old Job");
+  @Test
+  void should_UpdateMaterial_When_MaterialExists() {
+    // Given
+    var id = "material-id";
+    var request = new UpdateRequest(
+        "Updated Job", BigDecimal.valueOf(200000), BigDecimal.valueOf(60000),
+        BigDecimal.valueOf(55000), BigDecimal.valueOf(30000),
+        BigDecimal.valueOf(25000), null, null);
 
-        when(mRepo.findById(id)).thenReturn(Optional.of(material));
-        when(mRepo.save(any(Material.class))).thenAnswer(invocation -> invocation.getArgument(0));
+    var material = new Material();
+    ReflectionTestUtils.setField(material, "materialId", id);
+    ReflectionTestUtils.setField(material, "jobContent", "Old Job");
 
-        // When
-        var response = materialService.updateMaterial(id, request);
+    when(mRepo.findById(id)).thenReturn(Optional.of(material));
+    when(mRepo.save(any(Material.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // Then
-        assertThat(response.jobContent()).isEqualTo("Updated Job");
-        assertThat(response.price()).isEqualTo(BigDecimal.valueOf(200000));
-        verify(mRepo).save(material);
-    }
+    // When
+    var response = materialService.updateMaterial(id, request);
 
-    @Test
-    void should_OnlyUpdateNonNullFields_When_UpdateRequestHasNulls() {
-        // Given
-        var id = "material-id";
-        var request = new UpdateRequest(
-                null, null, null, null, null, null, null, null);
+    // Then
+    assertThat(response.price()).isEqualTo(BigDecimal.valueOf(200000));
+    verify(mRepo).save(material);
+  }
 
-        var material = new Material();
-        ReflectionTestUtils.setField(material, "materialId", id);
-        ReflectionTestUtils.setField(material, "jobContent", "Persistent Job");
-        ReflectionTestUtils.setField(material, "price", BigDecimal.valueOf(100));
+  @Test
+  void should_ThrowException_When_UpdateRequestIsNull() {
+    assertThatThrownBy(() -> materialService.updateMaterial("id", null))
+        .isInstanceOf(NullPointerException.class);
+  }
 
-        when(mRepo.findById(id)).thenReturn(Optional.of(material));
-        when(mRepo.save(any(Material.class))).thenAnswer(invocation -> invocation.getArgument(0));
+  @Test
+  void should_ThrowException_When_UpdateRequestIsNull() {
+    assertThatThrownBy(() -> materialService.updateMaterial("id", null))
+        .isInstanceOf(NullPointerException.class);
+  }
 
-        // When
-        var response = materialService.updateMaterial(id, request);
+  @Test
+  void should_OnlyUpdateNonNullFields_When_UpdateRequestHasNulls() {
+    // Given
+    var id = "material-id";
+    var request = new UpdateRequest(
+        null, null, null, null,
+        null, null, null, null);
 
-        // Then
-        assertThat(response.jobContent()).isEqualTo("Persistent Job");
-        assertThat(response.price()).isEqualTo(BigDecimal.valueOf(100));
-        verify(mRepo).save(material);
-    }
+    var material = new Material();
+    ReflectionTestUtils.setField(material, "materialId", id);
+    ReflectionTestUtils.setField(material, "jobContent", "Persistent Job");
+    ReflectionTestUtils.setField(material, "price", BigDecimal.valueOf(100));
 
-    @Test
-    void should_ThrowException_When_UpdatingNonExistentMaterial() {
-        // Given
-        var id = "not-found";
-        var request = new UpdateRequest(null, null, null, null, null, null, null, null);
-        when(mRepo.findById(id)).thenReturn(Optional.empty());
+    when(mRepo.findById(id)).thenReturn(Optional.of(material));
+    when(mRepo.save(any(Material.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // When & Then
-        assertThatThrownBy(() -> materialService.updateMaterial(id, request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Material not found");
-    }
+    // When
+    var response = materialService.updateMaterial(id, request);
 
-    @Test
-    void should_DeleteMaterial_When_Exists() {
-        // Given
-        var id = "material-id";
-        when(mceRepo.existsByMaterial_MaterialId(id)).thenReturn(true);
-        when(msRepo.existsByMaterial_MaterialId(id)).thenReturn(true);
-        when(mRepo.existsById(id)).thenReturn(true);
+    // Then
+    assertThat(response.jobContent()).isEqualTo("Persistent Job");
+    assertThat(response.price()).isEqualTo(BigDecimal.valueOf(100));
+    verify(mRepo).save(material);
+  }
 
-        // When
-        materialService.deleteMaterial(id);
+  @Test
+  void should_ThrowException_When_UpdatingNonExistentMaterial() {
+    // Given
+    var id = "not-found";
+    var request = new UpdateRequest(null, null, null, null,
+        null, null, null, null);
+    when(mRepo.findById(id)).thenReturn(Optional.empty());
 
-        // Then
-        verify(mceRepo).deleteByMaterial_MaterialId(id);
-        verify(msRepo).deleteByMaterial_MaterialId(id);
-        verify(mRepo).deleteById(id);
-    }
+    // When & Then
+    assertThatThrownBy(() -> materialService.updateMaterial(id, request))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("Material not found");
+  }
 
-    @Test
-    void should_ThrowException_When_DeletingNonExistentMaterial() {
-        // Given
-        var id = "not-found";
-        when(mceRepo.existsByMaterial_MaterialId(id)).thenReturn(false);
-        when(msRepo.existsByMaterial_MaterialId(id)).thenReturn(false);
-        when(mRepo.existsById(id)).thenReturn(false);
+  @Test
+  void should_DeleteMaterial_When_Exists() {
+    // Given
+    var id = "material-id";
+    when(mceRepo.existsByMaterial_MaterialId(id)).thenReturn(true);
+    when(msRepo.existsByMaterial_MaterialId(id)).thenReturn(true);
+    when(mRepo.existsById(id)).thenReturn(true);
 
-        // When & Then
-        assertThatThrownBy(() -> materialService.deleteMaterial(id))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Material not found");
-    }
+    // When
+    materialService.deleteMaterial(id);
 
-    @Test
-    void should_GetMaterialById_When_Exists() {
-        // Given
-        var id = "material-id";
-        var material = new Material();
-        ReflectionTestUtils.setField(material, "materialId", id);
-        when(mRepo.findById(id)).thenReturn(Optional.of(material));
+    // Then
+    verify(mceRepo).deleteByMaterial_MaterialId(id);
+    verify(msRepo).deleteByMaterial_MaterialId(id);
+    verify(mRepo).deleteById(id);
+  }
 
-        // When
-        var response = materialService.getMaterialById(id);
+  @Test
+  void should_ThrowException_When_DeletingNonExistentMaterial() {
+    // Given
+    var id = "not-found";
+    when(mceRepo.existsByMaterial_MaterialId(id)).thenReturn(false);
+    when(msRepo.existsByMaterial_MaterialId(id)).thenReturn(false);
+    when(mRepo.existsById(id)).thenReturn(false);
 
-        // Then
-        assertThat(response.id()).isEqualTo(id);
-    }
+    // When & Then
+    assertThatThrownBy(() -> materialService.deleteMaterial(id))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("Material not found");
+  }
 
-    @Test
-    void should_ThrowException_When_GettingNonExistentMaterial() {
-        // Given
-        var id = "not-found";
-        when(mRepo.findById(id)).thenReturn(Optional.empty());
+  @Test
+  void should_GetMaterialById_When_Exists() {
+    // Given
+    var id = "material-id";
+    var material = new Material();
+    ReflectionTestUtils.setField(material, "materialId", id);
+    when(mRepo.findById(id)).thenReturn(Optional.of(material));
 
-        // When & Then
-        assertThatThrownBy(() -> materialService.getMaterialById(id))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Material not found");
-    }
+    // When
+    var response = materialService.getMaterialById(id);
 
-    @Test
-    void should_GetAllMaterials_WithPagination() {
-        // Given
-        var pageable = PageRequest.of(0, 10);
-        var material = new Material();
-        ReflectionTestUtils.setField(material, "materialId", "id-1");
-        var page = new PageImpl<>(List.of(material));
+    // Then
+    assertThat(response.id()).isEqualTo(id);
+  }
 
-        when(mRepo.findAll(pageable)).thenReturn(page);
+  @Test
+  void should_ThrowException_When_GettingNonExistentMaterial() {
+    // Given
+    var id = "not-found";
+    when(mRepo.findById(id)).thenReturn(Optional.empty());
 
-        // When
-        var response = materialService.getAllMaterials(pageable);
+    // When & Then
+    assertThatThrownBy(() -> materialService.getMaterialById(id))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("Material not found");
+  }
 
-        // Then
-        assertThat(response.getContent()).hasSize(1);
-        assertThat(response.getContent().get(0).id()).isEqualTo("id-1");
-    }
+  @Test
+  void should_GetAllMaterials_WithPagination() {
+    // Given
+    var pageable = PageRequest.of(0, 10);
+    var material = new Material();
+    ReflectionTestUtils.setField(material, "materialId", "id-1");
+    var page = new PageImpl<>(List.of(material));
 
-    @Test
-    void should_ReturnTrue_When_MaterialExists() {
-        // Given
-        var id = "material-id";
-        when(mRepo.existsById(id)).thenReturn(true);
+    when(mRepo.findAll(pageable)).thenReturn(page);
 
-        // When
-        var exists = materialService.materialExists(id);
+    // When
+    var response = materialService.getAllMaterials(pageable);
 
-        // Then
-        assertThat(exists).isTrue();
-    }
+    // Then
+    assertThat(response.getContent()).hasSize(1);
+    assertThat(response.getContent().getFirst().id()).isEqualTo("id-1");
+  }
 
-    @Test
-    void should_HandleNullGroupAndUnit_InMapper() {
-        // Given
-        var id = "material-id";
-        var material = new Material();
-        ReflectionTestUtils.setField(material, "materialId", id);
-        ReflectionTestUtils.setField(material, "group", null);
-        ReflectionTestUtils.setField(material, "unit", null);
-        when(mRepo.findById(id)).thenReturn(Optional.of(material));
+  @Test
+  void should_ReturnTrue_When_MaterialExists() {
+    // Given
+    var id = "material-id";
+    when(mRepo.existsById(id)).thenReturn(true);
 
-        // When
-        var response = materialService.getMaterialById(id);
+    // When
+    var exists = materialService.materialExists(id);
 
-        // Then
-        assertThat(response.groupName()).isNull();
-        assertThat(response.unitName()).isNull();
-    }
+    // Then
+    assertThat(exists).isTrue();
+  }
+
+  @Test
+  void should_HandleNullGroupAndUnit_InMapper() {
+    // Given
+    var id = "material-id";
+    var material = new Material();
+    ReflectionTestUtils.setField(material, "materialId", id);
+    ReflectionTestUtils.setField(material, "group", null);
+    ReflectionTestUtils.setField(material, "unit", null);
+    when(mRepo.findById(id)).thenReturn(Optional.of(material));
+
+    // When
+    var response = materialService.getMaterialById(id);
+
+    // Then
+    assertThat(response.groupName()).isNull();
+    assertThat(response.unitName()).isNull();
+  }
 }

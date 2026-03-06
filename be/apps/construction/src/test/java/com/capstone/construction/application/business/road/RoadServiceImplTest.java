@@ -218,4 +218,11 @@ class RoadServiceImplTest {
     assertThat(result.content()).hasSize(1);
     assertThat(result.content().getFirst().name()).isEqualTo("Road Test");
   }
+
+  @Test
+  void should_ThrowException_When_CreateNameIsNull() {
+    var request = new RoadRequest(null);
+    assertThatThrownBy(() -> roadService.createRoad(request))
+        .isInstanceOf(NullPointerException.class);
+  }
 }
