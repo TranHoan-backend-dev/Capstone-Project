@@ -1,4 +1,4 @@
-export * from "./networks.type"
-export * from "./lateral.type"
+export * from "./networks.type";
+export * from "./lateral.type";
 export * from "./commune.type";
 export * from "./hamlet.type";

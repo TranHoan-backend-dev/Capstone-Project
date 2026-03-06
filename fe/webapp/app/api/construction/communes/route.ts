@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(
       {
-        message: "Lấy danh sách chi nhánh cấp nước thành công",
+        message: "Lấy danh sách phường/xã thành công",
         data: response.data.data,
       },
       { status: 200 },
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     return NextResponse.json(
       {
-        message: error.response?.data?.message || "Create network failed",
+        message: error.response?.data?.message || "Thêm phường/xã thất bại",
       },
       { status: error.response?.status || 500 },
     );

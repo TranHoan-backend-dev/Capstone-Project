@@ -7,7 +7,7 @@ import { SearchIcon } from "@/components/ui/Icons";
 import CustomInput from "@/components/ui/custom/CustomInput";
 import FilterButton from "@/components/ui/FilterButton";
 import { AddNewIcon } from "@/config/chip-and-icon";
-import { FilterSectionProps } from "@/types";
+import { FilterSectionHamletProps } from "@/types";
 import { useCommune } from "@/hooks/useCommunes";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
 
@@ -20,18 +20,17 @@ export const FilterSection = ({
   filter,
   onSearch,
   onAddNew,
-}: FilterSectionProps) => {
-  const [code, setCode] = useState(filter.code ?? "");
+}: FilterSectionHamletProps) => {
   const [name, setName] = useState(filter.name ?? "");
-    const [type, setType] = useState(filter?.type || "");
+  const [type, setType] = useState(filter?.type || "");
   const [selectedCommune, setSelectedCommune] = useState<Set<string>>(
     new Set(),
   );
   const { communeOptions } = useCommune();
 
   useEffect(() => {
-    setCode(filter.code ?? "");
     setName(filter.name ?? "");
+    setType(filter.type ?? "");
     if (filter.communeId) {
       setSelectedCommune(new Set([filter.communeId]));
     } else {
@@ -57,8 +56,8 @@ export const FilterSection = ({
           <FilterButton
             onPress={() =>
               onSearch({
-                code: code.trim(),
                 name: name.trim(),
+                type: type,
                 communeId: Array.from(selectedCommune)[0],
               })
             }
@@ -69,11 +68,6 @@ export const FilterSection = ({
       <section className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-1 flex flex-col gap-4">
-            <CustomInput
-              label="Mã thôn/làng"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-            />
             <CustomInput
               label="Tên thôn/làng"
               value={name}

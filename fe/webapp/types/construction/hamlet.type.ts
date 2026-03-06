@@ -8,7 +8,6 @@ export interface HamletItem {
 }
 
 export interface HamletFilter {
-  code?: string;
   name?: string;
   communeId?: string;
   type?: string;
@@ -17,7 +16,6 @@ export interface HamletFilter {
 export interface HamletFormProps {
   initialData?: {
     id?: string;
-    code?: string;
     name?: string;
     type?: string;
     communeId?: string;
@@ -26,7 +24,7 @@ export interface HamletFormProps {
   onClose: () => void;
 }
 
-export interface FilterSectionProps {
+export interface FilterSectionHamletProps {
   filter: HamletFilter;
   onSearch: (value: HamletFilter) => void;
   onAddNew: () => void;

@@ -25,7 +25,7 @@ export async function PUT(
   } catch (error: any) {
     return NextResponse.json(
       {
-        message: error.response?.data?.message || "Update commune failed",
+        message: error.response?.data?.message || "Cập nhật thôn làng thất bại",
       },
       { status: error.response?.status || 500 },
     );
@@ -51,7 +51,7 @@ export async function DELETE(
   } catch (error: any) {
     return NextResponse.json(
       {
-        message: error.response?.data?.message || "Update commune failed",
+        message: error.response?.data?.message || "Xóa thôn làng thất bại",
       },
       { status: error.response?.status || 500 },
     );
