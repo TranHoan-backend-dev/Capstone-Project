@@ -21,16 +21,16 @@ public class MessageProducer {
 
   private final RabbitTemplate template;
 
-  public void send(String routingKey, Object message) {
-    log.info("Sending message to exchange: {}, routingKey: {}", EXCHANGE_NAME, routingKey);
+  public void send(String routingKey, Object data) {
+    log.info("Sending data to exchange: {}, routingKey: {}", EXCHANGE_NAME, routingKey);
     Map<String, Object> payload = new HashMap<>();
     payload.put("pattern", routingKey);
-    payload.put("data", message);
+    payload.put("data", data);
 
     template.invoke(t -> {
       template.convertAndSend(EXCHANGE_NAME, routingKey, payload);
       return null;
     });
-    log.info("Message sent successfully to RabbitMQ: {}", message);
+    log.info("Message sent successfully to RabbitMQ: {}", data);
   }
 }

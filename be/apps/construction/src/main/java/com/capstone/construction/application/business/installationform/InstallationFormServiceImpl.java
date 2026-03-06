@@ -55,26 +55,26 @@ public class InstallationFormServiceImpl implements InstallationFormService {
     }
 
     var entity = InstallationForm.create(builder -> builder
-      .formCode(request.formCode())
-      .formNumber(request.formNumber())
-      .customerName(request.customerName())
-      .address(request.address())
-      .customerType(request.customerType())
-      .citizenIdentificationNumber(request.citizenIdentificationNumber())
-      .citizenIdentificationProvideDate(request.citizenIdentificationProvideDate())
-      .citizenIdentificationProvideLocation(request.citizenIdentificationProvideLocation())
-      .phoneNumber(request.phoneNumber())
-      .taxCode(request.taxCode())
-      .bankAccountNumber(request.bankAccountNumber())
-      .bankAccountProviderLocation(request.bankAccountProviderLocation())
-      .usageTarget(request.usageTarget())
-      .receivedFormAt(LocalDate.parse(request.receivedFormAt()))
-      .scheduleSurveyAt(LocalDate.parse(request.scheduleSurveyAt()))
-      .numberOfHousehold(request.numberOfHousehold())
-      .householdRegistrationNumber(request.householdRegistrationNumber())
-      .network(getNetwork(request.networkId()))
-      .createdBy(request.createdBy())
-      .overallWaterMeterId(request.overallWaterMeterId()));
+        .formCode(request.formCode())
+        .formNumber(request.formNumber())
+        .customerName(request.customerName())
+        .address(request.address())
+        .customerType(request.customerType())
+        .citizenIdentificationNumber(request.citizenIdentificationNumber())
+        .citizenIdentificationProvideDate(request.citizenIdentificationProvideDate())
+        .citizenIdentificationProvideLocation(request.citizenIdentificationProvideLocation())
+        .phoneNumber(request.phoneNumber())
+        .taxCode(request.taxCode())
+        .bankAccountNumber(request.bankAccountNumber())
+        .bankAccountProviderLocation(request.bankAccountProviderLocation())
+        .usageTarget(request.usageTarget())
+        .receivedFormAt(LocalDate.parse(request.receivedFormAt()))
+        .scheduleSurveyAt(LocalDate.parse(request.scheduleSurveyAt()))
+        .numberOfHousehold(request.numberOfHousehold())
+        .householdRegistrationNumber(request.householdRegistrationNumber())
+        .network(getNetwork(request.networkId()))
+        .createdBy(request.createdBy())
+        .overallWaterMeterId(request.overallWaterMeterId()));
     if (request.representative() != null) {
       entity.setRepresentative(request.representative());
     }
@@ -86,15 +86,16 @@ public class InstallationFormServiceImpl implements InstallationFormService {
     log.info("Installation form created successfully: {}", saved.getFormNumber());
 
     return new NewInstallationFormResponse(
-      saved.getFormNumber(),
-      saved.getCustomerName(),
-      saved.getFormCode(),
-      saved.getCreatedBy(),
-      saved.getCreatedAt());
+        saved.getFormNumber(),
+        saved.getCustomerName(),
+        saved.getFormCode(),
+        saved.getCreatedBy(),
+        saved.getCreatedAt());
   }
 
   @Override
-  public Page<InstallationFormListResponse> getInstallationForms(Pageable pageable, @NonNull FilterFormRequest request) {
+  public Page<InstallationFormListResponse> getInstallationForms(Pageable pageable,
+      @NonNull FilterFormRequest request) {
     log.info("Fetching paginated installation forms with pageable: {}", pageable);
 
     LocalDateTime startDate = null;
@@ -106,23 +107,28 @@ public class InstallationFormServiceImpl implements InstallationFormService {
     }
 
     var result = (startDate != null || (request.keyword() != null && !request.keyword().isBlank())) ? ifRepo.findAll(
-      InstallationFormRepository.search(
-        request.keyword(),
-        startDate,
-        endDate),
-      pageable) : ifRepo.findAll(pageable);
+        InstallationFormRepository.search(
+            request.keyword(),
+            startDate,
+            endDate),
+        pageable) : ifRepo.findAll(pageable);
 
     var content = result.getContent()
-      .stream()
-      .map(this::mapToResponse)
-      .toList();
+        .stream()
+        .map(this::mapToResponse)
+        .toList();
 
     return new PageImpl<>(content, pageable, result.getTotalElements());
   }
 
   @Override
+  public void approveAndAssignInstallationForm(String formNumber, String formCode, Boolean status) {
+
+  }
+
+  @Override
   public boolean isInstallationFormExisting(String formNumber, String formCode) {
-    var status = ifRepo.existsByFormNumberOrFormCode(formNumber, formCode);
+    var status = ifRepo.existsById_FormNumberOrId_FormCode(formNumber, formCode);
     log.info("Installation form with form number: {} and form code {} is exist: {}", formNumber, formCode, status);
     return status;
   }
@@ -130,15 +136,15 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   private @NonNull InstallationFormListResponse mapToResponse(@NonNull InstallationForm entity) {
     var fullName = empSrv.getEmployeeNameById(entity.getCreatedBy());
     return new InstallationFormListResponse(
-      entity.getFormCode(),
-      entity.getFormNumber(),
-      entity.getCustomerName(),
-      entity.getAddress(),
-      entity.getPhoneNumber(),
-      entity.getScheduleSurveyAt() == null ? null : entity.getScheduleSurveyAt().toString(),
-      entity.getCreatedAt().toString(),
-      (fullName != null && fullName.data() != null) ? fullName.data().toString() : "Unknown",
-      entity.getStatus());
+        entity.getFormCode(),
+        entity.getFormNumber(),
+        entity.getCustomerName(),
+        entity.getAddress(),
+        entity.getPhoneNumber(),
+        entity.getScheduleSurveyAt() == null ? null : entity.getScheduleSurveyAt().toString(),
+        entity.getCreatedAt().toString(),
+        (fullName != null && fullName.data() != null) ? fullName.data().toString() : "Unknown",
+        entity.getStatus());
   }
 
   private WaterSupplyNetwork getNetwork(String networkId) {

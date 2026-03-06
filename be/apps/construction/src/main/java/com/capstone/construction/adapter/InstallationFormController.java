@@ -66,6 +66,15 @@ public class InstallationFormController {
     return Utils.returnCreatedResponse("Installation form created successfully");
   }
 
+  @PatchMapping("/approve/{id}")
+  public ResponseEntity<?> approveInstallationForm(
+    @PathVariable("id") String orderId,
+    @RequestParam String status
+  ) {
+    log.info("Received request to approve installation form: {}", orderId);
+    return Utils.returnOkResponse("Change status successfully", null);
+  }
+
   @Operation(summary = "Lấy danh sách đơn lắp đặt (có phân trang & lọc)", description = "API này cho phép lấy danh sách các đơn lắp đặt nước. Hỗ trợ phân trang và lọc theo từ khóa (tên khách hàng, địa chỉ) hoặc khoảng thời gian.", responses = {
     @ApiResponse(responseCode = "200", description = "Thành công. Trả về danh sách đơn lắp đặt.", content = @Content(schema = @Schema(implementation = InstallationFormListResponse.class))),
     @ApiResponse(responseCode = "400", description = "Lỗi dữ liệu đầu vào (VD: định dạng ngày sai, ngày bắt đầu lớn hơn ngày kết thúc).", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
