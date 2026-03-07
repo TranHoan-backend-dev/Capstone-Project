@@ -1,5 +1,7 @@
 package com.capstone.construction.application.business.installationform;
 
+import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
+import com.capstone.construction.application.dto.request.installationform.FilterConstructionOrderRequest;
 import com.capstone.construction.application.dto.request.installationform.FilterFormRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
@@ -14,5 +16,11 @@ public interface InstallationFormService {
 
   Page<InstallationFormListResponse> getInstallationForms(Pageable pageable, FilterFormRequest request);
 
-  void approveAndAssignInstallationForm(String formNumber, String formCode, Boolean status);
+  Page<InstallationFormListResponse> getConstructionRequestsList(Pageable pageable, FilterConstructionOrderRequest request);
+
+  void approveAndAssignInstallationForm(ApproveRequest request);
+
+  InstallationFormListResponse getByFormCodeAndFormNumber(String formCode, String formNumber);
+
+  Boolean checkFormBelongedToNetwork(String id);
 }

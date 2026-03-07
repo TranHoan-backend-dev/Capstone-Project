@@ -43,6 +43,8 @@ public class WaterPrice {
 
   @Column(nullable = false)
   LocalDate expirationDate;
+
+  @Column(nullable = false, unique = true)
   String description;
 
   @Column(nullable = false)
@@ -62,12 +64,9 @@ public class WaterPrice {
     this.updatedAt = LocalDateTime.now();
   }
 
-  public void setUsageTarget(String usageTarget) {
+  public void setUsageTarget(UsageTarget usageTarget) {
     Objects.requireNonNull(usageTarget, Constant.ENT_17);
-    if (usageTarget.trim().isEmpty()) {
-      throw new IllegalArgumentException(Constant.ENT_17);
-    }
-    this.usageTarget = UsageTarget.valueOf(usageTarget);
+    this.usageTarget = usageTarget;
   }
 
   public void setTax(BigDecimal tax) {
@@ -110,7 +109,7 @@ public class WaterPrice {
   public static class WaterPriceBuilder {
     private final WaterPrice wp = new WaterPrice();
 
-    public WaterPriceBuilder usageTarget(String usageTarget) {
+    public WaterPriceBuilder usageTarget(UsageTarget usageTarget) {
       wp.setUsageTarget(usageTarget);
       return this;
     }

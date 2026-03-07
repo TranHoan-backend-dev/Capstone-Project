@@ -4,6 +4,8 @@ import com.capstone.common.enumerate.CustomerType;
 import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.common.enumerate.UsageTarget;
 import com.capstone.common.response.WrapperApiResponse;
+import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
+import com.capstone.construction.application.dto.request.installationform.FilterConstructionOrderRequest;
 import com.capstone.construction.application.dto.request.installationform.FilterFormRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.domain.model.InstallationForm;
@@ -258,7 +260,7 @@ class InstallationFormServiceImplTest {
     var result = service.getInstallationForms(pageable, request);
 
     // Then
-    assertThat(result.getContent().getFirst().surveyEmployeeName()).isEqualTo("Unknown");
+    assertThat(result.getContent().getFirst().handoverBy()).isEqualTo("Unknown");
   }
 
   @Test
@@ -275,7 +277,7 @@ class InstallationFormServiceImplTest {
     var result = service.getInstallationForms(pageable, request);
 
     // Then
-    assertThat(result.getContent().get(0).surveyEmployeeName()).isEqualTo("Unknown");
+    assertThat(result.getContent().getFirst().handoverBy()).isEqualTo("Unknown");
   }
 
   @Test
@@ -358,6 +360,140 @@ class InstallationFormServiceImplTest {
     // Then
     assertThat(result.getContent()).hasSize(1);
     verify(ifRepo).findAll(pageable);
+  }
+
+  @Test
+  void should_GetConstructionRequestsList_When_ValidRequest() {
+    // Given
+    var pageable = PageRequest.of(0, 10);
+    var request = new FilterConstructionOrderRequest("keyword", "2024-01-01", "2024-01-31");
+    var entity = createMockEntity();
+
+    when(ifRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(new PageImpl<>(List.of(entity)));
+    when(empSrv.getEmployeeNameById(any())).thenReturn(new WrapperApiResponse(200, "OK", "Staff", LocalDateTime.now()));
+
+    // When
+    var result = service.getConstructionRequestsList(pageable, request);
+
+    // Then
+    assertThat(result.getContent()).hasSize(1);
+    verify(ifRepo).findAll(any(Specification.class), eq(pageable));
+  }
+
+  @Test
+  void should_GetConstructionRequestsList_When_NoFilters() {
+    // Given
+    var pageable = PageRequest.of(0, 10);
+    var request = new FilterConstructionOrderRequest(null, null, null);
+    var entity = createMockEntity();
+
+    when(ifRepo.findByStatus_ContractAndStatus_Construction(ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING,
+        pageable))
+        .thenReturn(new PageImpl<>(List.of(entity)));
+    when(empSrv.getEmployeeNameById(any())).thenReturn(new WrapperApiResponse(200, "OK", "Staff", LocalDateTime.now()));
+
+    // When
+    var result = service.getConstructionRequestsList(pageable, request);
+
+    // Then
+    assertThat(result.getContent()).hasSize(1);
+    verify(ifRepo).findByStatus_ContractAndStatus_Construction(ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING,
+        pageable);
+  }
+
+  @Test
+  void should_ApproveAndAssign_When_StatusIsTrue() {
+    // Given
+    var request = new ApproveRequest("EMP-001", "F-001", "C-001", true);
+    var entity = createMockEntity();
+    var status = new FormProcessingStatus(ProcessingStatus.PENDING_FOR_APPROVAL, ProcessingStatus.PROCESSING,
+        ProcessingStatus.PROCESSING, ProcessingStatus.PROCESSING);
+    when(entity.getStatus()).thenReturn(status);
+
+    when(ifRepo.findById_FormCodeAndId_FormNumber("C-001", "F-001")).thenReturn(Optional.of(entity));
+    when(empSrv.isEmployeeExisting("EMP-001"))
+        .thenReturn(new WrapperApiResponse(200, "OK", "true", LocalDateTime.now()));
+
+    // When
+    service.approveAndAssignInstallationForm(request);
+
+    // Then
+    assertThat(status.getRegistration()).isEqualTo(ProcessingStatus.APPROVED);
+    verify(entity).setHandoverBy("EMP-001");
+    verify(ifRepo).save(entity);
+  }
+
+  @Test
+  void should_Reject_When_StatusIsFalse() {
+    // Given
+    var request = new ApproveRequest("EMP-001", "F-001", "C-001", false);
+    var entity = createMockEntity();
+    var status = new FormProcessingStatus(ProcessingStatus.PENDING_FOR_APPROVAL, ProcessingStatus.PROCESSING,
+        ProcessingStatus.PROCESSING, ProcessingStatus.PROCESSING);
+    when(entity.getStatus()).thenReturn(status);
+
+    when(ifRepo.findById_FormCodeAndId_FormNumber("C-001", "F-001")).thenReturn(Optional.of(entity));
+
+    // When
+    service.approveAndAssignInstallationForm(request);
+
+    // Then
+    assertThat(status.getRegistration()).isEqualTo(ProcessingStatus.REJECTED);
+    verify(ifRepo).save(entity);
+  }
+
+  @Test
+  void should_ThrowException_When_FormNotFoundInApprove() {
+    // Given
+    var request = new ApproveRequest("EMP-001", "F-001", "C-001", true);
+    when(ifRepo.findById_FormCodeAndId_FormNumber("C-001", "F-001")).thenReturn(Optional.empty());
+
+    // When & Then
+    assertThatThrownBy(() -> service.approveAndAssignInstallationForm(request))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage(Constant.PT_61);
+  }
+
+  @Test
+  void should_ThrowException_When_EmployeeNotFoundInApprove() {
+    // Given
+    var request = new ApproveRequest("EMP-001", "F-001", "C-001", true);
+    var entity = createMockEntity();
+    when(entity.getStatus()).thenReturn(new FormProcessingStatus(ProcessingStatus.PENDING_FOR_APPROVAL,
+        ProcessingStatus.PROCESSING, ProcessingStatus.PROCESSING, ProcessingStatus.PROCESSING));
+
+    when(ifRepo.findById_FormCodeAndId_FormNumber("C-001", "F-001")).thenReturn(Optional.of(entity));
+    when(empSrv.isEmployeeExisting("EMP-001"))
+        .thenReturn(new WrapperApiResponse(200, "OK", "false", LocalDateTime.now()));
+
+    // When & Then
+    assertThatThrownBy(() -> service.approveAndAssignInstallationForm(request))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage(Constant.PT_60);
+  }
+
+  @Test
+  void should_GetByFormCodeAndNumber_When_Exists() {
+    // Given
+    var entity = createMockEntity();
+    when(ifRepo.findById_FormCodeAndId_FormNumber("C-001", "F-001")).thenReturn(Optional.of(entity));
+    when(empSrv.getEmployeeNameById(any())).thenReturn(new WrapperApiResponse(200, "OK", "Staff", LocalDateTime.now()));
+
+    // When
+    var result = service.getByFormCodeAndFormNumber("C-001", "F-001");
+
+    // Then
+    assertThat(result).isNotNull();
+    assertThat(result.formCode()).isEqualTo("FC01");
+  }
+
+  @Test
+  void should_ThrowException_When_NotFoundInGetByCodeAndNumber() {
+    // When & Then
+    when(ifRepo.findById_FormCodeAndId_FormNumber("C-001", "F-001")).thenReturn(Optional.empty());
+    assertThatThrownBy(() -> service.getByFormCodeAndFormNumber("C-001", "F-001"))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage(Constant.PT_61);
   }
 
   // Helper methods

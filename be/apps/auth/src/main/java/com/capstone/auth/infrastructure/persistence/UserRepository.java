@@ -25,4 +25,6 @@ public interface UserRepository extends JpaRepository<Users, String> {
   Page<Users> findByIsEnabledTrueAndIsLockedFalseOrUsernameContainingIgnoreCase(String username, Pageable pageable);
 
   List<Users> findByRoleNameIn(List<RoleName> roleNames);
+
+  Boolean existsByUserId(String userId);
 }

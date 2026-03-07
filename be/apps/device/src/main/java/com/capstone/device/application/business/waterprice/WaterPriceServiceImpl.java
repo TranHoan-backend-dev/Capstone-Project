@@ -55,7 +55,7 @@ public class WaterPriceServiceImpl implements WaterPriceService {
     var wp = waterPriceRepository.findById(id)
       .orElseThrow(() -> new IllegalArgumentException("Water price not found: " + id));
 
-    if (request.usageTarget() != null && !request.usageTarget().isBlank()) {
+    if (request.usageTarget() != null) {
       wp.setUsageTarget(request.usageTarget());
     }
     if (request.tax() != null) {
@@ -71,6 +71,9 @@ public class WaterPriceServiceImpl implements WaterPriceService {
       wp.setExpirationDate(request.expirationDate());
     }
     if (request.description() != null) {
+      if (waterPriceRepository.existsByDescription(request.description()) && !wp.getDescription().equalsIgnoreCase(request.description())) {
+        throw new ExistingException("Water price already exists: " + request.description());
+      }
       wp.setDescription(request.description());
     }
 
