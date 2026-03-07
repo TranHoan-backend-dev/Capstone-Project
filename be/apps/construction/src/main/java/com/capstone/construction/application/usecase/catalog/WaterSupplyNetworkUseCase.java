@@ -1,10 +1,13 @@
 package com.capstone.construction.application.usecase.catalog;
 
+import com.capstone.construction.application.business.installationform.InstallationFormService;
+import com.capstone.construction.application.business.lateral.LateralService;
 import com.capstone.construction.application.business.network.WaterSupplyNetworkService;
 import com.capstone.construction.application.dto.request.branch.CreateRequest;
 import com.capstone.construction.application.dto.request.branch.UpdateRequest;
 import com.capstone.construction.application.dto.response.catalog.WaterSupplyNetworkResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
+import com.capstone.construction.infrastructure.service.EmployeeService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -17,6 +20,9 @@ import org.springframework.stereotype.Component;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class WaterSupplyNetworkUseCase {
   WaterSupplyNetworkService networkService;
+  EmployeeService empSrv;
+  LateralService lService;
+  InstallationFormService iService;
 
   public void createNetwork(@NonNull CreateRequest request) {
     networkService.createNetwork(request);
@@ -27,6 +33,12 @@ public class WaterSupplyNetworkUseCase {
   }
 
   public void deleteNetwork(String id) {
+//    var status1 = empSrv.checkIfEmployeeBelongedToNetwork(id).data().toString();
+//    var status2 = lService.checkLateralBelongedToNetwork(id);
+//    var status3 = iService.checkFormBelongedToNetwork(id);
+//    if (!Boolean.parseBoolean(status1) || !status2 || !status3) {
+//      throw new IllegalArgumentException("Cannot delete network with id " + id + " because there are huge of resources are using this network");
+//    }
     networkService.deleteNetwork(id);
   }
 
