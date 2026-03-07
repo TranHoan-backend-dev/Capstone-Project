@@ -1,6 +1,6 @@
 import { SVGProps } from "react";
 export * from "./construction/index"
-export * from "./construction/networks.type"
+export * from "./device/index"
 
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;

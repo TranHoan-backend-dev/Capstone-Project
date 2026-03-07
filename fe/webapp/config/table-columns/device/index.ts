@@ -1,2 +1,1 @@
-export * from "./lateral-column"
-export * from "./networks-column"
+export * from "./water-meter-column";

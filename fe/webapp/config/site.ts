@@ -11,6 +11,19 @@ export const siteConfig = {
       href: "/home",
     },
 
+    // Thiết bị
+    {
+      key: "device",
+      label: "Thiết bị",
+      items: [
+        {
+          key: "water-meter-type",
+          label: "Quản lý Loại đồng hồ nước",
+          href: "/water-meter-type",
+        },
+      ],
+    },
+
     // Hợp đồng
     {
       key: "contract",
