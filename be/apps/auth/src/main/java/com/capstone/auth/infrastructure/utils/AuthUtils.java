@@ -2,6 +2,7 @@ package com.capstone.auth.infrastructure.utils;
 
 import com.capstone.auth.application.business.dto.UserDTO;
 import com.capstone.auth.infrastructure.config.Constant;
+import com.capstone.common.utils.SharedConstant;
 
 public class AuthUtils {
   /**
@@ -13,7 +14,7 @@ public class AuthUtils {
    * @param username username that sent in the request
    */
   public static void validateCredentials(UserDTO user, String email, String username) {
-    if (email != null && email.matches(Constant.EMAIL_PATTERN)) {
+    if (email != null && email.matches(SharedConstant.EMAIL_PATTERN)) {
       if (!email.equals(user.email())) {
         throw new IllegalArgumentException("Email does not match");
       }
