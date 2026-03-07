@@ -10,8 +10,12 @@ public record InstallationFormListResponse(
   String phoneNumber,
   String scheduleSurveyAt,
   String registrationAt,
-  String surveyEmployeeName,
+  String handoverBy,
+  String handoverByFullName,
   String creator,
+  String creatorFullName,
+  String constructedBy,
+  String constructedByFullName,
   FormProcessingStatus status
 ) {
 }

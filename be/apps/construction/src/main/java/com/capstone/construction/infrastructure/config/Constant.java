@@ -3,7 +3,7 @@ package com.capstone.construction.infrastructure.config;
 public final class Constant {
   // for dto and entity layer
   public static final String PT_01 = "Form code cannot be null or empty";
-  public static final String PT_02 = "Invalid password. Password must contain at least one number, one uppercase letter, one lowercase letter, one special character, and be at least 8 characters long";
+  public static final String PT_02 = "The staff of the Construction department who will hand over the construction can not be null or empty";
   public static final String PT_03 = "Processing status cannot be null or empty";
   public static final String PT_04 = "Registration date cannot be null or empty";
   public static final String PT_05 = "Invalid date format";

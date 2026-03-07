@@ -33,6 +33,7 @@ public class InstallationForm {
   @EmbeddedId
   InstallationFormId id = new InstallationFormId();
 
+  // <editor-fold> desc="thông tin chung của đơn"
   @Column(nullable = false)
   String customerName;
 
@@ -91,10 +92,6 @@ public class InstallationForm {
   WaterSupplyNetwork network;
 
   @Column(nullable = false)
-  String createdBy; // the planning-technical department staff who create this form
-  String handoverBy; // the planning-technical department staff who will approve/reject this form
-
-  @Column(nullable = false)
   String overallWaterMeterId;
 
   @Column(nullable = false)
@@ -102,13 +99,19 @@ public class InstallationForm {
 
   @Column(nullable = false)
   LocalDateTime updatedAt;
+  //</editor-fold>
+
+  @Column(nullable = false)
+  String createdBy; // the planning-technical department staff who create this form
+  String handoverBy; // the planning-technical department staff who will approve/reject this form
+  String constructedBy; // nhân viên thi công đảm nhiệm công việc
 
   @PrePersist
   void onCreate() {
     this.createdAt = LocalDateTime.now();
     this.updatedAt = this.createdAt;
     this.status = new FormProcessingStatus(
-      ProcessingStatus.PROCESSING,
+      ProcessingStatus.PENDING_FOR_APPROVAL,
       ProcessingStatus.PROCESSING,
       ProcessingStatus.PROCESSING,
       ProcessingStatus.PROCESSING
@@ -136,6 +139,11 @@ public class InstallationForm {
   public void setCustomerName(String customerName) {
     requireNonNullAndNotEmpty(customerName, Constant.PT_27);
     this.customerName = customerName;
+  }
+
+  public void setConstructedBy(String value) {
+    requireNonNullAndNotEmpty(value, Constant.PT_02);
+    this.constructedBy = value;
   }
 
   public void setStatus(FormProcessingStatus status) {
@@ -281,6 +289,11 @@ public class InstallationForm {
 
     public InstallationFormBuilder customerName(String customerName) {
       instance.setCustomerName(customerName);
+      return this;
+    }
+
+    public InstallationFormBuilder constructedBy(String value) {
+      instance.setConstructedBy(value);
       return this;
     }
 

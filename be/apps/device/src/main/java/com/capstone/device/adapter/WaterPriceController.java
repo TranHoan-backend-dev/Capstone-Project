@@ -41,6 +41,7 @@ public class WaterPriceController {
   @NonFinal
   Logger log;
 
+  // TODO: test api
   @Operation(summary = "", description = "", responses = {
     @ApiResponse(responseCode = "201", description = ""),
     @ApiResponse(responseCode = "", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
@@ -54,6 +55,7 @@ public class WaterPriceController {
     return Utils.returnCreatedResponse("Water price created successfully");
   }
 
+  // TODO: test api
   @Operation(summary = "", description = "", responses = {
     @ApiResponse(responseCode = "200", description = "", content = @Content(schema = @Schema(implementation = WaterPriceResponse.class))),
     @ApiResponse(responseCode = "", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
@@ -68,6 +70,7 @@ public class WaterPriceController {
     return Utils.returnOkResponse("Water price updated successfully", response);
   }
 
+  // TODO: test api
   @Operation(summary = "", description = "", responses = {
     @ApiResponse(responseCode = "200", description = ""),
     @ApiResponse(responseCode = "", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))

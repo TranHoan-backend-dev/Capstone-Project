@@ -2,6 +2,7 @@ package com.capstone.construction.application.usecase;
 
 import com.capstone.construction.application.business.installationform.InstallationFormService;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
+import com.capstone.construction.application.dto.request.installationform.FilterConstructionOrderRequest;
 import com.capstone.construction.application.dto.request.installationform.FilterFormRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
@@ -9,6 +10,7 @@ import com.capstone.construction.application.dto.response.installationform.NewIn
 import com.capstone.construction.application.event.producer.order.ApproveEvent;
 import com.capstone.construction.application.event.producer.order.CreatedEvent;
 import com.capstone.construction.application.event.producer.MessageProducer;
+import com.capstone.construction.application.event.producer.order.RejectEvent;
 import com.capstone.construction.application.exception.ExistingItemException;
 import com.capstone.construction.infrastructure.config.Constant;
 import com.capstone.construction.infrastructure.service.EmployeeService;
@@ -38,6 +40,9 @@ public class InstallationFormHandlingUseCase {
 
   @Value("${rabbit-mq-config.actions[3]}")
   String APPROVE_ACTION;
+
+  @Value("${rabbit-mq-config.actions[4]}")
+  String REJECT_ACTION;
 
   @Value("${rabbit-mq-config.queue_name}")
   String QUEUE_NAME;
@@ -70,7 +75,6 @@ public class InstallationFormHandlingUseCase {
   public void approveInstallationForm(ApproveRequest request) {
     ifSrv.approveAndAssignInstallationForm(request);
     var order = ifSrv.getByFormCodeAndFormNumber(request.formCode(), request.formNumber());
-
     if (request.status()) {
       // gui su kien cho nhan vien khao sat
       var routingKey = QUEUE_NAME + PREFIX + APPROVE_ACTION;
@@ -78,12 +82,23 @@ public class InstallationFormHandlingUseCase {
         request.empId(),
         order.formCode(),
         order.formNumber(),
-        order.creator(),
+        order.creatorFullName(),
         order.customerName(),
         order.registrationAt()
       ));
+    } else {
+      var routingKey = QUEUE_NAME + PREFIX + REJECT_ACTION;
+      messageProducer.send(routingKey, new RejectEvent(
+        order.creator(),
+        order.formCode(),
+        order.formNumber(),
+        order.customerName()
+      ));
     }
+  }
 
+  public Page<InstallationFormListResponse> getPaginatedConstructionRequest(Pageable pageable, FilterConstructionOrderRequest request) {
+    return null;
   }
 
   private String getCreatorName(String creator) {

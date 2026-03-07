@@ -112,6 +112,12 @@ public class LateralServiceImpl implements LateralService {
     return PageResponse.fromPage(page, this::mapToResponse);
   }
 
+  @Override
+  public Boolean checkLateralBelongedToNetwork(String id) {
+    log.info("Checking lateral belonged to network with id: {}", id);
+    return lateralRepository.existsByNetwork_BranchId(id);
+  }
+
   private @NonNull LateralResponse mapToResponse(@NonNull Lateral lateral) {
     var network = lateral.getNetwork();
     return new LateralResponse(

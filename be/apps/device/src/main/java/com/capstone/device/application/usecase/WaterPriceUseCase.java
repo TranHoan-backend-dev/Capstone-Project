@@ -5,8 +5,7 @@ import com.capstone.device.application.dto.request.price.CreateRequest;
 import com.capstone.device.application.dto.request.price.UpdateRequest;
 import com.capstone.device.application.dto.response.WaterPriceResponse;
 import com.capstone.device.application.event.producer.MessageProducer;
-import com.capstone.device.application.event.producer.waterprices.DeleteEvent;
-import com.capstone.device.application.event.producer.waterprices.UpdateEvent;
+import com.capstone.device.infrastructure.service.CustomerService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -25,6 +24,7 @@ import java.time.LocalDate;
 public class WaterPriceUseCase {
   final WaterPriceService waterPriceService;
   final MessageProducer producer;
+  final CustomerService customerService;
   static final String PREFIX = ".water-price.";
 
   @Value("${rabbit-mq-config.queue}" + PREFIX + "${rabbit-mq-config.actions[0]}")
@@ -43,25 +43,30 @@ public class WaterPriceUseCase {
 
   @Transactional(rollbackFor = Exception.class)
   public WaterPriceResponse updateWaterPrice(String id, @NonNull UpdateRequest request) {
-    var old = waterPriceService.getWaterPriceById(id);
+//    var old = waterPriceService.getWaterPriceById(id);
     var n = waterPriceService.updateWaterPrice(id, request);
 
-    producer.send(UPDATE_ROUTING_KEY, new UpdateEvent(
-        old.usageTarget(), old.tax(), old.environmentPrice(), old.applicationPeriod(),
-        old.expirationDate(), old.description(),
-        n.usageTarget(), n.tax(), n.environmentPrice(), n.applicationPeriod(),
-        n.expirationDate(), n.description()));
+//    producer.send(UPDATE_ROUTING_KEY, new UpdateEvent(
+//        old.usageTarget(), old.tax(), old.environmentPrice(), old.applicationPeriod(),
+//        old.expirationDate(), old.description(),
+//        n.usageTarget(), n.tax(), n.environmentPrice(), n.applicationPeriod(),
+//        n.expirationDate(), n.description()));
     return n;
   }
 
   @Transactional(rollbackFor = Exception.class)
   public void deleteWaterPrice(@NonNull String id) {
-    var old = waterPriceService.getWaterPriceById(id);
+//    var status = customerService.checkWhetherCustomersAreApplied(id).data();
+//    if (Boolean.parseBoolean((String) status)) {
+//      throw new IllegalArgumentException(Constant.ENT_48);
+//    }
+
+//    var old = waterPriceService.getWaterPriceById(id);
     waterPriceService.deleteWaterPrice(id);
 
-    producer.send(DELETE_ROUTING_KEY, new DeleteEvent(
-        old.usageTarget(), old.tax(), old.environmentPrice(), old.applicationPeriod(),
-        old.expirationDate(), old.description()));
+//    producer.send(DELETE_ROUTING_KEY, new DeleteEvent(
+//        old.usageTarget(), old.tax(), old.environmentPrice(), old.applicationPeriod(),
+//        old.expirationDate(), old.description()));
   }
 
   public WaterPriceResponse getWaterPriceById(@NonNull String id) {
