@@ -1,81 +1,160 @@
 package com.capstone.device.application.usecase;
 
+import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.device.application.business.waterprice.WaterPriceService;
 import com.capstone.device.application.dto.request.price.CreateRequest;
 import com.capstone.device.application.dto.request.price.UpdateRequest;
 import com.capstone.device.application.dto.response.WaterPriceResponse;
+import com.capstone.device.application.event.producer.MessageProducer;
+import com.capstone.device.infrastructure.config.Constant;
+import com.capstone.device.infrastructure.service.CustomerService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.Collections;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class WaterPriceUseCaseTest {
 
-    @Mock
-    WaterPriceService waterPriceService;
+  @Mock
+  WaterPriceService waterPriceService;
 
-    @InjectMocks
-    WaterPriceUseCase waterPriceUseCase;
+  @Mock
+  MessageProducer producer;
 
-    @Test
-    void should_CreatePrice_Success() {
-        var request = new CreateRequest(null, null, null, null, null, null);
-        var response = new WaterPriceResponse(null, null, null, null, null, null, null, null, null);
-        when(waterPriceService.createWaterPrice(request)).thenReturn(response);
+  @Mock
+  CustomerService customerService;
 
-        var result = waterPriceUseCase.createPrice(request);
+  @InjectMocks
+  WaterPriceUseCase waterPriceUseCase;
 
-        assertThat(result).isNotNull();
-    }
+  private final String UPDATE_KEY = "update-key";
+  private final String DELETE_KEY = "delete-key";
 
-    @Test
-    void should_UpdatePrice_Success() {
-        var id = "id";
-        var request = new UpdateRequest(null, null, null, null, null, null);
-        var response = new WaterPriceResponse(id, null, null, null, null, null, null, null, null);
-        when(waterPriceService.updateWaterPrice(id, request)).thenReturn(response);
+  @BeforeEach
+  void setUp() {
+    ReflectionTestUtils.setField(waterPriceUseCase, "UPDATE_ROUTING_KEY", UPDATE_KEY);
+    ReflectionTestUtils.setField(waterPriceUseCase, "DELETE_ROUTING_KEY", DELETE_KEY);
+  }
 
-        var result = waterPriceUseCase.updatePrice(id, request);
+  @Test
+  void should_getPricesList_When_ValidParams() {
+    // Given
+    Pageable pageable = mock(Pageable.class);
+    LocalDate filter = LocalDate.now();
+    Page<WaterPriceResponse> expectedPage = new PageImpl<>(List.of());
+    when(waterPriceService.getAllWaterPrices(pageable, filter)).thenReturn(expectedPage);
 
-        assertThat(result.id()).isEqualTo(id);
-    }
+    // When
+    Page<WaterPriceResponse> result = waterPriceUseCase.getPricesList(pageable, filter);
 
-    @Test
-    void should_DeletePrice_Success() {
-        var id = "id";
-        waterPriceUseCase.deletePrice(id);
-        verify(waterPriceService).deleteWaterPrice(id);
-    }
+    // Then
+    assertThat(result).isEqualTo(expectedPage);
+    verify(waterPriceService).getAllWaterPrices(pageable, filter);
+  }
 
-    @Test
-    void should_GetPrice_Success() {
-        var id = "id";
-        var response = new WaterPriceResponse(id, null, null, null, null, null, null, null, null);
-        when(waterPriceService.getWaterPriceById(id)).thenReturn(response);
+  @Test
+  void should_createWaterPrice_When_ValidRequest() {
+    // Given
+    CreateRequest request = new CreateRequest(null, BigDecimal.TEN, BigDecimal.ONE, LocalDate.now(),
+      LocalDate.now().plusDays(1), "Desc");
+    WaterPriceResponse expectedResponse = mock(WaterPriceResponse.class);
+    when(waterPriceService.createWaterPrice(request)).thenReturn(expectedResponse);
 
-        var result = waterPriceUseCase.getPrice(id);
+    // When
+    WaterPriceResponse result = waterPriceUseCase.createWaterPrice(request);
 
-        assertThat(result.id()).isEqualTo(id);
-    }
+    // Then
+    assertThat(result).isEqualTo(expectedResponse);
+    verify(waterPriceService).createWaterPrice(request);
+  }
 
-    @Test
-    void should_GetAllPrices_Success() {
-        var pageable = Pageable.unpaged();
-        var page = new PageImpl<WaterPriceResponse>(Collections.emptyList());
-        when(waterPriceService.getAllWaterPrices(pageable, null)).thenReturn(page);
+  @Test
+  void should_updateWaterPrice_When_ValidRequest() {
+    // Given
+    String id = "some-id";
+    UpdateRequest request = new UpdateRequest(null, BigDecimal.TEN, BigDecimal.ONE, LocalDate.now(),
+      LocalDate.now().plusDays(1), "New Desc");
 
-        var result = waterPriceUseCase.getAllPrices(pageable, null);
+    WaterPriceResponse oldPrice = new WaterPriceResponse(id, "DOMESTIC", BigDecimal.valueOf(5), BigDecimal.ZERO,
+      LocalDate.now().minusDays(10), LocalDate.now().plusDays(10), "Old Desc", LocalDateTime.now(),
+      LocalDateTime.now());
+    WaterPriceResponse newPrice = new WaterPriceResponse(id, "DOMESTIC", BigDecimal.TEN, BigDecimal.ONE,
+      LocalDate.now(), LocalDate.now().plusDays(1), "New Desc", LocalDateTime.now(), LocalDateTime.now());
 
-        assertThat(result.getContent()).isEmpty();
-    }
+    when(waterPriceService.getWaterPriceById(id)).thenReturn(oldPrice);
+    when(waterPriceService.updateWaterPrice(id, request)).thenReturn(newPrice);
+
+    // When
+    WaterPriceResponse result = waterPriceUseCase.updateWaterPrice(id, request);
+
+    // Then
+    assertThat(result).isEqualTo(newPrice);
+    verify(waterPriceService).getWaterPriceById(id);
+    verify(waterPriceService).updateWaterPrice(id, request);
+    verify(producer).send(eq(UPDATE_KEY), any());
+  }
+
+  @Test
+  void should_deleteWaterPrice_When_NotAppliedToCustomers() {
+    // Given
+    String id = "some-id";
+    WrapperApiResponse apiResponse = new WrapperApiResponse(200, "Success", "false", LocalDateTime.now());
+    when(customerService.checkWhetherCustomersAreApplied(id)).thenReturn(apiResponse);
+
+    // When
+    waterPriceUseCase.deleteWaterPrice(id);
+
+    // Then
+    verify(customerService).checkWhetherCustomersAreApplied(id);
+    verify(waterPriceService).deleteWaterPrice(id);
+  }
+
+  @Test
+  void should_throwException_When_deleteWaterPrice_AndAppliedToCustomers() {
+    // Given
+    String id = "some-id";
+    WrapperApiResponse apiResponse = new WrapperApiResponse(200, "Success", "true", LocalDateTime.now());
+    when(customerService.checkWhetherCustomersAreApplied(id)).thenReturn(apiResponse);
+
+    // When & Then
+    assertThatThrownBy(() -> waterPriceUseCase.deleteWaterPrice(id))
+      .isInstanceOf(IllegalArgumentException.class)
+      .hasMessage(Constant.ENT_48);
+
+    verify(customerService).checkWhetherCustomersAreApplied(id);
+    verify(waterPriceService, never()).deleteWaterPrice(id);
+  }
+
+  @Test
+  void should_getWaterPriceById_When_IdExists() {
+    // Given
+    String id = "some-id";
+    WaterPriceResponse expectedResponse = mock(WaterPriceResponse.class);
+    when(waterPriceService.getWaterPriceById(id)).thenReturn(expectedResponse);
+
+    // When
+    WaterPriceResponse result = waterPriceUseCase.getWaterPriceById(id);
+
+    // Then
+    assertThat(result).isEqualTo(expectedResponse);
+    verify(waterPriceService).getWaterPriceById(id);
+  }
 }
