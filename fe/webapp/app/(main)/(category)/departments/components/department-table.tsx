@@ -146,7 +146,7 @@ export const DepartmentTable = ({
         },
       },
     ],
-    [onEdit],
+    [data, onEdit],
   );
 
   const renderCell = (item: DepartmentItem, columnKey: string) => {
