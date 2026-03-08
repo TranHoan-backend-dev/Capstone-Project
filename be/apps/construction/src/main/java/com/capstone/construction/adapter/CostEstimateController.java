@@ -2,6 +2,7 @@ package com.capstone.construction.adapter;
 
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.common.utils.Utils;
 import com.capstone.construction.application.dto.request.estimate.CostEstimateRequest;
 import com.capstone.construction.application.dto.response.estimate.CostEstimateResponse;
 import com.capstone.construction.application.usecase.estimate.CostEstimateUseCase;
@@ -79,7 +80,6 @@ public class CostEstimateController {
   ) {
     log.info("REST request to get all cost estimates");
     var response = estimateUseCase.getAllEstimates(pageable, request);
-    return ResponseEntity.ok(new WrapperApiResponse(
-      HttpStatus.OK.value(), "Cost estimates retrieved successfully", response, LocalDateTime.now()));
+    return Utils.returnOkResponse("Cost estimates retrieved successfully", response);
   }
 }
