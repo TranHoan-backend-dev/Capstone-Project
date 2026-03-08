@@ -239,4 +239,52 @@ class CommuneServiceImplTest {
     assertThat(result.content()).hasSize(1);
     assertThat(result.content().getFirst().name()).isEqualTo("Xa Test");
   }
+
+  @Test
+  void should_ThrowException_When_CreateRequestIsNull() {
+    assertThatThrownBy(() -> communeService.createCommune(null))
+        .isInstanceOf(NullPointerException.class);
+  }
+
+  @Test
+  void should_UpdateOnlyType_When_NameIsNull() {
+    // Given
+    var id = "commune-id";
+    var request = new UpdateRequest(null, CommuneType.URBAN_WARD);
+    var existingCommune = Commune.create(builder -> builder.name("Xa Old").type(CommuneType.RURAL_COMMUNE));
+    ReflectionTestUtils.setField(existingCommune, "communeId", id);
+    ReflectionTestUtils.setField(existingCommune, "createdAt", LocalDateTime.now());
+
+    when(communeRepository.findById(id)).thenReturn(Optional.of(existingCommune));
+    when(communeRepository.save(any(Commune.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+    // When
+    var response = communeService.updateCommune(id, request);
+
+    // Then
+    assertThat(response.name()).isEqualTo("Xa Old");
+    assertThat(response.type()).isEqualTo(CommuneType.URBAN_WARD);
+    verify(communeRepository, never()).existsByNameIgnoreCase(any());
+  }
+
+  @Test
+  void should_NotUpdateType_When_TypeIsNull() {
+    // Given
+    var id = "commune-id";
+    var request = new UpdateRequest("Xa Updated", null);
+    var existingCommune = Commune.create(builder -> builder.name("Xa Old").type(CommuneType.RURAL_COMMUNE));
+    ReflectionTestUtils.setField(existingCommune, "communeId", id);
+    ReflectionTestUtils.setField(existingCommune, "createdAt", LocalDateTime.now());
+
+    when(communeRepository.findById(id)).thenReturn(Optional.of(existingCommune));
+    when(communeRepository.existsByNameIgnoreCase(request.name())).thenReturn(false);
+    when(communeRepository.save(any(Commune.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+    // When
+    var response = communeService.updateCommune(id, request);
+
+    // Then
+    assertThat(response.name()).isEqualTo("Xa Updated");
+    assertThat(response.type()).isEqualTo(CommuneType.RURAL_COMMUNE);
+  }
 }

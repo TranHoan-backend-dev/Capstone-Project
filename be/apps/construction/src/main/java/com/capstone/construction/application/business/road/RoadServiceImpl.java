@@ -5,7 +5,7 @@ import com.capstone.construction.application.dto.request.catalog.RoadRequest;
 import com.capstone.construction.application.dto.response.catalog.RoadResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.domain.model.Road;
-import com.capstone.construction.infrastructure.config.Constant;
+import com.capstone.construction.infrastructure.utils.Constant;
 import com.capstone.construction.infrastructure.persistence.RoadRepository;
 import com.capstone.construction.application.exception.ExistingItemException;
 import lombok.AccessLevel;

@@ -1,5 +1,5 @@
 import { SVGProps } from "react";
-export * from "./construction/index"
+export * from "./construction/index";
 
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
@@ -195,4 +195,3 @@ export type FormField =
 export type OrderStage = "register" | "estimate" | "contract" | "construction";
 
 export type OrderStatus = "processing" | "pending" | "approved" | "rejected";
-

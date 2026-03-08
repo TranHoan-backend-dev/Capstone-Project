@@ -1,4 +1,4 @@
-package com.capstone.auth.infrastructure.config;
+package com.capstone.auth.infrastructure.utils;
 
 public final class Constant {
   // for dto and entity layer

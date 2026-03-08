@@ -1,6 +1,6 @@
 package com.capstone.device.application.dto.request.metertype;
 
-import com.capstone.device.infrastructure.config.Constant;
+import com.capstone.device.infrastructure.util.Constant;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Positive;
 

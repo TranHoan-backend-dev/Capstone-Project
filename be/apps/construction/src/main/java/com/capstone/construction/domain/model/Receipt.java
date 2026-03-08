@@ -1,7 +1,8 @@
 package com.capstone.construction.domain.model;
 
+import com.capstone.construction.domain.model.utils.InstallationFormId;
 import jakarta.persistence.*;
-import com.capstone.construction.infrastructure.config.Constant;
+import com.capstone.construction.infrastructure.utils.Constant;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -18,8 +19,8 @@ import java.util.function.Consumer;
 @Table
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Receipt {
-  @Id
-  String installationFormCode;
+  @EmbeddedId
+  InstallationFormId installationFormId;
 
   @ManyToOne(fetch = FetchType.EAGER)
   @MapsId
@@ -43,7 +44,7 @@ public class Receipt {
   public void setInstallationForm(InstallationForm installationForm) {
     Objects.requireNonNull(installationForm, Constant.PT_66);
     this.installationForm = installationForm;
-    this.installationFormCode = installationForm.getFormCode();
+    this.installationFormId = installationForm.getId();
   }
 
   public void setReceiptNumber(String receiptNumber) {

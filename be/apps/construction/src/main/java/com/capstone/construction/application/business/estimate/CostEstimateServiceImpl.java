@@ -1,6 +1,7 @@
 package com.capstone.construction.application.business.estimate;
 
 import com.capstone.common.annotation.AppLog;
+import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.construction.application.dto.request.estimate.CostEstimateRequest;
 import com.capstone.construction.application.dto.response.estimate.CostEstimateResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
@@ -109,13 +110,14 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   }
 
   @Override
-  public PageResponse<CostEstimateResponse> getAllEstimates(Pageable pageable) {
+  public PageResponse<CostEstimateResponse> getAllEstimates(Pageable pageable, BaseFilterRequest request) {
     log.info("Fetching all cost estimates with pageable: {}", pageable);
     var page = estimateRepository.findAll(pageable);
+    // TODO: xu ly bo loc
     return PageResponse.fromPage(page, this::mapToResponse);
   }
 
-  private CostEstimateResponse mapToResponse(CostEstimate estimate) {
+  private @NonNull CostEstimateResponse mapToResponse(@NonNull CostEstimate estimate) {
     return new CostEstimateResponse(
       estimate.getEstimationId(),
       estimate.getCustomerName(),

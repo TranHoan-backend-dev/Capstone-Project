@@ -14,4 +14,6 @@ public interface DepartmentService {
   PagedDepartmentResponse getDepartments(Pageable pageable, String keyword);
 
   boolean checkIfDepartmentExists(String departmentId);
+
+  void deleteDepartment(String departmentId);
 }
