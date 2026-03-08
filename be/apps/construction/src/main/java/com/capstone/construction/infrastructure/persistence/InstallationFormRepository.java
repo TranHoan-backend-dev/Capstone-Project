@@ -41,16 +41,31 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
       List<Predicate> predicates = new ArrayList<>();
 
       if (keyword != null && !keyword.isBlank()) {
-        // tuong duong LOWER(address) LIKE %keyword%
-        Predicate address = cb.like(cb.lower(root.get("address")),
-          "%" + keyword.toLowerCase() + "%");
+        List<Predicate> orPredicates = new ArrayList<>();
+        var lowerCaseKeyword = "%" + keyword.toLowerCase() + "%";
 
-        // tuong duong LOWER(customerName) LIKE %keyword%
-        Predicate customer = cb.like(cb.lower(root.get("customerName")),
-          "%" + keyword.toLowerCase() + "%");
-// TODO: Bo sung tim kiem theo cac truong khac nua
+        // tuong duong LOWER(address) LIKE %keyword%
+        var list = List.of("address", "customerName",
+          "citizenIdentificationNumber", "citizenIdentificationProvideLocation",
+          "phoneNumber", "taxCode", "bankAccountNumber", "bankAccountProviderLocation",
+          "usageTarget", "householdRegistrationNumber", "customerType");
+
+        list.forEach(field ->
+          orPredicates.add(
+            cb.like(cb.lower(root.get(field).as(String.class)), lowerCaseKeyword)
+          )
+        );
+
+        orPredicates.add(
+          cb.like(cb.lower(root.get("representative").get("name")), lowerCaseKeyword)
+        );
+
+        orPredicates.add(
+          cb.like(cb.lower(root.get("representative").get("position")), lowerCaseKeyword)
+        );
+
         // gop 2 dieu kien tren bang OR
-        predicates.add(cb.or(address, customer));
+        predicates.add(cb.or(orPredicates.toArray(new Predicate[0])));
       }
 
       if (start != null && end != null) {
