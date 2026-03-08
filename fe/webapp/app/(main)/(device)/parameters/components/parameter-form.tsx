@@ -17,6 +17,7 @@ export const ParameterForm = ({
   const isEdit = !!initialData?.id;
 
   const [name, setName] = useState(initialData?.name || "");
+  const [value, setValue] = useState(initialData?.name || "");
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const [selectedNetwork, setSelectedNetwork] = useState<Set<string>>(
@@ -78,21 +79,21 @@ export const ParameterForm = ({
       <CardBody className="p-0">
         <div className="flex items-center justify-between px-6 py-4 border-b border-divider">
           <h2 className="text-base font-semibold text-foreground">
-            {isEdit ? "Cập nhật Nhánh tổng" : "Thêm mới Nhánh tổng"}
+            {isEdit ? "Cập nhật Tham số" : "Thêm mới Tham số"}
           </h2>
         </div>
         <div className="px-6 py-5 space-y-5">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="md:col-span-1 flex flex-col gap-4">
-              <CustomInput
-                label="Tên nhánh tổng"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
-            <div className="md:col-span-1 flex flex-col gap-4">
-
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <CustomInput
+              label="Tham số"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <CustomInput
+              label="Giá trị"
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+            />
           </div>
           <div className="flex justify-end">
             <CustomButton variant="light" onPress={onClose}>

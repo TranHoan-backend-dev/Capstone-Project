@@ -7,6 +7,7 @@ import { ParameterTable } from "./components/parameter-table";
 import { FilterSection } from "./components/filter-section";
 import { ParameterForm } from "./components/parameter-form";
 import { ParameterItem } from "@/types";
+import { Modal, ModalContent } from "@heroui/react";
 
 const ParameterPage = () => {
   const [filter, setFilter] = useState("");
@@ -42,14 +43,22 @@ const ParameterPage = () => {
         onAddNew={handleAddNew}
       />
 
-      {showAddForm && (
-        <ParameterForm
-          key={editingItem?.id || "create"}
-          initialData={editingItem || undefined}
-          onSuccess={handleSuccess}
-          onClose={handleCloseForm}
-        />
-      )}
+      <Modal
+        isOpen={showAddForm}
+        onClose={handleCloseForm}
+        size="3xl"
+        placement="top-center"
+        scrollBehavior="inside"
+      >
+        <ModalContent>
+          <ParameterForm
+            key={editingItem?.id || "create"}
+            initialData={editingItem || undefined}
+            onSuccess={handleSuccess}
+            onClose={handleCloseForm}
+          />
+        </ModalContent>
+      </Modal>
 
       <ParameterTable
         filter={filter}
