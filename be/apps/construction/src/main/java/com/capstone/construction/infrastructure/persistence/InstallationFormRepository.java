@@ -48,7 +48,7 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
         // tuong duong LOWER(customerName) LIKE %keyword%
         Predicate customer = cb.like(cb.lower(root.get("customerName")),
           "%" + keyword.toLowerCase() + "%");
-
+// TODO: Bo sung tim kiem theo cac truong khac nua
         // gop 2 dieu kien tren bang OR
         predicates.add(cb.or(address, customer));
       }
