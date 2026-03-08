@@ -25,6 +25,8 @@ export async function GET(req: NextRequest) {
       size,
       sort,
       keyword,
+      communeId,
+      type,
     );
 
     return NextResponse.json(
