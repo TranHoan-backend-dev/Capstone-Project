@@ -1,5 +1,6 @@
 import { SVGProps } from "react";
-export * from "./device/materials-group.type";
+export * from "./construction/index";
+export * from "./device/index";
 
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
@@ -195,4 +196,3 @@ export type FormField =
 export type OrderStage = "register" | "estimate" | "contract" | "construction";
 
 export type OrderStatus = "processing" | "pending" | "approved" | "rejected";
-

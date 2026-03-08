@@ -1,5 +1,6 @@
 package com.capstone.construction.domain.model;
 
+import com.capstone.common.utils.SharedConstant;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -9,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import com.capstone.construction.infrastructure.config.Constant;
+import com.capstone.construction.infrastructure.utils.Constant;
 
 @Getter
 @Entity
@@ -53,7 +54,7 @@ public class ConstructionRequest {
 
   public void setPhoneNumber(String phoneNumber) {
     requireNonNullAndNotEmpty(phoneNumber, Constant.PT_15);
-    if (!phoneNumber.matches(Constant.PHONE_PATTERN)) {
+    if (!phoneNumber.matches(SharedConstant.PHONE_PATTERN)) {
       throw new IllegalArgumentException(Constant.PT_14);
     }
     this.phoneNumber = phoneNumber;

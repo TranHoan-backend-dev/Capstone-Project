@@ -60,9 +60,13 @@ rabbit-mq-config:
     - lateral
     - neighborhood-unit
     - road
+    - installation-form
   actions:
     - update
     - delete
+    - create
+    - approve
+    - reject
 #spring:
 #  datasource:
 #    driver-class-name: org.postgresql.Driver

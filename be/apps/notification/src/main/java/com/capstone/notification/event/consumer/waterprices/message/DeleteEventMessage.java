@@ -4,14 +4,16 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public record DeleteEventMessage(
-    String pattern,
-    WaterPriceEventData data) {
+  String pattern,
+  WaterPriceEventData data
+) {
   public record WaterPriceEventData(
-      String usageTarget,
-      BigDecimal tax,
-      BigDecimal environmentPrice,
-      LocalDate applicationPeriod,
-      LocalDate expirationDate,
-      String description) {
+    String userTarget,
+    BigDecimal tax,
+    BigDecimal environmentPrice,
+    LocalDate applicationPeriod,
+    LocalDate expirationDate,
+    String description
+  ) {
   }
 }

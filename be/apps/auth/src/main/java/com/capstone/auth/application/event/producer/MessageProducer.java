@@ -17,9 +17,6 @@ public class MessageProducer {
   @Value("${rabbitmqconfig.exchange_name}")
   public String EXCHANGE_NAME;
 
-  @Value("${rabbitmqconfig.queue_name}")
-  public String QUEUE_NAME;
-
   @Value("${rabbitmqconfig.routing_key}")
   public String ROUTING_KEY;
 

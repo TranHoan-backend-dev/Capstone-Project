@@ -91,6 +91,12 @@ public class WaterMeterServiceImpl implements WaterMeterService {
   }
 
   @Override
+  public boolean isOverallWaterMeterExisting(String id) {
+    log.info("Checking existence of overall water meter ID: {}", id);
+    return overallWaterMeterRepository.existsById(id);
+  }
+
+  @Override
   public void deleteOverallWaterMeterByLateralId(String id) {
     log.info("Deleting overall water meter with lateral ID: {}", id);
     if (overallWaterMeterRepository.existsByLateralId(id)) {

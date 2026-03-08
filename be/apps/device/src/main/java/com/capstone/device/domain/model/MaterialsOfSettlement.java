@@ -1,7 +1,7 @@
 package com.capstone.device.domain.model;
 
 import com.capstone.device.domain.model.utils.MaterialsOfSettlementId;
-import com.capstone.device.infrastructure.config.Constant;
+import com.capstone.device.infrastructure.util.Constant;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

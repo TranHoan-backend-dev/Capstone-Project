@@ -1,7 +1,7 @@
 package com.capstone.construction.domain.model;
 
 import jakarta.persistence.*;
-import com.capstone.construction.infrastructure.config.Constant;
+import com.capstone.construction.infrastructure.utils.Constant;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.jspecify.annotations.NonNull;
@@ -43,9 +43,9 @@ public class WaterSupplyNetwork {
   }
 
   public void setName(String name) {
-    Objects.requireNonNull(name, Constant.PT_23);
+    Objects.requireNonNull(name, Constant.PT_59);
     if (name.trim().isEmpty()) {
-      throw new IllegalArgumentException(Constant.PT_23);
+      throw new IllegalArgumentException(Constant.PT_59);
     }
     this.name = name;
   }

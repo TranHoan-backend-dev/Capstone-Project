@@ -6,5 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MaterialsGroupRepository extends JpaRepository<MaterialsGroup, String> {
+  boolean existsByNameIgnoreCase(String name);
 }
 

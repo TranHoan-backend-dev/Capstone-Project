@@ -5,3 +5,11 @@
 @theme {
   --variant-dark: (&: where(.dark, .dark *));
 }
+
+tbody tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+.dark tbody tr:nth-child(even) {
+  background-color: #1f2937;
+}

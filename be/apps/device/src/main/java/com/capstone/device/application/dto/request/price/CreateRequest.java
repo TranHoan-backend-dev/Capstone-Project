@@ -1,8 +1,8 @@
 package com.capstone.device.application.dto.request.price;
 
+import com.capstone.common.enumerate.UsageTarget;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Schema(description = "Request DTO for Water Price")
 public record CreateRequest(
   @Schema(description = "Usage target", example = "DOMESTIC")
-  @NotBlank(message = "Usage target is required") String usageTarget,
+  UsageTarget usageTarget,
 
   @Schema(description = "Tax percentage", example = "5.0")
   @NotNull(message = "Tax is required")
