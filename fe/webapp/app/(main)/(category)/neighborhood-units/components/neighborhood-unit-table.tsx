@@ -11,6 +11,8 @@ import {
   NeighborhoodUnitResponse,
 } from "@/types";
 import { authFetch } from "@/utils/authFetch";
+import { ConfirmDialog } from "@/components/ui/modal/ConfirmDialog";
+import { CallToast } from "@/components/ui/CallToast";
 
 export const NeighborhoodUnitTable = ({
   filter,
@@ -22,6 +24,8 @@ export const NeighborhoodUnitTable = ({
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [sort, setSort] = useState<{
     field: string;
     direction: "asc" | "desc";
@@ -51,7 +55,7 @@ export const NeighborhoodUnitTable = ({
         if (filter?.communeId) {
           params.append("communeId", filter.communeId);
         }
-        
+
         const res = await authFetch(
           `/api/construction/neighborhood-units?${params.toString()}`,
         );
@@ -103,6 +107,36 @@ export const NeighborhoodUnitTable = ({
     });
   };
 
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return;
+
+    try {
+      setDeleteLoading(true);
+
+      const res = await authFetch(`/api/device/water-meter-type/${deleteId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Delete failed");
+
+      CallToast({
+        title: "Thành công",
+        message: "Xóa loại đồng hồ nước thành công",
+        color: "success",
+      });
+
+      setDeleteId(null);
+      onDeleted();
+    } catch (e: any) {
+      CallToast({
+        title: "Lỗi",
+        message: e.message || "Có lỗi xảy ra",
+        color: "danger",
+      });
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
   useEffect(() => {
     setPage(1);
   }, [filter]);
@@ -123,23 +157,8 @@ export const NeighborhoodUnitTable = ({
         content: "Xóa",
         icon: DeleteIcon,
         className: "text-red-500 hover:bg-red-50",
-        onClick: async (id: string) => {
-          if (!confirm("Bạn có chắc muốn xóa tổ/khu phố này?")) return;
-
-          try {
-            const res = await authFetch(
-              `/api/construction/neighborhood-units/${id}`,
-              {
-                method: "DELETE",
-              },
-            );
-
-            if (!res.ok) throw new Error("Delete failed");
-
-            onDeleted();
-          } catch (e) {
-            console.error(e);
-          }
+        onClick: (id: string) => {
+          setDeleteId(id);
         },
       },
     ],
@@ -207,6 +226,16 @@ export const NeighborhoodUnitTable = ({
         }}
         sort={sort}
         onSortChange={handleSortChange}
+      />
+      <ConfirmDialog
+        isOpen={!!deleteId}
+        title="Xác nhận xoá"
+        message="Bạn có chắc muốn xoá tổ/khu phố này không?"
+        confirmText="Xoá"
+        confirmColor="danger"
+        isLoading={deleteLoading}
+        onClose={() => setDeleteId(null)}
+        onConfirm={handleConfirmDelete}
       />
     </>
   );

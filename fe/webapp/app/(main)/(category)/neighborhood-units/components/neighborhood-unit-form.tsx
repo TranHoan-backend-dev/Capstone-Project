@@ -76,9 +76,14 @@ export const NeighborhoodUnitForm = ({
       });
       onSuccess();
     } catch (e: any) {
+      let message = e.message || "Có lỗi xảy ra";
+      if (message.includes("Neighborhood unit with name")) {
+        const name = message.match(/name (.*?) already exists/)?.[1];
+        message = `Tổ/khu phố "${name}" đã tồn tại`;
+      }
       CallToast({
         title: "Lỗi",
-        message: e.message || "Có lỗi xảy ra",
+        message: message,
         color: "danger",
       });
     } finally {

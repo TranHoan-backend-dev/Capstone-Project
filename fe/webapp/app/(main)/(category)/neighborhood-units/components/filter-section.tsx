@@ -33,6 +33,12 @@ export const FilterSection = ({
     }
   }, [filter]);
 
+  const handleSearch = () => {
+    onSearch({
+      name: name.trim(),
+      communeId: Array.from(selectedCommune)[0],
+    });
+  };
   return (
     <GenericSearchFilter
       title="Tìm kiếm"
@@ -48,23 +54,19 @@ export const FilterSection = ({
             label="Thêm mới"
             onPress={onAddNew}
           />
-          <FilterButton
-            onPress={() =>
-              onSearch({
-                name: name.trim(),
-                communeId: Array.from(selectedCommune)[0],
-              })
-            }
-          />
+          <FilterButton onPress={() => handleSearch()} />
         </div>
       }
     >
       <section className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <CustomInput
-            label="Tên tổ/khu xóm"
+            label="Tên tổ/khu phố"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSearch();
+            }}
           />
           <CustomSelect
             label="Phường/xã"
