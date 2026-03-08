@@ -224,19 +224,13 @@ export const getAllHamlets = (
   accessToken: string,
   page: number,
   size: number,
-  sort: string,
-  communeId?: string | null,
-  type?: string | null,
   keyword?: string | null,
 ) =>
   axios.get(`${API_GATEWAY_URL}/construction/hamlets`, {
     params: {
       page,
       size,
-      sort,
       keyword,
-      communeId,
-      type,
     },
     headers: {
       Authorization: `Bearer ${accessToken}`,

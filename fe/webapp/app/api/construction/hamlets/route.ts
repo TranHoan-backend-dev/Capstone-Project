@@ -23,10 +23,7 @@ export async function GET(req: NextRequest) {
       accessToken,
       page,
       size,
-      sort,
       keyword,
-      communeId,
-      type,
     );
 
     return NextResponse.json(
