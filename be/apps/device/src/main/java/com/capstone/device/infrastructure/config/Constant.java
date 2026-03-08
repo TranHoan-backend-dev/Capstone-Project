@@ -49,4 +49,5 @@ public final class Constant {
   public static final String ENT_45 = "Group id cannot be null or empty";
   public static final String ENT_46 = "Calculation unit id cannot be null or empty";
   public static final String ENT_47 = "Labor code cannot be null or empty";
+  public static final String ENT_48 = "This water price is still used by customers";
 }

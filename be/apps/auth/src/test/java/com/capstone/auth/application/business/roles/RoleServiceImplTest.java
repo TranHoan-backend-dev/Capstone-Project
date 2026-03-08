@@ -17,8 +17,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -97,5 +96,16 @@ class RoleServiceImplTest {
 
     assertEquals(roleName, result.getName());
     verify(repo).findRolesByName(roleName);
+  }
+
+  @Test
+  @DisplayName("should_ReturnNull_When_RoleNameNotFound")
+  void should_ReturnNull_When_RoleNameNotFound() {
+    var roleName = RoleName.IT_STAFF;
+    when(repo.findRolesByName(roleName)).thenReturn(null);
+
+    var result = roleService.getRoleByName(roleName);
+
+    assertNull(result);
   }
 }

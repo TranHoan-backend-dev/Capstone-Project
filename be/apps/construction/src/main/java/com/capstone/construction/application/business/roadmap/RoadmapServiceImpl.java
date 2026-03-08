@@ -107,10 +107,15 @@ public class RoadmapServiceImpl implements RoadmapService {
       .orElseThrow(() -> new IllegalArgumentException("Roadmap not found with id: " + id));
   }
 
-  @Override
   public PageResponse<RoadmapResponse> getAllRoadmaps(Pageable pageable) {
-    log.info("Fetching all roadmaps with pageable: {}", pageable);
-    var page = roadmapRepository.findAll(pageable);
+    log.info("Fetching all roadmaps with pageable (no filters): {}", pageable);
+    return getAllRoadmaps(pageable, null, null, null);
+  }
+
+  @Override
+  public PageResponse<RoadmapResponse> getAllRoadmaps(Pageable pageable, String keyword, String lateralId, String networkId) {
+    log.info("Fetching all roadmaps with filters - pageable: {}, keyword: {}, lateralId: {}, networkId: {}", pageable, keyword, lateralId, networkId);
+    var page = roadmapRepository.searchRoadmaps(keyword, lateralId, networkId, pageable);
     return PageResponse.fromPage(page, this::mapToResponse);
   }
 

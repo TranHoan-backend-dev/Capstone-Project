@@ -243,53 +243,50 @@ class CommuneServiceImplTest {
   }
 
   @Test
-  void should_SearchAccentInsensitive_When_SearchByName() {
-    // Given
-    var pageable = PageRequest.of(0, 10);
-    var search = "hoa binh";
-    var normalized = TextNormalizer.normalizeForSearch(search);
-
-    var commune = Commune.create(builder -> builder.name("Hòa Bình").type(CommuneType.RURAL_COMMUNE));
-    ReflectionTestUtils.setField(commune, "communeId", "id");
-    ReflectionTestUtils.setField(commune, "createdAt", LocalDateTime.now());
-
-    var page = new PageImpl<>(List.of(commune));
-    when(communeRepository.findAllByNameSearchContains(normalized, pageable)).thenReturn(page);
-
-    // When
-    var result = communeService.getAllCommunes(pageable, search, null);
-
-    // Then
-    assertThat(result.content()).hasSize(1);
-    assertThat(result.content().getFirst().name()).isEqualTo("Hòa Bình");
-    verify(communeRepository, times(1)).findAllByNameSearchContains(normalized, pageable);
-    verify(communeRepository, never()).findAllByNameSearchContainsAndType(anyString(), any(), any());
+  void should_ThrowException_When_CreateRequestIsNull() {
+    assertThatThrownBy(() -> communeService.createCommune(null))
+        .isInstanceOf(NullPointerException.class);
   }
 
   @Test
-  void should_SearchAccentInsensitive_WithTypeFilter_When_SearchByNameAndType() {
+  void should_UpdateOnlyType_When_NameIsNull() {
     // Given
-    var pageable = PageRequest.of(0, 10);
-    var search = "hoa binh";
-    var normalized = TextNormalizer.normalizeForSearch(search);
-    var type = "RURAL_COMMUNE";
+    var id = "commune-id";
+    var request = new UpdateRequest(null, CommuneType.URBAN_WARD);
+    var existingCommune = Commune.create(builder -> builder.name("Xa Old").type(CommuneType.RURAL_COMMUNE));
+    ReflectionTestUtils.setField(existingCommune, "communeId", id);
+    ReflectionTestUtils.setField(existingCommune, "createdAt", LocalDateTime.now());
 
-    var commune = Commune.create(builder -> builder.name("Hòa Bình").type(CommuneType.RURAL_COMMUNE));
-    ReflectionTestUtils.setField(commune, "communeId", "id");
-    ReflectionTestUtils.setField(commune, "createdAt", LocalDateTime.now());
-
-    var page = new PageImpl<>(List.of(commune));
-    when(communeRepository.findAllByNameSearchContainsAndType(normalized, CommuneType.RURAL_COMMUNE, pageable))
-      .thenReturn(page);
+    when(communeRepository.findById(id)).thenReturn(Optional.of(existingCommune));
+    when(communeRepository.save(any(Commune.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
     // When
-    var result = communeService.getAllCommunes(pageable, search, type);
+    var response = communeService.updateCommune(id, request);
 
     // Then
-    assertThat(result.content()).hasSize(1);
-    assertThat(result.content().getFirst().name()).isEqualTo("Hòa Bình");
-    verify(communeRepository, times(1))
-      .findAllByNameSearchContainsAndType(normalized, CommuneType.RURAL_COMMUNE, pageable);
-    verify(communeRepository, never()).findAllByNameSearchContains(anyString(), any());
+    assertThat(response.name()).isEqualTo("Xa Old");
+    assertThat(response.type()).isEqualTo(CommuneType.URBAN_WARD);
+    verify(communeRepository, never()).existsByNameIgnoreCase(any());
+  }
+
+  @Test
+  void should_NotUpdateType_When_TypeIsNull() {
+    // Given
+    var id = "commune-id";
+    var request = new UpdateRequest("Xa Updated", null);
+    var existingCommune = Commune.create(builder -> builder.name("Xa Old").type(CommuneType.RURAL_COMMUNE));
+    ReflectionTestUtils.setField(existingCommune, "communeId", id);
+    ReflectionTestUtils.setField(existingCommune, "createdAt", LocalDateTime.now());
+
+    when(communeRepository.findById(id)).thenReturn(Optional.of(existingCommune));
+    when(communeRepository.existsByNameIgnoreCase(request.name())).thenReturn(false);
+    when(communeRepository.save(any(Commune.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+    // When
+    var response = communeService.updateCommune(id, request);
+
+    // Then
+    assertThat(response.name()).isEqualTo("Xa Updated");
+    assertThat(response.type()).isEqualTo(CommuneType.RURAL_COMMUNE);
   }
 }

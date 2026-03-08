@@ -98,18 +98,33 @@ public class LateralServiceImpl implements LateralService {
   }
 
   @Override
-  public PageResponse<LateralResponse> getAllLaterals(Pageable pageable) {
-    log.info("Fetching all laterals with pageable: {}", pageable);
-    var page = lateralRepository.findAll(pageable);
+  public PageResponse<LateralResponse> getAllLaterals(Pageable pageable,
+                                                      String keyword,
+                                                      String networkId,
+                                                      Boolean networkAssigned) {
+    log.info("Fetching all laterals with pageable: {}, keyword: {}, networkId: {}, networkAssigned: {}",
+      pageable, keyword, networkId, networkAssigned);
+
+    var normalizedKeyword = (keyword == null || keyword.isBlank()) ? null : keyword.trim();
+    var page = (normalizedKeyword == null || normalizedKeyword.isEmpty())
+      ? lateralRepository.searchLateralsWithoutKeyword(networkId, networkAssigned, pageable)
+      : lateralRepository.searchLateralsWithKeyword(normalizedKeyword, networkId, networkAssigned, pageable);
     return PageResponse.fromPage(page, this::mapToResponse);
   }
 
+  @Override
+  public Boolean checkLateralBelongedToNetwork(String id) {
+    log.info("Checking lateral belonged to network with id: {}", id);
+    return lateralRepository.existsByNetwork_BranchId(id);
+  }
+
   private @NonNull LateralResponse mapToResponse(@NonNull Lateral lateral) {
+    var network = lateral.getNetwork();
     return new LateralResponse(
       lateral.getId(),
       lateral.getName(),
-      lateral.getNetwork().getBranchId(),
-      lateral.getNetwork().getName(),
+      network == null ? null : network.getBranchId(),
+      network == null ? null : network.getName(),
       lateral.getCreatedAt());
   }
 }
