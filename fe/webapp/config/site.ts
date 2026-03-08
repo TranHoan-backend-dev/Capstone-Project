@@ -155,6 +155,11 @@ export const siteConfig = {
           href: "/laterals",
         },
         {
+          key: "roadmaps",
+          label: "Quản lý Lộ trình ghi",
+          href: "/roadmaps",
+        },
+        {
           key: "settlement-lookup",
           label: "Tra cứu quyết toán",
           href: "/settlement-lookup",

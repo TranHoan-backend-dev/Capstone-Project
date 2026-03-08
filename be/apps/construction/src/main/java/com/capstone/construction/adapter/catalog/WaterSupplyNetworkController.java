@@ -104,7 +104,7 @@ public class WaterSupplyNetworkController {
 
   @GetMapping
   @Operation(summary = "Lấy danh sách mạng lưới cấp nước", description = "Lấy danh sách các mạng lưới cấp nước trong hệ thống, có hỗ trợ phân trang và tìm kiếm theo từ khóa.", responses = {
-    @ApiResponse(responseCode = "200", description = "Lấy danh sách thành công", content = @Content(schema = @Schema(implementation = PageResponse.class))),
+    @ApiResponse(responseCode = "200", description = "Lấy danh sách thành công", content = @Content(schema = @Schema(implementation = WaterSupplyNetworkResponse.class))),
     @ApiResponse(responseCode = "500", description = "Lỗi hệ thống nội bộ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   public ResponseEntity<WrapperApiResponse> getAllNetworks(
@@ -119,6 +119,7 @@ public class WaterSupplyNetworkController {
   }
 
   // internal api, do not expose
+  @Operation(hidden = true)
   @GetMapping("/exist/{id}")
   @PreAuthorize("hasAuthority('IT_STAFF')")
   public Boolean checkExistence(@PathVariable String id) {

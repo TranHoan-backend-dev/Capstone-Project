@@ -57,9 +57,14 @@ export const RoadForm = ({
       });
       onSuccess();
     } catch (e: any) {
+      let message = e.message || "Có lỗi xảy ra";
+      if (message.includes("Road with name")) {
+        const name = message.match(/name (.*?) already exists/)?.[1];
+        message = `Đường phố "${name}" đã tồn tại`;
+      }
       CallToast({
         title: "Lỗi",
-        message: e.message || "Có lỗi xảy ra",
+        message: message,
         color: "danger",
       });
     } finally {

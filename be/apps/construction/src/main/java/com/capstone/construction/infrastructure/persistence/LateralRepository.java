@@ -46,4 +46,6 @@ public interface LateralRepository extends JpaRepository<Lateral, String> {
   Page<Lateral> searchLateralsWithoutKeyword(@Param("networkId") String networkId,
                                             @Param("networkAssigned") Boolean networkAssigned,
                                             Pageable pageable);
+
+  Boolean existsByNetwork_BranchId(String id);
 }

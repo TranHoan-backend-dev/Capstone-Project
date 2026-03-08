@@ -44,6 +44,11 @@ export const FilterSection = ({
             label="Tên đường phố"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                onSearch(inputValue);
+              }
+            }}
           />
         </div>
       </section>

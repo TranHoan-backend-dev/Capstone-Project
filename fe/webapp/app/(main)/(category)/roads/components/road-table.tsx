@@ -23,7 +23,7 @@ export const RoadTable = ({
     field: string;
     direction: "asc" | "desc";
   }>({
-    field: "createdAt",
+    field: "name",
     direction: "desc",
   });
 
@@ -199,8 +199,8 @@ export const RoadTable = ({
           onChange: setPage,
           summary: `${data.length}`,
         }}
-        sort={sort}
-        onSortChange={handleSortChange}
+        // sort={sort}
+        // onSortChange={handleSortChange}
       />
     </>
   );

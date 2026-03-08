@@ -1,6 +1,6 @@
 package com.capstone.customer.model;
 
-import com.capstone.customer.config.Constant;
+import com.capstone.customer.utils.Constant;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

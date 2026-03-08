@@ -83,6 +83,7 @@ rabbit-mq-config:
     - update
     - delete
     - create
+    - approve
   auth-routingKey: auth.individual-notification.create
   auth-queue: auth.individual-notification.queue
 # spring:
