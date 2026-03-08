@@ -52,8 +52,7 @@ public class WaterMeterController {
   @PutMapping("/{id}")
   public ResponseEntity<WrapperApiResponse> updateWaterMeter(
     @PathVariable @Parameter(description = "") String id,
-    @RequestBody @Valid WaterMeterRequest request
-  ) {
+    @RequestBody @Valid WaterMeterRequest request) {
     log.info("REST request to update water meter: {}", id);
     var response = waterMeterService.updateWaterMeter(id, request);
     return Utils.returnOkResponse("Water meter updated successfully", response);
@@ -65,8 +64,7 @@ public class WaterMeterController {
   })
   @DeleteMapping("/{id}")
   public ResponseEntity<WrapperApiResponse> deleteWaterMeter(
-    @PathVariable @Parameter(description = "") String id
-  ) {
+    @PathVariable @Parameter(description = "") String id) {
     log.info("REST request to delete water meter: {}", id);
     waterMeterService.deleteWaterMeter(id);
     return Utils.returnOkResponse("Water meter deleted successfully", null);
@@ -75,8 +73,7 @@ public class WaterMeterController {
   @DeleteMapping("/overall/lateral")
   @PreAuthorize("hasAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> deleteByLateral(
-    @RequestParam String id
-  ) {
+    @RequestParam String id) {
     log.info("REST request to delete water meter by lateral: {}", id);
     waterMeterUseCase.deleteOverallWaterMeterByLateralId(id);
     return Utils.returnOkResponse("Water meter deleted successfully", null);
@@ -88,8 +85,7 @@ public class WaterMeterController {
   })
   @GetMapping("/{id}")
   public ResponseEntity<WrapperApiResponse> getWaterMeterById(
-    @PathVariable @Parameter(description = "") String id
-  ) {
+    @PathVariable @Parameter(description = "") String id) {
     log.info("REST request to get water meter: {}", id);
     var response = waterMeterService.getWaterMeterById(id);
     return Utils.returnOkResponse("Water meter retrieved successfully", response);
@@ -104,12 +100,12 @@ public class WaterMeterController {
   }
 
   @Operation(summary = "", description = "")
-  @GetMapping("/{id}/exists")
-  public ResponseEntity<WrapperApiResponse> checkWaterMeterExisting(
-    @PathVariable @Parameter(description = "") String id
-  ) {
+  @GetMapping("/overall/{id}/exists")
+  public ResponseEntity<WrapperApiResponse> checkOverallWaterMeterExisting(
+    @PathVariable @Parameter(description = "") String id) {
     log.info("REST request to check existence of water meter: {}", id);
-    return Utils.returnOkResponse("Check water meter existence successfully",
-      waterMeterService.isWaterMeterExisting(id));
+    var response = waterMeterService.isOverallWaterMeterExisting(id);
+    log.info("Meter is existed? {}", response);
+    return Utils.returnOkResponse("Check water meter existence successfully", response);
   }
 }

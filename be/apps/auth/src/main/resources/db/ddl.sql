@@ -1,8 +1,9 @@
 create table individual_notification
 (
-  notification_id varchar(255)          not null
-    primary key,
-  is_read         boolean default false not null
+  notification_id varchar(255)          not null,
+  user_id         varchar(255)          not null,
+  is_read         boolean default false not null,
+  primary key (notification_id, user_id)
 );
 
 alter table individual_notification

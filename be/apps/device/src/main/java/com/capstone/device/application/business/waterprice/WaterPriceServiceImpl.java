@@ -1,9 +1,12 @@
 package com.capstone.device.application.business.waterprice;
 
 import com.capstone.common.annotation.AppLog;
-import com.capstone.device.application.dto.request.WaterPriceRequest;
+import com.capstone.common.exception.ExistingException;
+import com.capstone.device.application.dto.request.price.CreateRequest;
+import com.capstone.device.application.dto.request.price.UpdateRequest;
 import com.capstone.device.application.dto.response.WaterPriceResponse;
 import com.capstone.device.domain.model.WaterPrice;
+import com.capstone.device.infrastructure.persistence.PriceTypeRepository;
 import com.capstone.device.infrastructure.persistence.WaterPriceRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 @AppLog
 @Service
@@ -25,12 +27,13 @@ import java.time.format.DateTimeFormatter;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class WaterPriceServiceImpl implements WaterPriceService {
   WaterPriceRepository waterPriceRepository;
+  PriceTypeRepository ptRepo;
   @NonFinal
   Logger log;
 
   @Override
   @Transactional(rollbackFor = Exception.class)
-  public void createWaterPrice(@NonNull WaterPriceRequest request) {
+  public WaterPriceResponse createWaterPrice(@NonNull CreateRequest request) {
     log.info("Creating water price for target: {}", request.usageTarget());
 
     var wp = WaterPrice.create(builder -> builder
@@ -41,22 +44,38 @@ public class WaterPriceServiceImpl implements WaterPriceService {
       .description(request.description())
       .expirationDate(request.expirationDate()));
 
-    waterPriceRepository.save(wp);
+    var response = waterPriceRepository.save(wp);
+    return mapToResponse(response);
   }
 
   @Override
   @Transactional(rollbackFor = Exception.class)
-  public WaterPriceResponse updateWaterPrice(String id, @NonNull WaterPriceRequest request) {
+  public WaterPriceResponse updateWaterPrice(String id, @NonNull UpdateRequest request) {
     log.info("Updating water price ID: {}", id);
     var wp = waterPriceRepository.findById(id)
       .orElseThrow(() -> new IllegalArgumentException("Water price not found: " + id));
 
-    wp.setUsageTarget(request.usageTarget());
-    wp.setTax(request.tax());
-    wp.setEnvironmentPrice(request.environmentPrice());
-    wp.setApplicationPeriod(request.applicationPeriod());
-    wp.setExpirationDate(request.expirationDate());
-    wp.setDescription(request.description());
+    if (request.usageTarget() != null) {
+      wp.setUsageTarget(request.usageTarget());
+    }
+    if (request.tax() != null) {
+      wp.setTax(request.tax());
+    }
+    if (request.environmentPrice() != null) {
+      wp.setEnvironmentPrice(request.environmentPrice());
+    }
+    if (request.applicationPeriod() != null) {
+      wp.setApplicationPeriod(request.applicationPeriod());
+    }
+    if (request.expirationDate() != null) {
+      wp.setExpirationDate(request.expirationDate());
+    }
+    if (request.description() != null) {
+      if (waterPriceRepository.existsByDescription(request.description()) && !wp.getDescription().equalsIgnoreCase(request.description())) {
+        throw new ExistingException("Water price already exists: " + request.description());
+      }
+      wp.setDescription(request.description());
+    }
 
     var updated = waterPriceRepository.save(wp);
     return mapToResponse(updated);
@@ -69,6 +88,7 @@ public class WaterPriceServiceImpl implements WaterPriceService {
     if (!waterPriceRepository.existsById(id)) {
       throw new IllegalArgumentException("Water price not found: " + id);
     }
+    ptRepo.deleteByWaterPrice_PriceId(id);
     waterPriceRepository.deleteById(id);
   }
 

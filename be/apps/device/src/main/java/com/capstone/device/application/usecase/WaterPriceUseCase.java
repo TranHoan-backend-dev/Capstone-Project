@@ -1,55 +1,78 @@
 package com.capstone.device.application.usecase;
 
-import com.capstone.common.annotation.AppLog;
-import com.capstone.common.utils.Utils;
 import com.capstone.device.application.business.waterprice.WaterPriceService;
-import com.capstone.device.application.dto.request.WaterPriceRequest;
+import com.capstone.device.application.dto.request.price.CreateRequest;
+import com.capstone.device.application.dto.request.price.UpdateRequest;
 import com.capstone.device.application.dto.response.WaterPriceResponse;
+import com.capstone.device.application.event.producer.MessageProducer;
+import com.capstone.device.application.event.producer.waterprices.DeleteEvent;
+import com.capstone.device.application.event.producer.waterprices.UpdateEvent;
+import com.capstone.device.infrastructure.util.Constant;
+import com.capstone.device.infrastructure.service.CustomerService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
-@AppLog
 @Component
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class WaterPriceUseCase {
-  WaterPriceService waterPriceService;
+  final WaterPriceService waterPriceService;
+  final MessageProducer producer;
+  final CustomerService customerService;
+  static final String PREFIX = ".water-price.";
 
-  @NonFinal
-  Logger log;
+  @Value("${rabbit-mq-config.queue}" + PREFIX + "${rabbit-mq-config.actions[0]}")
+  String UPDATE_ROUTING_KEY;
+
+  @Value("${rabbit-mq-config.queue}" + PREFIX + "${rabbit-mq-config.actions[1]}")
+  String DELETE_ROUTING_KEY;
 
   public Page<WaterPriceResponse> getPricesList(@NonNull Pageable pageable, LocalDate filter) {
-    log.info("Get prices list with index: {}, size: {}, filter: {}", pageable.getPageNumber(), pageable.getPageSize(), filter);
     return waterPriceService.getAllWaterPrices(pageable, filter);
   }
 
-  public void createWaterPrice(@NonNull WaterPriceRequest request) {
-    log.info("Create water price for target: {}", request.usageTarget());
-    waterPriceService.createWaterPrice(request);
+  public WaterPriceResponse createWaterPrice(@NonNull CreateRequest request) {
+    return waterPriceService.createWaterPrice(request);
   }
 
-  public WaterPriceResponse updateWaterPrice(String id, @NonNull WaterPriceRequest request) {
-    log.info("Update water price for target: {}", request.usageTarget());
-    return waterPriceService.updateWaterPrice(id, request);
+  @Transactional(rollbackFor = Exception.class)
+  public WaterPriceResponse updateWaterPrice(String id, @NonNull UpdateRequest request) {
+    var old = waterPriceService.getWaterPriceById(id);
+    var n = waterPriceService.updateWaterPrice(id, request);
+
+    producer.send(UPDATE_ROUTING_KEY, new UpdateEvent(
+        old.usageTarget(), old.tax(), old.environmentPrice(), old.applicationPeriod(),
+        old.expirationDate(), old.description(),
+        n.usageTarget(), n.tax(), n.environmentPrice(), n.applicationPeriod(),
+        n.expirationDate(), n.description()));
+    return n;
   }
 
+  @Transactional(rollbackFor = Exception.class)
   public void deleteWaterPrice(@NonNull String id) {
-    log.info("Delete water price for target: {}", id);
+    var status = customerService.checkWhetherCustomersAreApplied(id).data().toString();
+    if (Boolean.parseBoolean(status)) {
+      throw new IllegalArgumentException(Constant.ENT_48);
+    }
+
+    var old = waterPriceService.getWaterPriceById(id);
     waterPriceService.deleteWaterPrice(id);
+
+    producer.send(DELETE_ROUTING_KEY, new DeleteEvent(
+        old.usageTarget(), old.tax(), old.environmentPrice(), old.applicationPeriod(),
+        old.expirationDate(), old.description()));
   }
 
   public WaterPriceResponse getWaterPriceById(@NonNull String id) {
-    log.info("Get water price for target: {}", id);
     return waterPriceService.getWaterPriceById(id);
   }
 }

@@ -2,7 +2,6 @@ package com.capstone.auth.application.event.producer;
 
 import com.capstone.common.annotation.AppLog;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,9 +16,6 @@ import java.util.Map;
 public class MessageProducer {
   @Value("${rabbitmqconfig.exchange_name}")
   public String EXCHANGE_NAME;
-
-  @Value("${rabbitmqconfig.queue_name}")
-  public String QUEUE_NAME;
 
   @Value("${rabbitmqconfig.routing_key}")
   public String ROUTING_KEY;

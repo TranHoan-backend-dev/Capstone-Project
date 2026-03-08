@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(
   name = "device",
-  path = "/api/v1",
+  path = "/api/v1/water-meters",
   configuration = FeignAuthInterceptor.class
 )
 public interface OverallWaterMeterService {
-  @GetMapping("/water-meters/{id}/exists")
+  @GetMapping("/overall/{id}/exists")
   WrapperApiResponse isMeterExisting(@PathVariable String id);
 
   @DeleteMapping("/overall/lateral")

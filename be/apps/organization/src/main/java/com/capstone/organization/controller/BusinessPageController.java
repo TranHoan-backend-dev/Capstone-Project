@@ -56,9 +56,7 @@ public class BusinessPageController {
   })
   public ResponseEntity<WrapperApiResponse> updateBusinessPage(
     @Parameter(in = ParameterIn.PATH, description = "ID trang nghiệp vụ", required = true, schema = @Schema(type = "string"))
-    @PathVariable
-    @NotBlank
-    String pageId,
+    @PathVariable @NotBlank String pageId,
     @RequestBody @Valid UpdateBusinessPageRequest request) {
     log.info("Update business page request comes to endpoint: {}", pageId);
 

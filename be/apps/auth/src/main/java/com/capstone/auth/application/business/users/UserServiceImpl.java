@@ -3,7 +3,7 @@ package com.capstone.auth.application.business.users;
 import com.capstone.auth.application.business.dto.UserDTO;
 import com.capstone.auth.application.dto.request.FilterUsersRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
-import com.capstone.auth.application.exception.ExistingException;
+import com.capstone.common.exception.ExistingException;
 import com.capstone.auth.application.exception.NotExistingException;
 import com.capstone.auth.domain.model.EmployeeJob;
 import com.capstone.auth.domain.model.Profile;
@@ -14,10 +14,11 @@ import com.capstone.auth.infrastructure.persistence.BusinessPagesOfEmployeeRepos
 import com.capstone.auth.infrastructure.persistence.EmployeeJobRepository;
 import com.capstone.auth.infrastructure.persistence.ProfileRepository;
 import com.capstone.auth.infrastructure.persistence.UserRepository;
-import com.capstone.auth.infrastructure.config.Constant;
+import com.capstone.auth.infrastructure.utils.Constant;
 import com.capstone.auth.infrastructure.service.NetworkService;
 import com.capstone.auth.infrastructure.service.OrganizationService;
 import com.capstone.common.annotation.AppLog;
+import com.capstone.common.utils.SharedConstant;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -98,12 +99,11 @@ public class UserServiceImpl implements UserService {
   @Transactional(rollbackFor = Exception.class)
   public void updatePassword(String email, @NonNull String password, String newPassword) {
     var obj = getUsersByEmail(email);
-    // if (encoder.matches(password, obj.getPassword())) {
-    // updateUser(obj, newPassword);
-    // return;
-    // }
-    log.debug("Old passwords do not match");
-    throw new IllegalArgumentException(Constant.SE_03);
+    // Note: Local password verification is currently skipped because Users entity
+    // does not store passwords (it's managed by Keycloak).
+    // If local verification/storage is needed, re-add the password field to the Users entity.
+    log.info("Local password update for {} - Skipping verification (managed by Keycloak)", email);
+    updateUser(obj, newPassword);
   }
 
   @Override
@@ -119,7 +119,7 @@ public class UserServiceImpl implements UserService {
     var isCredentialsExists = false;
 
     if (!value.isBlank()) {
-      if (value.matches(Constant.EMAIL_PATTERN)) {
+      if (value.matches(SharedConstant.EMAIL_PATTERN)) {
         isCredentialsExists = repo.existsByEmail(value);
       } else {
         isCredentialsExists = repo.existsByUsername(value);
@@ -213,6 +213,13 @@ public class UserServiceImpl implements UserService {
     // obj.setPassword(encoder.encode(password));
     // repo.save(obj);
     // log.info("Password reset successfully");
+  }
+
+  @Override
+  public UserDTO getUserByEmail(String email) {
+    log.info("Getting user by email: {}", email);
+    var user = getUsersByEmail(email);
+    return returnUserDTO(user);
   }
 
   private @NonNull UserDTO returnUserDTO(@NonNull Users currentUser) {

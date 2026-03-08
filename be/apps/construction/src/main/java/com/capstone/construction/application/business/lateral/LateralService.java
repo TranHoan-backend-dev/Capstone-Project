@@ -14,5 +14,10 @@ public interface LateralService {
 
   LateralResponse getLateralById(String id);
 
-  PageResponse<LateralResponse> getAllLaterals(Pageable pageable);
+  PageResponse<LateralResponse> getAllLaterals(Pageable pageable,
+                                               String keyword,
+                                               String networkId,
+                                               Boolean networkAssigned);
+
+  Boolean checkLateralBelongedToNetwork(String id);
 }
