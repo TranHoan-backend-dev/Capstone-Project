@@ -43,6 +43,7 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
       if (keyword != null && !keyword.isBlank()) {
         List<Predicate> orPredicates = new ArrayList<>();
         var lowerCaseKeyword = "%" + keyword.toLowerCase() + "%";
+        var unaccent = "unaccent";
 
         // tuong duong LOWER(address) LIKE %keyword%
         var list = List.of("address", "customerName",
@@ -51,18 +52,22 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
           "usageTarget", "householdRegistrationNumber", "customerType");
 
         list.forEach(field ->
-          orPredicates.add(
-            cb.like(cb.lower(root.get(field).as(String.class)), lowerCaseKeyword)
-          )
-        );
+          orPredicates.add(cb.like(
+            cb.function(unaccent, String.class, cb.lower(root.get(field).as(String.class))),
+            cb.function(unaccent, String.class, cb.literal(lowerCaseKeyword))
+          )));
 
         orPredicates.add(
-          cb.like(cb.lower(root.get("representative").get("name")), lowerCaseKeyword)
-        );
+          cb.like(
+            cb.function(unaccent, String.class, cb.lower(root.get("representative").get("name"))),
+            cb.function(unaccent, String.class, cb.literal(lowerCaseKeyword))
+          ));
 
         orPredicates.add(
-          cb.like(cb.lower(root.get("representative").get("position")), lowerCaseKeyword)
-        );
+          cb.like(
+            cb.function(unaccent, String.class, cb.lower(root.get("representative").get("position"))),
+            cb.function(unaccent, String.class, cb.literal(lowerCaseKeyword))
+          ));
 
         // gop 2 dieu kien tren bang OR
         predicates.add(cb.or(orPredicates.toArray(new Predicate[0])));
