@@ -1,3 +1,15 @@
+DELETE FROM installation_form;
+DELETE FROM laterals;
+DELETE FROM water_supply_network;
+DELETE FROM neighborhood_unit;
+DELETE FROM hamlet;
+DELETE FROM commune;
+DELETE FROM road;
+DELETE FROM settlement;
+DELETE FROM construction_request;
+DELETE FROM cost_estimate;
+DELETE FROM roadmap;
+
 INSERT INTO installation_form (form_code, address, bank_account_number, bank_account_provider_location,
                                citizen_identification_number, citizen_identification_provide_date,
                                citizen_identification_provide_location, created_at, created_by, customer_name,

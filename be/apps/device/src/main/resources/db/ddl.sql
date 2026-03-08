@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS unaccent;
+
 create table public.materials_group
 (
   group_id   varchar(255) not null

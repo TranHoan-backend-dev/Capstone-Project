@@ -16,7 +16,7 @@ import com.capstone.auth.application.exception.AccountBlockedException;
 import com.capstone.auth.application.exception.NotExistingException;
 
 import com.capstone.common.enumerate.RoleName;
-import com.capstone.auth.infrastructure.config.Constant;
+import com.capstone.auth.infrastructure.utils.Constant;
 import com.capstone.auth.infrastructure.service.KeycloakService;
 import com.capstone.auth.infrastructure.utils.AuthUtils;
 import com.capstone.common.annotation.AppLog;
@@ -67,17 +67,17 @@ public class AuthUseCase {
   @NonFinal
   String realm;
 
-//  @Value("${keycloak.server-url}")
-//  @NonFinal
-//  String serverUrl;
+  // @Value("${keycloak.server-url}")
+  // @NonFinal
+  // String serverUrl;
 
-//  @Value("${keycloak.client-id}")
-//  @NonFinal
-//  String clientId;
+  // @Value("${keycloak.client-id}")
+  // @NonFinal
+  // String clientId;
 
-//  @Value("${keycloak.client-secret}")
-//  @NonFinal
-//  String clientSecret;
+  // @Value("${keycloak.client-secret}")
+  // @NonFinal
+  // String clientSecret;
 
   @Value("${keycloak.client-id-admin}")
   @NonFinal
@@ -121,13 +121,11 @@ public class AuthUseCase {
     Objects.requireNonNull(request.waterSupplyNetworkId(), Constant.PT_18);
 
     var role = rSrv.getRoleByName(RoleName.valueOf(request.role()));
-    Objects.requireNonNull(role, Constant.SE_08);
 
     uSrv.createEmployee(
       request.username(), request.email(), role, request.jobIds(),
       request.departmentId(), request.waterSupplyNetworkId(), request.fullName(),
-      request.phoneNumber()
-    );
+      request.phoneNumber());
 
     var id = uploadNewUserToKeycloak(request.username(), request.password(), request.role(), request.email());
     log.info("User id: {}", id);
@@ -137,7 +135,8 @@ public class AuthUseCase {
       request.fullName(), request.username(), request.password()));
   }
 
-  public void changePassword(String userId, String email, @NonNull String oldPassword, @NonNull String newPassword, String confirmPassword) {
+  public void changePassword(String userId, String email, @NonNull String oldPassword,
+                             @NonNull String newPassword, String confirmPassword) {
     log.info("Handling change password for email: {}", email);
 
     if (oldPassword.equals(newPassword)) {
@@ -159,23 +158,23 @@ public class AuthUseCase {
 
   private void verifyOldPassword(String email, String oldPassword) {
     log.info("Verifying old password for email: {}", email);
-//    try (Keycloak tempKeycloak = KeycloakBuilder.builder()
-//        .serverUrl(serverUrl)
-//        .realm(realm)
-//        .clientId(clientId)
-//        .clientSecret(clientSecret)
-//        .username(email)
-//        .password(oldPassword)
-//        .grantType(OAuth2Constants.PASSWORD)
-//        .build()) {
-      // Thử lấy token để xác thực mật khẩu
-//      tempKeycloak.tokenManager().getAccessToken();
+    // try (Keycloak tempKeycloak = KeycloakBuilder.builder()
+    // .serverUrl(serverUrl)
+    // .realm(realm)
+    // .clientId(clientId)
+    // .clientSecret(clientSecret)
+    // .username(email)
+    // .password(oldPassword)
+    // .grantType(OAuth2Constants.PASSWORD)
+    // .build()) {
+    // Thử lấy token để xác thực mật khẩu
+    // tempKeycloak.tokenManager().getAccessToken();
     keycloak.tokenManager().getAccessToken();
-//      log.info("Old password verification successful for email: {}", email);
-//    } catch (Exception e) {
-//      log.error("Old password verification failed for email: {}", email);
-//      throw new IllegalArgumentException("Mật khẩu cũ không chính xác");
-//    }
+    // log.info("Old password verification successful for email: {}", email);
+    // } catch (Exception e) {
+    // log.error("Old password verification failed for email: {}", email);
+    // throw new IllegalArgumentException("Mật khẩu cũ không chính xác");
+    // }
   }
 
   private void updatePasswordOnKeycloak(String userId, String newPassword) {
@@ -214,8 +213,7 @@ public class AuthUseCase {
       .grantType("client_credentials")
       .clientId(clientId)
       .clientSecret(clientSecret)
-      .scope("openid").build()
-    );
+      .scope("openid").build());
     log.info("Token info: {}", token);
     var response = keycloakService.createUser(
       "Bearer " + token.accessToken(),
@@ -227,8 +225,7 @@ public class AuthUseCase {
         .firstName(null)
         .lastName(null)
         .credentials(List.of(new Credential("password", password, false)))
-        .build()
-    );
+        .build());
     var userId = extractUserId(response);
     log.info("User ID: {}", userId);
 
@@ -250,19 +247,16 @@ public class AuthUseCase {
   private void assignRole(String roleName, String userId, String token) {
     var role = keycloakService.getRealmRole(
       "Bearer " + token,
-      roleName
-    );
+      roleName);
 
     var rolePayload = List.of(Map.of(
       "id", role.get("id"),
-      "name", role.get("name")
-    ));
+      "name", role.get("name")));
 
     keycloakService.assignRealmRole(
       "Bearer " + token,
       userId,
-      rolePayload
-    );
+      rolePayload);
   }
   // </editor-fold>
 

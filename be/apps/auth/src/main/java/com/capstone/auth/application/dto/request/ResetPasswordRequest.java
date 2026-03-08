@@ -1,6 +1,7 @@
 package com.capstone.auth.application.dto.request;
 
-import com.capstone.auth.infrastructure.config.Constant;
+import com.capstone.auth.infrastructure.utils.Constant;
+import com.capstone.common.utils.SharedConstant;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -18,6 +19,6 @@ public record ResetPasswordRequest(
   @NotBlank(message = "OTP cannot be empty") String otp,
 
   @Schema(description = "New password to set (must meet complexity requirements)", example = "NewPass789!", requiredMode = Schema.RequiredMode.REQUIRED)
-  @Pattern(regexp = Constant.PASSWORD_PATTERN, message = Constant.PT_02)
+  @Pattern(regexp = SharedConstant.PASSWORD_PATTERN, message = Constant.PT_02)
   String newPassword) {
 }

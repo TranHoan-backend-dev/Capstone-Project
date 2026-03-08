@@ -64,7 +64,10 @@ public class LateralUseCase {
     return lateralService.getLateralById(id);
   }
 
-  public PageResponse<LateralResponse> getAllLaterals(Pageable pageable) {
-    return lateralService.getAllLaterals(pageable);
+  public PageResponse<LateralResponse> getAllLaterals(Pageable pageable,
+                                                      String keyword,
+                                                      String networkId,
+                                                      Boolean networkAssigned) {
+    return lateralService.getAllLaterals(pageable, keyword, networkId, networkAssigned);
   }
 }

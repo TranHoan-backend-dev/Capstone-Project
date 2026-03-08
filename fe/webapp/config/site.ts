@@ -11,6 +11,19 @@ export const siteConfig = {
       href: "/home",
     },
 
+    // Danh mục
+    {
+      key: "category",
+      label: "Danh mục",
+      items: [
+        {
+          key: "roads",
+          label: "Quản lý Đường phố",
+          href: "/roads",
+        },
+      ],
+    },
+
     // Hợp đồng
     {
       key: "contract",
@@ -135,6 +148,16 @@ export const siteConfig = {
           key: "networks",
           label: "Quản lý Chi nhánh cấp nước",
           href: "/networks",
+        },
+        {
+          key: "laterals",
+          label: "Quản lý Nhánh tổng",
+          href: "/laterals",
+        },
+        {
+          key: "roadmaps",
+          label: "Quản lý Lộ trình ghi",
+          href: "/roadmaps",
         },
         {
           key: "settlement-lookup",

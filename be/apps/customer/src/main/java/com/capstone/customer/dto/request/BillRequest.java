@@ -1,6 +1,6 @@
 package com.capstone.customer.dto.request;
 
-import com.capstone.customer.config.Constant;
+import com.capstone.customer.utils.Constant;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 

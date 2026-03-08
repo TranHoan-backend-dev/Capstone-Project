@@ -1,7 +1,7 @@
 package com.capstone.organization.model;
 
 import jakarta.persistence.*;
-import com.capstone.organization.config.Constant;
+import com.capstone.organization.utils.Constant;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.jspecify.annotations.NonNull;

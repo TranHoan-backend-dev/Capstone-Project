@@ -1,6 +1,7 @@
 package com.capstone.construction.adapter.catalog;
 
-import com.capstone.construction.application.dto.request.catalog.WaterSupplyNetworkRequest;
+import com.capstone.construction.application.dto.request.branch.CreateRequest;
+import com.capstone.construction.application.dto.request.branch.UpdateRequest;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.application.dto.response.catalog.WaterSupplyNetworkResponse;
 import com.capstone.construction.application.usecase.catalog.WaterSupplyNetworkUseCase;
@@ -44,7 +45,7 @@ class WaterSupplyNetworkControllerTest {
   @Test
   void should_ReturnCreated_When_CreateRequestIsValid() {
     // Given
-    var request = new WaterSupplyNetworkRequest("Trạm bơm số 1");
+    var request = new CreateRequest("Trạm bơm số 1");
 
     // When
     var responseEntity = networkController.createNetwork(request);
@@ -65,10 +66,10 @@ class WaterSupplyNetworkControllerTest {
   @Test
   void should_ThrowException_When_CreateUseCaseThrowsException() {
     // Given
-    var request = new WaterSupplyNetworkRequest("Trạm bơm số 1");
+    var request = new CreateRequest("Trạm bơm số 1");
     var expectedException = new RuntimeException("Unexpected Error");
 
-    doThrow(expectedException).when(networkUseCase).createNetwork(any(WaterSupplyNetworkRequest.class));
+    doThrow(expectedException).when(networkUseCase).createNetwork(any(CreateRequest.class));
 
     // When & Then
     assertThatThrownBy(() -> networkController.createNetwork(request))
@@ -82,7 +83,7 @@ class WaterSupplyNetworkControllerTest {
   void should_ReturnOk_When_UpdateIsSuccessful() {
     // Given
     var id = "uuid-1";
-    var request = new WaterSupplyNetworkRequest("Updated Name");
+    var request = new UpdateRequest("Updated Name");
     var expectedResponse = new WaterSupplyNetworkResponse(id, "Updated Name", LocalDateTime.now());
 
     when(networkUseCase.updateNetwork(id, request)).thenReturn(expectedResponse);

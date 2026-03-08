@@ -14,10 +14,11 @@ import com.capstone.auth.infrastructure.persistence.BusinessPagesOfEmployeeRepos
 import com.capstone.auth.infrastructure.persistence.EmployeeJobRepository;
 import com.capstone.auth.infrastructure.persistence.ProfileRepository;
 import com.capstone.auth.infrastructure.persistence.UserRepository;
-import com.capstone.auth.infrastructure.config.Constant;
+import com.capstone.auth.infrastructure.utils.Constant;
 import com.capstone.auth.infrastructure.service.NetworkService;
 import com.capstone.auth.infrastructure.service.OrganizationService;
 import com.capstone.common.annotation.AppLog;
+import com.capstone.common.utils.SharedConstant;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -118,7 +119,7 @@ public class UserServiceImpl implements UserService {
     var isCredentialsExists = false;
 
     if (!value.isBlank()) {
-      if (value.matches(Constant.EMAIL_PATTERN)) {
+      if (value.matches(SharedConstant.EMAIL_PATTERN)) {
         isCredentialsExists = repo.existsByEmail(value);
       } else {
         isCredentialsExists = repo.existsByUsername(value);

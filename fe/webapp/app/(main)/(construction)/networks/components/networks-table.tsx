@@ -199,7 +199,7 @@ export const NetworksTable = ({
         headerSummary={`${totalItems}`}
         paginationProps={{
           total: totalPages,
-          initialPage: page,
+          page: page,
           onChange: setPage,
           summary: `${data.length}`,
         }}

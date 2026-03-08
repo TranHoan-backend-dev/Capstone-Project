@@ -5,7 +5,7 @@ import com.capstone.auth.application.business.dto.UserDTO;
 import com.capstone.auth.application.business.profile.ProfileService;
 import com.capstone.auth.application.business.users.UserService;
 import com.capstone.auth.application.exception.NotExistingException;
-import com.capstone.auth.infrastructure.config.Constant;
+import com.capstone.auth.infrastructure.utils.Constant;
 
 import java.time.LocalDate;
 

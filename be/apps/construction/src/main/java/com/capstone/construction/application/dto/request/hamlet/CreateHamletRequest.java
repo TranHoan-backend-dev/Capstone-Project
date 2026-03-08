@@ -1,6 +1,6 @@
 package com.capstone.construction.application.dto.request.hamlet;
 
-import com.capstone.construction.infrastructure.config.Constant;
+import com.capstone.construction.infrastructure.utils.Constant;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 

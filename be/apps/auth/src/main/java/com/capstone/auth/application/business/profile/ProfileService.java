@@ -11,4 +11,6 @@ public interface ProfileService {
   ProfileDTO updateProfile(Profile profile);
 
   ProfileDTO updateAvatar(String id, String avatar);
+
+  String getAvatar(String id);
 }

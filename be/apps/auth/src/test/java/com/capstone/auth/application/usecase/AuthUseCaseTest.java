@@ -9,7 +9,7 @@ import com.capstone.auth.application.dto.response.TokenExchangeResponse;
 import com.capstone.auth.application.event.producer.AccountCreationEvent;
 import com.capstone.auth.application.event.producer.MessageProducer;
 import com.capstone.auth.domain.model.Roles;
-import com.capstone.auth.infrastructure.config.Constant;
+import com.capstone.auth.infrastructure.utils.Constant;
 import com.capstone.auth.infrastructure.service.KeycloakService;
 import com.capstone.common.enumerate.RoleName;
 import org.junit.jupiter.api.BeforeEach;
