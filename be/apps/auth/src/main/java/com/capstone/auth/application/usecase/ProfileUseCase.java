@@ -129,8 +129,11 @@ public class ProfileUseCase {
   public UserProfileResponse updateAvatar(String id, MultipartFile file) {
     log.info("Update avatar");
     var user = getNonLockedUserById(id);
+    var au = pSrv.getAvatar(id);
+    log.info("Old avatar url: {}", au);
 
     // tải lên GCS
+    gcsSrv.delete(au);
     var avatarUrl = gcsSrv.upload(file);
 
     var profile = pSrv.updateAvatar(id, avatarUrl);
