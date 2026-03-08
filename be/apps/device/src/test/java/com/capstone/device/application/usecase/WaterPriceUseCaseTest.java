@@ -6,7 +6,7 @@ import com.capstone.device.application.dto.request.price.CreateRequest;
 import com.capstone.device.application.dto.request.price.UpdateRequest;
 import com.capstone.device.application.dto.response.WaterPriceResponse;
 import com.capstone.device.application.event.producer.MessageProducer;
-import com.capstone.device.infrastructure.config.Constant;
+import com.capstone.device.infrastructure.util.Constant;
 import com.capstone.device.infrastructure.service.CustomerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

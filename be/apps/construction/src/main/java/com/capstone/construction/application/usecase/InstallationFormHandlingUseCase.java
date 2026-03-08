@@ -1,9 +1,8 @@
 package com.capstone.construction.application.usecase;
 
 import com.capstone.construction.application.business.installationform.InstallationFormService;
+import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
-import com.capstone.construction.application.dto.request.installationform.FilterConstructionOrderRequest;
-import com.capstone.construction.application.dto.request.installationform.FilterFormRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import com.capstone.construction.application.dto.response.installationform.NewInstallationFormResponse;
@@ -12,7 +11,7 @@ import com.capstone.construction.application.event.producer.order.CreatedEvent;
 import com.capstone.construction.application.event.producer.MessageProducer;
 import com.capstone.construction.application.event.producer.order.RejectEvent;
 import com.capstone.construction.application.exception.ExistingItemException;
-import com.capstone.construction.infrastructure.config.Constant;
+import com.capstone.construction.infrastructure.utils.Constant;
 import com.capstone.construction.infrastructure.service.EmployeeService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +46,7 @@ public class InstallationFormHandlingUseCase {
   @Value("${rabbit-mq-config.queue_name}")
   String QUEUE_NAME;
 
-  public Page<InstallationFormListResponse> getPaginatedInstallationForms(Pageable pageable, FilterFormRequest request) {
+  public Page<InstallationFormListResponse> getPaginatedInstallationForms(Pageable pageable, BaseFilterRequest request) {
     return ifSrv.getInstallationForms(pageable, request);
   }
 
@@ -97,7 +96,7 @@ public class InstallationFormHandlingUseCase {
     }
   }
 
-  public Page<InstallationFormListResponse> getPaginatedConstructionRequest(Pageable pageable, FilterConstructionOrderRequest request) {
+  public Page<InstallationFormListResponse> getPaginatedConstructionRequest(Pageable pageable, BaseFilterRequest request) {
     return null;
   }
 

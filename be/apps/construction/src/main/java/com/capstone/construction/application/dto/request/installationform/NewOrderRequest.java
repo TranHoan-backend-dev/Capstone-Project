@@ -4,7 +4,7 @@ import com.capstone.common.enumerate.CustomerType;
 import com.capstone.common.enumerate.UsageTarget;
 import com.capstone.common.utils.SharedConstant;
 import com.capstone.construction.domain.model.utils.Representative;
-import com.capstone.construction.infrastructure.config.Constant;
+import com.capstone.construction.infrastructure.utils.Constant;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;

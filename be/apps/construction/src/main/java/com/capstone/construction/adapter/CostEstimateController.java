@@ -1,6 +1,7 @@
 package com.capstone.construction.adapter;
 
 import com.capstone.common.response.WrapperApiResponse;
+import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.construction.application.dto.request.estimate.CostEstimateRequest;
 import com.capstone.construction.application.dto.response.estimate.CostEstimateResponse;
 import com.capstone.construction.application.usecase.estimate.CostEstimateUseCase;
@@ -48,7 +49,8 @@ public class CostEstimateController {
   })
   public ResponseEntity<WrapperApiResponse> updateEstimate(
     @PathVariable @Parameter(description = "ID of the estimate to update", required = true) String id,
-    @RequestBody @Valid CostEstimateRequest request) {
+    @RequestBody @Valid CostEstimateRequest request
+  ) {
     log.info("REST request to update cost estimate with id: {}", id);
     var response = estimateUseCase.updateEstimate(id, request);
     return ResponseEntity.ok(new WrapperApiResponse(
@@ -60,8 +62,7 @@ public class CostEstimateController {
     @ApiResponse(responseCode = "200", description = "", content = @Content(schema = @Schema(implementation = CostEstimateResponse.class))),
     @ApiResponse(responseCode = "404", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
-  public ResponseEntity<WrapperApiResponse> getEstimateById(
-    @PathVariable @Parameter(description = "", required = true) String id) {
+  public ResponseEntity<WrapperApiResponse> getEstimateById(@PathVariable @Parameter(description = "", required = true) String id) {
     log.info("REST request to get cost estimate with id: {}", id);
     var response = estimateUseCase.getEstimateById(id);
     return ResponseEntity.ok(new WrapperApiResponse(
@@ -73,9 +74,11 @@ public class CostEstimateController {
     @ApiResponse(responseCode = "200", description = "", content = @Content(schema = @Schema(implementation = CostEstimateResponse.class)))
   })
   public ResponseEntity<WrapperApiResponse> getAllEstimates(
-    @PageableDefault(size = 10) @Parameter(description = "Pagination parameters") Pageable pageable) {
+    @PageableDefault @Parameter(description = "Pagination parameters") Pageable pageable,
+    @RequestParam(required = false) BaseFilterRequest request
+  ) {
     log.info("REST request to get all cost estimates");
-    var response = estimateUseCase.getAllEstimates(pageable);
+    var response = estimateUseCase.getAllEstimates(pageable, request);
     return ResponseEntity.ok(new WrapperApiResponse(
       HttpStatus.OK.value(), "Cost estimates retrieved successfully", response, LocalDateTime.now()));
   }

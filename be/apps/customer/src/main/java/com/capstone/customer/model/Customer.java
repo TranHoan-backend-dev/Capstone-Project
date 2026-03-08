@@ -7,7 +7,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.jspecify.annotations.NonNull;
 
-import com.capstone.customer.config.Constant;
+import com.capstone.customer.utils.Constant;
 
 import java.util.Objects;
 import java.util.function.Consumer;

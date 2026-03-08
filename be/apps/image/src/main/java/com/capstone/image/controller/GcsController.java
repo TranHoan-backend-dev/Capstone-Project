@@ -45,4 +45,13 @@ public class GcsController {
       .contentType(MediaType.IMAGE_JPEG)
       .body(file);
   }
+
+  @DeleteMapping("/delete/{file}")
+  public ResponseEntity<String> delete(@PathVariable("file") String fileName) {
+    log.info("Deleting file: {}", fileName);
+
+    storageService.delete(fileName);
+
+    return ResponseEntity.ok("File deleted successfully");
+  }
 }

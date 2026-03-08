@@ -1,4 +1,4 @@
-package com.capstone.construction.infrastructure.config;
+package com.capstone.construction.infrastructure.utils;
 
 public final class Constant {
   // for dto and entity layer
