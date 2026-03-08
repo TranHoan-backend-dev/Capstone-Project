@@ -8,7 +8,7 @@ import com.capstone.auth.application.dto.request.UpdateProfileRequest;
 import com.capstone.auth.application.dto.response.UserProfileResponse;
 import com.capstone.auth.application.exception.InternalServerError;
 import com.capstone.auth.domain.model.Profile;
-import com.capstone.auth.infrastructure.config.Constant;
+import com.capstone.auth.infrastructure.utils.Constant;
 import com.capstone.auth.infrastructure.service.GcsService;
 import com.capstone.auth.infrastructure.utils.AuthUtils;
 import com.capstone.common.annotation.AppLog;

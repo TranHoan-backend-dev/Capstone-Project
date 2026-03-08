@@ -1,4 +1,4 @@
-package com.capstone.device.infrastructure.config;
+package com.capstone.device.infrastructure.util;
 
 public final class Constant {
   public static final String ENT_01 = "Name cannot be null or empty";

@@ -2,15 +2,14 @@ package com.capstone.construction.application.usecase;
 
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.construction.application.business.installationform.InstallationFormService;
+import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
-import com.capstone.construction.application.dto.request.installationform.FilterConstructionOrderRequest;
-import com.capstone.construction.application.dto.request.installationform.FilterFormRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import com.capstone.construction.application.dto.response.installationform.NewInstallationFormResponse;
 import com.capstone.construction.application.event.producer.MessageProducer;
 import com.capstone.construction.application.exception.ExistingItemException;
-import com.capstone.construction.infrastructure.config.Constant;
+import com.capstone.construction.infrastructure.utils.Constant;
 import com.capstone.construction.infrastructure.service.EmployeeService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,7 +46,7 @@ class InstallationFormHandlingUseCaseTest {
   void should_ReturnPaginatedForms_When_ServiceReturnsData() {
     // Given
     var pageable = Pageable.unpaged();
-    var request = new FilterFormRequest("keyword", null, null);
+    var request = new BaseFilterRequest("keyword", null, null);
     var responseItem = mock(InstallationFormListResponse.class);
     var expectedPage = new PageImpl<>(List.of(responseItem));
 
@@ -150,7 +149,7 @@ class InstallationFormHandlingUseCaseTest {
   void should_ReturnNull_When_GettingPaginatedConstructionRequest() {
     // When
     var result = useCase.getPaginatedConstructionRequest(Pageable.unpaged(),
-        mock(FilterConstructionOrderRequest.class));
+        mock(BaseFilterRequest.class));
 
     // Then
     assertThat(result).isNull();

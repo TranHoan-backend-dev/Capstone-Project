@@ -7,7 +7,7 @@ import com.capstone.device.application.dto.response.WaterPriceResponse;
 import com.capstone.device.application.event.producer.MessageProducer;
 import com.capstone.device.application.event.producer.waterprices.DeleteEvent;
 import com.capstone.device.application.event.producer.waterprices.UpdateEvent;
-import com.capstone.device.infrastructure.config.Constant;
+import com.capstone.device.infrastructure.util.Constant;
 import com.capstone.device.infrastructure.service.CustomerService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,6 @@
 package com.capstone.auth.infrastructure.utils;
 
 import com.capstone.auth.application.business.dto.UserDTO;
-import com.capstone.auth.infrastructure.config.Constant;
 import com.capstone.common.utils.SharedConstant;
 
 public class AuthUtils {

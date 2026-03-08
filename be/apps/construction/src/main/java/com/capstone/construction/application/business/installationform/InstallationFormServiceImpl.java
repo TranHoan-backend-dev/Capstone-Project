@@ -2,9 +2,8 @@ package com.capstone.construction.application.business.installationform;
 
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.enumerate.ProcessingStatus;
+import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
-import com.capstone.construction.application.dto.request.installationform.FilterConstructionOrderRequest;
-import com.capstone.construction.application.dto.request.installationform.FilterFormRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import com.capstone.construction.application.dto.response.installationform.NewInstallationFormResponse;
@@ -12,7 +11,7 @@ import com.capstone.construction.domain.model.InstallationForm;
 import com.capstone.construction.domain.model.WaterSupplyNetwork;
 import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
 import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRepository;
-import com.capstone.construction.infrastructure.config.Constant;
+import com.capstone.construction.infrastructure.utils.Constant;
 import com.capstone.construction.infrastructure.service.EmployeeService;
 import com.capstone.construction.infrastructure.service.OverallWaterMeterService;
 import lombok.AccessLevel;
@@ -97,7 +96,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   }
 
   @Override
-  public Page<InstallationFormListResponse> getInstallationForms(Pageable pageable, @NonNull FilterFormRequest request) {
+  public Page<InstallationFormListResponse> getInstallationForms(Pageable pageable, BaseFilterRequest request) {
     log.info("Fetching paginated installation forms with pageable: {}", pageable);
     var startDate = parseFrom(request.from());
     var endDate = parseFrom(request.to());
@@ -115,7 +114,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   }
 
   @Override
-  public Page<InstallationFormListResponse> getConstructionRequestsList(Pageable pageable, @NonNull FilterConstructionOrderRequest request) {
+  public Page<InstallationFormListResponse> getConstructionRequestsList(Pageable pageable, @NonNull BaseFilterRequest request) {
     log.info("Fetching paginated construction request with pageable: {}", pageable);
     var startDate = parseFrom(request.from());
     var endDate = parseFrom(request.to());

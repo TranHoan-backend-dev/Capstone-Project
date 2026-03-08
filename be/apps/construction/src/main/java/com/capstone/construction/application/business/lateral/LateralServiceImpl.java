@@ -8,7 +8,7 @@ import com.capstone.construction.domain.model.Lateral;
 import com.capstone.construction.infrastructure.persistence.LateralRepository;
 import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRepository;
 import com.capstone.construction.application.exception.ExistingItemException;
-import com.capstone.construction.infrastructure.config.Constant;
+import com.capstone.construction.infrastructure.utils.Constant;
 import com.capstone.construction.infrastructure.service.OverallWaterMeterService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

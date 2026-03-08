@@ -14,7 +14,7 @@ import com.capstone.auth.infrastructure.persistence.BusinessPagesOfEmployeeRepos
 import com.capstone.auth.infrastructure.persistence.EmployeeJobRepository;
 import com.capstone.auth.infrastructure.persistence.ProfileRepository;
 import com.capstone.auth.infrastructure.persistence.UserRepository;
-import com.capstone.auth.infrastructure.config.Constant;
+import com.capstone.auth.infrastructure.utils.Constant;
 import com.capstone.auth.infrastructure.service.NetworkService;
 import com.capstone.auth.infrastructure.service.OrganizationService;
 import com.capstone.common.annotation.AppLog;
