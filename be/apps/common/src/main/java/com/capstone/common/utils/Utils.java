@@ -60,8 +60,8 @@ public class Utils {
     return buildResponse(HttpStatus.CONFLICT.value(), message, data);
   }
 
-  public static @NonNull ResponseEntity<WrapperApiResponse> returnNoContentResponse(String message, Object data) {
-    return buildResponse(HttpStatus.NO_CONTENT.value(), message, data);
+  public static @NonNull ResponseEntity<WrapperApiResponse> returnNoContentResponse(String message) {
+    return buildResponse(HttpStatus.NO_CONTENT.value(), message, null);
   }
 
   private static @NonNull ResponseEntity<WrapperApiResponse> buildResponse(int statusCode, String message, Object data) {

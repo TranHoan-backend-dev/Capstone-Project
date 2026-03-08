@@ -1,4 +1,4 @@
-package com.capstone.customer.config;
+package com.capstone.customer.utils;
 
 public final class Constant {
   public static final String ENT_01 = "Name cannot be null or empty";

@@ -1,7 +1,7 @@
 package com.capstone.auth.domain.model;
 
 import com.capstone.auth.domain.model.utils.EmployeeJobId;
-import com.capstone.auth.infrastructure.config.Constant;
+import com.capstone.auth.infrastructure.utils.Constant;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

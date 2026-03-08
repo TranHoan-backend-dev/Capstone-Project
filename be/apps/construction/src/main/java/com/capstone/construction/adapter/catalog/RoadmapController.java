@@ -143,9 +143,16 @@ public class RoadmapController {
     @ApiResponse(responseCode = "500", description = "Lỗi hệ thống", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   public ResponseEntity<WrapperApiResponse> getAllRoadmaps(
-    @PageableDefault @Parameter(hidden = true) Pageable pageable) {
-    log.info("REST request to get all roadmaps");
-    var response = roadmapUseCase.getAllRoadmaps(pageable);
+    @PageableDefault @Parameter(hidden = true) Pageable pageable,
+    @RequestParam(required = false)
+    @Parameter(description = "Từ khóa tìm kiếm theo tên lộ trình ghi") String keyword,
+    @RequestParam(required = false)
+    @Parameter(description = "Lọc theo ID tuyến ống (lateral)") String lateralId,
+    @RequestParam(required = false)
+    @Parameter(description = "Lọc theo ID mạng lưới cấp nước") String networkId
+  ) {
+    log.info("REST request to get all roadmaps with pagination: {}, keyword: {}, lateralId: {}, networkId: {}", pageable, keyword, lateralId, networkId);
+    var response = roadmapUseCase.getAllRoadmaps(pageable, keyword, lateralId, networkId);
     return Utils.returnOkResponse("Roadmaps retrieved successfully", response);
   }
 }

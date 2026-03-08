@@ -9,7 +9,7 @@ import com.capstone.construction.infrastructure.persistence.RoadmapRepository;
 import com.capstone.construction.infrastructure.persistence.LateralRepository;
 import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRepository;
 import com.capstone.construction.application.exception.ExistingItemException;
-import com.capstone.construction.infrastructure.config.Constant;
+import com.capstone.construction.infrastructure.utils.Constant;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -107,10 +107,15 @@ public class RoadmapServiceImpl implements RoadmapService {
       .orElseThrow(() -> new IllegalArgumentException("Roadmap not found with id: " + id));
   }
 
-  @Override
   public PageResponse<RoadmapResponse> getAllRoadmaps(Pageable pageable) {
-    log.info("Fetching all roadmaps with pageable: {}", pageable);
-    var page = roadmapRepository.findAll(pageable);
+    log.info("Fetching all roadmaps with pageable (no filters): {}", pageable);
+    return getAllRoadmaps(pageable, null, null, null);
+  }
+
+  @Override
+  public PageResponse<RoadmapResponse> getAllRoadmaps(Pageable pageable, String keyword, String lateralId, String networkId) {
+    log.info("Fetching all roadmaps with filters - pageable: {}, keyword: {}, lateralId: {}, networkId: {}", pageable, keyword, lateralId, networkId);
+    var page = roadmapRepository.searchRoadmaps(keyword, lateralId, networkId, pageable);
     return PageResponse.fromPage(page, this::mapToResponse);
   }
 

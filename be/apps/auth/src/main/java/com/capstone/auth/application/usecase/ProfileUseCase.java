@@ -8,7 +8,7 @@ import com.capstone.auth.application.dto.request.UpdateProfileRequest;
 import com.capstone.auth.application.dto.response.UserProfileResponse;
 import com.capstone.auth.application.exception.InternalServerError;
 import com.capstone.auth.domain.model.Profile;
-import com.capstone.auth.infrastructure.config.Constant;
+import com.capstone.auth.infrastructure.utils.Constant;
 import com.capstone.auth.infrastructure.service.GcsService;
 import com.capstone.auth.infrastructure.utils.AuthUtils;
 import com.capstone.common.annotation.AppLog;
@@ -129,8 +129,11 @@ public class ProfileUseCase {
   public UserProfileResponse updateAvatar(String id, MultipartFile file) {
     log.info("Update avatar");
     var user = getNonLockedUserById(id);
+    var au = pSrv.getAvatar(id);
+    log.info("Old avatar url: {}", au);
 
     // tải lên GCS
+    gcsSrv.delete(au);
     var avatarUrl = gcsSrv.upload(file);
 
     var profile = pSrv.updateAvatar(id, avatarUrl);

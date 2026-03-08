@@ -1,91 +1,99 @@
 package com.capstone.construction.application.dto.request.installationform;
 
+import com.capstone.common.enumerate.CustomerType;
+import com.capstone.common.enumerate.UsageTarget;
 import com.capstone.common.utils.SharedConstant;
 import com.capstone.construction.domain.model.utils.Representative;
-import com.capstone.construction.infrastructure.config.Constant;
+import com.capstone.construction.infrastructure.utils.Constant;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 import java.util.List;
 
 public record NewOrderRequest(
+  @Schema(description = "Mã biểu mẫu (ví dụ: BM-01)", example = "BM-01")
+  @NotBlank(message = Constant.PT_08)
+  @NotEmpty(message = Constant.PT_08)
   String formCode,
 
-  @Schema(description = "Unique form number identifying the request", example = "LF-2024-002")
+  @Schema(description = "Số hồ sơ duy nhất để định danh yêu cầu lắp đặt", example = "LF-2024-002")
   @NotBlank(message = Constant.PT_44) String formNumber,
 
-  @Schema(description = "Full name of the customer", example = "Trần Hoàng")
+  @Schema(description = "Họ và tên khách hàng (hoặc tên đơn vị)", example = "Nguyễn Văn A")
   @NotBlank(message = Constant.PT_27) String customerName,
 
-  @Schema(description = "Service address", example = "123 Main St, District 1, HCM")
+  @Schema(description = "Địa chỉ lắp đặt dịch vụ", example = "123 Đường ABC, Phường X, Quận Y, TP. HCM")
   @NotBlank(message = Constant.PT_12) String address,
 
-  @Schema(description = "Citizen identification number (CCCD)", example = "012345678901")
+  @Schema(description = "Số Căn cước công dân / Chứng minh nhân dân", example = "012345678901")
   @NotBlank(message = Constant.PT_48)
   String citizenIdentificationNumber,
 
-  @Schema(description = "CCCD provide date", example = "2020-01-01")
+  @Schema(description = "Ngày cấp Căn cước công dân (YYYY-MM-DD)", example = "2020-01-01")
   @NotBlank(message = Constant.PT_49)
   String citizenIdentificationProvideDate,
 
-  @Schema(description = "CCCD provide location", example = "Cục Cảnh sát QLHC về TTXH")
+  @Schema(description = "Nơi cấp Căn cước công dân", example = "Cục Cảnh sát QLHC về TTXH")
   @NotBlank(message = Constant.PT_50)
   String citizenIdentificationProvideLocation,
 
-  @Schema(description = "Customer phone number", example = "0901234567")
+  @Schema(description = "Số điện thoại liên lạc", example = "0901234567")
   @NotBlank(message = Constant.PT_15)
   @Pattern(regexp = SharedConstant.PHONE_PATTERN, message = Constant.PT_14)
   String phoneNumber,
 
-  @Schema(description = "Tax identification code", example = "8001234567")
-  @NotBlank(message = Constant.PT_51)
-  String taxCode,
+  @Schema(description = "Mã số thuế (nếu có)", example = "8001234567")
+  @NotBlank(message = Constant.PT_51) String taxCode,
 
-  @Schema(description = "Bank account number", example = "123456789")
+  @Schema(description = "Số tài khoản ngân hàng", example = "123456789")
   @NotBlank(message = Constant.PT_52)
   String bankAccountNumber,
 
-  @Schema(description = "Bank provided location", example = "Vietcombank HCM")
+  @Schema(description = "Ngân hàng và chi nhánh", example = "Vietcombank HCM")
   @NotBlank(message = Constant.PT_53)
   String bankAccountProviderLocation,
 
-  @Schema(description = "Usage target (e.g. INDIVIDUAL, BUSINESS)", example = "INDIVIDUAL")
-  @NotBlank(message = Constant.PT_54)
-  String usageTarget,
+  @Schema(description = "Mục đích sử dụng (DOMESTIC, INSTITUTIONAL, INDUSTRIAL, COMMERCIAL)", example = "DOMESTIC")
+  @NotNull(message = Constant.PT_54)
+  UsageTarget usageTarget,
 
-  String customerType,
+  @Schema(description = "Loại khách hàng (FAMILY: Hộ gia đình, COMPANY: Công ty/Tổ chức)", example = "FAMILY")
+  @NotNull(message = Constant.PT_06)
+  CustomerType customerType,
 
-  @Schema(description = "Form received timestamp (ISO format)", example = "2024-02-01T08:00:00")
+  @Schema(description = "Ngày tiếp nhận hồ sơ (ISO)", example = "2024-02-01")
   @NotBlank(message = Constant.PT_55)
   @NotEmpty(message = Constant.PT_55)
   String receivedFormAt,
 
-  @Schema(description = "Scheduled survey timestamp (ISO format)", example = "2024-02-05T09:00:00")
+  @Schema(description = "Ngày dự kiến khảo sát (ISO)", example = "2024-02-05")
   @NotBlank(message = Constant.PT_78)
   @NotEmpty(message = Constant.PT_78)
   String scheduleSurveyAt,
 
-  @Schema(description = "Number of households using the meter", example = "1")
-  Integer numberOfHousehold, // so nguoi su dung
+  @Schema(description = "Số hộ sử dụng chung đồng hồ", example = "1")
+  Integer numberOfHousehold,
 
-  @Schema(description = "Household registration number", example = "1")
-  Integer householdRegistrationNumber, // ma ho khau
+  @Schema(description = "Số nhân khẩu", example = "1")
+  Integer householdRegistrationNumber,
 
-  @Schema(description = "List of customer representatives")
+  @Schema(description = "Danh sách người đại diện (dành cho tổ chức/doanh nghiệp)")
   List<Representative> representative,
 
-  @Schema(description = "ID of the water supply network", example = "net-001")
+  @Schema(description = "ID của mạng lưới cấp nước quản lý", example = "net-001")
   @NotBlank(message = Constant.PT_59)
   @NotEmpty(message = Constant.PT_59)
   String networkId,
 
-  @Schema(description = "ID of the staff who created this form", example = "emp-001")
+  @Schema(description = "ID của nhân viên lập hồ sơ", example = "emp-001")
   @NotBlank(message = Constant.PT_61)
   String createdBy,
 
-  @Schema(description = "ID of the overall water meter", example = "owm-001")
+  @Schema(description = "ID của đồng hồ nước tổng khu vực", example = "owm-001")
   @NotBlank(message = Constant.PT_62)
-  String overallWaterMeterId) {
+  String overallWaterMeterId
+) {
 }

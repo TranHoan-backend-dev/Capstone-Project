@@ -8,7 +8,7 @@ import com.capstone.construction.domain.model.NeighborhoodUnit;
 import com.capstone.construction.infrastructure.persistence.NeighborhoodUnitRepository;
 import com.capstone.construction.infrastructure.persistence.CommuneRepository;
 import com.capstone.construction.application.exception.ExistingItemException;
-import com.capstone.construction.infrastructure.config.Constant;
+import com.capstone.construction.infrastructure.utils.Constant;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

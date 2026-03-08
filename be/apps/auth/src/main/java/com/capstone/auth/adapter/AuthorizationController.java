@@ -68,8 +68,7 @@ public class AuthorizationController {
     log.info("Getting all employees with page index {} and page size {}", pageable.getPageNumber(),
       pageable.getPageSize());
 
-    return Utils.returnOkResponse("Get all employees successfully",
-      usersUseCase.getPaginatedListOfEmployees(pageable, request));
+    return Utils.returnOkResponse("Get all employees successfully", usersUseCase.getPaginatedListOfEmployees(pageable, request));
   }
 
   @Operation(summary = "Lấy các trang web nghiệp vụ được ủy quyền cho nhân viên", description = """

@@ -4,6 +4,8 @@ spring:
   jackson:
     time-zone: Asia/Ho_Chi_Minh
     locale: vi_VN
+  profiles:
+    active: dev
 management:
   health:
     rabbit:
@@ -32,5 +34,11 @@ eureka:
       defaultZone: http://localhost:9000/eureka
   instance:
     prefer-ip-address: true
-gcs:
-  bucket: ${GCS_BUCKET_NAME:default}
+#spring:
+#  cloud:
+#    gcp:
+#      credentials:
+#        location: classpath:${gcs.credentials}
+#gcs:
+#  credentials: gcs/project-b0d9c9e8-e136-4e83-97e-732cf573e95c.json
+#  bucket: nawaco
