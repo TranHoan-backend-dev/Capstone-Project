@@ -16,7 +16,7 @@ const Hamlet = () => {
       <CustomBreadcrumb
         items={[
           { label: "Trang chủ", href: "/home" },
-          { label: "Quản lý Phường/xã", isCurrent: true },
+          { label: "Quản lý Thôn/làng", isCurrent: true },
         ]}
       />
 
