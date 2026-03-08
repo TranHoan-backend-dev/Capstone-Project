@@ -21,6 +21,11 @@ export const siteConfig = {
           label: "Quản lý Phòng ban",
           href: "/departments",
         },
+        {
+          key: "roads",
+          label: "Quản lý Đường phố",
+          href: "/roads",
+        },
       ],
     },
 

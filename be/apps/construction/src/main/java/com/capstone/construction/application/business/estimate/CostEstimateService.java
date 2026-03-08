@@ -11,8 +11,6 @@ public interface CostEstimateService {
 
   CostEstimateResponse updateEstimate(String id, CostEstimateRequest request);
 
-  void deleteEstimate(String id);
-
   CostEstimateResponse getEstimateById(String id);
 
   PageResponse<CostEstimateResponse> getAllEstimates(Pageable pageable, BaseFilterRequest request);
