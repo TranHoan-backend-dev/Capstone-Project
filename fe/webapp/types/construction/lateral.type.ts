@@ -11,7 +11,7 @@ export interface LateralFilter {
   networkId?: string;
 }
 
-export interface FilterNetworkProps {
+export interface FilterSectionLateralProps {
   filter: LateralFilter;
   onSearch: (value: LateralFilter) => void;
   onAddNew: () => void;

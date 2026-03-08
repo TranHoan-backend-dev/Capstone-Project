@@ -10,13 +10,13 @@ import FilterButton from "@/components/ui/FilterButton";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
 import { AddNewIcon } from "@/config/chip-and-icon";
 import { useNetwork } from "@/hooks/useNetworks";
-import { FilterNetworkProps } from "@/types";
+import { FilterSectionLateralProps } from "@/types";
 
 export const FilterSection = ({
   filter,
   onSearch,
   onAddNew,
-}: FilterSectionProps) => {
+}: FilterSectionLateralProps) => {
   const [keyword, setKeyword] = useState(filter.keyword ?? "");
   const [selectedNetwork, setSelectedNetwork] = useState<Set<string>>(
     new Set(),
