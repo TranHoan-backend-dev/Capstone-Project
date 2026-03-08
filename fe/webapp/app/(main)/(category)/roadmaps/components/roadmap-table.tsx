@@ -8,6 +8,7 @@ import { DeleteIcon, EditIcon } from "@/config/chip-and-icon";
 import { ROADMAP_COLUMN } from "@/config/table-columns";
 import { RoadmapItem, RoadmapResponse, RoadmapTableProps } from "@/types";
 import { authFetch } from "@/utils/authFetch";
+import { ConfirmDialog } from "@/components/ui/modal/ConfirmDialog";
 
 export const RoadmapTable = ({
   filter,
@@ -19,6 +20,8 @@ export const RoadmapTable = ({
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [sort, setSort] = useState<{
     field: string;
     direction: "asc" | "desc";
@@ -95,6 +98,36 @@ export const RoadmapTable = ({
       };
     });
   };
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return;
+
+    try {
+      setDeleteLoading(true);
+
+      const res = await authFetch(`/api/construction/roadmaps/${deleteId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Delete failed");
+
+      CallToast({
+        title: "Thành công",
+        message: "Xóa lộ trình ghi thành công",
+        color: "success",
+      });
+
+      setDeleteId(null);
+      onDeleted();
+    } catch (e: any) {
+      CallToast({
+        title: "Lỗi",
+        message: e.message || "Có lỗi xảy ra",
+        color: "danger",
+      });
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
 
   useEffect(() => {
     setPage(1);
@@ -116,32 +149,12 @@ export const RoadmapTable = ({
         content: "Xóa",
         icon: DeleteIcon,
         className: "text-red-500 hover:bg-red-50",
-        onClick: async (id: string) => {
-          if (!confirm("Bạn có chắc muốn xóa lộ trình ghi này?")) return;
-
-          try {
-            const res = await authFetch(`/api/construction/roadmaps/${id}`, {
-              method: "DELETE",
-            });
-
-            if (!res.ok) throw new Error("Delete failed");
-            CallToast({
-              title: "Thành công",
-              message: "Xóa lộ trình ghi thành công",
-              color: "success",
-            });
-            onDeleted();
-          } catch (e: any) {
-            CallToast({
-              title: "Lỗi",
-              message: e.message || "Có lỗi xảy ra",
-              color: "danger",
-            });
-          }
+        onClick: (id: string) => {
+          setDeleteId(id);
         },
       },
     ],
-    [data, onEdit, onDeleted],
+    [data, onEdit],
   );
 
   const renderCell = (item: RoadmapItem, columnKey: string) => {
@@ -205,6 +218,16 @@ export const RoadmapTable = ({
         }}
         sort={sort}
         onSortChange={handleSortChange}
+      />
+      <ConfirmDialog
+        isOpen={!!deleteId}
+        title="Xác nhận xoá"
+        message="Bạn có chắc muốn xoá lộ trình ghi này không?"
+        confirmText="Xoá"
+        confirmColor="danger"
+        isLoading={deleteLoading}
+        onClose={() => setDeleteId(null)}
+        onConfirm={handleConfirmDelete}
       />
     </>
   );

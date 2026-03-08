@@ -94,9 +94,23 @@ export const RoadmapForm = ({
       });
       onSuccess();
     } catch (e: any) {
+      let message = e.message || "Có lỗi xảy ra";
+      if (message.includes("Roadmap with name")) {
+        const name = message.match(/name (.*?) already exists/)?.[1];
+        message = `Lộ trình ghi "${name}" đã tồn tại`;
+      }
+
+      if (message.includes("Lateral cannot be null")) {
+        message = `Nhánh tổng không được để trống`;
+      }
+
+      if (message.includes("Network cannot be null")) {
+        message = `Chi nhánh không được để trống`;
+      }
+
       CallToast({
         title: "Lỗi",
-        message: e.message || "Có lỗi xảy ra",
+        message: message,
         color: "danger",
       });
     } finally {
@@ -147,7 +161,13 @@ export const RoadmapForm = ({
                 submitLoading ? null : <CheckApprovalIcon className="w-4 h-4" />
               }
               onPress={handleSubmit}
-              isDisabled={!name.trim() || lateralLoading || networkLoading}
+              isDisabled={
+                !name.trim() ||
+                !selectedNetwork.size ||
+                !selectedLateral.size ||
+                lateralLoading ||
+                networkLoading
+              }
               isLoading={submitLoading}
             >
               {submitLoading ? "Đang lưu..." : "Lưu"}
