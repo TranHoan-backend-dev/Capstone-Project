@@ -8,7 +8,7 @@ import com.capstone.construction.domain.model.Lateral;
 import com.capstone.construction.infrastructure.persistence.LateralRepository;
 import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRepository;
 import com.capstone.construction.application.exception.ExistingItemException;
-import com.capstone.construction.infrastructure.config.Constant;
+import com.capstone.construction.infrastructure.utils.Constant;
 import com.capstone.construction.infrastructure.service.OverallWaterMeterService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -110,6 +110,12 @@ public class LateralServiceImpl implements LateralService {
       ? lateralRepository.searchLateralsWithoutKeyword(networkId, networkAssigned, pageable)
       : lateralRepository.searchLateralsWithKeyword(normalizedKeyword, networkId, networkAssigned, pageable);
     return PageResponse.fromPage(page, this::mapToResponse);
+  }
+
+  @Override
+  public Boolean checkLateralBelongedToNetwork(String id) {
+    log.info("Checking lateral belonged to network with id: {}", id);
+    return lateralRepository.existsByNetwork_BranchId(id);
   }
 
   private @NonNull LateralResponse mapToResponse(@NonNull Lateral lateral) {

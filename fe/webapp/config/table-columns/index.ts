@@ -1,2 +1,2 @@
-export * from "./device/index"
-export * from "./organization/index"
+export * from "./device/index";
+export * from "./organization/index";

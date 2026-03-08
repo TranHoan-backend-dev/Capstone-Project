@@ -6,7 +6,7 @@ import com.capstone.auth.application.business.profile.ProfileService;
 import com.capstone.auth.application.business.users.UserService;
 import com.capstone.auth.application.exception.IncompatibleAvatarException;
 import com.capstone.auth.application.exception.NotExistingException;
-import com.capstone.auth.infrastructure.config.Constant;
+import com.capstone.auth.infrastructure.utils.Constant;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

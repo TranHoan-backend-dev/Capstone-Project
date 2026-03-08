@@ -66,6 +66,7 @@ rabbit-mq-config:
     - delete
     - create
     - approve
+    - reject
 #spring:
 #  datasource:
 #    driver-class-name: org.postgresql.Driver

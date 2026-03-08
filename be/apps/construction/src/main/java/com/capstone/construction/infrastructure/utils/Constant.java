@@ -1,9 +1,9 @@
-package com.capstone.construction.infrastructure.config;
+package com.capstone.construction.infrastructure.utils;
 
 public final class Constant {
   // for dto and entity layer
   public static final String PT_01 = "Form code cannot be null or empty";
-  public static final String PT_02 = "Invalid password. Password must contain at least one number, one uppercase letter, one lowercase letter, one special character, and be at least 8 characters long";
+  public static final String PT_02 = "The staff of the Construction department who will hand over the construction can not be null or empty";
   public static final String PT_03 = "Processing status cannot be null or empty";
   public static final String PT_04 = "Registration date cannot be null or empty";
   public static final String PT_05 = "Invalid date format";
@@ -61,7 +61,7 @@ public final class Constant {
   public static final String PT_57 = "Household registration number cannot be null";
   public static final String PT_58 = "";
   public static final String PT_59 = "Network cannot be null or empty";
-  public static final String PT_60 = "";
+  public static final String PT_60 = "This employee does not exist";
   public static final String PT_61 = "The staff in the Planning-Technical Department who will create the installation form cannot be null";
   public static final String PT_62 = "Overall water meter ID cannot be null or empty";
   public static final String PT_63 = "Contract ID cannot be null or empty";

@@ -1,7 +1,7 @@
 package com.capstone.construction.domain.model;
 
 import jakarta.persistence.*;
-import com.capstone.construction.infrastructure.config.Constant;
+import com.capstone.construction.infrastructure.utils.Constant;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.jspecify.annotations.NonNull;
