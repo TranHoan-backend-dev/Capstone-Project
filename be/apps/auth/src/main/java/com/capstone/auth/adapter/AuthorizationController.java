@@ -152,10 +152,4 @@ public class AuthorizationController {
     log.info("Verifying existence of employee: {}", authorId);
     return Utils.returnOkResponse("Check employee successfully", usersUseCase.checkIfEmployeeExists(authorId));
   }
-
-  @GetMapping("/water-price/{id}")
-  public ResponseEntity<?> areEmployeesAppliedThisWaterPrice(@PathVariable String id) {
-    log.info("Fetching water-price for employee with id: {}", id);
-    return Utils.returnOkResponse("", null);
-  }
 }
