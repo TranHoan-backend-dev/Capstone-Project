@@ -65,9 +65,14 @@ export const CommuneForm = ({
       });
       onSuccess();
     } catch (e: any) {
+      let message = e?.message || "Có lỗi xảy ra khi lưu thông tin!";
+      if (message.includes("Commune with name")) {
+        const name = message.match(/name (.*?) already exists/)?.[1];
+        message = `Tên phường/xã "${name}" đã tồn tại.`;
+      }
       CallToast({
         title: "Lỗi",
-        message: e?.message || "Có lỗi xảy ra khi lưu thông tin!",
+        message: message,
         color: "danger",
       });
     } finally {
