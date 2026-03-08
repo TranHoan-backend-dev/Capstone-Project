@@ -11,7 +11,7 @@ export const siteConfig = {
       href: "/home",
     },
 
-    //Danh mục
+    // Danh mục
     {
       key: "category",
       label: "Danh mục",
@@ -25,6 +25,11 @@ export const siteConfig = {
           key: "neighborhood-units",
           label: "Quản lý Tổ/Khu phố",
           href: "/neighborhood-units",
+        },
+        {
+          key: "roads",
+          label: "Quản lý Đường phố",
+          href: "/roads",
         },
       ],
     },

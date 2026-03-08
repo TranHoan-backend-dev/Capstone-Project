@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -136,18 +137,21 @@ public class RoadController {
     **Luồng nghiệp vụ:**
     1. Client gửi request lấy danh sách đường phố.
     2. Hỗ trợ phân trang qua tham số page, size, sort.
-    3. Trả về danh sách kết quả phân trang.""", parameters = {
+    3. Hỗ trợ search theo tên qua tham số keyword (contains, không phân biệt hoa thường).
+    4. Trả về danh sách kết quả phân trang.""", parameters = {
     @Parameter(name = "page", description = "Số trang (bắt đầu từ 0)", example = "0"),
     @Parameter(name = "size", description = "Số lượng phần tử trên 1 trang", example = "10"),
-    @Parameter(name = "sort", description = "Sắp xếp (VD: name,asc)", example = "name,asc")
+    @Parameter(name = "sort", description = "Sắp xếp (VD: name,asc)", example = "name,asc"),
+    @Parameter(name = "keyword", description = "Chuỗi search theo tên đường (contains, ignore case)", example = "Trần")
   }, responses = {
     @ApiResponse(responseCode = "200", description = "Lấy danh sách thành công", content = @Content(schema = @Schema(implementation = RoadResponse.class))),
     @ApiResponse(responseCode = "500", description = "Lỗi hệ thống", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   public ResponseEntity<WrapperApiResponse> getAllRoads(
-    @PageableDefault @Parameter(hidden = true) Pageable pageable) {
-    log.info("REST request to get all roads");
-    var response = roadUseCase.getAllRoads(pageable);
+    @PageableDefault @Parameter(hidden = true) Pageable pageable,
+    @RequestParam(required = false) String keyword) {
+    log.info("REST request to get all roads with keyword: {}", keyword);
+    var response = roadUseCase.getAllRoads(pageable, keyword);
     return Utils.returnOkResponse("Roads retrieved successfully", response);
   }
 }

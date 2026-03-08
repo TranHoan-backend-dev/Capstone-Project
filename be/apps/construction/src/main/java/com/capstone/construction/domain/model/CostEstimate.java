@@ -1,6 +1,7 @@
 package com.capstone.construction.domain.model;
 
 import com.capstone.common.enumerate.ProcessingStatus;
+import com.capstone.construction.domain.model.utils.InstallationFormId;
 import jakarta.persistence.*;
 import com.capstone.construction.infrastructure.utils.Constant;
 import lombok.*;
@@ -92,7 +93,7 @@ public class CostEstimate implements Serializable {
   String overallWaterMeterId;
 
   @Column(nullable = false)
-  String installationFormId;
+  InstallationFormId installationFormId;
 
   @PrePersist
   void onCreate() {
@@ -116,8 +117,8 @@ public class CostEstimate implements Serializable {
     this.registrationAt = value;
   }
 
-  public void setInstallationFormId(String value) {
-    requireNonNullAndNotEmpty(value, Constant.PT_66);
+  public void setInstallationFormId(InstallationFormId value) {
+    Objects.requireNonNull(value, Constant.PT_66);
     this.installationFormId = value;
   }
 
@@ -304,7 +305,7 @@ public class CostEstimate implements Serializable {
       return this;
     }
 
-    public EstimationBuilder installationFormId(String value) {
+    public EstimationBuilder installationFormId(InstallationFormId value) {
       instance.setInstallationFormId(value);
       return this;
     }
