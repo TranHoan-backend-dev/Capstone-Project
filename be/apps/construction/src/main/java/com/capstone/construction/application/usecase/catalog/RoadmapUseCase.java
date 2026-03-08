@@ -33,7 +33,7 @@ public class RoadmapUseCase {
     return roadmapService.getRoadmapById(id);
   }
 
-  public PageResponse<RoadmapResponse> getAllRoadmaps(Pageable pageable) {
-    return roadmapService.getAllRoadmaps(pageable);
+  public PageResponse<RoadmapResponse> getAllRoadmaps(Pageable pageable, String keyword, String lateralId, String networkId) {
+    return roadmapService.getAllRoadmaps(pageable, keyword, lateralId, networkId);
   }
 }

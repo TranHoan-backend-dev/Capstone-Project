@@ -3,33 +3,43 @@
 import React, { useState, useEffect } from "react";
 
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
-import { FilterActionButton } from "@/components/ui/FilterActionButton";
 import { SearchIcon } from "@/components/ui/Icons";
 import CustomInput from "@/components/ui/custom/CustomInput";
-import FilterButton from "@/components/ui/FilterButton";
-import CustomSelect from "@/components/ui/custom/CustomSelect";
 import { AddNewIcon } from "@/config/chip-and-icon";
+import FilterButton from "@/components/ui/FilterButton";
+import { FilterActionButton } from "@/components/ui/FilterActionButton";
+import CustomSelect from "@/components/ui/custom/CustomSelect";
+import { FilterRoadmapProps } from "@/types";
 import { useNetwork } from "@/hooks/useNetworks";
-import { FilterSectionLateralProps } from "@/types";
+import { useLateral } from "@/hooks/useLaterals";
 
 export const FilterSection = ({
   filter,
   onSearch,
   onAddNew,
-}: FilterSectionLateralProps) => {
+}: FilterRoadmapProps) => {
   const [keyword, setKeyword] = useState(filter.keyword ?? "");
+  
   const [selectedNetwork, setSelectedNetwork] = useState<Set<string>>(
     new Set(),
   );
+  const [selectedLateral, setSelectedLateral] = useState<Set<string>>(
+    new Set(),
+  );
   const { networkOptions } = useNetwork();
+  const { lateralOptions } = useLateral();
 
   useEffect(() => {
     setKeyword(filter.keyword ?? "");
-
     if (filter.networkId) {
       setSelectedNetwork(new Set([filter.networkId]));
     } else {
       setSelectedNetwork(new Set());
+    }
+    if (filter.lateralId) {
+      setSelectedLateral(new Set([filter.lateralId]));
+    } else {
+      setSelectedLateral(new Set());
     }
   }, [filter]);
 
@@ -53,6 +63,7 @@ export const FilterSection = ({
               onSearch({
                 keyword: keyword.trim(),
                 networkId: Array.from(selectedNetwork)[0],
+                lateralId: Array.from(selectedLateral)[0],
               })
             }
           />
@@ -61,10 +72,19 @@ export const FilterSection = ({
     >
       <section className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="md:col-span-1 flex flex-col gap-4">
             <CustomInput
-              label="Tên nhánh tổng"
+              label="Tên lộ trình ghi"
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
+            />
+          </div>
+          <div className="md:col-span-1 flex flex-col gap-4">
+            <CustomSelect
+              label="Nhánh tổng"
+              options={lateralOptions}
+              selectedKeys={selectedLateral}
+              onSelectionChange={setSelectedLateral}
             />
             <CustomSelect
               label="Chi nhánh"
@@ -73,6 +93,7 @@ export const FilterSection = ({
               onSelectionChange={setSelectedNetwork}
             />
           </div>
+        </div>
       </section>
     </GenericSearchFilter>
   );
