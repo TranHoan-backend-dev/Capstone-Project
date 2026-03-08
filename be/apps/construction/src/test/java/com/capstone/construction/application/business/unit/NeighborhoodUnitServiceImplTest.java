@@ -246,4 +246,11 @@ class NeighborhoodUnitServiceImplTest {
     assertThat(result.content()).hasSize(1);
     assertThat(result.content().getFirst().name()).isEqualTo("Unit Test");
   }
+
+  @Test
+  void should_ThrowException_When_CreateNameIsNull() {
+    var request = new NeighborhoodUnitRequest(null, "commune-id");
+    assertThatThrownBy(() -> unitService.createUnit(request))
+        .isInstanceOf(NullPointerException.class);
+  }
 }

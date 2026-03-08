@@ -129,7 +129,13 @@ public class CustomerServiceImpl implements CustomerService {
     return customerRepository.findAll(pageable).map(this::mapToResponse);
   }
 
-  private CustomerResponse mapToResponse(@NonNull Customer customer) {
+  @Override
+  public boolean areCustomersAppliedThisPrice(String priceId) {
+    log.info("Checking if customers are applied this water price: {}", priceId);
+    return customerRepository.existsByWaterPriceId(priceId);
+  }
+
+  private @NonNull CustomerResponse mapToResponse(@NonNull Customer customer) {
     return new CustomerResponse(
       customer.getCustomerId(),
       customer.getName(),

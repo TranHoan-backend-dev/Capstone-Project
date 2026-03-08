@@ -48,15 +48,15 @@ class MaterialUseCaseTest {
   void should_ReturnResponse_When_CreateRequestIsValid() {
     // Given
     var request = new CreateRequest("L001", "Job 1",
-      new BigDecimal("100"), new BigDecimal("50"),
-      new BigDecimal("45"), new BigDecimal("20"),
-      new BigDecimal("18"), "G1", "U1");
+        new BigDecimal("100"), new BigDecimal("50"),
+        new BigDecimal("45"), new BigDecimal("20"),
+        new BigDecimal("18"), "G1", "U1");
 
     var expectedResponse = new MaterialResponse("L001", "Job 1",
-      new BigDecimal("100"), new BigDecimal("50"),
-      new BigDecimal("45"), new BigDecimal("20"),
-      new BigDecimal("18"), "Group 1",
-      "Unit 1", LocalDateTime.now(), LocalDateTime.now());
+        new BigDecimal("100"), new BigDecimal("50"),
+        new BigDecimal("45"), new BigDecimal("20"),
+        new BigDecimal("18"), "Group 1",
+        "Unit 1", LocalDateTime.now(), LocalDateTime.now());
 
     when(mService.createMaterial(request)).thenReturn(expectedResponse);
 
@@ -76,16 +76,16 @@ class MaterialUseCaseTest {
     var request = new UpdateRequest("Job New", new BigDecimal("110"), null, null, null, null, "G1", "U1");
 
     var oldResponse = new MaterialResponse(id, "Job Old",
-      new BigDecimal("100"), new BigDecimal("50"),
-      new BigDecimal("45"), new BigDecimal("20"),
-      new BigDecimal("18"), "Group 1", "Unit 1",
-      LocalDateTime.now(), LocalDateTime.now());
+        new BigDecimal("100"), new BigDecimal("50"),
+        new BigDecimal("45"), new BigDecimal("20"),
+        new BigDecimal("18"), "Group 1", "Unit 1",
+        LocalDateTime.now(), LocalDateTime.now());
 
     var newResponse = new MaterialResponse(id, "Job New",
-      new BigDecimal("110"), new BigDecimal("50"),
-      new BigDecimal("45"), new BigDecimal("20"),
-      new BigDecimal("18"), "Group 1", "Unit 1",
-      LocalDateTime.now(), LocalDateTime.now());
+        new BigDecimal("110"), new BigDecimal("50"),
+        new BigDecimal("45"), new BigDecimal("20"),
+        new BigDecimal("18"), "Group 1", "Unit 1",
+        LocalDateTime.now(), LocalDateTime.now());
 
     when(mService.getMaterialById(id)).thenReturn(oldResponse);
     when(mService.updateMaterial(eq(id), any(UpdateRequest.class))).thenReturn(newResponse);
@@ -105,8 +105,8 @@ class MaterialUseCaseTest {
     // Given
     var id = "NON_EXISTENT";
     var request = new UpdateRequest("Job New",
-      new BigDecimal("110"), null, null,
-      null, null, "G1", "U1");
+        new BigDecimal("110"), null, null,
+        null, null, "G1", "U1");
 
     when(mService.getMaterialById(id)).thenThrow(new IllegalArgumentException("Material not found"));
 
@@ -121,10 +121,10 @@ class MaterialUseCaseTest {
     // Given
     var id = "L001";
     var oldResponse = new MaterialResponse(id, "Job Old",
-      new BigDecimal("100"), new BigDecimal("50"),
-      new BigDecimal("45"), new BigDecimal("20"),
-      new BigDecimal("18"), "Group 1", "Unit 1",
-      LocalDateTime.now(), LocalDateTime.now());
+        new BigDecimal("100"), new BigDecimal("50"),
+        new BigDecimal("45"), new BigDecimal("20"),
+        new BigDecimal("18"), "Group 1", "Unit 1",
+        LocalDateTime.now(), LocalDateTime.now());
 
     when(mService.getMaterialById(id)).thenReturn(oldResponse);
 
@@ -163,5 +163,20 @@ class MaterialUseCaseTest {
     // Then
     assertNotNull(actual);
     assertEquals(id, actual.id());
+
+  @Test
+  void should_ReturnAll_When_GetAll() {
+    // Given
+    var pageable = Pageable.unpaged();
+    var expectedPage = new org.springframework.data.domain.PageImpl<MaterialResponse>(
+        java.util.Collections.emptyList());
+    when(mService.getAllMaterials(pageable)).thenReturn(expectedPage);
+
+    // When
+    var actualPage = materialUseCase.getAll(pageable);
+
+    // Then
+    assertNotNull(actualPage);
+    verify(mService).getAllMaterials(pageable);
   }
 }

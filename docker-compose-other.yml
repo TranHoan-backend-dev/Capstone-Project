@@ -5,7 +5,7 @@ services:
     hostname: rabbitmq_host
     restart: always
     environment:
-      RABBIT_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
     ports:
       # For AMQP protocol connected from spring boot
