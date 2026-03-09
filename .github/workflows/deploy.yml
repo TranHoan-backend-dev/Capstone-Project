@@ -1,24 +1,42 @@
 name: Deploy VPS
 on:
-    push:
-        branches:
-            - dev
+  push:
+    branches:
+      - dev
 jobs:
-    deploy:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Deploy via SSH
-              uses: appleboy/ssh-action@v1
-              with:
-                  host: 14.225.198.198
-                  username: root
-                  key: ${{ secrets.VPS_SSH_KEY }}
-                  script: |
-                      cd /home/hoan/be/be/apps
-                      git pull origin dev
-                      docker compose down
-                      docker compose \
-                        -f docker-compose-db.yml \
-                        -f docker-compose-other.yml \
-                        -f docker-compose-services.yml \
-                        up -d --build
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: 14.225.198.198
+          username: root
+          key: ${{ secrets.VPS_SSH_KEY }}
+          command_timeout: 30m
+          script: |
+            cd /home/hoan/be/be/apps
+            git pull origin dev
+
+            # Kiểm tra và khởi động Docker nếu chưa chạy
+            if ! systemctl is-active --quiet docker; then
+              echo "Docker is not running. Starting Docker..."
+              systemctl start docker
+              sleep 5
+            fi
+
+            # Dừng các container cũ với đúng các file cấu hình
+            docker compose \
+              -f docker-compose-db.yml \
+              -f docker-compose-other.yml \
+              -f docker-compose-services.yml \
+              down --remove-orphans
+
+            docker pull ghcr.io/tranhoan-backend-dev/capstone-project:latest
+
+            # Khởi động lại
+            docker compose \
+              -f docker-compose-db.yml \
+              -f docker-compose-other.yml \
+              -f docker-compose-services.yml \
+              up -d --build

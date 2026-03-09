@@ -1,10 +1,8 @@
+version: "3.9"
+
 services:
   eureka-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: runtime-eureka
-    image: eureka-service
+    image: ghcr.io/tranhoan-backend-dev/capstone-project:eureka
     ports:
       - "9000:9000"
     environment:
@@ -14,11 +12,7 @@ services:
       - app-network
 
   api-gateway:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: runtime-api-gateway
-    image: api-gateway
+    image: ghcr.io/tranhoan-backend-dev/capstone-project:api-gateway
     ports:
       - "8000:8000"
     environment:
@@ -29,11 +23,7 @@ services:
       - app-network
 
   auth-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: runtime-auth
-    image: auth-service
+    image: ghcr.io/tranhoan-backend-dev/capstone-project:auth
     ports:
       - "9003:9003"
     environment:
@@ -45,11 +35,7 @@ services:
       - app-network
 
   construction-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: runtime-construction
-    image: construction-service
+    image: ghcr.io/tranhoan-backend-dev/capstone-project:construction
     ports:
       - "9004:9004"
     environment:
@@ -61,11 +47,7 @@ services:
       - app-network
 
   customer-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: runtime-customer
-    image: customer-service
+    image: ghcr.io/tranhoan-backend-dev/capstone-project:customer
     ports:
       - "9005:9005"
     environment:
@@ -77,11 +59,7 @@ services:
       - app-network
 
   device-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: runtime-device
-    image: device-service
+    image: ghcr.io/tranhoan-backend-dev/capstone-project:device
     ports:
       - "9006:9006"
     environment:
@@ -93,11 +71,7 @@ services:
       - app-network
 
   notification-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: runtime-notification
-    image: notification-service
+    image: ghcr.io/tranhoan-backend-dev/capstone-project:notification
     ports:
       - "9007:9007"
     environment:
@@ -109,11 +83,7 @@ services:
       - app-network
 
   organization-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: runtime-organization
-    image: organization-service
+    image: ghcr.io/tranhoan-backend-dev/capstone-project:organization
     ports:
       - "9008:9008"
     environment:
@@ -125,11 +95,7 @@ services:
       - app-network
 
   email-service:
-    build:
-      context: ..
-      dockerfile: ./apps/Dockerfile
-      target: runner
-    image: email-service
+    image: ghcr.io/tranhoan-backend-dev/capstone-project:email
     ports:
       - "3000:9009"
     environment:
