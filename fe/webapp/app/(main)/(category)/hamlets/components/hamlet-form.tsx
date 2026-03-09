@@ -86,9 +86,14 @@ export const HamletForm = ({
       });
       onSuccess();
     } catch (e: any) {
+      let message = e.message || "Có lỗi xảy ra";
+      if (message.includes("Hamlet with name")) {
+        const name = message.match(/name (.*?) already exists/)?.[1];
+        message = `Thôn/làng "${name}" đã tồn tại`;
+      }
       CallToast({
         title: "Lỗi",
-        message: e.message || "Có lỗi xảy ra",
+        message: message,
         color: "danger",
       });
     } finally {
@@ -106,30 +111,26 @@ export const HamletForm = ({
         </div>
 
         <div className="px-6 py-5 space-y-5">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="md:col-span-1 flex flex-col gap-4">
-              <CustomInput
-                label="Tên thôn/làng"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
-            <div className="md:col-span-1 flex flex-col gap-4">
-              <CustomSelect
-                label="Loại"
-                selectedKeys={type ? [type] : []}
-                onSelectionChange={(keys) =>
-                  setType(Array.from(keys)[0] as string)
-                }
-                options={typeOptions}
-              />
-              <CustomSelect
-                label="Phường/xã"
-                options={communeOptions}
-                selectedKeys={selectedCommune}
-                onSelectionChange={(keys) => setSelectedCommune(keys)}
-              />
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <CustomInput
+              label="Tên thôn/làng"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <CustomSelect
+              label="Loại"
+              selectedKeys={type ? [type] : []}
+              onSelectionChange={(keys) =>
+                setType(Array.from(keys)[0] as string)
+              }
+              options={typeOptions}
+            />
+            <CustomSelect
+              label="Phường/xã"
+              options={communeOptions}
+              selectedKeys={selectedCommune}
+              onSelectionChange={(keys) => setSelectedCommune(keys)}
+            />
           </div>
           <div className="flex justify-end gap-4">
             <CustomButton variant="light" onPress={onClose}>

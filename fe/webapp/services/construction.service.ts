@@ -225,6 +225,8 @@ export const getAllHamlets = (
   page: number,
   size: number,
   sort: string,
+  communeId?: string | null,
+  type?: string | null,
   keyword?: string | null,
 ) =>
   axios.get(`${API_GATEWAY_URL}/construction/hamlets`, {
@@ -233,6 +235,8 @@ export const getAllHamlets = (
       size,
       sort,
       keyword,
+      communeId,
+      type,
     },
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -276,57 +280,6 @@ export const updateHamlet = (
 
 export const deleteHamlet = (accessToken: string, id: string) => {
   return axios.delete(`${API_GATEWAY_URL}/construction/hamlets/${id}`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-};
-
-export const getAllRoads = (
-  accessToken: string,
-  page: number,
-  size: number,
-  sort: string,
-  keyword?: string | null,
-) =>
-  axios.get(`${API_GATEWAY_URL}/construction/roads`, {
-    params: {
-      page,
-      size,
-      sort,
-      keyword,
-    },
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-
-export const createRoad = (accessToken: string, name: string) => {
-  return axios.post(
-    `${API_GATEWAY_URL}/construction/roads`,
-    { name },
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
-  );
-};
-
-export const updateRoad = (accessToken: string, id: string, name: string) => {
-  return axios.put(
-    `${API_GATEWAY_URL}/construction/roads/${id}`,
-    { name },
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
-  );
-};
-
-export const deleteRoad = (accessToken: string, id: string) => {
-  return axios.delete(`${API_GATEWAY_URL}/construction/roads/${id}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },

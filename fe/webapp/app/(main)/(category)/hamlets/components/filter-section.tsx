@@ -38,6 +38,14 @@ export const FilterSection = ({
     }
   }, [filter]);
 
+  const handleSearch = () => {
+    onSearch({
+      name: name.trim(),
+      type: type,
+      communeId: Array.from(selectedCommune)[0],
+    });
+  };
+
   return (
     <GenericSearchFilter
       title="Tìm kiếm"
@@ -53,43 +61,34 @@ export const FilterSection = ({
             label="Thêm mới"
             onPress={onAddNew}
           />
-          <FilterButton
-            onPress={() =>
-              onSearch({
-                name: name.trim(),
-                type: type,
-                communeId: Array.from(selectedCommune)[0],
-              })
-            }
-          />
+          <FilterButton onPress={() => handleSearch()} />
         </div>
       }
     >
       <section className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="md:col-span-1 flex flex-col gap-4">
-            <CustomInput
-              label="Tên thôn/làng"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
-          <div className="md:col-span-1 flex flex-col gap-4">
-            <CustomSelect
-              label="Phường/xã"
-              options={communeOptions}
-              selectedKeys={selectedCommune}
-              onSelectionChange={setSelectedCommune}
-            />
-            <CustomSelect
-              label="Loại"
-              selectedKeys={type ? [type] : []}
-              onSelectionChange={(keys) =>
-                setType(Array.from(keys)[0] as string)
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <CustomInput
+            label="Tên thôn/làng"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSearch();
               }
-              options={typeOptions}
-            />
-          </div>
+            }}
+          />
+          <CustomSelect
+            label="Phường/xã"
+            options={communeOptions}
+            selectedKeys={selectedCommune}
+            onSelectionChange={setSelectedCommune}
+          />
+          <CustomSelect
+            label="Loại"
+            selectedKeys={type ? [type] : []}
+            onSelectionChange={(keys) => setType(Array.from(keys)[0] as string)}
+            options={typeOptions}
+          />
         </div>
       </section>
     </GenericSearchFilter>
