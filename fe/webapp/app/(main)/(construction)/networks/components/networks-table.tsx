@@ -8,6 +8,8 @@ import { NetworksItem, NetworksResponse, NetworksTableProps } from "@/types";
 import { NETWORKS_COLUMN } from "@/config/table-columns";
 import { CallToast } from "@/components/ui/CallToast";
 import { useIsITStaff } from "@/hooks/useHasRole";
+import { ConfirmDialog } from "@/components/ui/modal/ConfirmDialog";
+import { authFetch } from "@/utils/authFetch";
 
 export const NetworksTable = ({
   keyword,
@@ -20,6 +22,8 @@ export const NetworksTable = ({
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [sort, setSort] = useState<{
     field: string;
     direction: "asc" | "desc";
@@ -47,7 +51,7 @@ export const NetworksTable = ({
           params.append("keyword", trimmedKeyword);
         }
 
-        const res = await fetch(
+        const res = await authFetch(
           `/api/construction/networks?${params.toString()}`,
         );
 
@@ -94,6 +98,37 @@ export const NetworksTable = ({
     });
   };
 
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return;
+
+    try {
+      setDeleteLoading(true);
+
+      const res = await authFetch(`/api/construction/networks/${deleteId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Delete failed");
+
+      CallToast({
+        title: "Thành công",
+        message: "Xóa chi nhánh cấp nước thành công",
+        color: "success",
+      });
+
+      setDeleteId(null);
+      onDeleted();
+    } catch (e: any) {
+      CallToast({
+        title: "Lỗi",
+        message: e.message || "Có lỗi xảy ra",
+        color: "danger",
+      });
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
   useEffect(() => {
     setPage(1);
   }, [keyword]);
@@ -117,28 +152,8 @@ export const NetworksTable = ({
         content: "Xóa",
         icon: DeleteIcon,
         className: "text-red-500 hover:bg-red-50",
-        onClick: async (id: string) => {
-          if (!confirm("Bạn có chắc muốn xóa chi nhánh cấp nước này?")) return;
-
-          try {
-            const res = await fetch(`/api/construction/networks/${id}`, {
-              method: "DELETE",
-            });
-
-            if (!res.ok) throw new Error("Delete failed");
-            CallToast({
-              title: "Thành công",
-              message: "Xóa chi nhánh cấp nước thành công",
-              color: "success",
-            });
-            onDeleted();
-          } catch (e: any) {
-            CallToast({
-              title: "Lỗi",
-              message: e.message || "Có lỗi xảy ra",
-              color: "danger",
-            });
-          }
+        onClick: (id: string) => {
+          setDeleteId(id);
         },
       },
     ];
@@ -205,6 +220,16 @@ export const NetworksTable = ({
         }}
         sort={sort}
         onSortChange={handleSortChange}
+      />
+      <ConfirmDialog
+        isOpen={!!deleteId}
+        title="Xác nhận xoá"
+        message="Bạn có chắc muốn xoá lộ trình ghi này không?"
+        confirmText="Xoá"
+        confirmColor="danger"
+        isLoading={deleteLoading}
+        onClose={() => setDeleteId(null)}
+        onConfirm={handleConfirmDelete}
       />
     </>
   );

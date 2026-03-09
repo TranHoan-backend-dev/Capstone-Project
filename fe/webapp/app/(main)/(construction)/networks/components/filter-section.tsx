@@ -22,6 +22,11 @@ export const FilterSection = ({
     setName(keyword.name || "");
   }, [keyword]);
 
+  const handleSearch = () => {
+    onSearch({
+      name,
+    });
+  };
   return (
     <GenericSearchFilter
       title="Tìm kiếm"
@@ -39,7 +44,7 @@ export const FilterSection = ({
               onPress={onAddNew}
             />
           )}
-          <FilterButton onPress={() => onSearch({ name })} />
+          <FilterButton onPress={handleSearch} />
         </div>
       }
     >
@@ -50,6 +55,9 @@ export const FilterSection = ({
               label="Từ khóa"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSearch();
+              }}
             />
           </div>
         </div>
