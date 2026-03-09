@@ -22,19 +22,6 @@ export const siteConfig = {
           href: "/departments",
         },
         {
-          key: "roads",
-          label: "Quản lý Đường phố",
-          href: "/roads",
-        },
-      ],
-    },
-
-    // Danh mục
-    {
-      key: "category",
-      label: "Danh mục",
-      items: [
-        {
           key: "communes",
           label: "Quản lý Phường/xã",
           href: "/communes",
@@ -43,6 +30,11 @@ export const siteConfig = {
           key: "hamlets",
           label: "Quản lý Thôn/làng",
           href: "/hamlets",
+        },
+        {
+          key: "roads",
+          label: "Quản lý Đường phố",
+          href: "/roads",
         },
       ],
     },
