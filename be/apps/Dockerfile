@@ -3,6 +3,7 @@ FROM gradle:8-jdk21-alpine AS base-builder
 WORKDIR /workspace
 
 COPY settings.gradle build.gradle gradlew gradle/ ./
+COPY common ./common
 
 # AUTH SERVICE
 FROM base-builder AS build-auth
@@ -18,7 +19,7 @@ ENTRYPOINT ["java","-jar","app.jar"]
 # CONSTRUCTION SERVICE
 FROM base-builder AS build-construction
 COPY construction ./construction
-RUN gradle :construction:bootJar -x test --no-deamon
+RUN gradle :construction:bootJar -x test --no-daemon
 
 FROM eclipse-temurin:21-jre-alpine AS runtime-construction
 WORKDIR /app
@@ -40,7 +41,7 @@ ENTRYPOINT ["java","-jar","app2.jar"]
 # DEVICE SERVICE
 FROM base-builder AS build-device
 COPY device ./device
-RUN gradle :device:bootJar -x test --no-deamon
+RUN gradle :device:bootJar -x test --no-daemon
 
 FROM eclipse-temurin:21-jre-alpine AS runtime-device
 WORKDIR /app
