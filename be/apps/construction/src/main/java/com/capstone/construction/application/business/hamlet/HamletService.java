@@ -17,5 +17,5 @@ public interface HamletService {
 
   PageResponse<HamletResponse> getAllHamlets(Pageable pageable);
 
-  PageResponse<HamletResponse> searchHamletsByName(String keyword, Pageable pageable);
+  PageResponse<HamletResponse> searchHamlets(String keyword, String communeId, String type, Pageable pageable);
 }

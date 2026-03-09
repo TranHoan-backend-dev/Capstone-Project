@@ -99,9 +99,11 @@ public class HamletController {
   })
   public ResponseEntity<WrapperApiResponse> getAllHamlets(
     @PageableDefault @Parameter(description = "") Pageable pageable,
-    @RequestParam(required = false) @Parameter(description = "Keyword tìm kiếm theo tên thôn/làng (có thể không dấu)") String keyword) {
-    log.info("REST request to get all hamlets, keyword={}", keyword);
-    var response = hamletUseCase.searchHamletsByName(keyword, pageable);
+    @RequestParam(required = false) @Parameter(description = "Keyword tìm kiếm theo tên thôn/làng (có thể không dấu)") String keyword,
+    @RequestParam(required = false) @Parameter(description = "Lọc theo mã ID của xã") String communeId,
+    @RequestParam(required = false) @Parameter(description = "Lọc theo loại (HAMLET hoặc VILLAGE)") String type) {
+    log.info("REST request to get all hamlets, keyword={}, communeId={}, type={}", keyword, communeId, type);
+    var response = hamletUseCase.searchHamlets(keyword, communeId, type, pageable);
     return Utils.returnOkResponse("Hamlets retrieved successfully", response);
   }
 }

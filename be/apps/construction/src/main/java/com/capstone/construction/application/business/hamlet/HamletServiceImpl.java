@@ -108,13 +108,18 @@ public class HamletServiceImpl implements HamletService {
   }
 
   @Override
-  public PageResponse<HamletResponse> searchHamletsByName(String keyword, Pageable pageable) {
-    if (keyword == null || keyword.isBlank()) {
-      return getAllHamlets(pageable);
-    }
-    log.info("Searching hamlets by name (accent-insensitive), keyword='{}', pageable={}", keyword, pageable);
-    var page = hamletRepository.searchByNameAccentInsensitive(
-      keyword,
+  public PageResponse<HamletResponse> searchHamlets(String keyword, String communeId, String type, Pageable pageable) {
+    String finalKeyword = (keyword == null || keyword.isBlank()) ? null : keyword;
+    String finalCommuneId = (communeId == null || communeId.isBlank()) ? null : communeId;
+    String finalType = (type == null || type.isBlank()) ? null : type;
+
+    log.info("Searching hamlets, keyword='{}', communeId='{}', type='{}', pageable={}", 
+             finalKeyword, finalCommuneId, finalType, pageable);
+             
+    var page = hamletRepository.searchHamlets(
+      finalKeyword,
+      finalCommuneId,
+      finalType,
       ACCENTED_CHARS,
       UNACCENTED_CHARS,
       pageable);

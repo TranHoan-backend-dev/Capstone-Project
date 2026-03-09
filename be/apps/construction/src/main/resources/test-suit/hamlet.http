@@ -187,7 +187,27 @@ GET {{uri}}?keyword=Th%C3%B4n%20B%E1%BB%91n&page=0&size=10
 Authorization: Bearer {{access_token}}
 Accept: application/json
 
-### search by name without accents (should still match \"Thôn Bốn\")
+### search by name without accents (should still match "Thôn Bốn")
 GET {{uri}}?keyword=thon%20bon&page=0&size=10
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### search with communeId filter
+GET {{uri}}?communeId=0f1c0a3a-3c3c-4f33-8c24-7a7c0d6a0006&page=0&size=10
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### search with type filter (VILLAGE)
+GET {{uri}}?type=VILLAGE&page=0&size=10
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### search with type filter (HAMLET)
+GET {{uri}}?type=HAMLET&page=0&size=10
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### search with keyword, communeId, and type filter
+GET {{uri}}?keyword=thon%20bon&communeId=0f1c0a3a-3c3c-4f33-8c24-7a7c0d6a0006&type=HAMLET&page=0&size=10
 Authorization: Bearer {{access_token}}
 Accept: application/json

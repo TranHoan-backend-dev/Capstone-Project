@@ -23,37 +23,29 @@ public interface HamletRepository extends JpaRepository<Hamlet, String> {
   boolean existsByNameIgnoreCase(String name);
 
   /**
-   * Accent-insensitive search on hamlet name using PostgreSQL TRANSLATE.
-   * Cho phép client gửi keyword không dấu (\"thon bon\") để tìm \"Thôn Bốn\".
+   * Tăng cường Search: Hỗ trợ tìm kiếm theo tên (không dấu/có dấu), communeId và type.
+   * Các tham số có thể null.
    */
   @Query(
     value = """
       SELECT *
       FROM hamlet h
-      WHERE LOWER(TRANSLATE(h.name,
-                            :accented,
-                            :unaccented))
-            LIKE CONCAT('%',
-                        LOWER(TRANSLATE(:keyword,
-                                        :accented,
-                                        :unaccented)),
-                        '%')
+      WHERE (CAST(:keyword AS VARCHAR) IS NULL OR LOWER(TRANSLATE(h.name, :accented, :unaccented)) LIKE CONCAT('%', LOWER(TRANSLATE(CAST(:keyword AS VARCHAR), :accented, :unaccented)), '%'))
+        AND (CAST(:communeId AS VARCHAR) IS NULL OR h.commune_id = CAST(:communeId AS VARCHAR))
+        AND (CAST(:type AS VARCHAR) IS NULL OR h.type = CAST(:type AS VARCHAR))
       """,
     countQuery = """
       SELECT COUNT(*)
       FROM hamlet h
-      WHERE LOWER(TRANSLATE(h.name,
-                            :accented,
-                            :unaccented))
-            LIKE CONCAT('%',
-                        LOWER(TRANSLATE(:keyword,
-                                        :accented,
-                                        :unaccented)),
-                        '%')
+      WHERE (CAST(:keyword AS VARCHAR) IS NULL OR LOWER(TRANSLATE(h.name, :accented, :unaccented)) LIKE CONCAT('%', LOWER(TRANSLATE(CAST(:keyword AS VARCHAR), :accented, :unaccented)), '%'))
+        AND (CAST(:communeId AS VARCHAR) IS NULL OR h.commune_id = CAST(:communeId AS VARCHAR))
+        AND (CAST(:type AS VARCHAR) IS NULL OR h.type = CAST(:type AS VARCHAR))
       """,
     nativeQuery = true)
-  Page<Hamlet> searchByNameAccentInsensitive(
+  Page<Hamlet> searchHamlets(
     @Param("keyword") String keyword,
+    @Param("communeId") String communeId,
+    @Param("type") String type,
     @Param("accented") String accented,
     @Param("unaccented") String unaccented,
     Pageable pageable);
