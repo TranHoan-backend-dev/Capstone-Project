@@ -77,12 +77,16 @@ public record CostEstimateRequest(
   @NotBlank(message = "Water meter serial is required")
   String waterMeterSerial,
 
-  @Schema(description = "Overall water meter ID", example = "OM-001")
-  @NotBlank(message = "Overall water meter ID is required")
+  @Schema(description = "", example = "")
+  @NotBlank(message = "")
   String overallWaterMeterId,
 
-  @Schema(description = "Installation form ID", example = "form-uuid-123")
-  @NotBlank(message = "Installation form ID is required")
-  String installationFormId
+  @Schema(description = "", example = "")
+  @NotBlank(message = "")
+  String formCode,
+
+  @Schema(description = "", example = "")
+  @NotBlank(message = "")
+  String formNumber
 ) {
 }

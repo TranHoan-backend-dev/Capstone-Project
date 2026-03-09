@@ -143,6 +143,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       // trưởng phòng duyệt đơn
       var requestStatus = order.getStatus();
       requestStatus.setRegistration(ProcessingStatus.APPROVED);
+      requestStatus.setEstimate(ProcessingStatus.PENDING_FOR_APPROVAL);
 
       var status = empSrv.isEmployeeExisting(request.empId());
       if (!Boolean.parseBoolean(status.data().toString())) {

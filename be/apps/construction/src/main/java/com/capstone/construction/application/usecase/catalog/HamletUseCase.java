@@ -71,7 +71,7 @@ public class HamletUseCase {
     return hamletService.getAllHamlets(pageable);
   }
 
-  public PageResponse<HamletResponse> searchHamletsByName(String keyword, Pageable pageable) {
-    return hamletService.searchHamletsByName(keyword, pageable);
+  public PageResponse<HamletResponse> searchHamlets(String keyword, String communeId, String type, Pageable pageable) {
+    return hamletService.searchHamlets(keyword, communeId, type, pageable);
   }
 }
