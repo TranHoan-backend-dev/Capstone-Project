@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   eureka-service:
     image: ghcr.io/tranhoan-backend-dev/capstone-project:eureka

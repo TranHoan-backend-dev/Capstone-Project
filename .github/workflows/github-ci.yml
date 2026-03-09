@@ -123,7 +123,22 @@ jobs:
       - name: Build Image
         working-directory: be/apps
         run: |
-          ./gradlew clean bootBuildImage --imageName=app:latest
+          services=(
+            eureka-service
+            api-gateway
+            auth-service
+            construction-service
+            customer-service
+            device-service
+            notification-service
+            organization-service
+          )
+
+          for service in "${services[@]}"
+          do
+            ./gradlew :$service:bootBuildImage \
+            --imageName=ghcr.io/${{ github.repository }}/$service:latest
+          done
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -134,9 +149,21 @@ jobs:
 
       - name: Push image to GitHub Container Registry
         run: |
-          IMAGE_ID=$(echo "ghcr.io/${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          docker tag app:latest $IMAGE_ID:latest
-          docker push $IMAGE_ID:latest
+          services=(
+            eureka-service
+            api-gateway
+            auth-service
+            construction-service
+            customer-service
+            device-service
+            notification-service
+            organization-service
+          )
+
+          for service in "${services[@]}"
+          do
+            docker push ghcr.io/${{ github.repository }}/$service:latest
+          done
 
   android-build:
     runs-on: ubuntu-latest
