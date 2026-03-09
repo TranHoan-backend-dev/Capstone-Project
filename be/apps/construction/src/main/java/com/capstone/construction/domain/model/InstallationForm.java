@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import com.capstone.construction.infrastructure.config.Constant;
+import com.capstone.construction.infrastructure.utils.Constant;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.jspecify.annotations.NonNull;
@@ -33,6 +33,7 @@ public class InstallationForm {
   @EmbeddedId
   InstallationFormId id = new InstallationFormId();
 
+  // <editor-fold> desc="thông tin chung của đơn"
   @Column(nullable = false)
   String customerName;
 
@@ -91,10 +92,6 @@ public class InstallationForm {
   WaterSupplyNetwork network;
 
   @Column(nullable = false)
-  String createdBy; // the planning-technical department staff who create this form
-  String handoverBy; // the planning-technical department staff who will approve/reject this form
-
-  @Column(nullable = false)
   String overallWaterMeterId;
 
   @Column(nullable = false)
@@ -102,13 +99,23 @@ public class InstallationForm {
 
   @Column(nullable = false)
   LocalDateTime updatedAt;
+  //</editor-fold>
+
+  @Column(nullable = false)
+  String createdBy; // the planning-technical department staff who create this form
+  String handoverBy; // the planning-technical department staff who will approve/reject this form
+  String constructedBy; // nhân viên thi công đảm nhiệm công việc
 
   @PrePersist
   void onCreate() {
     this.createdAt = LocalDateTime.now();
     this.updatedAt = this.createdAt;
-    this.status = new FormProcessingStatus();
-    status.setRegistration(ProcessingStatus.PROCESSING);
+    this.status = new FormProcessingStatus(
+      ProcessingStatus.PENDING_FOR_APPROVAL,
+      ProcessingStatus.PROCESSING,
+      ProcessingStatus.PROCESSING,
+      ProcessingStatus.PROCESSING
+    );
   }
 
   @PreUpdate
@@ -132,6 +139,16 @@ public class InstallationForm {
   public void setCustomerName(String customerName) {
     requireNonNullAndNotEmpty(customerName, Constant.PT_27);
     this.customerName = customerName;
+  }
+
+  public void setConstructedBy(String value) {
+    requireNonNullAndNotEmpty(value, Constant.PT_02);
+    this.constructedBy = value;
+  }
+
+  public void setStatus(FormProcessingStatus status) {
+    Objects.requireNonNull(status, Constant.PT_27);
+    this.status = status;
   }
 
   public void setRepresentative(List<Representative> representative) {
@@ -235,7 +252,6 @@ public class InstallationForm {
   }
 
   public void setFormCode(String value) {
-    System.out.println("Value: " + value);
     requireNonNullAndNotEmpty(value, Constant.PT_01);
     this.id.setFormCode(value);
   }
@@ -258,13 +274,11 @@ public class InstallationForm {
 
     public InstallationFormBuilder formNumber(String formNumber) {
       instance.setFormNumber(formNumber);
-      System.out.println(instance.id);
       return this;
     }
 
     public InstallationFormBuilder formCode(String value) {
       instance.setFormCode(value);
-      System.out.println(instance.id);
       return this;
     }
 
@@ -275,6 +289,11 @@ public class InstallationForm {
 
     public InstallationFormBuilder customerName(String customerName) {
       instance.setCustomerName(customerName);
+      return this;
+    }
+
+    public InstallationFormBuilder constructedBy(String value) {
+      instance.setConstructedBy(value);
       return this;
     }
 

@@ -17,6 +17,24 @@ export const siteConfig = {
       label: "Danh mục",
       items: [
         {
+          key: "departments",
+          label: "Quản lý Phòng ban",
+          href: "/departments",
+        },
+        {
+          key: "roads",
+          label: "Quản lý Đường phố",
+          href: "/roads",
+        },
+      ],
+    },
+
+    // Danh mục
+    {
+      key: "category",
+      label: "Danh mục",
+      items: [
+        {
           key: "communes",
           label: "Quản lý Phường/xã",
           href: "/communes",
@@ -158,6 +176,11 @@ export const siteConfig = {
           key: "laterals",
           label: "Quản lý Nhánh tổng",
           href: "/laterals",
+        },
+        {
+          key: "roadmaps",
+          label: "Quản lý Lộ trình ghi",
+          href: "/roadmaps",
         },
         {
           key: "settlement-lookup",

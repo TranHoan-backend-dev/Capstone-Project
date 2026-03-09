@@ -14,5 +14,5 @@ public interface RoadService {
 
   RoadResponse getRoadById(String id);
 
-  PageResponse<RoadResponse> getAllRoads(Pageable pageable);
+  PageResponse<RoadResponse> getAllRoads(Pageable pageable, String keyword);
 }

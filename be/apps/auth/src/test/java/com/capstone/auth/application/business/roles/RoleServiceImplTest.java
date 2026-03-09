@@ -2,7 +2,7 @@ package com.capstone.auth.application.business.roles;
 
 import com.capstone.auth.application.exception.NotExistingException;
 import com.capstone.auth.domain.model.Roles;
-import com.capstone.auth.infrastructure.config.Constant;
+import com.capstone.auth.infrastructure.utils.Constant;
 import com.capstone.auth.infrastructure.persistence.RoleRepository;
 import com.capstone.common.enumerate.RoleName;
 import org.junit.jupiter.api.BeforeEach;

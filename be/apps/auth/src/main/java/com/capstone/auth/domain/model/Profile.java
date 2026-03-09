@@ -1,6 +1,6 @@
 package com.capstone.auth.domain.model;
 
-import com.capstone.auth.infrastructure.config.Constant;
+import com.capstone.auth.infrastructure.utils.Constant;
 import com.capstone.common.utils.SharedConstant;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;

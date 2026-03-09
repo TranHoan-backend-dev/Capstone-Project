@@ -121,9 +121,30 @@ jobs:
           restore-keys: "${{ runner.os }}-gradle"
 
       - name: Build Image
-        working-directory: be/apps
+        working-directory: be
         run: |
-          ./gradlew clean bootBuildImage --imageName=app:latest
+          REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+
+          services=(
+            auth
+            construction
+            customer
+            device
+            eureka
+            gateway
+            image
+            notification
+            organization
+          )
+
+          for service in "${services[@]}"
+          do
+            ./apps/gradlew -p apps :$service:bootBuildImage \
+              --imageName=ghcr.io/$REPO_LOWER/$service:latest
+          done
+
+          # Build Node.js email-service
+          docker build --target runner -t ghcr.io/$REPO_LOWER/email:latest -f apps/Dockerfile .
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -134,9 +155,24 @@ jobs:
 
       - name: Push image to GitHub Container Registry
         run: |
-          IMAGE_ID=$(echo "ghcr.io/${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          docker tag app:latest $IMAGE_ID:latest
-          docker push $IMAGE_ID:latest
+          REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          services=(
+            auth
+            construction
+            customer
+            device
+            email
+            eureka
+            gateway
+            image
+            notification
+            organization
+          )
+
+          for service in "${services[@]}"
+          do
+            docker push ghcr.io/$REPO_LOWER/$service:latest
+          done
 
   android-build:
     runs-on: ubuntu-latest

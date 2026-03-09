@@ -1,0 +1,117 @@
+services:
+  eureka-service:
+    image: ghcr.io/tranhoan-backend-dev/capstone-project/eureka:latest
+    ports:
+      - "9000:9000"
+    environment:
+      - SERVER_PORT=9000
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - app-network
+
+  api-gateway:
+    image: ghcr.io/tranhoan-backend-dev/capstone-project/gateway:latest
+    ports:
+      - "8000:8000"
+    environment:
+      - SERVER_PORT=8000
+      - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:9000/eureka
+    networks:
+      - app-network
+
+  auth-service:
+    image: ghcr.io/tranhoan-backend-dev/capstone-project/auth:latest
+    ports:
+      - "9003:9003"
+    environment:
+      - SERVER_PORT=9003
+      - SERVER_ADDRESS=0.0.0.0
+      - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:9000/eureka
+    networks:
+      - app-network
+
+  construction-service:
+    image: ghcr.io/tranhoan-backend-dev/capstone-project/construction:latest
+    ports:
+      - "9004:9004"
+    environment:
+      - SERVER_PORT=9004
+      - SERVER_ADDRESS=0.0.0.0
+      - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:9000/eureka
+    networks:
+      - app-network
+
+  customer-service:
+    image: ghcr.io/tranhoan-backend-dev/capstone-project/customer:latest
+    ports:
+      - "9005:9005"
+    environment:
+      - SERVER_PORT=9005
+      - SERVER_ADDRESS=0.0.0.0
+      - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:9000/eureka
+    networks:
+      - app-network
+
+  device-service:
+    image: ghcr.io/tranhoan-backend-dev/capstone-project/device:latest
+    ports:
+      - "9006:9006"
+    environment:
+      - SERVER_PORT=9006
+      - SERVER_ADDRESS=0.0.0.0
+      - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:9000/eureka
+    networks:
+      - app-network
+
+  notification-service:
+    image: ghcr.io/tranhoan-backend-dev/capstone-project/notification:latest
+    ports:
+      - "9007:9007"
+    environment:
+      - SERVER_PORT=9007
+      - SERVER_ADDRESS=0.0.0.0
+      - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:9000/eureka
+    networks:
+      - app-network
+
+  organization-service:
+    image: ghcr.io/tranhoan-backend-dev/capstone-project/organization:latest
+    ports:
+      - "9008:9008"
+    environment:
+      - SERVER_PORT=9008
+      - SERVER_ADDRESS=0.0.0.0
+      - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:9000/eureka
+    networks:
+      - app-network
+
+  image-service:
+    image: ghcr.io/tranhoan-backend-dev/capstone-project/image:latest
+    ports:
+      - "9010:9010"
+    environment:
+      - SERVER_PORT=9010
+      - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:9000/eureka
+    networks:
+      - app-network
+
+  email-service:
+    image: ghcr.io/tranhoan-backend-dev/capstone-project/email:latest
+    ports:
+      - "3000:9009"
+    environment:
+      - RABBITMQ_URL=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:5672
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

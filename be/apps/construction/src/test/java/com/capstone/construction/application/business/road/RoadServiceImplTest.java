@@ -212,7 +212,7 @@ class RoadServiceImplTest {
     when(roadRepository.findAll(pageable)).thenReturn(page);
 
     // When
-    var result = roadService.getAllRoads(pageable);
+    var result = roadService.getAllRoads(pageable, null);
 
     // Then
     assertThat(result.content()).hasSize(1);

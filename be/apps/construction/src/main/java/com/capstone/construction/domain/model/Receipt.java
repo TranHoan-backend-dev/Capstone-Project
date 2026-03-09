@@ -2,7 +2,7 @@ package com.capstone.construction.domain.model;
 
 import com.capstone.construction.domain.model.utils.InstallationFormId;
 import jakarta.persistence.*;
-import com.capstone.construction.infrastructure.config.Constant;
+import com.capstone.construction.infrastructure.utils.Constant;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

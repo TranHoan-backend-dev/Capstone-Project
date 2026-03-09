@@ -37,7 +37,11 @@ export const ConfirmDialog = ({
           <p className="text-sm text-default-600">{message}</p>
 
           <div className="flex justify-end gap-3 pt-4">
-            <CustomButton variant="light" onPress={onClose} isDisabled={isLoading}>
+            <CustomButton
+              variant="light"
+              onPress={onClose}
+              isDisabled={isLoading}
+            >
               {cancelText}
             </CustomButton>
 

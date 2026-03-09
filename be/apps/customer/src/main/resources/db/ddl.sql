@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS unaccent;
+
 create table public.customer
 (
   customer_id                       varchar(255) not null

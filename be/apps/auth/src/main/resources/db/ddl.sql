@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS unaccent;
+
 create table individual_notification
 (
   notification_id varchar(255)          not null,

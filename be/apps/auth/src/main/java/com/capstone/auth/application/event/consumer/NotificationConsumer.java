@@ -44,11 +44,18 @@ public class NotificationConsumer {
     }
 
     Set<RoleName> targetRoles = new HashSet<>();
+    String userId = null;
     for (String topic : topics) {
+      var components = topic.split("/");
+      if (components.length == 4) {
+        userId = components[3];
+        topic = String.join("/", components[0], components[1], components[2]);
+      }
       List<RoleName> roles = mapTopicToRoles(topic);
       if (roles != null) {
         targetRoles.addAll(roles);
       }
+
     }
 
     if (targetRoles.isEmpty()) {
@@ -56,20 +63,7 @@ public class NotificationConsumer {
       return;
     }
 
-    List<Users> targetUsers = userRepository.findByRoleNameIn(new ArrayList<>(targetRoles));
-    if (targetUsers == null || targetUsers.isEmpty()) {
-      log.info("No users found for roles corresponding to topics: {}", topics);
-      return;
-    }
-
-    log.info("Found {} users for notification {}", targetUsers.size(), notificationId);
-
-    List<IndividualNotification> individualNotifications = targetUsers.stream()
-        .map(user -> new IndividualNotification(notificationId, user.getUserId(), false))
-        .toList();
-
-    individualNotificationRepository.saveAll(individualNotifications);
-    log.info("Saved {} individual notifications", individualNotifications.size());
+    saveNotification(targetRoles, userId, topics, notificationId);
   }
 
   private List<RoleName> mapTopicToRoles(@NonNull String topic) {
@@ -77,9 +71,9 @@ public class NotificationConsumer {
       // for department
       case "/notification" -> List.of(RoleName.values());
       case "/technical" -> List.of(
-          RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD,
-          RoleName.SURVEY_STAFF,
-          RoleName.ORDER_RECEIVING_STAFF);
+        RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD,
+        RoleName.SURVEY_STAFF,
+        RoleName.ORDER_RECEIVING_STAFF);
       case "/construction" -> List.of(RoleName.CONSTRUCTION_DEPARTMENT_HEAD, RoleName.CONSTRUCTION_DEPARTMENT_STAFF);
       case "/business" -> List.of(RoleName.BUSINESS_DEPARTMENT_HEAD, RoleName.METER_INSPECTION_STAFF);
       case "/it" -> List.of(RoleName.IT_STAFF);
@@ -92,5 +86,32 @@ public class NotificationConsumer {
       case "/technical/order-receiving-staff" -> List.of(RoleName.ORDER_RECEIVING_STAFF);
       default -> Collections.emptyList();
     };
+  }
+
+  private void saveNotification(Set<RoleName> targetRoles, String userId, List<String> topics, String notificationId) {
+    List<IndividualNotification> individualNotifications;
+    if (userId == null) {
+      List<Users> targetUsers = userRepository.findByRoleNameIn(new ArrayList<>(targetRoles));
+      if (targetUsers == null || targetUsers.isEmpty()) {
+        log.info("No users found for roles corresponding to topics: {}", topics);
+        return;
+      }
+
+      log.info("Found {} users for notification {}", targetUsers.size(), notificationId);
+
+      individualNotifications = targetUsers.stream()
+        .map(user -> new IndividualNotification(notificationId, user.getUserId(), false))
+        .toList();
+    } else {
+      var user = userRepository.existsByUserId(userId);
+      if (user == null || !user) {
+        log.info("No user found for roles corresponding to topics: {}", topics);
+        return;
+      }
+      individualNotifications = List.of(new IndividualNotification(notificationId, userId, false));
+    }
+
+    individualNotificationRepository.saveAll(individualNotifications);
+    log.info("Saved {} individual notifications", individualNotifications.size());
   }
 }
