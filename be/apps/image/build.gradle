@@ -17,7 +17,7 @@ dependencyManagement {
 }
 
 dependencies {
-  implementation project(':common')
+//  implementation project(':common')
   implementation 'org.springframework.boot:spring-boot-starter-web'
   implementation 'com.google.cloud:spring-cloud-gcp-starter-storage'
   implementation 'com.google.cloud:google-cloud-storage:2.30.1'
