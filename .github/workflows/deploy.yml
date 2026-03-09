@@ -15,6 +15,10 @@ jobs:
                   key: ${{ secrets.VPS_SSH_KEY }}
                   script: |
                       cd /home/hoan/be/be/apps
-                      git pull
+                      git pull origin dev
                       docker compose down
-                      docker compose up -d --build
+                      docker compose \
+                        -f docker-compose-db.yml \
+                        -f docker-compose-other.yml \
+                        -f docker-compose-services.yml \
+                        up -d --build
