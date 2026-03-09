@@ -63,7 +63,6 @@ FROM node:22-alpine AS runner
 WORKDIR /app
 COPY --from=build-email /workspace/apps/email-service/dist ./
 RUN npm install --omit=dev
-EXPOSE 9005
 ENTRYPOINT ["node", "main.js"]
 
 # NOTIFICATION SERVICE
@@ -108,4 +107,15 @@ FROM eclipse-temurin:21-jre-alpine AS runtime-api-gateway
 WORKDIR /app
 COPY --from=build-api-gateway /workspace/gateway/build/libs/*.jar app.jar
 EXPOSE 8000
+ENTRYPOINT ["java","-jar","app.jar"]
+
+# IMAGE SERVICE
+FROM base-builder AS build-image
+COPY image ./image
+RUN gradle :image:bootJar -x test --no-daemon
+
+FROM eclipse-temurin:21-jre-alpine AS runtime-image
+WORKDIR /app
+COPY --from=build-image /workspace/image/build/libs/*.jar app.jar
+EXPOSE 9009
 ENTRYPOINT ["java","-jar","app.jar"]

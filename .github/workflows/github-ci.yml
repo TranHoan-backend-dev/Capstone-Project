@@ -121,24 +121,30 @@ jobs:
           restore-keys: "${{ runner.os }}-gradle"
 
       - name: Build Image
-        working-directory: be/apps
+        working-directory: be
         run: |
+          REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+
           services=(
-            eureka-service
-            api-gateway
-            auth-service
-            construction-service
-            customer-service
-            device-service
-            notification-service
-            organization-service
+            auth
+            construction
+            customer
+            device
+            eureka
+            gateway
+            image
+            notification
+            organization
           )
 
           for service in "${services[@]}"
           do
-            ./gradlew :$service:bootBuildImage \
-            --imageName=ghcr.io/${{ github.repository }}/$service:latest
+            ./apps/gradlew -p apps :$service:bootBuildImage \
+              --imageName=ghcr.io/$REPO_LOWER/$service:latest
           done
+
+          # Build Node.js email-service
+          docker build --target runner -t ghcr.io/$REPO_LOWER/email:latest -f apps/Dockerfile .
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -149,20 +155,23 @@ jobs:
 
       - name: Push image to GitHub Container Registry
         run: |
+          REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
           services=(
-            eureka-service
-            api-gateway
-            auth-service
-            construction-service
-            customer-service
-            device-service
-            notification-service
-            organization-service
+            auth
+            construction
+            customer
+            device
+            email
+            eureka
+            gateway
+            image
+            notification
+            organization
           )
 
           for service in "${services[@]}"
           do
-            docker push ghcr.io/${{ github.repository }}/$service:latest
+            docker push ghcr.io/$REPO_LOWER/$service:latest
           done
 
   android-build:

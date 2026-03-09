@@ -39,4 +39,4 @@ jobs:
               -f docker-compose-db.yml \
               -f docker-compose-other.yml \
               -f docker-compose-services.yml \
-              up -d --build
+              up -d

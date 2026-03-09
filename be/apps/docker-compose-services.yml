@@ -1,6 +1,6 @@
 services:
   eureka-service:
-    image: ghcr.io/tranhoan-backend-dev/capstone-project:eureka
+    image: ghcr.io/tranhoan-backend-dev/capstone-project/eureka:latest
     ports:
       - "9000:9000"
     environment:
@@ -10,7 +10,7 @@ services:
       - app-network
 
   api-gateway:
-    image: ghcr.io/tranhoan-backend-dev/capstone-project:api-gateway
+    image: ghcr.io/tranhoan-backend-dev/capstone-project/gateway:latest
     ports:
       - "8000:8000"
     environment:
@@ -21,7 +21,7 @@ services:
       - app-network
 
   auth-service:
-    image: ghcr.io/tranhoan-backend-dev/capstone-project:auth
+    image: ghcr.io/tranhoan-backend-dev/capstone-project/auth:latest
     ports:
       - "9003:9003"
     environment:
@@ -33,7 +33,7 @@ services:
       - app-network
 
   construction-service:
-    image: ghcr.io/tranhoan-backend-dev/capstone-project:construction
+    image: ghcr.io/tranhoan-backend-dev/capstone-project/construction:latest
     ports:
       - "9004:9004"
     environment:
@@ -45,7 +45,7 @@ services:
       - app-network
 
   customer-service:
-    image: ghcr.io/tranhoan-backend-dev/capstone-project:customer
+    image: ghcr.io/tranhoan-backend-dev/capstone-project/customer:latest
     ports:
       - "9005:9005"
     environment:
@@ -57,7 +57,7 @@ services:
       - app-network
 
   device-service:
-    image: ghcr.io/tranhoan-backend-dev/capstone-project:device
+    image: ghcr.io/tranhoan-backend-dev/capstone-project/device:latest
     ports:
       - "9006:9006"
     environment:
@@ -69,7 +69,7 @@ services:
       - app-network
 
   notification-service:
-    image: ghcr.io/tranhoan-backend-dev/capstone-project:notification
+    image: ghcr.io/tranhoan-backend-dev/capstone-project/notification:latest
     ports:
       - "9007:9007"
     environment:
@@ -81,7 +81,7 @@ services:
       - app-network
 
   organization-service:
-    image: ghcr.io/tranhoan-backend-dev/capstone-project:organization
+    image: ghcr.io/tranhoan-backend-dev/capstone-project/organization:latest
     ports:
       - "9008:9008"
     environment:
@@ -92,8 +92,19 @@ services:
     networks:
       - app-network
 
+  image-service:
+    image: ghcr.io/tranhoan-backend-dev/capstone-project/image:latest
+    ports:
+      - "9010:9010"
+    environment:
+      - SERVER_PORT=9010
+      - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:9000/eureka
+    networks:
+      - app-network
+
   email-service:
-    image: ghcr.io/tranhoan-backend-dev/capstone-project:email
+    image: ghcr.io/tranhoan-backend-dev/capstone-project/email:latest
     ports:
       - "3000:9009"
     environment:
