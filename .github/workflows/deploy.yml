@@ -32,7 +32,23 @@ jobs:
               -f docker-compose-services.yml \
               down --remove-orphans
 
-            docker pull ghcr.io/tranhoan-backend-dev/capstone-project:latest
+            services=(
+              auth
+              construction
+              customer
+              device
+              email
+              eureka
+              gateway
+              image
+              notification
+              organization
+            )
+
+            for service in "${services[@]}"
+            do
+              docker pull ghcr.io/tranhoan-backend-dev/capstone-project/$service:latest
+            done
 
             # Khởi động lại
             docker compose \
