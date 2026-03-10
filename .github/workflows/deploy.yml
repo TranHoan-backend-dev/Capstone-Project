@@ -60,7 +60,6 @@ jobs:
 
 
             # start keycloak background
-            pkill -f keycloak || true
             nohup /home/hoan/keycloak-26.5.1/bin/kc.sh start-dev > keycloak.log 2>&1 &
 
             # start backend services
