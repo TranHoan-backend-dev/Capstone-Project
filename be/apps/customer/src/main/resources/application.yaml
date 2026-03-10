@@ -1,8 +1,8 @@
 spring:
   application:
     name: customer
-  profiles:
-    active: dev
+#  profiles:
+#    active: dev
   jpa:
     hibernate:
       ddl-auto: update
@@ -18,6 +18,15 @@ spring:
       connection-timeout: 2000 # Cho ket noi toi da 3s
       max-lifetime: 600000 # Ket noi song toi da 30p
       idle-timeout: 30000 # Dong idle sau 30s neu khong su dung
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${POSTGRES_HOST}:5432/${CUSTOMER_DATABASE}
+    username: postgres
+    password: postgres
+  rabbitmq:
+    host: ${RABBITMQ_HOST} # cua may local
+    port: 5672
+    username: guest
+    password: guest
 management:
   endpoints:
     web:
@@ -31,9 +40,19 @@ management:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:9000/eureka
+      defaultZone: http://${EUREKA_HOST}:9000/eureka
   instance:
     prefer-ip-address: true
+keycloak:
+  server-url: http://${KEYCLOAK_HOST}:8080
+  issuer-uri: ${keycloak.server-url}/realms/${keycloak.realms}
+  aud:
+    - ${KEYCLOAK_AUD}
+  realms: ${KEYCLOAK_REALMS}
+  username: ${KEYCLOAK_USERNAME}
+  password: ${KEYCLOAK_PASSWORD}
+  token-uri: ${keycloak.server-url}/realms/${keycloak.realms}/protocol/openid-connect/token
+  client-id: ${KEYCLOAK_CLIENT_ID}
 springdoc:
   api-docs:
     enabled: true
@@ -49,9 +68,3 @@ web-frontend-url: ${WEB_FRONTEND_URL:http://localhost:3000}
 cors:
   allowed-origins:
     - ${web-frontend-url}
-#spring:
-#  datasource:
-#    driver-class-name: org.postgresql.Driver
-#    url:
-#    username:
-#    password:

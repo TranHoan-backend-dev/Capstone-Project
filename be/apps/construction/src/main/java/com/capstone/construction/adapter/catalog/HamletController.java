@@ -94,13 +94,16 @@ public class HamletController {
   }
 
   @GetMapping
-  @Operation(summary = "Danh sách thôn/làng", description = "Lấy danh sách tất cả các thôn/làng có phân trang", responses = {
+  @Operation(summary = "Danh sách thôn/làng", description = "Lấy danh sách tất cả các thôn/làng có phân trang hoặc tìm kiếm", responses = {
       @ApiResponse(responseCode = "200", description = "Lấy danh sách thành công", content = @Content(schema = @Schema(implementation = HamletResponse.class)))
   })
   public ResponseEntity<WrapperApiResponse> getAllHamlets(
+      @RequestParam(required = false) @Parameter(description = "Từ khóa tìm kiếm theo tên", in = ParameterIn.QUERY) String keyword,
+      @RequestParam(required = false) @Parameter(description = "ID xã/phường", in = ParameterIn.QUERY) String communeId,
+      @RequestParam(required = false) @Parameter(description = "Loại thôn/làng", in = ParameterIn.QUERY) String type,
       @PageableDefault @Parameter(description = "Thông tin phân trang (page, size, sort)", in = ParameterIn.QUERY) Pageable pageable) {
-    log.info("REST request to get all hamlets");
-    var response = hamletUseCase.getAllHamlets(pageable);
+    log.info("REST request to get hamlets");
+    var response = hamletUseCase.searchHamlets(keyword, communeId, type, pageable);
     return Utils.returnOkResponse("Hamlets retrieved successfully", response);
   }
 }
