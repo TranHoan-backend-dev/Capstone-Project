@@ -58,9 +58,21 @@ jobs:
               -f docker-compose-other.yml \
               up -d
 
+
             # start keycloak background
+            pkill -f keycloak || true
             nohup /home/hoan/keycloak-26.5.1/bin/kc.sh start-dev > keycloak.log 2>&1 &
 
+
+            # wait keycloak ready
+            echo "Waiting Keycloak..."
+            until curl -s http://0.0.0.0:8080/realms/master >/dev/null; do
+              sleep 5
+            done
+            echo "Keycloak ready"
+
+
+            # start backend services
             docker compose \
               -f docker-compose-services.yml \
               up -d
