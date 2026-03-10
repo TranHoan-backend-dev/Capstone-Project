@@ -5,35 +5,32 @@ import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class GcsStorageService {
-  Storage storage;
+  final Storage storage;
+  @Value("${gcs.bucket}")
   String bucketName;
-  static String PREFIX = "https://storage.googleapis.com/";
-
-  public GcsStorageService(
-    @Value("${gcs.bucket}") String bucketName
-  ) {
-    this.storage = StorageOptions.getDefaultInstance().getService();
-    this.bucketName = bucketName;
-  }
+  final static String PREFIX = "https://storage.googleapis.com/";
 
   public String upload(@NonNull MultipartFile file, String folder) {
     try {
       var fileName = folder + "/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
 
       var blobInfo = BlobInfo.newBuilder(bucketName, fileName)
-        .setContentType(file.getContentType())
-        .build();
+          .setContentType(file.getContentType())
+          .build();
 
       storage.create(blobInfo, file.getBytes());
 
@@ -41,5 +38,15 @@ public class GcsStorageService {
     } catch (IOException e) {
       throw new RuntimeException("Upload to GCS failed", e);
     }
+  }
+
+  public byte[] download(String fileName) {
+    var blob = storage.get(bucketName, fileName);
+    Objects.requireNonNull(blob, "File not found");
+    return blob.getContent();
+  }
+
+  public void delete(String fileName) {
+    storage.delete(bucketName, fileName);
   }
 }

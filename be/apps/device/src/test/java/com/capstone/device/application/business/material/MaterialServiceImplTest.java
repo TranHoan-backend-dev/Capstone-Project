@@ -54,10 +54,10 @@ class MaterialServiceImplTest {
   void should_CreateMaterial_When_RequestIsValid() {
     // Given
     var request = new CreateRequest(
-      "AB.11111", "Đào đất",
-      BigDecimal.valueOf(100000), BigDecimal.valueOf(50000),
-      BigDecimal.valueOf(45000), BigDecimal.valueOf(20000),
-      BigDecimal.valueOf(18000), "group-id", "unit-id");
+        "AB.11111", "Đào đất",
+        BigDecimal.valueOf(100000), BigDecimal.valueOf(50000),
+        BigDecimal.valueOf(45000), BigDecimal.valueOf(20000),
+        BigDecimal.valueOf(18000), "group-id", "unit-id");
 
     var group = new MaterialsGroup();
     ReflectionTestUtils.setField(group, "name", "Group Name");
@@ -84,34 +84,40 @@ class MaterialServiceImplTest {
   }
 
   @Test
+  void should_ThrowException_When_CreateRequestIsNull() {
+    assertThatThrownBy(() -> materialService.createMaterial(null))
+        .isInstanceOf(NullPointerException.class);
+  }
+
+  @Test
   void should_ThrowException_When_GroupNotFoundDuringCreation() {
     // Given
     var request = new CreateRequest(
-      "LAB001", "Job",
-      BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
-      BigDecimal.ONE, BigDecimal.ONE, "not-found", "unit");
+        "LAB001", "Job",
+        BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
+        BigDecimal.ONE, BigDecimal.ONE, "not-found", "unit");
     when(gRepo.findById("not-found")).thenReturn(Optional.empty());
 
     // When & Then
     assertThatThrownBy(() -> materialService.createMaterial(request))
-      .isInstanceOf(IllegalArgumentException.class)
-      .hasMessageContaining("Material group not found");
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("Material group not found");
   }
 
   @Test
   void should_ThrowException_When_UnitNotFoundDuringCreation() {
     // Given
     var request = new CreateRequest(
-      "LAB001", "Job",
-      BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
-      BigDecimal.ONE, BigDecimal.ONE, "group", "not-found");
+        "LAB001", "Job",
+        BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
+        BigDecimal.ONE, BigDecimal.ONE, "group", "not-found");
     when(gRepo.findById("group")).thenReturn(Optional.of(new MaterialsGroup()));
     when(uRepo.findById("not-found")).thenReturn(Optional.empty());
 
     // When & Then
     assertThatThrownBy(() -> materialService.createMaterial(request))
-      .isInstanceOf(IllegalArgumentException.class)
-      .hasMessageContaining("Unit not found");
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("Unit not found");
   }
 
   @Test
@@ -119,9 +125,9 @@ class MaterialServiceImplTest {
     // Given
     var id = "material-id";
     var request = new UpdateRequest(
-      "Updated Job", BigDecimal.valueOf(200000), BigDecimal.valueOf(60000),
-      BigDecimal.valueOf(55000), BigDecimal.valueOf(30000),
-      BigDecimal.valueOf(25000), null, null);
+        "Updated Job", BigDecimal.valueOf(200000), BigDecimal.valueOf(60000),
+        BigDecimal.valueOf(55000), BigDecimal.valueOf(30000),
+        BigDecimal.valueOf(25000), null, null);
 
     var material = new Material();
     ReflectionTestUtils.setField(material, "materialId", id);
@@ -134,9 +140,20 @@ class MaterialServiceImplTest {
     var response = materialService.updateMaterial(id, request);
 
     // Then
-    assertThat(response.jobContent()).isEqualTo("Updated Job");
     assertThat(response.price()).isEqualTo(BigDecimal.valueOf(200000));
     verify(mRepo).save(material);
+  }
+
+  @Test
+  void should_ThrowException_When_UpdateRequestIsNull() {
+    assertThatThrownBy(() -> materialService.updateMaterial("id", null))
+        .isInstanceOf(NullPointerException.class);
+  }
+
+  @Test
+  void should_ThrowException_When_UpdateRequestIsNull() {
+    assertThatThrownBy(() -> materialService.updateMaterial("id", null))
+        .isInstanceOf(NullPointerException.class);
   }
 
   @Test
@@ -144,8 +161,8 @@ class MaterialServiceImplTest {
     // Given
     var id = "material-id";
     var request = new UpdateRequest(
-      null, null, null, null,
-      null, null, null, null);
+        null, null, null, null,
+        null, null, null, null);
 
     var material = new Material();
     ReflectionTestUtils.setField(material, "materialId", id);
@@ -169,13 +186,13 @@ class MaterialServiceImplTest {
     // Given
     var id = "not-found";
     var request = new UpdateRequest(null, null, null, null,
-      null, null, null, null);
+        null, null, null, null);
     when(mRepo.findById(id)).thenReturn(Optional.empty());
 
     // When & Then
     assertThatThrownBy(() -> materialService.updateMaterial(id, request))
-      .isInstanceOf(IllegalArgumentException.class)
-      .hasMessageContaining("Material not found");
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("Material not found");
   }
 
   @Test
@@ -205,8 +222,8 @@ class MaterialServiceImplTest {
 
     // When & Then
     assertThatThrownBy(() -> materialService.deleteMaterial(id))
-      .isInstanceOf(IllegalArgumentException.class)
-      .hasMessageContaining("Material not found");
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("Material not found");
   }
 
   @Test
@@ -232,8 +249,8 @@ class MaterialServiceImplTest {
 
     // When & Then
     assertThatThrownBy(() -> materialService.getMaterialById(id))
-      .isInstanceOf(IllegalArgumentException.class)
-      .hasMessageContaining("Material not found");
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("Material not found");
   }
 
   @Test

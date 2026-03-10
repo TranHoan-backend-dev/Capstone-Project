@@ -210,7 +210,7 @@ export const MaterialPriceTable = ({
         headerSummary={`${data.length}`}
         paginationProps={{
           total: totalPages,
-          initialPage: page,
+          page: page,
           onChange: setPage,
           summary: `${totalItems}`,
         }}
