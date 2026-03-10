@@ -3,12 +3,8 @@ name: Backend Build
 on:
   push:
     branches: ["main", "dev", "feat/**", "refactor/**", "style/**", "fix/**"]
-    paths:
-      - be/**
   pull_request:
     branches: ["dev"]
-    paths:
-      - be/**
 
 permissions:
   contents: read
