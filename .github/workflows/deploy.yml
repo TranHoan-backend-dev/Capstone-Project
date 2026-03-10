@@ -56,5 +56,11 @@ jobs:
             docker compose \
               -f docker-compose-db.yml \
               -f docker-compose-other.yml \
+              up -d
+
+            # start keycloak background
+            nohup /home/hoan/keycloak-26.5.1/bin/kc.sh start-dev > keycloak.log 2>&1 &
+
+            docker compose \
               -f docker-compose-services.yml \
               up -d
