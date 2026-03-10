@@ -1,8 +1,10 @@
-name: Frontend Build
+name: Web Build
 
 on:
   push:
     branches: ["main", "dev", "feat/**", "refactor/**", "style/**", "fix/**"]
+    paths:
+      - fe/webapp/**
   pull_request:
     branches: ["dev"]
     paths:
