@@ -1,10 +1,7 @@
 name: Deploy VPS
 on:
-  push:
-    branches:
-      - dev
   workflow_run:
-    workflows: ["Capstone Project"]
+    workflows: ["Backend Build"]
     types:
       - completed
 jobs:

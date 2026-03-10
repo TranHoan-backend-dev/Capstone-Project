@@ -1,0 +1,216 @@
+name: Frontend Build
+
+on:
+  push:
+    branches: ["main", "dev", "feat/**", "refactor/**", "style/**", "fix/**"]
+  pull_request:
+    branches: ["dev"]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  # detect-services:
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     matrix: ${{steps.set-matrix.outputs.matrix}}
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+
+  #     - name: Services List
+  #       id: set-matrix
+  #       run: |
+  #         services=$(ls -d be/services/*/ | xargs -n 1 basename | jq -R -s -c 'split("\n")[:-1]')
+  #         echo "matrix=$services" >> $GITHUB_OUTPUT
+
+  next-build-and-deploy:
+    name: Next.js Build & Deploy
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [20]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: fe/webapp/package-lock.json
+
+      - name: Install deps
+        run: npm ci
+        working-directory: fe/webapp
+
+      - name: Run typescheck
+        run: npm run typescheck
+        working-directory: fe/webapp
+
+      - name: Build
+        run: npm run build
+        working-directory: fe/webapp
+      - name: Upload production build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: fe/webapp/dist
+  # nx-build:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         filter: tree:0
+  #         fetch-depth: 0
+
+  #     # This enables task distribution via Nx Cloud
+  #     # Run this command as early as possible, before dependencies are installed
+  #     # Learn more at https://nx.dev/ci/reference/nx-cloud-cli#npx-nxcloud-startcirun
+  #     # Uncomment this line to enable task distribution
+  #     # - run: npx nx start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="build"
+
+  #     # Cache node_modules
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 20
+  #         cache: "npm"
+  #         cache-dependency-path: ./be/package-lock.json
+
+  #     - name: Check disk
+  #       run: df -h
+
+  #     - uses: actions/setup-java@v3
+  #       with:
+  #         distribution: temurin
+  #         java-version: 21
+
+  #     - name: Set up Docker Buildx
+  #       uses: docker/setup-buildx-action@v3
+
+  #     - name: Grant execute permission
+  #       run: chmod +x gradlew
+  #       working-directory: ./be/apps
+
+  #     - run: npm ci
+  #       working-directory: ./be
+
+  #     - name: Force clean Gradle builds
+  #       run: |
+  #         rm -rf be/apps/*/build || true
+
+  #     # Prepend any command with "nx-cloud record --" to record its logs to Nx Cloud
+  #     # - run: npx nx-cloud record -- echo Hello World
+  #     #      - run: npx nx run-many -t lint build typecheck --exclude=services
+  #     #        working-directory: ./be
+  #     # Nx Cloud recommends fixes for failures to help you get CI green faster. Learn more: https://nx.dev/ci/features/self-healing-ci
+  #     - run: npx nx fix-ci
+  #       working-directory: ./be
+  #       if: always()
+
+  #     - name: Cache Gradle packages
+  #       uses: actions/cache@v4
+  #       with:
+  #         path: be/apps/.gradle/caches
+  #         key: "${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}"
+  #         restore-keys: "${{ runner.os }}-gradle"
+
+  #     - name: Build Image
+  #       working-directory: be
+  #       run: |
+  #         REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+
+  #         services=(
+  #           auth
+  #           construction
+  #           customer
+  #           device
+  #           eureka
+  #           gateway
+  #           image
+  #           notification
+  #           organization
+  #         )
+
+  #         for service in "${services[@]}"
+  #         do
+  #           ./apps/gradlew -p apps :$service:bootBuildImage \
+  #             --imageName=ghcr.io/$REPO_LOWER/$service:latest
+  #         done
+
+  #         # Build Node.js email-service
+  #         docker build --target runner -t ghcr.io/$REPO_LOWER/email:latest -f apps/Dockerfile .
+
+  #     - name: Login to GitHub Container Registry
+  #       uses: docker/login-action@v3
+  #       with:
+  #         registry: ghcr.io
+  #         username: "${{ github.actor }}"
+  #         password: "${{ secrets.GITHUB_TOKEN }}"
+
+  #     - name: Push image to GitHub Container Registry
+  #       run: |
+  #         REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+  #         services=(
+  #           auth
+  #           construction
+  #           customer
+  #           device
+  #           email
+  #           eureka
+  #           gateway
+  #           image
+  #           notification
+  #           organization
+  #         )
+
+  #         for service in "${services[@]}"
+  #         do
+  #           docker push ghcr.io/$REPO_LOWER/$service:latest
+  #         done
+
+  android-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          filter: tree:0
+          fetch-depth: 0
+
+      - name: Install Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./fe/mobile/android
+
+      - name: Grant execute permission
+        run: chmod +x gradlew
+        working-directory: ./fe/mobile/android
+
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug
+        working-directory: ./fe/mobile/android
+
+      - name: Upload Debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-apk
+          path: ./fe/mobile/android/app/build/outputs/apk/debug/app-debug.apk
