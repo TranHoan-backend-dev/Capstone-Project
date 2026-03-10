@@ -1,8 +1,8 @@
 spring:
   application:
     name: construction
-#  profiles:
-#    active: dev
+  profiles:
+    active: dev
   jpa:
     hibernate:
       ddl-auto: update
@@ -18,25 +18,25 @@ spring:
       connection-timeout: 2000 # Cho ket noi toi da 3s
       max-lifetime: 600000 # Ket noi song toi da 30p
       idle-timeout: 30000 # Dong idle sau 30s neu khong su dung
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${POSTGRES_HOST}:5432/${CONSTRUCTION_DATABASE}
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
-  rabbitmq:
-    host: ${RABBITMQ_HOST} # cua may local
-    port: 5672
-    username: ${RABBITMQ_DEFAULT_USER}
-    password: ${RABBITMQ_DEFAULT_PASS}
-keycloak:
-  server-url: http://${KEYCLOAK_HOST}:8080
-  issuer-uri: ${keycloak.server-url}/realms/${keycloak.realms}
-  aud:
-    - ${KEYCLOAK_AUD}
-  realms: ${KEYCLOAK_REALMS}
-  username: ${KEYCLOAK_USERNAME}
-  password: ${KEYCLOAK_PASSWORD}
-  token-uri: ${keycloak.server-url}/realms/${keycloak.realms}/protocol/openid-connect/token
-  client-id: ${KEYCLOAK_CLIENT_ID}
+  #   driver-class-name: org.postgresql.Driver
+  #   url: jdbc:postgresql://${POSTGRES_HOST}:5432/${CONSTRUCTION_DATABASE}
+  #   username: ${POSTGRES_USER}
+  #   password: ${POSTGRES_PASSWORD}
+  # rabbitmq:
+  #   host: ${RABBITMQ_HOST} # cua may local
+  #   port: 5672
+  #   username: ${RABBITMQ_DEFAULT_USER}
+  #   password: ${RABBITMQ_DEFAULT_PASS}
+# keycloak:
+#   server-url: http://${KEYCLOAK_HOST}:8080
+#   issuer-uri: ${keycloak.server-url}/realms/${keycloak.realms}
+#   aud:
+#     - ${KEYCLOAK_AUD}
+#   realms: ${KEYCLOAK_REALMS}
+#   username: ${KEYCLOAK_USERNAME}
+#   password: ${KEYCLOAK_PASSWORD}
+#   token-uri: ${keycloak.server-url}/realms/${keycloak.realms}/protocol/openid-connect/token
+#   client-id: ${KEYCLOAK_CLIENT_ID}
 management:
   endpoints:
     web:
