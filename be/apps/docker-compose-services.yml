@@ -95,7 +95,6 @@ services:
   notification-service:
     depends_on:
       - api-gateway
-      - mongodb
     image: ghcr.io/tranhoan-backend-dev/capstone-project/notification:latest
     ports:
       - "9007:9007"
