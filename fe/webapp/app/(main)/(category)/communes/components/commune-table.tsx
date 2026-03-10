@@ -8,6 +8,7 @@ import { COMMUNE_COLUMN } from "@/config/table-columns";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import { CallToast } from "@/components/ui/CallToast";
 import { authFetch } from "@/utils/authFetch";
+import { ConfirmDialog } from "@/components/ui/modal/ConfirmDialog";
 
 const typeLabel: Record<string, string> = {
   URBAN_WARD: "Phường",
@@ -26,6 +27,8 @@ export const CommuneTable = ({
   const [editingItem, setEditingItem] = useState<CommuneItem | null>(null);
   const [openForm, setOpenForm] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [sort, setSort] = useState<{
     field: string;
     direction: "asc" | "desc";
@@ -104,6 +107,37 @@ export const CommuneTable = ({
     });
   };
 
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return;
+
+    try {
+      setDeleteLoading(true);
+
+      const res = await authFetch(`/api/construction/communes/${deleteId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Access Denied");
+
+      CallToast({
+        title: "Thành công",
+        message: "Xóa phường/xã thành công",
+        color: "success",
+      });
+
+      setDeleteId(null);
+      onDeleted();
+    } catch (e: any) {
+      CallToast({
+        title: "Lỗi",
+        message: e.message || "Có lỗi xảy ra",
+        color: "danger",
+      });
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
   useEffect(() => {
     setPage(1);
   }, [filter]);
@@ -124,28 +158,8 @@ export const CommuneTable = ({
         content: "Xóa",
         icon: DeleteIcon,
         className: "text-red-500 hover:bg-red-50",
-        onClick: async (id: string) => {
-          if (!confirm("Bạn có chắc muốn xóa phường/xã này?")) return;
-
-          try {
-            const res = await authFetch(`/api/construction/communes/${id}`, {
-              method: "DELETE",
-            });
-
-            if (!res.ok) throw new Error("Delete failed");
-            CallToast({
-              title: "Thành công",
-              message: "Xóa phường/xã thành công!",
-              color: "success",
-            });
-            onDeleted();
-          } catch (e: any) {
-            CallToast({
-              title: "Lỗi",
-              message: e.message || "Xóa phường/xã thất bại!",
-              color: "danger",
-            });
-          }
+        onClick: (id: string) => {
+          setDeleteId(id);
         },
       },
     ],
@@ -220,6 +234,16 @@ export const CommuneTable = ({
         }}
         sort={sort}
         onSortChange={handleSortChange}
+      />
+      <ConfirmDialog
+        isOpen={!!deleteId}
+        title="Xác nhận xoá"
+        message="Bạn có chắc muốn xoá phường/xã này không?"
+        confirmText="Xoá"
+        confirmColor="danger"
+        isLoading={deleteLoading}
+        onClose={() => setDeleteId(null)}
+        onConfirm={handleConfirmDelete}
       />
     </>
   );
