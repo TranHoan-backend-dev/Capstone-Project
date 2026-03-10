@@ -37,7 +37,6 @@ services:
   auth-service:
     depends_on:
       - api-gateway
-      - keycloak
     image: ghcr.io/tranhoan-backend-dev/capstone-project/auth:latest
     ports:
       - "9003:9003"
@@ -57,7 +56,6 @@ services:
   construction-service:
     depends_on:
       - api-gateway
-      - keycloak
     image: ghcr.io/tranhoan-backend-dev/capstone-project/construction:latest
     ports:
       - "9004:9004"
@@ -71,7 +69,6 @@ services:
   customer-service:
     depends_on:
       - api-gateway
-      - keycloak
     image: ghcr.io/tranhoan-backend-dev/capstone-project/customer:latest
     ports:
       - "9005:9005"
@@ -85,7 +82,6 @@ services:
   device-service:
     depends_on:
       - api-gateway
-      - keycloak
     image: ghcr.io/tranhoan-backend-dev/capstone-project/device:latest
     ports:
       - "9006:9006"
@@ -115,7 +111,6 @@ services:
   organization-service:
     depends_on:
       - api-gateway
-      - keycloak
     image: ghcr.io/tranhoan-backend-dev/capstone-project/organization:latest
     ports:
       - "9008:9008"
