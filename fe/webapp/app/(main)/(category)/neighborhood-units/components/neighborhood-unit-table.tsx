@@ -113,7 +113,7 @@ export const NeighborhoodUnitTable = ({
     try {
       setDeleteLoading(true);
 
-      const res = await authFetch(`/api/device/water-meter-type/${deleteId}`, {
+      const res = await authFetch(`/api/construction/neighborhood-units/${deleteId}`, {
         method: "DELETE",
       });
 
@@ -121,7 +121,7 @@ export const NeighborhoodUnitTable = ({
 
       CallToast({
         title: "Thành công",
-        message: "Xóa loại đồng hồ nước thành công",
+        message: "Xóa tổ/khu phố thành công",
         color: "success",
       });
 
