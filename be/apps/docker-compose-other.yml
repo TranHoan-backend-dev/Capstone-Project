@@ -88,6 +88,8 @@ services:
 #    networks:
 #      - app-network
   keycloak:
+    depends_on:
+      - postgres
     image: quay.io/keycloak/keycloak:23.0.0
     container_name: keycloak
     environment:
@@ -109,4 +111,3 @@ volumes:
   rabbitmq_data:
 networks:
   app-network:
-    driver: bridge

@@ -37,6 +37,7 @@ services:
   auth-service:
     depends_on:
       - api-gateway
+      - keycloak
     image: ghcr.io/tranhoan-backend-dev/capstone-project/auth:latest
     ports:
       - "9003:9003"
@@ -56,6 +57,7 @@ services:
   construction-service:
     depends_on:
       - api-gateway
+      - keycloak
     image: ghcr.io/tranhoan-backend-dev/capstone-project/construction:latest
     ports:
       - "9004:9004"
@@ -69,6 +71,7 @@ services:
   customer-service:
     depends_on:
       - api-gateway
+      - keycloak
     image: ghcr.io/tranhoan-backend-dev/capstone-project/customer:latest
     ports:
       - "9005:9005"
@@ -82,6 +85,7 @@ services:
   device-service:
     depends_on:
       - api-gateway
+      - keycloak
     image: ghcr.io/tranhoan-backend-dev/capstone-project/device:latest
     ports:
       - "9006:9006"
@@ -95,6 +99,7 @@ services:
   notification-service:
     depends_on:
       - api-gateway
+      - mongodb
     image: ghcr.io/tranhoan-backend-dev/capstone-project/notification:latest
     ports:
       - "9007:9007"
@@ -110,6 +115,7 @@ services:
   organization-service:
     depends_on:
       - api-gateway
+      - keycloak
     image: ghcr.io/tranhoan-backend-dev/capstone-project/organization:latest
     ports:
       - "9008:9008"
@@ -135,8 +141,6 @@ services:
       - app-network
 
   email-service:
-    depends_on:
-      - api-gateway
     image: ghcr.io/tranhoan-backend-dev/capstone-project/email:latest
     ports:
       - "3000:9010"
@@ -151,4 +155,3 @@ services:
 
 networks:
   app-network:
-    driver: bridge

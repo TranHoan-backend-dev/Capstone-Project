@@ -20,13 +20,13 @@ spring:
       idle-timeout: 30000 # Dong idle sau 30s neu khong su dung
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://${POSTGRES_HOST}:5432/${CONSTRUCTION_DATABASE}
-    username: postgres
-    password: postgres
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
   rabbitmq:
     host: ${RABBITMQ_HOST} # cua may local
     port: 5672
-    username: guest
-    password: guest
+    username: ${RABBITMQ_DEFAULT_USER}
+    password: ${RABBITMQ_DEFAULT_PASS}
 keycloak:
   server-url: http://${KEYCLOAK_HOST}:8080
   issuer-uri: ${keycloak.server-url}/realms/${keycloak.realms}

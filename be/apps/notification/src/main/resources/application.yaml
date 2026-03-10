@@ -15,8 +15,8 @@ spring:
           max-interval: 5000
     host: ${RABBITMQ_HOST} # cua may local
     port: 5672
-    username: guest
-    password: guest
+    username: ${RABBITMQ_DEFAULT_USER}
+    password: ${RABBITMQ_DEFAULT_PASS}
   data:
     mongodb:
       uri: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@${MONGODB_HOST}:27017/notification?authSource=admin
