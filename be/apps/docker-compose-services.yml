@@ -1,114 +1,151 @@
+x-common-env: &common-env
+  SERVER_ADDRESS: 0.0.0.0
+  EUREKA_HOST: ${EUREKA_HOST}
+  POSTGRES_HOST: ${POSTGRES_HOST}
+  RABBITMQ_HOST: ${RABBITMQ_HOST}
+  KEYCLOAK_HOST: ${KEYCLOAK_HOST}
+  KEYCLOAK_AUD: ${KEYCLOAK_AUD}
+  KEYCLOAK_REALMS: ${KEYCLOAK_REALMS}
+  KEYCLOAK_USERNAME: ${KEYCLOAK_USERNAME}
+  KEYCLOAK_PASSWORD: ${KEYCLOAK_PASSWORD}
+  KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+  KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
+
 services:
   eureka-service:
     image: ghcr.io/tranhoan-backend-dev/capstone-project/eureka:latest
     ports:
       - "9000:9000"
     environment:
-      - SERVER_PORT=9000
-      - SPRING_PROFILES_ACTIVE=dev
+      EUREKA_HOST: ${EUREKA_HOST}
+      SERVER_PORT: 9000
     networks:
       - app-network
 
   api-gateway:
+    depends_on:
+      - eureka-service
     image: ghcr.io/tranhoan-backend-dev/capstone-project/gateway:latest
     ports:
       - "8000:8000"
     environment:
-      - SERVER_PORT=8000
-      - SPRING_PROFILES_ACTIVE=dev
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:9000/eureka
+      EUREKA_HOST: ${EUREKA_HOST}
+      SERVER_PORT: 8000
     networks:
       - app-network
 
   auth-service:
+    depends_on:
+      - api-gateway
     image: ghcr.io/tranhoan-backend-dev/capstone-project/auth:latest
     ports:
       - "9003:9003"
     environment:
-      - SERVER_PORT=9003
-      - SERVER_ADDRESS=0.0.0.0
-      - SPRING_PROFILES_ACTIVE=dev
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:9000/eureka
+      <<: *common-env
+      SERVER_PORT: 9003
+      AUTH_DATABASE: ${AUTH_DATABASE}
+      OAUTH2_CLIENT_ID: ${OAUTH2_CLIENT_ID}
+      OAUTH2_CLIENT_SECRET: ${OAUTH2_CLIENT_SECRET}
+      KEYCLOAK_CLIENT_SECRET_ADMIN: ${KEYCLOAK_CLIENT_SECRET_ADMIN}
+      KEYCLOAK_CLIENT_ID_ADMIN: ${KEYCLOAK_CLIENT_ID_ADMIN}
     networks:
       - app-network
 
+#  common
+
   construction-service:
+    depends_on:
+      - api-gateway
     image: ghcr.io/tranhoan-backend-dev/capstone-project/construction:latest
     ports:
       - "9004:9004"
     environment:
-      - SERVER_PORT=9004
-      - SERVER_ADDRESS=0.0.0.0
-      - SPRING_PROFILES_ACTIVE=dev
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:9000/eureka
+      <<: *common-env
+      SERVER_PORT: 9004
+      CONSTRUCTION_DATABASE: ${CONSTRUCTION_DATABASE}
     networks:
       - app-network
 
   customer-service:
+    depends_on:
+      - api-gateway
     image: ghcr.io/tranhoan-backend-dev/capstone-project/customer:latest
     ports:
       - "9005:9005"
     environment:
-      - SERVER_PORT=9005
-      - SERVER_ADDRESS=0.0.0.0
-      - SPRING_PROFILES_ACTIVE=dev
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:9000/eureka
+      <<: *common-env
+      SERVER_PORT: 9005
+      CUSTOMER_DATABASE: ${CUSTOMER_DATABASE}
     networks:
       - app-network
 
   device-service:
+    depends_on:
+      - api-gateway
     image: ghcr.io/tranhoan-backend-dev/capstone-project/device:latest
     ports:
       - "9006:9006"
     environment:
-      - SERVER_PORT=9006
-      - SERVER_ADDRESS=0.0.0.0
-      - SPRING_PROFILES_ACTIVE=dev
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:9000/eureka
+      <<: *common-env
+      SERVER_PORT: 9006
+      DEVICE_DATABASE: ${DEVICE_DATABASE}
     networks:
       - app-network
 
   notification-service:
+    depends_on:
+      - api-gateway
     image: ghcr.io/tranhoan-backend-dev/capstone-project/notification:latest
     ports:
       - "9007:9007"
     environment:
-      - SERVER_PORT=9007
-      - SERVER_ADDRESS=0.0.0.0
-      - SPRING_PROFILES_ACTIVE=dev
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:9000/eureka
+      <<: *common-env
+      SERVER_PORT: 9007
+      MONGODB_USERNAME: ${MONGODB_USERNAME}
+      MONGODB_PASSWORD: ${MONGODB_PASSWORD}
+      MONGODB_HOST: ${MONGODB_HOST}
     networks:
       - app-network
 
   organization-service:
+    depends_on:
+      - api-gateway
     image: ghcr.io/tranhoan-backend-dev/capstone-project/organization:latest
     ports:
       - "9008:9008"
     environment:
-      - SERVER_PORT=9008
-      - SERVER_ADDRESS=0.0.0.0
-      - SPRING_PROFILES_ACTIVE=dev
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:9000/eureka
+      <<: *common-env
+      SERVER_PORT: 9008
+      ORGANIZATION_DATABASE: ${ORGANIZATION_DATABASE}
     networks:
       - app-network
 
   image-service:
+    depends_on:
+      - api-gateway
     image: ghcr.io/tranhoan-backend-dev/capstone-project/image:latest
     ports:
-      - "9010:9010"
+      - "9009:9009"
     environment:
-      - SERVER_PORT=9010
-      - SPRING_PROFILES_ACTIVE=dev
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:9000/eureka
+      <<: *common-env
+      SERVER_PORT: 9009
+      GCS_CREDENTIALS: ${GCS_CREDENTIALS}
+      BUCKET: ${BUCKET}
     networks:
       - app-network
 
   email-service:
+    depends_on:
+      - api-gateway
     image: ghcr.io/tranhoan-backend-dev/capstone-project/email:latest
     ports:
-      - "3000:9009"
+      - "3000:9010"
     environment:
-      - RABBITMQ_URL=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:5672
+      EMAIL_ID: ${EMAIL_ID}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD}
+      EMAIL_HOST: ${EMAIL_HOST}
+      EMAIL_PORT: ${EMAIL_PORT}
+      ORGANIZATION_MAIL_NAME: ${ORGANIZATION_MAIL_NAME}
     networks:
       - app-network
 
