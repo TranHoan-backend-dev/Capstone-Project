@@ -174,7 +174,7 @@ public class Customer {
   }
 
   public void setCitizenIdentificationProvideAt(String value) {
-    requireText(value, Message.ENT_19);
+    requireText(value, SharedMessage.MES_16);
     this.citizenIdentificationProvideAt = value;
   }
 
@@ -189,7 +189,7 @@ public class Customer {
   }
 
   public void setBankAccountProviderLocation(String value) {
-    requireText(value, Message.ENT_22);
+    requireText(value, SharedMessage.MES_17);
     this.bankAccountProviderLocation = value;
   }
 
@@ -459,9 +459,9 @@ public class Customer {
     }
 
     public Customer build() {
-      Objects.requireNonNull(customer.name, Message.ENT_01);
+      Objects.requireNonNull(customer.name, SharedMessage.MES_05);
       if (customer.name.trim().isEmpty()) {
-        throw new IllegalArgumentException(Message.ENT_01);
+        throw new IllegalArgumentException(SharedMessage.MES_05);
       }
       return customer;
     }

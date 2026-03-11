@@ -120,11 +120,12 @@ public class InstallationFormServiceImpl implements InstallationFormService {
     var endDate = parseFrom(request.to());
     var specification = InstallationFormRepository.search(
       request.keyword(), startDate, endDate,
-      ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING
-    );
+      ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING);
 
-    var response = (startDate != null || (request.keyword() != null && !request.keyword().isBlank())) ? ifRepo.findAll(specification, pageable) :
-      ifRepo.findByStatus_ContractAndStatus_Construction(ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING, pageable);
+    var response = (startDate != null || (request.keyword() != null && !request.keyword().isBlank()))
+      ? ifRepo.findAll(specification, pageable)
+      : ifRepo.findByStatus_ContractAndStatus_Construction(ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING,
+      pageable);
     var result = response.getContent()
       .stream()
       .map(this::mapToResponse)
@@ -137,7 +138,8 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   @Transactional(rollbackFor = Exception.class)
   public void approveAndAssignInstallationForm(@NonNull ApproveRequest request) {
     log.info("Approving and assigning installation form with number: {}", request.formNumber());
-    var order = ifRepo.findById_FormCodeAndId_FormNumber(request.formCode(), request.formNumber()).orElseThrow(() -> new IllegalArgumentException(Message.PT_36));
+    var order = ifRepo.findById_FormCodeAndId_FormNumber(request.formCode(), request.formNumber())
+      .orElseThrow(() -> new IllegalArgumentException(Message.PT_36));
 
     if (request.status()) {
       // trưởng phòng duyệt đơn
@@ -161,7 +163,8 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   @Override
   public InstallationFormListResponse getByFormCodeAndFormNumber(String formCode, String formNumber) {
     log.info("Fetching installation form with form number: {}", formNumber);
-    var result = ifRepo.findById_FormCodeAndId_FormNumber(formCode, formNumber).orElseThrow(() -> new IllegalArgumentException(Message.PT_36));
+    var result = ifRepo.findById_FormCodeAndId_FormNumber(formCode, formNumber)
+      .orElseThrow(() -> new IllegalArgumentException(Message.PT_36));
     return mapToResponse(result);
   }
 
@@ -193,11 +196,14 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       entity.getScheduleSurveyAt() == null ? null : entity.getScheduleSurveyAt().toString(),
       entity.getCreatedAt().toString(),
       entity.getHandoverBy(),
-      (handOverByFullName != null && handOverByFullName.data() != null) ? handOverByFullName.data().toString() : unknown,
+      (handOverByFullName != null && handOverByFullName.data() != null) ? handOverByFullName.data().toString()
+        : unknown,
       entity.getCreatedBy(),
       (creatorFullName != null && creatorFullName.data() != null) ? creatorFullName.data().toString() : unknown,
       entity.getConstructedBy(),
-      (constructionEmployeeName != null && constructionEmployeeName.data() != null) ? constructionEmployeeName.data().toString() : unknown,
+      (constructionEmployeeName != null && constructionEmployeeName.data() != null)
+        ? constructionEmployeeName.data().toString()
+        : unknown,
       entity.getStatus());
   }
 

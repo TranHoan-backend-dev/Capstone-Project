@@ -1,4 +1,5 @@
-CREATE EXTENSION IF NOT EXISTS unaccent;
+CREATE
+EXTENSION IF NOT EXISTS unaccent;
 
 create table public.customer
 (
@@ -77,3 +78,20 @@ create table public.installation_contract
 alter table public.installation_contract
   owner to postgres;
 
+create table public.water_usage_contract
+(
+  contract_id          varchar(255) not null
+    primary key,
+  created_at           timestamp(6) not null,
+  installation_form_id varchar(255),
+  representative       jsonb,
+  updated_at           timestamp(6) not null,
+  customer_customer_id varchar(255)
+    constraint ukfj7clu6vnl01ucvn75sdsc6c5
+            unique
+        constraint fkhkvv0d391ffy1gndonpy5k0p1
+            references public.customer
+);
+
+alter table public.water_usage_contract
+  owner to postgres;
