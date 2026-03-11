@@ -34,7 +34,7 @@ public class ContractController {
   public ResponseEntity<WrapperApiResponse> createContract(@RequestBody @Valid ContractRequest request) {
     log.info("REST request to create contract: {}", request.contractId());
     var response = contractService.createContract(request);
-    return Utils.returnCreatedResponse("Contract created successfully");
+    return Utils.returnCreatedResponse("Tạo hợp đồng thành công");
   }
 
   @Operation(summary = "Update a contract", description = "Updates details of an existing water usage contract", responses = {
@@ -47,7 +47,7 @@ public class ContractController {
     @RequestBody @Valid ContractRequest request) {
     log.info("REST request to update contract: {}", id);
     var response = contractService.updateContract(id, request);
-    return Utils.returnOkResponse("Contract updated successfully", response);
+    return Utils.returnOkResponse("Cập nhật hợp đồng thành công", response);
   }
 
   @Operation(summary = "Delete a contract", description = "Removes a water usage contract from the system", responses = {
@@ -59,7 +59,7 @@ public class ContractController {
     @PathVariable @Parameter(description = "Contract ID") String id) {
     log.info("REST request to delete contract: {}", id);
     contractService.deleteContract(id);
-    return Utils.returnOkResponse("Contract deleted successfully", null);
+    return Utils.returnOkResponse("Xóa hợp đồng thành công", null);
   }
 
   @Operation(summary = "Get contract by ID", description = "Fetches detailed information of a water usage contract", responses = {
@@ -71,7 +71,7 @@ public class ContractController {
     @PathVariable @Parameter(description = "Contract ID") String id) {
     log.info("REST request to get contract: {}", id);
     var response = contractService.getContractById(id);
-    return Utils.returnOkResponse("Contract retrieved successfully", response);
+    return Utils.returnOkResponse("Lấy thông tin hợp đồng thành công", response);
   }
 
   @Operation(summary = "Get all contracts", description = "Retrieves a paginated list of all water usage contracts")
@@ -79,6 +79,6 @@ public class ContractController {
   public ResponseEntity<WrapperApiResponse> getAllContracts(@PageableDefault Pageable pageable) {
     log.info("REST request to get all contracts with pagination: {}", pageable);
     Page<ContractResponse> response = contractService.getAllContracts(pageable);
-    return Utils.returnOkResponse("Contracts retrieved successfully", response);
+    return Utils.returnOkResponse("Lấy danh sách hợp đồng thành công", response);
   }
 }

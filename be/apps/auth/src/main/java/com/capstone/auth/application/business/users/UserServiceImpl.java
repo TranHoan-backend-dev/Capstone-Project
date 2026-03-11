@@ -261,4 +261,10 @@ public class UserServiceImpl implements UserService {
     if (!invalidJobs.isEmpty())
       throw new NotExistingException("Jobs not exist: " + invalidJobs);
   }
+
+  @Override
+  public boolean isJobAssigned(String jobId) {
+    log.info("Checking if job is assigned to any employee: {}", jobId);
+    return employeeJobRepo.existsByIdJobId(jobId);
+  }
 }

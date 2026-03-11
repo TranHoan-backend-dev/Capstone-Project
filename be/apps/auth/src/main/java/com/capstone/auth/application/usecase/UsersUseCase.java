@@ -37,4 +37,8 @@ public class UsersUseCase {
   public boolean checkIfEmployeeExists(String id) {
     return userService.isUserExists(id);
   }
+
+  public boolean isJobAssigned(String jobId) {
+    return userService.isJobAssigned(jobId);
+  }
 }

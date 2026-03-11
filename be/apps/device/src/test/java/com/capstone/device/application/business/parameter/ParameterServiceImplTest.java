@@ -16,10 +16,6 @@ import org.slf4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
@@ -53,12 +49,12 @@ class ParameterServiceImplTest {
 
   @Test
   void should_ReturnPaginatedParameters_When_NoFilter() {
-    Pageable pageable = mock(Pageable.class);
-    Parameters param = createMockParam("1", "VAT", new BigDecimal("0.1"));
+    var pageable = mock(Pageable.class);
+    var param = createMockParam("1", "VAT", new BigDecimal("0.1"));
     Page<Parameters> page = new PageImpl<>(Collections.singletonList(param));
 
     when(repository.findAll(pageable)).thenReturn(page);
-    when(employeeService.getEmployeeName(any())).thenReturn(new WrapperApiResponse<>(200, "Admin", true));
+    when(employeeService.getEmployeeName(any())).thenReturn(new WrapperApiResponse(200, "Admin", true, LocalDateTime.now()));
 
     Page<ParameterResponse> result = parameterService.getParameters(pageable, null);
 
@@ -68,13 +64,13 @@ class ParameterServiceImplTest {
 
   @Test
   void should_ReturnPaginatedParameters_When_NameFilter() {
-    Pageable pageable = mock(Pageable.class);
-    String filter = "VAT";
-    Parameters param = createMockParam("1", "VAT", new BigDecimal("0.1"));
+    var pageable = mock(Pageable.class);
+    var filter = "VAT";
+    var param = createMockParam("1", "VAT", new BigDecimal("0.1"));
     Page<Parameters> page = new PageImpl<>(Collections.singletonList(param));
 
     when(repository.findAllByNameContainingIgnoreCase(filter, pageable)).thenReturn(page);
-    when(employeeService.getEmployeeName(any())).thenReturn(new WrapperApiResponse<>(200, "Admin", true));
+    when(employeeService.getEmployeeName(any())).thenReturn(new WrapperApiResponse(200, "Admin", true, LocalDateTime.now()));
 
     Page<ParameterResponse> result = parameterService.getParameters(pageable, filter);
 
@@ -84,34 +80,27 @@ class ParameterServiceImplTest {
 
   @Test
   void should_UpdateParameter_When_ValidRequest() {
-    String id = "1";
-    UpdateParameterRequest request = new UpdateParameterRequest("New Name", new BigDecimal("0.08"));
-    Parameters existingParam = createMockParam(id, "Old Name", new BigDecimal("0.1"));
+    var id = "1";
+    var request = new UpdateParameterRequest("New Name", new BigDecimal("0.08"), "Admin-ID");
+    var existingParam = createMockParam(id, "Old Name", new BigDecimal("0.1"));
 
-    // Mock Security Context
-    JwtAuthenticationToken auth = mock(JwtAuthenticationToken.class);
-    when(auth.getName()).thenReturn("Current User");
-    SecurityContext securityContext = mock(SecurityContext.class);
-    when(securityContext.getAuthentication()).thenReturn(auth);
-    SecurityContextHolder.setContext(securityContext);
+    when(employeeService.checkAuthorExisting(any())).thenReturn(new WrapperApiResponse(200, "Success", true, LocalDateTime.now()));
 
     when(repository.findById(id)).thenReturn(Optional.of(existingParam));
     when(repository.save(any(Parameters.class))).thenReturn(existingParam);
-    when(employeeService.getEmployeeName(any())).thenReturn(new WrapperApiResponse<>(200, "Admin", true));
+    when(employeeService.getEmployeeName(any())).thenReturn(new WrapperApiResponse(200, "Admin", true, LocalDateTime.now()));
 
-    ParameterResponse result = parameterService.updateParameter(id, request);
+    var result = parameterService.updateParameter(id, request);
 
     assertEquals("New Name", result.name());
     assertEquals("0.08", result.value());
     verify(repository).save(existingParam);
-
-    SecurityContextHolder.clearContext();
   }
 
   @Test
   void should_ThrowException_When_UpdateParameterNotFound() {
-    String id = "not-found";
-    UpdateParameterRequest request = new UpdateParameterRequest("VAT", new BigDecimal("0.08"));
+    var id = "not-found";
+    var request = new UpdateParameterRequest("VAT", new BigDecimal("0.08"), "Admin-ID");
     when(repository.findById(id)).thenReturn(Optional.empty());
 
     assertThrows(IllegalArgumentException.class, () -> parameterService.updateParameter(id, request));
@@ -119,10 +108,10 @@ class ParameterServiceImplTest {
 
   @Test
   void should_GetParameterById_When_Found() {
-    String id = "1";
-    Parameters param = createMockParam(id, "VAT", new BigDecimal("0.1"));
+    var id = "1";
+    var param = createMockParam(id, "VAT", new BigDecimal("0.1"));
     when(repository.findById(id)).thenReturn(Optional.of(param));
-    when(employeeService.getEmployeeName(any())).thenReturn(new WrapperApiResponse<>(200, "Admin", true));
+    when(employeeService.getEmployeeName(any())).thenReturn(new WrapperApiResponse(200, "Admin", true, LocalDateTime.now()));
 
     ParameterResponse result = parameterService.getParameterById(id);
 
@@ -130,7 +119,7 @@ class ParameterServiceImplTest {
   }
 
   private Parameters createMockParam(String id, String name, BigDecimal value) {
-    Parameters param = new Parameters();
+    var param = new Parameters();
     ReflectionTestUtils.setField(param, "paramId", id);
     ReflectionTestUtils.setField(param, "name", name);
     ReflectionTestUtils.setField(param, "value", value);

@@ -52,7 +52,7 @@ public class UnitController {
       @Parameter(description = "Từ khóa lọc theo tên đơn vị tính") @RequestParam(required = false) String filter) {
     log.info("REST request to get paginated list of units: {}, filter: {}", pageable, filter);
     var response = unitUseCase.getUnits(pageable, filter);
-    return Utils.returnOkResponse("Get paginated list of units successfully", response);
+    return Utils.returnOkResponse("Lấy danh sách đơn vị tính thành công", response);
   }
 
   @Operation(summary = "Tạo mới đơn vị đo", description = "API cho phép Admin tạo mới một đơn vị đo tính toán. Tên đơn vị đo phải là duy nhất và không được trùng lặp trong hệ thống.")
@@ -67,7 +67,7 @@ public class UnitController {
     log.info("REST request to create unit: {}", request);
     var response = unitUseCase.createUnit(request);
     log.info("New unit: {}", response);
-    return Utils.returnCreatedResponse("Create unit successfully");
+    return Utils.returnCreatedResponse("Tạo đơn vị đo thành công");
   }
 
   @Operation(summary = "Cập nhật đơn vị đo", description = "API cho phép Admin cập nhật thông tin đơn vị đo. Sau khi cập nhật thành công, hệ thống sẽ gửi thông báo đến phòng KH-KT, chi nhánh Thi công và phòng Kinh doanh.")
@@ -83,7 +83,7 @@ public class UnitController {
       @RequestBody @Valid UpdateUnitRequest request) {
     log.info("REST request to update unit id: {}, request: {}", id, request);
     var response = unitUseCase.updateUnit(id, request);
-    return Utils.returnOkResponse("Update unit successfully", response);
+    return Utils.returnOkResponse("Cập nhật đơn vị đo thành công", response);
   }
 
   @Operation(summary = "Xóa đơn vị đo", description = "API cho phép Admin xóa một đơn vị đo. Điều kiện xóa: đơn vị này chưa từng được sử dụng trong danh mục vật tư. Hệ thống sẽ gửi thông báo cho các phòng ban liên quan sau khi xóa.")
@@ -98,6 +98,6 @@ public class UnitController {
       @Parameter(description = "ID của đơn vị đo cần xóa", example = "550e8400-e29b-41d4-a716-446655440000") @PathVariable String id) {
     log.info("REST request to delete unit id: {}", id);
     unitUseCase.deleteUnit(id);
-    return Utils.returnOkResponse("Delete unit successfully", null);
+    return Utils.returnOkResponse("Xóa đơn vị đo thành công", null);
   }
 }

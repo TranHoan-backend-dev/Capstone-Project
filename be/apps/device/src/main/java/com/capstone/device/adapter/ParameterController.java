@@ -48,7 +48,7 @@ public class ParameterController {
       @Parameter(description = "Từ khóa tìm kiếm") @RequestParam(required = false) String filter) {
     log.info("REST request to get paginated list of params: {}, filter: {}", pageable, filter);
     var response = parameterUseCase.getParametersList(pageable, filter);
-    return Utils.returnOkResponse("Get paginated list of params successfully", response);
+    return Utils.returnOkResponse("Lấy danh sách tham số thành công", response);
   }
 
   @Operation(summary = "Cập nhật tham số hệ thống", description = "API cho phép Admin cập nhật giá trị tham số cấu hình. Hệ thống sẽ gửi thông báo cho phòng KH-KT và chi nhánh Thi công.")
@@ -64,6 +64,6 @@ public class ParameterController {
       @RequestBody @Valid UpdateParameterRequest request) {
     log.info("REST request to update parameter id: {}, request: {}", id, request);
     var response = parameterUseCase.updateParameter(id, request);
-    return Utils.returnOkResponse("Update parameter successfully", response);
+    return Utils.returnOkResponse("Cập nhật tham số thành công", response);
   }
 }

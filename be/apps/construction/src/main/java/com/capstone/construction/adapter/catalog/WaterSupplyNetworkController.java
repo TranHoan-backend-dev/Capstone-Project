@@ -48,12 +48,10 @@ public class WaterSupplyNetworkController {
   })
   @PreAuthorize("hasAnyAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> createNetwork(
-    @Parameter(description = "Thông tin tạo mới mạng lưới", required = true, schema = @Schema(implementation = CreateRequest.class))
-    @RequestBody @Valid CreateRequest request
-  ) {
+    @Parameter(description = "Thông tin tạo mới mạng lưới", required = true, schema = @Schema(implementation = CreateRequest.class)) @RequestBody @Valid CreateRequest request) {
     log.info("REST request to create network: {}", request.name());
     networkUseCase.createNetwork(request);
-    return Utils.returnCreatedResponse("Network created successfully");
+    return Utils.returnCreatedResponse("Tạo chi nhánh cấp nước thành công");
   }
 
   @PutMapping("/{id}")
@@ -69,7 +67,7 @@ public class WaterSupplyNetworkController {
     @RequestBody @Valid UpdateRequest request) {
     log.info("REST request to update network: {}", id);
     var response = networkUseCase.updateNetwork(id, request);
-    return Utils.returnOkResponse("Network updated successfully", response);
+    return Utils.returnOkResponse("Cập nhật chi nhánh cấp nước thành công", response);
   }
 
   @DeleteMapping("/{id}")
@@ -80,13 +78,10 @@ public class WaterSupplyNetworkController {
   })
   @PreAuthorize("hasAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> deleteNetwork(
-    @PathVariable
-    @Parameter(description = "ID của mạng lưới cấp nước", required = true)
-    String id
-  ) {
+    @PathVariable @Parameter(description = "ID của mạng lưới cấp nước", required = true) String id) {
     log.info("REST request to delete network: {}", id);
     networkUseCase.deleteNetwork(id);
-    return Utils.returnOkResponse("Network deleted successfully", null);
+    return Utils.returnOkResponse("Xóa chi nhánh cấp nước thành công", null);
   }
 
   @GetMapping("/{id}")
@@ -99,7 +94,7 @@ public class WaterSupplyNetworkController {
     @PathVariable @Parameter(description = "", required = true) String id) {
     log.info("REST request to get network: {}", id);
     var response = networkUseCase.getNetworkById(id);
-    return Utils.returnOkResponse("Network retrieved successfully", response);
+    return Utils.returnOkResponse("Lấy thông tin chi nhánh thành công", response);
   }
 
   @GetMapping
@@ -109,10 +104,7 @@ public class WaterSupplyNetworkController {
   })
   public ResponseEntity<WrapperApiResponse> getAllNetworks(
     @PageableDefault @Parameter(description = "Tham số phân trang (page, size, sort)") Pageable pageable,
-    @RequestParam(required = false)
-    @Parameter(description = "Từ khóa tìm kiếm theo tên mạng lưới")
-    String keyword
-  ) {
+    @RequestParam(required = false) @Parameter(description = "Từ khóa tìm kiếm theo tên mạng lưới") String keyword) {
     log.info("REST request to get all networks with pagination: {}", pageable);
     var response = networkUseCase.getAllNetworks(pageable, keyword);
     return Utils.returnOkResponse("Lấy danh sách mạng lưới thành công", response);

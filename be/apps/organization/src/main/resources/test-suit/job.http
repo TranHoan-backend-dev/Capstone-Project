@@ -1,0 +1,51 @@
+### Job API Test Suit
+
+@baseUrl = http://localhost:8080/organization/api/v1
+@jobId = YOUR_JOB_ID_HERE
+
+### 1. Tạo công việc mới (Thành công)
+POST {{baseUrl}}/jobs
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Kỹ sư phần mềm"
+}
+
+### 2. Tạo công việc mới (Tên đã tồn tại - Chờ đợi 400 hoặc 500 nếu bắn Exception)
+POST {{baseUrl}}/jobs
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Kỹ sư phần mềm"
+}
+
+### 3. Lấy danh sách công việc (Không lọc)
+GET {{baseUrl}}/jobs?page=0&size=10
+Authorization: Bearer {{token}}
+
+### 4. Lấy danh sách công việc (Tìm kiếm theo tên)
+GET {{baseUrl}}/jobs?name=Kỹ sư&page=0&size=10
+Authorization: Bearer {{token}}
+
+### 5. Lấy danh sách công việc (Lọc theo ngày)
+GET {{baseUrl}}/jobs?fromDate=2024-03-01 00:00:00&toDate=2026-12-31 23:59:59&page=0&size=10
+Authorization: Bearer {{token}}
+
+### 6. Cập nhật công việc (Thành công)
+PUT {{baseUrl}}/jobs/{{jobId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Kỹ sư phần mềm Senior"
+}
+
+### 7. Xóa công việc (Thành công nết không có nhân viên)
+DELETE {{baseUrl}}/jobs/{{jobId}}
+Authorization: Bearer {{token}}
+
+### 8. Kiểm tra sự tồn tại (Nội bộ)
+GET {{baseUrl}}/jobs/exist/{{jobId}}
+Authorization: Bearer {{token}}

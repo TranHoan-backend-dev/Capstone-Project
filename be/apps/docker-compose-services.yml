@@ -1,24 +1,11 @@
-x-common-env: &common-env
-  SERVER_ADDRESS: 0.0.0.0
-  EUREKA_HOST: ${EUREKA_HOST}
-  POSTGRES_HOST: ${POSTGRES_HOST}
-  RABBITMQ_HOST: ${RABBITMQ_HOST}
-  KEYCLOAK_HOST: ${KEYCLOAK_HOST}
-  KEYCLOAK_AUD: ${KEYCLOAK_AUD}
-  KEYCLOAK_REALMS: ${KEYCLOAK_REALMS}
-  KEYCLOAK_USERNAME: ${KEYCLOAK_USERNAME}
-  KEYCLOAK_PASSWORD: ${KEYCLOAK_PASSWORD}
-  KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
-  KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
-
 services:
   eureka-service:
     image: ghcr.io/tranhoan-backend-dev/capstone-project/eureka:latest
     ports:
       - "9000:9000"
     environment:
-      EUREKA_HOST: ${EUREKA_HOST}
       SERVER_PORT: 9000
+      SERVER_ADDRESS: 0.0.0.0
     networks:
       - app-network
 
@@ -29,8 +16,8 @@ services:
     ports:
       - "8000:8000"
     environment:
-      EUREKA_HOST: ${EUREKA_HOST}
       SERVER_PORT: 8000
+      SERVER_ADDRESS: 0.0.0.0
     networks:
       - app-network
 
@@ -41,17 +28,10 @@ services:
     ports:
       - "9003:9003"
     environment:
-      <<: *common-env
       SERVER_PORT: 9003
-      AUTH_DATABASE: ${AUTH_DATABASE}
-      OAUTH2_CLIENT_ID: ${OAUTH2_CLIENT_ID}
-      OAUTH2_CLIENT_SECRET: ${OAUTH2_CLIENT_SECRET}
-      KEYCLOAK_CLIENT_SECRET_ADMIN: ${KEYCLOAK_CLIENT_SECRET_ADMIN}
-      KEYCLOAK_CLIENT_ID_ADMIN: ${KEYCLOAK_CLIENT_ID_ADMIN}
+      SERVER_ADDRESS: 0.0.0.0
     networks:
       - app-network
-
-#  common
 
   construction-service:
     depends_on:
@@ -60,9 +40,8 @@ services:
     ports:
       - "9004:9004"
     environment:
-      <<: *common-env
       SERVER_PORT: 9004
-      CONSTRUCTION_DATABASE: ${CONSTRUCTION_DATABASE}
+      SERVER_ADDRESS: 0.0.0.0
     networks:
       - app-network
 
@@ -73,9 +52,8 @@ services:
     ports:
       - "9005:9005"
     environment:
-      <<: *common-env
       SERVER_PORT: 9005
-      CUSTOMER_DATABASE: ${CUSTOMER_DATABASE}
+      SERVER_ADDRESS: 0.0.0.0
     networks:
       - app-network
 
@@ -86,9 +64,8 @@ services:
     ports:
       - "9006:9006"
     environment:
-      <<: *common-env
       SERVER_PORT: 9006
-      DEVICE_DATABASE: ${DEVICE_DATABASE}
+      SERVER_ADDRESS: 0.0.0.0
     networks:
       - app-network
 
@@ -99,11 +76,8 @@ services:
     ports:
       - "9007:9007"
     environment:
-      <<: *common-env
       SERVER_PORT: 9007
-      MONGODB_USERNAME: ${MONGODB_USERNAME}
-      MONGODB_PASSWORD: ${MONGODB_PASSWORD}
-      MONGODB_HOST: ${MONGODB_HOST}
+      SERVER_ADDRESS: 0.0.0.0
     networks:
       - app-network
 
@@ -114,9 +88,8 @@ services:
     ports:
       - "9008:9008"
     environment:
-      <<: *common-env
       SERVER_PORT: 9008
-      ORGANIZATION_DATABASE: ${ORGANIZATION_DATABASE}
+      SERVER_ADDRESS: 0.0.0.0
     networks:
       - app-network
 
@@ -127,10 +100,8 @@ services:
     ports:
       - "9009:9009"
     environment:
-      <<: *common-env
       SERVER_PORT: 9009
-      GCS_CREDENTIALS: ${GCS_CREDENTIALS}
-      BUCKET: ${BUCKET}
+      SERVER_ADDRESS: 0.0.0.0
     networks:
       - app-network
 
@@ -138,12 +109,6 @@ services:
     image: ghcr.io/tranhoan-backend-dev/capstone-project/email:latest
     ports:
       - "3000:9010"
-    environment:
-      EMAIL_ID: ${EMAIL_ID}
-      EMAIL_PASSWORD: ${EMAIL_PASSWORD}
-      EMAIL_HOST: ${EMAIL_HOST}
-      EMAIL_PORT: ${EMAIL_PORT}
-      ORGANIZATION_MAIL_NAME: ${ORGANIZATION_MAIL_NAME}
     networks:
       - app-network
 

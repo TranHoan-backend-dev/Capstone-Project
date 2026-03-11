@@ -52,7 +52,7 @@ public class WaterPriceController {
     log.info("REST request to create water price for target: {}", request.usageTarget());
     var response = useCase.createWaterPrice(request);
     log.info(response.toString());
-    return Utils.returnCreatedResponse("Water price created successfully");
+    return Utils.returnCreatedResponse("Tạo bảng giá nước thành công");
   }
 
   @Operation(summary = "Cập nhật bảng giá nước", description = "Cập nhật thông tin của một bảng giá nước đã tồn tại dựa trên ID.", responses = {
@@ -68,7 +68,7 @@ public class WaterPriceController {
   ) {
     log.info("REST request to update water price: {}", id);
     var response = useCase.updateWaterPrice(id, request);
-    return Utils.returnOkResponse("Water price updated successfully", response);
+    return Utils.returnOkResponse("Cập nhật bảng giá nước thành công", response);
   }
 
   @Operation(summary = "Xóa bảng giá nước", description = "Xóa một bảng giá nước khỏi hệ thống. Lưu ý: Không thể xóa nếu có khách hàng đang áp dụng mức giá này.", responses = {
@@ -83,7 +83,7 @@ public class WaterPriceController {
   ) {
     log.info("REST request to delete water price: {}", id);
     useCase.deleteWaterPrice(id);
-    return Utils.returnOkResponse("Water price deleted successfully", null);
+    return Utils.returnOkResponse("Xóa bảng giá nước thành công", null);
   }
 
   @Operation(summary = "Lấy thông tin giá nước theo ID", description = "Truy xuất chi tiết một bảng giá nước cụ thể bằng ID.", responses = {
@@ -96,7 +96,7 @@ public class WaterPriceController {
   ) {
     log.info("REST request to get water price: {}", id);
     var response = useCase.getWaterPriceById(id);
-    return Utils.returnOkResponse("Water price retrieved successfully", response);
+    return Utils.returnOkResponse("Lấy thông tin giá nước thành công", response);
   }
 
   @Operation(summary = "Lấy danh sách bảng giá nước", description = "Lấy danh sách các bảng giá nước có phân trang. Có thể lọc theo kỳ áp dụng.", responses = {
@@ -113,6 +113,6 @@ public class WaterPriceController {
   ) {
     log.info("REST request to get all water prices with pagination: {}", pageable);
     var response = useCase.getPricesList(pageable, applicationPeriod);
-    return Utils.returnOkResponse("Water prices retrieved successfully", response);
+    return Utils.returnOkResponse("Lấy danh sách bảng giá nước thành công", response);
   }
 }

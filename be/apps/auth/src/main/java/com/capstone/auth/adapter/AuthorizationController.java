@@ -63,12 +63,12 @@ public class AuthorizationController {
   @GetMapping("/employees")
   public ResponseEntity<WrapperApiResponse> getAllEmployees(
     @ParameterObject Pageable pageable,
-    @Parameter(description = "Filter criteria for users (isEnabled, username)") FilterUsersRequest request
-  ) {
+    @Parameter(description = "Filter criteria for users (isEnabled, username)") FilterUsersRequest request) {
     log.info("Getting all employees with page index {} and page size {}", pageable.getPageNumber(),
       pageable.getPageSize());
 
-    return Utils.returnOkResponse("Get all employees successfully", usersUseCase.getPaginatedListOfEmployees(pageable, request));
+    return Utils.returnOkResponse("Lấy danh sách nhân viên thành công",
+      usersUseCase.getPaginatedListOfEmployees(pageable, request));
   }
 
   @Operation(summary = "Lấy các trang web nghiệp vụ được ủy quyền cho nhân viên", description = """
@@ -85,10 +85,9 @@ public class AuthorizationController {
   })
   @GetMapping("/employees/{empId}/pages")
   public ResponseEntity<WrapperApiResponse> getBusinessPageNamesOfEmployees(
-    @Parameter(description = "ID của nhân viên", required = true) @PathVariable String empId
-  ) {
+    @Parameter(description = "ID của nhân viên", required = true) @PathVariable String empId) {
     log.info("Getting pages of employee with id {}", empId);
-    return Utils.returnOkResponse("Get pages successfully", usersUseCase.getListOfPagesByEmployeeId(empId));
+    return Utils.returnOkResponse("Lấy danh sách trang nghiệp vụ thành công", usersUseCase.getListOfPagesByEmployeeId(empId));
   }
 
   @Operation(summary = "Cập nhật các trang nghiệp vụ được ủy quyền cho nhiều nhân viên", description = """
@@ -111,22 +110,19 @@ public class AuthorizationController {
   })
   @PutMapping("employees/pages")
   public ResponseEntity<WrapperApiResponse> updateBusinessPageNamesOfEmployee(
-    @Parameter(description = "Danh sách các yêu cầu cập nhật chứa ID nhân viên và bộ ID trang được ủy quyền mới của họ.", required = true)
-    @RequestBody List<UpdateBusinessPageNamesRequest> request
-  ) {
+    @Parameter(description = "Danh sách các yêu cầu cập nhật chứa ID nhân viên và bộ ID trang được ủy quyền mới của họ.", required = true) @RequestBody List<UpdateBusinessPageNamesRequest> request) {
     log.info("Updating pages of employees");
     usersUseCase.updateBusinessPagesListOfEmployee(request);
 
-    return Utils.returnOkResponse("Update pages successfully", null);
+    return Utils.returnOkResponse("Cập nhật trang nghiệp vụ thành công", null);
   }
 
   @GetMapping("/employees/{id}/name")
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF')")
   public ResponseEntity<WrapperApiResponse> getEmployeeNameById(
-    @PathVariable @NotBlank @NotEmpty @NotNull String id
-  ) {
+    @PathVariable @NotBlank @NotEmpty @NotNull String id) {
     log.info("Fetching employee name by id: {}", id);
-    return Utils.returnOkResponse("Get name of current employee successfully", profileUseCase.getFullNameById(id));
+    return Utils.returnOkResponse("Lấy tên nhân viên thành công", profileUseCase.getFullNameById(id));
   }
 
   @Operation(summary = "Kiểm tra sự tồn tại của nhân viên", description = """
@@ -145,10 +141,16 @@ public class AuthorizationController {
   @GetMapping("/employees/{authorId}")
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF')")
   public ResponseEntity<WrapperApiResponse> checkAuthorExisting(
-    @Parameter(description = "ID của nhân viên cần kiểm tra", required = true)
-    @PathVariable String authorId
-  ) {
+    @Parameter(description = "ID của nhân viên cần kiểm tra", required = true) @PathVariable String authorId) {
     log.info("Verifying existence of employee: {}", authorId);
-    return Utils.returnOkResponse("Check employee successfully", usersUseCase.checkIfEmployeeExists(authorId));
+    return Utils.returnOkResponse("Kiểm tra nhân viên thành công", usersUseCase.checkIfEmployeeExists(authorId));
+  }
+
+  @Operation(hidden = true)
+  @GetMapping("/employees/jobs/{jobId}/assigned")
+  @PreAuthorize("hasAuthority('IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> isJobAssigned(@PathVariable String jobId) {
+    log.info("Checking if job {} is assigned to any employee", jobId);
+    return Utils.returnOkResponse("Kiểm tra gán việc thành công", usersUseCase.isJobAssigned(jobId));
   }
 }

@@ -52,7 +52,7 @@ public class DepartmentController {
       @RequestBody @Valid CreateDepartmentRequest request) {
     log.info("Create department request comes to endpoint: {}", request);
     var response = departmentService.createDepartment(request);
-    return Utils.returnOkResponse("Create department successfully", response);
+    return Utils.returnOkResponse("Tạo phòng ban thành công", response);
   }
 
   @PutMapping("/{departmentId}")
@@ -68,7 +68,7 @@ public class DepartmentController {
       @RequestBody @Valid UpdateDepartmentRequest request) {
     log.info("Update department request comes to endpoint: {}", departmentId);
     var response = departmentService.updateDepartment(departmentId, request);
-    return Utils.returnOkResponse("Update department successfully", response);
+    return Utils.returnOkResponse("Cập nhật phòng ban thành công", response);
   }
 
   @GetMapping
@@ -90,7 +90,7 @@ public class DepartmentController {
       @Parameter(description = "Thông tin phân trang") Pageable pageable,
       @Parameter(description = "Từ khóa tìm kiếm theo tên phòng ban", example = "Human") @RequestParam(required = false) String keyword) {
     var response = departmentService.getDepartments(pageable, keyword);
-    return Utils.returnOkResponse("Get departments successfully", response);
+    return Utils.returnOkResponse("Lấy danh sách phòng ban thành công", response);
   }
 
   @Operation(hidden = true)
@@ -115,6 +115,6 @@ public class DepartmentController {
       @Parameter(description = "ID của phòng ban cần xóa", example = "dept-123") @PathVariable String id) {
     log.info("Delete department {}", id);
     departmentService.deleteDepartment(id);
-    return Utils.returnOkResponse("Delete successfully", null);
+    return Utils.returnOkResponse("Xóa phòng ban thành công", null);
   }
 }

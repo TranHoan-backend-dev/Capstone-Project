@@ -30,4 +30,6 @@ public interface UserService {
   UserDTO getUserByEmail(String email);
 
   Page<EmployeeResponse> getAllEmployeesWithStatus(Pageable pageable, FilterUsersRequest request);
+
+  boolean isJobAssigned(String jobId);
 }

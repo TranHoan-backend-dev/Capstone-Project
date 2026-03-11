@@ -43,7 +43,7 @@ public class CustomerController {
     log.info("REST request to create customer: {}", request.email());
     var response = customerService.createCustomer(request);
     log.info("New customer created: {}", response);
-    return Utils.returnCreatedResponse("Customer created successfully");
+    return Utils.returnCreatedResponse("Tạo khách hàng thành công");
   }
 
   @Operation(summary = "", description = "", responses = {
@@ -56,7 +56,7 @@ public class CustomerController {
     @RequestBody @Valid CustomerRequest request) {
     log.info("REST request to update customer: {}", id);
     var response = customerService.updateCustomer(id, request);
-    return Utils.returnOkResponse("", response);
+    return Utils.returnOkResponse("Cập nhật khách hàng thành công", response);
   }
 
   @Operation(summary = "", description = "", responses = {
@@ -68,7 +68,7 @@ public class CustomerController {
     @PathVariable @Parameter(description = "") String id) {
     log.info("REST request to delete customer: {}", id);
     customerService.deleteCustomer(id);
-    return Utils.returnOkResponse("Customer deleted successfully", null);
+    return Utils.returnOkResponse("Xóa khách hàng thành công", null);
   }
 
   @Operation(summary = "", description = "", responses = {
@@ -80,7 +80,7 @@ public class CustomerController {
     @PathVariable @Parameter(description = "") String id) {
     log.info("REST request to get customer: {}", id);
     var response = customerService.getCustomerById(id);
-    return Utils.returnOkResponse("Customer retrieved successfully", response);
+    return Utils.returnOkResponse("Lấy thông tin khách hàng thành công", response);
   }
 
   @Operation(summary = "", description = "")
@@ -88,7 +88,7 @@ public class CustomerController {
   public ResponseEntity<WrapperApiResponse> getAllCustomers(@PageableDefault Pageable pageable) {
     log.info("REST request to get all customers with pagination: {}", pageable);
     Page<CustomerResponse> response = customerService.getAllCustomers(pageable);
-    return Utils.returnOkResponse("Customers retrieved successfully", response);
+    return Utils.returnOkResponse("Lấy danh sách khách hàng thành công", response);
   }
 
   @Operation(hidden = true)
@@ -97,6 +97,6 @@ public class CustomerController {
     log.info("REST request to check whether customers applied: {}", waterPriceId);
     var response = customerService.areCustomersAppliedThisPrice(waterPriceId);
     log.info("Customer applied: {}", response);
-    return Utils.returnOkResponse("Check successfully", response);
+    return Utils.returnOkResponse("Kiểm tra thành công", response);
   }
 }

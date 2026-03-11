@@ -62,9 +62,7 @@ public class BusinessPageController {
 
     var response = businessPageService.updateBusinessPage(pageId, request);
 
-    return Utils.returnOkResponse(
-      "Update business page successfully",
-      response);
+    return Utils.returnOkResponse("Cập nhật trang nghiệp vụ thành công", response);
   }
 
   @GetMapping
@@ -86,9 +84,7 @@ public class BusinessPageController {
     var response = status ? businessPageService.filterBusinessPagesList(request, pageable)
       : businessPageService.getBusinessPages(pageable);
 
-    return Utils.returnOkResponse(
-      "Get business pages successfully",
-      response);
+    return Utils.returnOkResponse("Lấy danh sách trang nghiệp vụ thành công", response);
   }
 
   @GetMapping("/e")
@@ -114,8 +110,6 @@ public class BusinessPageController {
       .map(String::trim).filter(c -> !c.isBlank())
       .toList();
 
-    return Utils.returnOkResponse(
-      "Get all pages by list of ids successfully",
-      businessPageService.getAllBusinessPageNamesByIds(content));
+    return Utils.returnOkResponse("Lấy danh sách trang theo ID thành công", businessPageService.getAllBusinessPageNamesByIds(content));
   }
 }
