@@ -16,4 +16,6 @@ public interface DepartmentService {
   boolean checkIfDepartmentExists(String departmentId);
 
   void deleteDepartment(String departmentId);
+
+  String getName(String id);
 }

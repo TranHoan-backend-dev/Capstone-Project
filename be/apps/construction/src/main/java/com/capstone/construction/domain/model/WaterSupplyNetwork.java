@@ -43,9 +43,9 @@ public class WaterSupplyNetwork {
   }
 
   public void setName(String name) {
-    Objects.requireNonNull(name, Message.PT_59);
+    Objects.requireNonNull(name, Message.PT_34);
     if (name.trim().isEmpty()) {
-      throw new IllegalArgumentException(Message.PT_59);
+      throw new IllegalArgumentException(Message.PT_34);
     }
     this.name = name;
   }

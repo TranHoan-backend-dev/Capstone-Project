@@ -38,7 +38,7 @@ public class NeighborhoodUnitServiceImpl implements NeighborhoodUnitService {
     }
 
     var commune = communeRepository.findById(request.communeId())
-      .orElseThrow(() -> new IllegalArgumentException(Message.PT_26));
+      .orElseThrow(() -> new IllegalArgumentException(Message.PT_13));
 
     var unit = NeighborhoodUnit.create(builder -> builder
       .name(request.name())
@@ -59,7 +59,7 @@ public class NeighborhoodUnitServiceImpl implements NeighborhoodUnitService {
     }
 
     var commune = communeRepository.findById(request.communeId())
-      .orElseThrow(() -> new IllegalArgumentException(Message.PT_26));
+      .orElseThrow(() -> new IllegalArgumentException(Message.PT_13));
 
     if (!unit.getName().equalsIgnoreCase(request.name())) {
       unit.setName(request.name());

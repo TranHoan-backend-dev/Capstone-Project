@@ -6,15 +6,15 @@ import jakarta.validation.constraints.NotBlank;
 
 public record CreateHamletRequest(
   @Schema(description = "Hamlet name", example = "Ấp 1")
-  @NotBlank(message = Message.PT_24)
+  @NotBlank(message = Message.PT_11)
   String name,
 
   @Schema(description = "Hamlet type", example = "Hamlet")
-  @NotBlank(message = Message.PT_25)
+  @NotBlank(message = Message.PT_12)
   String type,
 
   @Schema(description = "Commune ID this hamlet belongs to", example = "uuid-123")
-  @NotBlank(message = Message.PT_26)
+  @NotBlank(message = Message.PT_13)
   String communeId
 ) {
 }

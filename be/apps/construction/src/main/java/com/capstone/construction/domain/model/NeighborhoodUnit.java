@@ -48,15 +48,15 @@ public class NeighborhoodUnit {
   }
 
   public void setName(String name) {
-    Objects.requireNonNull(name, Message.PT_71);
+    Objects.requireNonNull(name, Message.PT_46);
     if (name.trim().isEmpty()) {
-      throw new IllegalArgumentException(Message.PT_71);
+      throw new IllegalArgumentException(Message.PT_46);
     }
     this.name = name;
   }
 
   public void setCommune(Commune commune) {
-    Objects.requireNonNull(commune, Message.PT_26);
+    Objects.requireNonNull(commune, Message.PT_13);
     this.commune = commune;
   }
 

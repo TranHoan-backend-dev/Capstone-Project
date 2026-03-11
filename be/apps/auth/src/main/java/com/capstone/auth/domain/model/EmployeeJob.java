@@ -31,7 +31,7 @@ public class EmployeeJob {
   }
 
   public void setUsers(Users users) {
-    Objects.requireNonNull(users, Message.PT_04);
+    Objects.requireNonNull(users, Message.PT_02);
     this.users = users;
   }
 

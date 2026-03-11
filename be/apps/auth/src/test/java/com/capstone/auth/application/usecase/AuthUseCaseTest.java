@@ -6,7 +6,7 @@ import com.capstone.auth.application.dto.request.users.NewUserRequest;
 import com.capstone.auth.application.dto.request.keycloakparam.TokenExchangeParam;
 import com.capstone.auth.application.dto.request.keycloakparam.UserCreationParam;
 import com.capstone.auth.application.dto.response.TokenExchangeResponse;
-import com.capstone.auth.application.event.producer.AccountCreationEvent;
+import com.capstone.auth.application.event.producer.message.AccountCreationEvent;
 import com.capstone.auth.application.event.producer.MessageProducer;
 import com.capstone.auth.domain.model.Roles;
 import com.capstone.auth.infrastructure.utils.Message;

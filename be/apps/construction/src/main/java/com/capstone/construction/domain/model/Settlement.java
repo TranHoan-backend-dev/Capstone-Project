@@ -84,7 +84,7 @@ public class Settlement implements Serializable {
   }
 
   public void setConnectionFee(BigDecimal connectionFee) {
-    Objects.requireNonNull(connectionFee, Message.PT_76);
+    Objects.requireNonNull(connectionFee, Message.PT_50);
     this.connectionFee = connectionFee;
   }
 

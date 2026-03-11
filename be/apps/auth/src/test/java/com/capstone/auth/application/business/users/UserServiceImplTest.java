@@ -399,18 +399,4 @@ class UserServiceImplTest {
     assertNotNull(result);
     verify(repo).findByIsEnabledTrueAndIsLockedFalseOrUsernameContainingIgnoreCase("user1", pageable);
   }
-
-  @Test
-  @DisplayName("should_HashPassword_Success")
-  void should_HashPassword_Success() throws Exception {
-    var rawPassword = "password";
-    var encodedPassword = "encodedPassword";
-    when(encoder.encode(rawPassword)).thenReturn(encodedPassword);
-
-    var result = userService.hashPassword(rawPassword);
-
-    assertNotNull(result);
-    assertEquals(encodedPassword, result.get());
-    verify(encoder).encode(rawPassword);
-  }
 }

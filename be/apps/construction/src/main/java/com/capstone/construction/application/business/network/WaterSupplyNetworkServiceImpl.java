@@ -88,6 +88,11 @@ public class WaterSupplyNetworkServiceImpl implements WaterSupplyNetworkService 
     return networkRepository.existsById(id);
   }
 
+  @Override
+  public String getName(String id) {
+    return networkRepository.findNameByBranchId(id);
+  }
+
   private @NonNull WaterSupplyNetworkResponse mapToResponse(@NonNull WaterSupplyNetwork network) {
     return new WaterSupplyNetworkResponse(
       network.getBranchId(),

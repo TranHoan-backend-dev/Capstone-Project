@@ -30,13 +30,13 @@ public class RoleServiceImpl implements RoleService {
       var roleName = repo.findNameById(id);
       return roleName.name();
     }
-    throw new NotExistingException(Message.SE_08);
+    throw new NotExistingException(Message.SE_07);
   }
 
   @Override
   public Roles getRoleById(String id) {
     log.info("Getting role by id: {}", id);
-    return repo.findById(id).orElseThrow(() -> new NotExistingException(Message.SE_08));
+    return repo.findById(id).orElseThrow(() -> new NotExistingException(Message.SE_07));
   }
 
   @Override

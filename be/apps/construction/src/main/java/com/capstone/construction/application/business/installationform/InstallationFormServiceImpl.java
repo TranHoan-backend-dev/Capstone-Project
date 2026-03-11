@@ -49,7 +49,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
     log.info("Creating new installation form with number: {}", request.formNumber());
 
     if (!checkAuthorExisting(request.createdBy())) {
-      throw new IllegalArgumentException(Message.PT_61);
+      throw new IllegalArgumentException(Message.PT_36);
     }
 
     if (!checkMeterExisting(request.overallWaterMeterId())) {
@@ -137,7 +137,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   @Transactional(rollbackFor = Exception.class)
   public void approveAndAssignInstallationForm(@NonNull ApproveRequest request) {
     log.info("Approving and assigning installation form with number: {}", request.formNumber());
-    var order = ifRepo.findById_FormCodeAndId_FormNumber(request.formCode(), request.formNumber()).orElseThrow(() -> new IllegalArgumentException(Message.PT_61));
+    var order = ifRepo.findById_FormCodeAndId_FormNumber(request.formCode(), request.formNumber()).orElseThrow(() -> new IllegalArgumentException(Message.PT_36));
 
     if (request.status()) {
       // trưởng phòng duyệt đơn
@@ -147,7 +147,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
 
       var status = empSrv.isEmployeeExisting(request.empId());
       if (!Boolean.parseBoolean(status.data().toString())) {
-        throw new IllegalArgumentException(Message.PT_60);
+        throw new IllegalArgumentException(Message.PT_35);
       }
       order.setHandoverBy(request.empId());
     } else {
@@ -161,7 +161,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   @Override
   public InstallationFormListResponse getByFormCodeAndFormNumber(String formCode, String formNumber) {
     log.info("Fetching installation form with form number: {}", formNumber);
-    var result = ifRepo.findById_FormCodeAndId_FormNumber(formCode, formNumber).orElseThrow(() -> new IllegalArgumentException(Message.PT_61));
+    var result = ifRepo.findById_FormCodeAndId_FormNumber(formCode, formNumber).orElseThrow(() -> new IllegalArgumentException(Message.PT_36));
     return mapToResponse(result);
   }
 
@@ -205,7 +205,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
     log.info("Fetching water supply network with ID: {}", networkId);
     return wsnRepo.findById(networkId).orElseThrow(() -> {
       log.error("Water supply network not found: {}", networkId);
-      return new IllegalArgumentException(Message.PT_59);
+      return new IllegalArgumentException(Message.PT_34);
     });
   }
 

@@ -48,15 +48,15 @@ public class Commune {
   }
 
   public void setName(String name) {
-    Objects.requireNonNull(name, Message.PT_21);
+    Objects.requireNonNull(name, Message.PT_09);
     if (name.trim().isEmpty()) {
-      throw new IllegalArgumentException(Message.PT_21);
+      throw new IllegalArgumentException(Message.PT_09);
     }
     this.name = name;
   }
 
   public void setType(CommuneType type) {
-    Objects.requireNonNull(type, Message.PT_22);
+    Objects.requireNonNull(type, Message.PT_10);
     this.type = type;
   }
 

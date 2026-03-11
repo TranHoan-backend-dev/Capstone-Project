@@ -20,6 +20,6 @@ public record ResetPasswordRequest(
   @NotBlank(message = "OTP cannot be empty") String otp,
 
   @Schema(description = "New password to set (must meet complexity requirements)", example = "NewPass789!", requiredMode = Schema.RequiredMode.REQUIRED)
-  @Pattern(regexp = SharedConstant.PASSWORD_PATTERN, message = Message.PT_02)
+  @Pattern(regexp = SharedConstant.PASSWORD_PATTERN, message = Message.PT_01)
   String newPassword) {
 }

@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Pattern;
 
 public record CreateRequest(
   @Schema(description = "Network name", example = "Trạm bơm số 1")
-  @NotBlank(message = Message.PT_59)
+  @NotBlank(message = Message.PT_34)
   @Pattern(regexp = SharedConstant.VIETNAMESE_CHARACTER_PATTERN)
   String name) {
 }

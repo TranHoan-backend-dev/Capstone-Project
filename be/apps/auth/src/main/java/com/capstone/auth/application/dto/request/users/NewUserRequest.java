@@ -17,7 +17,7 @@ public record NewUserRequest(
 
   @NotBlank
   @NotEmpty
-  @Pattern(regexp = SharedConstant.PASSWORD_PATTERN, message = Message.PT_02)
+  @Pattern(regexp = SharedConstant.PASSWORD_PATTERN, message = Message.PT_01)
   String password,
 
   @NotBlank

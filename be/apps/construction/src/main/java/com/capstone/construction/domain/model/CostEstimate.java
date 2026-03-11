@@ -3,6 +3,7 @@ package com.capstone.construction.domain.model;
 import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
 import jakarta.persistence.*;
+import com.capstone.common.utils.SharedMessage;
 import com.capstone.construction.infrastructure.utils.Message;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -118,97 +119,97 @@ public class CostEstimate implements Serializable {
   }
 
   public void setInstallationFormId(InstallationFormId value) {
-    Objects.requireNonNull(value, Message.PT_66);
+    Objects.requireNonNull(value, Message.PT_41);
     this.installationFormId = value;
   }
 
   public void setCustomerName(String customerName) {
-    requireNonNullAndNotEmpty(customerName, Message.PT_27);
+    requireNonNullAndNotEmpty(customerName, Message.PT_14);
     this.customerName = customerName;
   }
 
   public void setAddress(String address) {
-    requireNonNullAndNotEmpty(address, Message.PT_12);
+    requireNonNullAndNotEmpty(address, SharedMessage.MES_06);
     this.address = address;
   }
 
   public void setNote(String note) {
-    requireNonNullAndNotEmpty(note, Message.PT_77);
+    requireNonNullAndNotEmpty(note, SharedMessage.MES_08);
     this.note = note;
   }
 
   public void setContractFee(Integer contractFee) {
-    Objects.requireNonNull(contractFee, Message.PT_28);
+    Objects.requireNonNull(contractFee, Message.PT_15);
     this.contractFee = contractFee;
   }
 
   public void setSurveyFee(Integer surveyFee) {
-    Objects.requireNonNull(surveyFee, Message.PT_29);
+    Objects.requireNonNull(surveyFee, Message.PT_16);
     this.surveyFee = surveyFee;
   }
 
   public void setSurveyEffort(Integer surveyEffort) {
-    Objects.requireNonNull(surveyEffort, Message.PT_30);
+    Objects.requireNonNull(surveyEffort, Message.PT_17);
     this.surveyEffort = surveyEffort;
   }
 
   public void setInstallationFee(Integer installationFee) {
-    Objects.requireNonNull(installationFee, Message.PT_31);
+    Objects.requireNonNull(installationFee, SharedMessage.MES_15);
     this.installationFee = installationFee;
   }
 
   public void setLaborCoefficient(Integer laborCoefficient) {
-    Objects.requireNonNull(laborCoefficient, Message.PT_32);
+    Objects.requireNonNull(laborCoefficient, Message.PT_18);
     this.laborCoefficient = laborCoefficient;
   }
 
   public void setGeneralCostCoefficient(Integer generalCostCoefficient) {
-    Objects.requireNonNull(generalCostCoefficient, Message.PT_33);
+    Objects.requireNonNull(generalCostCoefficient, Message.PT_19);
     this.generalCostCoefficient = generalCostCoefficient;
   }
 
   public void setPrecalculatedTaxCoefficient(Integer precalculatedTaxCoefficient) {
-    Objects.requireNonNull(precalculatedTaxCoefficient, Message.PT_34);
+    Objects.requireNonNull(precalculatedTaxCoefficient, Message.PT_20);
     this.precalculatedTaxCoefficient = precalculatedTaxCoefficient;
   }
 
   public void setConstructionMachineryCoefficient(Integer constructionMachineryCoefficient) {
-    Objects.requireNonNull(constructionMachineryCoefficient, Message.PT_35);
+    Objects.requireNonNull(constructionMachineryCoefficient, Message.PT_21);
     this.constructionMachineryCoefficient = constructionMachineryCoefficient;
   }
 
   public void setVatCoefficient(Integer vatCoefficient) {
-    Objects.requireNonNull(vatCoefficient, Message.PT_36);
+    Objects.requireNonNull(vatCoefficient, Message.PT_22);
     this.vatCoefficient = vatCoefficient;
   }
 
   public void setDesignCoefficient(Integer designCoefficient) {
-    Objects.requireNonNull(designCoefficient, Message.PT_37);
+    Objects.requireNonNull(designCoefficient, Message.PT_23);
     this.designCoefficient = designCoefficient;
   }
 
   public void setDesignFee(Integer designFee) {
-    Objects.requireNonNull(designFee, Message.PT_38);
+    Objects.requireNonNull(designFee, Message.PT_24);
     this.designFee = designFee;
   }
 
   public void setDesignImageUrl(String designImageUrl) {
-    requireNonNullAndNotEmpty(designImageUrl, Message.PT_41);
+    requireNonNullAndNotEmpty(designImageUrl, Message.PT_25);
     this.designImageUrl = designImageUrl;
   }
 
   public void setCreateBy(String createBy) {
-    requireNonNullAndNotEmpty(createBy, Message.PT_42);
+    requireNonNullAndNotEmpty(createBy, Message.PT_26);
     this.createBy = createBy;
   }
 
   public void setWaterMeterSerial(String waterMeterId) {
-    requireNonNullAndNotEmpty(waterMeterId, Message.PT_43);
+    requireNonNullAndNotEmpty(waterMeterId, Message.PT_27);
     this.waterMeterSerial = waterMeterId;
   }
 
   public void setOverallWaterMeterId(String overallWaterMeterId) {
-    requireNonNullAndNotEmpty(overallWaterMeterId, Message.PT_62);
+    requireNonNullAndNotEmpty(overallWaterMeterId, Message.PT_37);
     this.overallWaterMeterId = overallWaterMeterId;
   }
 

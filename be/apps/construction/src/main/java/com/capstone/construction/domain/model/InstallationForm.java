@@ -132,12 +132,12 @@ public class InstallationForm {
   }
 
   public void setFormNumber(String formNumber) {
-    requireNonNullAndNotEmpty(formNumber, Message.PT_44);
+    requireNonNullAndNotEmpty(formNumber, Message.PT_28);
     this.id.setFormNumber(formNumber);
   }
 
   public void setCustomerName(String customerName) {
-    requireNonNullAndNotEmpty(customerName, Message.PT_27);
+    requireNonNullAndNotEmpty(customerName, Message.PT_14);
     this.customerName = customerName;
   }
 
@@ -147,12 +147,12 @@ public class InstallationForm {
   }
 
   public void setStatus(FormProcessingStatus status) {
-    Objects.requireNonNull(status, Message.PT_27);
+    Objects.requireNonNull(status, Message.PT_14);
     this.status = status;
   }
 
   public void setRepresentative(List<Representative> representative) {
-    Objects.requireNonNull(representative, Message.PT_45);
+    Objects.requireNonNull(representative, Message.PT_29);
     this.representative = representative;
   }
 
@@ -163,7 +163,7 @@ public class InstallationForm {
 
   public void setCitizenIdentificationProvideDate(String citizenIdentificationProvideDate) {
     requireNonNullAndNotEmpty(citizenIdentificationProvideDate,
-      Message.PT_49);
+      Message.PT_30);
     this.citizenIdentificationProvideDate = citizenIdentificationProvideDate;
   }
 
@@ -182,7 +182,7 @@ public class InstallationForm {
   }
 
   public void setTaxCode(String taxCode) {
-    requireNonNullAndNotEmpty(taxCode, Message.PT_51);
+    requireNonNullAndNotEmpty(taxCode, Message.PT_31);
     this.taxCode = taxCode;
   }
 
@@ -197,17 +197,17 @@ public class InstallationForm {
   }
 
   public void setUsageTarget(UsageTarget usageTarget) {
-    Objects.requireNonNull(usageTarget, Message.PT_54);
+    Objects.requireNonNull(usageTarget, Message.PT_32);
     this.usageTarget = usageTarget;
   }
 
   public void setReceivedFormAt(LocalDate receivedFormAt) {
-    Objects.requireNonNull(receivedFormAt, Message.PT_55);
+    Objects.requireNonNull(receivedFormAt, Message.PT_33);
     this.receivedFormAt = receivedFormAt;
   }
 
   public void setScheduleSurveyAt(LocalDate scheduleSurveyAt) {
-    Objects.requireNonNull(scheduleSurveyAt, Message.PT_78);
+    Objects.requireNonNull(scheduleSurveyAt, Message.PT_51);
     this.scheduleSurveyAt = scheduleSurveyAt;
   }
 
@@ -222,22 +222,22 @@ public class InstallationForm {
   }
 
   public void setNetwork(WaterSupplyNetwork network) {
-    Objects.requireNonNull(network, Message.PT_59);
+    Objects.requireNonNull(network, Message.PT_34);
     this.network = network;
   }
 
   public void setCreatedBy(String value) {
-    requireNonNullAndNotEmpty(value, Message.PT_61);
+    requireNonNullAndNotEmpty(value, Message.PT_36);
     this.createdBy = value;
   }
 
   public void setHandoverBy(String value) {
-    requireNonNullAndNotEmpty(value, Message.PT_79);
+    requireNonNullAndNotEmpty(value, Message.PT_52);
     this.handoverBy = value;
   }
 
   public void setOverallWaterMeterId(String overallWaterMeterId) {
-    requireNonNullAndNotEmpty(overallWaterMeterId, Message.PT_62);
+    requireNonNullAndNotEmpty(overallWaterMeterId, Message.PT_37);
     this.overallWaterMeterId = overallWaterMeterId;
   }
 

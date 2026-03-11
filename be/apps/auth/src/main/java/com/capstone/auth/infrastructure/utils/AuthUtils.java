@@ -27,7 +27,7 @@ public class AuthUtils {
         throw new IllegalArgumentException("Username does not match");
       }
     } else {
-      throw new IllegalArgumentException(Message.PT_05);
+      throw new IllegalArgumentException(SharedMessage.MES_18);
     }
   }
 }

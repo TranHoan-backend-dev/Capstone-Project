@@ -42,7 +42,7 @@ public class Profile {
   LocalDate birthday;
 
   public void setUsers(Users users) {
-    Objects.requireNonNull(users, Message.PT_09);
+    Objects.requireNonNull(users, Message.PT_02);
     this.users = users;
   }
 
@@ -52,15 +52,15 @@ public class Profile {
   }
 
   public void setFullname(String fullname) {
-    requireNonNullAndNotEmpty(fullname, Message.PT_10);
+    requireNonNullAndNotEmpty(fullname, SharedMessage.MES_19);
     if (!fullname.chars().allMatch(c -> Character.isLetter(c) || Character.isWhitespace(c))) {
-      throw new IllegalArgumentException(Message.PT_13);
+      throw new IllegalArgumentException(Message.PT_07);
     }
     this.fullname = fullname;
   }
 
   public void setAvatarUrl(String avatarUrl) {
-    requireNonNullAndNotEmpty(avatarUrl, Message.PT_11);
+    requireNonNullAndNotEmpty(avatarUrl, Message.PT_06);
     this.avatarUrl = avatarUrl;
   }
 
@@ -88,12 +88,12 @@ public class Profile {
   }
 
   public void setGender(Boolean gender) {
-    Objects.requireNonNull(gender, Message.PT_16);
+    Objects.requireNonNull(gender, Message.PT_08);
     this.gender = gender;
   }
 
   public void setBirthday(LocalDate birthday) {
-    Objects.requireNonNull(birthday, Message.PT_17);
+    Objects.requireNonNull(birthday, Message.PT_09);
     this.birthday = birthday;
   }
 

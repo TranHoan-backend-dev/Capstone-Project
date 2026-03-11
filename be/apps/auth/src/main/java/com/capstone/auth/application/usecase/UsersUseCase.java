@@ -4,11 +4,16 @@ import com.capstone.auth.application.business.pages.BusinessPageService;
 import com.capstone.auth.application.business.users.UserService;
 import com.capstone.auth.application.dto.request.users.FilterUsersRequest;
 import com.capstone.auth.application.dto.request.UpdateBusinessPageNamesRequest;
+import com.capstone.auth.application.dto.request.users.UpdateRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
+import com.capstone.auth.application.event.producer.MessageProducer;
+import com.capstone.auth.application.event.producer.message.DeleteEvent;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -21,6 +26,15 @@ import java.util.List;
 public class UsersUseCase {
   UserService userService;
   BusinessPageService bpService;
+  MessageProducer template;
+
+  @NonFinal
+  @Value("${sending_mail.delete_account.subject}")
+  String SUBJECT;
+
+  @NonFinal
+  @Value("${sending_mail.delete_account.template}")
+  String TEMPLATE;
 
   public Page<EmployeeResponse> getPaginatedListOfEmployees(Pageable pageable, FilterUsersRequest request) {
     return userService.getAllEmployeesWithStatus(pageable, request);
@@ -40,5 +54,20 @@ public class UsersUseCase {
 
   public boolean isJobAssigned(String jobId) {
     return userService.isJobAssigned(jobId);
+  }
+
+  public EmployeeResponse updateEmployee(String id, UpdateRequest request) {
+    var response = userService.updateEmployee(id, request);
+    template.sendMessage(new DeleteEvent(
+      response.fullName(),
+      response.departmentName(),
+      response.email(),
+      SUBJECT, TEMPLATE
+    ));
+    return response;
+  }
+
+  public void deleteEmployee(String id) {
+    userService.deleteEmployee(id);
   }
 }

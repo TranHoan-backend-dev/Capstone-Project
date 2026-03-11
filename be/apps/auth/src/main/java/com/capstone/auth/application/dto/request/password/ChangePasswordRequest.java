@@ -14,7 +14,7 @@ public record ChangePasswordRequest(
   @NotBlank(message = "Old password cannot be empty") String oldPassword,
 
   @Schema(description = "New password to set (must meet complexity requirements)", example = "NewPass456!", requiredMode = Schema.RequiredMode.REQUIRED)
-  @NotBlank(message = "New password cannot be empty") @Pattern(regexp = SharedConstant.PASSWORD_PATTERN, message = Message.PT_02) String newPassword,
+  @NotBlank(message = "New password cannot be empty") @Pattern(regexp = SharedConstant.PASSWORD_PATTERN, message = Message.PT_01) String newPassword,
 
   @Schema(description = "Confirmation of the new password (must match newPassword)", example = "NewPass456!", requiredMode = Schema.RequiredMode.REQUIRED)
   @NotBlank(message = "Confirm password cannot be empty") String confirmPassword) {

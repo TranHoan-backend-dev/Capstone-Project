@@ -37,11 +37,11 @@ public class LateralServiceImpl implements LateralService {
   @Transactional(rollbackFor = Exception.class)
   public LateralResponse createLateral(@NonNull LateralRequest request) {
     log.info("Creating new lateral with name: {}", request.name());
-    Objects.requireNonNull(request.name(), Message.PT_70);
+    Objects.requireNonNull(request.name(), Message.PT_45);
     if (lateralRepository.existsByNameIgnoreCase(request.name())) {
       throw new ExistingItemException("Lateral with name " + request.name() + " already exists");
     }
-    Objects.requireNonNull(request.networkId(), Message.PT_59);
+    Objects.requireNonNull(request.networkId(), Message.PT_34);
 
     var network = networkRepository.findById(request.networkId())
       .orElseThrow(() -> new IllegalArgumentException(Message.SE_03));
@@ -67,7 +67,7 @@ public class LateralServiceImpl implements LateralService {
 
     if (request.networkId() != null && !request.networkId().isBlank()) {
       var network = networkRepository.findById(request.networkId())
-        .orElseThrow(() -> new IllegalArgumentException(Message.PT_59));
+        .orElseThrow(() -> new IllegalArgumentException(Message.PT_34));
       lateral.setNetwork(network);
     }
     if (request.name() != null && !request.name().isBlank()) {

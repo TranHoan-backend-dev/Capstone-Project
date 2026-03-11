@@ -44,12 +44,13 @@ public class DepartmentController {
   @PostMapping
   @Operation(summary = "Tạo phòng ban", description = "Tạo một phòng ban mới và trả về dữ liệu của nó.")
   @ApiResponses({
-      @ApiResponse(responseCode = "201", description = "Tạo phòng ban thành công"),
-      @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ", content = @Content),
-      @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
+    @ApiResponse(responseCode = "201", description = "Tạo phòng ban thành công"),
+    @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ", content = @Content),
+    @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
   })
   public ResponseEntity<WrapperApiResponse> createDepartment(
-      @RequestBody @Valid CreateDepartmentRequest request) {
+    @RequestBody @Valid CreateDepartmentRequest request
+  ) {
     log.info("Create department request comes to endpoint: {}", request);
     var response = departmentService.createDepartment(request);
     return Utils.returnOkResponse("Tạo phòng ban thành công", response);
@@ -58,14 +59,15 @@ public class DepartmentController {
   @PutMapping("/{departmentId}")
   @Operation(summary = "Cập nhật phòng ban", description = "Cập nhật một phòng ban hiện có bằng ID của nó.")
   @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "Cập nhật phòng ban thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-      @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ", content = @Content),
-      @ApiResponse(responseCode = "404", description = "Không tìm thấy phòng ban", content = @Content),
-      @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
+    @ApiResponse(responseCode = "200", description = "Cập nhật phòng ban thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ", content = @Content),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy phòng ban", content = @Content),
+    @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
   })
   public ResponseEntity<WrapperApiResponse> updateDepartment(
-      @Parameter(in = ParameterIn.PATH, description = "ID phòng ban", required = true, schema = @Schema(type = "string")) @PathVariable @NotBlank String departmentId,
-      @RequestBody @Valid UpdateDepartmentRequest request) {
+    @Parameter(in = ParameterIn.PATH, description = "ID phòng ban", required = true, schema = @Schema(type = "string")) @PathVariable @NotBlank String departmentId,
+    @RequestBody @Valid UpdateDepartmentRequest request
+  ) {
     log.info("Update department request comes to endpoint: {}", departmentId);
     var response = departmentService.updateDepartment(departmentId, request);
     return Utils.returnOkResponse("Cập nhật phòng ban thành công", response);
@@ -73,24 +75,44 @@ public class DepartmentController {
 
   @GetMapping
   @Operation(summary = "Liệt kê phòng ban", description = """
-      Lấy danh sách phòng ban có phân trang và hỗ trợ tìm kiếm theo từ khóa.
+    Lấy danh sách phòng ban có phân trang và hỗ trợ tìm kiếm theo từ khóa.
 
-      - Không thay đổi dữ liệu (read-only)
-      - Idempotent
-      - Hỗ trợ phân trang qua page, size, sort
-      """)
+    - Không thay đổi dữ liệu (read-only)
+    - Idempotent
+    - Hỗ trợ phân trang qua page, size, sort
+    """)
   @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "Lấy danh sách phòng ban thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DepartmentResponse.class))),
-      @ApiResponse(responseCode = "400", description = "Tham số phân trang không hợp lệ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-      @ApiResponse(responseCode = "401", description = "Chưa xác thực", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-      @ApiResponse(responseCode = "403", description = "Không đủ quyền truy cập", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-      @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
+    @ApiResponse(responseCode = "200", description = "Lấy danh sách phòng ban thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DepartmentResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Tham số phân trang không hợp lệ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "401", description = "Chưa xác thực", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "403", description = "Không đủ quyền truy cập", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   public ResponseEntity<WrapperApiResponse> getDepartments(
-      @Parameter(description = "Thông tin phân trang") Pageable pageable,
-      @Parameter(description = "Từ khóa tìm kiếm theo tên phòng ban", example = "Human") @RequestParam(required = false) String keyword) {
+    @Parameter(description = "Thông tin phân trang") Pageable pageable,
+    @Parameter(description = "Từ khóa tìm kiếm theo tên phòng ban", example = "Human")
+    @RequestParam(required = false) String keyword
+  ) {
     var response = departmentService.getDepartments(pageable, keyword);
     return Utils.returnOkResponse("Lấy danh sách phòng ban thành công", response);
+  }
+
+  @DeleteMapping("/{id}")
+  @Operation(summary = "Xóa phòng ban", description = "Xóa một phòng ban hiện có dựa trên ID.")
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "Xóa phòng ban thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "401", description = "Chưa xác thực", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "403", description = "Không đủ quyền truy cập", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy phòng ban", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
+  })
+  public ResponseEntity<WrapperApiResponse> deleteDepartment(
+    @Parameter(description = "ID của phòng ban cần xóa", example = "dept-123")
+    @PathVariable String id
+  ) {
+    log.info("Delete department {}", id);
+    departmentService.deleteDepartment(id);
+    return Utils.returnOkResponse("Xóa phòng ban thành công", null);
   }
 
   @Operation(hidden = true)
@@ -102,19 +124,12 @@ public class DepartmentController {
     return response;
   }
 
-  @DeleteMapping("/{id}")
-  @Operation(summary = "Xóa phòng ban", description = "Xóa một phòng ban hiện có dựa trên ID.")
-  @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "Xóa phòng ban thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-      @ApiResponse(responseCode = "401", description = "Chưa xác thực", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-      @ApiResponse(responseCode = "403", description = "Không đủ quyền truy cập", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-      @ApiResponse(responseCode = "404", description = "Không tìm thấy phòng ban", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
-      @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
-  })
-  public ResponseEntity<WrapperApiResponse> deleteDepartment(
-      @Parameter(description = "ID của phòng ban cần xóa", example = "dept-123") @PathVariable String id) {
-    log.info("Delete department {}", id);
-    departmentService.deleteDepartment(id);
-    return Utils.returnOkResponse("Xóa phòng ban thành công", null);
+  @Operation(hidden = true)
+  @GetMapping("/name/{id}")
+  public String getDepartmentName(@PathVariable String id) {
+    log.info("Get department name {}", id);
+    var name = departmentService.getName(id);
+    log.info("Department name {}", name);
+    return name;
   }
 }

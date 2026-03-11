@@ -44,9 +44,9 @@ public class Road {
   }
 
   public void setName(String name) {
-    Objects.requireNonNull(name, Message.PT_72);
+    Objects.requireNonNull(name, Message.PT_47);
     if (name.trim().isEmpty()) {
-      throw new IllegalArgumentException(Message.PT_72);
+      throw new IllegalArgumentException(Message.PT_47);
     }
     this.name = name;
   }

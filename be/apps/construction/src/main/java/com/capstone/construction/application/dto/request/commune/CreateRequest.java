@@ -8,11 +8,11 @@ import jakarta.validation.constraints.NotNull;
 
 public record CreateRequest(
   @Schema(description = "Commune name", example = "Phú Hòa")
-  @NotBlank(message = Message.PT_21)
+  @NotBlank(message = Message.PT_09)
   String name,
 
   @Schema(description = "Commune type (e.g. Ward, Commune, Town)", example = "Commune")
-  @NotNull(message = Message.PT_22)
+  @NotNull(message = Message.PT_10)
   CommuneType type
 ) {
 }

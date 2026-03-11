@@ -8,13 +8,13 @@ import jakarta.validation.constraints.NotNull;
 
 public record ApproveRequest(
   @Schema(description = "Mã nhân viên phê duyệt", example = "EMP-001")
-  @NotBlank(message = Message.PT_61)
-  @NotEmpty(message = Message.PT_61)
+  @NotBlank(message = Message.PT_36)
+  @NotEmpty(message = Message.PT_36)
   String empId,
 
   @Schema(description = "Số hồ sơ", example = "HS2024-001")
-  @NotBlank(message = Message.PT_44)
-  @NotEmpty(message = Message.PT_44) String formNumber,
+  @NotBlank(message = Message.PT_28)
+  @NotEmpty(message = Message.PT_28) String formNumber,
 
   @Schema(description = "Mã biểu mẫu (Biểu số)", example = "BM-01")
   @NotBlank(message = Message.PT_01)

@@ -37,12 +37,12 @@ public class RoadmapServiceImpl implements RoadmapService {
   @Transactional(rollbackFor = Exception.class)
   public RoadmapResponse createRoadmap(@NonNull RoadmapRequest request) {
     log.info("Creating new roadmap with name: {}", request.name());
-    Objects.requireNonNull(request.name(), Message.PT_73);
+    Objects.requireNonNull(request.name(), Message.PT_48);
     if (roadmapRepository.existsByNameEqualsIgnoreCase(request.name())) {
       throw new ExistingItemException("Roadmap with name " + request.name() + " already exists");
     }
-    Objects.requireNonNull(request.lateralId(), Message.PT_74);
-    Objects.requireNonNull(request.networkId(), Message.PT_59);
+    Objects.requireNonNull(request.lateralId(), Message.PT_49);
+    Objects.requireNonNull(request.networkId(), Message.PT_34);
 
     var lateral = lateralRepository.findById(request.lateralId())
       .orElseThrow(() -> new IllegalArgumentException(Message.SE_02));

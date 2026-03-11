@@ -35,7 +35,7 @@ public class RoadServiceImpl implements RoadService {
       throw new ExistingItemException("Road with name " + request.name() + " already exists");
     }
     if (request.name() != null && request.name().isBlank()) {
-      throw new IllegalArgumentException(Message.PT_72);
+      throw new IllegalArgumentException(Message.PT_47);
     }
     var road = Road.create(builder -> builder
       .name(request.name()));

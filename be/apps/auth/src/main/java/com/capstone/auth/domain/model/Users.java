@@ -82,27 +82,27 @@ public class Users {
   }
 
   public void setUsername(String username) {
-    requireNonNullAndNotEmpty(username, Message.PT_05);
+    requireNonNullAndNotEmpty(username, SharedMessage.MES_18);
     this.username = username;
   }
 
   public void setElectronicSigningUrl(String value) {
-    requireNonNullAndNotEmpty(value, Message.PT_24);
+    requireNonNullAndNotEmpty(value, Message.PT_14);
     this.electronicSigningUrl = value;
   }
 
   public void setRole(Roles role) {
-    Objects.requireNonNull(role, Message.PT_06);
+    Objects.requireNonNull(role, Message.PT_03);
     this.role = role;
   }
 
   public void setDepartmentId(String departmentId) {
-    requireNonNullAndNotEmpty(departmentId, Message.PT_19);
+    requireNonNullAndNotEmpty(departmentId, Message.PT_11);
     this.departmentId = departmentId;
   }
 
   public void setWaterSupplyNetworkId(String value) {
-    requireNonNullAndNotEmpty(value, Message.PT_18);
+    requireNonNullAndNotEmpty(value, Message.PT_10);
     this.waterSupplyNetworkId = value;
   }
 

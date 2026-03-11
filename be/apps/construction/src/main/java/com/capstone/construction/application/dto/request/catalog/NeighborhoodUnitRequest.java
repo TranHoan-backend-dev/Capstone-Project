@@ -6,8 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 
 public record NeighborhoodUnitRequest(
   @Schema(description = "Neighborhood unit name", example = "Tổ 1")
-  @NotBlank(message = Message.PT_71) String name,
+  @NotBlank(message = Message.PT_46) String name,
 
   @Schema(description = "Commune ID this unit belongs to", example = "uuid-123")
-  @NotBlank(message = Message.PT_26) String communeId) {
+  @NotBlank(message = Message.PT_13) String communeId) {
 }

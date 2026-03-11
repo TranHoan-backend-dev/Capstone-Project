@@ -34,12 +34,12 @@ public class Roles implements Serializable {
   Set<Users> users;
 
   public void setName(RoleName name) {
-    Objects.requireNonNull(name, Message.PT_07); // Nullpointer Exception
+    Objects.requireNonNull(name, Message.PT_04); // Nullpointer Exception
     this.name = name;
   }
 
   public void setUsers(Set<Users> users) {
-    Objects.requireNonNull(users, Message.PT_08);
+    Objects.requireNonNull(users, Message.PT_05);
     this.users = users;
   }
 
