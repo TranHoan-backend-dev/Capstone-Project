@@ -9,7 +9,7 @@ import com.capstone.construction.domain.model.Hamlet;
 import com.capstone.construction.infrastructure.persistence.HamletRepository;
 import com.capstone.construction.infrastructure.persistence.CommuneRepository;
 import com.capstone.construction.application.exception.ExistingItemException;
-import com.capstone.construction.infrastructure.utils.Constant;
+import com.capstone.construction.infrastructure.utils.Message;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -39,7 +39,7 @@ public class HamletServiceImpl implements HamletService {
     }
 
     var commune = communeRepository.findById(communeId)
-      .orElseThrow(() -> new IllegalArgumentException(Constant.SE_04));
+      .orElseThrow(() -> new IllegalArgumentException(Message.SE_04));
 
     var hamlet = Hamlet.create(builder -> builder
       .name(name)
@@ -63,7 +63,7 @@ public class HamletServiceImpl implements HamletService {
 
     if (!request.communeId().isBlank()) {
       var commune = communeRepository.findById(request.communeId())
-        .orElseThrow(() -> new IllegalArgumentException(Constant.SE_04));
+        .orElseThrow(() -> new IllegalArgumentException(Message.SE_04));
       hamlet.setCommune(commune);
     }
 

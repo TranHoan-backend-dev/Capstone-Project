@@ -6,7 +6,7 @@ import com.capstone.construction.application.dto.request.branch.UpdateRequest;
 import com.capstone.construction.application.dto.response.catalog.WaterSupplyNetworkResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.domain.model.WaterSupplyNetwork;
-import com.capstone.construction.infrastructure.utils.Constant;
+import com.capstone.construction.infrastructure.utils.Message;
 import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +48,7 @@ public class WaterSupplyNetworkServiceImpl implements WaterSupplyNetworkService 
     var name = request.name();
     if (name != null && !name.isBlank()) {
       if (networkRepository.existsByNameIgnoreCase(name) && !network.getName().equalsIgnoreCase(name)) {
-        throw new IllegalArgumentException(Constant.SE_05);
+        throw new IllegalArgumentException(Message.SE_05);
       }
       network.setName(name);
     }

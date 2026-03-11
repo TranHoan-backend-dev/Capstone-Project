@@ -1,7 +1,7 @@
 package com.capstone.auth.application.business.users;
 
 import com.capstone.auth.application.business.dto.UserDTO;
-import com.capstone.auth.application.dto.request.FilterUsersRequest;
+import com.capstone.auth.application.dto.request.users.FilterUsersRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
 import com.capstone.common.exception.ExistingException;
 import com.capstone.auth.application.exception.NotExistingException;
@@ -14,7 +14,7 @@ import com.capstone.auth.infrastructure.persistence.BusinessPagesOfEmployeeRepos
 import com.capstone.auth.infrastructure.persistence.EmployeeJobRepository;
 import com.capstone.auth.infrastructure.persistence.ProfileRepository;
 import com.capstone.auth.infrastructure.persistence.UserRepository;
-import com.capstone.auth.infrastructure.utils.Constant;
+import com.capstone.auth.infrastructure.utils.Message;
 import com.capstone.auth.infrastructure.service.NetworkService;
 import com.capstone.auth.infrastructure.service.OrganizationService;
 import com.capstone.common.annotation.AppLog;
@@ -203,7 +203,7 @@ public class UserServiceImpl implements UserService {
   private @NonNull Users getUsersByEmail(String email) {
     var obj = repo.findByEmail(email);
     if (obj.isEmpty()) {
-      throw new NotExistingException(Constant.SE_02);
+      throw new NotExistingException(Message.SE_02);
     }
     log.info("Find user by email: {}", obj);
     return obj.get();
@@ -244,16 +244,16 @@ public class UserServiceImpl implements UserService {
   private void validateNewEmployeeInformation(String email, String phone, String networkId, String departmentId, List<String> jobIds) {
     var obj = repo.findByEmail(email);
     if (obj.isPresent()) {
-      throw new ExistingException(Constant.SE_01);
+      throw new ExistingException(Message.SE_01);
     }
     if (profileRepo.existsByPhoneNumber(phone)) {
-      throw new ExistingException(Constant.SE_09);
+      throw new ExistingException(Message.SE_09);
     }
     if (!netWorkService.checkExistence(networkId)) {
-      throw new NotExistingException(Constant.SE_10);
+      throw new NotExistingException(Message.SE_10);
     }
     if (!organizationService.checkDepartmentExistence(departmentId)) {
-      throw new NotExistingException(Constant.SE_11);
+      throw new NotExistingException(Message.SE_11);
     }
     var invalidJobs = jobIds.stream()
       .filter(jid -> !organizationService.checkJobExistence(jid))

@@ -1,7 +1,7 @@
 package com.capstone.auth.application.business.users;
 
 import com.capstone.auth.application.business.dto.UserDTO;
-import com.capstone.auth.application.dto.request.FilterUsersRequest;
+import com.capstone.auth.application.dto.request.users.FilterUsersRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
 import com.capstone.auth.domain.model.Roles;
 import org.springframework.data.domain.Page;

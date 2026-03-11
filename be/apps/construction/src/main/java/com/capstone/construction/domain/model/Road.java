@@ -1,7 +1,7 @@
 package com.capstone.construction.domain.model;
 
 import jakarta.persistence.*;
-import com.capstone.construction.infrastructure.utils.Constant;
+import com.capstone.construction.infrastructure.utils.Message;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.jspecify.annotations.NonNull;
@@ -44,9 +44,9 @@ public class Road {
   }
 
   public void setName(String name) {
-    Objects.requireNonNull(name, Constant.PT_72);
+    Objects.requireNonNull(name, Message.PT_72);
     if (name.trim().isEmpty()) {
-      throw new IllegalArgumentException(Constant.PT_72);
+      throw new IllegalArgumentException(Message.PT_72);
     }
     this.name = name;
   }

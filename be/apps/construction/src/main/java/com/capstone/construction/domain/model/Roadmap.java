@@ -1,7 +1,7 @@
 package com.capstone.construction.domain.model;
 
 import jakarta.persistence.*;
-import com.capstone.construction.infrastructure.utils.Constant;
+import com.capstone.construction.infrastructure.utils.Message;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.jspecify.annotations.NonNull;
@@ -51,20 +51,20 @@ public class Roadmap {
   }
 
   public void setName(String name) {
-    Objects.requireNonNull(name, Constant.PT_73);
+    Objects.requireNonNull(name, Message.PT_73);
     if (name.trim().isEmpty()) {
-      throw new IllegalArgumentException(Constant.PT_73);
+      throw new IllegalArgumentException(Message.PT_73);
     }
     this.name = name;
   }
 
   public void setLateral(Lateral lateral) {
-    Objects.requireNonNull(lateral, Constant.PT_74);
+    Objects.requireNonNull(lateral, Message.PT_74);
     this.lateral = lateral;
   }
 
   public void setNetwork(WaterSupplyNetwork network) {
-    Objects.requireNonNull(network, Constant.PT_59);
+    Objects.requireNonNull(network, Message.PT_59);
     this.network = network;
   }
 

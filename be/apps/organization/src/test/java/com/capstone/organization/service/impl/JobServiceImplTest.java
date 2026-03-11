@@ -7,7 +7,7 @@ import com.capstone.organization.dto.request.job.FilterJobRequest;
 import com.capstone.organization.model.Job;
 import com.capstone.organization.repository.JobRepository;
 import com.capstone.organization.service.boundary.EmployeeService;
-import com.capstone.organization.utils.Constant;
+import com.capstone.organization.utils.Message;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -70,7 +70,7 @@ class JobServiceImplTest {
 
         assertThatThrownBy(() -> jobService.createJob(request))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(Constant.ORG_13);
+                .hasMessage(Message.ORG_13);
     }
 
     @Test
@@ -112,7 +112,7 @@ class JobServiceImplTest {
 
         assertThatThrownBy(() -> jobService.updateJob(id, request))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(Constant.ORG_12);
+                .hasMessage(Message.ORG_12);
     }
 
     @Test
@@ -128,7 +128,7 @@ class JobServiceImplTest {
 
         assertThatThrownBy(() -> jobService.updateJob(id, request))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(Constant.ORG_13);
+                .hasMessage(Message.ORG_13);
     }
 
     @Test
@@ -149,7 +149,7 @@ class JobServiceImplTest {
 
         assertThatThrownBy(() -> jobService.deleteJob(id))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(Constant.ORG_12);
+                .hasMessage(Message.ORG_12);
     }
 
     @Test
@@ -160,7 +160,7 @@ class JobServiceImplTest {
 
         assertThatThrownBy(() -> jobService.deleteJob(id))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(Constant.ORG_14);
+                .hasMessage(Message.ORG_14);
     }
 
     @Test

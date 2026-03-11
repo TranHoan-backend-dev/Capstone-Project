@@ -2,7 +2,7 @@ package com.capstone.auth.application.usecase;
 
 import com.capstone.auth.application.business.pages.BusinessPageService;
 import com.capstone.auth.application.business.users.UserService;
-import com.capstone.auth.application.dto.request.FilterUsersRequest;
+import com.capstone.auth.application.dto.request.users.FilterUsersRequest;
 import com.capstone.auth.application.dto.request.UpdateBusinessPageNamesRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
 import lombok.AccessLevel;

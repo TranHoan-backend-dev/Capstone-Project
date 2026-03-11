@@ -5,7 +5,7 @@ import com.capstone.organization.dto.request.department.CreateDepartmentRequest;
 import com.capstone.organization.dto.request.department.UpdateDepartmentRequest;
 import com.capstone.organization.model.Department;
 import com.capstone.organization.repository.DepartmentRepository;
-import com.capstone.organization.utils.Constant;
+import com.capstone.organization.utils.Message;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -111,7 +111,7 @@ class DepartmentServiceImplTest {
 
       // When & Then
       assertThatThrownBy(() -> departmentService.createDepartment(request)).isInstanceOf(IllegalArgumentException.class)
-          .hasMessage(Constant.ORG_10); // "Phone number must be 10 digits"
+          .hasMessage(Message.ORG_10); // "Phone number must be 10 digits"
     }
 
     @Test

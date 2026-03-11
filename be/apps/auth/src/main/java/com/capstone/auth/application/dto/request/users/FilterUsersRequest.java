@@ -1,4 +1,4 @@
-package com.capstone.auth.application.dto.request;
+package com.capstone.auth.application.dto.request.users;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

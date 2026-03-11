@@ -5,7 +5,7 @@ import com.capstone.auth.application.business.profile.ProfileService;
 import com.capstone.auth.application.business.roles.RoleService;
 import com.capstone.auth.application.business.users.UserService;
 import com.capstone.auth.application.business.dto.ProfileDTO;
-import com.capstone.auth.application.dto.request.NewUserRequest;
+import com.capstone.auth.application.dto.request.users.NewUserRequest;
 import com.capstone.auth.application.dto.request.keycloakparam.Credential;
 import com.capstone.auth.application.dto.request.keycloakparam.TokenExchangeParam;
 import com.capstone.auth.application.dto.request.keycloakparam.UserCreationParam;
@@ -16,10 +16,11 @@ import com.capstone.auth.application.exception.AccountBlockedException;
 import com.capstone.auth.application.exception.NotExistingException;
 
 import com.capstone.common.enumerate.RoleName;
-import com.capstone.auth.infrastructure.utils.Constant;
+import com.capstone.auth.infrastructure.utils.Message;
 import com.capstone.auth.infrastructure.service.KeycloakService;
 import com.capstone.auth.infrastructure.utils.AuthUtils;
 import com.capstone.common.annotation.AppLog;
+import com.capstone.common.utils.SharedMessage;
 import jakarta.transaction.Transactional;
 import org.jspecify.annotations.NonNull;
 import lombok.AccessLevel;
@@ -90,21 +91,21 @@ public class AuthUseCase {
   public UserProfileResponse login(String userId, String email, String username) {
     log.info("Handling login business with userId={} and email={}", userId, email);
     var user = uSrv.getUserById(userId);
-    Objects.requireNonNull(user, Constant.SE_04);
+    Objects.requireNonNull(user, Message.SE_04);
 
     AuthUtils.validateCredentials(user, email, username);
 
     if (!uSrv.checkExistence(email) || !uSrv.checkExistence(username)) {
-      throw new NotExistingException(Constant.SE_05);
+      throw new NotExistingException(Message.SE_05);
     }
 
     // kiem tra xem tai khoan co bi khoa hay khong
     if (user.isLocked()) {
-      throw new AccountBlockedException(Constant.SE_07);
+      throw new AccountBlockedException(Message.SE_07);
     }
 
     var profile = pSrv.getProfileById(userId);
-    Objects.requireNonNull(profile, Constant.SE_06);
+    Objects.requireNonNull(profile, Message.SE_06);
 
     return returnUserProfile(profile, user);
   }
@@ -113,12 +114,12 @@ public class AuthUseCase {
   public void register(@NonNull NewUserRequest request) throws ExecutionException, InterruptedException {
     log.info("AuthUseCase is handling business");
 
-    Objects.requireNonNull(request.username(), Constant.PT_05);
-    Objects.requireNonNull(request.email(), Constant.PT_03);
-    Objects.requireNonNull(request.role(), Constant.PT_23);
-    Objects.requireNonNull(request.jobIds(), Constant.PT_20);
-    Objects.requireNonNull(request.departmentId(), Constant.PT_19);
-    Objects.requireNonNull(request.waterSupplyNetworkId(), Constant.PT_18);
+    Objects.requireNonNull(request.username(), Message.PT_05);
+    Objects.requireNonNull(request.email(), SharedMessage.MES_02);
+    Objects.requireNonNull(request.role(), Message.PT_23);
+    Objects.requireNonNull(request.jobIds(), Message.PT_20);
+    Objects.requireNonNull(request.departmentId(), Message.PT_19);
+    Objects.requireNonNull(request.waterSupplyNetworkId(), Message.PT_18);
 
     var role = rSrv.getRoleByName(RoleName.valueOf(request.role()));
 

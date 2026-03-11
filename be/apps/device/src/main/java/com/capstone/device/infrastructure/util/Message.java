@@ -1,13 +1,11 @@
 package com.capstone.device.infrastructure.util;
 
-public final class Constant {
-  public static final String ENT_01 = "Tên không được để trống";
+public final class Message {
   public static final String ENT_02 = "Id của nhánh tổng không được để trống";
 
   public static final String ENT_03 = "Giá không được để trống";
   public static final String ENT_04 = "Giá không được để trống hoặc là số âm";
 
-  public static final String ENT_05 = "Nội dung công việc không được để trống";
 
   public static final String ENT_06 = "Giá nhân công không được để trống";
   public static final String ENT_07 = "Giá nhân công không được là số âm";
@@ -40,9 +38,7 @@ public final class Constant {
   public static final String ENT_28 = "Chỉ số tối đa không được để trống";
   public static final String ENT_30 = "Đơn giá nhân công không được để trống";
   public static final String ENT_31 = "Đơn giá vật tư không được để trống";
-  public static final String ENT_32 = "Id không được để trống";
   public static final String ENT_33 = "Vật tư không được để trống";
-  public static final String ENT_34 = "Ghi chú không được để trống";
   public static final String ENT_35 = "Nhóm vật tư không được để trống";
   public static final String ENT_36 = "Đơn vị không được để trống";
   public static final String ENT_37 = "Ngày hết hạn không được để trống";
@@ -53,6 +49,5 @@ public final class Constant {
   public static final String ENT_49 = "Tên đơn vị đo không được để trống";
   public static final String ENT_50 = "Tên tham số không được để trống";
   public static final String ENT_51 = "Giá trị tham số không được để trống";
-  public static final String ENT_52 = "ID của người cập nhật không được để trống";
   public static final String ENT_53 = "Giá trị tham số không được là số âm";
 }

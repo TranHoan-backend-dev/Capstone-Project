@@ -1,37 +1,24 @@
 package com.capstone.customer.utils;
 
-public final class Constant {
-  public static final String ENT_01 = "Tên không được để trống";
+public final class Message {
   public static final String ENT_02 = "";
   public static final String ENT_03 = "Địa chỉ xuất hóa đơn không được để trống";
   public static final String ENT_04 = "";
-  public static final String ENT_05 = "Số điện thoại không được để trống";
   public static final String ENT_06 = "Id của khách hàng không được để trống";
   public static final String ENT_07 = "Loại không được để trống";
   public static final String ENT_08 = "";
   public static final String ENT_09 = "Id của hình thức lắp đặt không được để trống";
-  public static final String ENT_10 = "Ghi chú không được để trống";
   public static final String ENT_11 = "Khách hàng không được để trống";
   public static final String ENT_12 = "Id của hợp đồng không được để trống";
-  public static final String ENT_13 = "Email không được để trống";
-  public static final String ENT_14 = "Email phải theo định dạng <tên>@<tên_miền>";
-  public static final String ENT_15 = "Số điện thoại chỉ được phép có 10 chữ số";
   public static final String ENT_16 = "Mục đích sử dụng không được để trống";
   public static final String ENT_17 = "Loại đồng hồ nước không được để trống";
-  public static final String ENT_18 = "Số chứng minh nhân dân/Căn cước công dân không được để trống";
-  public static final String ENT_19 = "Nơi cấp chứng minh nhân dân/Căn cước công dân không được để trống";
   public static final String ENT_20 = "Phương thức thanh toán không được để trống";
-  public static final String ENT_21 = "Số tài khoản ngân hàng không được để trống";
-  public static final String ENT_22 = "Nơi cấp tài khoản ngân hàng không được để trống";
   public static final String ENT_23 = "Tên tài khoản ngân hàng không được để trống";
   public static final String ENT_24 = "Mã quan hệ ngân sách không được để trống";
   public static final String ENT_25 = "Mã hộ chiếu không được để trống";
   public static final String ENT_26 = "Điểm đấu nối không được để trống";
   public static final String ENT_27 = "Lý do hủy không được để trống";
-  public static final String ENT_28 = "Số hộ gia đình không được để trống";
-  public static final String ENT_29 = "Số sổ hộ khẩu không được để trống";
   public static final String ENT_30 = "Phí bảo vệ môi trường không được để trống";
-  public static final String ENT_31 = "Phí lắp đặt không được để trống";
   public static final String ENT_32 = "Tiền thuê hàng tháng không được để trống";
   public static final String ENT_33 = "Id của xã/phường không được để trống";
   public static final String ENT_34 = "Id của thôn/xóm không được để trống";

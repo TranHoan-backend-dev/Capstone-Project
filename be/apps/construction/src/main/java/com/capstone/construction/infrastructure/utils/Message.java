@@ -1,6 +1,6 @@
 package com.capstone.construction.infrastructure.utils;
 
-public final class Constant {
+public final class Message {
   // for dto and entity layer
   public static final String PT_01 = "Mã đơn không được để trống";
   public static final String PT_02 = "Nhân viên chi nhánh Xây lắp không được để trống";
@@ -13,10 +13,7 @@ public final class Constant {
   public static final String PT_09 = "";
   public static final String PT_10 = "";
   public static final String PT_11 = "";
-  public static final String PT_12 = "Địa chỉ không được để trống";
   public static final String PT_13 = "";
-  public static final String PT_14 = "Số điện thoại phải là số và có độ dài 10 chữ số";
-  public static final String PT_15 = "Số điện thoại không được để trống";
   public static final String PT_16 = "";
   public static final String PT_17 = "";
   public static final String PT_18 = "";
@@ -32,7 +29,6 @@ public final class Constant {
   public static final String PT_28 = "Phí lập hợp đồng không được để trống";
   public static final String PT_29 = "Phí khảo sát không được để trống";
   public static final String PT_30 = "Công khảo sát không được để trống";
-  public static final String PT_31 = "Phí lắp đặt không được để trống";
   public static final String PT_32 = "Hệ số nhân công không được để trống";
   public static final String PT_33 = "Hệ số chi phí chung không được để trống";
   public static final String PT_34 = "Hệ số thuế tính trước không được để trống";
@@ -49,16 +45,10 @@ public final class Constant {
   public static final String PT_45 = "Người đại diện không được để trống";
   public static final String PT_46 = "";
   public static final String PT_47 = "";
-  public static final String PT_48 = "Số chứng minh nhân dân/Căn cước công dân không được để trống";
   public static final String PT_49 = "Ngày cấp chứng minh nhân dân/Căn cước công dân không được để trống";
-  public static final String PT_50 = "Nơi cấp chứng minh nhân dân/Căn cước công dân không được để trống";
   public static final String PT_51 = "Mã số thuế không được để trống";
-  public static final String PT_52 = "Số tài khoản ngân hàng không được để trống";
-  public static final String PT_53 = "Nơi cấp tài khoản ngân hàng không được để trống";
   public static final String PT_54 = "Đối tượng sử dụng không được để trống";
   public static final String PT_55 = "Ngày nhận đơn không được để trống";
-  public static final String PT_56 = "Số hộ gia đình không được để trống";
-  public static final String PT_57 = "Số sổ hộ khẩu không được để trống";
   public static final String PT_58 = "";
   public static final String PT_59 = "Mạng lưới không được để trống";
   public static final String PT_60 = "Nhân viên này không tồn tại";
@@ -76,9 +66,7 @@ public final class Constant {
   public static final String PT_72 = "Tên đường không được để trống";
   public static final String PT_73 = "Tên lộ trình không được để trống";
   public static final String PT_74 = "Tuyến không được để trống";
-  public static final String PT_75 = "Nội dung công việc không được để trống";
   public static final String PT_76 = "Phí đấu nối không được để trống";
-  public static final String PT_77 = "Ghi chú không được để trống";
   public static final String PT_78 = "Lịch hẹn khảo sát không được để trống";
   public static final String PT_79 = "Nhân viên phòng Kế hoạch - Kỹ thuật xử lý phiếu lắp đặt không được để trống";
 

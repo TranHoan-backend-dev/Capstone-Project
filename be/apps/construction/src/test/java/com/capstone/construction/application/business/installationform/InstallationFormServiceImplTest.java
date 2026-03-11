@@ -10,7 +10,7 @@ import com.capstone.construction.application.dto.request.installationform.NewOrd
 import com.capstone.construction.domain.model.InstallationForm;
 import com.capstone.construction.domain.model.WaterSupplyNetwork;
 import com.capstone.construction.domain.model.utils.FormProcessingStatus;
-import com.capstone.construction.infrastructure.utils.Constant;
+import com.capstone.construction.infrastructure.utils.Message;
 import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
 import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRepository;
 import com.capstone.construction.infrastructure.service.EmployeeService;
@@ -110,7 +110,7 @@ class InstallationFormServiceImplTest {
     // When & Then
     assertThatThrownBy(() -> service.createNewInstallationForm(request))
       .isInstanceOf(IllegalArgumentException.class)
-      .hasMessage(Constant.PT_61);
+      .hasMessage(Message.PT_61);
   }
 
   @Test
@@ -125,7 +125,7 @@ class InstallationFormServiceImplTest {
     // When & Then
     assertThatThrownBy(() -> service.createNewInstallationForm(request))
       .isInstanceOf(IllegalArgumentException.class)
-      .hasMessage(Constant.SE_06);
+      .hasMessage(Message.SE_06);
   }
 
   @Test
@@ -141,7 +141,7 @@ class InstallationFormServiceImplTest {
     // When & Then
     assertThatThrownBy(() -> service.createNewInstallationForm(request))
       .isInstanceOf(IllegalArgumentException.class)
-      .hasMessage(Constant.PT_59);
+      .hasMessage(Message.PT_59);
   }
 
   @Test
@@ -450,7 +450,7 @@ class InstallationFormServiceImplTest {
     // When & Then
     assertThatThrownBy(() -> service.approveAndAssignInstallationForm(request))
       .isInstanceOf(IllegalArgumentException.class)
-      .hasMessage(Constant.PT_61);
+      .hasMessage(Message.PT_61);
   }
 
   @Test
@@ -468,7 +468,7 @@ class InstallationFormServiceImplTest {
     // When & Then
     assertThatThrownBy(() -> service.approveAndAssignInstallationForm(request))
       .isInstanceOf(IllegalArgumentException.class)
-      .hasMessage(Constant.PT_60);
+      .hasMessage(Message.PT_60);
   }
 
   @Test
@@ -492,7 +492,7 @@ class InstallationFormServiceImplTest {
     when(ifRepo.findById_FormCodeAndId_FormNumber("C-001", "F-001")).thenReturn(Optional.empty());
     assertThatThrownBy(() -> service.getByFormCodeAndFormNumber("C-001", "F-001"))
       .isInstanceOf(IllegalArgumentException.class)
-      .hasMessage(Constant.PT_61);
+      .hasMessage(Message.PT_61);
   }
 
   // Helper methods

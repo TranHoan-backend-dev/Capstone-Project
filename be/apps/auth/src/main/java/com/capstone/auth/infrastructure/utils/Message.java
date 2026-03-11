@@ -1,10 +1,8 @@
 package com.capstone.auth.infrastructure.utils;
 
-public final class Constant {
+public final class Message {
   // for dto and entity layer
-  public static final String PT_01 = "Email phải có định dạng <tên>@<tên_miền>";
   public static final String PT_02 = "Mật khẩu không hợp lệ. Mật khẩu phải chứa ít nhất một chữ số, một chữ hoa, một chữ thường, một ký tự đặc biệt và có độ dài ít nhất 8 ký tự";
-  public static final String PT_03 = "Email không được để trống";
   public static final String PT_04 = "Đối tượng này không được để trống";
   public static final String PT_05 = "Tên đăng nhập không được để trống";
   public static final String PT_06 = "Đối tượng Role không được để trống";
@@ -13,17 +11,12 @@ public final class Constant {
   public static final String PT_09 = "Profile phải có một người dùng";
   public static final String PT_10 = "Họ và tên không được để trống";
   public static final String PT_11 = "Ảnh đại diện không được để trống";
-  public static final String PT_12 = "Địa chỉ không được để trống";
   public static final String PT_13 = "Họ và tên không được chứa chữ số và ký tự đặc biệt";
-  public static final String PT_14 = "Số điện thoại phải là số và có độ dài 10 chữ số";
-  public static final String PT_15 = "Số điện thoại không được để trống";
   public static final String PT_16 = "Giới tính không được để trống";
   public static final String PT_17 = "Ngày sinh không được để trống";
   public static final String PT_18 = "Id của chi nhánh cấp nước không được để trống";
   public static final String PT_19 = "Id của phòng ban không được để trống";
   public static final String PT_20 = "Id của công việc không được để trống";
-  public static final String PT_21 = "";
-  public static final String PT_22 = "Id không được để trống";
   public static final String PT_23 = "Id của vai trò không được để trống";
   public static final String PT_24 = "URL chữ ký điện tử không được để trống";
   public static final String PT_25 = "Định dạng ngày sinh không chính xác. Phải đảm bảo định dạng là yyyy-MM-dd";

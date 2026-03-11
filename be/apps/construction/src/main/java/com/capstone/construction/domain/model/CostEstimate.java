@@ -3,7 +3,7 @@ package com.capstone.construction.domain.model;
 import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
 import jakarta.persistence.*;
-import com.capstone.construction.infrastructure.utils.Constant;
+import com.capstone.construction.infrastructure.utils.Message;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.jspecify.annotations.NonNull;
@@ -108,107 +108,107 @@ public class CostEstimate implements Serializable {
 
   // <editor-fold> desc="setter"
   public void setStatus(@NonNull ProcessingStatus value) {
-    requireNonNullAndNotEmpty(value.name(), Constant.PT_03);
+    requireNonNullAndNotEmpty(value.name(), Message.PT_03);
     this.status = value;
   }
 
   public void setRegistrationAt(@NonNull LocalDate value) {
-    Objects.requireNonNull(value, Constant.PT_04);
+    Objects.requireNonNull(value, Message.PT_04);
     this.registrationAt = value;
   }
 
   public void setInstallationFormId(InstallationFormId value) {
-    Objects.requireNonNull(value, Constant.PT_66);
+    Objects.requireNonNull(value, Message.PT_66);
     this.installationFormId = value;
   }
 
   public void setCustomerName(String customerName) {
-    requireNonNullAndNotEmpty(customerName, Constant.PT_27);
+    requireNonNullAndNotEmpty(customerName, Message.PT_27);
     this.customerName = customerName;
   }
 
   public void setAddress(String address) {
-    requireNonNullAndNotEmpty(address, Constant.PT_12);
+    requireNonNullAndNotEmpty(address, Message.PT_12);
     this.address = address;
   }
 
   public void setNote(String note) {
-    requireNonNullAndNotEmpty(note, Constant.PT_77);
+    requireNonNullAndNotEmpty(note, Message.PT_77);
     this.note = note;
   }
 
   public void setContractFee(Integer contractFee) {
-    Objects.requireNonNull(contractFee, Constant.PT_28);
+    Objects.requireNonNull(contractFee, Message.PT_28);
     this.contractFee = contractFee;
   }
 
   public void setSurveyFee(Integer surveyFee) {
-    Objects.requireNonNull(surveyFee, Constant.PT_29);
+    Objects.requireNonNull(surveyFee, Message.PT_29);
     this.surveyFee = surveyFee;
   }
 
   public void setSurveyEffort(Integer surveyEffort) {
-    Objects.requireNonNull(surveyEffort, Constant.PT_30);
+    Objects.requireNonNull(surveyEffort, Message.PT_30);
     this.surveyEffort = surveyEffort;
   }
 
   public void setInstallationFee(Integer installationFee) {
-    Objects.requireNonNull(installationFee, Constant.PT_31);
+    Objects.requireNonNull(installationFee, Message.PT_31);
     this.installationFee = installationFee;
   }
 
   public void setLaborCoefficient(Integer laborCoefficient) {
-    Objects.requireNonNull(laborCoefficient, Constant.PT_32);
+    Objects.requireNonNull(laborCoefficient, Message.PT_32);
     this.laborCoefficient = laborCoefficient;
   }
 
   public void setGeneralCostCoefficient(Integer generalCostCoefficient) {
-    Objects.requireNonNull(generalCostCoefficient, Constant.PT_33);
+    Objects.requireNonNull(generalCostCoefficient, Message.PT_33);
     this.generalCostCoefficient = generalCostCoefficient;
   }
 
   public void setPrecalculatedTaxCoefficient(Integer precalculatedTaxCoefficient) {
-    Objects.requireNonNull(precalculatedTaxCoefficient, Constant.PT_34);
+    Objects.requireNonNull(precalculatedTaxCoefficient, Message.PT_34);
     this.precalculatedTaxCoefficient = precalculatedTaxCoefficient;
   }
 
   public void setConstructionMachineryCoefficient(Integer constructionMachineryCoefficient) {
-    Objects.requireNonNull(constructionMachineryCoefficient, Constant.PT_35);
+    Objects.requireNonNull(constructionMachineryCoefficient, Message.PT_35);
     this.constructionMachineryCoefficient = constructionMachineryCoefficient;
   }
 
   public void setVatCoefficient(Integer vatCoefficient) {
-    Objects.requireNonNull(vatCoefficient, Constant.PT_36);
+    Objects.requireNonNull(vatCoefficient, Message.PT_36);
     this.vatCoefficient = vatCoefficient;
   }
 
   public void setDesignCoefficient(Integer designCoefficient) {
-    Objects.requireNonNull(designCoefficient, Constant.PT_37);
+    Objects.requireNonNull(designCoefficient, Message.PT_37);
     this.designCoefficient = designCoefficient;
   }
 
   public void setDesignFee(Integer designFee) {
-    Objects.requireNonNull(designFee, Constant.PT_38);
+    Objects.requireNonNull(designFee, Message.PT_38);
     this.designFee = designFee;
   }
 
   public void setDesignImageUrl(String designImageUrl) {
-    requireNonNullAndNotEmpty(designImageUrl, Constant.PT_41);
+    requireNonNullAndNotEmpty(designImageUrl, Message.PT_41);
     this.designImageUrl = designImageUrl;
   }
 
   public void setCreateBy(String createBy) {
-    requireNonNullAndNotEmpty(createBy, Constant.PT_42);
+    requireNonNullAndNotEmpty(createBy, Message.PT_42);
     this.createBy = createBy;
   }
 
   public void setWaterMeterSerial(String waterMeterId) {
-    requireNonNullAndNotEmpty(waterMeterId, Constant.PT_43);
+    requireNonNullAndNotEmpty(waterMeterId, Message.PT_43);
     this.waterMeterSerial = waterMeterId;
   }
 
   public void setOverallWaterMeterId(String overallWaterMeterId) {
-    requireNonNullAndNotEmpty(overallWaterMeterId, Constant.PT_62);
+    requireNonNullAndNotEmpty(overallWaterMeterId, Message.PT_62);
     this.overallWaterMeterId = overallWaterMeterId;
   }
 

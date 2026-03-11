@@ -8,7 +8,7 @@ import com.capstone.construction.application.dto.request.installationform.Approv
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import com.capstone.construction.application.usecase.InstallationFormHandlingUseCase;
-import com.capstone.construction.infrastructure.utils.Constant;
+import com.capstone.construction.infrastructure.utils.Message;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -57,7 +57,7 @@ public class InstallationFormController {
     if (!Utils.isLocalDate(request.receivedFormAt(), DateTimeFormatter.ISO_LOCAL_DATE) ||
       !Utils.isLocalDate(request.citizenIdentificationProvideDate(), DateTimeFormatter.ISO_LOCAL_DATE) ||
       !Utils.isLocalDate(request.scheduleSurveyAt(), DateTimeFormatter.ISO_LOCAL_DATE)) {
-      throw new IllegalArgumentException(Constant.PT_05);
+      throw new IllegalArgumentException(Message.PT_05);
     }
 
     var response = installationFormHandlingUseCase.createNewInstallationRequest(request);

@@ -1,6 +1,6 @@
 package com.capstone.device.domain.model;
 
-import com.capstone.device.infrastructure.util.Constant;
+import com.capstone.device.infrastructure.util.Message;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -43,9 +43,9 @@ public class MaterialsGroup {
   }
 
   public void setName(String name) {
-    Objects.requireNonNull(name, Constant.ENT_01);
+    Objects.requireNonNull(name, Message.ENT_01);
     if (name.trim().isEmpty()) {
-      throw new IllegalArgumentException(Constant.ENT_01);
+      throw new IllegalArgumentException(Message.ENT_01);
     }
     this.name = name;
   }

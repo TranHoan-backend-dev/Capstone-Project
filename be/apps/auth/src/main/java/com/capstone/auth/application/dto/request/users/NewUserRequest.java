@@ -1,7 +1,8 @@
-package com.capstone.auth.application.dto.request;
+package com.capstone.auth.application.dto.request.users;
 
-import com.capstone.auth.infrastructure.utils.Constant;
+import com.capstone.auth.infrastructure.utils.Message;
 import com.capstone.common.utils.SharedConstant;
+import com.capstone.common.utils.SharedMessage;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -16,7 +17,7 @@ public record NewUserRequest(
 
   @NotBlank
   @NotEmpty
-  @Pattern(regexp = SharedConstant.PASSWORD_PATTERN, message = Constant.PT_02)
+  @Pattern(regexp = SharedConstant.PASSWORD_PATTERN, message = Message.PT_02)
   String password,
 
   @NotBlank
@@ -25,12 +26,12 @@ public record NewUserRequest(
 
   @NotBlank
   @NotEmpty
-  @Email(message = Constant.PT_01)
+  @Email(message = SharedMessage.MES_01)
   String email,
 
   @NotBlank
   @NotEmpty
-  @Pattern(regexp = SharedConstant.PHONE_PATTERN, message = Constant.PT_14)
+  @Pattern(regexp = SharedConstant.PHONE_PATTERN, message = SharedMessage.MES_04)
   String phoneNumber,
 
   @NotBlank

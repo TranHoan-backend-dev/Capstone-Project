@@ -6,7 +6,7 @@ import com.capstone.auth.application.business.profile.ProfileService;
 import com.capstone.auth.application.business.users.UserService;
 import com.capstone.auth.application.exception.IncompatibleAvatarException;
 import com.capstone.auth.application.exception.NotExistingException;
-import com.capstone.auth.infrastructure.utils.Constant;
+import com.capstone.auth.infrastructure.utils.Message;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -69,7 +69,7 @@ class ProfileUseCaseUpdateAvatarTest {
 
     DisabledException ex = assertThrows(DisabledException.class,
       () -> profileUseCase.updateAvatar(id, file));
-    assertEquals(Constant.SE_07, ex.getMessage());
+    assertEquals(Message.SE_07, ex.getMessage());
 
     verify(userService).getUserById(id);
     verify(profileService, never()).updateAvatar(anyString(), anyString());

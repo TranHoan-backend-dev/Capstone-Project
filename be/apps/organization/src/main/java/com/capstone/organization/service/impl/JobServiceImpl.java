@@ -16,7 +16,7 @@ import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import com.capstone.organization.service.boundary.EmployeeService;
-import com.capstone.organization.utils.Constant;
+import com.capstone.organization.utils.Message;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,7 +40,7 @@ public class JobServiceImpl implements JobService {
     log.info("Creating job with name: {}", request.name());
 
     if (jobRepository.existsByNameIgnoreCase(request.name())) {
-      throw new IllegalArgumentException(Constant.ORG_13.concat(": ").concat(request.name()));
+      throw new IllegalArgumentException(Message.ORG_13.concat(": ").concat(request.name()));
     }
 
     var entity = Job.create(builder -> builder
@@ -56,12 +56,12 @@ public class JobServiceImpl implements JobService {
     log.info("Updating job: {}", jobId);
 
     var entity = jobRepository.findById(jobId)
-      .orElseThrow(() -> new IllegalArgumentException(Constant.ORG_12));
+      .orElseThrow(() -> new IllegalArgumentException(Message.ORG_12));
 
     jobRepository.findByNameIgnoreCase(request.name())
       .ifPresent(existing -> {
         if (!existing.getId().equals(jobId)) {
-          throw new IllegalArgumentException(Constant.ORG_13);
+          throw new IllegalArgumentException(Message.ORG_13);
         }
       });
 
@@ -77,12 +77,12 @@ public class JobServiceImpl implements JobService {
     log.info("Deleting job: {}", jobId);
 
     if (!jobRepository.existsById(jobId)) {
-      throw new IllegalArgumentException(Constant.ORG_12);
+      throw new IllegalArgumentException(Message.ORG_12);
     }
 
     var response = employeeService.isJobAssigned(jobId);
     if (response != null && response.data() != null && (Boolean) response.data()) {
-      throw new IllegalArgumentException(Constant.ORG_14);
+      throw new IllegalArgumentException(Message.ORG_14);
     }
 
     jobRepository.deleteById(jobId);

@@ -1,6 +1,11 @@
 package com.capstone.auth.adapter;
 
 import com.capstone.auth.application.dto.request.*;
+import com.capstone.auth.application.dto.request.otp.SendOtpRequest;
+import com.capstone.auth.application.dto.request.otp.VerifyOtpRequest;
+import com.capstone.auth.application.dto.request.password.ChangePasswordRequest;
+import com.capstone.auth.application.dto.request.password.ResetPasswordRequest;
+import com.capstone.auth.application.dto.request.users.NewUserRequest;
 import com.capstone.auth.application.dto.response.UserProfileResponse;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;

@@ -2,7 +2,7 @@ package com.capstone.construction.domain.model;
 
 import com.capstone.construction.domain.model.utils.InstallationFormId;
 import jakarta.persistence.*;
-import com.capstone.construction.infrastructure.utils.Constant;
+import com.capstone.construction.infrastructure.utils.Message;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -42,33 +42,33 @@ public class Receipt {
   Boolean isPaid;
 
   public void setInstallationForm(InstallationForm installationForm) {
-    Objects.requireNonNull(installationForm, Constant.PT_66);
+    Objects.requireNonNull(installationForm, Message.PT_66);
     this.installationForm = installationForm;
     this.installationFormId = installationForm.getId();
   }
 
   public void setReceiptNumber(String receiptNumber) {
-    requireNonNullAndNotEmpty(receiptNumber, Constant.PT_67);
+    requireNonNullAndNotEmpty(receiptNumber, Message.PT_67);
     this.receiptNumber = receiptNumber;
   }
 
   public void setCustomerName(String customerName) {
-    requireNonNullAndNotEmpty(customerName, Constant.PT_27);
+    requireNonNullAndNotEmpty(customerName, Message.PT_27);
     this.customerName = customerName;
   }
 
   public void setAddress(String address) {
-    requireNonNullAndNotEmpty(address, Constant.PT_12);
+    requireNonNullAndNotEmpty(address, Message.PT_12);
     this.address = address;
   }
 
   public void setPaymentDate(LocalDate paymentDate) {
-    Objects.requireNonNull(paymentDate, Constant.PT_68);
+    Objects.requireNonNull(paymentDate, Message.PT_68);
     this.paymentDate = paymentDate;
   }
 
   public void setIsPaid(Boolean isPaid) {
-    Objects.requireNonNull(isPaid, Constant.PT_69);
+    Objects.requireNonNull(isPaid, Message.PT_69);
     this.isPaid = isPaid;
   }
 
