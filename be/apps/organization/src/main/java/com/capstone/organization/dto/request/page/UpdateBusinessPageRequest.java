@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 
 @Schema(description = "Request to update an existing business page")
 public record UpdateBusinessPageRequest(
-    @Schema(description = "Name of the business page", example = "Sales Department Updated") @NotBlank String name,
-    @Schema(description = "Activation status", example = "true") @NotNull Boolean activate,
-    @Schema(description = "Updator of the page", example = "admin") @NotBlank String updator) {
+  @Schema(description = "Name of the business page", example = "Sales Department Updated") @NotBlank String name,
+  @Schema(description = "Activation status", example = "true") @NotNull Boolean activate,
+  @Schema(description = "Updator of the page", example = "admin") @NotBlank String updator) {
 }
