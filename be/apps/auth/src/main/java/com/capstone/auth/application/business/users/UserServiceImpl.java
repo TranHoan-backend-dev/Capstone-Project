@@ -256,16 +256,18 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public void deleteEmployee(String id) {
+  public EmployeeResponse deleteEmployee(String id) {
     log.info("Delete employee: {}", id);
     var emp = getById(id);
+    var profile = profileRepo.findById(id)
+      .orElseThrow(() -> new NotExistingException("Không tìm thấy hồ sơ người dùng với id " + id));
 
     emp.setIsEnabled(false);
     indRepo.deleteByUserId(id);
     bpRepo.deleteByUsers(emp);
 
     var rolesList = roleRepo.findByUsers(Set.of(emp));
-    if (rolesList != null) {
+    if (rolesList != null && !rolesList.isEmpty()) {
       var role = rolesList.getFirst();
       role.getUsers().removeIf(u -> u
         .getUserId()
@@ -275,6 +277,16 @@ public class UserServiceImpl implements UserService {
     }
 
     repo.save(emp);
+
+    return new EmployeeResponse(
+      emp.getUserId(),
+      emp.getUsername(),
+      profile.getFullname(),
+      organizationService.getDepartmentName(emp.getDepartmentId()),
+      netWorkService.getNameById(emp.getWaterSupplyNetworkId()),
+      bpService.getPagesByEmployeeId(emp.getUserId()).toString(),
+      emp.getEmail()
+    );
   }
 
   private Users getById(String id) {

@@ -7,7 +7,8 @@ import com.capstone.auth.application.dto.request.UpdateBusinessPageNamesRequest;
 import com.capstone.auth.application.dto.request.users.UpdateRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
 import com.capstone.auth.application.event.producer.MessageProducer;
-import com.capstone.auth.application.event.producer.message.DeleteEvent;
+import com.capstone.auth.application.event.producer.message.AccountDeleteEvent;
+import com.capstone.auth.application.event.producer.message.AccountUpdateEvent;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -30,11 +31,19 @@ public class UsersUseCase {
 
   @NonFinal
   @Value("${sending_mail.delete_account.subject}")
-  String SUBJECT;
+  String DELETE_SUBJECT;
 
   @NonFinal
   @Value("${sending_mail.delete_account.template}")
-  String TEMPLATE;
+  String DELETE_TEMPLATE;
+
+  @NonFinal
+  @Value("${sending_mail.update_account.subject}")
+  String UPDATE_SUBJECT;
+
+  @NonFinal
+  @Value("${sending_mail.update_account.template}")
+  String UPDATE_TEMPLATE;
 
   public Page<EmployeeResponse> getPaginatedListOfEmployees(Pageable pageable, FilterUsersRequest request) {
     return userService.getAllEmployeesWithStatus(pageable, request);
@@ -58,16 +67,21 @@ public class UsersUseCase {
 
   public EmployeeResponse updateEmployee(String id, UpdateRequest request) {
     var response = userService.updateEmployee(id, request);
-    template.sendMessage(new DeleteEvent(
+    template.sendMessage(new AccountUpdateEvent(
       response.fullName(),
       response.departmentName(),
-      response.email(),
-      SUBJECT, TEMPLATE
+      UPDATE_SUBJECT, UPDATE_TEMPLATE
     ));
     return response;
   }
 
   public void deleteEmployee(String id) {
-    userService.deleteEmployee(id);
+    var response = userService.deleteEmployee(id);
+    template.sendMessage(new AccountDeleteEvent(
+      response.fullName(),
+      response.departmentName(),
+      response.email(),
+      DELETE_SUBJECT, DELETE_TEMPLATE
+    ));
   }
 }

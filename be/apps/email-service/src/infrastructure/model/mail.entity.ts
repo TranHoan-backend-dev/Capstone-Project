@@ -20,3 +20,7 @@ export type DeleteAccount = {
   departmentName: string,
   email: string
 }
+export type UpdateAccount = {
+  fullName: string,
+  departmentName: string,
+}

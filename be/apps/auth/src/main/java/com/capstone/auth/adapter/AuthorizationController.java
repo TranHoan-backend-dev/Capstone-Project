@@ -108,7 +108,7 @@ public class AuthorizationController {
 
   @Operation(summary = "Cập nhật thông tin nhân viên", description = """
     Cập nhật các thông tin cơ bản của nhân viên bao gồm tên, phòng ban, số điện thoại, trạng thái hoạt động và chi nhánh cấp nước.
-    
+
     Yêu cầu quyền hạn: 'IT_STAFF'.
     """)
   @ApiResponses(value = {
@@ -118,6 +118,7 @@ public class AuthorizationController {
     @ApiResponse(responseCode = "500", description = "Lỗi hệ thống", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PutMapping("/employees/{id}")
+  @PreAuthorize("hasAuthority('IT_STAFF')")
   public ResponseEntity<?> updateEmployee(
     @PathVariable @NotBlank @NotEmpty @NotNull String id,
     @RequestBody UpdateRequest request
@@ -130,7 +131,7 @@ public class AuthorizationController {
 
   @Operation(summary = "Xóa tài khoản nhân viên", description = """
     Vô hiệu hóa tài khoản nhân viên trong hệ thống. Thao tác này sẽ đặt trạng thái 'isEnabled' thành false và gửi email thông báo cho nhân viên.
-    
+
     Yêu cầu quyền hạn: 'IT_STAFF'.
     """)
   @ApiResponses(value = {
@@ -138,6 +139,7 @@ public class AuthorizationController {
     @ApiResponse(responseCode = "404", description = "Không tìm thấy nhân viên", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "500", description = "Lỗi hệ thống", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
+  @PreAuthorize("hasAuthority('IT_STAFF')")
   @DeleteMapping("/employees/{id}")
   public ResponseEntity<?> deleteEmployee(@PathVariable @NotBlank @NotEmpty @NotNull String id) {
     log.info("Deleting employee: {}", id);
@@ -165,7 +167,8 @@ public class AuthorizationController {
     @PathVariable String empId
   ) {
     log.info("Getting pages of employee with id {}", empId);
-    return Utils.returnOkResponse("Lấy danh sách trang nghiệp vụ thành công", usersUseCase.getListOfPagesByEmployeeId(empId));
+    return Utils.returnOkResponse("Lấy danh sách trang nghiệp vụ thành công",
+      usersUseCase.getListOfPagesByEmployeeId(empId));
   }
 
   @Operation(summary = "Cập nhật các trang nghiệp vụ được ủy quyền cho nhiều nhân viên", description = """

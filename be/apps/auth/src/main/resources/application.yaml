@@ -111,3 +111,6 @@ sending_mail:
   delete_account:
     subject: 'Xóa tài khoản của nhân viên'
     template: account-delete
+  update_account:
+    subject: 'Cập nhật tài khoản của nhân viên'
+    template: account-update

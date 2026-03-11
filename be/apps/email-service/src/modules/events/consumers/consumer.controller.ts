@@ -1,7 +1,7 @@
 import { Controller, Logger } from '@nestjs/common';
 import { EventPattern, Payload } from '@nestjs/microservices';
 import { MailServiceImpl } from '../../../service/mail.service';
-import {AccountCreationContext, DeleteAccount, MailInformation} from '../../../infrastructure/model/mail.entity';
+import {AccountCreationContext, DeleteAccount, MailInformation, UpdateAccount} from '../../../infrastructure/model/mail.entity';
 
 @Controller()
 export class ConsumerController {
@@ -49,6 +49,31 @@ export class ConsumerController {
       fullName: data.fullName,
       departmentName: data.departmentName,
       email: data.email
+    }
+
+    Logger.log('Info: ', info);
+    Logger.log('Context: ', context);
+
+    await this.service.sendNormalEmail(info, context);
+
+    Logger.log('Email sent successfully');
+  }
+
+  @EventPattern('update-account')
+  async updatingAccountEvent(@Payload() data: any) {
+    Logger.log('Updating event request received');
+    Logger.log(data);
+
+    if (!data.fullName || !data.departmentName) {
+      Logger.log('Fields cannot be missing');
+      return;
+    }
+
+    const info = this.createMailTemplate(data)
+
+    const context: UpdateAccount = {
+      fullName: data.fullName,
+      departmentName: data.departmentName,
     }
 
     Logger.log('Info: ', info);
