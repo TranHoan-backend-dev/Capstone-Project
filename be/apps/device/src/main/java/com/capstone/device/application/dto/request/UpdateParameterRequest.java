@@ -1,6 +1,7 @@
 package com.capstone.device.application.dto.request;
 
 import com.capstone.device.infrastructure.util.Message;
+import com.capstone.common.utils.SharedMessage;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -22,8 +23,8 @@ public record UpdateParameterRequest(
   BigDecimal value,
 
   @Schema(description = "ID của người cập nhật", example = "uuid-v4")
-  @NotBlank(message = Message.ENT_52)
-  @NotEmpty(message = Message.ENT_52)
+  @NotBlank(message = SharedMessage.MES_09)
+  @NotEmpty(message = SharedMessage.MES_09)
   String updatorId
 ) {
 }
