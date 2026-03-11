@@ -5,9 +5,12 @@ import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
 import com.capstone.customer.dto.request.ContractRequest;
+import com.capstone.customer.dto.response.ContractResponse;
 import com.capstone.customer.service.boundary.ContractService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
@@ -30,7 +33,7 @@ public class ContractController {
 
   @Operation(summary = "Tạo mới hợp đồng", description = "Tạo một hợp đồng sử dụng nước mới dựa trên thông tin yêu cầu.", responses = {
     @ApiResponse(responseCode = "201", description = "Tạo hợp đồng thành công"),
-    @ApiResponse(responseCode = "400", description = "Dữ liệu đầu vào không hợp lệ")
+    @ApiResponse(responseCode = "400", description = "Dữ liệu đầu vào không hợp lệ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PostMapping
   public ResponseEntity<WrapperApiResponse> createContract(@RequestBody @Valid ContractRequest request) {
@@ -41,8 +44,8 @@ public class ContractController {
   }
 
   @Operation(summary = "Cập nhật hợp đồng", description = "Cập nhật thông tin hợp đồng hiện có dựa trên mã hợp đồng.", responses = {
-    @ApiResponse(responseCode = "200", description = "Cập nhật hợp đồng thành công"),
-    @ApiResponse(responseCode = "404", description = "Không tìm thấy hợp đồng")
+    @ApiResponse(responseCode = "200", description = "Cập nhật hợp đồng thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ContractResponse.class))),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy hợp đồng", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PutMapping("/{id}")
   public ResponseEntity<WrapperApiResponse> updateContract(
@@ -55,8 +58,8 @@ public class ContractController {
   }
 
   @Operation(summary = "Xóa hợp đồng", description = "Xóa một hợp đồng khỏi hệ thống.", responses = {
-    @ApiResponse(responseCode = "200", description = "Xóa hợp đồng thành công"),
-    @ApiResponse(responseCode = "404", description = "Không tìm thấy hợp đồng")
+    @ApiResponse(responseCode = "200", description = "Xóa hợp đồng thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ContractResponse.class))),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy hợp đồng", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @DeleteMapping("/{id}")
   public ResponseEntity<WrapperApiResponse> deleteContract(
@@ -68,8 +71,8 @@ public class ContractController {
   }
 
   @Operation(summary = "Lấy thông tin hợp đồng theo ID", description = "Truy xuất thông tin chi tiết của một hợp đồng cụ thể.", responses = {
-    @ApiResponse(responseCode = "200", description = "Lấy thông tin hợp đồng thành công"),
-    @ApiResponse(responseCode = "404", description = "Không tìm thấy hợp đồng")
+    @ApiResponse(responseCode = "200", description = "Lấy thông tin hợp đồng thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ContractResponse.class))),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy hợp đồng", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @GetMapping("/{id}")
   public ResponseEntity<WrapperApiResponse> getContractById(
@@ -81,7 +84,7 @@ public class ContractController {
   }
 
   @Operation(summary = "Lấy danh sách hợp đồng", description = "Truy xuất danh sách hợp đồng với các tiêu chí lọc và phân trang.", responses = {
-    @ApiResponse(responseCode = "200", description = "Lấy danh sách hợp đồng thành công")
+    @ApiResponse(responseCode = "200", description = "Lấy danh sách hợp đồng thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ContractResponse.class)))
   })
   @GetMapping
   public ResponseEntity<WrapperApiResponse> getAllContracts(
