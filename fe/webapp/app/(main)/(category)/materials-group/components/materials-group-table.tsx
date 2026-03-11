@@ -124,7 +124,7 @@ export const MaterialsGroupTable = () => {
         headerSummary={`${data.length}`}
         paginationProps={{
           total: 5,
-          initialPage: 1,
+          page: 1,
           summary: `1-5 của 25`,
         }}
         renderCellAction={renderCell}
