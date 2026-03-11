@@ -1,6 +1,6 @@
 export const MATERIAL_PRICE_COLUMN = [
   { key: "stt", label: "STT", width: "40px", align: "center" as const },
-  { key: "laborCode", label: "Mã nhân công", align: "center" as const },
+  { key: "laborCode", label: "Mã hiệu nhân công", align: "center" as const },
   { key: "unitName", label: "Tên đơn vị", align: "center" as const },
   { key: "groupName", label: "Tên nhóm", align: "center" as const },
   { key: "jobContent", label: "Nội dung", align: "center" as const },
@@ -8,7 +8,7 @@ export const MATERIAL_PRICE_COLUMN = [
   { key: "laborPrice", label: "Giá nhân công", align: "center" as const },
   {
     key: "laborPriceAtRuralCommune",
-    label: "Giá nhân công phường/xã",
+    label: "Giá nhân công huyện",
     align: "center" as const,
   },
   {
@@ -19,7 +19,7 @@ export const MATERIAL_PRICE_COLUMN = [
   },
   {
     key: "constructionMachineryPriceAtRuralCommune",
-    label: "Giá máy thi công phường/xã",
+    label: "Giá máy thi công huyện",
     sortable: true,
     align: "center" as const,
   },
