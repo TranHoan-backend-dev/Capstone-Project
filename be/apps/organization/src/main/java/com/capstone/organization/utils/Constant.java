@@ -15,5 +15,5 @@ public final class Constant {
   public static final String ORG_12 = "Công việc không tồn tại";
   public static final String ORG_13 = "Tên công việc đã tồn tại";
   public static final String ORG_14 = "Không thể xóa công việc đang có nhân viên đảm nhiệm";
-  public static final String ORG_15 = "Định dạng ngày không hợp lệ (yyyy-MM-dd)";
+  public static final String ORG_15 = "";
 }

@@ -1,8 +1,8 @@
 package com.capstone.organization.service.impl;
 
 import com.capstone.common.exception.ExistingException;
-import com.capstone.organization.dto.request.CreateDepartmentRequest;
-import com.capstone.organization.dto.request.UpdateDepartmentRequest;
+import com.capstone.organization.dto.request.department.CreateDepartmentRequest;
+import com.capstone.organization.dto.request.department.UpdateDepartmentRequest;
 import com.capstone.organization.model.Department;
 import com.capstone.organization.repository.DepartmentRepository;
 import com.capstone.organization.utils.Constant;

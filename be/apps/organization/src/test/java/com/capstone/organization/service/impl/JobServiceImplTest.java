@@ -1,9 +1,9 @@
 package com.capstone.organization.service.impl;
 
 import com.capstone.common.response.WrapperApiResponse;
-import com.capstone.organization.dto.request.CreateJobRequest;
-import com.capstone.organization.dto.request.UpdateJobRequest;
-import com.capstone.organization.dto.request.FilterJobRequest;
+import com.capstone.organization.dto.request.job.CreateJobRequest;
+import com.capstone.organization.dto.request.job.UpdateJobRequest;
+import com.capstone.organization.dto.request.job.FilterJobRequest;
 import com.capstone.organization.model.Job;
 import com.capstone.organization.repository.JobRepository;
 import com.capstone.organization.service.boundary.EmployeeService;

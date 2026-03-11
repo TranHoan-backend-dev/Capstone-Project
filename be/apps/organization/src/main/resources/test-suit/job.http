@@ -1,51 +1,106 @@
-### Job API Test Suit
+@baseUrl = http://localhost:9008/api/v1
+@jobId = b015cb0e-cc4f-4803-8e98-75d858e93e52
+@existingJobId = 2420a323-e180-4927-b956-654761026048
 
-@baseUrl = http://localhost:8080/organization/api/v1
-@jobId = YOUR_JOB_ID_HERE
+###############################################################################
+### 1. CREATE JOB (C)
+###############################################################################
 
-### 1. Tạo công việc mới (Thành công)
+### 1.1 Tạo công việc mới (Thành công)
 POST {{baseUrl}}/jobs
 Content-Type: application/json
-Authorization: Bearer {{token}}
+Authorization: Bearer {{access_token}}
 
 {
   "name": "Kỹ sư phần mềm"
 }
 
-### 2. Tạo công việc mới (Tên đã tồn tại - Chờ đợi 400 hoặc 500 nếu bắn Exception)
+### 1.2 Tạo công việc mới (Tên đã tồn tại) - Mong đợi 400/IllegalArgument
 POST {{baseUrl}}/jobs
 Content-Type: application/json
-Authorization: Bearer {{token}}
+Authorization: Bearer {{access_token}}
 
 {
   "name": "Kỹ sư phần mềm"
 }
 
-### 3. Lấy danh sách công việc (Không lọc)
+### 1.3 Tạo công việc mới (Tên trống) - Mong đợi 400 Validation
+POST {{baseUrl}}/jobs
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "name": ""
+}
+
+###############################################################################
+### 2. READ JOB (R)
+###############################################################################
+
+### 2.1 Lấy danh sách (Không lọc)
 GET {{baseUrl}}/jobs?page=0&size=10
-Authorization: Bearer {{token}}
+Authorization: Bearer {{access_token}}
 
-### 4. Lấy danh sách công việc (Tìm kiếm theo tên)
-GET {{baseUrl}}/jobs?name=Kỹ sư&page=0&size=10
-Authorization: Bearer {{token}}
+### 2.2 Lấy danh sách (Tìm kiếm theo tên tiếng Việt)
+GET {{baseUrl}}/jobs?name=Ky su&page=0&size=10
+Authorization: Bearer {{access_token}}
 
-### 5. Lấy danh sách công việc (Lọc theo ngày)
-GET {{baseUrl}}/jobs?fromDate=2024-03-01 00:00:00&toDate=2026-12-31 23:59:59&page=0&size=10
-Authorization: Bearer {{token}}
+### 2.3 Lấy danh sách (Lọc theo khoảng ngày)
+GET {{baseUrl}}/jobs?fromDate=2026-02-17&toDate=2026-12-31&page=0&size=10
+Authorization: Bearer {{access_token}}
 
-### 6. Cập nhật công việc (Thành công)
+### 2.4 Lấy danh sách (Kết hợp tên và ngày)
+GET {{baseUrl}}/jobs?name=ky&fromDate=2024-01-01&toDate=2026-12-31&page=0&size=10
+Authorization: Bearer {{access_token}}
+
+### 2.5 Lấy danh sách (Sai định dạng ngày) - Mong đợi 400
+GET {{baseUrl}}/jobs?fromDate=01-01-2024&page=0&size=10
+Authorization: Bearer {{access_token}}
+
+###############################################################################
+### 3. UPDATE JOB (U)
+###############################################################################
+
+### 3.1 Cập nhật thông tin (Thành công)
 PUT {{baseUrl}}/jobs/{{jobId}}
 Content-Type: application/json
-Authorization: Bearer {{token}}
+Authorization: Bearer {{access_token}}
 
 {
-  "name": "Kỹ sư phần mềm Senior"
+  "name": "Kỹ sư phần mềm bậc 2"
 }
 
-### 7. Xóa công việc (Thành công nết không có nhân viên)
-DELETE {{baseUrl}}/jobs/{{jobId}}
-Authorization: Bearer {{token}}
+### 3.2 Cập nhật trùng tên với Job khác - Mong đợi 400
+PUT {{baseUrl}}/jobs/{{jobId}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
 
-### 8. Kiểm tra sự tồn tại (Nội bộ)
-GET {{baseUrl}}/jobs/exist/{{jobId}}
-Authorization: Bearer {{token}}
+{
+  "name": "Cấp quản lý xem báo cáo"
+}
+
+### 3.3 Cập nhật với ID không tồn tại - Mong đợi 400/404
+PUT {{baseUrl}}/jobs/non-exists-id
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "name": "New Name"
+}
+
+###############################################################################
+### 4. DELETE JOB (D)
+###############################################################################
+
+### 4.1 Xóa công việc đang có nhân viên đảm nhiệm - Mong đợi 400
+# (Phải gán jobId này cho 1 nhân viên trước khi test)
+DELETE {{baseUrl}}/jobs/{{existingJobId}}
+Authorization: Bearer {{access_token}}
+
+### 4.2 Xóa công việc không tồn tại - Mong đợi 400/404
+DELETE {{baseUrl}}/jobs/invalid-id
+Authorization: Bearer {{access_token}}
+
+### 4.3 Xóa công việc thành công (Không có nhân viên)
+DELETE {{baseUrl}}/jobs/{{jobId}}
+Authorization: Bearer {{access_token}}

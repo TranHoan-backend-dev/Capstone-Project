@@ -1,9 +1,9 @@
 package com.capstone.organization.service.impl;
 
 import com.capstone.common.annotation.AppLog;
-import com.capstone.organization.dto.request.CreateJobRequest;
-import com.capstone.organization.dto.request.UpdateJobRequest;
-import com.capstone.organization.dto.request.FilterJobRequest;
+import com.capstone.organization.dto.request.job.CreateJobRequest;
+import com.capstone.organization.dto.request.job.UpdateJobRequest;
+import com.capstone.organization.dto.request.job.FilterJobRequest;
 import com.capstone.organization.dto.response.JobResponse;
 import com.capstone.organization.dto.response.PagedJobResponse;
 import com.capstone.organization.model.Job;
