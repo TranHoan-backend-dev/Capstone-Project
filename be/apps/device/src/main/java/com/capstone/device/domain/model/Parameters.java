@@ -49,6 +49,17 @@ public class Parameters {
   }
 
   // <editor-fold desc="setter">
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public void setValue(BigDecimal value) {
+    this.value = value;
+  }
+
+  public void setUpdator(String updator) {
+    this.updator = updator;
+  }
   // </editor-fold>
 
   // <editor-fold desc="builder">

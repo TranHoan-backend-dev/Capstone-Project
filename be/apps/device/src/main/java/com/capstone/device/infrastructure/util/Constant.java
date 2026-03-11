@@ -1,53 +1,58 @@
 package com.capstone.device.infrastructure.util;
 
 public final class Constant {
-  public static final String ENT_01 = "Name cannot be null or empty";
-  public static final String ENT_02 = "Lateral ID cannot be null or empty";
+  public static final String ENT_01 = "Tên không được để trống";
+  public static final String ENT_02 = "Id của nhánh tổng không được để trống";
 
-  public static final String ENT_03 = "Price cannot be null";
-  public static final String ENT_04 = "Price cannot be null or negative";
+  public static final String ENT_03 = "Giá không được để trống";
+  public static final String ENT_04 = "Giá không được để trống hoặc là số âm";
 
-  public static final String ENT_05 = "Job content cannot be null or empty";
+  public static final String ENT_05 = "Nội dung công việc không được để trống";
 
-  public static final String ENT_06 = "Labor price cannot be null";
-  public static final String ENT_07 = "Labor price cannot be negative";
+  public static final String ENT_06 = "Giá nhân công không được để trống";
+  public static final String ENT_07 = "Giá nhân công không được là số âm";
 
-  public static final String ENT_08 = "Labor price at rural commune cannot be negative";
-  public static final String ENT_09 = "Labor price at rural commune cannot be null";
+  public static final String ENT_08 = "Giá nhân công tại xã nông thôn không được là số âm";
+  public static final String ENT_09 = "Giá nhân công tại xã nông thôn không được để trống";
 
-  public static final String ENT_10 = "Construction machinery price cannot be null";
-  public static final String ENT_29 = "Construction machinery price cannot be negative";
+  public static final String ENT_10 = "Giá máy thi công không được để trống";
+  public static final String ENT_29 = "Giá máy thi công không được là số âm";
 
-  public static final String ENT_21 = "Construction machinery price at rural commune cannot be null";
-  public static final String ENT_211 = "Construction machinery price at rural commune cannot be negative";
+  public static final String ENT_21 = "Giá máy thi công tại xã nông thôn không được để trống";
+  public static final String ENT_211 = "Giá máy thi công tại xã nông thôn không được là số âm";
 
-  public static final String ENT_18 = "Installation date cannot be null";
-  public static final String ENT_11 = "Size must be greater than 0";
-  public static final String ENT_12 = "Price cannot be negative";
-  public static final String ENT_13 = "Water meter type cannot be null";
-  public static final String ENT_14 = "Origin cannot be null or empty";
-  public static final String ENT_15 = "Meter model cannot be null or empty";
-  public static final String ENT_16 = "Diameter must be positive";
-  public static final String ENT_17 = "Usage target cannot be null or empty";
-  public static final String ENT_19 = "Tax cannot be null or negative";
-  public static final String ENT_20 = "Environment price cannot be negative";
-  public static final String ENT_22 = "Application period cannot be null";
-  public static final String ENT_23 = "Description cannot be null";
-  public static final String ENT_24 = "Water meters list cannot be null";
-  public static final String ENT_25 = "Qmin list cannot be null";
-  public static final String ENT_26 = "Qn list cannot be null";
-  public static final String ENT_27 = "Qt list cannot be null";
-  public static final String ENT_28 = "Max index cannot be null";
-  public static final String ENT_30 = "Labor cost cannot be null or empty";
-  public static final String ENT_31 = "Material cost cannot be null or empty";
-  public static final String ENT_32 = "ID cannot be null";
-  public static final String ENT_33 = "Material cannot be null";
-  public static final String ENT_34 = "Note cannot be null";
-  public static final String ENT_35 = "Materials group cannot be null";
-  public static final String ENT_36 = "Unit cannot be null";
-  public static final String ENT_37 = "Expiration date cannot be null";
-  public static final String ENT_45 = "Group id cannot be null or empty";
-  public static final String ENT_46 = "Calculation unit id cannot be null or empty";
-  public static final String ENT_47 = "Labor code cannot be null or empty";
-  public static final String ENT_48 = "This water price is still used by customers";
+  public static final String ENT_18 = "Ngày lắp đặt không được để trống";
+  public static final String ENT_11 = "Kích thước phải lớn hơn 0";
+  public static final String ENT_12 = "Giá không được là số âm";
+  public static final String ENT_13 = "Loại đồng hồ nước không được để trống";
+  public static final String ENT_14 = "Nguồn gốc đồng hồ không được để trống";
+  public static final String ENT_15 = "Kiểu đồng hồ không được để trống";
+  public static final String ENT_16 = "Đường kính phải là số dương";
+  public static final String ENT_17 = "Mục đích sử dụng không được để trống";
+  public static final String ENT_19 = "Thuế không được để trống hoặc là số âm";
+  public static final String ENT_20 = "Phí bảo vệ môi trường không được là số âm";
+  public static final String ENT_22 = "Thời hạn áp dụng không được để trống";
+  public static final String ENT_23 = "Mô tả không được để trống";
+  public static final String ENT_24 = "Danh sách đồng hồ nước không được để trống";
+  public static final String ENT_25 = "Danh sách Qmin không được để trống";
+  public static final String ENT_26 = "Danh sách Qn không được để trống";
+  public static final String ENT_27 = "Danh sách Qt không được để trống";
+  public static final String ENT_28 = "Chỉ số tối đa không được để trống";
+  public static final String ENT_30 = "Đơn giá nhân công không được để trống";
+  public static final String ENT_31 = "Đơn giá vật tư không được để trống";
+  public static final String ENT_32 = "Id không được để trống";
+  public static final String ENT_33 = "Vật tư không được để trống";
+  public static final String ENT_34 = "Ghi chú không được để trống";
+  public static final String ENT_35 = "Nhóm vật tư không được để trống";
+  public static final String ENT_36 = "Đơn vị không được để trống";
+  public static final String ENT_37 = "Ngày hết hạn không được để trống";
+  public static final String ENT_45 = "Id của nhóm không được để trống";
+  public static final String ENT_46 = "Id của đơn vị tính không được để trống";
+  public static final String ENT_47 = "Mã nhân công không được để trống";
+  public static final String ENT_48 = "Giá nước này vẫn đang được khách hàng sử dụng";
+  public static final String ENT_49 = "Tên đơn vị đo không được để trống";
+  public static final String ENT_50 = "Tên tham số không được để trống";
+  public static final String ENT_51 = "Giá trị tham số không được để trống";
+  public static final String ENT_52 = "ID của người cập nhật không được để trống";
+  public static final String ENT_53 = "Giá trị tham số không được là số âm";
 }
