@@ -1,5 +1,6 @@
 package com.capstone.device.domain.model;
 
+import com.capstone.common.utils.SharedMessage;
 import com.capstone.device.infrastructure.util.Message;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,7 +29,7 @@ public class OverallWaterMeter {
   String lateralId;
 
   public void setName(String name) {
-    requireNonNullAndNotEmpty(name, Message.ENT_01);
+    requireNonNullAndNotEmpty(name, SharedMessage.MES_05);
     this.name = name;
   }
 

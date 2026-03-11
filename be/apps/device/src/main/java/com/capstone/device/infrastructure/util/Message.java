@@ -50,4 +50,6 @@ public final class Message {
   public static final String ENT_50 = "Tên tham số không được để trống";
   public static final String ENT_51 = "Giá trị tham số không được để trống";
   public static final String ENT_53 = "Giá trị tham số không được là số âm";
+  public static final String ENT_54 = "Tên công việc không được để trống";
+  public static final String ENT_55 = "Ghi chú không được là số âm";
 }

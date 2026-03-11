@@ -1,6 +1,7 @@
 package com.capstone.device.application.dto.request.metertype;
 
 import com.capstone.device.infrastructure.util.Message;
+import com.capstone.common.utils.SharedMessage;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -9,7 +10,7 @@ import jakarta.validation.constraints.Positive;
 @Schema(description = "Yêu cầu tạo mới loại đồng hồ nước")
 public record CreateRequest(
   @Schema(description = "Tên loại đồng hồ", example = "Đồng hồ nước lạnh")
-  @NotBlank(message = Message.ENT_01) String name,
+  @NotBlank(message = SharedMessage.MES_05) String name,
 
   @Schema(description = "Xuất xứ", example = "Việt Nam")
   @NotBlank(message = Message.ENT_14) String origin,

@@ -1,5 +1,6 @@
 package com.capstone.device.domain.model;
 
+import com.capstone.common.utils.SharedMessage;
 import com.capstone.device.domain.model.utils.MaterialsOfCostEstimateId;
 import com.capstone.device.infrastructure.util.Message;
 import jakarta.persistence.*;
@@ -33,7 +34,7 @@ public class MaterialsOfCostEstimate {
   String note;
 
   public void setId(MaterialsOfCostEstimateId id) {
-    this.id = Objects.requireNonNull(id, Message.ENT_32);
+    this.id = Objects.requireNonNull(id, SharedMessage.MES_07);
   }
 
   public void setMaterial(Material material) {
@@ -53,7 +54,7 @@ public class MaterialsOfCostEstimate {
   }
 
   public void setNote(String note) {
-    this.note = Objects.requireNonNull(note, Message.ENT_34);
+    this.note = Objects.requireNonNull(note, Message.ENT_55);
   }
 
   public static MaterialsOfCostEstimate create(Consumer<MaterialsOfCostEstimateBuilder> consumer) {
@@ -91,11 +92,11 @@ public class MaterialsOfCostEstimate {
     }
 
     public MaterialsOfCostEstimate build() {
-      Objects.requireNonNull(instance.id, Message.ENT_32);
+      Objects.requireNonNull(instance.id, SharedMessage.MES_07);
       Objects.requireNonNull(instance.material, Message.ENT_33);
       Objects.requireNonNull(instance.laborCost, Message.ENT_30);
       Objects.requireNonNull(instance.materialCost, Message.ENT_31);
-      Objects.requireNonNull(instance.note, Message.ENT_34);
+      Objects.requireNonNull(instance.note, Message.ENT_55);
       return instance;
     }
   }

@@ -14,8 +14,8 @@ public record CreateRequest(
   String laborCode,
 
   @Schema(description = "Job content / Description of the material", example = "Đào đất bằng thủ công")
-  @NotBlank(message = Message.ENT_05)
-  @NotEmpty(message = Message.ENT_05)
+  @NotBlank(message = Message.ENT_54)
+  @NotEmpty(message = Message.ENT_54)
   String jobContent,
 
   @Schema(description = "Material price", example = "100000.00")
