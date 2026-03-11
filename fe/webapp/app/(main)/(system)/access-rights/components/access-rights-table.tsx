@@ -6,8 +6,15 @@ import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import { AccessRightsItem } from "@/types";
 import { UserPermissionPanel } from "./user-permission-panel";
 import { Button, Tooltip } from "@heroui/react";
-import { DeleteIcon } from "@/config/chip-and-icon";
+import { DeleteIcon, EditIcon } from "@/config/chip-and-icon";
 import { ACCESS_RIGHTS_COLUMNS } from "@/config/table-columns";
+import {
+  Modal,
+  ModalContent,
+  ModalBody,
+  ModalHeader,
+  ModalFooter,
+} from "@heroui/react";
 
 interface Props {
   username: string;
@@ -30,6 +37,7 @@ export const AccessRightsTable = ({ username }: Props) => {
     username: string;
   } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -93,21 +101,35 @@ export const AccessRightsTable = ({ username }: Props) => {
   }, [page, formData, username]);
 
   const handleSelectUser = (item: AccessRightsItem) => {
-    setSelectedUser((prev) =>
-      prev?.id === item.id ? null : { id: item.id, username: item.username },
-    );
+    setSelectedUser({
+      id: item.id,
+      username: item.username,
+    });
+    setIsModalOpen(true);
   };
 
   const actionItems = useMemo(
     () => [
       {
-        content: "Xóa",
-        icon: DeleteIcon,
-        className: "text-red-500 hover:bg-red-50",
-        onClick: (id: string) => console.log("Xóa:", id),
+        content: "Chỉnh sửa",
+        icon: EditIcon,
+        className:
+          "text-amber-500 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/30",
+        onClick: (id: string) => {
+          const found = data.find((i) => i.id === id);
+
+          if (found) {
+            setSelectedUser({
+              id: found.id,
+              username: found.username,
+            });
+
+            setIsModalOpen(true);
+          }
+        },
       },
     ],
-    [],
+    [data],
   );
   const renderCell = (item: AccessRightsItem, columnKey: string) => {
     switch (columnKey) {
@@ -159,12 +181,6 @@ export const AccessRightsTable = ({ username }: Props) => {
 
   return (
     <>
-      {selectedUser && (
-        <UserPermissionPanel
-          empId={selectedUser.id}
-          username={selectedUser.username}
-        />
-      )}
       <GenericDataTable
         isLoading={loading}
         title="Quản lý quyền truy cập"
@@ -180,6 +196,36 @@ export const AccessRightsTable = ({ username }: Props) => {
           summary: `${totalItems}`,
         }}
       />
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        size="3xl"
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader>Quyền truy cập</ModalHeader>
+
+              <ModalBody>
+                {selectedUser && (
+                  <UserPermissionPanel
+                    empId={selectedUser.id}
+                    username={selectedUser.username}
+                  />
+                )}
+              </ModalBody>
+
+              <ModalFooter>
+                <Button variant="light" onPress={onClose}>
+                  Huỷ
+                </Button>
+
+                <Button color="success">Lưu</Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </>
   );
 };

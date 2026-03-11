@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Card, Checkbox, Spinner, TableBody } from "@heroui/react";
+import { Checkbox, Spinner } from "@heroui/react";
 
 interface UserPermissionPanelProps {
   empId: string;
@@ -61,32 +61,30 @@ export const UserPermissionPanel = ({
   }, [empId]);
 
   return (
-    <Card
-      className="overflow-hidden bg-content1 transition-all duration-300"
-      shadow="sm"
-    >
-      <div className="rounded-xl bg-white p-6 shadow-sm border-none rounded-xl bg-content1 overflow-hidden transition-all duration-300">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold">
-            Người dùng: <span className="text-blue-600">{username}</span>
-          </h3>
+    <div className="space-y-4 pb-6">
+      <div className="flex items-center justify-between border-b pb-3">
+        <h3 className="text-base font-semibold">
+          Người dùng: <span className="text-blue-600">{username}</span>
+        </h3>
 
-          <Checkbox isSelected={isAllSelected} onChange={handleToggleAll}>
-            {isAllSelected ? "Bỏ chọn hết" : "Chọn hết"}
-          </Checkbox>
-        </div>
+        <Checkbox isSelected={isAllSelected} onChange={handleToggleAll}>
+          {isAllSelected ? "Bỏ chọn hết" : "Chọn hết"}
+        </Checkbox>
+      </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {loading ? (
-            <div className="col-span-full flex justify-center">
-              <Spinner label="Loading..." />
-            </div>
-          ) : permissions.length === 0 ? (
-            <div className="col-span-full text-center text-gray-500">
-              Không có dữ liệu để hiển thị
-            </div>
-          ) : (
-            permissions.map((permission) => (
+      {/* Permission list */}
+      <div className="rounded-xl border bg-default-50 p-4">
+        {loading ? (
+          <div className="flex justify-center py-6">
+            <Spinner label="Loading..." />
+          </div>
+        ) : permissions.length === 0 ? (
+          <div className="text-center text-gray-500 py-6">
+            Không có dữ liệu để hiển thị
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {permissions.map((permission) => (
               <Checkbox
                 key={permission}
                 isSelected={selectedPermissions.includes(permission)}
@@ -94,10 +92,10 @@ export const UserPermissionPanel = ({
               >
                 {permission}
               </Checkbox>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
-    </Card>
+    </div>
   );
 };
