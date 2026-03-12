@@ -20,7 +20,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 @AppLog
 @Service
@@ -122,13 +125,32 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   @Override
   public PageResponse<CostEstimateResponse> getAllEstimates(Pageable pageable, BaseFilterRequest request) {
     log.info("Fetching all cost estimates with pageable: {}", pageable);
-    var page = request == null ? eRepo.findAll(pageable) : eRepo.findAll(
+    var startDate = parseFrom(request != null ? request.from() : null);
+    var endDate = parseTo(request != null ? request.to() : null);
+
+    var keyword = request == null ? null : request.keyword();
+
+    var page = (startDate != null || endDate != null || (keyword != null && !keyword.isBlank())) ? eRepo.findAll(
       CostEstimateRepository.search(
-        request.keyword(),
-        LocalDateTime.parse(request.from()),
-        LocalDateTime.parse(request.to())
-      ), pageable);
+        keyword,
+        startDate,
+        endDate
+      ), pageable) : eRepo.findAll(pageable);
     return PageResponse.fromPage(page, this::mapToResponse);
+  }
+
+  private LocalDateTime parseFrom(String from) {
+    if (from == null || from.isBlank()) {
+      return null;
+    }
+    return LocalDate.parse(from, DateTimeFormatter.ofPattern("dd-MM-yyyy")).atStartOfDay();
+  }
+
+  private LocalDateTime parseTo(String to) {
+    if (to == null || to.isBlank()) {
+      return null;
+    }
+    return LocalDate.parse(to, DateTimeFormatter.ofPattern("dd-MM-yyyy")).atTime(LocalTime.MAX);
   }
 
   private @NonNull CostEstimateResponse mapToResponse(@NonNull CostEstimate estimate) {

@@ -76,7 +76,7 @@ public class CostEstimateController {
   })
   public ResponseEntity<WrapperApiResponse> getAllEstimates(
     @PageableDefault @Parameter(description = "Pagination parameters") Pageable pageable,
-    @RequestParam(required = false) BaseFilterRequest request
+    @Parameter(description = "Thông tin lọc (từ khóa, khoảng thời gian)") BaseFilterRequest request
   ) {
     log.info("REST request to get all cost estimates");
     var response = estimateUseCase.getAllEstimates(pageable, request);
