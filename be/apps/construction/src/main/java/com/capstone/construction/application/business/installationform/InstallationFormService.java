@@ -21,5 +21,5 @@ public interface InstallationFormService {
 
   InstallationFormListResponse getByFormCodeAndFormNumber(String formCode, String formNumber);
 
-  Boolean checkFormBelongedToNetwork(String id);
+  Boolean checkAnyFormsBelongedToNetwork(String id);
 }

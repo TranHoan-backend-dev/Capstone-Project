@@ -169,7 +169,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   }
 
   @Override
-  public Boolean checkFormBelongedToNetwork(String id) {
+  public Boolean checkAnyFormsBelongedToNetwork(String id) {
     log.info("Checking if installation form with id: {}", id);
     return ifRepo.existsByNetwork_BranchId(id);
   }

@@ -113,7 +113,7 @@ public class LateralServiceImpl implements LateralService {
   }
 
   @Override
-  public Boolean checkLateralBelongedToNetwork(String id) {
+  public Boolean checkAnyLateralsBelongedToNetwork(String id) {
     log.info("Checking lateral belonged to network with id: {}", id);
     return lateralRepository.existsByNetwork_BranchId(id);
   }

@@ -33,10 +33,10 @@ public class WaterSupplyNetworkUseCase {
   }
 
   public void deleteNetwork(String id) {
-    var status1 = empSrv.checkIfEmployeeBelongedToNetwork(id).data().toString();
-    var status2 = lService.checkLateralBelongedToNetwork(id);
-    var status3 = iService.checkFormBelongedToNetwork(id);
-    if (!Boolean.parseBoolean(status1) || !status2 || !status3) {
+    var status1 = empSrv.checkAnyEmployeesBelongedToNetwork(id).data().toString();
+    var status2 = lService.checkAnyLateralsBelongedToNetwork(id);
+    var status3 = iService.checkAnyFormsBelongedToNetwork(id);
+    if (Boolean.parseBoolean(status1) || status2 || status3) {
       throw new IllegalArgumentException("Cannot delete network with id " + id + " because there are huge of resources are using this network");
     }
     networkService.deleteNetwork(id);
