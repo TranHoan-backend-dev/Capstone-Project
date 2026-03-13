@@ -1,8 +1,7 @@
 package com.capstone.construction.infrastructure.utils;
 
 public final class Message {
-  // for dto and entity layer
-  public static final String PT_01 = "Mã đơn không được để trống";
+  public static final String PT_01 = "Thôn/Làng %s đã tồn tại";
   public static final String PT_02 = "Nhân viên chi nhánh Xây lắp không được để trống";
   public static final String PT_03 = "Trạng thái xử lý không được để trống";
   public static final String PT_04 = "Ngày đăng ký không được để trống";
@@ -54,12 +53,15 @@ public final class Message {
   public static final String PT_50 = "Phí đấu nối không được để trống";
   public static final String PT_51 = "Lịch hẹn khảo sát không được để trống";
   public static final String PT_52 = "Nhân viên phòng Kế hoạch - Kỹ thuật xử lý phiếu lắp đặt không được để trống";
-
-  // for service layer
-  public static final String SE_01 = "Số đơn hoặc mã đơn đã tồn tại";
-  public static final String SE_02 = "Không tìm thấy nhánh tổng";
-  public static final String SE_03 = "Không tìm thấy chi nhánh cấp nước";
-  public static final String SE_04 = "Không tìm thấy xã/phường";
-  public static final String SE_05 = "Tên chi nhánh cấp nước đã tồn tại";
-  public static final String SE_06 = "Không tìm thấy đồng hồ tổng";
+  public static final String PT_53 = "Số đơn hoặc mã đơn đã tồn tại";
+  public static final String PT_54 = "Không tìm thấy nhánh tổng";
+  public static final String PT_55 = "Không tìm thấy chi nhánh cấp nước";
+  public static final String PT_56 = "Không tìm thấy xã/phường";
+  public static final String PT_57 = "Tên chi nhánh cấp nước đã tồn tại";
+  public static final String PT_58 = "Không tìm thấy đồng hồ tổng";
+  public static final String PT_59 = "Đơn lắp đặt mới với số đơn %s và mã đơn %s không tồn tại";
+  public static final String PT_60 = "Đơn lắp đặt với số đơn %s và mã đơn %s không tồn tại";
+  public static final String PT_61 = "Dự toán với id %s không tồn tại";
+  public static final String PT_62 = "Thôn/Làng với id %s không tìm thấy";
+  public static final String PT_63 = "Thôn/Làng với tên %s đã tồn tại";
 }

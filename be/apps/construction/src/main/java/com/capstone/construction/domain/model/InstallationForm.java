@@ -252,7 +252,7 @@ public class InstallationForm {
   }
 
   public void setFormCode(String value) {
-    requireNonNullAndNotEmpty(value, Message.PT_01);
+    requireNonNullAndNotEmpty(value, Message.PT_08);
     this.id.setFormCode(value);
   }
 

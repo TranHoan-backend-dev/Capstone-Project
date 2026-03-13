@@ -72,7 +72,7 @@ class InstallationFormHandlingUseCaseTest {
     // When & Then
     assertThatThrownBy(() -> useCase.createNewInstallationRequest(request))
         .isInstanceOf(ExistingItemException.class)
-        .hasMessage(Message.SE_01);
+        .hasMessage(Message.PT_53);
 
     verify(ifSrv).isInstallationFormExisting("FORM-001", "CODE-001");
     verify(ifSrv, never()).createNewInstallationForm(any());

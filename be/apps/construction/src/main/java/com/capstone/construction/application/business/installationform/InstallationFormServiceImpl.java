@@ -53,7 +53,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
     }
 
     if (!checkMeterExisting(request.overallWaterMeterId())) {
-      throw new IllegalArgumentException(Message.SE_06);
+      throw new IllegalArgumentException(Message.PT_58);
     }
 
     var entity = InstallationForm.create(builder -> builder

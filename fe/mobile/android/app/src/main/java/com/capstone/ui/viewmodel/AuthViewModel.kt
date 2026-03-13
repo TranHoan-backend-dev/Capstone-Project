@@ -18,6 +18,9 @@ import com.capstone.infrastructure.security.AntiBruteForceManager
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val authRepository: AuthRepository,
+    private val loginUseCase: com.capstone.domain.usecase.LoginUseCase,
+    private val forgotPasswordUseCase: com.capstone.domain.usecase.ForgotPasswordUseCase,
+    private val changePasswordUseCase: com.capstone.domain.usecase.ChangePasswordUseCase,
     private val bruteForceManager: AntiBruteForceManager
 ) : ViewModel() {
 
@@ -26,15 +29,17 @@ class AuthViewModel @Inject constructor(
 
     /**
      * Thực hiện đăng nhập bằng token từ Keycloak.
-     * Luồng: UI -> AuthViewModel.login -> AuthRepository -> Backend
+     * Luồng: UI -> AuthViewModel.login -> LoginUseCase (Kiểm tra quyền truy cập) -> AuthRepository -> Backend
      */
     fun login(accessToken: String) {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
-            try {
-                val profile = authRepository.login(accessToken)
+            
+            val result = loginUseCase.execute(accessToken)
+            
+            result.onSuccess { profile ->
                 _authState.value = AuthState.AuthSuccess(profile)
-            } catch (e: Exception) {
+            }.onFailure { e ->
                 _authState.value = AuthState.Error(e.message ?: "Login failed")
             }
         }
@@ -46,10 +51,10 @@ class AuthViewModel @Inject constructor(
     fun sendOtp(email: String) {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
-            try {
-                val message = authRepository.sendOtp(email)
+            val result = forgotPasswordUseCase.sendOtp(email)
+            result.onSuccess { message ->
                 _authState.value = AuthState.MessageSent(message)
-            } catch (e: Exception) {
+            }.onFailure { e ->
                 _authState.value = AuthState.Error(e.message ?: "Failed to send OTP")
             }
         }
@@ -67,11 +72,11 @@ class AuthViewModel @Inject constructor(
 
         viewModelScope.launch {
             _authState.value = AuthState.Loading
-            try {
-                val message = authRepository.verifyOtp(email, otp)
+            val result = forgotPasswordUseCase.verifyOtp(email, otp)
+            result.onSuccess { message ->
                 bruteForceManager.resetAttempts(email)
                 _authState.value = AuthState.MessageSent(message)
-            } catch (e: Exception) {
+            }.onFailure { e ->
                 bruteForceManager.recordFailure(email)
                 val remaining = bruteForceManager.getRemainingAttempts(email)
                 _authState.value = AuthState.Error("Mã OTP không chính xác. Bạn còn $remaining lần thử.")
@@ -91,16 +96,32 @@ class AuthViewModel @Inject constructor(
 
         viewModelScope.launch {
             _authState.value = AuthState.Loading
-            try {
-                val message = authRepository.resetPassword(email, otp, newPass)
+            val result = forgotPasswordUseCase.resetPassword(email, otp, newPass)
+            result.onSuccess { message ->
                 bruteForceManager.resetAttempts(email)
                 _authState.value = AuthState.MessageSent(message)
-            } catch (e: Exception) {
+            }.onFailure { e ->
                 bruteForceManager.recordFailure(email)
                 _authState.value = AuthState.Error(e.message ?: "Đặt lại mật khẩu thất bại.")
             }
         }
     }
+
+    /**
+     * Thay đổi mật khẩu khi đã đăng nhập.
+     */
+    fun changePassword(oldPass: String, newPass: String, confirmPass: String) {
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+            val result = changePasswordUseCase.execute(oldPass, newPass, confirmPass)
+            result.onSuccess { message ->
+                _authState.value = AuthState.MessageSent(message)
+            }.onFailure { e ->
+                _authState.value = AuthState.Error(e.message ?: "Failed to change password")
+            }
+        }
+    }
+
 
     /**
      * Lấy thông tin người dùng hiện tại (sử dụng session đã lưu).

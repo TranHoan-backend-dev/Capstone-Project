@@ -1,4 +1,4 @@
-package com.capstone.common.config;
+package com.capstone.common.config.feign;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;

@@ -1,4 +1,4 @@
-package com.capstone.common.config;
+package com.capstone.common.config.keycloak;
 
 import lombok.AccessLevel;
 import lombok.Data;

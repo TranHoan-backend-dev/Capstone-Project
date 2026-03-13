@@ -125,7 +125,7 @@ class InstallationFormServiceImplTest {
     // When & Then
     assertThatThrownBy(() -> service.createNewInstallationForm(request))
       .isInstanceOf(IllegalArgumentException.class)
-      .hasMessage(Message.SE_06);
+      .hasMessage(Message.PT_58);
   }
 
   @Test

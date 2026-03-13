@@ -4,7 +4,7 @@ import com.capstone.auth.application.dto.request.users.FilterUsersRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
 import com.capstone.common.enumerate.RoleName;
 import com.capstone.common.exception.ExistingException;
-import com.capstone.auth.application.exception.NotExistingException;
+import com.capstone.common.exception.NotExistingException;
 import com.capstone.auth.domain.model.EmployeeJob;
 import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.domain.model.Roles;
