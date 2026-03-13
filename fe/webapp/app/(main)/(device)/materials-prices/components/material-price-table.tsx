@@ -11,6 +11,8 @@ import {
 import { MATERIAL_PRICE_COLUMN } from "@/config/table-columns";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import { CallToast } from "@/components/ui/CallToast";
+import { authFetch } from "@/utils/authFetch";
+import { ConfirmDialog } from "@/components/ui/modal/ConfirmDialog";
 
 export const MaterialPriceTable = ({
   filter,
@@ -22,6 +24,8 @@ export const MaterialPriceTable = ({
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [sort, setSort] = useState<{
     field: string;
     direction: "asc" | "desc";
@@ -107,6 +111,37 @@ export const MaterialPriceTable = ({
     });
   };
 
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return;
+
+    try {
+      setDeleteLoading(true);
+
+      const res = await authFetch(`/api/device/materials-prices/${deleteId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Delete failed");
+
+      CallToast({
+        title: "Thành công",
+        message: "Xóa đơn giá vật tư thành công",
+        color: "success",
+      });
+
+      setDeleteId(null);
+      onDeleted();
+    } catch (e: any) {
+      CallToast({
+        title: "Lỗi",
+        message: e.message || "Có lỗi xảy ra",
+        color: "danger",
+      });
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
   useEffect(() => {
     setPage(1);
   }, [filter, reloadKey]);
@@ -127,28 +162,8 @@ export const MaterialPriceTable = ({
         content: "Xóa",
         icon: DeleteIcon,
         className: "text-red-500 hover:bg-red-50",
-        onClick: async (id: string) => {
-          if (!confirm("Bạn có chắc muốn xóa tham số này?")) return;
-
-          try {
-            const res = await fetch(`/api/device/materials-prices/${id}`, {
-              method: "DELETE",
-            });
-
-            if (!res.ok) throw new Error("Delete failed");
-            CallToast({
-              title: "Thành công",
-              message: "Xóa giá vật tư thành công",
-              color: "success",
-            });
-            onDeleted();
-          } catch (e: any) {
-            CallToast({
-              title: "Lỗi",
-              message: e.message || "Có lỗi xảy ra",
-              color: "danger",
-            });
-          }
+        onClick: (id: string) => {
+          setDeleteId(id);
         },
       },
     ],
@@ -216,6 +231,16 @@ export const MaterialPriceTable = ({
         }}
         sort={sort}
         onSortChange={handleSortChange}
+      />
+      <ConfirmDialog
+        isOpen={!!deleteId}
+        title="Xác nhận xoá"
+        message="Bạn có chắc muốn xoá đơn giá vật tư này không?"
+        confirmText="Xoá"
+        confirmColor="danger"
+        isLoading={deleteLoading}
+        onClose={() => setDeleteId(null)}
+        onConfirm={handleConfirmDelete}
       />
     </>
   );

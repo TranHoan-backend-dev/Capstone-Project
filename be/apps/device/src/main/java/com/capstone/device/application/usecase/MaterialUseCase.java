@@ -2,7 +2,7 @@ package com.capstone.device.application.usecase;
 
 import com.capstone.device.application.business.material.MaterialService;
 import com.capstone.device.application.dto.request.material.CreateRequest;
-import com.capstone.device.application.dto.request.material.GroupRequest;
+import com.capstone.device.application.dto.request.material.SearchRequest;
 import com.capstone.device.application.dto.request.material.UpdateRequest;
 import com.capstone.device.application.dto.response.MaterialResponse;
 import com.capstone.device.application.event.producer.MessageProducer;
@@ -67,8 +67,8 @@ public class MaterialUseCase {
     return mService.getMaterialById(id);
   }
 
-  public Page<MaterialResponse> getAll(Pageable pageable) {
-    return mService.getAllMaterials(pageable);
+  public Page<MaterialResponse> searchMaterials(SearchRequest request, Pageable pageable) {
+    return mService.searchMaterials(request, pageable);
   }
   // </editor-fold>
 

@@ -99,35 +99,14 @@ export const MaterialPriceForm = ({
         <div className="px-6 py-5 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <CustomInput
-              label="Mã vật tư"
-              value={materialCode}
-              onChange={(e) => setMaterialCode(e.target.value)}
-            />
-            <CustomInput
-              label="Mã hiệu"
+              label="Mã hiệu nhân công"
               value={symbol}
               onChange={(e) => setSymbol(e.target.value)}
             />
             <CustomInput
-              label="Tên vật tư"
+              label="Nội dung"
               value={name}
               onChange={(e) => setName(e.target.value)}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <CustomSelect
-              label="Đơn vị tính"
-              selectedKeys={unit}
-              onSelectionChange={setUnit}
-              options={unitOptions}
-            />
-
-            <CustomSelect
-              label="Nhóm vật tư"
-              selectedKeys={group}
-              onSelectionChange={setGroup}
-              options={groupOptions}
             />
             <CustomInput
               label="Giá vật tư"
@@ -136,31 +115,42 @@ export const MaterialPriceForm = ({
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <CustomInput
               label="Giá nhân công"
               value={laborPrice}
               onChange={(e) => setLaborPrice(e.target.value)}
             />
-            <CustomInput
-              label="Giá nhân công phường/xã"
-              value={laborPriceDistrict}
-              onChange={(e) => setLaborPriceDistrict(e.target.value)}
+            <CustomSelect
+              label="Nhóm vật tư"
+              selectedKeys={group}
+              onSelectionChange={setGroup}
+              options={groupOptions}
             />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <CustomInput
               label="Giá máy thi công"
               value={machinePrice}
               onChange={(e) => setMachinePrice(e.target.value)}
             />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <CustomInput
-              label="Giá máy thi công phường/xã"
+              label="Giá nhân công huyện"
+              value={laborPriceDistrict}
+              onChange={(e) => setLaborPriceDistrict(e.target.value)}
+            />
+            <CustomSelect
+              label="Đơn vị tính"
+              selectedKeys={unit}
+              onSelectionChange={setUnit}
+              options={unitOptions}
+            />
+            <CustomInput
+              label="Giá máy thi công huyện"
               value={machinePriceDistrict}
               onChange={(e) => setMachinePriceDistrict(e.target.value)}
             />
-            <div />
           </div>
 
           <div className="flex justify-end gap-2">

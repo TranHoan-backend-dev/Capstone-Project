@@ -62,7 +62,7 @@ const MaterialPricePage = () => {
       <Modal
         isOpen={showAddForm}
         onClose={handleCloseForm}
-        size="2xl"
+        size="5xl"
         placement="top-center"
         scrollBehavior="inside"
       >

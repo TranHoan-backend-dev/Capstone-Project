@@ -119,37 +119,22 @@ public class MaterialServiceImpl implements MaterialService {
   }
 
   @Override
-  public Page<MaterialResponse> searchMaterials(SearchRequest searchRequest, Pageable pageable) {
-    log.info("Searching materials with criteria: jobContent={}, minPrice={}, maxPrice={}",
-        searchRequest.getJobContent(), searchRequest.getMinPrice(), searchRequest.getMaxPrice());
+  public Page<MaterialResponse> searchMaterials(SearchRequest request, Pageable pageable) {
+    log.info("Searching materials with criteria: jobContent={}, laborCode={}, groupId={}, minPrice={}, maxPrice={}",
+        request.getJobContent(), request.getLaborCode(), request.getGroupId(), request.getMinPrice(), request.getMaxPrice());
 
-    if (searchRequest.getJobContent() != null && !searchRequest.getJobContent().isBlank()) {
-        if (searchRequest.getMinPrice() != null && searchRequest.getMaxPrice() != null) {
-            // Search by both jobContent and price range
-            return mRepo.findByJobContentContainingIgnoreCaseAndPriceBetween(
-                searchRequest.getJobContent(),
-                searchRequest.getMinPrice(),
-                searchRequest.getMaxPrice(),
-                pageable
-            ).map(this::mapToResponse);
-        } else {
-            // Search by jobContent only
-            return mRepo.findByJobContentContainingIgnoreCase(
-                searchRequest.getJobContent(),
-                pageable
-            ).map(this::mapToResponse);
-        }
-    } else if (searchRequest.getMinPrice() != null && searchRequest.getMaxPrice() != null) {
-        // Search by price range only
-        return mRepo.findByPriceBetween(
-            searchRequest.getMinPrice(),
-            searchRequest.getMaxPrice(),
-            pageable
-        ).map(this::mapToResponse);
-    } else {
-        // No search criteria provided, return all materials
-        return getAllMaterials(pageable);
-    }
+    String jobContent = (request.getJobContent() != null && !request.getJobContent().isBlank()) ? request.getJobContent() : null;
+    String laborCode = (request.getLaborCode() != null && !request.getLaborCode().isBlank()) ? request.getLaborCode() : null;
+    String groupId = (request.getGroupId() != null && !request.getGroupId().isBlank()) ? request.getGroupId() : null;
+
+    return mRepo.searchMaterials(
+        jobContent,
+        laborCode,
+        groupId,
+        request.getMinPrice(),
+        request.getMaxPrice(),
+        pageable
+    ).map(this::mapToResponse);
   }
 
   @Override
