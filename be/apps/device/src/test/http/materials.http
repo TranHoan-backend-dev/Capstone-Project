@@ -1,0 +1,43 @@
+### Search Materials by Name
+GET http://localhost:8080/api/materials/search?keyword=cement HTTP/1.1
+Accept: application/json
+
+### Search Materials by Price Range
+GET http://localhost:8080/api/materials/search?minPrice=100&maxPrice=500 HTTP/1.1
+Accept: application/json
+
+### Search Materials by Name and Price Range
+GET http://localhost:8080/api/materials/search?keyword=steel&minPrice=200&maxPrice=800 HTTP/1.1
+Accept: application/json
+
+### Search Materials by Name Only
+GET http://localhost:8080/api/materials/search?keyword=pipe HTTP/1.1
+Accept: application/json
+
+### Search Materials by Min Price Only
+GET http://localhost:8080/api/materials/search?minPrice=150 HTTP/1.1
+Accept: application/json
+
+### Search Materials by Max Price Only
+GET http://localhost:8080/api/materials/search?maxPrice=300 HTTP/1.1
+Accept: application/json
+
+### Search All Materials (No Filters)
+GET http://localhost:8080/api/materials/search HTTP/1.1
+Accept: application/json
+
+### Search with Pagination
+GET http://localhost:8080/api/materials/search?keyword=material&page=0&size=5&sort=jobContent,asc HTTP/1.1
+Accept: application/json
+
+### Test Invalid Parameters
+GET http://localhost:8080/api/materials/search?minPrice=500&maxPrice=100 HTTP/1.1
+Accept: application/json
+
+### Test Empty Keyword
+GET http://localhost:8080/api/materials/search?keyword= HTTP/1.1
+Accept: application/json
+
+### Test Null Parameters
+GET http://localhost:8080/api/materials/search?keyword=null&minPrice=null&maxPrice=null HTTP/1.1
+Accept: application/json
