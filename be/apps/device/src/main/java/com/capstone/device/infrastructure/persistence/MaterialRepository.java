@@ -1,20 +1,19 @@
+package com.capstone.device.infrastructure.persistence;
+
+import com.capstone.device.domain.model.Material;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
 @Repository
 public interface MaterialRepository extends JpaRepository<Material, String> {
+    Page<Material> findByJobContentContainingIgnoreCase(String jobContent, Pageable pageable);
 
-    // Search materials by name (jobContent) - case-insensitive partial match
-    List<Material> findByJobContentContainingIgnoreCase(String jobContent);
+    @Query("SELECT m FROM Material m WHERE m.jobContent LIKE %?1% AND m.price BETWEEN ?2 AND ?3")
+    Page<Material> findByJobContentContainingIgnoreCaseAndPriceBetween(String jobContent, Double minPrice, Double maxPrice, Pageable pageable);
 
-    // Filter materials by price range
-    List<Material> findByPriceBetween(BigDecimal minPrice, BigDecimal maxPrice);
-
-    // Combined search and filter - search by name AND filter by price range
-    List<Material> findByJobContentContainingIgnoreCaseAndPriceBetween(String jobContent, BigDecimal minPrice, BigDecimal maxPrice);
-    // Search materials by name (jobContent) - case-insensitive partial match
-    List<Material> findByJobContentContainingIgnoreCase(String jobContent);
-
-    // Filter materials by price range
-    List<Material> findByPriceBetween(BigDecimal minPrice, BigDecimal maxPrice);
-
-    // Combined search and filter - search by name AND filter by price range
-    List<Material> findByJobContentContainingIgnoreCaseAndPriceBetween(String jobContent, BigDecimal minPrice, BigDecimal maxPrice);
+    @Query("SELECT m FROM Material m WHERE m.price BETWEEN ?1 AND ?2")
+    Page<Material> findByPriceBetween(Double minPrice, Double maxPrice, Pageable pageable);
 }
