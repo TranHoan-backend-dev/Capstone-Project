@@ -5,6 +5,7 @@ import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
 import com.capstone.device.application.business.material.MaterialService;
 import com.capstone.device.application.dto.request.material.CreateRequest;
+import com.capstone.device.application.dto.request.material.SearchRequest;
 import com.capstone.device.application.dto.request.material.UpdateRequest;
 import com.capstone.device.application.dto.response.MaterialResponse;
 import com.capstone.device.application.usecase.MaterialUseCase;
@@ -92,9 +93,9 @@ public class MaterialController {
 
   @Operation(summary = "", description = "")
   @GetMapping
-  public ResponseEntity<WrapperApiResponse> getAllMaterials(@PageableDefault Pageable pageable) {
-    log.info("REST request to get all materials with pagination: {}", pageable);
-    var response = mUseCase.getAll(pageable);
+  public ResponseEntity<WrapperApiResponse> getAllMaterials(SearchRequest request, @PageableDefault Pageable pageable) {
+    log.info("REST request to get all materials with search: {} and pagination: {}", request, pageable);
+    var response = mUseCase.searchMaterials(request, pageable);
     return Utils.returnOkResponse("Materials retrieved successfully", response);
   }
 
