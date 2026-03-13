@@ -24,6 +24,11 @@ GET {{uri}}
 Authorization: Bearer {{access_token}}
 Accept: application/json
 
+### Get All Materials Groups (No filter)
+GET {{uri}}
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
 ### Search Materials Groups by Name (Filter)
 GET {{uri}}?filter=Xây
 Authorization: Bearer {{access_token}}
