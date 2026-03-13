@@ -11,7 +11,7 @@ import com.capstone.construction.application.event.producer.order.CreatedEvent;
 import com.capstone.construction.application.event.producer.MessageProducer;
 import com.capstone.construction.application.event.producer.order.RejectEvent;
 import com.capstone.construction.application.exception.ExistingItemException;
-import com.capstone.construction.infrastructure.utils.Constant;
+import com.capstone.construction.infrastructure.utils.Message;
 import com.capstone.construction.infrastructure.service.EmployeeService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -54,7 +54,7 @@ public class InstallationFormHandlingUseCase {
   public NewInstallationFormResponse createNewInstallationRequest(@NonNull NewOrderRequest request) {
     var routingKey = QUEUE_NAME + PREFIX + CREATE_ACTION;
     if (ifSrv.isInstallationFormExisting(request.formNumber(), request.formCode())) {
-      throw new ExistingItemException(Constant.SE_01);
+      throw new ExistingItemException(Message.SE_01);
     }
 
     var savedResponse = ifSrv.createNewInstallationForm(request);

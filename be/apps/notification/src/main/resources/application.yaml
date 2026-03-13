@@ -13,6 +13,13 @@ spring:
           initial-interval: 1000
           max-attempts: 999999
           max-interval: 5000
+  #   host: ${RABBITMQ_HOST} # cua may local
+  #   port: 5672
+  #   username: ${RABBITMQ_DEFAULT_USER}
+  #   password: ${RABBITMQ_DEFAULT_PASS}
+  # data:
+  #   mongodb:
+  #     uri: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@${MONGODB_HOST}:27017/notification?authSource=admin
   jpa:
     hibernate:
       ddl-auto: update
@@ -38,6 +45,16 @@ management:
           - metrics
           - prometheus
       base-path: /actuator
+# keycloak:
+#   server-url: http://${KEYCLOAK_HOST}:8080
+#   issuer-uri: ${keycloak.server-url}/realms/${keycloak.realms}
+#   aud:
+#     - ${KEYCLOAK_AUD}
+#   realms: ${KEYCLOAK_REALMS}
+#   username: ${KEYCLOAK_USERNAME}
+#   password: ${KEYCLOAK_PASSWORD}
+#   token-uri: ${keycloak.server-url}/realms/${keycloak.realms}/protocol/openid-connect/token
+#   client-id: ${KEYCLOAK_CLIENT_ID}
 server:
   port: 9007
   servlet:
@@ -49,7 +66,7 @@ cors:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:9000/eureka
+      defaultZone: http://${EUREKA_HOST}:9000/eureka
   instance:
     prefer-ip-address: true
 springdoc:
@@ -86,12 +103,3 @@ rabbit-mq-config:
     - approve
   auth-routingKey: auth.individual-notification.create
   auth-queue: auth.individual-notification.queue
-# spring:
-# data:
-# mongodb:
-# uri: mongodb://guest:guest@mongodb:27017/microservice_db?authSource=admin
-#  rabbitmq:
-#    host: localhost # cua may local
-#    port: 5672
-#    username: guest
-#    password: guest

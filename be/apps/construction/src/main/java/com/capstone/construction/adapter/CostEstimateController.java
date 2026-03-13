@@ -2,6 +2,7 @@ package com.capstone.construction.adapter;
 
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.common.utils.Utils;
 import com.capstone.construction.application.dto.request.estimate.CostEstimateRequest;
 import com.capstone.construction.application.dto.response.estimate.CostEstimateResponse;
 import com.capstone.construction.application.usecase.estimate.CostEstimateUseCase;
@@ -39,7 +40,7 @@ public class CostEstimateController {
     log.info("REST request to create cost estimate for customer: {}", request.customerName());
     var response = estimateUseCase.createEstimate(request);
     return ResponseEntity.status(HttpStatus.CREATED).body(new WrapperApiResponse(
-      HttpStatus.CREATED.value(), "Cost estimate created successfully", response, LocalDateTime.now()));
+      HttpStatus.CREATED.value(), "Tạo dự toán chi phí thành công", response, LocalDateTime.now()));
   }
 
   @PutMapping("/{id}")
@@ -54,7 +55,7 @@ public class CostEstimateController {
     log.info("REST request to update cost estimate with id: {}", id);
     var response = estimateUseCase.updateEstimate(id, request);
     return ResponseEntity.ok(new WrapperApiResponse(
-      HttpStatus.OK.value(), "Cost estimate updated successfully", response, LocalDateTime.now()));
+      HttpStatus.OK.value(), "Cập nhật dự toán chi phí thành công", response, LocalDateTime.now()));
   }
 
   @GetMapping("/{id}")
@@ -66,7 +67,7 @@ public class CostEstimateController {
     log.info("REST request to get cost estimate with id: {}", id);
     var response = estimateUseCase.getEstimateById(id);
     return ResponseEntity.ok(new WrapperApiResponse(
-      HttpStatus.OK.value(), "Cost estimate retrieved successfully", response, LocalDateTime.now()));
+      HttpStatus.OK.value(), "Lấy thông tin dự toán chi phí thành công", response, LocalDateTime.now()));
   }
 
   @GetMapping
@@ -79,7 +80,6 @@ public class CostEstimateController {
   ) {
     log.info("REST request to get all cost estimates");
     var response = estimateUseCase.getAllEstimates(pageable, request);
-    return ResponseEntity.ok(new WrapperApiResponse(
-      HttpStatus.OK.value(), "Cost estimates retrieved successfully", response, LocalDateTime.now()));
+    return Utils.returnOkResponse("Lấy danh sách dự toán chi phí thành công", response);
   }
 }

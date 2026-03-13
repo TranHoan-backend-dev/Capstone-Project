@@ -13,4 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface NetworkService {
   @GetMapping("/exist/{id}")
   Boolean checkExistence(@PathVariable String id);
+
+  @GetMapping("/name/{id}")
+  String getNameById(@PathVariable String id);
 }

@@ -11,7 +11,25 @@ export const siteConfig = {
       href: "/home",
     },
 
-    //Danh mục
+    // Danh mục
+    {
+      key: "category",
+      label: "Danh mục",
+      items: [
+        {
+          key: "departments",
+          label: "Quản lý Phòng ban",
+          href: "/departments",
+        },
+        {
+          key: "roads",
+          label: "Quản lý Đường phố",
+          href: "/roads",
+        },
+      ],
+    },
+
+    //THiết bị
     {
       key: "device",
       label: "Thiết bị",

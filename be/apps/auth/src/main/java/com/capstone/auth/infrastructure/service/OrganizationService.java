@@ -19,6 +19,9 @@ public interface OrganizationService {
   @GetMapping("/departments/exist/{id}")
   Boolean checkDepartmentExistence(@PathVariable String id);
 
+  @GetMapping("/departments/name/{id}")
+  String getDepartmentName(@PathVariable String id);
+
   @GetMapping("/jobs/exist/{id}")
   Boolean checkJobExistence(@PathVariable String id);
 }

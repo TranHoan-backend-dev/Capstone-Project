@@ -5,7 +5,7 @@ import com.capstone.construction.application.dto.request.catalog.RoadRequest;
 import com.capstone.construction.application.dto.response.catalog.RoadResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.domain.model.Road;
-import com.capstone.construction.infrastructure.utils.Constant;
+import com.capstone.construction.infrastructure.utils.Message;
 import com.capstone.construction.infrastructure.persistence.RoadRepository;
 import com.capstone.construction.application.exception.ExistingItemException;
 import lombok.AccessLevel;
@@ -35,7 +35,7 @@ public class RoadServiceImpl implements RoadService {
       throw new ExistingItemException("Road with name " + request.name() + " already exists");
     }
     if (request.name() != null && request.name().isBlank()) {
-      throw new IllegalArgumentException(Constant.PT_72);
+      throw new IllegalArgumentException(Message.PT_47);
     }
     var road = Road.create(builder -> builder
       .name(request.name()));
@@ -82,9 +82,15 @@ public class RoadServiceImpl implements RoadService {
   }
 
   @Override
-  public PageResponse<RoadResponse> getAllRoads(Pageable pageable) {
-    log.info("Fetching all roads with pageable: {}", pageable);
-    var page = roadRepository.findAll(pageable);
+  public PageResponse<RoadResponse> getAllRoads(Pageable pageable, String keyword) {
+    log.info("Fetching all roads with pageable: {}, keyword: {}", pageable, keyword);
+
+    String trimmedKeyword = keyword != null ? keyword.trim() : null;
+
+    var page = (trimmedKeyword == null || trimmedKeyword.isEmpty())
+      ? roadRepository.findAll(pageable)
+      : roadRepository.searchByNameIgnoreAccent(trimmedKeyword, pageable);
+
     return PageResponse.fromPage(page, this::mapToResponse);
   }
 

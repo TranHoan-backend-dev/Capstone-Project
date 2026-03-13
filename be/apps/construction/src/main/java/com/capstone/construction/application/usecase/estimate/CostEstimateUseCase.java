@@ -25,10 +25,6 @@ public class CostEstimateUseCase {
     return estimateService.updateEstimate(id, request);
   }
 
-  public void deleteEstimate(String id) {
-    estimateService.deleteEstimate(id);
-  }
-
   public CostEstimateResponse getEstimateById(String id) {
     return estimateService.getEstimateById(id);
   }

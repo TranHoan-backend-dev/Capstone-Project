@@ -14,4 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface EmployeeService {
   @GetMapping("/{id}/name")
   WrapperApiResponse getEmployeeNameById(@PathVariable String id);
+
+  @GetMapping("/jobs/{jobId}/assigned")
+  WrapperApiResponse isJobAssigned(@PathVariable String jobId);
 }
