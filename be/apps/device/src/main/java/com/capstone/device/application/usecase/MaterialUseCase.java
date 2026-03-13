@@ -73,7 +73,7 @@ public class MaterialUseCase {
   // </editor-fold>
 
   // <editor-fold> desc="material group"
-  public void createMaterialGroup(@NonNull GroupRequest request) {
+  public void createMaterialGroup(@NonNull SearchRequest request) {
     mService.createGroup(request.name());
   }
 
