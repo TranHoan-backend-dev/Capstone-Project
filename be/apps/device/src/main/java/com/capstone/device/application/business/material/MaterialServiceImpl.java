@@ -2,6 +2,7 @@ package com.capstone.device.application.business.material;
 
 import com.capstone.common.annotation.AppLog;
 import com.capstone.device.application.dto.request.material.CreateRequest;
+import com.capstone.device.application.dto.request.material.SearchRequest;
 import com.capstone.device.application.dto.request.material.UpdateRequest;
 import com.capstone.device.application.dto.response.MaterialResponse;
 import com.capstone.device.domain.model.Material;
@@ -115,6 +116,40 @@ public class MaterialServiceImpl implements MaterialService {
   public Page<MaterialResponse> getAllMaterials(Pageable pageable) {
     log.debug("Fetching all materials with pagination: {}", pageable);
     return mRepo.findAll(pageable).map(this::mapToResponse);
+  }
+
+  @Override
+  public Page<MaterialResponse> searchMaterials(SearchRequest searchRequest, Pageable pageable) {
+    log.info("Searching materials with criteria: jobContent={}, minPrice={}, maxPrice={}",
+        searchRequest.getJobContent(), searchRequest.getMinPrice(), searchRequest.getMaxPrice());
+
+    if (searchRequest.getJobContent() != null && !searchRequest.getJobContent().isBlank()) {
+        if (searchRequest.getMinPrice() != null && searchRequest.getMaxPrice() != null) {
+            // Search by both jobContent and price range
+            return mRepo.findByJobContentContainingIgnoreCaseAndPriceBetween(
+                searchRequest.getJobContent(),
+                searchRequest.getMinPrice(),
+                searchRequest.getMaxPrice(),
+                pageable
+            ).map(this::mapToResponse);
+        } else {
+            // Search by jobContent only
+            return mRepo.findByJobContentContainingIgnoreCase(
+                searchRequest.getJobContent(),
+                pageable
+            ).map(this::mapToResponse);
+        }
+    } else if (searchRequest.getMinPrice() != null && searchRequest.getMaxPrice() != null) {
+        // Search by price range only
+        return mRepo.findByPriceBetween(
+            searchRequest.getMinPrice(),
+            searchRequest.getMaxPrice(),
+            pageable
+        ).map(this::mapToResponse);
+    } else {
+        // No search criteria provided, return all materials
+        return getAllMaterials(pageable);
+    }
   }
 
   @Override
