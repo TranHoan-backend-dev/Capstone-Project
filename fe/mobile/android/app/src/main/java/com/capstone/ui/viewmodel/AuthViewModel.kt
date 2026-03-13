@@ -21,6 +21,8 @@ class AuthViewModel @Inject constructor(
     private val loginUseCase: com.capstone.domain.usecase.LoginUseCase,
     private val forgotPasswordUseCase: com.capstone.domain.usecase.ForgotPasswordUseCase,
     private val changePasswordUseCase: com.capstone.domain.usecase.ChangePasswordUseCase,
+    private val getProfileUseCase: com.capstone.domain.usecase.GetProfileUseCase,
+    private val updateProfileUseCase: com.capstone.domain.usecase.UpdateProfileUseCase,
     private val bruteForceManager: AntiBruteForceManager
 ) : ViewModel() {
 
@@ -129,14 +131,52 @@ class AuthViewModel @Inject constructor(
     fun fetchMe() {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
-            try {
-                val profile = authRepository.getMe()
+            val result = getProfileUseCase.execute()
+            result.onSuccess { profile ->
                 _authState.value = AuthState.AuthSuccess(profile)
-            } catch (e: Exception) {
+            }.onFailure { e ->
                 _authState.value = AuthState.Error(e.message ?: "Failed to fetch profile")
             }
         }
     }
+
+    /**
+     * Cập nhật thông tin profile.
+     */
+    fun updateProfile(
+        fullName: String? = null,
+        username: String? = null,
+        phoneNumber: String? = null,
+        birthdate: String? = null,
+        address: String? = null,
+        gender: Boolean? = null
+    ) {
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+            val result = updateProfileUseCase.updateInfo(fullName, username, phoneNumber, birthdate, address, gender)
+            result.onSuccess { profile ->
+                _authState.value = AuthState.AuthSuccess(profile)
+            }.onFailure { e ->
+                _authState.value = AuthState.Error(e.message ?: "Failed to update profile")
+            }
+        }
+    }
+
+    /**
+     * Cập nhật ảnh đại diện.
+     */
+    fun updateAvatar(imageBytes: ByteArray) {
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+            val result = updateProfileUseCase.updateAvatar(imageBytes)
+            result.onSuccess { profile ->
+                _authState.value = AuthState.AuthSuccess(profile)
+            }.onFailure { e ->
+                _authState.value = AuthState.Error(e.message ?: "Failed to update avatar")
+            }
+        }
+    }
+
 
     /**
      * Đặt lại trạng thái về Idle
