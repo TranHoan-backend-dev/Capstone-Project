@@ -47,6 +47,14 @@ export const HamletForm = ({
 
   const handleSubmit = async () => {
     if (submitLoading) return;
+    if (name.trim().length > 255) {
+      CallToast({
+        title: "Lỗi",
+        message: "Tên thôn/làng không được vượt quá 255 ký tự",
+        color: "danger",
+      });
+      return;
+    }
     try {
       setSubmitLoading(true);
       const url = isEdit
