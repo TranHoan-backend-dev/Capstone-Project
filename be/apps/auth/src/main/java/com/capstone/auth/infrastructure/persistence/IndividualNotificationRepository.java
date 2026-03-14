@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface IndividualNotificationRepository
   extends JpaRepository<IndividualNotification, IndividualNotification.IndividualNotificationId> {
+  void deleteByUserId(String userId);
 }

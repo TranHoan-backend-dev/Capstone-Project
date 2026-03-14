@@ -1,137 +1,244 @@
 package com.capstone.organization.service.impl;
 
-import com.capstone.organization.dto.request.CreateJobRequest;
-import com.capstone.organization.dto.request.UpdateJobRequest;
+import com.capstone.common.response.WrapperApiResponse;
+import com.capstone.organization.dto.request.job.CreateJobRequest;
+import com.capstone.organization.dto.request.job.UpdateJobRequest;
+import com.capstone.organization.dto.request.job.FilterJobRequest;
 import com.capstone.organization.model.Job;
 import com.capstone.organization.repository.JobRepository;
+import com.capstone.organization.service.boundary.EmployeeService;
+import com.capstone.organization.utils.Message;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class JobServiceImplTest {
-  @Mock
-  JobRepository jobRepository;
 
-  @InjectMocks
-  JobServiceImpl jobService;
+    @Mock
+    JobRepository jobRepository;
 
-  @Test
-  void createJobReturnsResponse() {
-    var now = LocalDateTime.of(2026, 1, 31, 12, 0);
-    var request = new CreateJobRequest("Engineer");
-    var saved = new Job("job-1", "Engineer", now, now);
-    when(jobRepository.save(any(Job.class))).thenReturn(saved);
+    @Mock
+    EmployeeService employeeService;
 
-    var response = jobService.createJob(request);
+    @Mock
+    Logger log;
 
-    assertThat(response.jobId()).isEqualTo("job-1");
-    assertThat(response.name()).isEqualTo("Engineer");
-    assertThat(response.createdAt()).isEqualTo(now);
-    assertThat(response.updatedAt()).isEqualTo(now);
-  }
+    @InjectMocks
+    JobServiceImpl jobService;
 
-  @Test
-  void createJob_emptyName_throws() {
-    var request = new CreateJobRequest("");
+    @BeforeEach
+    void setUp() {
+        ReflectionTestUtils.setField(jobService, "log", log);
+    }
 
-    assertThatThrownBy(() -> jobService.createJob(request))
-        .isInstanceOf(IllegalArgumentException.class);
-  }
+    @Test
+    void should_CreateJob_When_ValidRequest() {
+        var request = new CreateJobRequest("Engineer");
+        when(jobRepository.existsByNameIgnoreCase("Engineer")).thenReturn(false);
 
-  @Test
-  void updateJobReturnsResponse() {
-    var createdAt = LocalDateTime.of(2026, 1, 30, 9, 0);
-    var updatedAt = LocalDateTime.of(2026, 1, 31, 10, 0);
-    var request = new UpdateJobRequest("Senior Engineer");
-    var existing = new Job("job-2", "Engineer", createdAt, createdAt);
-    when(jobRepository.findById("job-2")).thenReturn(Optional.of(existing));
-    when(jobRepository.save(existing)).thenReturn(new Job("job-2", "Senior Engineer", createdAt, updatedAt));
+        Job savedJob = createMockJob("1", "Engineer");
+        when(jobRepository.save(any(Job.class))).thenReturn(savedJob);
 
-    var response = jobService.updateJob("job-2", request);
+        var result = jobService.createJob(request);
 
-    assertThat(response.jobId()).isEqualTo("job-2");
-    assertThat(response.name()).isEqualTo("Senior Engineer");
-    assertThat(response.createdAt()).isEqualTo(createdAt);
-    assertThat(response.updatedAt()).isEqualTo(updatedAt);
-  }
+        assertThat(result.name()).isEqualTo("Engineer");
+        verify(jobRepository).save(any(Job.class));
+    }
 
-  @Test
-  void updateJob_emptyName_throws() {
-    var request = new UpdateJobRequest(" ");
-    var existing = new Job("job-1", "Old", LocalDateTime.now(), LocalDateTime.now());
-    when(jobRepository.findById("job-1")).thenReturn(Optional.of(existing));
+    @Test
+    void should_ThrowException_When_CreateJobWithNameExists() {
+        var request = new CreateJobRequest("Engineer");
+        when(jobRepository.existsByNameIgnoreCase("Engineer")).thenReturn(true);
 
-    assertThatThrownBy(() -> jobService.updateJob("job-1", request))
-        .isInstanceOf(IllegalArgumentException.class);
-  }
+        assertThatThrownBy(() -> jobService.createJob(request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(Message.ORG_13);
+    }
 
-  @Test
-  void updateJobThrowsWhenNotFound() {
-    var request = new UpdateJobRequest("Senior Engineer");
-    when(jobRepository.findById("missing")).thenReturn(Optional.empty());
+    @Test
+    void should_UpdateJob_When_ValidRequest() {
+        var id = "1";
+        var request = new UpdateJobRequest("Senior Engineer");
+        var existingJob = createMockJob(id, "Engineer");
 
-    assertThatThrownBy(() -> jobService.updateJob("missing", request))
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessage("Job not found");
-  }
+        when(jobRepository.findById(id)).thenReturn(Optional.of(existingJob));
+        when(jobRepository.findByNameIgnoreCase("Senior Engineer")).thenReturn(Optional.empty());
+        when(jobRepository.save(any(Job.class))).thenReturn(createMockJob(id, "Senior Engineer"));
 
-  @Test
-  void getJobsReturnsPagedResponse() {
-    var createdAt = LocalDateTime.of(2026, 1, 30, 9, 0);
-    var updatedAt = LocalDateTime.of(2026, 1, 31, 10, 0);
-    var pageRequest = PageRequest.of(0, 2);
-    var items = List.of(
-        new Job("job-1", "Engineer", createdAt, updatedAt),
-        new Job("job-2", "Designer", createdAt, updatedAt));
-    var page = new PageImpl<>(items, pageRequest, 2);
-    when(jobRepository.findAll(pageRequest)).thenReturn(page);
+        var result = jobService.updateJob(id, request);
 
-    var response = jobService.getJobs(0, 2);
+        assertThat(result.name()).isEqualTo("Senior Engineer");
+        verify(jobRepository).save(any(Job.class));
+    }
 
-    assertThat(response.items()).hasSize(2);
-    assertThat(response.page()).isEqualTo(0);
-    assertThat(response.size()).isEqualTo(2);
-    assertThat(response.totalItems()).isEqualTo(2);
-    assertThat(response.totalPages()).isEqualTo(1);
-    verify(jobRepository).findAll(pageRequest);
-  }
+    @Test
+    void should_UpdateJob_When_NameIsSameAsExisting() {
+        var id = "1";
+        var request = new UpdateJobRequest("Engineer");
+        var existingJob = createMockJob(id, "Engineer");
 
-  @Test
-  void getJobs_emptyList_returnsEmptyPagedResponse() {
-    var pageRequest = PageRequest.of(0, 10);
-    when(jobRepository.findAll(pageRequest)).thenReturn(new PageImpl<>(List.of(), pageRequest, 0));
+        when(jobRepository.findById(id)).thenReturn(Optional.of(existingJob));
+        when(jobRepository.findByNameIgnoreCase("Engineer")).thenReturn(Optional.of(existingJob));
+        when(jobRepository.save(any(Job.class))).thenReturn(existingJob);
 
-    var response = jobService.getJobs(0, 10);
+        var result = jobService.updateJob(id, request);
 
-    assertThat(response.items()).isEmpty();
-    assertThat(response.totalItems()).isZero();
-    assertThat(response.totalPages()).isZero();
-  }
+        assertThat(result.name()).isEqualTo("Engineer");
+    }
 
-  @Test
-  void checkExistence_returnsTrueWhenExists() {
-    when(jobRepository.existsById("job-1")).thenReturn(true);
-    assertThat(jobService.checkExistence("job-1")).isTrue();
-  }
+    @Test
+    void should_ThrowException_When_UpdateJobNotFound() {
+        var id = "1";
+        var request = new UpdateJobRequest("Engineer");
+        when(jobRepository.findById(id)).thenReturn(Optional.empty());
 
-  @Test
-  void checkExistence_returnsFalseWhenNotExists() {
-    when(jobRepository.existsById("unknown")).thenReturn(false);
-    assertThat(jobService.checkExistence("unknown")).isFalse();
-  }
+        assertThatThrownBy(() -> jobService.updateJob(id, request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(Message.ORG_12);
+    }
+
+    @Test
+    void should_ThrowException_When_UpdateJobWithNameExists() {
+        var id = "1";
+        var otherId = "2";
+        var request = new UpdateJobRequest("Manager");
+        var existingJob = createMockJob(id, "Engineer");
+        var otherJob = createMockJob(otherId, "Manager");
+
+        when(jobRepository.findById(id)).thenReturn(Optional.of(existingJob));
+        when(jobRepository.findByNameIgnoreCase("Manager")).thenReturn(Optional.of(otherJob));
+
+        assertThatThrownBy(() -> jobService.updateJob(id, request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(Message.ORG_13);
+    }
+
+    @Test
+    void should_DeleteJob_When_ValidRequest() {
+        var id = "1";
+        when(jobRepository.existsById(id)).thenReturn(true);
+        when(employeeService.isJobAssigned(id)).thenReturn(new WrapperApiResponse(200, "Success", false, LocalDateTime.now()));
+
+        jobService.deleteJob(id);
+
+        verify(jobRepository).deleteById(id);
+    }
+
+    @Test
+    void should_ThrowException_When_DeleteJobNotFound() {
+        var id = "1";
+        when(jobRepository.existsById(id)).thenReturn(false);
+
+        assertThatThrownBy(() -> jobService.deleteJob(id))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(Message.ORG_12);
+    }
+
+    @Test
+    void should_ThrowException_When_DeleteJobAssigned() {
+        var id = "1";
+        when(jobRepository.existsById(id)).thenReturn(true);
+        when(employeeService.isJobAssigned(id)).thenReturn(new WrapperApiResponse(200, "Success", true, LocalDateTime.now()));
+
+        assertThatThrownBy(() -> jobService.deleteJob(id))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(Message.ORG_14);
+    }
+
+    @Test
+    void should_ReturnPagedJobs_When_NoFilters() {
+        var pageable = PageRequest.of(0, 10);
+        var job = createMockJob("1", "Engineer");
+        var page = new PageImpl<>(List.of(job), pageable, 1);
+        var filter = new FilterJobRequest(null, null, null);
+
+        when(jobRepository.searchJobs(isNull(), isNull(), isNull(), eq(pageable))).thenReturn(page);
+
+        var result = jobService.getJobs(pageable, filter);
+
+        assertThat(result.items()).hasSize(1);
+        assertThat(result.totalItems()).isEqualTo(1);
+    }
+
+    @Test
+    void should_ReturnPagedJobs_When_NameFilterOnly() {
+        var pageable = PageRequest.of(0, 10);
+        var job = createMockJob("1", "Engineer");
+        var page = new PageImpl<>(List.of(job), pageable, 1);
+        var filter = new FilterJobRequest("Eng", null, null);
+
+        when(jobRepository.searchJobs(eq("Eng"), isNull(), isNull(), eq(pageable))).thenReturn(page);
+
+        var result = jobService.getJobs(pageable, filter);
+
+        assertThat(result.items()).hasSize(1);
+        verify(jobRepository).searchJobs(eq("Eng"), isNull(), isNull(), any());
+    }
+
+    @Test
+    void should_ReturnPagedJobs_When_DateFilterOnly() {
+        var pageable = PageRequest.of(0, 10);
+        var job = createMockJob("1", "Engineer");
+        var page = new PageImpl<>(List.of(job), pageable, 1);
+        var from = LocalDate.of(2024, 1, 1);
+        var to = LocalDate.of(2024, 1, 2);
+        var filter = new FilterJobRequest(null, from, to);
+
+        when(jobRepository.searchJobs(isNull(), any(), any(), eq(pageable))).thenReturn(page);
+
+        var result = jobService.getJobs(pageable, filter);
+
+        assertThat(result.items()).hasSize(1);
+        verify(jobRepository).searchJobs(isNull(), any(), any(), any());
+    }
+
+    @Test
+    void should_ReturnPagedJobs_When_AllFilters() {
+        var pageable = PageRequest.of(0, 10);
+        var job = createMockJob("1", "Engineer");
+        var page = new PageImpl<>(List.of(job), pageable, 1);
+        var from = LocalDate.of(2024, 1, 1);
+        var to = LocalDate.of(2024, 1, 2);
+        var filter = new FilterJobRequest("Eng", from, to);
+
+        when(jobRepository.searchJobs(eq("Eng"), any(), any(), eq(pageable))).thenReturn(page);
+
+        var result = jobService.getJobs(pageable, filter);
+
+        assertThat(result.items()).hasSize(1);
+        verify(jobRepository).searchJobs(eq("Eng"), any(), any(), any());
+    }
+
+    @Test
+    void should_ReturnExistence_When_Called() {
+        when(jobRepository.existsById("1")).thenReturn(true);
+        assertThat(jobService.checkExistence("1")).isTrue();
+    }
+
+    private Job createMockJob(String id, String name) {
+        var job = new Job();
+        ReflectionTestUtils.setField(job, "id", id);
+        ReflectionTestUtils.setField(job, "name", name);
+        ReflectionTestUtils.setField(job, "createdAt", LocalDateTime.now());
+        ReflectionTestUtils.setField(job, "updatedAt", LocalDateTime.now());
+        return job;
+    }
 }

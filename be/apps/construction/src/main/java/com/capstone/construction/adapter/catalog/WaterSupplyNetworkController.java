@@ -3,6 +3,7 @@ package com.capstone.construction.adapter.catalog;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
+import com.capstone.construction.application.business.network.WaterSupplyNetworkService;
 import com.capstone.construction.application.dto.request.branch.CreateRequest;
 import com.capstone.construction.application.dto.request.branch.UpdateRequest;
 import com.capstone.construction.application.dto.response.catalog.WaterSupplyNetworkResponse;
@@ -23,7 +24,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import com.capstone.construction.application.dto.response.PageResponse;
 import org.springframework.web.bind.annotation.*;
 
 @AppLog
@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Water Supply Network", description = "Quản lý danh mục mạng lưới cấp nước. Cung cấp các API để tạo, cập nhật, xóa và truy vấn thông tin mạng lưới.")
 public class WaterSupplyNetworkController {
   WaterSupplyNetworkUseCase networkUseCase;
+  WaterSupplyNetworkService service;
   @NonFinal
   Logger log;
 
@@ -49,11 +50,12 @@ public class WaterSupplyNetworkController {
   @PreAuthorize("hasAnyAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> createNetwork(
     @Parameter(description = "Thông tin tạo mới mạng lưới", required = true, schema = @Schema(implementation = CreateRequest.class))
-    @RequestBody @Valid CreateRequest request
+    @RequestBody @Valid
+    CreateRequest request
   ) {
     log.info("REST request to create network: {}", request.name());
     networkUseCase.createNetwork(request);
-    return Utils.returnCreatedResponse("Network created successfully");
+    return Utils.returnCreatedResponse("Tạo chi nhánh cấp nước thành công");
   }
 
   @PutMapping("/{id}")
@@ -65,11 +67,13 @@ public class WaterSupplyNetworkController {
   })
   @PreAuthorize("hasAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> updateNetwork(
-    @PathVariable @Parameter(description = "ID của mạng lưới cấp nước", required = true) String id,
-    @RequestBody @Valid UpdateRequest request) {
+    @PathVariable @Parameter(description = "ID của mạng lưới cấp nước", required = true)
+    String id,
+    @RequestBody @Valid UpdateRequest request
+  ) {
     log.info("REST request to update network: {}", id);
     var response = networkUseCase.updateNetwork(id, request);
-    return Utils.returnOkResponse("Network updated successfully", response);
+    return Utils.returnOkResponse("Cập nhật chi nhánh cấp nước thành công", response);
   }
 
   @DeleteMapping("/{id}")
@@ -80,13 +84,12 @@ public class WaterSupplyNetworkController {
   })
   @PreAuthorize("hasAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> deleteNetwork(
-    @PathVariable
-    @Parameter(description = "ID của mạng lưới cấp nước", required = true)
+    @PathVariable @Parameter(description = "ID của mạng lưới cấp nước", required = true)
     String id
   ) {
     log.info("REST request to delete network: {}", id);
     networkUseCase.deleteNetwork(id);
-    return Utils.returnOkResponse("Network deleted successfully", null);
+    return Utils.returnOkResponse("Xóa chi nhánh cấp nước thành công", null);
   }
 
   @GetMapping("/{id}")
@@ -96,15 +99,16 @@ public class WaterSupplyNetworkController {
     @ApiResponse(description = "Lỗi hệ thống nội bộ", responseCode = "500", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   public ResponseEntity<WrapperApiResponse> getNetworkById(
-    @PathVariable @Parameter(description = "", required = true) String id) {
+    @PathVariable @Parameter(description = "", required = true) String id
+  ) {
     log.info("REST request to get network: {}", id);
     var response = networkUseCase.getNetworkById(id);
-    return Utils.returnOkResponse("Network retrieved successfully", response);
+    return Utils.returnOkResponse("Lấy thông tin chi nhánh thành công", response);
   }
 
   @GetMapping
   @Operation(summary = "Lấy danh sách mạng lưới cấp nước", description = "Lấy danh sách các mạng lưới cấp nước trong hệ thống, có hỗ trợ phân trang và tìm kiếm theo từ khóa.", responses = {
-    @ApiResponse(responseCode = "200", description = "Lấy danh sách thành công", content = @Content(schema = @Schema(implementation = PageResponse.class))),
+    @ApiResponse(responseCode = "200", description = "Lấy danh sách thành công", content = @Content(schema = @Schema(implementation = WaterSupplyNetworkResponse.class))),
     @ApiResponse(responseCode = "500", description = "Lỗi hệ thống nội bộ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   public ResponseEntity<WrapperApiResponse> getAllNetworks(
@@ -119,10 +123,20 @@ public class WaterSupplyNetworkController {
   }
 
   // internal api, do not expose
+  @Operation(hidden = true)
   @GetMapping("/exist/{id}")
   @PreAuthorize("hasAuthority('IT_STAFF')")
   public Boolean checkExistence(@PathVariable String id) {
     log.info("REST request to check existence: {}", id);
     return networkUseCase.checkExistenceOfNetwork(id);
+  }
+
+  @Operation(hidden = true)
+  @GetMapping("/name/{id}")
+  public String getName(@PathVariable String id) {
+    log.info("REST request to get name: {}", id);
+    var name = service.getName(id);
+    log.info("Name: {}", name);
+    return name;
   }
 }

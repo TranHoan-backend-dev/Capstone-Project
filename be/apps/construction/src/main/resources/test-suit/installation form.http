@@ -193,3 +193,87 @@ Authorization: Bearer {{access_token}}
   "createdBy": "non-existent-staff-id",
   "overallWaterMeterId": "00000000-0000-0000-0000-400000000001"
 }
+
+### U - Approve/Reject Installation Form
+### 1. Happy Path - Approve Installation Form (Status: true)
+PATCH {{uri}}/approve
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "empId": "6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20",
+  "formNumber": "NUM-AHbUrpRI",
+  "formCode": "FORM-b1a01c53-41d6-4881-a83e-61d9bb8564d2",
+  "status": true
+}
+
+### 2. Happy Path - Reject Installation Form (Status: false)
+PATCH {{uri}}/approve
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "empId": "6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20",
+  "formNumber": "NUM-AHbUrpRI",
+  "formCode": "FORM-b1a01c53-41d6-4881-a83e-61d9bb8564d2",
+  "status": false
+}
+
+### 3. Error Case - Missing Required Fields (Validation)
+PATCH {{uri}}/approve
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "empId": "6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20",
+  "formNumber": "NUM-AHbUrpRI",
+  "formCode": "FORM-b1a01c53-41d6-4881-a83e-61d9bb8564d2",
+  "status": null
+}
+
+### 4. Error Case - Form Not Found (404)
+PATCH {{uri}}/approve
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "empId": "EMP-001",
+  "formNumber": "NON-EXISTENT-NUM",
+  "formCode": "NON-EXISTENT-CODE",
+  "status": true
+}
+
+### 5. Error Case - Missing Authorization Header (401)
+PATCH {{uri}}/approve
+Content-Type: application/json
+
+{
+  "empId": "EMP-001",
+  "formNumber": "NUM-tVlgiCno",
+  "formCode": "hehe1",
+  "status": true
+}
+
+### L - Get Construction Orders List (đơn chờ thi công)
+### 1. Happy Path - Get all construction orders (No param)
+GET {{uri}}/construction
+Authorization: Bearer {{access_token}}
+
+### 2. Happy Path - Pagination and Sort
+GET {{uri}}/construction?page=0&size=10&sort=createdAt,desc
+Authorization: Bearer {{access_token}}
+
+### 3. Happy Path - Filtering by keyword, from, and to
+GET {{uri}}/construction?keyword=Nguyễn&from=01-01-2024&to=31-12-2024
+Authorization: Bearer {{access_token}}
+
+### 4. Error Case - Invalid Date Format (from)
+GET {{uri}}/construction?from=2024-01-01
+Authorization: Bearer {{access_token}}
+
+### 5. Error Case - Invalid Date Format (to)
+GET {{uri}}/construction?to=01/01/2024
+Authorization: Bearer {{access_token}}
+
+### 6. Error Case - Unauthorized (Missing Token)
+GET {{uri}}/construction

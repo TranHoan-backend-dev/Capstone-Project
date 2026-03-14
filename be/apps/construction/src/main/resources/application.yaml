@@ -61,28 +61,10 @@ rabbit-mq-config:
     - neighborhood-unit
     - road
     - installation-form
+    - cost-estimate
   actions:
     - update
     - delete
     - create
     - approve
-#spring:
-#  datasource:
-#    driver-class-name: org.postgresql.Driver
-#    url: jdbc:postgresql://localhost:5432/construction
-#    username:
-#    password:
-#  rabbitmq:
-#    host:
-#    port:
-#    username:
-#    password:
-#keycloak:
-#  server-url: http://localhost:8080
-#  issuer-uri: ${keycloak.server-url}/realms/${keycloak.realms}
-#  aud:
-#  realms:
-#  username:
-#  password:
-#  token-uri: ${keycloak.server-url}/realms/${keycloak.realms}/protocol/openid-connect/token
-#  client-id:
+    - assign
