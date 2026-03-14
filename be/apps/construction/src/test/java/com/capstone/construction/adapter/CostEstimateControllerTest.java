@@ -32,97 +32,115 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class CostEstimateControllerTest {
 
-    @Mock
-    private CostEstimateUseCase estimateUseCase;
+  @Mock
+  private CostEstimateUseCase estimateUseCase;
 
-    @Mock
-    private Logger log;
+  @Mock
+  private Logger log;
 
-    @InjectMocks
-    private CostEstimateController estimateController;
+  @InjectMocks
+  private CostEstimateController estimateController;
 
-    private CreateRequest createRequest;
-    private UpdateRequest updateRequest;
-    private CostEstimateResponse mockResponse;
+  private CreateRequest createRequest;
+  private UpdateRequest updateRequest;
+  private CostEstimateResponse mockResponse;
 
-    @BeforeEach
-    void setUp() {
-        ReflectionTestUtils.setField(estimateController, "log", log);
+  @BeforeEach
+  void setUp() {
+    ReflectionTestUtils.setField(estimateController, "log", log);
 
-        createRequest = new CreateRequest(
-                "Customer", "Address", "Note", 1000, 100, 1, 1000, 1, 1, 1, 1, 1, 1, 100, "url",
-                ProcessingStatus.PROCESSING, LocalDate.now(), "user", "SN", "METER", "CODE", "NUM"
-        );
+    createRequest = new CreateRequest(
+      "Customer", "Address", "Note", 1000, 100, 1, 1000, 1, 1, 1, 1, 1, 1, 100, "url",
+      LocalDate.now(), "user", "SN", "METER", "CODE", "NUM"
+    );
 
-        updateRequest = new UpdateRequest(
-                "Customer", "Address", "Note", 1000, 100, 1, 1000, 1, 1, 1, 1, 1, 1, 100, null, ProcessingStatus.PROCESSING, "SN", "METER"
-        );
+    updateRequest = new UpdateRequest(
+      "Customer", "Address", "Note", 1000, 100, 1, 1000, 1, 1, 1, 1, 1, 1, 100, null, "SN", "METER"
+    );
 
-        mockResponse = new CostEstimateResponse(
-                "id", "Customer", "Address", "Note", 1000, 100, 1, 1000, 1, 1, 1, 1, 1, 1, 100, "url",
-                LocalDateTime.now(), LocalDateTime.now(), ProcessingStatus.PROCESSING, LocalDate.now(), "user", "SN", "METER",
-                new InstallationFormId("CODE", "NUM")
-        );
-    }
+    mockResponse = new CostEstimateResponse(
+      "id", "Customer", "Address", "Note", 1000, 100, 1, 1000, 1, 1, 1, 1, 1, 1, 100, "url",
+      LocalDateTime.now(), LocalDateTime.now(), LocalDate.now(), "user", "SN", "METER",
+      new InstallationFormId("CODE", "NUM")
+    );
+  }
 
-    @Test
-    void should_ReturnCreated_When_CreateEstimate() {
-        // Arrange
-        when(estimateUseCase.createEstimate(any(CreateRequest.class))).thenReturn(mockResponse);
+  @Test
+  void should_ReturnCreated_When_CreateEstimate() {
+    // Arrange
+    when(estimateUseCase.createEstimate(any(CreateRequest.class))).thenReturn(mockResponse);
 
-        // Act
-        var responseEntity = estimateController.createEstimate(createRequest);
+    // Act
+    var responseEntity = estimateController.createEstimate(createRequest);
 
-        // Assert
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        assertThat(responseEntity.getBody()).isNotNull();
-        assertThat(responseEntity.getBody().message()).isEqualTo("Tạo dự toán chi phí thành công");
-        verify(estimateUseCase).createEstimate(createRequest);
-    }
+    // Assert
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+    assertThat(responseEntity.getBody()).isNotNull();
+    assertThat(responseEntity.getBody().message()).isEqualTo("Tạo dự toán chi phí thành công");
+    verify(estimateUseCase).createEstimate(createRequest);
+  }
 
-    @Test
-    void should_ReturnOk_When_UpdateEstimate() {
-        // Arrange
-        String id = "id-123";
-        when(estimateUseCase.updateEstimate(eq(id), any(UpdateRequest.class))).thenReturn(mockResponse);
+  @Test
+  void should_ReturnOk_When_UpdateEstimate() {
+    // Arrange
+    String id = "id-123";
+    when(estimateUseCase.updateEstimate(eq(id), any(UpdateRequest.class))).thenReturn(mockResponse);
 
-        // Act
-        var responseEntity = estimateController.updateEstimate(id, updateRequest);
+    // Act
+    var responseEntity = estimateController.updateEstimate(id, updateRequest);
 
-        // Assert
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(responseEntity.getBody()).isNotNull();
-        assertThat(responseEntity.getBody().message()).isEqualTo("Cập nhật dự toán chi phí thành công");
-        verify(estimateUseCase).updateEstimate(id, updateRequest);
-    }
+    // Assert
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(responseEntity.getBody()).isNotNull();
+    assertThat(responseEntity.getBody().message()).isEqualTo("Cập nhật dự toán chi phí thành công");
+    verify(estimateUseCase).updateEstimate(id, updateRequest);
+  }
 
-    @Test
-    void should_ReturnOk_When_GetEstimateById() {
-        // Arrange
-        String id = "id-123";
-        when(estimateUseCase.getEstimateById(id)).thenReturn(mockResponse);
+  @Test
+  void should_ReturnOk_When_GetEstimateById() {
+    // Arrange
+    String id = "id-123";
+    when(estimateUseCase.getEstimateById(id)).thenReturn(mockResponse);
 
-        // Act
-        var responseEntity = estimateController.getEstimateById(id);
+    // Act
+    var responseEntity = estimateController.getEstimateById(id);
 
-        // Assert
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(responseEntity.getBody()).isNotNull();
-        assertThat(responseEntity.getBody().data()).isEqualTo(mockResponse);
-        verify(estimateUseCase).getEstimateById(id);
-    }
+    // Assert
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(responseEntity.getBody()).isNotNull();
+    assertThat(responseEntity.getBody().data()).isEqualTo(mockResponse);
+    verify(estimateUseCase).getEstimateById(id);
+  }
 
-    @Test
-    void should_ReturnOk_When_GetAllEstimates() {
-        // Arrange
-        Pageable pageable = PageRequest.of(0, 10);
-        BaseFilterRequest filter = new BaseFilterRequest(null, null, null);
-        
-        // Act
-        var responseEntity = estimateController.getAllEstimates(pageable, filter);
+  @Test
+  void should_ReturnOk_When_GetAllEstimates() {
+    // Arrange
+    Pageable pageable = PageRequest.of(0, 10);
+    BaseFilterRequest filter = new BaseFilterRequest(null, null, null);
 
-        // Assert
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        verify(estimateUseCase).getAllEstimates(pageable, filter);
-    }
+    // Act
+    var responseEntity = estimateController.getAllEstimates(pageable, filter);
+
+    // Assert
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    verify(estimateUseCase).getAllEstimates(pageable, filter);
+  }
+
+  @Test
+  void should_ReturnOk_When_ApproveEstimate() {
+    // Arrange
+    String id = "id-123";
+    Boolean status = true;
+    when(estimateUseCase.approveEstimate(id, status)).thenReturn(mockResponse);
+
+    // Act
+    var responseEntity = estimateController.approveEstimate(id, status);
+
+    // Assert
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(responseEntity.getBody()).isNotNull();
+    assertThat(responseEntity.getBody().message()).isEqualTo("Duyệt dự toán chi phí thành công");
+    assertThat(responseEntity.getBody().data()).isEqualTo(mockResponse);
+    verify(estimateUseCase).approveEstimate(id, status);
+  }
 }

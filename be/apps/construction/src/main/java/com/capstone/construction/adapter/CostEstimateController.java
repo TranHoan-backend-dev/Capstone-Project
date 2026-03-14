@@ -1,6 +1,7 @@
 package com.capstone.construction.adapter;
 
 import com.capstone.common.annotation.AppLog;
+import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.common.utils.Utils;
@@ -18,10 +19,12 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @AppLog
@@ -40,6 +43,7 @@ public class CostEstimateController {
     @ApiResponse(responseCode = "400", description = "Dữ liệu đầu vào không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "404", description = "Không tìm thấy đơn đăng ký lắp đặt liên quan", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF')")
   public ResponseEntity<WrapperApiResponse> createEstimate(@RequestBody @Valid CreateRequest request) {
     log.info("REST request to create cost estimate for customer: {}", request.customerName());
     var response = estimateUseCase.createEstimate(request);
@@ -53,6 +57,7 @@ public class CostEstimateController {
     @ApiResponse(responseCode = "400", description = "Dữ liệu đầu vào không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "404", description = "Không tìm thấy dự toán", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF')")
   public ResponseEntity<WrapperApiResponse> updateEstimate(
     @PathVariable @Parameter(description = "ID của dự toán chi phí", required = true) String id,
     @RequestBody @Valid UpdateRequest request
@@ -62,11 +67,28 @@ public class CostEstimateController {
     return Utils.returnOkResponse("Cập nhật dự toán chi phí thành công", response);
   }
 
+  @PatchMapping("/{id}")
+  @Operation(summary = "Phê duyệt hoặc từ chối dự toán chi phí", description = "Lưu trạng thái phê duyệt của dự toán chi phí dựa theo ID. Truyền 'true' để phê duyệt, 'false' để từ chối.", responses = {
+    @ApiResponse(responseCode = "200", description = "Cập nhật trạng thái duyệt thành công", content = @Content(schema = @Schema(implementation = CostEstimateResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Dữ liệu trạng thái truyền lên không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy dự toán chi phí với ID tương ứng", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+  })
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD')")
+  public ResponseEntity<WrapperApiResponse> approveEstimate(
+    @PathVariable @Parameter(description = "ID của dự toán chi phí", required = true) String id,
+    @RequestBody @NonNull @Parameter(description = "Trạng thái duyệt (true = Duyệt, false = Từ chối)") Boolean status
+  ) {
+    log.info("REST request to update cost estimate's status with id: {}", id);
+    var response = estimateUseCase.approveEstimate(id, status);
+    return Utils.returnOkResponse("Duyệt dự toán chi phí thành công", response);
+  }
+
   @GetMapping("/{id}")
   @Operation(summary = "", description = "", responses = {
     @ApiResponse(responseCode = "200", description = "", content = @Content(schema = @Schema(implementation = CostEstimateResponse.class))),
     @ApiResponse(responseCode = "404", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'SURVEY_STAFF')")
   public ResponseEntity<WrapperApiResponse> getEstimateById(
     @PathVariable @Parameter(description = "", required = true) String id
   ) {
@@ -79,6 +101,7 @@ public class CostEstimateController {
   @Operation(summary = "", description = "", responses = {
     @ApiResponse(responseCode = "200", description = "", content = @Content(schema = @Schema(implementation = CostEstimateResponse.class)))
   })
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'SURVEY_STAFF')")
   public ResponseEntity<WrapperApiResponse> getAllEstimates(
     @PageableDefault @Parameter(description = "Pagination parameters") Pageable pageable,
     @Parameter(description = "Thông tin lọc (từ khóa, khoảng thời gian)") BaseFilterRequest request

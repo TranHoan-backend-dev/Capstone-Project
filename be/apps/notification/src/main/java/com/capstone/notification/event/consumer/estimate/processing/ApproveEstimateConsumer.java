@@ -2,6 +2,7 @@ package com.capstone.notification.event.consumer.estimate.processing;
 
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.enumerate.RoleName;
+import com.capstone.notification.event.consumer.estimate.message.ApproveEventMessage;
 import com.capstone.notification.event.consumer.estimate.message.CreateEventMessage;
 import com.capstone.notification.event.producer.MessageProducer;
 import com.capstone.notification.event.websocket.GeneralEventConsumer;
@@ -15,15 +16,15 @@ import java.util.List;
 
 @AppLog
 @Component
-public class CreateEstimateConsumer extends GeneralEventConsumer<CreateEventMessage> {
+public class ApproveEstimateConsumer extends GeneralEventConsumer<ApproveEventMessage> {
   Logger log;
 
-  public CreateEstimateConsumer(MessageProducer producer) {
+  public ApproveEstimateConsumer(MessageProducer producer) {
     super(producer);
   }
 
   @RabbitListener(queues = "${rabbit-mq-config.queue}.${rabbit-mq-config.entities[14]}.${rabbit-mq-config.actions[2]}")
-  public void handle(CreateEventMessage event) {
+  public void handle(ApproveEventMessage event) {
     super.handle(
       event,
       List.of(Topic.getTopicOfPlanningTechnicalDepartment(RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD, "")),
@@ -33,15 +34,16 @@ public class CreateEstimateConsumer extends GeneralEventConsumer<CreateEventMess
   }
 
   @Override
-  protected String buildMessage(@NonNull CreateEventMessage event) {
+  protected String buildMessage(@NonNull ApproveEventMessage event) {
     var data = event.data;
     var response = """
-      Một dự toán mới vừa được tạo bởi nhân viên %s
+      Một dự toán mới vừa được tạo bởi nhân viên %s đã %s
       Mã đơn: %s
       Số đơn: %s
       Tên khách hàng: %s
       """.formatted(
-      data.surveyStaffName(), data.formCode(), data.formNumber(), data.customerName());
+      data.surveyStaffName(), data.status() ? "được trưởng phòng duyệt" : "bị trưởng phòng từ chối",
+      data.formCode(), data.formNumber(), data.customerName());
     log.info(response);
     return response;
   }

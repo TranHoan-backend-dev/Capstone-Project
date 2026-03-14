@@ -33,7 +33,7 @@ public class UpdateEstimateConsumer extends GeneralEventConsumer<UpdateEventMess
 
   @Override
   protected String buildMessage(@NonNull UpdateEventMessage event) {
-    var data = event.data();
+    var data = event.data;
     var response = """
       Một dự toán mới vừa được cập nhật bởi nhân viên %s
       Mã đơn: %s

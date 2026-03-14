@@ -1,5 +1,6 @@
 package com.capstone.construction.application.usecase.estimate;
 
+import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.construction.application.business.estimate.CostEstimateService;
 import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.construction.application.dto.request.estimate.CreateRequest;
@@ -7,6 +8,7 @@ import com.capstone.construction.application.dto.request.estimate.UpdateRequest;
 import com.capstone.construction.application.dto.response.estimate.CostEstimateResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.application.event.producer.MessageProducer;
+import com.capstone.construction.application.event.producer.estimate.ApproveEvent;
 import com.capstone.construction.application.event.producer.estimate.CreatedEvent;
 import com.capstone.construction.application.event.producer.estimate.UpdatedEvent;
 import com.capstone.construction.infrastructure.service.EmployeeService;
@@ -65,6 +67,23 @@ public class CostEstimateUseCase {
     var routingKey = QUEUE_NAME + PREFIX + UPDATE_ACTION;
     var employee = empSrv.getEmployeeNameById(result.createBy());
     var event = new UpdatedEvent(
+      result.customerName(),
+      result.installationFormId().getFormCode(),
+      result.installationFormId().getFormNumber(),
+      employee.data().toString());
+    messageProducer.send(routingKey, event);
+
+    return result;
+  }
+
+  public CostEstimateResponse approveEstimate(String id, @NonNull Boolean status) {
+    estSrv.approveEstimate(id, status);
+
+    var result = estSrv.getEstimateById(id);
+
+    var routingKey = status ? QUEUE_NAME + PREFIX + APPROVE_ACTION : QUEUE_NAME + PREFIX + REJECT_ACTION;
+    var employee = empSrv.getEmployeeNameById(result.createBy());
+    var event = new ApproveEvent(
       result.customerName(),
       result.installationFormId().getFormCode(),
       result.installationFormId().getFormNumber(),
