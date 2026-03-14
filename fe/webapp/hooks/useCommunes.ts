@@ -1,25 +1,25 @@
 import axiosBase from "@/lib/axios/axios-base";
 import { useEffect, useState } from "react";
 
-export const useNetworks = () => {
-  const [networkOptions, setNetworkOptions] = useState<
+export const useCommune = () => {
+  const [communeOptions, setCommuneOptions] = useState<
     { label: string; value: string }[]
   >([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     axiosBase
-      .get("/api/construction/networks", { withCredentials: true })
+      .get("/api/construction/communes", { withCredentials: true })
       .then((res) =>
-        setNetworkOptions(
+        setCommuneOptions(
           res.data.data.content.map((item: any) => ({
             label: item.name,
-            value: item.branchId,
+            value: item.communeId,
           })),
         ),
       )
       .finally(() => setLoading(false));
   }, []);
 
-  return { networkOptions, loading };
+  return { communeOptions, loading };
 };

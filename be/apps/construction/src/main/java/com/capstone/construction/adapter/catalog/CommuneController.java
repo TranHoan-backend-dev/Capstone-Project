@@ -130,9 +130,12 @@ public class CommuneController {
     @ApiResponse(responseCode = "200", description = "", content = @Content(schema = @Schema(implementation = CommuneResponse.class)))
   })
   public ResponseEntity<WrapperApiResponse> getAllCommunes(
-    @PageableDefault @Parameter(description = "") Pageable pageable) {
+    @PageableDefault @Parameter(description = "") Pageable pageable,
+    @RequestParam(required = false) @Parameter(description = "Từ khóa tìm kiếm theo tên (không phân biệt dấu)") String search,
+    @RequestParam(required = false) @Parameter(description = "Filter theo type: URBAN_WARD | RURAL_COMMUNE") String type
+  ) {
     log.info("REST request to get all communes");
-    var response = communeUseCase.getAllCommunes(pageable);
-    return Utils.returnOkResponse("Lấy danh sách xã/phường thành công", response);
+    var response = communeUseCase.getAllCommunes(pageable, search, type);
+    return Utils.returnOkResponse("Communes retrieved successfully", response);
   }
 }
