@@ -55,7 +55,7 @@ public class WaterMeterTypeController {
     log.info("REST request to create water meter type: {}", request.name());
     var response = mtUseCase.createMeterType(request);
     log.info(response.toString());
-    return Utils.returnCreatedResponse("Water meter type created successfully");
+    return Utils.returnCreatedResponse("Tạo chủng loại đồng hồ thành công");
   }
 
   @PutMapping("/{id}")
@@ -72,7 +72,7 @@ public class WaterMeterTypeController {
       @RequestBody @Valid UpdateRequest request) {
     log.info("REST request to update water meter type: {}", id);
     var response = mtUseCase.updateMeterType(id, request);
-    return Utils.returnOkResponse("Water meter type updated successfully", response);
+    return Utils.returnOkResponse("Cập nhật chủng loại đồng hồ thành công", response);
   }
 
   @DeleteMapping("/{id}")
@@ -88,7 +88,7 @@ public class WaterMeterTypeController {
       @PathVariable @Parameter(description = "ID của loại đồng hồ cần xóa") String id) {
     log.info("REST request to delete water meter type: {}", id);
     mtUseCase.deleteMeterType(id);
-    return Utils.returnOkResponse("Water meter type deleted successfully", null);
+    return Utils.returnOkResponse("Xóa chủng loại đồng hồ thành công", null);
   }
 
   @GetMapping("/{id}")
@@ -100,7 +100,7 @@ public class WaterMeterTypeController {
       @PathVariable @Parameter(description = "ID của loại đồng hồ cần lấy thông tin") String id) {
     log.info("REST request to get water meter type: {}", id);
     var response = mtUseCase.getMeterTypeById(id);
-    return Utils.returnOkResponse("Water meter type retrieved successfully", response);
+    return Utils.returnOkResponse("Lấy thông tin chủng loại đồng hồ thành công", response);
   }
 
   @GetMapping
@@ -108,6 +108,6 @@ public class WaterMeterTypeController {
   public ResponseEntity<WrapperApiResponse> getAllTypes(@PageableDefault Pageable pageable) {
     log.info("REST request to get all water meter types");
     var response = mtUseCase.getAllMeterTypes(pageable);
-    return Utils.returnOkResponse("Water meter types retrieved successfully", response);
+    return Utils.returnOkResponse("Lấy danh sách chủng loại đồng hồ thành công", response);
   }
 }

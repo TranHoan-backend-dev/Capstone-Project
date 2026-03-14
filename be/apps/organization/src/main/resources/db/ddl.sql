@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS unaccent;
+
 create table public.business_page
 (
   page_id  varchar(255) not null

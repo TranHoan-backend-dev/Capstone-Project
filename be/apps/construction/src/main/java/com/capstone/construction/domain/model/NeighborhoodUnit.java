@@ -1,7 +1,7 @@
 package com.capstone.construction.domain.model;
 
 import jakarta.persistence.*;
-import com.capstone.construction.infrastructure.utils.Constant;
+import com.capstone.construction.infrastructure.utils.Message;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.jspecify.annotations.NonNull;
@@ -48,15 +48,15 @@ public class NeighborhoodUnit {
   }
 
   public void setName(String name) {
-    Objects.requireNonNull(name, Constant.PT_71);
+    Objects.requireNonNull(name, Message.PT_46);
     if (name.trim().isEmpty()) {
-      throw new IllegalArgumentException(Constant.PT_71);
+      throw new IllegalArgumentException(Message.PT_46);
     }
     this.name = name;
   }
 
   public void setCommune(Commune commune) {
-    Objects.requireNonNull(commune, Constant.PT_26);
+    Objects.requireNonNull(commune, Message.PT_13);
     this.commune = commune;
   }
 

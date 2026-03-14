@@ -1,6 +1,7 @@
 package com.capstone.construction.domain.model;
 
 import com.capstone.common.utils.SharedConstant;
+import com.capstone.common.utils.SharedMessage;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import com.capstone.construction.infrastructure.utils.Constant;
+import com.capstone.construction.infrastructure.utils.Message;
 
 @Getter
 @Entity
@@ -43,35 +44,35 @@ public class ConstructionRequest {
   String employeeInChargeId;
 
   public void setContractId(String contractId) {
-    requireNonNullAndNotEmpty(contractId, Constant.PT_63);
+    requireNonNullAndNotEmpty(contractId, Message.PT_38);
     this.contractId = contractId;
   }
 
   public void setCustomerName(String customerName) {
-    requireNonNullAndNotEmpty(customerName, Constant.PT_27);
+    requireNonNullAndNotEmpty(customerName, Message.PT_14);
     this.customerName = customerName;
   }
 
   public void setPhoneNumber(String phoneNumber) {
-    requireNonNullAndNotEmpty(phoneNumber, Constant.PT_15);
+    requireNonNullAndNotEmpty(phoneNumber, SharedMessage.MES_03);
     if (!phoneNumber.matches(SharedConstant.PHONE_PATTERN)) {
-      throw new IllegalArgumentException(Constant.PT_14);
+      throw new IllegalArgumentException(SharedMessage.MES_04);
     }
     this.phoneNumber = phoneNumber;
   }
 
   public void setAddress(String address) {
-    requireNonNullAndNotEmpty(address, Constant.PT_12);
+    requireNonNullAndNotEmpty(address, SharedMessage.MES_06);
     this.address = address;
   }
 
   public void setRegistrationDate(LocalDate registrationDate) {
-    Objects.requireNonNull(registrationDate, Constant.PT_64);
+    Objects.requireNonNull(registrationDate, Message.PT_39);
     this.registrationDate = registrationDate;
   }
 
   public void setEmployeeInChargeId(String employeeInChargeId) {
-    requireNonNullAndNotEmpty(employeeInChargeId, Constant.PT_65);
+    requireNonNullAndNotEmpty(employeeInChargeId, Message.PT_40);
     this.employeeInChargeId = employeeInChargeId;
   }
 

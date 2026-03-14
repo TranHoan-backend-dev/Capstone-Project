@@ -18,6 +18,7 @@ public class Notification {
   @Id
   String notificationId;
   String title;
+  @Setter
   String link;
   String message;
   Boolean status;
@@ -28,13 +29,6 @@ public class Notification {
       throw new IllegalArgumentException("Tiêu đề không được để trống");
     }
     this.title = title;
-  }
-
-  public void setLink(String link) {
-    if (link != null && link.trim().isEmpty()) {
-      throw new IllegalArgumentException("Link không được để trống");
-    }
-    this.link = link;
   }
 
   public void setMessage(String message) {

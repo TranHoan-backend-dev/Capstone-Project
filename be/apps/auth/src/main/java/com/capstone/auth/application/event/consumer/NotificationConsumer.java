@@ -7,7 +7,10 @@ import com.capstone.auth.infrastructure.persistence.UserRepository;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.enumerate.RoleName;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -18,9 +21,11 @@ import java.util.*;
 @AppLog
 @Component
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class NotificationConsumer {
-  private final UserRepository userRepository;
-  private final IndividualNotificationRepository individualNotificationRepository;
+  UserRepository userRepository;
+  IndividualNotificationRepository individualNotificationRepository;
+  @NonFinal
   Logger log;
 
   @RabbitListener(queues = "auth.individual-notification.queue")

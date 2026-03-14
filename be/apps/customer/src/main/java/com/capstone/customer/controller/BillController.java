@@ -34,7 +34,7 @@ public class BillController {
   public ResponseEntity<WrapperApiResponse> createBill(@RequestBody @Valid BillRequest request) {
     log.info("REST request to create bill for customer: {}", request.customerId());
     BillResponse response = billService.createBill(request);
-    return Utils.returnCreatedResponse("Bill created successfully");
+    return Utils.returnCreatedResponse("Tạo hóa đơn thành công");
   }
 
   @Operation(summary = "Update a bill", description = "Updates details of an existing bill record", responses = {
@@ -48,7 +48,7 @@ public class BillController {
     log.info("REST request to update bill: {}", id);
     BillResponse response = billService.updateBill(id, request);
     return Utils.returnOkResponse(
-      "Bill updated successfully", response);
+      "Cập nhật hóa đơn thành công", response);
   }
 
   @Operation(summary = "Delete a bill", description = "Removes a bill record from the system", responses = {
@@ -59,7 +59,7 @@ public class BillController {
   public ResponseEntity<WrapperApiResponse> deleteBill(@PathVariable @Parameter(description = "Bill ID") String id) {
     log.info("REST request to delete bill: {}", id);
     billService.deleteBill(id);
-    return Utils.returnOkResponse("Bill deleted successfully", null);
+    return Utils.returnOkResponse("Xóa hóa đơn thành công", null);
   }
 
   @Operation(summary = "Get bill by ID", description = "Fetches detailed information of a bill record", responses = {
@@ -70,7 +70,7 @@ public class BillController {
   public ResponseEntity<WrapperApiResponse> getBillById(@PathVariable @Parameter(description = "Bill ID") String id) {
     log.info("REST request to get bill: {}", id);
     BillResponse response = billService.getBillById(id);
-    return Utils.returnOkResponse("Bill retrieved successfully", response);
+    return Utils.returnOkResponse("Lấy thông tin hóa đơn thành công", response);
   }
 
   @Operation(summary = "Get all bills", description = "Retrieves a paginated list of all bill records")
@@ -78,6 +78,6 @@ public class BillController {
   public ResponseEntity<WrapperApiResponse> getAllBills(@PageableDefault Pageable pageable) {
     log.info("REST request to get all bills with pagination: {}", pageable);
     Page<BillResponse> response = billService.getAllBills(pageable);
-    return Utils.returnOkResponse("Bills retrieved successfully", response);
+    return Utils.returnOkResponse("Lấy danh sách hóa đơn thành công", response);
   }
 }

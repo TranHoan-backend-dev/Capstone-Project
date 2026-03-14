@@ -6,7 +6,7 @@ import com.capstone.device.application.dto.request.price.CreateRequest;
 import com.capstone.device.application.dto.request.price.UpdateRequest;
 import com.capstone.device.application.dto.response.WaterPriceResponse;
 import com.capstone.device.application.event.producer.MessageProducer;
-import com.capstone.device.infrastructure.util.Constant;
+import com.capstone.device.infrastructure.util.Message;
 import com.capstone.device.infrastructure.service.CustomerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -137,7 +137,7 @@ class WaterPriceUseCaseTest {
     // When & Then
     assertThatThrownBy(() -> waterPriceUseCase.deleteWaterPrice(id))
       .isInstanceOf(IllegalArgumentException.class)
-      .hasMessage(Constant.ENT_48);
+      .hasMessage(Message.ENT_48);
 
     verify(customerService).checkWhetherCustomersAreApplied(id);
     verify(waterPriceService, never()).deleteWaterPrice(id);

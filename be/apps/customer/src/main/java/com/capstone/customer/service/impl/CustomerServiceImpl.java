@@ -54,7 +54,6 @@ public class CustomerServiceImpl implements CustomerService {
       .passportCode(request.passportCode())
       .connectionPoint(request.connectionPoint())
       .isActive(request.isActive() != null ? request.isActive() : true)
-      .cancelReason(request.cancelReason())
       .installationFormId(request.installationFormId())
       .waterPriceId(request.waterPriceId())
       .waterMeterId(request.waterMeterId()));

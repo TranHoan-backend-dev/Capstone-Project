@@ -1,1 +1,2 @@
-export * from "./commune-column"
+export * from "./road_column";
+export * from "./commune-column";

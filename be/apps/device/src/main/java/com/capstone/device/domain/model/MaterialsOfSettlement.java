@@ -1,7 +1,8 @@
 package com.capstone.device.domain.model;
 
+import com.capstone.common.utils.SharedMessage;
 import com.capstone.device.domain.model.utils.MaterialsOfSettlementId;
-import com.capstone.device.infrastructure.util.Constant;
+import com.capstone.device.infrastructure.util.Message;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -33,27 +34,27 @@ public class MaterialsOfSettlement {
   String note;
 
   public void setId(MaterialsOfSettlementId id) {
-    this.id = Objects.requireNonNull(id, Constant.ENT_32);
+    this.id = Objects.requireNonNull(id, SharedMessage.MES_07);
   }
 
   public void setMaterial(Material material) {
-    this.material = Objects.requireNonNull(material, Constant.ENT_33);
+    this.material = Objects.requireNonNull(material, Message.ENT_33);
   }
 
   public void setLaborCost(String laborCost) {
-    this.laborCost = Objects.requireNonNull(laborCost, Constant.ENT_30);
+    this.laborCost = Objects.requireNonNull(laborCost, Message.ENT_30);
     if (laborCost.isBlank())
-      throw new IllegalArgumentException(Constant.ENT_30);
+      throw new IllegalArgumentException(Message.ENT_30);
   }
 
   public void setMaterialCost(String materialCost) {
-    this.materialCost = Objects.requireNonNull(materialCost, Constant.ENT_31);
+    this.materialCost = Objects.requireNonNull(materialCost, Message.ENT_31);
     if (materialCost.isBlank())
-      throw new IllegalArgumentException(Constant.ENT_31);
+      throw new IllegalArgumentException(Message.ENT_31);
   }
 
   public void setNote(String note) {
-    this.note = Objects.requireNonNull(note, Constant.ENT_34);
+    this.note = Objects.requireNonNull(note, Message.ENT_55);
   }
 
   public static MaterialsOfSettlement create(Consumer<MaterialsOfSettlementBuilder> consumer) {
@@ -91,11 +92,11 @@ public class MaterialsOfSettlement {
     }
 
     public MaterialsOfSettlement build() {
-      Objects.requireNonNull(instance.id, Constant.ENT_32);
-      Objects.requireNonNull(instance.material, Constant.ENT_33);
-      Objects.requireNonNull(instance.laborCost, Constant.ENT_30);
-      Objects.requireNonNull(instance.materialCost, Constant.ENT_31);
-      Objects.requireNonNull(instance.note, Constant.ENT_34);
+      Objects.requireNonNull(instance.id, SharedMessage.MES_07);
+      Objects.requireNonNull(instance.material, Message.ENT_33);
+      Objects.requireNonNull(instance.laborCost, Message.ENT_30);
+      Objects.requireNonNull(instance.materialCost, Message.ENT_31);
+      Objects.requireNonNull(instance.note, Message.ENT_55);
       return instance;
     }
   }
