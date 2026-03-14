@@ -68,7 +68,7 @@ export const JobsTable = ({
         const json = await res.json();
         const pageData = json?.data;
         const items = pageData?.items ?? [];
-        setTotalItems(pageData?.totalElements ?? 0);
+        setTotalItems(pageData?.totalItems ?? 0);
         setTotalPages(pageData?.totalPages ?? 1);
 
         const mapped = items.map((item: JobResponse, index: number) => ({
