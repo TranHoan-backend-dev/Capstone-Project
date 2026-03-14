@@ -71,6 +71,10 @@ public class MaterialUseCase {
   public Page<MaterialResponse> getAll(Pageable pageable) {
     return mService.getAllMaterials(pageable);
   }
+
+  public Page<MaterialResponse> searchMaterials(SearchRequest request, Pageable pageable) {
+    return mService.searchMaterials(request, pageable);
+  }
   // </editor-fold>
 
   // <editor-fold> desc="material group"
