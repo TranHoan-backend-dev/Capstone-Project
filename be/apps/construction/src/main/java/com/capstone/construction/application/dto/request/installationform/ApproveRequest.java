@@ -17,8 +17,8 @@ public record ApproveRequest(
   @NotEmpty(message = Message.PT_28) String formNumber,
 
   @Schema(description = "Mã biểu mẫu (Biểu số)", example = "BM-01")
-  @NotBlank(message = Message.PT_01)
-  @NotEmpty(message = Message.PT_01) String formCode,
+  @NotBlank(message = Message.PT_08)
+  @NotEmpty(message = Message.PT_08) String formCode,
 
   @Schema(description = "Trạng thái (true: Phê duyệt, false: Từ chối)", example = "true")
   @NotNull(message = "Status cannot be null") Boolean status

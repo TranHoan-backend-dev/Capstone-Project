@@ -81,3 +81,88 @@ Accept: application/json
     ]
   }
 ]
+
+### get employee name by id
+GET {{uri}}/authorization/employees/{{empId}}/name
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+### check employee existence
+GET {{uri}}/authorization/employees/{{empId}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+### update employee information
+PUT {{uri}}/authorization/employees/{{empId}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "name": "Updated Name",
+  "departmentId": "dept-001",
+  "phone": "0123456789",
+  "isActive": true,
+  "networkId": "net-001"
+}
+
+### delete employee account
+DELETE {{uri}}/authorization/employees/{{empId}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+### check if job is assigned
+GET {{uri}}/authorization/employees/jobs/job-001/assigned
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+###
+@jobId = job-001
+
+### 6. Cập nhật thông tin nhân viên (Thành công)
+PUT {{uri}}/authorization/employees/{{empId}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "name": "Nguyễn Văn A Updated",
+  "departmentId": "e1823908-0125-468b-9831-5079a4055577",
+  "phone": "0987654321",
+  "isActive": true,
+  "networkId": "550e8400-e29b-41d4-a716-446655440001"
+}
+
+### Blank params
+PUT {{uri}}/authorization/employees/{{empId}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "name": "",
+  "departmentId": "e1823908-0125-468b-9831-5079a4055577",
+  "phone": "",
+  "isActive": false,
+  "networkId": "550e8400-e29b-41d4-a716-446655440001"
+}
+
+### 7. Cập nhật thông tin nhân viên (Thất bại - ID không tồn tại)
+PUT {{uri}}/authorization/employees/NON_EXISTENT_ID
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "name": "User Ao",
+  "departmentId": "DEPT001",
+  "phone": "0987654321",
+  "isActive": true,
+  "networkId": "NET001"
+}
+
+### 8. Xóa tài khoản nhân viên (Thành công)
+DELETE {{uri}}/authorization/employees/{{empId}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+### 9. Xóa tài khoản nhân viên (Thất bại - ID không tồn tại)
+DELETE {{uri}}/authorization/employees/NON_EXISTENT_ID
+Authorization: Bearer {{access_token}}
+Content-Type: application/json

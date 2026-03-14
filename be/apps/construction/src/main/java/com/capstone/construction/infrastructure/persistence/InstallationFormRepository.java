@@ -18,7 +18,7 @@ import java.util.*;
 @Repository
 public interface InstallationFormRepository extends JpaRepository<InstallationForm, InstallationFormId>,
   JpaSpecificationExecutor<InstallationForm> {
-  boolean existsById_FormNumberOrId_FormCode(String formNumber, String formCode);
+  boolean existsById_FormNumberAndId_FormCode(String formNumber, String formCode);
 
   Page<InstallationForm> findByStatus_ContractAndStatus_Construction(@NonNull ProcessingStatus statusContract, @NonNull ProcessingStatus statusConstruction, Pageable pageable);
 
@@ -86,8 +86,6 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
       return cb.and(predicates.toArray(new Predicate[0]));
     };
   }
-
-  Optional<InstallationForm> findById_FormCodeAndId_FormNumber(String idFormCode, String idFormNumber);
 
   Boolean existsByNetwork_BranchId(String id);
 }

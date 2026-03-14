@@ -48,7 +48,7 @@ public class WaterSupplyNetworkServiceImpl implements WaterSupplyNetworkService 
     var name = request.name();
     if (name != null && !name.isBlank()) {
       if (networkRepository.existsByNameIgnoreCase(name) && !network.getName().equalsIgnoreCase(name)) {
-        throw new IllegalArgumentException(Message.SE_05);
+        throw new IllegalArgumentException(Message.PT_57);
       }
       network.setName(name);
     }

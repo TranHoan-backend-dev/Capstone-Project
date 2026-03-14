@@ -4,7 +4,7 @@ import com.capstone.auth.application.dto.request.keycloakparam.TokenExchangePara
 import com.capstone.auth.application.dto.request.keycloakparam.UserCreationParam;
 import com.capstone.auth.application.dto.request.keycloakparam.UserTokenExchangeParam;
 import com.capstone.auth.application.dto.response.TokenExchangeResponse;
-import com.capstone.auth.infrastructure.config.FeignMultipartConfig;
+import com.capstone.common.config.feign.FeignMultipartConfig;
 import feign.QueryMap;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;

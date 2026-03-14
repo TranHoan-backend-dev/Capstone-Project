@@ -54,7 +54,7 @@ public class InstallationFormHandlingUseCase {
   public NewInstallationFormResponse createNewInstallationRequest(@NonNull NewOrderRequest request) {
     var routingKey = QUEUE_NAME + PREFIX + CREATE_ACTION;
     if (ifSrv.isInstallationFormExisting(request.formNumber(), request.formCode())) {
-      throw new ExistingItemException(Message.SE_01);
+      throw new ExistingItemException(Message.PT_53);
     }
 
     var savedResponse = ifSrv.createNewInstallationForm(request);

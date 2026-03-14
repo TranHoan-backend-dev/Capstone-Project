@@ -1,4 +1,4 @@
-package com.capstone.auth.infrastructure.config;
+package com.capstone.common.config.feign;
 
 import feign.codec.Encoder;
 import feign.form.spring.SpringFormEncoder;

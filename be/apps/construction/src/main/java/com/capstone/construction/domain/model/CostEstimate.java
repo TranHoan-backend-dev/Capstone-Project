@@ -1,7 +1,5 @@
 package com.capstone.construction.domain.model;
 
-import com.capstone.common.enumerate.ProcessingStatus;
-import com.capstone.construction.domain.model.utils.InstallationFormId;
 import jakarta.persistence.*;
 import com.capstone.common.utils.SharedMessage;
 import com.capstone.construction.infrastructure.utils.Message;
@@ -77,10 +75,6 @@ public class CostEstimate implements Serializable {
   @Column(nullable = false)
   LocalDateTime updatedAt;
 
-  @Enumerated(EnumType.STRING)
-  @Column(nullable = false)
-  ProcessingStatus status;
-
   @Column(nullable = false)
   LocalDate registrationAt;
 
@@ -93,8 +87,8 @@ public class CostEstimate implements Serializable {
   @Column(nullable = false)
   String overallWaterMeterId;
 
-  @Column(nullable = false)
-  InstallationFormId installationFormId;
+  @OneToOne
+  InstallationForm installationForm;
 
   @PrePersist
   void onCreate() {
@@ -108,19 +102,14 @@ public class CostEstimate implements Serializable {
   }
 
   // <editor-fold> desc="setter"
-  public void setStatus(@NonNull ProcessingStatus value) {
-    requireNonNullAndNotEmpty(value.name(), Message.PT_03);
-    this.status = value;
-  }
-
   public void setRegistrationAt(@NonNull LocalDate value) {
     Objects.requireNonNull(value, Message.PT_04);
     this.registrationAt = value;
   }
 
-  public void setInstallationFormId(InstallationFormId value) {
+  public void setInstallationFormId(InstallationForm value) {
     Objects.requireNonNull(value, Message.PT_41);
-    this.installationFormId = value;
+    this.installationForm = value;
   }
 
   public void setCustomerName(String customerName) {
@@ -246,11 +235,6 @@ public class CostEstimate implements Serializable {
       return this;
     }
 
-    public EstimationBuilder status(ProcessingStatus address) {
-      instance.setStatus(address);
-      return this;
-    }
-
     public EstimationBuilder note(String note) {
       instance.setNote(note);
       return this;
@@ -306,7 +290,7 @@ public class CostEstimate implements Serializable {
       return this;
     }
 
-    public EstimationBuilder installationFormId(InstallationFormId value) {
+    public EstimationBuilder installationFormId(InstallationForm value) {
       instance.setInstallationFormId(value);
       return this;
     }

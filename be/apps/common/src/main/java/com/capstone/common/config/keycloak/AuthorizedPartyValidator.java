@@ -1,4 +1,4 @@
-package com.capstone.common.config;
+package com.capstone.common.config.keycloak;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;

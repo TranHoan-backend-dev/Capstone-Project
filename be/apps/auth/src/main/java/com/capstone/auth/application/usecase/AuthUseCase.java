@@ -13,7 +13,7 @@ import com.capstone.auth.application.dto.response.UserProfileResponse;
 import com.capstone.auth.application.event.producer.message.AccountCreationEvent;
 import com.capstone.auth.application.event.producer.MessageProducer;
 import com.capstone.auth.application.exception.AccountBlockedException;
-import com.capstone.auth.application.exception.NotExistingException;
+import com.capstone.common.exception.NotExistingException;
 
 import com.capstone.common.enumerate.RoleName;
 import com.capstone.auth.infrastructure.utils.Message;

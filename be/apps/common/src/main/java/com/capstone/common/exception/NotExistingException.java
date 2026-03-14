@@ -1,4 +1,4 @@
-package com.capstone.auth.application.exception;
+package com.capstone.common.exception;
 
 public class NotExistingException extends RuntimeException {
   public NotExistingException(String message) {

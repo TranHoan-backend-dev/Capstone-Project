@@ -40,7 +40,6 @@ Authorization: Bearer {{access_token}}
 Accept: application/json
 
 ### Get all estimates - Filter by date range (from-to)
-# Note: Based on @Pattern(regexp = "dd-MM-yyyy") in BaseFilterRequest
 GET {{uri}}?from=01-01-2023&to=31-12-2023
 Authorization: Bearer {{access_token}}
 Accept: application/json
@@ -59,6 +58,18 @@ Accept: application/json
 GET {{uri}}?from=2023-01-01
 Authorization: Bearer {{access_token}}
 Accept: application/json
+
+### C - Create estimate (Validation Failure - missing required fields)
+POST {{uri}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "customerName": "",
+  "address": "",
+  "formCode": "CODE-01"
+}
 
 ### C - Create estimate
 POST {{uri}}
@@ -82,28 +93,16 @@ Accept: application/json
   "designCoefficient": 2,
   "designFee": 500000,
   "designImageUrl": "http://storage.com/design.png",
-  "status": "PROCESSING",
   "registrationAt": "2023-10-27",
-  "createBy": "user-123",
+  "createBy": "6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20",
   "waterMeterSerial": "SN12345678",
   "overallWaterMeterId": "METER-001",
-  "formCode": "CODE-01",
-  "formNumber": "NUM-001"
+  "formNumber": "7dfebc99-9c0b-4ef8-bb6d-6bb9bd380a2e",
+  "formCode": "FORM-2024-0030"
 }
 
-> {%
-  client.global.set("estimate_id", response.body.data.id);
-%}
-
-### R - Get estimate by ID
-GET {{uri}}/{{estimate_id}}
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### R - Get estimate by ID (Not found)
-GET {{uri}}/invalid-id
-Authorization: Bearer {{access_token}}
-Accept: application/json
+###
+@estimate_id = 5513e1e5-a627-440a-be72-a84aa1315fc6
 
 ### U - Update estimate
 PUT {{uri}}/{{estimate_id}}
@@ -126,14 +125,8 @@ Accept: application/json
   "vatCoefficient": 10,
   "designCoefficient": 3,
   "designFee": 600000,
-  "designImageUrl": "http://storage.com/design_updated.png",
-  "status": "COMPLETED",
-  "registrationAt": "2023-10-28",
-  "createBy": "user-123",
   "waterMeterSerial": "SN12345678",
-  "overallWaterMeterId": "METER-001",
-  "formCode": "CODE-01",
-  "formNumber": "NUM-001"
+  "overallWaterMeterId": "METER-001"
 }
 
 ### U - Update estimate (Not found)
@@ -145,23 +138,21 @@ Accept: application/json
 {
   "customerName": "Test",
   "address": "Test",
-  "contractFee": 0,
-  "surveyFee": 0,
-  "surveyEffort": 0,
-  "installationFee": 0,
-  "laborCoefficient": 0,
-  "generalCostCoefficient": 0,
-  "precalculatedTaxCoefficient": 0,
-  "constructionMachineryCoefficient": 0,
-  "vatCoefficient": 0,
-  "designCoefficient": 0,
-  "designFee": 0,
-  "designImageUrl": "Test",
   "status": "PROCESSING",
-  "registrationAt": "2023-10-27",
-  "createBy": "user-123",
-  "waterMeterSerial": "SN12345678",
-  "overallWaterMeterId": "METER-001",
-  "formCode": "CODE-01",
-  "formNumber": "NUM-001"
+  "waterMeterSerial": "SN123",
+  "overallWaterMeterId": "METER-001"
+}
+
+### U - Blank params
+PUT {{uri}}/{{estimate_id}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "customerName": "",
+  "address": "",
+  "status": "",
+  "waterMeterSerial": "",
+  "overallWaterMeterId": ""
 }

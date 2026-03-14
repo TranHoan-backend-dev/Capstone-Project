@@ -45,10 +45,10 @@ public class RoadmapServiceImpl implements RoadmapService {
     Objects.requireNonNull(request.networkId(), Message.PT_34);
 
     var lateral = lateralRepository.findById(request.lateralId())
-      .orElseThrow(() -> new IllegalArgumentException(Message.SE_02));
+      .orElseThrow(() -> new IllegalArgumentException(Message.PT_54));
 
     var network = networkRepository.findById(request.networkId())
-      .orElseThrow(() -> new IllegalArgumentException(Message.SE_03));
+      .orElseThrow(() -> new IllegalArgumentException(Message.PT_55));
 
     // TODO: kiểm tra quy tắc định mã lộ trình ghi
     var roadmap = Roadmap.create(builder -> builder
@@ -73,12 +73,12 @@ public class RoadmapServiceImpl implements RoadmapService {
 
     if (request.lateralId() != null && !request.lateralId().isBlank()) {
       var lateral = lateralRepository.findById(request.lateralId())
-        .orElseThrow(() -> new IllegalArgumentException(Message.SE_02));
+        .orElseThrow(() -> new IllegalArgumentException(Message.PT_54));
       roadmap.setLateral(lateral);
     }
     if (request.networkId() != null && !request.networkId().isBlank()) {
       var network = networkRepository.findById(request.networkId())
-        .orElseThrow(() -> new IllegalArgumentException(Message.SE_03));
+        .orElseThrow(() -> new IllegalArgumentException(Message.PT_55));
       roadmap.setNetwork(network);
     }
     if (request.name() != null && !request.name().isBlank()) {
