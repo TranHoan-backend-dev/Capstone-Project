@@ -5,9 +5,9 @@ import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
 import DepartmentPage from "./department-page";
 
 export const metadata: Metadata = {
-  title: "Quản lý Đường phố",
+  title: "Quản lý Phòng ban",
   description:
-    "Thông tin chi tiết danh sách đường phố do Công ty Cổ Phần Nước Nam Định - NAWACO quản lý",
+    "Thông tin chi tiết danh sách phòng ban của Công ty Cổ Phần Nước Nam Định - NAWACO quản lý",
 };
 
 const Department = () => {

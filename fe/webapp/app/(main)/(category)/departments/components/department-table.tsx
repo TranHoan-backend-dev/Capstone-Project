@@ -68,7 +68,7 @@ export const DepartmentTable = ({
         const json = await res.json();
         const pageData = json?.data;
         const items = pageData?.items ?? [];
-        setTotalItems(pageData?.totalElements ?? 0);
+        setTotalItems(pageData?.totalItems ?? 0);
         setTotalPages(pageData?.totalPages ?? 1);
 
         const mapped = items.map((item: DepartmentResponse, index: number) => ({
@@ -109,6 +109,9 @@ export const DepartmentTable = ({
       });
 
       setDeleteId(null);
+      if (data.length === 1 && page > 1) {
+        setPage(page - 1);
+      }
       onDeleted();
     } catch (e: any) {
       CallToast({
