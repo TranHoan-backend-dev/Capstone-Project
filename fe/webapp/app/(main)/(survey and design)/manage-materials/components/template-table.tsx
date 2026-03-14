@@ -112,7 +112,7 @@ export const TemplateTable = ({ data }: TemplateTableProps) => {
       headerSummary={`${data.length}`}
       paginationProps={{
         total: 5,
-        initialPage: 1,
+        page: 1,
         summary: `1-${data.length} của 25`,
       }}
       renderCellAction={renderCell}

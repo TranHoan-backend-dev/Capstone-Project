@@ -8,7 +8,7 @@ import com.capstone.construction.domain.model.NeighborhoodUnit;
 import com.capstone.construction.infrastructure.persistence.NeighborhoodUnitRepository;
 import com.capstone.construction.infrastructure.persistence.CommuneRepository;
 import com.capstone.construction.application.exception.ExistingItemException;
-import com.capstone.construction.infrastructure.config.Constant;
+import com.capstone.construction.infrastructure.utils.Message;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -38,7 +38,7 @@ public class NeighborhoodUnitServiceImpl implements NeighborhoodUnitService {
     }
 
     var commune = communeRepository.findById(request.communeId())
-      .orElseThrow(() -> new IllegalArgumentException(Constant.PT_26));
+      .orElseThrow(() -> new IllegalArgumentException(Message.PT_13));
 
     var unit = NeighborhoodUnit.create(builder -> builder
       .name(request.name())
@@ -59,7 +59,7 @@ public class NeighborhoodUnitServiceImpl implements NeighborhoodUnitService {
     }
 
     var commune = communeRepository.findById(request.communeId())
-      .orElseThrow(() -> new IllegalArgumentException(Constant.PT_26));
+      .orElseThrow(() -> new IllegalArgumentException(Message.PT_13));
 
     if (!unit.getName().equalsIgnoreCase(request.name())) {
       unit.setName(request.name());

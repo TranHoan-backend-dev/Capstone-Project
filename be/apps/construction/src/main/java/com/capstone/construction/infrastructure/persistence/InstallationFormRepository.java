@@ -1,7 +1,10 @@
 package com.capstone.construction.infrastructure.persistence;
 
+import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.construction.domain.model.InstallationForm;
+import com.capstone.construction.domain.model.utils.InstallationFormId;
 import jakarta.persistence.criteria.Predicate;
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -13,13 +16,11 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Repository
-public interface InstallationFormRepository extends JpaRepository<InstallationForm, String>,
+public interface InstallationFormRepository extends JpaRepository<InstallationForm, InstallationFormId>,
   JpaSpecificationExecutor<InstallationForm> {
-  boolean existsByFormNumberAndFormCode(String formNumber, String formCode);
+  boolean existsById_FormNumberAndId_FormCode(String formNumber, String formCode);
 
-  Page<InstallationForm> findByHandoverByIsNull(Pageable pageable);
-
-  Page<InstallationForm> findByHandoverByIsNotNull(Pageable pageable);
+  Page<InstallationForm> findByStatus_ContractAndStatus_Construction(@NonNull ProcessingStatus statusContract, @NonNull ProcessingStatus statusConstruction, Pageable pageable);
 
   // build dynamic WHERE clause
 
@@ -34,30 +35,57 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
    * @param end
    * @return
    */
-  static Specification<InstallationForm> search(String keyword, LocalDateTime start, LocalDateTime end) {
+  static @NonNull Specification<InstallationForm> search(String keyword, LocalDateTime start, LocalDateTime end, ProcessingStatus statusContract, ProcessingStatus statusConstruction) {
     return (root, query, cb) -> {
       // tao danh sach cac dieu kien
       List<Predicate> predicates = new ArrayList<>();
 
       if (keyword != null && !keyword.isBlank()) {
-        // tuong duong LOWER(address) LIKE %keyword%
-        Predicate address = cb.like(cb.lower(root.get("address")),
-          "%" + keyword.toLowerCase() + "%");
+        List<Predicate> orPredicates = new ArrayList<>();
+        var lowerCaseKeyword = "%" + keyword.toLowerCase() + "%";
+        var unaccent = "unaccent";
 
-        // tuong duong LOWER(customerName) LIKE %keyword%
-        Predicate customer = cb.like(cb.lower(root.get("customerName")),
-          "%" + keyword.toLowerCase() + "%");
+        // tuong duong LOWER(address) LIKE %keyword%
+        var list = List.of("address", "customerName",
+          "citizenIdentificationNumber", "citizenIdentificationProvideLocation",
+          "phoneNumber", "taxCode", "bankAccountNumber", "bankAccountProviderLocation",
+          "usageTarget", "householdRegistrationNumber", "customerType");
+
+        list.forEach(field ->
+          orPredicates.add(cb.like(
+            cb.function(unaccent, String.class, cb.lower(root.get(field).as(String.class))),
+            cb.function(unaccent, String.class, cb.literal(lowerCaseKeyword))
+          )));
+
+        orPredicates.add(
+          cb.like(
+            cb.function(unaccent, String.class, cb.lower(root.get("representative").get("name"))),
+            cb.function(unaccent, String.class, cb.literal(lowerCaseKeyword))
+          ));
+
+        orPredicates.add(
+          cb.like(
+            cb.function(unaccent, String.class, cb.lower(root.get("representative").get("position"))),
+            cb.function(unaccent, String.class, cb.literal(lowerCaseKeyword))
+          ));
 
         // gop 2 dieu kien tren bang OR
-        predicates.add(cb.or(address, customer));
+        predicates.add(cb.or(orPredicates.toArray(new Predicate[0])));
       }
 
       if (start != null && end != null) {
         predicates.add(cb.between(root.get("createdAt"), start, end));
       }
 
+      if (statusConstruction != null && statusContract != null) {
+        predicates.add(cb.equal(root.get("status").get("contract"), statusContract));
+        predicates.add(cb.equal(root.get("status").get("construction"), statusConstruction));
+      }
+
       // gop cac dieu kien bang toan tu AND
       return cb.and(predicates.toArray(new Predicate[0]));
     };
   }
+
+  Boolean existsByNetwork_BranchId(String id);
 }

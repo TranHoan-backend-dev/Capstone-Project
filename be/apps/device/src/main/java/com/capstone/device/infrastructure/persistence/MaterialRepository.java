@@ -6,5 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MaterialRepository extends JpaRepository<Material, String> {
-}
+  boolean existsByGroup_GroupId(String id);
 
+  boolean existsByUnit_Id(String unitId);
+}

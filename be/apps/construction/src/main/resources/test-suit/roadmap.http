@@ -173,3 +173,28 @@ DELETE {{uri}}/e3e701d6-5fda-4adf-ad5e-2033a2ae1707
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 Accept: application/json
+
+### R - get all roadmaps (no filter)
+GET {{uri}}?page=0&size=10
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### R - search by keyword
+GET {{uri}}?page=0&size=10&keyword=roadmap
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### R - filter by lateralId
+GET {{uri}}?page=0&size=10&lateralId=4d5e6f70-3000-4ddd-9eee-dddddddd0001
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### R - filter by networkId
+GET {{uri}}?page=0&size=10&networkId=550e8400-e29b-41d4-a716-446655440001
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### R - combine keyword + lateralId + networkId
+GET {{uri}}?page=0&size=10&keyword=roadmap&lateralId=4d5e6f70-3000-4ddd-9eee-dddddddd0001&networkId=550e8400-e29b-41d4-a716-446655440001
+Authorization: Bearer {{access_token}}
+Accept: application/json

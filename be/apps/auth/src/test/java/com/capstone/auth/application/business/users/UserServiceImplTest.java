@@ -1,10 +1,10 @@
 package com.capstone.auth.application.business.users;
 
-import com.capstone.auth.application.dto.request.FilterUsersRequest;
+import com.capstone.auth.application.dto.request.users.FilterUsersRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
 import com.capstone.common.enumerate.RoleName;
 import com.capstone.common.exception.ExistingException;
-import com.capstone.auth.application.exception.NotExistingException;
+import com.capstone.common.exception.NotExistingException;
 import com.capstone.auth.domain.model.EmployeeJob;
 import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.domain.model.Roles;
@@ -100,10 +100,10 @@ class UserServiceImplTest {
 
     // Assert
     verify(repo).save(argThat(u -> u.getEmail().equals(email) &&
-      u.getUsername().equals(username) &&
-      u.getRole().equals(role) &&
-      u.getDepartmentId().equals(departmentId) &&
-      u.getWaterSupplyNetworkId().equals(waterSupplyNetworkId)));
+        u.getUsername().equals(username) &&
+        u.getRole().equals(role) &&
+        u.getDepartmentId().equals(departmentId) &&
+        u.getWaterSupplyNetworkId().equals(waterSupplyNetworkId)));
     verify(profileRepo).save(any(Profile.class));
     verify(employeeJobRepo).save(any(EmployeeJob.class));
   }
@@ -115,7 +115,7 @@ class UserServiceImplTest {
     when(repo.findByEmail(email)).thenReturn(Optional.of(new Users()));
 
     assertThrows(ExistingException.class,
-      () -> userService.createEmployee("u", email, new Roles(), List.of(), "d", "w", "n", "p"));
+        () -> userService.createEmployee("u", email, new Roles(), List.of(), "d", "w", "n", "p"));
   }
 
   @Test
@@ -126,7 +126,7 @@ class UserServiceImplTest {
     when(profileRepo.existsByPhoneNumber(phone)).thenReturn(true);
 
     assertThrows(ExistingException.class,
-      () -> userService.createEmployee("u", "e@e.com", new Roles(), List.of(), "d", "w", "n", phone));
+        () -> userService.createEmployee("u", "e@e.com", new Roles(), List.of(), "d", "w", "n", phone));
   }
 
   @Test
@@ -138,7 +138,7 @@ class UserServiceImplTest {
     when(netWorkService.checkExistence(networkId)).thenReturn(false);
 
     assertThrows(NotExistingException.class,
-      () -> userService.createEmployee("u", "e@e.com", new Roles(), List.of(), "d", networkId, "n", "p"));
+        () -> userService.createEmployee("u", "e@e.com", new Roles(), List.of(), "d", networkId, "n", "p"));
   }
 
   @Test
@@ -151,7 +151,7 @@ class UserServiceImplTest {
     when(organizationService.checkDepartmentExistence(deptId)).thenReturn(false);
 
     assertThrows(NotExistingException.class,
-      () -> userService.createEmployee("u", "e@e.com", new Roles(), List.of(), deptId, "w", "n", "p"));
+        () -> userService.createEmployee("u", "e@e.com", new Roles(), List.of(), deptId, "w", "n", "p"));
   }
 
   @Test
@@ -165,7 +165,7 @@ class UserServiceImplTest {
     when(organizationService.checkJobExistence("job1")).thenReturn(false);
 
     assertThrows(NotExistingException.class,
-      () -> userService.createEmployee("u", "e@e.com", new Roles(), jobs, "d", "w", "n", "p"));
+        () -> userService.createEmployee("u", "e@e.com", new Roles(), jobs, "d", "w", "n", "p"));
   }
 
   @Test
@@ -309,5 +309,94 @@ class UserServiceImplTest {
     when(repo.findByEmail(email)).thenReturn(Optional.of(user));
 
     assertThrows(IllegalArgumentException.class, () -> userService.updatePassword(email, "old", "new"));
+  }
+
+  @Test
+  @DisplayName("should_ReturnTrue_When_UserExists")
+  void should_IsUserExists_Success() {
+    var userId = "user-id";
+    when(repo.existsById(userId)).thenReturn(true);
+
+    assertTrue(userService.isUserExists(userId));
+    verify(repo).existsById(userId);
+  }
+
+  @Test
+  @DisplayName("should_GetUserByEmail_When_Exists")
+  void should_GetUserByEmail_Success() {
+    var email = "test@example.com";
+    var user = new Users();
+    user.setUserId("uid");
+    user.setEmail(email);
+    user.setRole(new Roles());
+    user.getRole().setName(RoleName.IT_STAFF);
+
+    when(repo.findByEmail(email)).thenReturn(Optional.of(user));
+    when(bpRepo.findPagesOfEmployeesByUsersUserId("uid")).thenReturn(Collections.emptyList());
+
+    var result = userService.getUserByEmail(email);
+
+    assertNotNull(result);
+    assertEquals(email, result.email());
+  }
+
+  @Test
+  @DisplayName("should_ThrowNotExistingException_When_UserEmailNotFound")
+  void should_GetUserByEmail_NotFound() {
+    var email = "missing@example.com";
+    when(repo.findByEmail(email)).thenReturn(Optional.empty());
+
+    assertThrows(NotExistingException.class, () -> userService.getUserByEmail(email));
+  }
+
+  @Test
+  @DisplayName("should_ResetPassword_When_UserExists")
+  void should_ResetPassword_Success() {
+    var email = "test@example.com";
+    var user = new Users();
+    when(repo.findByEmail(email)).thenReturn(Optional.of(user));
+
+    userService.resetPassword(email, "newPassword");
+
+    verify(repo).findByEmail(email);
+  }
+
+  @Test
+  @DisplayName("should_GetAllEmployeesWithStatus_When_RequestIsNull")
+  void should_GetAllEmployeesWithStatus_RequestNull() {
+    var pageable = Pageable.unpaged();
+    when(repo.findAll(pageable)).thenReturn(new PageImpl<>(Collections.emptyList()));
+
+    var result = userService.getAllEmployeesWithStatus(pageable, null);
+
+    assertNotNull(result);
+    verify(repo).findAll(pageable);
+  }
+
+  @Test
+  @DisplayName("should_GetAllEmployeesWithStatus_When_UsernameOnly")
+  void should_GetAllEmployeesWithStatus_UsernameOnly() {
+    var pageable = Pageable.unpaged();
+    var request = new FilterUsersRequest(null, "user1");
+    when(repo.findByUsernameContainsIgnoreCase("user1", pageable)).thenReturn(new PageImpl<>(Collections.emptyList()));
+
+    var result = userService.getAllEmployeesWithStatus(pageable, request);
+
+    assertNotNull(result);
+    verify(repo).findByUsernameContainsIgnoreCase("user1", pageable);
+  }
+
+  @Test
+  @DisplayName("should_GetAllEmployeesWithStatus_When_UsernameAndStatus")
+  void should_GetAllEmployeesWithStatus_UsernameAndStatus() {
+    var pageable = Pageable.unpaged();
+    var request = new FilterUsersRequest(true, "user1");
+    when(repo.findByIsEnabledTrueAndIsLockedFalseOrUsernameContainingIgnoreCase("user1", pageable))
+        .thenReturn(new PageImpl<>(Collections.emptyList()));
+
+    var result = userService.getAllEmployeesWithStatus(pageable, request);
+
+    assertNotNull(result);
+    verify(repo).findByIsEnabledTrueAndIsLockedFalseOrUsernameContainingIgnoreCase("user1", pageable);
   }
 }

@@ -1,6 +1,6 @@
 package com.capstone.customer.model;
 
-import com.capstone.customer.config.Constant;
+import com.capstone.customer.utils.Message;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -52,19 +52,19 @@ public class WaterUsageContract {
   }
 
   public void setContractId(String id) {
-    Objects.requireNonNull(id, Constant.ENT_06);
+    Objects.requireNonNull(id, Message.ENT_06);
     this.contractId = id;
   }
 
   public void setCustomer(Customer customer) {
-    Objects.requireNonNull(customer, Constant.ENT_11);
+    Objects.requireNonNull(customer, Message.ENT_11);
     this.customer = customer;
   }
 
   public void setInstallationFormId(String value) {
-    Objects.requireNonNull(value, Constant.ENT_09);
+    Objects.requireNonNull(value, Message.ENT_09);
     if (value.trim().isEmpty()) {
-      throw new IllegalArgumentException(Constant.ENT_09);
+      throw new IllegalArgumentException(Message.ENT_09);
     }
     this.installationFormId = value;
   }

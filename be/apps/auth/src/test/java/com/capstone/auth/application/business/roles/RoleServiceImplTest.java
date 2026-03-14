@@ -1,8 +1,8 @@
 package com.capstone.auth.application.business.roles;
 
-import com.capstone.auth.application.exception.NotExistingException;
+import com.capstone.common.exception.NotExistingException;
 import com.capstone.auth.domain.model.Roles;
-import com.capstone.auth.infrastructure.config.Constant;
+import com.capstone.auth.infrastructure.utils.Message;
 import com.capstone.auth.infrastructure.persistence.RoleRepository;
 import com.capstone.common.enumerate.RoleName;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,8 +17,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -59,7 +58,7 @@ class RoleServiceImplTest {
     when(repo.existsById(id)).thenReturn(false);
 
     NotExistingException ex = assertThrows(NotExistingException.class, () -> roleService.getRoleNameById(id));
-    assertEquals(Constant.SE_08, ex.getMessage());
+    assertEquals(Message.SE_08, ex.getMessage());
   }
 
   @Test
@@ -82,7 +81,7 @@ class RoleServiceImplTest {
     when(repo.findById(id)).thenReturn(Optional.empty());
 
     NotExistingException ex = assertThrows(NotExistingException.class, () -> roleService.getRoleById(id));
-    assertEquals(Constant.SE_08, ex.getMessage());
+    assertEquals(Message.SE_08, ex.getMessage());
   }
 
   @Test
@@ -97,5 +96,16 @@ class RoleServiceImplTest {
 
     assertEquals(roleName, result.getName());
     verify(repo).findRolesByName(roleName);
+  }
+
+  @Test
+  @DisplayName("should_ReturnNull_When_RoleNameNotFound")
+  void should_ReturnNull_When_RoleNameNotFound() {
+    var roleName = RoleName.IT_STAFF;
+    when(repo.findRolesByName(roleName)).thenReturn(null);
+
+    var result = roleService.getRoleByName(roleName);
+
+    assertNull(result);
   }
 }

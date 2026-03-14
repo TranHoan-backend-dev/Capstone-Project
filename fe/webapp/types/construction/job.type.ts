@@ -1,21 +1,21 @@
-export interface NetworksItem {
+export interface JobItem {
   id: string;
   stt: string;
   name: string;
 }
 
-export type NetworksFilter = {
+export type JobFilter = {
   name?: string;
   type?: string;
 };
 
-export interface FilterSectionNetworksProps {
-  keyword: NetworksFilter;
-  onSearch: (value: NetworksFilter) => void;
+export interface FilterSectionJobProps {
+  keyword: JobFilter;
+  onSearch: (value: JobFilter) => void;
   onAddNew: () => void;
 }
 
-export interface NetworksFormProps {
+export interface JobFormProps {
   initialData?: {
     id?: string;
     name: string;
@@ -25,14 +25,14 @@ export interface NetworksFormProps {
   onClose: () => void;
 }
 
-export interface NetworksTableProps {
-  keyword: NetworksFilter;
+export interface JobTableProps {
+  keyword: JobFilter;
   reloadKey: number;
-  onEdit: (item: NetworksItem) => void;
+  onEdit: (item: JobItem) => void;
   onDeleted: () => void;
 }
 
-export interface NetworksResponse {
+export interface JobResponse {
   branchId: string;
   name: string;
 }

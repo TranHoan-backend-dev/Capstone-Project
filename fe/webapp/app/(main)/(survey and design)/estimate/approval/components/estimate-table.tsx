@@ -122,7 +122,7 @@ export const EstimateTable = ({
       isCollapsible={false}
       paginationProps={{
         total: Math.ceil(data.length / 5),
-        initialPage: 1,
+        page: 1,
         summary: `1-5 trong tổng số ${data.length}`,
       }}
       renderCellAction={renderCell}

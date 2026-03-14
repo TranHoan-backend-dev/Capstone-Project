@@ -1,9 +1,18 @@
+# gcs:
+#   credentials: gcs/${GCS_CREDENTIALS}
+#   bucket: ${BUCKET}
 spring:
   application:
     name: image
   jackson:
     time-zone: Asia/Ho_Chi_Minh
     locale: vi_VN
+  profiles:
+    active: dev
+  # cloud:
+  #   gcp:
+  #     credentials:
+  #       location: classpath:${gcs.credentials}
 management:
   health:
     rabbit:
@@ -32,5 +41,3 @@ eureka:
       defaultZone: http://localhost:9000/eureka
   instance:
     prefer-ip-address: true
-gcs:
-  bucket: ${GCS_BUCKET_NAME:default}
