@@ -154,17 +154,17 @@ public class Customer {
   }
 
   public void setType(String type) {
-    requireText(type, Message.ENT_07);
+    requireText(type, Message.ENT_03);
     this.type = type;
   }
 
   public void setUsageTarget(String usageTarget) {
-    requireText(usageTarget, Message.ENT_16);
+    requireText(usageTarget, Message.ENT_06);
     this.usageTarget = UsageTarget.valueOf(usageTarget.trim().toUpperCase());
   }
 
   public void setWaterMeterType(String waterMeterType) {
-    requireText(waterMeterType, Message.ENT_17);
+    requireText(waterMeterType, Message.ENT_07);
     this.waterMeterType = waterMeterType;
   }
 
@@ -179,7 +179,7 @@ public class Customer {
   }
 
   public void setPaymentMethod(String paymentMethod) {
-    requireText(paymentMethod, Message.ENT_20);
+    requireText(paymentMethod, Message.ENT_08);
     this.paymentMethod = paymentMethod;
   }
 
@@ -194,27 +194,27 @@ public class Customer {
   }
 
   public void setBankAccountName(String value) {
-    requireText(value, Message.ENT_23);
+    requireText(value, Message.ENT_09);
     this.bankAccountName = value;
   }
 
   public void setBudgetRelationshipCode(String budgetRelationshipCode) {
-    requireText(budgetRelationshipCode, Message.ENT_24);
+    requireText(budgetRelationshipCode, Message.ENT_10);
     this.budgetRelationshipCode = budgetRelationshipCode;
   }
 
   public void setPassportCode(String passportCode) {
-    requireText(passportCode, Message.ENT_25);
+    requireText(passportCode, Message.ENT_11);
     this.passportCode = passportCode;
   }
 
   public void setConnectionPoint(String connectionPoint) {
-    requireText(connectionPoint, Message.ENT_26);
+    requireText(connectionPoint, Message.ENT_12);
     this.connectionPoint = connectionPoint;
   }
 
   public void setCancelReason(String cancelReason) {
-    requireText(cancelReason, Message.ENT_27);
+    requireText(cancelReason, Message.ENT_13);
     this.cancelReason = cancelReason;
   }
 
@@ -231,7 +231,7 @@ public class Customer {
   }
 
   public void setProtectEnvironmentFee(Integer value) {
-    requireNonNegative(value, Message.ENT_30);
+    requireNonNegative(value, Message.ENT_14);
     this.protectEnvironmentFee = value;
   }
 
@@ -241,37 +241,37 @@ public class Customer {
   }
 
   public void setMonthlyRent(Integer value) {
-    requireNonNegative(value, Message.ENT_32);
+    requireNonNegative(value, Message.ENT_15);
     this.monthlyRent = value;
   }
 
   public void setInstallationFormId(String value) {
-    requireId(value, Message.ENT_33);
+    requireId(value, Message.ENT_16);
     this.installationFormId = value;
   }
 
   public void setWaterPriceId(String value) {
-    requireId(value, Message.ENT_34);
+    requireId(value, Message.ENT_17);
     this.waterPriceId = value;
   }
 
   public void setWaterMeterId(String value) {
-    requireId(value, Message.ENT_37);
+    requireId(value, Message.ENT_18);
     this.waterMeterId = value;
   }
 
   public void setM3Sale(String value) {
-    requireText(value, Message.ENT_39);
+    requireText(value, Message.ENT_19);
     this.m3Sale = value;
   }
 
   public void setFixRate(String value) {
-    requireText(value, Message.ENT_40);
+    requireText(value, Message.ENT_20);
     this.fixRate = value;
   }
 
   public void setDeductionPeriod(String value) {
-    requireText(value, Message.ENT_41);
+    requireText(value, Message.ENT_21);
     this.deductionPeriod = value;
   }
 
