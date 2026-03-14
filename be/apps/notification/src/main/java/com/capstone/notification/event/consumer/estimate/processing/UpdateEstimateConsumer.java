@@ -1,21 +1,19 @@
 package com.capstone.notification.event.consumer.estimate.processing;
 
-import com.capstone.common.annotation.AppLog;
 import com.capstone.notification.event.consumer.estimate.message.UpdateEventMessage;
 import com.capstone.notification.event.producer.MessageProducer;
 import com.capstone.notification.event.websocket.GeneralEventConsumer;
 import com.capstone.notification.event.websocket.Topic;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@AppLog
+@Slf4j
 @Component
 public class UpdateEstimateConsumer extends GeneralEventConsumer<UpdateEventMessage> {
-  Logger log;
 
   public UpdateEstimateConsumer(MessageProducer producer) {
     super(producer);

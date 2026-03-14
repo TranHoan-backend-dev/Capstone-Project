@@ -1,1 +1,2 @@
 com.capstone.common.config.LoggerConfig
+com.capstone.common.exception.GlobalExceptionHandler

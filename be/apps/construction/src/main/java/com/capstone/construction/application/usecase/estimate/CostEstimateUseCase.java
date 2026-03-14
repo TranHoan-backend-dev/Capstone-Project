@@ -40,9 +40,6 @@ public class CostEstimateUseCase {
   @Value("${rabbit-mq-config.actions[0]}")
   String UPDATE_ACTION;
 
-  @Value("${rabbit-mq-config.actions[4]}")
-  String REJECT_ACTION;
-
   @Value("${rabbit-mq-config.queue_name}")
   String QUEUE_NAME;
 
@@ -81,13 +78,15 @@ public class CostEstimateUseCase {
 
     var result = estSrv.getEstimateById(id);
 
-    var routingKey = status ? QUEUE_NAME + PREFIX + APPROVE_ACTION : QUEUE_NAME + PREFIX + REJECT_ACTION;
+    var routingKey = QUEUE_NAME + PREFIX + APPROVE_ACTION;
     var employee = empSrv.getEmployeeNameById(result.createBy());
     var event = new ApproveEvent(
       result.customerName(),
       result.installationFormId().getFormCode(),
       result.installationFormId().getFormNumber(),
-      employee.data().toString());
+      employee.data().toString(),
+      status,
+      result.createBy());
     messageProducer.send(routingKey, event);
 
     return result;

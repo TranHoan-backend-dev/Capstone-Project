@@ -67,4 +67,4 @@ rabbit-mq-config:
     - delete
     - create
     - approve
-    - reject
+    - assign
