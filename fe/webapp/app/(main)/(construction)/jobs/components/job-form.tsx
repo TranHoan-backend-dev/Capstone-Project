@@ -4,16 +4,13 @@ import { CallToast } from "@/components/ui/CallToast";
 import CustomButton from "@/components/ui/custom/CustomButton";
 import CustomInput from "@/components/ui/custom/CustomInput";
 import { CheckApprovalIcon } from "@/config/chip-and-icon";
-import { NetworksFormProps } from "@/types";
+import { JobFormProps } from "@/types";
 import { Card, CardBody } from "@heroui/react";
 import React, { useState, useEffect } from "react";
 import { useIsITStaff } from "@/hooks/useHasRole";
+import { authFetch } from "@/utils/authFetch";
 
-export const NetworkForm = ({
-  initialData,
-  onSuccess,
-  onClose,
-}: NetworksFormProps) => {
+export const JobForm = ({ initialData, onSuccess, onClose }: JobFormProps) => {
   const { isITStaff } = useIsITStaff();
   const [name, setName] = useState("");
   const [submitLoading, setSubmitLoading] = useState(false);
@@ -25,20 +22,28 @@ export const NetworkForm = ({
 
   const handleSubmit = async () => {
     if (submitLoading) return;
+    if (name.trim().length > 255) {
+      CallToast({
+        title: "Lỗi",
+        message: "Tên công việc không được vượt quá 255 ký tự",
+        color: "danger",
+      });
+      return;
+    }
     try {
       setSubmitLoading(true);
 
       const url = isEdit
-        ? `/api/construction/networks/${initialData?.id}`
-        : `/api/construction/networks`;
+        ? `/api/organization/jobs/${initialData?.id}`
+        : `/api/organization/jobs`;
 
       const method = isEdit ? "PUT" : "POST";
 
       const payload = {
-        name: !isEdit || name !== initialData?.name ? name.trim() : "",
+        name,
       };
 
-      const response = await fetch(url, {
+      const response = await authFetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -51,7 +56,7 @@ export const NetworkForm = ({
       }
       CallToast({
         title: "Thành công",
-        message: "Lưu chi nhánh cấp nước thành công",
+        message: "Lưu công việc thành công",
         color: "success",
       });
       onSuccess();
@@ -71,15 +76,13 @@ export const NetworkForm = ({
       <CardBody className="p-0">
         <div className="flex items-center justify-between px-6 py-4 border-b border-divider">
           <h2 className="text-base font-semibold text-foreground">
-            {isEdit
-              ? "Cập nhật chi nhánh cấp nước"
-              : "Thêm mới chi nhánh cấp nước"}
+            {isEdit ? "Cập nhật công việc" : "Thêm mới công việc"}
           </h2>
         </div>
 
         <div className="px-6 py-5 space-y-5">
           <CustomInput
-            label="Tên chi nhánh"
+            label="Tên công việc"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />

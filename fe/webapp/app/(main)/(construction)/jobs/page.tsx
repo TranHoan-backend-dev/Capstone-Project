@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     "Thông tin chi tiết danh sách chi nhánh cấp nước của Công ty Cổ Phần Nước Nam Định - NAWACO",
 };
 
-const Networks = () => {
+const Jobs = () => {
   return (
     <>
       <CustomBreadcrumb
@@ -27,4 +27,4 @@ const Networks = () => {
   );
 };
 
-export default Networks;
+export default Jobs;

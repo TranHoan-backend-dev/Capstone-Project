@@ -5,24 +5,23 @@ import React, { useState } from "react";
 import { Spinner } from "@heroui/react";
 import { useEmployeeProfile } from "@/hooks/useEmployeeProfile";
 import { useIsITStaff } from "@/hooks/useHasRole";
-import { NetworksTable } from "./components/jpb-table";
 import { FilterSection } from "./components/filter-section";
-import { NetworkForm } from "./components/job-form";
 import { Modal, ModalContent } from "@heroui/react";
-import { NetworksFilter, NetworksItem } from "@/types";
+import { JobFilter, JobItem } from "@/types";
+import { JobForm } from "./components/job-form";
+import { JobsTable } from "./components/job-table";
 
 
-const NetworksPage = () => {
+const JobPage = () => {
   const { profile, loading: profileLoading } = useEmployeeProfile();
   const { isITStaff, loading: roleLoading } = useIsITStaff();
   const loading = profileLoading || roleLoading;
-  const [keyword, setKeyword] = useState<NetworksFilter>({
+  const [keyword, setKeyword] = useState<JobFilter>({
     name: "",
-    type: "",
   });
   const [showAddForm, setShowAddForm] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
-  const [editingItem, setEditingItem] = useState<NetworksItem | null>(null);
+  const [editingItem, setEditingItem] = useState<JobItem | null>(null);
 
   const handleReload = () => setReloadKey((prev) => prev + 1);
   const handleAddNew = () => {
@@ -30,7 +29,7 @@ const NetworksPage = () => {
     setShowAddForm(true);
   };
 
-  const handleEdit = (item: NetworksItem) => {
+  const handleEdit = (item: JobItem) => {
     setEditingItem(item);
     setShowAddForm(true);
   };
@@ -55,7 +54,7 @@ const NetworksPage = () => {
   }
 
   if (!profile) {
-    return <p>Không thể tải danh sách chi nhánh cấp nước</p>;
+    return <p>Không thể tải danh sách công việc</p>;
   }
 
   // Chỉ IT_STAFF mới được truy cập trang này
@@ -67,7 +66,7 @@ const NetworksPage = () => {
             Truy cập bị từ chối
           </h1>
           <p className="text-default-500">
-            Tính năng quản lý chi nhánh cấp nước chỉ dành cho nhân viên IT.
+            Tính năng quản lý công việc chỉ dành cho nhân viên IT.
           </p>
           <p className="text-sm text-default-400 mt-2">
             Nếu bạn là nhân viên IT, vui lòng liên hệ quản trị viên hệ thống.
@@ -93,7 +92,7 @@ const NetworksPage = () => {
         scrollBehavior="inside"
       >
         <ModalContent>
-          <NetworkForm
+          <JobForm
             key={editingItem?.id || "create"}
             initialData={editingItem || undefined}
             onSuccess={handleSuccess}
@@ -102,7 +101,7 @@ const NetworksPage = () => {
         </ModalContent>
       </Modal>
 
-      <NetworksTable
+      <JobsTable
         keyword={keyword}
         reloadKey={reloadKey}
         onEdit={handleEdit}
@@ -112,4 +111,4 @@ const NetworksPage = () => {
   );
 };
 
-export default NetworksPage;
+export default JobPage;

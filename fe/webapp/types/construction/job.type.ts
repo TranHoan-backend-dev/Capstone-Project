@@ -6,7 +6,8 @@ export interface JobItem {
 
 export type JobFilter = {
   name?: string;
-  type?: string;
+  fromDate?: string;
+  toDate?: string;
 };
 
 export interface FilterSectionJobProps {
@@ -19,7 +20,6 @@ export interface JobFormProps {
   initialData?: {
     id?: string;
     name: string;
-    type?: string;
   };
   onSuccess: () => void;
   onClose: () => void;
@@ -33,6 +33,6 @@ export interface JobTableProps {
 }
 
 export interface JobResponse {
-  branchId: string;
+  jobId: string;
   name: string;
 }
