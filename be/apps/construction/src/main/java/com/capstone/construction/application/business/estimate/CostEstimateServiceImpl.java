@@ -1,11 +1,15 @@
 package com.capstone.construction.application.business.estimate;
 
 import com.capstone.common.annotation.AppLog;
+import com.capstone.common.enumerate.ProcessingStatus;
+import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.construction.application.dto.request.estimate.CostEstimateRequest;
 import com.capstone.construction.application.dto.response.estimate.CostEstimateResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.domain.model.CostEstimate;
+import com.capstone.construction.domain.model.utils.InstallationFormId;
 import com.capstone.construction.infrastructure.persistence.CostEstimateRepository;
+import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -16,12 +20,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @AppLog
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CostEstimateServiceImpl implements CostEstimateService {
-  CostEstimateRepository estimateRepository;
+  CostEstimateRepository eRepo;
+  InstallationFormRepository ifRepo;
   @NonFinal
   Logger log;
 
@@ -51,9 +58,20 @@ public class CostEstimateServiceImpl implements CostEstimateService {
       .createBy(request.createBy())
       .waterMeterSerial(request.waterMeterSerial())
       .overallWaterMeterId(request.overallWaterMeterId())
-      .installationFormId(request.installationFormId()));
+      .installationFormId(new InstallationFormId(
+        request.formCode(),
+        request.formNumber()
+      )));
 
-    var saved = estimateRepository.save(estimate);
+    var saved = eRepo.save(estimate);
+
+    // cap nhat trang thai cua installation form
+    var installationForm = ifRepo.findById_FormCodeAndId_FormNumber(request.formCode(), request.formNumber())
+      .orElseThrow(() -> new IllegalArgumentException("Invalid form code and form number: " + request.formCode() + request.formNumber()));
+    var status = installationForm.getStatus();
+    status.setEstimate(ProcessingStatus.PROCESSING);
+    ifRepo.save(installationForm);
+
     return mapToResponse(saved);
   }
 
@@ -61,7 +79,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   @Transactional(rollbackFor = Exception.class)
   public CostEstimateResponse updateEstimate(String id, @NonNull CostEstimateRequest request) {
     log.info("Updating cost estimate with id: {}", id);
-    var estimate = estimateRepository.findById(id)
+    var estimate = eRepo.findById(id)
       .orElseThrow(() -> new IllegalArgumentException("Cost estimate not found with id: " + id));
 
     estimate.setCustomerName(request.customerName());
@@ -84,38 +102,36 @@ public class CostEstimateServiceImpl implements CostEstimateService {
     estimate.setCreateBy(request.createBy());
     estimate.setWaterMeterSerial(request.waterMeterSerial());
     estimate.setOverallWaterMeterId(request.overallWaterMeterId());
-    estimate.setInstallationFormId(request.installationFormId());
+    estimate.setInstallationFormId(new InstallationFormId(
+      request.formCode(),
+      request.formNumber()
+    ));
 
-    var saved = estimateRepository.save(estimate);
+    var saved = eRepo.save(estimate);
     return mapToResponse(saved);
-  }
-
-  @Override
-  @Transactional(rollbackFor = Exception.class)
-  public void deleteEstimate(String id) {
-    log.info("Deleting cost estimate with id: {}", id);
-    if (!estimateRepository.existsById(id)) {
-      throw new IllegalArgumentException("Cost estimate not found with id: " + id);
-    }
-    estimateRepository.deleteById(id);
   }
 
   @Override
   public CostEstimateResponse getEstimateById(String id) {
     log.info("Fetching cost estimate with id: {}", id);
-    return estimateRepository.findById(id)
+    return eRepo.findById(id)
       .map(this::mapToResponse)
       .orElseThrow(() -> new IllegalArgumentException("Cost estimate not found with id: " + id));
   }
 
   @Override
-  public PageResponse<CostEstimateResponse> getAllEstimates(Pageable pageable) {
+  public PageResponse<CostEstimateResponse> getAllEstimates(Pageable pageable, BaseFilterRequest request) {
     log.info("Fetching all cost estimates with pageable: {}", pageable);
-    var page = estimateRepository.findAll(pageable);
+    var page = request == null ? eRepo.findAll(pageable) : eRepo.findAll(
+      CostEstimateRepository.search(
+        request.keyword(),
+        LocalDateTime.parse(request.from()),
+        LocalDateTime.parse(request.to())
+      ), pageable);
     return PageResponse.fromPage(page, this::mapToResponse);
   }
 
-  private CostEstimateResponse mapToResponse(CostEstimate estimate) {
+  private @NonNull CostEstimateResponse mapToResponse(@NonNull CostEstimate estimate) {
     return new CostEstimateResponse(
       estimate.getEstimationId(),
       estimate.getCustomerName(),

@@ -4,8 +4,8 @@ import com.capstone.auth.application.business.dto.ProfileDTO;
 import com.capstone.auth.application.exception.NotExistingException;
 import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.infrastructure.persistence.ProfileRepository;
-import com.capstone.auth.infrastructure.config.Constant;
 import com.capstone.common.annotation.AppLog;
+import com.capstone.common.utils.SharedConstant;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -39,7 +39,7 @@ public class ProfileServiceImpl implements ProfileService {
   public ProfileDTO getProfileByCredentials(String value) {
     log.info("Getting profile by credentials: {}", value);
     Objects.requireNonNull(value, "id cannot be null");
-    var profile = value.matches(Constant.EMAIL_PATTERN) ? repo.findByUsersEmail(value) : repo.findByUsersUsername(value);
+    var profile = value.matches(SharedConstant.EMAIL_PATTERN) ? repo.findByUsersEmail(value) : repo.findByUsersUsername(value);
     return convertToResponse(profile);
   }
 
@@ -58,6 +58,12 @@ public class ProfileServiceImpl implements ProfileService {
     log.info("Update avatar with id: {} and avatar url: {}", id, avatar);
     repo.updateAvatarByProfileId(id, avatar);
     return convertToResponse(repo.findById(id));
+  }
+
+  @Override
+  public String getAvatar(String id) {
+    log.info("Getting avatar with id: {}", id);
+    return repo.findAvatarUrlByProfileId(id);
   }
 
   private @NonNull ProfileDTO convertToResponse(@NonNull Optional<Profile> profile) {

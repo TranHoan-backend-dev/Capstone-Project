@@ -80,7 +80,7 @@ export const RelatedOrdersTable = ({ data }: { data: any[] }) => {
       columns={columns}
       isCollapsible
       data={data}
-      paginationProps={{ total: 3, initialPage: 1 }}
+      paginationProps={{ total: 3, page: 1 }}
       renderCellAction={renderCell}
       title="Danh sách đơn"
     />

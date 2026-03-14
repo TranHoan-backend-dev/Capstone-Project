@@ -54,7 +54,6 @@ public class CustomerServiceImpl implements CustomerService {
       .passportCode(request.passportCode())
       .connectionPoint(request.connectionPoint())
       .isActive(request.isActive() != null ? request.isActive() : true)
-      .cancelReason(request.cancelReason())
       .installationFormId(request.installationFormId())
       .waterPriceId(request.waterPriceId())
       .waterMeterId(request.waterMeterId()));
@@ -129,7 +128,13 @@ public class CustomerServiceImpl implements CustomerService {
     return customerRepository.findAll(pageable).map(this::mapToResponse);
   }
 
-  private CustomerResponse mapToResponse(@NonNull Customer customer) {
+  @Override
+  public boolean areCustomersAppliedThisPrice(String priceId) {
+    log.info("Checking if customers are applied this water price: {}", priceId);
+    return customerRepository.existsByWaterPriceId(priceId);
+  }
+
+  private @NonNull CustomerResponse mapToResponse(@NonNull Customer customer) {
     return new CustomerResponse(
       customer.getCustomerId(),
       customer.getName(),

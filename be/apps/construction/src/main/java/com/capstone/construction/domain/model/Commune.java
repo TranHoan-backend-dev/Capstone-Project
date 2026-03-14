@@ -2,9 +2,10 @@ package com.capstone.construction.domain.model;
 
 import com.capstone.construction.domain.enumerate.CommuneType;
 import jakarta.persistence.*;
-import com.capstone.construction.infrastructure.config.Constant;
+import com.capstone.construction.infrastructure.utils.Message;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.jspecify.annotations.NonNull;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -47,19 +48,19 @@ public class Commune {
   }
 
   public void setName(String name) {
-    Objects.requireNonNull(name, Constant.PT_21);
+    Objects.requireNonNull(name, Message.PT_09);
     if (name.trim().isEmpty()) {
-      throw new IllegalArgumentException(Constant.PT_21);
+      throw new IllegalArgumentException(Message.PT_09);
     }
     this.name = name;
   }
 
   public void setType(CommuneType type) {
-    Objects.requireNonNull(type, Constant.PT_22);
+    Objects.requireNonNull(type, Message.PT_10);
     this.type = type;
   }
 
-  public static Commune create(Consumer<CommuneBuilder> builder) {
+  public static Commune create(@NonNull Consumer<CommuneBuilder> builder) {
     var instance = new CommuneBuilder();
     builder.accept(instance);
     return instance.build();

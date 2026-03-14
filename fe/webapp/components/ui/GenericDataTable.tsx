@@ -34,7 +34,7 @@ interface GenericDataTableProps<T> {
   renderCellAction: (item: T, columnKey: string) => React.ReactNode;
   paginationProps?: {
     total: number;
-    initialPage: number;
+    page: number;
     onChange?: (page: number) => void;
     summary?: string;
   };
@@ -178,7 +178,7 @@ export const GenericDataTable = <T extends { id: string | number }>({
 
           {paginationProps && (
             <CustomPagination
-              initialPage={paginationProps.initialPage}
+              page={paginationProps.page}
               summary={paginationProps.summary}
               total={paginationProps.total}
               onChange={paginationProps.onChange}

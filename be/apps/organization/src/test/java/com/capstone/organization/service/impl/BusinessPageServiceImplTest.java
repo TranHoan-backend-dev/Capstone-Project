@@ -1,9 +1,13 @@
 package com.capstone.organization.service.impl;
 
-import com.capstone.organization.dto.request.CreateBusinessPageRequest;
-import com.capstone.organization.dto.request.UpdateBusinessPageRequest;
+import com.capstone.organization.dto.request.page.CreateBusinessPageRequest;
+import com.capstone.organization.dto.request.page.UpdateBusinessPageRequest;
+import com.capstone.organization.dto.request.page.FilterBusinessPagesRequest;
+import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.organization.model.BusinessPage;
 import com.capstone.organization.repository.BusinessPageRepository;
+import com.capstone.organization.service.boundary.EmployeeService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,8 +28,17 @@ class BusinessPageServiceImplTest {
   @Mock
   BusinessPageRepository businessPageRepository;
 
+  @Mock
+  EmployeeService employeeService;
+
   @InjectMocks
   BusinessPageServiceImpl businessPageService;
+
+  @BeforeEach
+  void setUp() {
+    lenient().when(employeeService.getEmployeeNameById(anyString()))
+        .thenReturn(new WrapperApiResponse(200, "Success", "Employee Name", null));
+  }
 
   @Test
   void createBusinessPageReturnsResponse() {
@@ -47,7 +60,7 @@ class BusinessPageServiceImplTest {
     var request = new CreateBusinessPageRequest("", true, "creator-1", "updator-1");
 
     assertThatThrownBy(() -> businessPageService.createBusinessPage(request))
-      .isInstanceOf(IllegalArgumentException.class);
+        .isInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
@@ -55,7 +68,7 @@ class BusinessPageServiceImplTest {
     var request = new CreateBusinessPageRequest("Sales", null, "creator-1", "updator-1");
 
     assertThatThrownBy(() -> businessPageService.createBusinessPage(request))
-      .isInstanceOf(NullPointerException.class);
+        .isInstanceOf(NullPointerException.class);
   }
 
   @Test
@@ -81,7 +94,7 @@ class BusinessPageServiceImplTest {
     when(businessPageRepository.findById("page-1")).thenReturn(Optional.of(existing));
 
     assertThatThrownBy(() -> businessPageService.updateBusinessPage("page-1", request))
-      .isInstanceOf(IllegalArgumentException.class);
+        .isInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
@@ -90,16 +103,16 @@ class BusinessPageServiceImplTest {
     when(businessPageRepository.findById("missing")).thenReturn(Optional.empty());
 
     assertThatThrownBy(() -> businessPageService.updateBusinessPage("missing", request))
-      .isInstanceOf(IllegalArgumentException.class)
-      .hasMessage("Business page not found");
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("Business page not found");
   }
 
   @Test
   void getBusinessPagesReturnsPagedResponse() {
     var pageRequest = PageRequest.of(1, 2);
     var items = List.of(
-      new BusinessPage("page-1", "Sales", true, "creator-1", "updator-1"),
-      new BusinessPage("page-2", "Support", false, "creator-2", "updator-2"));
+        new BusinessPage("page-1", "Sales", true, "creator-1", "updator-1"),
+        new BusinessPage("page-2", "Support", false, "creator-2", "updator-2"));
     var page = new PageImpl<>(items, pageRequest, 4);
     when(businessPageRepository.findAll(pageRequest)).thenReturn(page);
 
@@ -131,8 +144,8 @@ class BusinessPageServiceImplTest {
   void getAllBusinessPageNamesByIds_ReturnsListOfNames() {
     var ids = List.of("page-1", "page-2");
     var pages = List.of(
-      new BusinessPage("page-1", "Sales", true, "creator-1", "updator-1"),
-      new BusinessPage("page-2", "Support", false, "creator-2", "updator-2"));
+        new BusinessPage("page-1", "Sales", true, "creator-1", "updator-1"),
+        new BusinessPage("page-2", "Support", false, "creator-2", "updator-2"));
     when(businessPageRepository.findAllById(ids)).thenReturn(pages);
 
     var names = businessPageService.getAllBusinessPageNamesByIds(ids);
@@ -150,5 +163,19 @@ class BusinessPageServiceImplTest {
 
     assertThat(names).isEmpty();
     verify(businessPageRepository).findAllById(ids);
+  }
+
+  @Test
+  void filterBusinessPagesList_ReturnsPagedResponse() {
+    var req = new FilterBusinessPagesRequest("Sales", true);
+    var pageable = PageRequest.of(0, 10);
+    var items = List.of(new BusinessPage("page-1", "Sales", true, "creator-1", "updator-1"));
+    var page = new PageImpl<>(items, pageable, 1);
+    when(businessPageRepository.findByNameAndActivate("Sales", true, pageable)).thenReturn(page);
+
+    var response = businessPageService.filterBusinessPagesList(req, pageable);
+
+    assertThat(response.items()).hasSize(1);
+    verify(businessPageRepository).findByNameAndActivate("Sales", true, pageable);
   }
 }

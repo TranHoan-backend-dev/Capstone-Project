@@ -4,16 +4,11 @@ import com.capstone.image.service.GcsStorageService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/gcs")
@@ -24,15 +19,29 @@ public class GcsController {
 
   @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<String> upload(@RequestParam(value = "avatar") MultipartFile file) {
-    log.info("Uploading file: {}", file.getOriginalFilename());
 
     if (file.isEmpty()) {
       return ResponseEntity.badRequest().body("Failed to upload empty file");
     }
-    var avatarUrl = "haha";
-    // TODO: config secret key of gcs
-//    var avatarUrl = storageService.upload(file, FOLDER_NAME);
+//    var avatarUrl = "haha";
+    var avatarUrl = storageService.upload(file, FOLDER_NAME);
 
     return ResponseEntity.ok(avatarUrl);
+  }
+
+  @GetMapping(value = "/download/{file}")
+  public ResponseEntity<?> download(@PathVariable("file") String fileName) {
+//    var file = storageService.download(fileName);
+    byte[] file = null;
+    return ResponseEntity.ok()
+      .contentType(MediaType.IMAGE_JPEG)
+      .body(file);
+  }
+
+  @DeleteMapping("/delete/{file}")
+  public ResponseEntity<String> delete(@PathVariable("file") String fileName) {
+    storageService.delete(fileName);
+
+    return ResponseEntity.ok("File deleted successfully");
   }
 }
