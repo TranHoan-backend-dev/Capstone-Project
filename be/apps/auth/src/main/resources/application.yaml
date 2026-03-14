@@ -1,8 +1,8 @@
 spring:
   application:
     name: auth
-#  profiles:
-#    active: dev
+  profiles:
+    active: dev
   jackson:
     time-zone: Asia/Ho_Chi_Minh
     locale: vi_VN
@@ -21,46 +21,10 @@ spring:
       connection-timeout: 2000 # Cho ket noi toi da 3s
       max-lifetime: 600000 # Ket noi song toi da 30p
       idle-timeout: 30000 # Dong idle sau 30s neu khong su dung
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${POSTGRES_HOST}:5432/${AUTH_DATABASE}
-    username: postgres
-    password: postgres
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: ${OAUTH2_CLIENT_ID}
-            client-secret: ${OAUTH2_CLIENT_SECRET}
-            scope:
-              - email
-              - profile
-              - openid
-      resourceserver:
-        jwt:
-          issuer-uri: ${keycloak.issuer-uri}
-  rabbitmq:
-    host: ${RABBITMQ_HOST} # cua may local
-    port: 5672
-    username: guest
-    password: guest
 rabbitmqconfig:
   exchange_name: auth_event_exchange
   queue_name: user_registered_queue
   routing_key: user-created
-keycloak:
-  server-url: http://${KEYCLOAK_HOST}:8080
-  issuer-uri: ${keycloak.server-url}/realms/${keycloak.realms}
-  aud:
-    - ${KEYCLOAK_AUD}
-  realms: ${KEYCLOAK_REALMS}
-  username: ${KEYCLOAK_USERNAME}
-  password: ${KEYCLOAK_PASSWORD}
-  token-uri: ${keycloak.server-url}/realms/${keycloak.realms}/protocol/openid-connect/token
-  client-id: ${KEYCLOAK_CLIENT_ID}
-
-  client-secret-admin: ${KEYCLOAK_CLIENT_SECRET_ADMIN}
-  client-id-admin: ${KEYCLOAK_CLIENT_ID_ADMIN}
 management:
   health:
     rabbit:
@@ -91,7 +55,7 @@ cors:
 eureka:
   client:
     service-url:
-      defaultZone: http://${EUREKA_HOST}:9000/eureka
+      defaultZone: http://localhost:9000/eureka
   instance:
     prefer-ip-address: true
 springdoc:
@@ -108,3 +72,9 @@ sending_mail:
   otp_verification:
     subject: 'Mã xác thực OTP'
     template: 'verify-otp'
+  delete_account:
+    subject: 'Xóa tài khoản của nhân viên'
+    template: account-delete
+  update_account:
+    subject: 'Cập nhật tài khoản của nhân viên'
+    template: account-update

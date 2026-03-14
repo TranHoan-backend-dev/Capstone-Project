@@ -1,6 +1,5 @@
 package com.capstone.construction.application.dto.response.estimate;
 
-import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
 
 import java.time.LocalDate;
@@ -25,7 +24,6 @@ public record CostEstimateResponse(
   String designImageUrl,
   LocalDateTime createdAt,
   LocalDateTime updatedAt,
-  ProcessingStatus status,
   LocalDate registrationAt,
   String createBy,
   String waterMeterSerial,

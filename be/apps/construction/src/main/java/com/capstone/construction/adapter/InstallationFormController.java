@@ -8,7 +8,7 @@ import com.capstone.construction.application.dto.request.installationform.Approv
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import com.capstone.construction.application.usecase.InstallationFormHandlingUseCase;
-import com.capstone.construction.infrastructure.utils.Constant;
+import com.capstone.construction.infrastructure.utils.Message;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -57,14 +57,14 @@ public class InstallationFormController {
     if (!Utils.isLocalDate(request.receivedFormAt(), DateTimeFormatter.ISO_LOCAL_DATE) ||
       !Utils.isLocalDate(request.citizenIdentificationProvideDate(), DateTimeFormatter.ISO_LOCAL_DATE) ||
       !Utils.isLocalDate(request.scheduleSurveyAt(), DateTimeFormatter.ISO_LOCAL_DATE)) {
-      throw new IllegalArgumentException(Constant.PT_05);
+      throw new IllegalArgumentException(Message.PT_05);
     }
 
     var response = installationFormHandlingUseCase.createNewInstallationRequest(request);
 
     log.info("Successfully created installation form: {}", response.formNumber());
 
-    return Utils.returnCreatedResponse("Installation form created successfully");
+    return Utils.returnCreatedResponse("Tạo đơn lắp đặt thành công");
   }
 
   @Operation(summary = "Phê duyệt hoặc từ chối đơn lắp đặt", description = """
@@ -83,7 +83,7 @@ public class InstallationFormController {
   public ResponseEntity<WrapperApiResponse> approveInstallationForm(@RequestBody @Valid ApproveRequest request) {
     log.info("Received request to approve installation form: {}", request.formCode());
     installationFormHandlingUseCase.approveInstallationForm(request);
-    return Utils.returnOkResponse("Change status successfully", null);
+    return Utils.returnOkResponse("Thay đổi trạng thái thành công", null);
   }
 
   @Operation(summary = "Lấy danh sách đơn lắp đặt (có phân trang & lọc)", description = "API này cho phép lấy danh sách các đơn lắp đặt nước. Hỗ trợ phân trang và lọc theo từ khóa (tên khách hàng, địa chỉ) hoặc khoảng thời gian.", responses = {
@@ -104,13 +104,13 @@ public class InstallationFormController {
       LocalDate to = LocalDate.parse(request.to());
 
       if (from.isAfter(to)) {
-        throw new IllegalArgumentException("From date must be before to date");
+        throw new IllegalArgumentException("Ngày bắt đầu phải trước ngày kết thúc");
       }
     }
 
     var response = installationFormHandlingUseCase.getPaginatedInstallationForms(pageable, request);
 
-    return Utils.returnOkResponse("Installation forms retrieved successfully", response);
+    return Utils.returnOkResponse("Lấy danh sách đơn lắp đặt thành công", response);
   }
 
   // <editor-fold> desc="đơn chờ thi công"
@@ -129,7 +129,7 @@ public class InstallationFormController {
     @Parameter(description = "Thông tin lọc (từ khóa, khoảng thời gian)") BaseFilterRequest request) {
     log.info("Received request to fetch construction orders list");
     var response = installationFormHandlingUseCase.getPaginatedConstructionRequest(pageable, request);
-    return Utils.returnOkResponse("Get construction requests list successfully", response);
+    return Utils.returnOkResponse("Lấy danh sách đơn chờ thi công thành công", response);
   }
   // </editor-fold>
 

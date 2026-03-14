@@ -4,11 +4,12 @@ import com.capstone.auth.application.business.dto.ProfileDTO;
 import com.capstone.auth.application.business.dto.UserDTO;
 import com.capstone.auth.application.business.profile.ProfileService;
 import com.capstone.auth.application.business.users.UserService;
-import com.capstone.auth.application.exception.NotExistingException;
-import com.capstone.auth.infrastructure.utils.Constant;
+import com.capstone.common.exception.NotExistingException;
+import com.capstone.auth.infrastructure.utils.Message;
 
 import java.time.LocalDate;
 
+import com.capstone.common.utils.SharedMessage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -65,7 +66,7 @@ class ProfileUseCaseGetMeTest {
 
     DisabledException ex = assertThrows(DisabledException.class,
       () -> profileUseCase.getMe(id, "user@example.com", "user1"));
-    assertEquals(Constant.SE_07, ex.getMessage());
+    assertEquals(Message.SE_07, ex.getMessage());
   }
 
   @Test
@@ -114,7 +115,7 @@ class ProfileUseCaseGetMeTest {
     when(userService.getUserById(id)).thenReturn(userDTO);
 
     var ex = assertThrows(IllegalArgumentException.class, () -> profileUseCase.getMe(id, null, "user1"));
-    assertEquals(Constant.PT_01, ex.getMessage());
+    assertEquals(SharedMessage.MES_01, ex.getMessage());
   }
 
   @Test
@@ -126,7 +127,7 @@ class ProfileUseCaseGetMeTest {
 
     var ex = assertThrows(IllegalArgumentException.class,
       () -> profileUseCase.getMe(id, "invalid-email", "user1"));
-    assertEquals(Constant.PT_01, ex.getMessage());
+    assertEquals(SharedMessage.MES_01, ex.getMessage());
   }
 
   @Test
@@ -138,7 +139,7 @@ class ProfileUseCaseGetMeTest {
 
     var ex = assertThrows(IllegalArgumentException.class,
       () -> profileUseCase.getMe(id, "user@example.com", null));
-    assertEquals(Constant.PT_05, ex.getMessage());
+    assertEquals(Message.PT_05, ex.getMessage());
   }
 
   @Test

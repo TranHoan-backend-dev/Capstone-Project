@@ -9,7 +9,7 @@ import com.capstone.construction.application.dto.response.installationform.Insta
 import com.capstone.construction.application.dto.response.installationform.NewInstallationFormResponse;
 import com.capstone.construction.application.event.producer.MessageProducer;
 import com.capstone.construction.application.exception.ExistingItemException;
-import com.capstone.construction.infrastructure.utils.Constant;
+import com.capstone.construction.infrastructure.utils.Message;
 import com.capstone.construction.infrastructure.service.EmployeeService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -72,7 +72,7 @@ class InstallationFormHandlingUseCaseTest {
     // When & Then
     assertThatThrownBy(() -> useCase.createNewInstallationRequest(request))
         .isInstanceOf(ExistingItemException.class)
-        .hasMessage(Constant.SE_01);
+        .hasMessage(Message.PT_53);
 
     verify(ifSrv).isInstallationFormExisting("FORM-001", "CODE-001");
     verify(ifSrv, never()).createNewInstallationForm(any());

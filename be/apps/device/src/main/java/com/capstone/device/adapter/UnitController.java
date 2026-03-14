@@ -3,6 +3,8 @@ package com.capstone.device.adapter;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
+import com.capstone.device.application.dto.request.UpdateUnitRequest;
+import com.capstone.device.application.dto.request.unit.CreateUnitRequest;
 import com.capstone.device.application.dto.response.UnitResponse;
 import com.capstone.device.application.usecase.UnitUseCase;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,10 +23,8 @@ import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 @AppLog
 @RestController
@@ -51,6 +52,52 @@ public class UnitController {
       @Parameter(description = "Từ khóa lọc theo tên đơn vị tính") @RequestParam(required = false) String filter) {
     log.info("REST request to get paginated list of units: {}, filter: {}", pageable, filter);
     var response = unitUseCase.getUnits(pageable, filter);
-    return Utils.returnOkResponse("Get paginated list of units successfully", response);
+    return Utils.returnOkResponse("Lấy danh sách đơn vị tính thành công", response);
+  }
+
+  @Operation(summary = "Tạo mới đơn vị đo", description = "API cho phép Admin tạo mới một đơn vị đo tính toán. Tên đơn vị đo phải là duy nhất và không được trùng lặp trong hệ thống.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "201", description = "Tạo đơn vị đo thành công"),
+      @ApiResponse(responseCode = "400", description = "Dữ liệu không hợp lệ (ví dụ: tên bị trống hoặc đã tồn tại)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+      @ApiResponse(responseCode = "403", description = "Không có quyền thực hiện hành động này", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
+  })
+  @PostMapping
+  @PreAuthorize("hasAuthority('IT_STAFF')")
+  public ResponseEntity<?> createUnit(@RequestBody @Valid CreateUnitRequest request) {
+    log.info("REST request to create unit: {}", request);
+    var response = unitUseCase.createUnit(request);
+    log.info("New unit: {}", response);
+    return Utils.returnCreatedResponse("Tạo đơn vị đo thành công");
+  }
+
+  @Operation(summary = "Cập nhật đơn vị đo", description = "API cho phép Admin cập nhật thông tin đơn vị đo. Sau khi cập nhật thành công, hệ thống sẽ gửi thông báo đến phòng KH-KT, chi nhánh Thi công và phòng Kinh doanh.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Cập nhật đơn vị đo thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UnitResponse.class))),
+      @ApiResponse(responseCode = "404", description = "Không tìm thấy đơn vị đo với ID cung cấp", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+      @ApiResponse(responseCode = "400", description = "Tên mới đã tồn tại ở đơn vị đo khác", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
+  })
+  @PutMapping("/{id}")
+  @PreAuthorize("hasAuthority('IT_STAFF')")
+  public ResponseEntity<?> updateUnit(
+      @Parameter(description = "ID của đơn vị đo cần cập nhật", example = "550e8400-e29b-41d4-a716-446655440000") @PathVariable String id,
+      @RequestBody @Valid UpdateUnitRequest request) {
+    log.info("REST request to update unit id: {}, request: {}", id, request);
+    var response = unitUseCase.updateUnit(id, request);
+    return Utils.returnOkResponse("Cập nhật đơn vị đo thành công", response);
+  }
+
+  @Operation(summary = "Xóa đơn vị đo", description = "API cho phép Admin xóa một đơn vị đo. Điều kiện xóa: đơn vị này chưa từng được sử dụng trong danh mục vật tư. Hệ thống sẽ gửi thông báo cho các phòng ban liên quan sau khi xóa.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Xóa đơn vị đo thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+      @ApiResponse(responseCode = "400", description = "Đơn vị đang được sử dụng bởi vật tư, không thể xóa", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+      @ApiResponse(responseCode = "404", description = "Không tìm thấy đơn vị đo cần xóa", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
+  })
+  @DeleteMapping("/{id}")
+  @PreAuthorize("hasAuthority('IT_STAFF')")
+  public ResponseEntity<?> deleteUnit(
+      @Parameter(description = "ID của đơn vị đo cần xóa", example = "550e8400-e29b-41d4-a716-446655440000") @PathVariable String id) {
+    log.info("REST request to delete unit id: {}", id);
+    unitUseCase.deleteUnit(id);
+    return Utils.returnOkResponse("Xóa đơn vị đo thành công", null);
   }
 }

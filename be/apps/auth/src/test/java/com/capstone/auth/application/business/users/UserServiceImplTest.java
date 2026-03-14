@@ -1,11 +1,10 @@
 package com.capstone.auth.application.business.users;
 
-import com.capstone.auth.application.business.dto.UserDTO;
-import com.capstone.auth.application.dto.request.FilterUsersRequest;
+import com.capstone.auth.application.dto.request.users.FilterUsersRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
 import com.capstone.common.enumerate.RoleName;
 import com.capstone.common.exception.ExistingException;
-import com.capstone.auth.application.exception.NotExistingException;
+import com.capstone.common.exception.NotExistingException;
 import com.capstone.auth.domain.model.EmployeeJob;
 import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.domain.model.Roles;
@@ -399,19 +398,5 @@ class UserServiceImplTest {
 
     assertNotNull(result);
     verify(repo).findByIsEnabledTrueAndIsLockedFalseOrUsernameContainingIgnoreCase("user1", pageable);
-  }
-
-  @Test
-  @DisplayName("should_HashPassword_Success")
-  void should_HashPassword_Success() throws Exception {
-    var rawPassword = "password";
-    var encodedPassword = "encodedPassword";
-    when(encoder.encode(rawPassword)).thenReturn(encodedPassword);
-
-    var result = userService.hashPassword(rawPassword);
-
-    assertNotNull(result);
-    assertEquals(encodedPassword, result.get());
-    verify(encoder).encode(rawPassword);
   }
 }

@@ -56,7 +56,7 @@ public class LateralController {
     log.info("REST request to create lateral: {}", request.name());
     var response = lateralUseCase.createLateral(request);
     log.info("Created lateral: {}", response);
-    return Utils.returnCreatedResponse("Lateral created successfully");
+    return Utils.returnCreatedResponse("Tạo nhánh tổng thành công");
   }
 
   @PutMapping("/{id}")
@@ -84,7 +84,7 @@ public class LateralController {
     @RequestBody @Valid LateralRequest request) {
     log.info("REST request to update lateral: {}", id);
     var response = lateralUseCase.updateLateral(id, request);
-    return Utils.returnOkResponse("Lateral updated successfully", response);
+    return Utils.returnOkResponse("Cập nhật nhánh tổng thành công", response);
   }
 
   @DeleteMapping("/{id}")
@@ -108,7 +108,7 @@ public class LateralController {
     @PathVariable @Parameter(description = "ID của nhánh tổng cần xóa") String id) {
     log.info("REST request to delete lateral: {}", id);
     lateralUseCase.deleteLateral(id);
-    return Utils.returnOkResponse("Lateral deleted successfully", null);
+    return Utils.returnOkResponse("Xóa nhánh tổng thành công", null);
   }
 
   @GetMapping("/{id}")
@@ -127,7 +127,7 @@ public class LateralController {
     @PathVariable @Parameter(description = "ID của nhánh tổng cần lấy thông tin") String id) {
     log.info("REST request to get lateral: {}", id);
     var response = lateralUseCase.getLateralById(id);
-    return Utils.returnOkResponse("Lateral retrieved successfully", response);
+    return Utils.returnOkResponse("Lấy thông tin nhánh tổng thành công", response);
   }
 
   @GetMapping
@@ -157,6 +157,6 @@ public class LateralController {
     log.info("REST request to get all laterals with pagination: {}, keyword: {}, networkId: {}, networkAssigned: {}",
       pageable, keyword, networkId, networkAssigned);
     var response = lateralUseCase.getAllLaterals(pageable, keyword, networkId, networkAssigned);
-    return Utils.returnOkResponse("Laterals retrieved successfully", response);
+    return Utils.returnOkResponse("Lấy danh sách nhánh tổng thành công", response);
   }
 }

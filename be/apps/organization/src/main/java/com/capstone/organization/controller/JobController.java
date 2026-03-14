@@ -3,28 +3,29 @@ package com.capstone.organization.controller;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.utils.Utils;
 import com.capstone.common.response.WrapperApiResponse;
-import com.capstone.organization.dto.request.CreateJobRequest;
-import com.capstone.organization.dto.request.UpdateJobRequest;
+import com.capstone.organization.dto.request.job.CreateJobRequest;
+import com.capstone.organization.dto.request.job.UpdateJobRequest;
+import com.capstone.organization.dto.request.job.FilterJobRequest;
 import com.capstone.organization.service.boundary.JobService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.slf4j.Logger;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -60,9 +61,7 @@ public class JobController {
     @RequestBody @Valid CreateJobRequest request) {
     log.info("Create job request comes to endpoint: {}", request);
     var response = jobService.createJob(request);
-    return Utils.returnOkResponse(
-      "Create job successfully",
-      response);
+    return Utils.returnOkResponse("Tạo công việc thành công", response);
   }
 
   @PutMapping("/{jobId}")
@@ -79,27 +78,35 @@ public class JobController {
     @RequestBody @Valid UpdateJobRequest request) {
     log.info("Update job request comes to endpoint: {}", jobId);
     var response = jobService.updateJob(jobId, request);
-    return Utils.returnOkResponse(
-      "Update job successfully",
-      response);
+    return Utils.returnOkResponse("Cập nhật công việc thành công", response);
   }
 
   @GetMapping
-  @Operation(summary = "Liệt kê công việc", description = "Lấy danh sách phân trang các công việc.")
+  @Operation(summary = "Liệt kê công việc", description = "Lấy danh sách phân trang các công việc với hỗ trợ tìm kiếm và lọc.")
   @ApiResponses({
     @ApiResponse(responseCode = "200", description = "Lấy danh sách công việc thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "400", description = "Tham số phân trang không hợp lệ", content = @Content),
+    @ApiResponse(responseCode = "400", description = "Tham số yêu cầu không hợp lệ", content = @Content),
     @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
   })
   public ResponseEntity<WrapperApiResponse> getJobs(
-    @Parameter(in = ParameterIn.QUERY, description = "Chỉ số trang (bắt đầu từ 0)", schema = @Schema(type = "integer", defaultValue = "0", minimum = "0"))
-    @RequestParam(defaultValue = "0") @PositiveOrZero int page,
-    @Parameter(in = ParameterIn.QUERY, description = "Kích thước trang", schema = @Schema(type = "integer", defaultValue = "20", minimum = "1"))
-    @RequestParam(defaultValue = "20") @Positive int size) {
-    var response = jobService.getJobs(page, size);
-    return Utils.returnOkResponse(
-      "Get jobs successfully",
-      response);
+    @ParameterObject Pageable pageable,
+    @ParameterObject FilterJobRequest filter) {
+    var response = jobService.getJobs(pageable, filter);
+    return Utils.returnOkResponse("Lấy danh sách công việc thành công", response);
+  }
+
+  @DeleteMapping("/{jobId}")
+  @Operation(summary = "Xóa công việc", description = "Xóa một công việc nếu không còn nhân viên nào đảm nhiệm.")
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "Xóa công việc thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Không thể xóa do ràng buộc dữ liệu hoặc lỗi nghiệp vụ", content = @Content),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy công việc", content = @Content),
+    @ApiResponse(responseCode = "500", description = "Lỗi máy chủ", content = @Content)
+  })
+  public ResponseEntity<WrapperApiResponse> deleteJob(@PathVariable String jobId) {
+    log.info("Delete job request for id: {}", jobId);
+    jobService.deleteJob(jobId);
+    return Utils.returnOkResponse("Xóa công việc thành công", null);
   }
 
   @GetMapping("/exist/{id}")

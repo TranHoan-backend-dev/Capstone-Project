@@ -1,8 +1,8 @@
 spring:
   application:
     name: construction
-#  profiles:
-#    active: dev
+  profiles:
+    active: dev
   jpa:
     hibernate:
       ddl-auto: update
@@ -18,25 +18,6 @@ spring:
       connection-timeout: 2000 # Cho ket noi toi da 3s
       max-lifetime: 600000 # Ket noi song toi da 30p
       idle-timeout: 30000 # Dong idle sau 30s neu khong su dung
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${POSTGRES_HOST}:5432/${CONSTRUCTION_DATABASE}
-    username: postgres
-    password: postgres
-  rabbitmq:
-    host: ${RABBITMQ_HOST} # cua may local
-    port: 5672
-    username: guest
-    password: guest
-keycloak:
-  server-url: http://${KEYCLOAK_HOST}:8080
-  issuer-uri: ${keycloak.server-url}/realms/${keycloak.realms}
-  aud:
-    - ${KEYCLOAK_AUD}
-  realms: ${KEYCLOAK_REALMS}
-  username: ${KEYCLOAK_USERNAME}
-  password: ${KEYCLOAK_PASSWORD}
-  token-uri: ${keycloak.server-url}/realms/${keycloak.realms}/protocol/openid-connect/token
-  client-id: ${KEYCLOAK_CLIENT_ID}
 management:
   endpoints:
     web:
@@ -58,7 +39,7 @@ cors:
 eureka:
   client:
     service-url:
-      defaultZone: http://${EUREKA_HOST}:9000/eureka
+      defaultZone: http://localhost:9000/eureka
   instance:
     prefer-ip-address: true
 springdoc:
@@ -80,9 +61,9 @@ rabbit-mq-config:
     - neighborhood-unit
     - road
     - installation-form
+    - cost-estimate
   actions:
     - update
     - delete
     - create
     - approve
-    - reject

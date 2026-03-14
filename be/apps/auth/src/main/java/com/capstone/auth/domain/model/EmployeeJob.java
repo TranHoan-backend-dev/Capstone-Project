@@ -1,7 +1,8 @@
 package com.capstone.auth.domain.model;
 
 import com.capstone.auth.domain.model.utils.EmployeeJobId;
-import com.capstone.auth.infrastructure.utils.Constant;
+import com.capstone.auth.infrastructure.utils.Message;
+import com.capstone.common.utils.SharedMessage;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -25,12 +26,12 @@ public class EmployeeJob {
   Users users;
 
   public void setId(EmployeeJobId id) {
-    Objects.requireNonNull(id, Constant.PT_22);
+    Objects.requireNonNull(id, SharedMessage.MES_07);
     this.id = id;
   }
 
   public void setUsers(Users users) {
-    Objects.requireNonNull(users, Constant.PT_04);
+    Objects.requireNonNull(users, Message.PT_02);
     this.users = users;
   }
 

@@ -3,7 +3,7 @@ package com.capstone.construction.domain.model;
 import com.capstone.construction.domain.enumerate.CommuneType;
 import com.capstone.construction.domain.enumerate.HamletType;
 import jakarta.persistence.*;
-import com.capstone.construction.infrastructure.utils.Constant;
+import com.capstone.construction.infrastructure.utils.Message;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.jspecify.annotations.NonNull;
@@ -42,22 +42,22 @@ public class Hamlet {
   Commune commune;
 
   public void setName(String name) {
-    Objects.requireNonNull(name, Constant.PT_24);
+    Objects.requireNonNull(name, Message.PT_11);
     if (name.trim().isEmpty()) {
-      throw new IllegalArgumentException(Constant.PT_24);
+      throw new IllegalArgumentException(Message.PT_11);
     }
     this.name = name;
   }
 
   public void setType(HamletType type) {
-    Objects.requireNonNull(type, Constant.PT_25);
+    Objects.requireNonNull(type, Message.PT_12);
     this.type = type;
   }
 
   public void setCommune(Commune commune) {
-    Objects.requireNonNull(commune, Constant.PT_26);
+    Objects.requireNonNull(commune, Message.PT_13);
     if (!commune.getType().equals(CommuneType.RURAL_COMMUNE)) {
-      throw new IllegalArgumentException(Constant.PT_07);
+      throw new IllegalArgumentException(Message.PT_07);
     }
     this.commune = commune;
   }

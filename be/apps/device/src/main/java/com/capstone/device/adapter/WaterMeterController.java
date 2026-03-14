@@ -42,7 +42,7 @@ public class WaterMeterController {
   public ResponseEntity<WrapperApiResponse> createWaterMeter(@RequestBody @Valid WaterMeterRequest request) {
     log.info("REST request to create water meter: {}", request.size());
     waterMeterService.createWaterMeter(request);
-    return Utils.returnCreatedResponse("Water meter created successfully");
+    return Utils.returnCreatedResponse("Tạo đồng hồ nước thành công");
   }
 
   @Operation(summary = "", description = "", responses = {
@@ -55,7 +55,7 @@ public class WaterMeterController {
     @RequestBody @Valid WaterMeterRequest request) {
     log.info("REST request to update water meter: {}", id);
     var response = waterMeterService.updateWaterMeter(id, request);
-    return Utils.returnOkResponse("Water meter updated successfully", response);
+    return Utils.returnOkResponse("Cập nhật đồng hồ nước thành công", response);
   }
 
   @Operation(summary = "", description = "", responses = {
@@ -67,7 +67,7 @@ public class WaterMeterController {
     @PathVariable @Parameter(description = "") String id) {
     log.info("REST request to delete water meter: {}", id);
     waterMeterService.deleteWaterMeter(id);
-    return Utils.returnOkResponse("Water meter deleted successfully", null);
+    return Utils.returnOkResponse("Xóa đồng hồ nước thành công", null);
   }
 
   @DeleteMapping("/overall/lateral")
@@ -76,7 +76,7 @@ public class WaterMeterController {
     @RequestParam String id) {
     log.info("REST request to delete water meter by lateral: {}", id);
     waterMeterUseCase.deleteOverallWaterMeterByLateralId(id);
-    return Utils.returnOkResponse("Water meter deleted successfully", null);
+    return Utils.returnOkResponse("Xóa đồng hồ nước thành công", null);
   }
 
   @Operation(summary = "", description = "", responses = {
@@ -88,7 +88,7 @@ public class WaterMeterController {
     @PathVariable @Parameter(description = "") String id) {
     log.info("REST request to get water meter: {}", id);
     var response = waterMeterService.getWaterMeterById(id);
-    return Utils.returnOkResponse("Water meter retrieved successfully", response);
+    return Utils.returnOkResponse("Lấy thông tin đồng hồ nước thành công", response);
   }
 
   @Operation(summary = "", description = "")
@@ -96,16 +96,26 @@ public class WaterMeterController {
   public ResponseEntity<WrapperApiResponse> getAllWaterMeters(@PageableDefault Pageable pageable) {
     log.info("REST request to get all water meters with pagination: {}", pageable);
     var response = waterMeterService.getAllWaterMeters(pageable);
-    return Utils.returnOkResponse("Water meters retrieved successfully", response);
+    return Utils.returnOkResponse("Lấy danh sách đồng hồ nước thành công", response);
   }
 
   @Operation(summary = "", description = "")
   @GetMapping("/overall/{id}/exists")
   public ResponseEntity<WrapperApiResponse> checkOverallWaterMeterExisting(
     @PathVariable @Parameter(description = "") String id) {
-    log.info("REST request to check existence of water meter: {}", id);
+    log.info("REST request to check existence of overall water meter: {}", id);
     var response = waterMeterService.isOverallWaterMeterExisting(id);
     log.info("Meter is existed? {}", response);
-    return Utils.returnOkResponse("Check water meter existence successfully", response);
+    return Utils.returnOkResponse("Kiểm tra sự tồn tại của đồng hồ nước thành công", response);
+  }
+
+  @Operation(summary = "", description = "")
+  @GetMapping("/{id}/exists")
+  public ResponseEntity<WrapperApiResponse> checkWaterMeterExisting(
+    @PathVariable @Parameter(description = "") String id) {
+    log.info("REST request to check existence of water meter: {}", id);
+    var response = waterMeterService.isWaterMeterExisting(id);
+    log.info("Meter is existed? {}", response);
+    return Utils.returnOkResponse("Kiểm tra sự tồn tại của đồng hồ nước thành công", response);
   }
 }
