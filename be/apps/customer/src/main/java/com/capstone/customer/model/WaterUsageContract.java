@@ -1,5 +1,6 @@
 package com.capstone.customer.model;
 
+import com.capstone.common.utils.SharedMessage;
 import com.capstone.customer.utils.Message;
 import jakarta.persistence.*;
 import lombok.*;
@@ -56,27 +57,27 @@ public class WaterUsageContract {
   }
 
   public void setContractId(String id) {
-    Objects.requireNonNull(id, Message.ENT_06);
+    Objects.requireNonNull(id, Message.ENT_02);
     this.contractId = id;
   }
 
   public void setCustomer(Customer customer) {
-    Objects.requireNonNull(customer, Message.ENT_11);
+    Objects.requireNonNull(customer, Message.ENT_04);
     this.customer = customer;
   }
 
   public void setFormCode(String value) {
-    Objects.requireNonNull(value, Message.ENT_09);
+    Objects.requireNonNull(value, SharedMessage.MES_21);
     if (value.trim().isEmpty()) {
-      throw new IllegalArgumentException(Message.ENT_09);
+      throw new IllegalArgumentException(SharedMessage.MES_21);
     }
     this.formCode = value;
   }
 
   public void setFormNumber(String value) {
-    Objects.requireNonNull(value, Message.ENT_08);
+    Objects.requireNonNull(value, SharedMessage.MES_20);
     if (value.trim().isEmpty()) {
-      throw new IllegalArgumentException(Message.ENT_08);
+      throw new IllegalArgumentException(SharedMessage.MES_20);
     }
     this.formNumber = value;
   }

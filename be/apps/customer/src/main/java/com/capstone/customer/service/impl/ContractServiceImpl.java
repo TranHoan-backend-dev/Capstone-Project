@@ -44,7 +44,8 @@ public class ContractServiceImpl implements ContractService {
     var contract = WaterUsageContract.create(builder -> builder
       .id(request.contractId())
       .customer(customer)
-      .installationFormId(request.installationFormId())
+      .formNumber(request.formNumber())
+      .formCode(request.formCode())
       .representative(request.representatives()));
 
     var saved = contractRepository.save(contract);
@@ -66,7 +67,8 @@ public class ContractServiceImpl implements ContractService {
     }
 
     contract.setContractId(request.contractId());
-    contract.setFormCode(request.installationFormId());
+    contract.setFormCode(request.formCode());
+    contract.setFormNumber(request.formNumber());
     contract.setRepresentative(request.representatives());
 
     var updated = contractRepository.save(contract);
