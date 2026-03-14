@@ -6,8 +6,8 @@ public final class Message {
   public static final String ENT_04 = "";
   public static final String ENT_06 = "Id của khách hàng không được để trống";
   public static final String ENT_07 = "Loại không được để trống";
-  public static final String ENT_08 = "";
-  public static final String ENT_09 = "Id của hình thức lắp đặt không được để trống";
+  public static final String ENT_08 = "Mã đơn lắp đặt không được để trống";
+  public static final String ENT_09 = "Số đơn lắp đặt không được để trống";
   public static final String ENT_11 = "Khách hàng không được để trống";
   public static final String ENT_12 = "Id của hợp đồng không được để trống";
   public static final String ENT_16 = "Mục đích sử dụng không được để trống";
@@ -29,7 +29,7 @@ public final class Message {
   public static final String ENT_39 = "Mã giảm giá M3 không được để trống";
   public static final String ENT_40 = "Fix rate không được để trống";
   public static final String ENT_41 = "Kỳ khấu trừ không được để trống"; // Deduction Period
-  public static final String ENT_42 = " không được để trống";
+  public static final String ENT_42 = "Id khách hàng không được để trống";
   public static final String ENT_43 = " không được để trống";
   public static final String ENT_44 = " không được để trống";
   public static final String ENT_45 = " không được để trống";

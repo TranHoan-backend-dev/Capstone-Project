@@ -59,7 +59,7 @@ class ContractServiceImplTest {
     contract = mock(WaterUsageContract.class);
     lenient().when(contract.getContractId()).thenReturn("CON001");
     lenient().when(contract.getCustomer()).thenReturn(customer);
-    lenient().when(contract.getInstallationFormId()).thenReturn("INST001");
+    lenient().when(contract.getFormCode()).thenReturn("INST001");
     lenient().when(contract.getCreatedAt()).thenReturn(now);
     lenient().when(contract.getUpdatedAt()).thenReturn(now);
     lenient().when(contract.getRepresentative()).thenReturn(Collections.emptyList());

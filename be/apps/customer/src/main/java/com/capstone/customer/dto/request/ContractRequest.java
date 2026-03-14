@@ -8,17 +8,24 @@ import jakarta.validation.constraints.NotEmpty;
 
 import java.util.List;
 
-@Schema(description = "Request DTO for creating or updating a Water Usage Contract")
+@Schema(description = "")
 public record ContractRequest(
-  @Schema(description = "Contract ID", example = "HD001")
-  @NotBlank(message = Message.ENT_12) String contractId,
+  @Schema(description = "", example = "HD001")
+  @NotBlank(message = Message.ENT_12)
+  @NotEmpty(message = Message.ENT_12)
+  String contractId,
 
-  @Schema(description = "Customer ID associated with this contract")
-  @NotBlank(message = "Customer ID is required") String customerId,
+  @Schema(description = "")
+  @NotBlank(message = "")
+  @NotEmpty(message = "")
+  String customerId,
 
-  @Schema(description = "Installation form ID associated with this contract")
-  @NotBlank(message = Message.ENT_09) String installationFormId,
+  @Schema(description = "")
+  @NotBlank(message = Message.ENT_09)
+  @NotEmpty(message = Message.ENT_09)
+  String installationFormId,
 
-  @Schema(description = "List of representatives for the contract")
-  @NotEmpty(message = "At least one representative is required") List<Representative> representatives) {
+  @Schema(description = "")
+  List<Representative> representatives
+) {
 }

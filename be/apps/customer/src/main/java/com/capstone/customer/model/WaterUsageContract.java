@@ -34,7 +34,11 @@ public class WaterUsageContract {
   @OneToOne(fetch = FetchType.EAGER)
   Customer customer;
 
-  String installationFormId;
+  @Column(nullable = false, unique = true)
+  String formCode;
+
+  @Column(nullable = false)
+  String formNumber;
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(columnDefinition = "jsonb")
@@ -61,12 +65,20 @@ public class WaterUsageContract {
     this.customer = customer;
   }
 
-  public void setInstallationFormId(String value) {
+  public void setFormCode(String value) {
     Objects.requireNonNull(value, Message.ENT_09);
     if (value.trim().isEmpty()) {
       throw new IllegalArgumentException(Message.ENT_09);
     }
-    this.installationFormId = value;
+    this.formCode = value;
+  }
+
+  public void setFormNumber(String value) {
+    Objects.requireNonNull(value, Message.ENT_08);
+    if (value.trim().isEmpty()) {
+      throw new IllegalArgumentException(Message.ENT_08);
+    }
+    this.formNumber = value;
   }
 
   public void setRepresentative(List<Representative> representative) {
@@ -94,8 +106,13 @@ public class WaterUsageContract {
       return this;
     }
 
-    public ContractBuilder installationFormId(String installationFormId) {
-      waterUsageContract.setInstallationFormId(installationFormId);
+    public ContractBuilder formCode(String value) {
+      waterUsageContract.setFormCode(value);
+      return this;
+    }
+
+    public ContractBuilder formNumber(String value) {
+      waterUsageContract.setFormCode(value);
       return this;
     }
 
