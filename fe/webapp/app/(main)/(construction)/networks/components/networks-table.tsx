@@ -63,8 +63,16 @@ export const NetworksTable = ({
         const json = await res.json();
         const pageData = json?.data;
         const items = pageData?.content ?? [];
-        setTotalItems(pageData?.totalElements ?? 0);
-        setTotalPages(pageData?.totalPages ?? 1);
+        const totalElements = pageData?.totalElements ?? 0;
+        const totalPagesValue = pageData?.totalPages ?? 1;
+
+        setTotalItems(totalElements);
+        setTotalPages(totalPagesValue || 1);
+
+        if (page > totalPagesValue && totalPagesValue > 0) {
+          setPage(totalPagesValue);
+          return;
+        }
 
         const mapped = items.map((item: NetworksResponse, index: number) => ({
           id: item.branchId,
@@ -117,7 +125,11 @@ export const NetworksTable = ({
       });
 
       setDeleteId(null);
-      onDeleted();
+      if (data.length === 1 && page > 1) {
+        setPage((prev) => prev - 1);
+      } else {
+        onDeleted();
+      }
     } catch (e: any) {
       CallToast({
         title: "Lỗi",
@@ -218,13 +230,12 @@ export const NetworksTable = ({
           onChange: setPage,
           summary: `${data.length}`,
         }}
-        sort={sort}
         onSortChange={handleSortChange}
       />
       <ConfirmDialog
         isOpen={!!deleteId}
         title="Xác nhận xoá"
-        message="Bạn có chắc muốn xoá lộ trình ghi này không?"
+        message="Bạn có chắc muốn xoá chi nhánh này không?"
         confirmText="Xoá"
         confirmColor="danger"
         isLoading={deleteLoading}

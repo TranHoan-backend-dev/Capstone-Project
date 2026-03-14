@@ -8,6 +8,7 @@ import { NetworksFormProps } from "@/types/construction/networks.type";
 import { Card, CardBody } from "@heroui/react";
 import React, { useState, useEffect } from "react";
 import { useIsITStaff } from "@/hooks/useHasRole";
+import { validateBranchName } from "@/utils/validation";
 
 export const NetworkForm = ({
   initialData,
@@ -25,6 +26,15 @@ export const NetworkForm = ({
 
   const handleSubmit = async () => {
     if (submitLoading) return;
+    const error = validateBranchName(name, "Tên chi nhánh");
+    if (error) {
+      CallToast({
+        title: "Lỗi",
+        message: error,
+        color: "danger",
+      });
+      return;
+    }
     try {
       setSubmitLoading(true);
 
@@ -35,7 +45,7 @@ export const NetworkForm = ({
       const method = isEdit ? "PUT" : "POST";
 
       const payload = {
-        name: !isEdit || name !== initialData?.name ? name.trim() : "",
+        name,
       };
 
       const response = await fetch(url, {
