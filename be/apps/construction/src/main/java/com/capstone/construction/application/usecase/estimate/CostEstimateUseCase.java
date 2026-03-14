@@ -1,5 +1,6 @@
 package com.capstone.construction.application.usecase.estimate;
 
+import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.construction.application.business.estimate.CostEstimateService;
 import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.construction.application.dto.request.estimate.CreateRequest;
@@ -7,6 +8,7 @@ import com.capstone.construction.application.dto.request.estimate.UpdateRequest;
 import com.capstone.construction.application.dto.response.estimate.CostEstimateResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.application.event.producer.MessageProducer;
+import com.capstone.construction.application.event.producer.estimate.ApproveEvent;
 import com.capstone.construction.application.event.producer.estimate.CreatedEvent;
 import com.capstone.construction.application.event.producer.estimate.UpdatedEvent;
 import com.capstone.construction.infrastructure.service.EmployeeService;
@@ -38,9 +40,6 @@ public class CostEstimateUseCase {
   @Value("${rabbit-mq-config.actions[0]}")
   String UPDATE_ACTION;
 
-  @Value("${rabbit-mq-config.actions[4]}")
-  String REJECT_ACTION;
-
   @Value("${rabbit-mq-config.queue_name}")
   String QUEUE_NAME;
 
@@ -69,6 +68,25 @@ public class CostEstimateUseCase {
       result.installationFormId().getFormCode(),
       result.installationFormId().getFormNumber(),
       employee.data().toString());
+    messageProducer.send(routingKey, event);
+
+    return result;
+  }
+
+  public CostEstimateResponse approveEstimate(String id, @NonNull Boolean status) {
+    estSrv.approveEstimate(id, status);
+
+    var result = estSrv.getEstimateById(id);
+
+    var routingKey = QUEUE_NAME + PREFIX + APPROVE_ACTION;
+    var employee = empSrv.getEmployeeNameById(result.createBy());
+    var event = new ApproveEvent(
+      result.customerName(),
+      result.installationFormId().getFormCode(),
+      result.installationFormId().getFormNumber(),
+      employee.data().toString(),
+      status,
+      result.createBy());
     messageProducer.send(routingKey, event);
 
     return result;

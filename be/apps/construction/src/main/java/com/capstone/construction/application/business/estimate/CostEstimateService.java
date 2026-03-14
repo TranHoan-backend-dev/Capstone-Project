@@ -1,5 +1,6 @@
 package com.capstone.construction.application.business.estimate;
 
+import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.construction.application.dto.request.estimate.CreateRequest;
 import com.capstone.construction.application.dto.request.estimate.UpdateRequest;
@@ -15,4 +16,6 @@ public interface CostEstimateService {
   CostEstimateResponse getEstimateById(String id);
 
   PageResponse<CostEstimateResponse> getAllEstimates(Pageable pageable, BaseFilterRequest request);
+
+  void approveEstimate(String id, Boolean status);
 }

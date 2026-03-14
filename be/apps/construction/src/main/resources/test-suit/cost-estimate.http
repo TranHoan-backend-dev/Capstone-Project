@@ -156,3 +156,27 @@ Accept: application/json
   "waterMeterSerial": "",
   "overallWaterMeterId": ""
 }
+
+### P - Approve estimate
+PATCH {{uri}}/{{estimate_id}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+true
+
+### P - Reject estimate
+PATCH {{uri}}/{{estimate_id}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+false
+
+### P - Approve estimate (Not found)
+PATCH {{uri}}/invalid-id
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+true

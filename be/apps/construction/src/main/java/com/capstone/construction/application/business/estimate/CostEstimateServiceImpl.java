@@ -191,6 +191,16 @@ public class CostEstimateServiceImpl implements CostEstimateService {
     return PageResponse.fromPage(page, this::mapToResponse);
   }
 
+  @Override
+  public void approveEstimate(String id, Boolean request) {
+    var est = eRepo.findById(id)
+      .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_61, id)));
+    var form = est.getInstallationForm();
+    var status = form.getStatus();
+    status.setEstimate(request ? ProcessingStatus.APPROVED : ProcessingStatus.REJECTED);
+    ifRepo.save(form);
+  }
+
   private LocalDateTime parseFrom(String from) {
     if (from == null || from.isBlank()) {
       return null;
