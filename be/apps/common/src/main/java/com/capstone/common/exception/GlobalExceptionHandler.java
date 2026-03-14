@@ -2,7 +2,6 @@ package com.capstone.common.exception;
 
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
-import org.apache.coyote.BadRequestException;
 import org.jspecify.annotations.NonNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -18,11 +17,6 @@ import java.util.concurrent.ExecutionException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
-  @ExceptionHandler(BadRequestException.class)
-  public ResponseEntity<WrapperApiResponse> handleBadRequestException(@NonNull BadRequestException ex) {
-    return Utils.returnBadRequestResponse(ex.getMessage(), null);
-  }
 
   @ExceptionHandler(DateTimeParseException.class)
   public ResponseEntity<WrapperApiResponse> handleDateTimeParseException(@NonNull DateTimeParseException ex) {
