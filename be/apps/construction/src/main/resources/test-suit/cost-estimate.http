@@ -40,7 +40,6 @@ Authorization: Bearer {{access_token}}
 Accept: application/json
 
 ### Get all estimates - Filter by date range (from-to)
-# Note: Based on @Pattern(regexp = "dd-MM-yyyy") in BaseFilterRequest
 GET {{uri}}?from=01-01-2023&to=31-12-2023
 Authorization: Bearer {{access_token}}
 Accept: application/json
@@ -59,6 +58,18 @@ Accept: application/json
 GET {{uri}}?from=2023-01-01
 Authorization: Bearer {{access_token}}
 Accept: application/json
+
+### C - Create estimate (Validation Failure - missing required fields)
+POST {{uri}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "customerName": "",
+  "address": "",
+  "formCode": "CODE-01"
+}
 
 ### C - Create estimate
 POST {{uri}}
@@ -82,70 +93,16 @@ Accept: application/json
   "designCoefficient": 2,
   "designFee": 500000,
   "designImageUrl": "http://storage.com/design.png",
-  "status": "PROCESSING",
   "registrationAt": "2023-10-27",
-  "createBy": "user-123",
+  "createBy": "6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20",
   "waterMeterSerial": "SN12345678",
   "overallWaterMeterId": "METER-001",
-  "formCode": "CODE-01",
-  "formNumber": "NUM-001"
+  "formNumber": "7dfebc99-9c0b-4ef8-bb6d-6bb9bd380a2e",
+  "formCode": "FORM-2024-0030"
 }
 
-> {%
-  client.global.set("estimate_id", response.body.data.id);
-%}
-
-### R - Get estimate by ID
-GET {{uri}}/{{estimate_id}}
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### R - Get estimate by ID (Not found)
-GET {{uri}}/invalid-id
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### C - Create estimate (Validation Failure - missing required fields)
-POST {{uri}}
-Content-Type: application/json
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-{
-  "customerName": "",
-  "address": "",
-  "formCode": "CODE-01"
-}
-
-### C - Create estimate (Not Found - Installation Form does not exist)
-POST {{uri}}
-Content-Type: application/json
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-{
-  "customerName": "Trần Văn NonExistent",
-  "address": "123 Street",
-  "contractFee": 1000,
-  "surveyFee": 100,
-  "surveyEffort": 1,
-  "installationFee": 1000,
-  "laborCoefficient": 10,
-  "generalCostCoefficient": 5,
-  "precalculatedTaxCoefficient": 10,
-  "constructionMachineryCoefficient": 0,
-  "vatCoefficient": 10,
-  "designCoefficient": 2,
-  "designFee": 500,
-  "designImageUrl": "http://img.com",
-  "status": "PROCESSING",
-  "registrationAt": "27-10-2023",
-  "createBy": "user-123",
-  "waterMeterSerial": "SN123",
-  "overallWaterMeterId": "METER-001",
-  "formCode": "INVALID",
-  "formNumber": "INVALID"
-}
+###
+@estimate_id = 5513e1e5-a627-440a-be72-a84aa1315fc6
 
 ### U - Update estimate
 PUT {{uri}}/{{estimate_id}}
@@ -168,9 +125,8 @@ Accept: application/json
   "vatCoefficient": 10,
   "designCoefficient": 3,
   "designFee": 600000,
-  "status": "COMPLETED",
-  "waterMeterSerial": "SN12345678-UPDATED",
-  "overallWaterMeterId": "METER-001-UPDATED"
+  "waterMeterSerial": "SN12345678",
+  "overallWaterMeterId": "METER-001"
 }
 
 ### U - Update estimate (Not found)
@@ -187,12 +143,16 @@ Accept: application/json
   "overallWaterMeterId": "METER-001"
 }
 
-### U - Update estimate (Validation failure - status invalid)
+### U - Blank params
 PUT {{uri}}/{{estimate_id}}
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 Accept: application/json
 
 {
-  "status": "INVALID_STATUS"
+  "customerName": "",
+  "address": "",
+  "status": "",
+  "waterMeterSerial": "",
+  "overallWaterMeterId": ""
 }

@@ -1,9 +1,7 @@
 package com.capstone.construction.application.usecase.estimate;
 
-import com.capstone.common.exception.NotExistingException;
 import com.capstone.construction.application.business.estimate.CostEstimateService;
 import com.capstone.common.utils.BaseFilterRequest;
-import com.capstone.construction.application.business.installationform.InstallationFormService;
 import com.capstone.construction.application.dto.request.estimate.CreateRequest;
 import com.capstone.construction.application.dto.request.estimate.UpdateRequest;
 import com.capstone.construction.application.dto.response.estimate.CostEstimateResponse;
@@ -12,7 +10,6 @@ import com.capstone.construction.application.event.producer.MessageProducer;
 import com.capstone.construction.application.event.producer.estimate.CreatedEvent;
 import com.capstone.construction.application.event.producer.estimate.UpdatedEvent;
 import com.capstone.construction.infrastructure.service.EmployeeService;
-import com.capstone.construction.infrastructure.utils.Message;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -28,7 +25,6 @@ public class CostEstimateUseCase {
   final CostEstimateService estSrv;
   final EmployeeService empSrv;
   final MessageProducer messageProducer;
-  final InstallationFormService ifSrv;
 
   @Value(".${rabbit-mq-config.entities[6]}.")
   String PREFIX;
@@ -49,8 +45,6 @@ public class CostEstimateUseCase {
   String QUEUE_NAME;
 
   public CostEstimateResponse createEstimate(@NonNull CreateRequest request) {
-    checkInstallationForm(request.formCode(), request.formNumber());
-
     var result = estSrv.createEstimate(request);
 
     var routingKey = QUEUE_NAME + PREFIX + CREATE_ACTION;
@@ -86,11 +80,5 @@ public class CostEstimateUseCase {
 
   public PageResponse<CostEstimateResponse> getAllEstimates(Pageable pageable, BaseFilterRequest request) {
     return estSrv.getAllEstimates(pageable, request);
-  }
-
-  private void checkInstallationForm(String formCode, String formNumber) {
-    if (!ifSrv.isInstallationFormExisting(formNumber, formCode)) {
-      throw new NotExistingException(String.format(Message.PT_59, formNumber, formCode));
-    }
   }
 }

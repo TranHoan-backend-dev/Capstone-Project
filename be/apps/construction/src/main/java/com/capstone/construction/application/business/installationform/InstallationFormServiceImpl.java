@@ -9,6 +9,7 @@ import com.capstone.construction.application.dto.response.installationform.Insta
 import com.capstone.construction.application.dto.response.installationform.NewInstallationFormResponse;
 import com.capstone.construction.domain.model.InstallationForm;
 import com.capstone.construction.domain.model.WaterSupplyNetwork;
+import com.capstone.construction.domain.model.utils.InstallationFormId;
 import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
 import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRepository;
 import com.capstone.construction.infrastructure.utils.Message;
@@ -138,7 +139,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   @Transactional(rollbackFor = Exception.class)
   public void approveAndAssignInstallationForm(@NonNull ApproveRequest request) {
     log.info("Approving and assigning installation form with number: {}", request.formNumber());
-    var order = ifRepo.findById_FormCodeAndId_FormNumber(request.formCode(), request.formNumber())
+    var order = ifRepo.findById(new InstallationFormId(request.formCode(), request.formNumber()))
       .orElseThrow(() -> new IllegalArgumentException(Message.PT_36));
 
     if (request.status()) {
@@ -163,7 +164,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   @Override
   public InstallationFormListResponse getByFormCodeAndFormNumber(String formCode, String formNumber) {
     log.info("Fetching installation form with form number: {}", formNumber);
-    var result = ifRepo.findById_FormCodeAndId_FormNumber(formCode, formNumber)
+    var result = ifRepo.findById(new InstallationFormId(formCode, formNumber))
       .orElseThrow(() -> new IllegalArgumentException(Message.PT_36));
     return mapToResponse(result);
   }
@@ -176,7 +177,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
 
   @Override
   public boolean isInstallationFormExisting(String formNumber, String formCode) {
-    var status = ifRepo.existsById_FormNumberOrId_FormCode(formNumber, formCode);
+    var status = ifRepo.existsById_FormNumberAndId_FormCode(formNumber, formCode);
     log.info("Installation form with form number: {} and form code {} is exist: {}", formNumber, formCode, status);
     return status;
   }
@@ -227,7 +228,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
 
   private boolean checkMeterExisting(String id) {
     log.info("Verifying existence of water meter: {}", id);
-    var response = owmSrv.isMeterExisting(id);
+    var response = owmSrv.isOverallMeterExisting(id);
     boolean exists = Boolean.parseBoolean(response.data().toString());
     if (!exists) {
       log.warn("Water meter not found: {}", id);

@@ -13,6 +13,7 @@ import com.capstone.construction.domain.model.utils.InstallationFormId;
 import com.capstone.construction.infrastructure.persistence.CostEstimateRepository;
 import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
 import com.capstone.construction.infrastructure.service.GcsService;
+import com.capstone.construction.infrastructure.service.OverallWaterMeterService;
 import com.capstone.construction.infrastructure.utils.Message;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   CostEstimateRepository eRepo;
   InstallationFormRepository ifRepo;
   GcsService gcsService;
+  OverallWaterMeterService owmSrv;
   @NonFinal
   Logger log;
 
@@ -44,6 +46,15 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   @Transactional(rollbackFor = Exception.class)
   public CostEstimateResponse createEstimate(@NonNull CreateRequest request) {
     log.info("Creating new cost estimate for customer: {}", request.customerName());
+    var installationForm = ifRepo.findById(new InstallationFormId(request.formNumber(), request.formCode()))
+      .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_60, request.formCode(), request.formNumber())));
+    var overallMeterStatus = owmSrv.isOverallMeterExisting(request.overallWaterMeterId())
+      .data().toString();
+    var meterStatus = owmSrv.isMeterExisting(request.waterMeterSerial())
+      .data().toString();
+    if (Boolean.parseBoolean(overallMeterStatus) || Boolean.parseBoolean(meterStatus)) {
+      throw new IllegalArgumentException("Đồng hồ nước không tồn tại");
+    }
 
     var estimate = CostEstimate.create(builder -> builder
       .customerName(request.customerName())
@@ -60,15 +71,12 @@ public class CostEstimateServiceImpl implements CostEstimateService {
       .designCoefficient(request.designCoefficient())
       .designFee(request.designFee())
       .designImageUrl(request.designImageUrl())
-      .status(request.status())
       .registrationAt(request.registrationAt())
       .createBy(request.createBy())
       .waterMeterSerial(request.waterMeterSerial())
       .overallWaterMeterId(request.overallWaterMeterId())
-      .installationFormId(new InstallationFormId(
-        request.formCode(),
-        request.formNumber()
-      )));
+      .installationFormId(installationForm)
+    );
     if (request.note() != null && !request.note().isBlank()) {
       estimate.setNote(request.note());
     }
@@ -76,10 +84,9 @@ public class CostEstimateServiceImpl implements CostEstimateService {
     var saved = eRepo.save(estimate);
 
     // cap nhat trang thai cua installation form
-    var installationForm = ifRepo.findById_FormCodeAndId_FormNumber(request.formCode(), request.formNumber())
-      .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_60, request.formNumber(), request.formCode())));
     var status = installationForm.getStatus();
     status.setEstimate(ProcessingStatus.PROCESSING);
+    System.out.println(installationForm);
     ifRepo.save(installationForm);
 
     return mapToResponse(saved);
@@ -138,13 +145,20 @@ public class CostEstimateServiceImpl implements CostEstimateService {
       var url = gcsService.upload(request.designImage());
       estimate.setDesignImageUrl(url);
     }
-    if (request.status() != null) {
-      estimate.setStatus(request.status());
-    }
     if (request.waterMeterSerial() != null && !request.waterMeterSerial().isBlank()) {
+      var meterStatus = owmSrv.isMeterExisting(request.waterMeterSerial())
+        .data().toString();
+      if (Boolean.parseBoolean(meterStatus)) {
+        throw new IllegalArgumentException("Đồng hồ nước không tồn tại");
+      }
       estimate.setWaterMeterSerial(request.waterMeterSerial());
     }
     if (request.overallWaterMeterId() != null && !request.overallWaterMeterId().isBlank()) {
+      var overallMeterStatus = owmSrv.isOverallMeterExisting(request.overallWaterMeterId())
+        .data().toString();
+      if (Boolean.parseBoolean(overallMeterStatus)) {
+        throw new IllegalArgumentException("Đồng hồ nước không tồn tại");
+      }
       estimate.setOverallWaterMeterId(request.overallWaterMeterId());
     }
 
@@ -211,11 +225,10 @@ public class CostEstimateServiceImpl implements CostEstimateService {
       estimate.getDesignImageUrl(),
       estimate.getCreatedAt(),
       estimate.getUpdatedAt(),
-      estimate.getStatus(),
       estimate.getRegistrationAt(),
       estimate.getCreateBy(),
       estimate.getWaterMeterSerial(),
       estimate.getOverallWaterMeterId(),
-      estimate.getInstallationFormId());
+      estimate.getInstallationForm().getId());
   }
 }

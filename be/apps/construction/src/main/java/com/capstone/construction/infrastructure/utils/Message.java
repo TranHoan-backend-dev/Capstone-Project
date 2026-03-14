@@ -59,9 +59,10 @@ public final class Message {
   public static final String PT_56 = "Không tìm thấy xã/phường";
   public static final String PT_57 = "Tên chi nhánh cấp nước đã tồn tại";
   public static final String PT_58 = "Không tìm thấy đồng hồ tổng";
-  public static final String PT_59 = "Đơn lắp đặt mới với số đơn %s và mã đơn %s không tồn tại";
+  public static final String PT_59 = "Số seri đồng hồ không được để trống";
   public static final String PT_60 = "Đơn lắp đặt với số đơn %s và mã đơn %s không tồn tại";
   public static final String PT_61 = "Dự toán với id %s không tồn tại";
   public static final String PT_62 = "Thôn/Làng với id %s không tìm thấy";
   public static final String PT_63 = "Thôn/Làng với tên %s đã tồn tại";
+  public static final String PT_64 = "Id đồng hồ tổng không được để trống";
 }

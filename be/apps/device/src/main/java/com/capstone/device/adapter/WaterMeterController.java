@@ -103,9 +103,19 @@ public class WaterMeterController {
   @GetMapping("/overall/{id}/exists")
   public ResponseEntity<WrapperApiResponse> checkOverallWaterMeterExisting(
     @PathVariable @Parameter(description = "") String id) {
-    log.info("REST request to check existence of water meter: {}", id);
+    log.info("REST request to check existence of overall water meter: {}", id);
     var response = waterMeterService.isOverallWaterMeterExisting(id);
     log.info("Meter is existed? {}", response);
-    return Utils.returnOkResponse("Kiểm tra tồn tại đồng hồ nước thành công", response);
+    return Utils.returnOkResponse("Kiểm tra sự tồn tại của đồng hồ nước thành công", response);
+  }
+
+  @Operation(summary = "", description = "")
+  @GetMapping("/{id}/exists")
+  public ResponseEntity<WrapperApiResponse> checkWaterMeterExisting(
+    @PathVariable @Parameter(description = "") String id) {
+    log.info("REST request to check existence of water meter: {}", id);
+    var response = waterMeterService.isWaterMeterExisting(id);
+    log.info("Meter is existed? {}", response);
+    return Utils.returnOkResponse("Kiểm tra sự tồn tại của đồng hồ nước thành công", response);
   }
 }
