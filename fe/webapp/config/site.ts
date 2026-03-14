@@ -22,6 +22,11 @@ export const siteConfig = {
           href: "/departments",
         },
         {
+          key: "employees",
+          label: "Quản lý Nhân viên",
+          href: "/employees",
+        },
+        {
           key: "roads",
           label: "Quản lý Đường phố",
           href: "/roads",

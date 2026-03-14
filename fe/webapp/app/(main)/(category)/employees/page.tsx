@@ -2,29 +2,29 @@ import React from "react";
 import { Metadata } from "next";
 
 import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
-import DepartmentPage from "./department-page";
+import EmployeePage from "./employee-page";
 
 export const metadata: Metadata = {
-  title: "Quản lý Phòng ban",
+  title: "Quản lý Nhân viên",
   description:
-    "Thông tin chi tiết danh sách phòng ban của Công ty Cổ Phần Nước Nam Định - NAWACO quản lý",
+    "Thông tin chi tiết danh sách nhân viên của Công ty Cổ Phần Nước Nam Định - NAWACO quản lý",
 };
 
-const Department = () => {
+const Employee = () => {
   return (
     <>
       <CustomBreadcrumb
         items={[
           { label: "Trang chủ", href: "/home" },
-          { label: "Quản lý Phòng ban", isCurrent: true },
+          { label: "Quản lý Nhân viên", isCurrent: true },
         ]}
       />
 
       <div className="space-y-6 pt-2">
-        <DepartmentPage />
+        <EmployeePage />
       </div>
     </>
   );
 };
 
-export default Department;
+export default Employee;
