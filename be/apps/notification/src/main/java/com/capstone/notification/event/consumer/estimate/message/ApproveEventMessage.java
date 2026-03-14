@@ -9,7 +9,8 @@ public class ApproveEventMessage {
     String formCode,
     String formNumber,
     String surveyStaffName,
-    Boolean status
+    Boolean status,
+    String employeeId
   ) {
 
   }
