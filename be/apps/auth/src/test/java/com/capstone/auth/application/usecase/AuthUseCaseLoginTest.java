@@ -6,10 +6,11 @@ import com.capstone.auth.application.business.profile.ProfileService;
 import com.capstone.auth.application.business.users.UserService;
 import com.capstone.auth.application.exception.AccountBlockedException;
 import com.capstone.auth.application.exception.NotExistingException;
-import com.capstone.auth.infrastructure.config.Constant;
+import com.capstone.auth.infrastructure.utils.Message;
 
 import java.time.LocalDate;
 
+import com.capstone.common.utils.SharedMessage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -83,7 +84,7 @@ class AuthUseCaseLoginTest {
       IllegalArgumentException.class,
       () -> authUseCase.login(userId, email, username));
 
-    assertEquals(Constant.PT_01, ex.getMessage());
+    assertEquals(SharedMessage.MES_01, ex.getMessage());
   }
 
   @Test
@@ -102,7 +103,7 @@ class AuthUseCaseLoginTest {
       AccountBlockedException.class,
       () -> authUseCase.login(userId, email, username));
 
-    assertEquals(Constant.SE_07, ex.getMessage());
+    assertEquals(Message.SE_07, ex.getMessage());
   }
 
   @Test
@@ -121,7 +122,7 @@ class AuthUseCaseLoginTest {
       NotExistingException.class,
       () -> authUseCase.login(userId, email, username));
 
-    assertEquals(Constant.SE_05, ex.getMessage());
+    assertEquals(Message.SE_05, ex.getMessage());
   }
 
   @Test
@@ -136,7 +137,7 @@ class AuthUseCaseLoginTest {
       NullPointerException.class,
       () -> authUseCase.login(userId, email, username));
 
-    assertEquals(Constant.SE_04, ex.getMessage());
+    assertEquals(Message.SE_04, ex.getMessage());
   }
 
   @Test
@@ -191,6 +192,6 @@ class AuthUseCaseLoginTest {
       NullPointerException.class,
       () -> authUseCase.login(userId, email, username));
 
-    assertEquals(Constant.SE_06, ex.getMessage());
+    assertEquals(Message.SE_06, ex.getMessage());
   }
 }

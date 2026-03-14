@@ -1,7 +1,8 @@
 package com.capstone.organization.model;
 
 import jakarta.persistence.*;
-import com.capstone.organization.utils.Constant;
+import com.capstone.common.utils.SharedMessage;
+import com.capstone.organization.utils.Message;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.jspecify.annotations.NonNull;
@@ -34,22 +35,22 @@ public class BusinessPage {
   String updator;
 
   public void setActivate(Boolean activate) {
-    Objects.requireNonNull(activate, Constant.ORG_01);
+    Objects.requireNonNull(activate, Message.ORG_01);
     this.activate = activate;
   }
 
   public void setCreator(String creator) {
-    requireNonNullAndNotEmpty(creator, Constant.ORG_02);
+    requireNonNullAndNotEmpty(creator, Message.ORG_02);
     this.creator = creator;
   }
 
   public void setUpdator(String updator) {
-    requireNonNullAndNotEmpty(updator, Constant.ORG_03);
+    requireNonNullAndNotEmpty(updator, SharedMessage.MES_09);
     this.updator = updator;
   }
 
   public void setName(String name) {
-    requireNonNullAndNotEmpty(name, Constant.ORG_04);
+    requireNonNullAndNotEmpty(name, SharedMessage.MES_05);
     this.name = name;
   }
 

@@ -42,3 +42,64 @@ GET {{uri}}?page=0&size=15&filter=param 15
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
 Accept: application/json
+
+### update parameter - Happy Path
+@param_id = 00000000-0000-0000-0000-100000000015
+PUT {{uri}}/{{param_id}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "VAT",
+  "value": 0.08,
+  "updatorId": "6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20"
+}
+
+### update parameter - Not Found (Error 404)
+PUT {{uri}}/invalid-id
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "VAT",
+  "value": 0.08,
+  "updatorId": "6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20"
+}
+
+### update parameter - Invalid Data (Error 400)
+PUT {{uri}}/{{param_id}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "",
+  "value": -1,
+  "updatorId": "6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20"
+}
+
+### update parameter - Invalid Data (Error 400)
+PUT {{uri}}/{{param_id}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20",
+  "value": -1,
+  "updatorId": ""
+}
+
+### update parameter - Employee not found
+PUT {{uri}}/{{param_id}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "VAT",
+  "value": 0.08,
+  "updatorId": "6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb21"
+}

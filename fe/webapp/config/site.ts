@@ -11,6 +11,24 @@ export const siteConfig = {
       href: "/home",
     },
 
+    // Danh mục
+    {
+      key: "category",
+      label: "Danh mục",
+      items: [
+        {
+          key: "departments",
+          label: "Quản lý Phòng ban",
+          href: "/departments",
+        },
+        {
+          key: "roads",
+          label: "Quản lý Đường phố",
+          href: "/roads",
+        },
+      ],
+    },
+
     // Thiết bị
     {
       key: "device",
@@ -153,6 +171,11 @@ export const siteConfig = {
           key: "laterals",
           label: "Quản lý Nhánh tổng",
           href: "/laterals",
+        },
+        {
+          key: "roadmaps",
+          label: "Quản lý Lộ trình ghi",
+          href: "/roadmaps",
         },
         {
           key: "settlement-lookup",

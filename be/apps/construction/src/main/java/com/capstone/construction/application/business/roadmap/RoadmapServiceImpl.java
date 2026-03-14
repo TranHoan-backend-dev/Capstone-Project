@@ -9,7 +9,7 @@ import com.capstone.construction.infrastructure.persistence.RoadmapRepository;
 import com.capstone.construction.infrastructure.persistence.LateralRepository;
 import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRepository;
 import com.capstone.construction.application.exception.ExistingItemException;
-import com.capstone.construction.infrastructure.config.Constant;
+import com.capstone.construction.infrastructure.utils.Message;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -37,18 +37,18 @@ public class RoadmapServiceImpl implements RoadmapService {
   @Transactional(rollbackFor = Exception.class)
   public RoadmapResponse createRoadmap(@NonNull RoadmapRequest request) {
     log.info("Creating new roadmap with name: {}", request.name());
-    Objects.requireNonNull(request.name(), Constant.PT_73);
+    Objects.requireNonNull(request.name(), Message.PT_48);
     if (roadmapRepository.existsByNameEqualsIgnoreCase(request.name())) {
       throw new ExistingItemException("Roadmap with name " + request.name() + " already exists");
     }
-    Objects.requireNonNull(request.lateralId(), Constant.PT_74);
-    Objects.requireNonNull(request.networkId(), Constant.PT_59);
+    Objects.requireNonNull(request.lateralId(), Message.PT_49);
+    Objects.requireNonNull(request.networkId(), Message.PT_34);
 
     var lateral = lateralRepository.findById(request.lateralId())
-      .orElseThrow(() -> new IllegalArgumentException(Constant.SE_02));
+      .orElseThrow(() -> new IllegalArgumentException(Message.SE_02));
 
     var network = networkRepository.findById(request.networkId())
-      .orElseThrow(() -> new IllegalArgumentException(Constant.SE_03));
+      .orElseThrow(() -> new IllegalArgumentException(Message.SE_03));
 
     // TODO: kiểm tra quy tắc định mã lộ trình ghi
     var roadmap = Roadmap.create(builder -> builder
@@ -73,12 +73,12 @@ public class RoadmapServiceImpl implements RoadmapService {
 
     if (request.lateralId() != null && !request.lateralId().isBlank()) {
       var lateral = lateralRepository.findById(request.lateralId())
-        .orElseThrow(() -> new IllegalArgumentException(Constant.SE_02));
+        .orElseThrow(() -> new IllegalArgumentException(Message.SE_02));
       roadmap.setLateral(lateral);
     }
     if (request.networkId() != null && !request.networkId().isBlank()) {
       var network = networkRepository.findById(request.networkId())
-        .orElseThrow(() -> new IllegalArgumentException(Constant.SE_03));
+        .orElseThrow(() -> new IllegalArgumentException(Message.SE_03));
       roadmap.setNetwork(network);
     }
     if (request.name() != null && !request.name().isBlank()) {
@@ -107,10 +107,15 @@ public class RoadmapServiceImpl implements RoadmapService {
       .orElseThrow(() -> new IllegalArgumentException("Roadmap not found with id: " + id));
   }
 
-  @Override
   public PageResponse<RoadmapResponse> getAllRoadmaps(Pageable pageable) {
-    log.info("Fetching all roadmaps with pageable: {}", pageable);
-    var page = roadmapRepository.findAll(pageable);
+    log.info("Fetching all roadmaps with pageable (no filters): {}", pageable);
+    return getAllRoadmaps(pageable, null, null, null);
+  }
+
+  @Override
+  public PageResponse<RoadmapResponse> getAllRoadmaps(Pageable pageable, String keyword, String lateralId, String networkId) {
+    log.info("Fetching all roadmaps with filters - pageable: {}, keyword: {}, lateralId: {}, networkId: {}", pageable, keyword, lateralId, networkId);
+    var page = roadmapRepository.searchRoadmaps(keyword, lateralId, networkId, pageable);
     return PageResponse.fromPage(page, this::mapToResponse);
   }
 

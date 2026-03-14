@@ -14,5 +14,5 @@ public interface RoadmapService {
 
   RoadmapResponse getRoadmapById(String id);
 
-  PageResponse<RoadmapResponse> getAllRoadmaps(Pageable pageable);
+  PageResponse<RoadmapResponse> getAllRoadmaps(Pageable pageable, String keyword, String lateralId, String networkId);
 }

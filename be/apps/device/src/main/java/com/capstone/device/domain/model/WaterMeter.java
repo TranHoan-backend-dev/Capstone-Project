@@ -1,6 +1,6 @@
 package com.capstone.device.domain.model;
 
-import com.capstone.device.infrastructure.config.Constant;
+import com.capstone.device.infrastructure.util.Message;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -34,18 +34,18 @@ public class WaterMeter {
   WaterMeterType type;
 
   public void setInstallationDate(LocalDate installationDate) {
-    this.installationDate = Objects.requireNonNull(installationDate, Constant.ENT_18);
+    this.installationDate = Objects.requireNonNull(installationDate, Message.ENT_18);
   }
 
   public void setSize(Integer size) {
     if (size == null || size <= 0) {
-      throw new IllegalArgumentException(Constant.ENT_11);
+      throw new IllegalArgumentException(Message.ENT_11);
     }
     this.size = size;
   }
 
   public void setType(WaterMeterType type) {
-    Objects.requireNonNull(type, Constant.ENT_13);
+    Objects.requireNonNull(type, Message.ENT_13);
     this.type = type;
   }
 

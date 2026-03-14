@@ -1,5 +1,6 @@
 package com.capstone.construction.application.business.estimate;
 
+import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.construction.application.dto.request.estimate.CostEstimateRequest;
 import com.capstone.construction.application.dto.response.estimate.CostEstimateResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
@@ -10,9 +11,7 @@ public interface CostEstimateService {
 
   CostEstimateResponse updateEstimate(String id, CostEstimateRequest request);
 
-  void deleteEstimate(String id);
-
   CostEstimateResponse getEstimateById(String id);
 
-  PageResponse<CostEstimateResponse> getAllEstimates(Pageable pageable);
+  PageResponse<CostEstimateResponse> getAllEstimates(Pageable pageable, BaseFilterRequest request);
 }

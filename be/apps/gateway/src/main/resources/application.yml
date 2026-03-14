@@ -55,7 +55,7 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:9000/eureka
+      defaultZone: http://${EUREKA_HOST}:9000/eureka
     registry-fetch-interval-seconds: 5
     instance-info-replication-interval-seconds: 10
   instance:

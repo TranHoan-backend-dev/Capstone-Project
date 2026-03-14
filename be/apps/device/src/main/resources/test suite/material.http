@@ -150,3 +150,59 @@ Authorization: Bearer {{access_token}}
 ### Case 2: Xóa vật tư thất bại - ID không tồn tại
 DELETE {{uri}}/invalid-id
 Authorization: Bearer {{access_token}}
+
+### Material Group
+
+### Case 1: Tạo nhóm vật tư mới thành công
+POST {{uri}}/group
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "name": "Nhóm vật tư mới"
+}
+
+### Case 2: Tạo nhóm vật tư thất bại - Tên trống
+POST {{uri}}/group
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "name": ""
+}
+
+### Case 3: Tạo nhóm vật tư thất bại - Tên không hợp lệ (Pattern)
+POST {{uri}}/group
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "name": "@#$%^&*"
+}
+
+### Case 4: Cập nhật nhóm vật tư thành công
+@groupId = 00000000-0000-0000-0000-200000000001
+PUT {{uri}}/group/{{groupId}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "name": "Nhóm vật tư (Updated)"
+}
+
+### Case 5: Cập nhật nhóm vật tư thất bại - ID không tồn tại
+PUT {{uri}}/group/invalid-id
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "name": "Test update not found"
+}
+
+### Case 6: Xóa nhóm vật tư thành công
+DELETE {{uri}}/group/{{groupId}}
+Authorization: Bearer {{access_token}}
+
+### Case 7: Xóa nhóm vật tư thất bại - ID không tồn tại
+DELETE {{uri}}/group/invalid-id
+Authorization: Bearer {{access_token}}
