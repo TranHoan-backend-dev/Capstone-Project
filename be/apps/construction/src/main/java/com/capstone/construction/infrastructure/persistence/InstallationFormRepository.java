@@ -30,12 +30,14 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
    * - query -> object dai dien cho query<br/>
    * - cb (CriteriaBuilder) -> tao dieu kien (Predicate)
    *
-   * @param keyword
-   * @param start
-   * @param end
-   * @return
+   * @param keyword tu khoa, tim kiem theo cac truong address, customerName, citizenIdentificationNumber, citizenIdentificationProvideLocation,
+   *               phoneNumber, taxCode, bankAccountNumber, bankAccountProviderLocation, usageTarget, householdRegistrationNumber,
+   *               customerType
+   * @param start thoi gian bat dau loc. Tinh theo createdAt
+   * @param end thoi gian ket thuc loc. Tinh theo createdAt
+   * @return Specification&lt;InstallationForm&gt;
    */
-  static @NonNull Specification<InstallationForm> search(String keyword, LocalDateTime start, LocalDateTime end, ProcessingStatus statusContract, ProcessingStatus statusConstruction) {
+  static @NonNull Specification<InstallationForm> search(String keyword, LocalDateTime start, LocalDateTime end, ProcessingStatus statusEstimate, ProcessingStatus statusConstruction) {
     return (root, query, cb) -> {
       // tao danh sach cac dieu kien
       List<Predicate> predicates = new ArrayList<>();
@@ -77,8 +79,8 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
         predicates.add(cb.between(root.get("createdAt"), start, end));
       }
 
-      if (statusConstruction != null && statusContract != null) {
-        predicates.add(cb.equal(root.get("status").get("contract"), statusContract));
+      if (statusConstruction != null && statusEstimate != null) {
+        predicates.add(cb.equal(root.get("status").get("estimate"), statusEstimate));
         predicates.add(cb.equal(root.get("status").get("construction"), statusConstruction));
       }
 

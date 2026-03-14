@@ -54,7 +54,8 @@ public class CustomerServiceImpl implements CustomerService {
       .passportCode(request.passportCode())
       .connectionPoint(request.connectionPoint())
       .isActive(request.isActive() != null ? request.isActive() : true)
-      .installationFormId(request.installationFormId())
+      .formNumber(request.formNumber())
+      .formCode(request.formCode())
       .waterPriceId(request.waterPriceId())
       .waterMeterId(request.waterMeterId()));
     var saved = customerRepository.save(customer);
@@ -96,7 +97,8 @@ public class CustomerServiceImpl implements CustomerService {
     customer.setConnectionPoint(request.connectionPoint());
     customer.setIsActive(request.isActive());
     customer.setCancelReason(request.cancelReason());
-    customer.setInstallationFormId(request.installationFormId());
+    customer.setFormNumber(request.formNumber());
+    customer.setFormCode(request.formCode());
     customer.setWaterPriceId(request.waterPriceId());
     customer.setWaterMeterId(request.waterMeterId());
 
@@ -167,7 +169,7 @@ public class CustomerServiceImpl implements CustomerService {
       customer.getCancelReason(),
       customer.getCreatedAt(),
       customer.getUpdatedAt(),
-      customer.getInstallationFormId(),
+      customer.getFormNumber(),
       customer.getWaterPriceId(),
       customer.getWaterMeterId());
   }

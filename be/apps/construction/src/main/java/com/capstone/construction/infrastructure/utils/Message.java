@@ -8,7 +8,7 @@ public final class Message {
   public static final String PT_05 = "Định dạng ngày không hợp lệ";
   public static final String PT_06 = "Loại khách hàng không được để trống";
   public static final String PT_07 = "Thôn/làng phải thuộc về một xã nông thôn";
-  public static final String PT_08 = "Mã đơn không được để trống";
+  public static final String PT_08 = "";
   public static final String PT_09 = "Tên xã/phường không được để trống";
   public static final String PT_10 = "Loại xã/phường không được để trống";
   public static final String PT_11 = "Tên thôn/làng không được để trống";
@@ -28,8 +28,8 @@ public final class Message {
   public static final String PT_25 = "URL hình ảnh thiết kế không được để trống";
   public static final String PT_26 = "Người tạo không được để trống";
   public static final String PT_27 = "Id của đồng hồ nước không được để trống";
-  public static final String PT_28 = "Số đơn không được để trống";
-  public static final String PT_29 = "Người đại diện không được để trống";
+  public static final String PT_28 = "";
+  public static final String PT_29 = "";
   public static final String PT_30 = "Ngày cấp chứng minh nhân dân/Căn cước công dân không được để trống";
   public static final String PT_31 = "Mã số thuế không được để trống";
   public static final String PT_32 = "Đối tượng sử dụng không được để trống";

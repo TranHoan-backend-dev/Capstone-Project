@@ -8,6 +8,11 @@ import { CheckApprovalIcon } from "@/config/chip-and-icon";
 import { Card, CardBody } from "@heroui/react";
 import { DepartmentFormProps } from "@/types";
 import { authFetch } from "@/utils/authFetch";
+import {
+  validateMaxLength,
+  validatePhone,
+  validateRequired,
+} from "@/utils/validation";
 
 export const DepartmentForm = ({
   initialData,
@@ -29,18 +34,34 @@ export const DepartmentForm = ({
 
   const handleSubmit = async () => {
     if (submitLoading) return;
+
+    const nameError =
+      validateRequired(name, "Tên phòng ban") ||
+      validateMaxLength(name, 255, "Tên phòng ban");
+
+    if (nameError) {
+      CallToast({
+        title: "Lỗi",
+        message: nameError,
+        color: "danger",
+      });
+      return;
+    }
+
+    const phoneError =
+      validateRequired(phoneNumber, "Số điện thoại") ||
+      validatePhone(phoneNumber);
+
+    if (phoneError) {
+      CallToast({
+        title: "Lỗi",
+        message: phoneError,
+        color: "danger",
+      });
+      return;
+    }
     try {
       setSubmitLoading(true);
-      const phoneRegex = /^0[0-9]{9}$/;
-
-      if (!phoneRegex.test(phoneNumber)) {
-        CallToast({
-          title: "Lỗi",
-          message: "Số điện thoại phải bắt đầu bằng 0 và gồm đúng 10 chữ số",
-          color: "danger",
-        });
-        return;
-      }
       const url = isEdit
         ? `/api/organization/departments/${initialData?.id}`
         : `/api/organization/departments`;
@@ -103,12 +124,14 @@ export const DepartmentForm = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <CustomInput
               label="Tên phòng ban"
+              maxLength={255}
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
             <CustomInput
               label="Số điện thoại"
               value={phoneNumber}
+              maxLength={10}
               onChange={(e) => setPhoneNumber(e.target.value)}
             />
           </div>

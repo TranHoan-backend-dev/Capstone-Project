@@ -93,13 +93,13 @@ public record CreateRequest(
   String overallWaterMeterId,
 
   @Schema(description = "Mã đơn", example = "FORM-01")
-  @NotBlank(message = Message.PT_08)
-  @NotEmpty(message = Message.PT_08)
+  @NotBlank(message = SharedMessage.MES_21)
+  @NotEmpty(message = SharedMessage.MES_21)
   String formCode,
 
   @Schema(description = "Số đơn", example = "0000001")
-  @NotBlank(message = Message.PT_28)
-  @NotEmpty(message = Message.PT_28)
+  @NotBlank(message = SharedMessage.MES_20)
+  @NotEmpty(message = SharedMessage.MES_20)
   String formNumber
 ) {
 }

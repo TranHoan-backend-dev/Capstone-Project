@@ -12,7 +12,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
-import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.springframework.data.domain.Page;
@@ -45,7 +44,8 @@ public class ContractServiceImpl implements ContractService {
     var contract = WaterUsageContract.create(builder -> builder
       .id(request.contractId())
       .customer(customer)
-      .installationFormId(request.installationFormId())
+      .formNumber(request.formNumber())
+      .formCode(request.formCode())
       .representative(request.representatives()));
 
     var saved = contractRepository.save(contract);
@@ -67,7 +67,8 @@ public class ContractServiceImpl implements ContractService {
     }
 
     contract.setContractId(request.contractId());
-    contract.setInstallationFormId(request.installationFormId());
+    contract.setFormCode(request.formCode());
+    contract.setFormNumber(request.formNumber());
     contract.setRepresentative(request.representatives());
 
     var updated = contractRepository.save(contract);
@@ -131,7 +132,7 @@ public class ContractServiceImpl implements ContractService {
       contract.getUpdatedAt(),
       contract.getCustomer().getName(),
       contract.getCustomer().getCustomerId(),
-      contract.getInstallationFormId(),
+      contract.getFormCode(),
       contract.getRepresentative());
   }
 }
