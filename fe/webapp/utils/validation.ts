@@ -25,3 +25,19 @@ export const validatePhone = (phone: string) => {
 
   return null;
 };
+
+export const validateBranchName = (value: string, fieldName: string) => {
+  const requiredError = validateRequired(value, fieldName);
+  if (requiredError) return requiredError;
+
+  const maxError = validateMaxLength(value, 255, fieldName);
+  if (maxError) return maxError;
+
+  const nameRegex = /^[a-zA-ZÀ-ỹ\s()]+$/;
+
+  if (!nameRegex.test(value.trim())) {
+    return `${fieldName} chỉ được chứa chữ cái`;
+  }
+
+  return null;
+};
