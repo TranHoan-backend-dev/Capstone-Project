@@ -1,0 +1,163 @@
+@keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
+@client_secret=t2io8dzbyJ9qdVdR2uoL01L6vBfViILJ
+@baseUrl = http://localhost:9005/api/v1
+@customersUrl = {{baseUrl}}/customers
+
+### 0. Lấy token
+POST {{keycloak}}/token
+Content-Type: application/x-www-form-urlencoded
+Accept: application/json
+
+grant_type = password &
+client_id = cmsn &
+client_secret = {{client_secret}} &
+username = test &
+password = 12345678 &
+scope = openid
+
+> {%
+    client.global.set("access_token", response.body.access_token);
+%}
+
+### 1. Tạo mới khách hàng (Thành công)
+POST {{customersUrl}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "name": "Trần Văn A",
+  "email": "tranvana@example.com",
+  "phoneNumber": "0901234567",
+  "type": "CÁ NHÂN",
+  "isBigCustomer": false,
+  "usageTarget": "DOMESTIC",
+  "numberOfHouseholds": 1,
+  "householdRegistrationNumber": 123456,
+  "protectEnvironmentFee": 1000,
+  "isFree": false,
+  "isSale": false,
+  "m3Sale": "0",
+  "fixRate": "5000",
+  "installationFee": 1500000,
+  "deductionPeriod": "2023-12",
+  "monthlyRent": 20000,
+  "waterMeterType": "CƠ",
+  "citizenIdentificationNumber": "012345678901",
+  "citizenIdentificationProvideAt": "Cục CSQLHC về TTXH",
+  "paymentMethod": "TIỀN MẶT",
+  "bankAccountNumber": "123456789",
+  "bankAccountProviderLocation": "Vietcombank",
+  "bankAccountName": "TRAN VAN A",
+  "budgetRelationshipCode": "BRC001",
+  "passportCode": "P001",
+  "connectionPoint": "CP001",
+  "isActive": true,
+  "installationFormId": "IF_TEST_001",
+  "waterPriceId": "WP_TEST_001",
+  "waterMeterId": "WM_TEST_001"
+}
+
+> {%
+    client.global.set("customer_id", response.body.data.customerId);
+%}
+
+### 2. Tạo mới khách hàng (Lỗi - Thiếu trường bắt buộc hoặc sai định dạng)
+POST {{customersUrl}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "name": "",
+  "email": "email-sai-dinh-dang",
+  "phoneNumber": "123",
+  "type": "INDIVIDUAL"
+}
+
+### 3. Cập nhật khách hàng (Thành công)
+PUT {{customersUrl}}/{{customer_id}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "name": "Trần Văn A - Cập nhật",
+  "email": "tranvana.updated@example.com",
+  "phoneNumber": "0987654321",
+  "type": "DOANH NGHIỆP",
+  "isBigCustomer": true,
+  "usageTarget": "INDUSTRIAL",
+  "numberOfHouseholds": 2,
+  "householdRegistrationNumber": 654321,
+  "protectEnvironmentFee": 2000,
+  "isFree": false,
+  "isSale": true,
+  "m3Sale": "5",
+  "fixRate": "10000",
+  "installationFee": 2000000,
+  "deductionPeriod": "2024-01",
+  "monthlyRent": 30000,
+  "waterMeterType": "ĐIỆN TỬ",
+  "citizenIdentificationNumber": "012345678901",
+  "citizenIdentificationProvideAt": "Cục CSQLHC về TTXH",
+  "paymentMethod": "CHUYỂN KHOẢN",
+  "bankAccountNumber": "987654321",
+  "bankAccountProviderLocation": "Agribank",
+  "bankAccountName": "TRAN VAN A UPDATED",
+  "budgetRelationshipCode": "BRC002",
+  "passportCode": "P002",
+  "connectionPoint": "CP002",
+  "isActive": true,
+  "installationFormId": "IF_TEST_001",
+  "waterPriceId": "WP_TEST_001",
+  "waterMeterId": "WM_TEST_001"
+}
+
+### 4. Cập nhật khách hàng (Lỗi - Không tìm thấy ID)
+PUT {{customersUrl}}/ID_KHONG_TON_TAI
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "name": "Khách hàng ảo",
+  "email": "ao@example.com",
+  "phoneNumber": "0901234567",
+  "type": "INDIVIDUAL",
+  "isBigCustomer": false,
+  "usageTarget": "DOMESTIC",
+  "numberOfHouseholds": 1,
+  "householdRegistrationNumber": 123456,
+  "protectEnvironmentFee": 1000,
+  "waterMeterType": "CƠ",
+  "citizenIdentificationNumber": "999999999999",
+  "citizenIdentificationProvideAt": "Hà Nội",
+  "paymentMethod": "CASH",
+  "bankAccountNumber": "123",
+  "bankAccountProviderLocation": "Bank",
+  "bankAccountName": "AO",
+  "installationFormId": "IF001",
+  "waterPriceId": "WP001",
+  "waterMeterId": "WM001"
+}
+
+### 5. Lấy thông tin khách hàng theo ID (Thành công)
+GET {{customersUrl}}/{{customer_id}}
+Authorization: Bearer {{access_token}}
+
+### 6. Lấy thông tin khách hàng theo ID (Lỗi - Không tìm thấy)
+GET {{customersUrl}}/ID_KHONG_TON_TAI
+Authorization: Bearer {{access_token}}
+
+### 7. Lấy danh sách khách hàng (Phân trang)
+GET {{customersUrl}}?page=0&size=10&sort=name,asc
+Authorization: Bearer {{access_token}}
+
+### 8. Kiểm tra xem giá nước có đang được áp dụng cho khách hàng nào không
+GET {{customersUrl}}/water-price/WP_TEST_001
+Authorization: Bearer {{access_token}}
+
+### 9. Xóa khách hàng (Thành công)
+DELETE {{customersUrl}}/{{customer_id}}
+Authorization: Bearer {{access_token}}
+
+### 10. Xóa khách hàng (Lỗi - Không tìm thấy)
+DELETE {{customersUrl}}/ID_KHONG_TON_TAI
+Authorization: Bearer {{access_token}}

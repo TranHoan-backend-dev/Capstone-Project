@@ -35,5 +35,15 @@
             <data android:scheme="com.capstone"/>
         </intent-filter>
     </activity>
+
+    <!-- Notification Service -->
+    <service
+        android:name=".infrastructure.notification.AppNotificationService"
+        android:exported="false">
+        <intent-filter>
+            <action android:name="com.google.firebase.MESSAGING_EVENT" />
+        </intent-filter>
+    </service>
+
   </application>
 </manifest>

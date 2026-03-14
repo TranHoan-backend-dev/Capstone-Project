@@ -1,15 +1,14 @@
 package com.capstone.data.source.remote
 
+import com.capstone.data.source.request.ChangePasswordRequest
+import com.capstone.data.source.request.UpdateProfileRequest
 import com.capstone.data.source.request.ResetPasswordRequest
 import com.capstone.data.source.request.SendOtpRequest
 import com.capstone.data.source.request.VerifyOtpRequest
 import com.capstone.data.source.response.UserProfileResponse
 import com.capstone.data.source.response.WrapperApiResponse
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.Headers
-import retrofit2.http.POST
+import okhttp3.MultipartBody
+import retrofit2.http.*
 
 interface AuthApi {
     /** Đăng nhập hệ thống và lấy thông tin người dùng */
@@ -39,6 +38,25 @@ interface AuthApi {
     suspend fun resetPassword(
         @Body request: ResetPasswordRequest
     ): WrapperApiResponse<Unit?>
+
+    /** Thay đổi mật khẩu khi đã đăng nhập */
+    @POST("/auth/change-password")
+    suspend fun changePassword(
+        @Body request: ChangePasswordRequest
+    ): WrapperApiResponse<Unit?>
+
+    /** Cập nhật thông tin profile */
+    @PATCH("/me")
+    suspend fun updateProfile(
+        @Body request: UpdateProfileRequest
+    ): WrapperApiResponse<UserProfileResponse>
+
+    /** Cập nhật ảnh đại diện */
+    @Multipart
+    @PATCH("/me")
+    suspend fun updateAvatar(
+        @Part avatar: MultipartBody.Part
+    ): WrapperApiResponse<UserProfileResponse>
 
     /** Lấy thông tin cá nhân của người dùng hiện tại */
     @GET("/auth/me")

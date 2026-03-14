@@ -5,7 +5,8 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.jspecify.annotations.NonNull;
 
-import com.capstone.customer.utils.Constant;
+import com.capstone.common.utils.SharedMessage;
+import com.capstone.customer.utils.Message;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -33,27 +34,27 @@ public class Bill {
   String exportAddress;
 
   public void setBillId(String value) {
-    requireNonNullAndNotEmpty(value, Constant.ENT_06);
+    requireNonNullAndNotEmpty(value, Message.ENT_02);
     this.billId = value;
   }
 
   public void setBillName(String name) {
-    requireNonNullAndNotEmpty(name, Constant.ENT_01);
+    requireNonNullAndNotEmpty(name, SharedMessage.MES_05);
     this.billName = name;
   }
 
   public void setNote(String note) {
-    requireNonNullAndNotEmpty(note, Constant.ENT_10);
+    requireNonNullAndNotEmpty(note, SharedMessage.MES_08);
     this.note = note;
   }
 
   public void setExportAddress(String exportAddress) {
-    requireNonNullAndNotEmpty(exportAddress, Constant.ENT_03);
+    requireNonNullAndNotEmpty(exportAddress, Message.ENT_01);
     this.exportAddress = exportAddress;
   }
 
   public void setCustomer(Customer customer) {
-    Objects.requireNonNull(customer, Constant.ENT_11);
+    Objects.requireNonNull(customer, Message.ENT_04);
     this.customer = customer;
   }
 
@@ -99,13 +100,13 @@ public class Bill {
     }
 
     public Bill build() {
-      Objects.requireNonNull(bill.billName, Constant.ENT_01);
+      Objects.requireNonNull(bill.billName, SharedMessage.MES_05);
       if (bill.billName.trim().isEmpty()) {
-        throw new IllegalArgumentException(Constant.ENT_01);
+        throw new IllegalArgumentException(SharedMessage.MES_05);
       }
-      Objects.requireNonNull(bill.exportAddress, Constant.ENT_03);
+      Objects.requireNonNull(bill.exportAddress, Message.ENT_01);
       if (bill.exportAddress.trim().isEmpty()) {
-        throw new IllegalArgumentException(Constant.ENT_03);
+        throw new IllegalArgumentException(Message.ENT_01);
       }
       return bill;
     }

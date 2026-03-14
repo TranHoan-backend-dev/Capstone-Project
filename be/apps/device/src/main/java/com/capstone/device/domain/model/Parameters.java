@@ -19,15 +19,19 @@ public class Parameters {
   @GeneratedValue(strategy = GenerationType.UUID)
   String paramId;
 
+  // <editor-fold desc="setter">
+  @Setter
   @Column(nullable = false, unique = true)
   String name;
 
+  @Setter
   @Column(nullable = false)
   BigDecimal value;
 
   @Column(nullable = false)
   String creator;
 
+  @Setter
   @Column(nullable = false)
   String updator;
 
@@ -47,10 +51,4 @@ public class Parameters {
   void onUpdate() {
     this.updatedAt = LocalDateTime.now();
   }
-
-  // <editor-fold desc="setter">
-  // </editor-fold>
-
-  // <editor-fold desc="builder">
-  // </editor-fold>
 }

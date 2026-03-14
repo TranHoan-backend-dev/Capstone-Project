@@ -1,5 +1,8 @@
 package com.capstone.common.config;
 
+import com.capstone.common.config.keycloak.AudienceValidator;
+import com.capstone.common.config.keycloak.AuthorizedPartyValidator;
+import com.capstone.common.config.keycloak.KeycloakProperties;
 import jakarta.ws.rs.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

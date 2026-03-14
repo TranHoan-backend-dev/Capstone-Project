@@ -49,23 +49,3 @@ springdoc:
   swagger-ui:
     enabled: true
     path: /swagger-ui/index.html
-#spring:
-#  datasource:
-#    driver-class-name: org.postgresql.Driver
-#    url:
-#    username:
-#    password:
-#  security:
-#    oauth2:
-#      resourceserver:
-#        jwt:
-#          issuer-uri: ${keycloak.issuer-uri}
-#keycloak:
-#  server-url:
-#  issuer-uri: ${keycloak.server-url}/realms/${keycloak.realms}
-#  aud:
-#  realms:
-#  token-uri: ${keycloak.server-url}/realms/${keycloak.realms}/protocol/openid-connect/token
-#  client-id:
-#  client-secret:
-#  scope:

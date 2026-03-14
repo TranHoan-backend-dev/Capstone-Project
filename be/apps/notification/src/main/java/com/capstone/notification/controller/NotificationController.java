@@ -43,7 +43,7 @@ public class NotificationController {
     log.info("Create notification request comes to endpoint: {}", request);
     var response = notificationService.createNotification(request);
 
-    return Utils.returnCreatedResponse("Create notification successfully");
+    return Utils.returnCreatedResponse("Tạo thông báo thành công");
   }
 
   @GetMapping("/notifications")
@@ -52,11 +52,11 @@ public class NotificationController {
     @RequestParam(defaultValue = "20") @Positive int size
   ) {
     if (notificationIds.size() != size) {
-      return Utils.returnBadRequestResponse("Notification ids size must match requested size", null);
+      return Utils.returnBadRequestResponse("Số lượng ID thông báo phải khớp với kích thước yêu cầu", null);
     }
 
     var response = notificationService.getNotificationsByIds(notificationIds, size);
     log.info("Get notifications successfully: {}", response);
-    return Utils.returnOkResponse("Get notifications successfully", response);
+    return Utils.returnOkResponse("Lấy danh sách thông báo thành công", response);
   }
 }

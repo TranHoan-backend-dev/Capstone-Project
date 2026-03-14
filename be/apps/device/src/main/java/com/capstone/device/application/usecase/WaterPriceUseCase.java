@@ -7,7 +7,7 @@ import com.capstone.device.application.dto.response.WaterPriceResponse;
 import com.capstone.device.application.event.producer.MessageProducer;
 import com.capstone.device.application.event.producer.waterprices.DeleteEvent;
 import com.capstone.device.application.event.producer.waterprices.UpdateEvent;
-import com.capstone.device.infrastructure.util.Constant;
+import com.capstone.device.infrastructure.util.Message;
 import com.capstone.device.infrastructure.service.CustomerService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -61,7 +61,7 @@ public class WaterPriceUseCase {
   public void deleteWaterPrice(@NonNull String id) {
     var status = customerService.checkWhetherCustomersAreApplied(id).data().toString();
     if (Boolean.parseBoolean(status)) {
-      throw new IllegalArgumentException(Constant.ENT_48);
+      throw new IllegalArgumentException(Message.ENT_48);
     }
 
     var old = waterPriceService.getWaterPriceById(id);

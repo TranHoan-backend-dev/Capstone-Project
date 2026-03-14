@@ -18,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -57,7 +56,7 @@ public class RoadController {
     log.info("REST request to create road: {}", request.name());
     var response = roadUseCase.createRoad(request);
     log.info("Created road: {}", response);
-    return Utils.returnCreatedResponse("Road created successfully");
+    return Utils.returnCreatedResponse("Tạo đường phố thành công");
   }
 
   @PutMapping("/{id}")
@@ -85,7 +84,7 @@ public class RoadController {
     @RequestBody @Valid RoadRequest request) {
     log.info("REST request to update road: {}", id);
     var response = roadUseCase.updateRoad(id, request);
-    return Utils.returnOkResponse("Road updated successfully", response);
+    return Utils.returnOkResponse("Cập nhật đường phố thành công", response);
   }
 
   @DeleteMapping("/{id}")
@@ -109,7 +108,7 @@ public class RoadController {
     @PathVariable @Parameter(description = "ID của đường phố cần xóa", required = true) String id) {
     log.info("REST request to delete road: {}", id);
     roadUseCase.deleteRoad(id);
-    return Utils.returnOkResponse("Road deleted successfully", null);
+    return Utils.returnOkResponse("Xóa đường phố thành công", null);
   }
 
   @GetMapping("/{id}")
@@ -129,7 +128,7 @@ public class RoadController {
     @PathVariable @Parameter(description = "ID của đường phố cần lấy thông tin", required = true) String id) {
     log.info("REST request to get road: {}", id);
     var response = roadUseCase.getRoadById(id);
-    return Utils.returnOkResponse("Road retrieved successfully", response);
+    return Utils.returnOkResponse("Lấy thông tin đường phố thành công", response);
   }
 
   @GetMapping
@@ -152,6 +151,6 @@ public class RoadController {
     @RequestParam(required = false) String keyword) {
     log.info("REST request to get all roads with keyword: {}", keyword);
     var response = roadUseCase.getAllRoads(pageable, keyword);
-    return Utils.returnOkResponse("Roads retrieved successfully", response);
+    return Utils.returnOkResponse("Lấy danh sách đường phố thành công", response);
   }
 }

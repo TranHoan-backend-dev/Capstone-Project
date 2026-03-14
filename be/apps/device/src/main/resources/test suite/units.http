@@ -1,6 +1,7 @@
 @uri = http://localhost:9006/api/v1/units
 @keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
 @client_secret=
+@unit_id = 9d5c3045-71cb-41b2-aed8-3723c64b5f2c
 
 ### get token
 POST {{keycloak}}/token
@@ -25,14 +26,96 @@ Authorization: Bearer {{access_token}}
 Content-Type: application/json
 Accept: application/json
 
-### get all, pageabale
+### get all, pageable
 GET {{uri}}?page=0&size=5
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
 Accept: application/json
 
-### get all, pageabale and filter
+### get all, pageable and filter
 GET {{uri}}?page=0&size=5&filter=30
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+### create unit - Happy Path
+# @name createUnit
+POST {{uri}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Mét khối"
+}
+
+### create unit - Duplicate Name (Error 400)
+POST {{uri}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Mét khối"
+}
+
+### create unit - Empty Name (Error 400)
+POST {{uri}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": ""
+}
+
+### update unit - Happy Path
+PUT {{uri}}/{{unit_id}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Mét khối (m3)"
+}
+
+### update unit - Not Found (Error 404)
+PUT {{uri}}/invalid-id
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "New Name"
+}
+
+### update unit - Duplicate Name (Error 400)
+# Giả sử đã có đơn vị tên "Cái"
+PUT {{uri}}/{{unit_id}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Cái"
+}
+
+### delete unit - Happy Path
+DELETE {{uri}}/{{unit_id}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+### delete unit - Not Found (Error 404)
+DELETE {{uri}}/invalid-id
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+Accept: application/json
+
+### delete unit - Being Used (Error 400)
+# Giả sử unit_id_used là ID của đơn vị đang được vật tư sử dụng
+@unit_id_used = some-id-being-used
+DELETE {{uri}}/{{unit_id_used}}
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
 Accept: application/json

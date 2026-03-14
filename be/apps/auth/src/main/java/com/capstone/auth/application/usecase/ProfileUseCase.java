@@ -8,11 +8,12 @@ import com.capstone.auth.application.dto.request.UpdateProfileRequest;
 import com.capstone.auth.application.dto.response.UserProfileResponse;
 import com.capstone.auth.application.exception.InternalServerError;
 import com.capstone.auth.domain.model.Profile;
-import com.capstone.auth.infrastructure.utils.Constant;
+import com.capstone.auth.infrastructure.utils.Message;
 import com.capstone.auth.infrastructure.service.GcsService;
 import com.capstone.auth.infrastructure.utils.AuthUtils;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.utils.SharedConstant;
+import com.capstone.common.utils.SharedMessage;
 import com.capstone.common.utils.Utils;
 import jakarta.ws.rs.BadRequestException;
 import lombok.AccessLevel;
@@ -92,7 +93,7 @@ public class ProfileUseCase {
       !request.phoneNumber().isBlank() &&
       !request.phoneNumber().equalsIgnoreCase(profile.phoneNumber())) {
       if (!request.phoneNumber().matches(SharedConstant.PHONE_PATTERN)) {
-        throw new IllegalArgumentException(Constant.PT_14);
+        throw new IllegalArgumentException(SharedMessage.MES_04);
       }
       if (!request.phoneNumber().equals(profile.phoneNumber())) {
         newProfile.setPhoneNumber(request.phoneNumber());
@@ -107,7 +108,7 @@ public class ProfileUseCase {
       !request.birthdate().isEmpty() &&
       !request.birthdate().isBlank()) {
       if (Utils.isLocalDate(request.birthdate(), DateTimeFormatter.ISO_LOCAL_DATE)) {
-        throw new IllegalArgumentException(Constant.PT_25);
+        throw new IllegalArgumentException(Message.PT_15);
       }
       newProfile.setBirthday(
         LocalDate.parse(request.birthdate(), DateTimeFormatter.ISO_LOCAL_DATE));
@@ -144,7 +145,7 @@ public class ProfileUseCase {
     var user = uSrv.getUserById(id);
 
     if (user.isLocked()) {
-      throw new DisabledException(Constant.SE_07);
+      throw new DisabledException(Message.SE_07);
     }
     return user;
   }
