@@ -38,14 +38,13 @@ class CustomerServiceImplTest {
   private Customer customer;
   private CustomerRequest customerRequest;
   private Pageable pageable;
-  private LocalDateTime now;
 
   @BeforeEach
   void setUp() {
     pageable = PageRequest.of(0, 10);
-    now = LocalDateTime.now();
+    var now = LocalDateTime.now();
     customer = mock(Customer.class);
-    
+
     // Mocking common get methods used in mapToResponse
     lenient().when(customer.getCustomerId()).thenReturn("CUST-123");
     lenient().when(customer.getName()).thenReturn("Trần Văn A");
@@ -77,7 +76,7 @@ class CustomerServiceImplTest {
     lenient().when(customer.getIsActive()).thenReturn(true);
     lenient().when(customer.getCreatedAt()).thenReturn(now);
     lenient().when(customer.getUpdatedAt()).thenReturn(now);
-    lenient().when(customer.getInstallationFormId()).thenReturn("IF001");
+    lenient().when(customer.getFormNumber()).thenReturn("IF001");
     lenient().when(customer.getWaterPriceId()).thenReturn("WP001");
     lenient().when(customer.getWaterMeterId()).thenReturn("WM001");
 
@@ -86,7 +85,7 @@ class CustomerServiceImplTest {
       UsageTarget.DOMESTIC, 1, 123456, 1000, false, false, "0", "5000",
       1500000, "2023-12", 20000, "CƠ", "012345678901", "Cục CSQLHC về TTXH",
       "TIỀN MẶT", "123456789", "Vietcombank", "TRAN VAN A", "BRC001", "P001",
-      "CP001", true, null, "IF001", "WP001", "WM001"
+      "CP001", true, null, "IF001", "FORMCODE-1", "WP001", "WM001"
     );
   }
 
@@ -97,7 +96,7 @@ class CustomerServiceImplTest {
     when(customerRepository.save(any(Customer.class))).thenReturn(customer);
 
     // When
-    CustomerResponse response = customerService.createCustomer(customerRequest);
+    var response = customerService.createCustomer(customerRequest);
 
     // Then
     assertThat(response).isNotNull();
@@ -109,12 +108,12 @@ class CustomerServiceImplTest {
   @DisplayName("Should create customer with default active status when isActive is null")
   void should_CreateCustomerWithDefaultActiveStatus_When_IsActiveIsNull() {
     // Given
-    CustomerRequest requestWithNullActive = new CustomerRequest(
+    var requestWithNullActive = new CustomerRequest(
       "Trần Văn A", "tranvana@example.com", "0901234567", "CÁ NHÂN", false,
       UsageTarget.DOMESTIC, 1, 123456, 1000, false, false, "0", "5000",
       1500000, "2023-12", 20000, "CƠ", "012345678901", "Cục CSQLHC về TTXH",
       "TIỀN MẶT", "123456789", "Vietcombank", "TRAN VAN A", "BRC001", "P001",
-      "CP001", null, null, "IF001", "WP001", "WM001"
+      "CP001", null, null, "IF001", "FORMCODE-2", "WP001", "WM001"
     );
     when(customerRepository.save(any(Customer.class))).thenReturn(customer);
 
@@ -129,12 +128,12 @@ class CustomerServiceImplTest {
   @DisplayName("Should update customer successfully")
   void should_UpdateCustomer_When_CustomerExists() {
     // Given
-    String id = "CUST-123";
+    var id = "CUST-123";
     when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
     when(customerRepository.save(any(Customer.class))).thenReturn(customer);
 
     // When
-    CustomerResponse response = customerService.updateCustomer(id, customerRequest);
+    var response = customerService.updateCustomer(id, customerRequest);
 
     // Then
     assertThat(response).isNotNull();
@@ -146,7 +145,7 @@ class CustomerServiceImplTest {
   @DisplayName("Should throw exception when updating non-existent customer")
   void should_ThrowException_When_UpdateNonExistentCustomer() {
     // Given
-    String id = "NON-EXISTENT";
+    var id = "NON-EXISTENT";
     when(customerRepository.findById(id)).thenReturn(Optional.empty());
 
     // When & Then
@@ -157,7 +156,7 @@ class CustomerServiceImplTest {
   @DisplayName("Should delete customer successfully")
   void should_DeleteCustomer_When_CustomerExists() {
     // Given
-    String id = "CUST-123";
+    var id = "CUST-123";
     when(customerRepository.existsById(id)).thenReturn(true);
 
     // When
@@ -171,7 +170,7 @@ class CustomerServiceImplTest {
   @DisplayName("Should throw exception when deleting non-existent customer")
   void should_ThrowException_When_DeleteNonExistentCustomer() {
     // Given
-    String id = "NON-EXISTENT";
+    var id = "NON-EXISTENT";
     when(customerRepository.existsById(id)).thenReturn(false);
 
     // When & Then
@@ -182,11 +181,11 @@ class CustomerServiceImplTest {
   @DisplayName("Should return customer by ID when exists")
   void should_ReturnCustomer_When_IdExists() {
     // Given
-    String id = "CUST-123";
+    var id = "CUST-123";
     when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
 
     // When
-    CustomerResponse response = customerService.getCustomerById(id);
+    var response = customerService.getCustomerById(id);
 
     // Then
     assertThat(response).isNotNull();
@@ -197,7 +196,7 @@ class CustomerServiceImplTest {
   @DisplayName("Should throw exception when fetching non-existent customer")
   void should_ThrowException_When_GetNonExistentCustomer() {
     // Given
-    String id = "NON-EXISTENT";
+    var id = "NON-EXISTENT";
     when(customerRepository.findById(id)).thenReturn(Optional.empty());
 
     // When & Then
@@ -224,11 +223,11 @@ class CustomerServiceImplTest {
   @DisplayName("Should return true when customers are applied this price")
   void should_ReturnTrue_When_PriceIsApplied() {
     // Given
-    String priceId = "WP001";
+    var priceId = "WP001";
     when(customerRepository.existsByWaterPriceId(priceId)).thenReturn(true);
 
     // When
-    boolean result = customerService.areCustomersAppliedThisPrice(priceId);
+    var result = customerService.areCustomersAppliedThisPrice(priceId);
 
     // Then
     assertThat(result).isTrue();
@@ -238,11 +237,11 @@ class CustomerServiceImplTest {
   @DisplayName("Should return false when no customers are applied this price")
   void should_ReturnFalse_When_PriceIsNotApplied() {
     // Given
-    String priceId = "WP002";
+    var priceId = "WP002";
     when(customerRepository.existsByWaterPriceId(priceId)).thenReturn(false);
 
     // When
-    boolean result = customerService.areCustomersAppliedThisPrice(priceId);
+    var result = customerService.areCustomersAppliedThisPrice(priceId);
 
     // Then
     assertThat(result).isFalse();

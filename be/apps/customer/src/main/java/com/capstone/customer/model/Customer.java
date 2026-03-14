@@ -103,7 +103,10 @@ public class Customer {
   LocalDateTime updatedAt;
 
   @Column(nullable = false)
-  String installationFormId;
+  String formNumber;
+
+  @Column(nullable = false, unique = true)
+  String formCode;
 
   @Column(nullable = false)
   String waterPriceId;
@@ -245,9 +248,14 @@ public class Customer {
     this.monthlyRent = value;
   }
 
-  public void setInstallationFormId(String value) {
-    requireId(value, Message.ENT_16);
-    this.installationFormId = value;
+  public void setFormNumber(String value) {
+    requireId(value, SharedMessage.MES_20);
+    this.formNumber = value;
+  }
+
+  public void setFormCode(String value) {
+    requireId(value, SharedMessage.MES_21);
+    this.formCode = value;
   }
 
   public void setWaterPriceId(String value) {
@@ -453,8 +461,13 @@ public class Customer {
       return this;
     }
 
-    public CustomerBuilder installationFormId(String value) {
-      customer.setInstallationFormId(value);
+    public CustomerBuilder formNumber(String value) {
+      customer.setFormNumber(value);
+      return this;
+    }
+
+    public CustomerBuilder formCode(String value) {
+      customer.setFormCode(value);
       return this;
     }
 
