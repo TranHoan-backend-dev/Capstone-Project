@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { FilterActionButton } from "@/components/ui/FilterActionButton";
 import { SearchIcon } from "@/components/ui/Icons";
@@ -14,8 +14,11 @@ export const FilterSection = ({
   onSearch,
   onAddNew,
 }: FilterSectionUnitProps) => {
-  const [code, setCode] = useState(filter.code ?? "");
   const [name, setName] = useState(filter.name ?? "");
+
+  const handleSearch = () => {
+    onSearch({ name: name.trim() });
+  };
 
   return (
     <GenericSearchFilter
@@ -32,23 +35,21 @@ export const FilterSection = ({
             label="Thêm mới"
             onPress={onAddNew}
           />
-          <FilterButton
-            onPress={() => onSearch({ code: code.trim(), name: name.trim() })}
-          />
+          <FilterButton onPress={handleSearch} />
         </div>
       }
     >
       <section className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <CustomInput
-            label="Mã đơn vị"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-          />
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
           <CustomInput
             label="Tên đơn vị"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSearch();
+              }
+            }}
           />
         </div>
       </section>

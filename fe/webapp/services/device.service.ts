@@ -19,3 +19,42 @@ export const getAllUnits = (
       Authorization: `Bearer ${accessToken}`,
     },
   });
+
+export const createUnit = (
+  accessToken: string,
+  name: string,
+) => {
+  return axios.post(
+    `${API_GATEWAY_URL}/d/units`,
+    { name },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+};
+
+export const updateUnit = (
+  accessToken: string,
+  id: string,
+  name: string,
+) => {
+  return axios.put(
+    `${API_GATEWAY_URL}/d/units/${id}`,
+    { name },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+};
+
+export const deleteUnit = (accessToken: string, id: string) => {
+  return axios.delete(`${API_GATEWAY_URL}/d/units/${id}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};

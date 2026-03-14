@@ -7,6 +7,7 @@ import CustomInput from "@/components/ui/custom/CustomInput";
 import { CheckApprovalIcon } from "@/config/chip-and-icon";
 import { Card, CardBody } from "@heroui/react";
 import { UnitFormProps } from "@/types";
+import { authFetch } from "@/utils/authFetch";
 
 export const UnitForm = ({
   initialData,
@@ -15,7 +16,6 @@ export const UnitForm = ({
 }: UnitFormProps) => {
   const isEdit = !!initialData?.id;
 
-  const [code, setCode] = useState(initialData?.code || "");
   const [name, setName] = useState(initialData?.name || "");
   const [submitLoading, setSubmitLoading] = useState(false);
 
@@ -25,21 +25,38 @@ export const UnitForm = ({
 
   const handleSubmit = async () => {
     if (submitLoading) return;
+
+    const trimmedName = name.trim();
+
+    if (!trimmedName) {
+      CallToast({
+        title: "Lỗi",
+        message: "Tên đơn vị không được để trống",
+        color: "danger",
+      });
+      return;
+    }
+
+    if (trimmedName.length > 255) {
+      CallToast({
+        title: "Lỗi",
+        message: "Tên đơn vị không được vượt quá 255 ký tự",
+        color: "danger",
+      });
+      return;
+    }
+
     try {
       setSubmitLoading(true);
       const url = isEdit
-        ? `/api/construction/roads/${initialData?.id}`
-        : `/api/construction/roads`;
+        ? `/api/device/units/${initialData?.id}`
+        : `/api/device/units`;
 
       const method = isEdit ? "PUT" : "POST";
 
-      const payload = { name };
+      const payload = { name: trimmedName };
 
-      if (!isEdit || name !== initialData?.name) {
-        payload.name = name;
-      }
-
-      const response = await fetch(url, {
+      const response = await authFetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -54,7 +71,7 @@ export const UnitForm = ({
         title: "Thành công",
         message: isEdit
           ? "Cập nhật thành công!"
-          : "Thêm mới đường phố thành công!",
+          : "Thêm mới đơn vị tính thành công!",
         color: "success",
       });
       onSuccess();
@@ -79,12 +96,7 @@ export const UnitForm = ({
         </div>
 
         <div className="px-6 py-5 space-y-5">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <CustomInput
-              label="Mã đơn vị"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-            />
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
             <CustomInput
               label="Tên đơn vị"
               value={name}

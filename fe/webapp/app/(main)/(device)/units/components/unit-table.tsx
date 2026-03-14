@@ -7,6 +7,8 @@ import { UnitItem, UnitResponse, UnitTableProps } from "@/types";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import { UNIT_COLUMN } from "@/config/table-columns";
 import { CallToast } from "@/components/ui/CallToast";
+import { authFetch } from "@/utils/authFetch";
+import { ConfirmDialog } from "@/components/ui/modal/ConfirmDialog";
 
 export const UnitTable = ({
   filter,
@@ -18,6 +20,8 @@ export const UnitTable = ({
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [sort, setSort] = useState<{
     field: string;
     direction: "asc" | "desc";
@@ -40,12 +44,13 @@ export const UnitTable = ({
           sort: `${sort.field},${sort.direction}`,
         });
 
-        const trimmedFilter = filter.name?.trim() || filter.code?.trim() ? JSON.stringify(filter) : "";
+        const trimmedFilter = filter.name?.trim() || "";
+
         if (trimmedFilter) {
           params.append("filter", trimmedFilter);
         }
 
-        const res = await fetch(`/api/device/units?${params.toString()}`);
+        const res = await authFetch(`/api/device/units?${params.toString()}`);
 
         if (!res.ok) {
           console.error("Fetch failed", res.status);
@@ -90,6 +95,37 @@ export const UnitTable = ({
     });
   };
 
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return;
+
+    try {
+      setDeleteLoading(true);
+
+      const res = await authFetch(`/api/device/units/${deleteId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Delete failed");
+
+      CallToast({
+        title: "Thành công",
+        message: "Xóa đơn vị tính thành công",
+        color: "success",
+      });
+
+      setDeleteId(null);
+      onDeleted();
+    } catch (e: any) {
+      CallToast({
+        title: "Lỗi",
+        message: e.message || "Có lỗi xảy ra",
+        color: "danger",
+      });
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
   useEffect(() => {
     setPage(1);
   }, [filter]);
@@ -110,32 +146,12 @@ export const UnitTable = ({
         content: "Xóa",
         icon: DeleteIcon,
         className: "text-red-500 hover:bg-red-50",
-        onClick: async (id: string) => {
-          if (!confirm("Bạn có chắc muốn xóa đường phố này?")) return;
-
-          try {
-            const res = await fetch(`/api/construction/roads/${id}`, {
-              method: "DELETE",
-            });
-
-            if (!res.ok) throw new Error("Delete failed");
-            CallToast({
-              title: "Thành công",
-              message: "Xóa đường phố thành công!",
-              color: "success",
-            });
-            onDeleted();
-          } catch (e: any) {
-            CallToast({
-              title: "Lỗi",
-              message: e.message || "Có lỗi xảy ra",
-              color: "danger",
-            });
-          }
+        onClick: (id: string) => {
+          setDeleteId(id);
         },
       },
     ],
-    [data, onEdit, onDeleted],
+    [data, onEdit],
   );
 
   const renderCell = (item: UnitItem, columnKey: string) => {
@@ -193,12 +209,22 @@ export const UnitTable = ({
         headerSummary={`${totalItems}`}
         paginationProps={{
           total: totalPages,
-          initialPage: page,
+          page: page,
           onChange: setPage,
           summary: `${data.length}`,
         }}
         sort={sort}
         onSortChange={handleSortChange}
+      />
+      <ConfirmDialog
+        isOpen={!!deleteId}
+        title="Xác nhận xoá"
+        message="Bạn có chắc muốn xoá đơn vị tính này không?"
+        confirmText="Xoá"
+        confirmColor="danger"
+        isLoading={deleteLoading}
+        onClose={() => setDeleteId(null)}
+        onConfirm={handleConfirmDelete}
       />
     </>
   );
