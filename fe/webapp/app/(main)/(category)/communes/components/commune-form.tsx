@@ -9,6 +9,7 @@ import CustomSelect from "@/components/ui/custom/CustomSelect";
 import { CommuneFormProps } from "@/types";
 import { CallToast } from "@/components/ui/CallToast";
 import { authFetch } from "@/utils/authFetch";
+import { validateMaxLength, validateRequired } from "@/utils/validation";
 
 const typeOptions = [
   { label: "Phường", value: "URBAN_WARD" },
@@ -33,6 +34,18 @@ export const CommuneForm = ({
   const handleSubmit = async () => {
     if (submitLoading) return;
     try {
+      const nameError =
+        validateRequired(name, "Tên Phường/xã") ||
+        validateMaxLength(name, 255, "Tên Phường/xã");
+
+      if (nameError) {
+        CallToast({
+          title: "Lỗi",
+          message: nameError,
+          color: "danger",
+        });
+        return;
+      }
       setSubmitLoading(true);
       const url = isEdit
         ? `/api/construction/communes/${initialData?.id}`
@@ -42,7 +55,7 @@ export const CommuneForm = ({
 
       const payload = {
         name: name.trim(),
-        type: type.toUpperCase(),
+        type: type?.toUpperCase(),
       };
 
       const response = await authFetch(url, {

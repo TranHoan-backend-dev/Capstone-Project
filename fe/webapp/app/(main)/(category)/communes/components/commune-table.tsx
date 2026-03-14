@@ -66,11 +66,17 @@ export const CommuneTable = ({
           return;
         }
 
-        const json = await res.json();
-        const pageData = json?.data;
+        const pageData = await res.json();
         const items = pageData?.content ?? [];
-        setTotalItems(pageData?.totalElements ?? 0);
-        setTotalPages(pageData?.totalPages ?? 1);
+        const totalElements = pageData?.totalElements ?? 0;
+        const totalPagesApi = pageData?.totalPages ?? 1;
+
+        if (page > totalPagesApi && totalPagesApi > 0) {
+          setPage(totalPagesApi);
+          return;
+        }
+        setTotalItems(totalElements);
+        setTotalPages(totalPagesApi);
 
         const mapped = items.map((item: CommuneResponse, index: number) => ({
           id: item.communeId,
@@ -161,7 +167,7 @@ export const CommuneTable = ({
         },
       },
     ],
-    [data, onEdit, onDeleted],
+    [data, onEdit],
   );
 
   const renderCell = (item: CommuneItem, columnKey: string) => {
@@ -230,7 +236,6 @@ export const CommuneTable = ({
           onChange: setPage,
           summary: `${data.length}`,
         }}
-        sort={sort}
         onSortChange={handleSortChange}
       />
       <ConfirmDialog

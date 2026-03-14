@@ -14,8 +14,8 @@ export async function GET(req: NextRequest) {
     const page = Number(searchParams.get("page") ?? 0);
     const size = Number(searchParams.get("size") ?? 10);
     const sort = searchParams.get("sort") || "createdAt,desc";
-    const search = searchParams.get("search") || undefined;
-    const type = searchParams.get("type") || undefined;
+    const search = searchParams.get("search") || "";
+    const type = searchParams.get("type") || "";
 
     const response = await getAllCommunes(
       accessToken,
@@ -26,13 +26,7 @@ export async function GET(req: NextRequest) {
       type,
     );
 
-    return NextResponse.json(
-      {
-        message: "Lấy danh sách chi nhánh cấp nước thành công",
-        data: response.data.data,
-      },
-      { status: 200 },
-    );
+    return NextResponse.json(response.data.data, { status: 200 });
   } catch (error: any) {
     const status = error?.response?.status ?? 500;
 
@@ -61,7 +55,7 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     return NextResponse.json(
       {
-        message: error.response?.data?.message || "Create network failed",
+        message: error.response?.data?.message || "Tạo phường xã thất bại",
       },
       { status: error.response?.status || 500 },
     );
