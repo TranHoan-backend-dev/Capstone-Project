@@ -10,7 +10,7 @@ class AuthRepositoryImpl(
     private val remote: AuthRemoteDataSource,
     private val tokenManager: TokenManager,
     private val bruteForceManager: AntiBruteForceManager
-): AuthRepository {
+) : AuthRepository {
     /**
      * Xử lý logic đăng nhập: Gọi DataSource để lấy Profile sau đó convert sang Domain Model.
      */
@@ -23,8 +23,10 @@ class AuthRepositoryImpl(
                 role = profile.role,
                 username = profile.username,
                 email = profile.email,
-                departmentId = profile.departmentId,
-                departmentName = profile.departmentName
+                address = profile.address,
+                phoneNumber = profile.phoneNumber,
+                gender = profile.gender,
+                birthday = profile.birthday
             )
         }
     }
@@ -63,7 +65,13 @@ class AuthRepositoryImpl(
             throw Exception("Tài khoản đang bị khóa.")
         }
         return try {
-            val result = remote.resetPassword(com.capstone.data.source.request.ResetPasswordRequest(email, otp, newPassword))
+            val result = remote.resetPassword(
+                com.capstone.data.source.request.ResetPasswordRequest(
+                    email,
+                    otp,
+                    newPassword
+                )
+            )
             bruteForceManager.resetAttempts(email)
             result
         } catch (e: Exception) {
@@ -75,8 +83,18 @@ class AuthRepositoryImpl(
     /**
      * Thực hiện đổi mật khẩu khi đã đăng nhập.
      */
-    override suspend fun changePassword(oldPass: String, newPass: String, confirmPass: String): String {
-        return remote.changePassword(com.capstone.data.source.request.ChangePasswordRequest(oldPass, newPass, confirmPass))
+    override suspend fun changePassword(
+        oldPass: String,
+        newPass: String,
+        confirmPass: String
+    ): String {
+        return remote.changePassword(
+            com.capstone.data.source.request.ChangePasswordRequest(
+                oldPass,
+                newPass,
+                confirmPass
+            )
+        )
     }
 
     override suspend fun updateProfile(
@@ -87,7 +105,16 @@ class AuthRepositoryImpl(
         address: String?,
         gender: Boolean?
     ): UserProfile {
-        return remote.updateProfile(com.capstone.data.source.request.UpdateProfileRequest(fullName, username, phoneNumber, birthdate, address, gender))
+        return remote.updateProfile(
+            com.capstone.data.source.request.UpdateProfileRequest(
+                fullName,
+                username,
+                phoneNumber,
+                birthdate,
+                address,
+                gender
+            )
+        )
             .let { profile ->
                 with(UserProfile) { profile.toDomain() }
             }

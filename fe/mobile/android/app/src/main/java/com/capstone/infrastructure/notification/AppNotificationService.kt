@@ -2,7 +2,6 @@ package com.capstone.infrastructure.notification
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingCorner
 import android.content.Context
 import android.os.Build
 import androidx.core.app.NotificationCompat
