@@ -1,7 +1,7 @@
 import { SVGProps } from "react";
 export * from "./construction/index";
+export * from "./organization/index";
 
-export * from "./organization/index"
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
@@ -40,16 +40,6 @@ export interface EmployeeProfileUpdatePayload {
   phoneNumber: string;
   gender: string;
   birthdate: string;
-}
-
-export interface EstimateItem {
-  id: number;
-  code: string;
-  customerName: string;
-  phone: string;
-  address: string;
-  registerDate: string;
-  status: "pending_estimate" | "rejected";
 }
 
 export interface SettlementItem {

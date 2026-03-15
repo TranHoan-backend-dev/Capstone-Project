@@ -332,3 +332,26 @@ export const deleteRoad = (accessToken: string, id: string) => {
     },
   });
 };
+
+export const getAllSettlements = (
+  accessToken: string,
+  page: number,
+  size: number,
+  sort: string,
+  keyword?: string | null,
+  fromDate?: string,
+  toDate?: string,
+) =>
+  axios.get(`${API_GATEWAY_URL}/construction/estimates`, {
+    params: {
+      page,
+      size,
+      sort,
+      keyword,
+      fromDate,
+      toDate,
+    },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
