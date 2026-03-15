@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -38,6 +39,9 @@ class UsersUseCaseTest {
 
   @InjectMocks
   private UsersUseCase usersUseCase;
+
+  @Mock
+  private Logger log;
 
   @Test
   @DisplayName("Should return paginated list of employees - Success")
@@ -193,7 +197,7 @@ class UsersUseCaseTest {
     // Assert
     assertEquals(response, result);
     verify(userService).updateEmployee(id, request);
-    verifyNoInteractions(messageProducer);
+    verify(messageProducer).sendMessage(any(com.capstone.auth.application.event.producer.message.AccountUpdateEvent.class));
   }
 
   @Test

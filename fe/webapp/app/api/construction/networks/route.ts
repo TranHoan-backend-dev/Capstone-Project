@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
     const { name } = await req.json();
 
     const response = await createNetwork(accessToken, name);
-    console.log(response);
+
     return NextResponse.json(response.data, { status: 201 });
   } catch (error: any) {
     return NextResponse.json(

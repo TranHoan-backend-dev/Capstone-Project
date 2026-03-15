@@ -5,6 +5,7 @@ import com.capstone.construction.application.dto.request.installationform.Approv
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.NewInstallationFormResponse;
+import com.capstone.construction.domain.model.utils.InstallationFormId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -22,4 +23,6 @@ public interface InstallationFormService {
   InstallationFormListResponse getByFormCodeAndFormNumber(String formCode, String formNumber);
 
   Boolean checkAnyFormsBelongedToNetwork(String id);
+
+  void assignInstallationForm(String id, InstallationFormId installationFormId, Boolean status);
 }

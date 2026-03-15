@@ -22,6 +22,16 @@ export const siteConfig = {
           href: "/departments",
         },
         {
+          key: "jobs",
+          label: "Quản lý Công việc",
+          href: "/jobs",
+        },
+        {
+          key: "communes",
+          label: "Quản lý Phường/xã",
+          href: "/communes",
+        },
+        {
           key: "roads",
           label: "Quản lý Đường phố",
           href: "/roads",
@@ -38,6 +48,11 @@ export const siteConfig = {
           key: "materials-prices",
           label: "Quản lý Đơn giá vật tư",
           href: "/materials-prices",
+        },
+        {
+          key: "units",
+          label: "Quản lý Đơn vị tính",
+          href: "/units",
         },
       ],
     },

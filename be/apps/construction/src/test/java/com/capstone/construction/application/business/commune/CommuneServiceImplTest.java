@@ -3,6 +3,7 @@ package com.capstone.construction.application.business.commune;
 import com.capstone.construction.application.dto.request.commune.CreateRequest;
 import com.capstone.construction.application.dto.request.commune.UpdateRequest;
 import com.capstone.construction.application.exception.ExistingItemException;
+import com.capstone.common.utils.TextNormalizer;
 import com.capstone.construction.domain.enumerate.CommuneType;
 import com.capstone.construction.domain.model.Commune;
 import com.capstone.construction.infrastructure.persistence.CommuneRepository;
@@ -16,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -224,7 +226,7 @@ class CommuneServiceImplTest {
   @Test
   void should_ReturnPage_When_GetAllCommunes() {
     // Given
-    var pageable = Pageable.unpaged();
+    var pageable = PageRequest.of(0, 10);
     var commune = Commune.create(builder -> builder.name("Xa Test").type(CommuneType.URBAN_WARD));
     ReflectionTestUtils.setField(commune, "communeId", "id");
     ReflectionTestUtils.setField(commune, "createdAt", LocalDateTime.now());
@@ -233,7 +235,7 @@ class CommuneServiceImplTest {
     when(communeRepository.findAll(pageable)).thenReturn(page);
 
     // When
-    var result = communeService.getAllCommunes(pageable);
+    var result = communeService.getAllCommunes(pageable, null, null);
 
     // Then
     assertThat(result.content()).hasSize(1);

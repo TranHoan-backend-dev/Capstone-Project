@@ -9,6 +9,7 @@ import com.capstone.construction.application.dto.response.installationform.Insta
 import com.capstone.construction.application.dto.response.installationform.NewInstallationFormResponse;
 import com.capstone.construction.domain.model.InstallationForm;
 import com.capstone.construction.domain.model.WaterSupplyNetwork;
+import com.capstone.construction.domain.model.utils.InstallationFormId;
 import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
 import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRepository;
 import com.capstone.construction.infrastructure.utils.Message;
@@ -53,7 +54,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
     }
 
     if (!checkMeterExisting(request.overallWaterMeterId())) {
-      throw new IllegalArgumentException(Message.SE_06);
+      throw new IllegalArgumentException(Message.PT_58);
     }
 
     var entity = InstallationForm.create(builder -> builder
@@ -138,11 +139,11 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   @Transactional(rollbackFor = Exception.class)
   public void approveAndAssignInstallationForm(@NonNull ApproveRequest request) {
     log.info("Approving and assigning installation form with number: {}", request.formNumber());
-    var order = ifRepo.findById_FormCodeAndId_FormNumber(request.formCode(), request.formNumber())
+    var order = ifRepo.findById(new InstallationFormId(request.formCode(), request.formNumber()))
       .orElseThrow(() -> new IllegalArgumentException(Message.PT_36));
 
     if (request.status()) {
-      // trưởng phòng duyệt đơn
+      // nvks duyệt đơn
       var requestStatus = order.getStatus();
       requestStatus.setRegistration(ProcessingStatus.APPROVED);
       requestStatus.setEstimate(ProcessingStatus.PENDING_FOR_APPROVAL);
@@ -151,9 +152,8 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       if (!Boolean.parseBoolean(status.data().toString())) {
         throw new IllegalArgumentException(Message.PT_35);
       }
-      order.setHandoverBy(request.empId());
     } else {
-      // trưởng phòng hủy đơn
+      // nvks hủy đơn
       var status = order.getStatus();
       status.setRegistration(ProcessingStatus.REJECTED);
     }
@@ -163,7 +163,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   @Override
   public InstallationFormListResponse getByFormCodeAndFormNumber(String formCode, String formNumber) {
     log.info("Fetching installation form with form number: {}", formNumber);
-    var result = ifRepo.findById_FormCodeAndId_FormNumber(formCode, formNumber)
+    var result = ifRepo.findById(new InstallationFormId(formCode, formNumber))
       .orElseThrow(() -> new IllegalArgumentException(Message.PT_36));
     return mapToResponse(result);
   }
@@ -175,8 +175,20 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   }
 
   @Override
+  public void assignInstallationForm(String id, InstallationFormId installationFormId, @NonNull Boolean status) {
+    log.info("Assigning installation form with id: {}", id);
+    var form = ifRepo.findById(installationFormId).orElseThrow(() -> new IllegalArgumentException(Message.PT_36));
+    if (status) {
+      form.setHandoverBy(id);
+    } else {
+      form.setConstructedBy(id);
+    }
+    ifRepo.save(form);
+  }
+
+  @Override
   public boolean isInstallationFormExisting(String formNumber, String formCode) {
-    var status = ifRepo.existsById_FormNumberOrId_FormCode(formNumber, formCode);
+    var status = ifRepo.existsById_FormNumberAndId_FormCode(formNumber, formCode);
     log.info("Installation form with form number: {} and form code {} is exist: {}", formNumber, formCode, status);
     return status;
   }
@@ -227,7 +239,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
 
   private boolean checkMeterExisting(String id) {
     log.info("Verifying existence of water meter: {}", id);
-    var response = owmSrv.isMeterExisting(id);
+    var response = owmSrv.isOverallMeterExisting(id);
     boolean exists = Boolean.parseBoolean(response.data().toString());
     if (!exists) {
       log.warn("Water meter not found: {}", id);

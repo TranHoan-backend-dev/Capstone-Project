@@ -44,7 +44,7 @@ public class LateralServiceImpl implements LateralService {
     Objects.requireNonNull(request.networkId(), Message.PT_34);
 
     var network = networkRepository.findById(request.networkId())
-      .orElseThrow(() -> new IllegalArgumentException(Message.SE_03));
+      .orElseThrow(() -> new IllegalArgumentException(Message.PT_55));
 
     var lateral = Lateral.create(builder -> builder
       .name(request.name())

@@ -96,7 +96,6 @@ class AuthUseCaseTest {
       List.of("job1", "job2"),
       "dept1",
       "wsn1");
-    ReflectionTestUtils.setField(authUseCase, "log", log);
   }
 
   @Test
@@ -163,7 +162,7 @@ class AuthUseCaseTest {
 
     NullPointerException exception = assertThrows(NullPointerException.class,
       () -> authUseCase.register(invalidRequest));
-    assertEquals(Message.PT_05, exception.getMessage());
+    assertEquals(SharedMessage.MES_18, exception.getMessage());
   }
 
   @Test
@@ -185,7 +184,7 @@ class AuthUseCaseTest {
 
     NullPointerException exception = assertThrows(NullPointerException.class,
       () -> authUseCase.register(invalidRequest));
-    assertEquals(Message.PT_23, exception.getMessage());
+    assertEquals(Message.PT_13, exception.getMessage());
   }
 
   @Test
@@ -196,7 +195,7 @@ class AuthUseCaseTest {
 
     NullPointerException exception = assertThrows(NullPointerException.class,
       () -> authUseCase.register(invalidRequest));
-    assertEquals(Message.PT_20, exception.getMessage());
+    assertEquals(Message.PT_12, exception.getMessage());
   }
 
   @Test
@@ -207,7 +206,7 @@ class AuthUseCaseTest {
 
     NullPointerException exception = assertThrows(NullPointerException.class,
       () -> authUseCase.register(invalidRequest));
-    assertEquals(Message.PT_19, exception.getMessage());
+    assertEquals(Message.PT_11, exception.getMessage());
   }
 
   @Test
@@ -218,7 +217,7 @@ class AuthUseCaseTest {
 
     NullPointerException exception = assertThrows(NullPointerException.class,
       () -> authUseCase.register(invalidRequest));
-    assertEquals(Message.PT_18, exception.getMessage());
+    assertEquals(Message.PT_10, exception.getMessage());
   }
 
   @Test
@@ -228,7 +227,7 @@ class AuthUseCaseTest {
 
     NullPointerException exception = assertThrows(NullPointerException.class,
       () -> authUseCase.register(validRequest));
-    assertEquals(Message.SE_08, exception.getMessage());
+    assertEquals(Message.SE_07, exception.getMessage());
   }
 
   @Test

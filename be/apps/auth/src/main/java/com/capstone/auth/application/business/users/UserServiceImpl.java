@@ -7,7 +7,7 @@ import com.capstone.auth.application.dto.request.users.UpdateRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
 import com.capstone.auth.infrastructure.persistence.*;
 import com.capstone.common.exception.ExistingException;
-import com.capstone.auth.application.exception.NotExistingException;
+import com.capstone.common.exception.NotExistingException;
 import com.capstone.auth.domain.model.EmployeeJob;
 import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.domain.model.Roles;
@@ -17,7 +17,6 @@ import com.capstone.auth.infrastructure.utils.Message;
 import com.capstone.auth.infrastructure.service.NetworkService;
 import com.capstone.auth.infrastructure.service.OrganizationService;
 import com.capstone.common.annotation.AppLog;
-import com.capstone.common.exception.InternalServerException;
 import com.capstone.common.utils.SharedConstant;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -93,12 +92,7 @@ public class UserServiceImpl implements UserService {
   @Override
   @Transactional(rollbackFor = Exception.class)
   public void updatePassword(String email, @NonNull String password, String newPassword) {
-    var obj = getUsersByEmail(email);
-    // Note: Local password verification is currently skipped because Users entity
-    // does not store passwords (it's managed by Keycloak).
-    // If local verification/storage is needed, re-add the password field to the Users entity.
-    log.info("Local password update for {} - Skipping verification (managed by Keycloak)", email);
-    updateUser(obj, newPassword);
+    throw new IllegalArgumentException("Password managed by Keycloak");
   }
 
   @Override
@@ -287,6 +281,13 @@ public class UserServiceImpl implements UserService {
       bpService.getPagesByEmployeeId(emp.getUserId()).toString(),
       emp.getEmail()
     );
+  }
+
+  @Override
+  public String getRoleOfEmployee(String id) {
+    var user = getById(id);
+    return roleRepo.findByUsers(Set.of(user))
+      .getFirst().getName().toString();
   }
 
   private Users getById(String id) {

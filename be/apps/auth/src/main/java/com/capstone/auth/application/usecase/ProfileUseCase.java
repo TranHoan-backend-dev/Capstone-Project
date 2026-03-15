@@ -203,6 +203,8 @@ public class ProfileUseCase {
       profile.birthday() == null ? null : profile.birthday().toString(),
       user.role().toLowerCase(),
       user.username(),
-      user.email());
+      user.email(),
+      user.userId()
+    );
   }
 }

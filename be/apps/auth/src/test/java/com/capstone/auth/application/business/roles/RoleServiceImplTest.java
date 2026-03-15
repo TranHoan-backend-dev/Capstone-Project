@@ -1,6 +1,6 @@
 package com.capstone.auth.application.business.roles;
 
-import com.capstone.auth.application.exception.NotExistingException;
+import com.capstone.common.exception.NotExistingException;
 import com.capstone.auth.domain.model.Roles;
 import com.capstone.auth.infrastructure.utils.Message;
 import com.capstone.auth.infrastructure.persistence.RoleRepository;
@@ -58,7 +58,7 @@ class RoleServiceImplTest {
     when(repo.existsById(id)).thenReturn(false);
 
     NotExistingException ex = assertThrows(NotExistingException.class, () -> roleService.getRoleNameById(id));
-    assertEquals(Message.SE_08, ex.getMessage());
+    assertEquals(Message.SE_07, ex.getMessage());
   }
 
   @Test
@@ -81,7 +81,7 @@ class RoleServiceImplTest {
     when(repo.findById(id)).thenReturn(Optional.empty());
 
     NotExistingException ex = assertThrows(NotExistingException.class, () -> roleService.getRoleById(id));
-    assertEquals(Message.SE_08, ex.getMessage());
+    assertEquals(Message.SE_07, ex.getMessage());
   }
 
   @Test

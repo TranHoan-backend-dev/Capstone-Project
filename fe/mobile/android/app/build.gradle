@@ -143,6 +143,9 @@ dependencies {
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
 
+    // Firebase Messaging (Cho AppNotificationService)
+    implementation("com.google.firebase:firebase-messaging:23.4.1")
+
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
     } else {

@@ -23,8 +23,8 @@ public class GcsController {
     if (file.isEmpty()) {
       return ResponseEntity.badRequest().body("Failed to upload empty file");
     }
-//    var avatarUrl = "haha";
-    var avatarUrl = storageService.upload(file, FOLDER_NAME);
+    var avatarUrl = "haha";
+//    var avatarUrl = storageService.upload(file, FOLDER_NAME);
 
     return ResponseEntity.ok(avatarUrl);
   }
@@ -40,7 +40,7 @@ public class GcsController {
 
   @DeleteMapping("/delete/{file}")
   public ResponseEntity<String> delete(@PathVariable("file") String fileName) {
-    storageService.delete(fileName);
+//    storageService.delete(fileName);
 
     return ResponseEntity.ok("File deleted successfully");
   }

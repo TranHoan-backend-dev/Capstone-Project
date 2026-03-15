@@ -4,7 +4,7 @@ import com.capstone.auth.application.dto.request.users.FilterUsersRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
 import com.capstone.common.enumerate.RoleName;
 import com.capstone.common.exception.ExistingException;
-import com.capstone.auth.application.exception.NotExistingException;
+import com.capstone.common.exception.NotExistingException;
 import com.capstone.auth.domain.model.EmployeeJob;
 import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.domain.model.Roles;
@@ -115,7 +115,7 @@ class UserServiceImplTest {
     when(repo.findByEmail(email)).thenReturn(Optional.of(new Users()));
 
     assertThrows(ExistingException.class,
-        () -> userService.createEmployee("u", email, new Roles(), List.of(), "d", "w", "n", "p"));
+        () -> userService.createEmployee("u", email, new Roles(), List.of(), "dept1", "wsn1", "name", "0123456789"));
   }
 
   @Test
@@ -126,7 +126,7 @@ class UserServiceImplTest {
     when(profileRepo.existsByPhoneNumber(phone)).thenReturn(true);
 
     assertThrows(ExistingException.class,
-        () -> userService.createEmployee("u", "e@e.com", new Roles(), List.of(), "d", "w", "n", phone));
+        () -> userService.createEmployee("u", "test@example.com", new Roles(), List.of(), "dept1", "wsn1", "name", phone));
   }
 
   @Test
@@ -138,7 +138,7 @@ class UserServiceImplTest {
     when(netWorkService.checkExistence(networkId)).thenReturn(false);
 
     assertThrows(NotExistingException.class,
-        () -> userService.createEmployee("u", "e@e.com", new Roles(), List.of(), "d", networkId, "n", "p"));
+        () -> userService.createEmployee("u", "test@example.com", new Roles(), List.of(), "dept1", networkId, "name", "0123456789"));
   }
 
   @Test
@@ -151,7 +151,7 @@ class UserServiceImplTest {
     when(organizationService.checkDepartmentExistence(deptId)).thenReturn(false);
 
     assertThrows(NotExistingException.class,
-        () -> userService.createEmployee("u", "e@e.com", new Roles(), List.of(), deptId, "w", "n", "p"));
+        () -> userService.createEmployee("u", "test@example.com", new Roles(), List.of(), deptId, "wsn1", "name", "0123456789"));
   }
 
   @Test
@@ -165,7 +165,7 @@ class UserServiceImplTest {
     when(organizationService.checkJobExistence("job1")).thenReturn(false);
 
     assertThrows(NotExistingException.class,
-        () -> userService.createEmployee("u", "e@e.com", new Roles(), jobs, "d", "w", "n", "p"));
+        () -> userService.createEmployee("u", "test@example.com", new Roles(), jobs, "dept1", "wsn1", "name", "0123456789"));
   }
 
   @Test
@@ -203,9 +203,9 @@ class UserServiceImplTest {
     var user = new Users();
     user.setUserId(userId);
     user.setUsername("u");
-    user.setEmail("e");
-    user.setDepartmentId("d");
-    user.setWaterSupplyNetworkId("w");
+    user.setEmail("test@example.com");
+    user.setDepartmentId("department-id");
+    user.setWaterSupplyNetworkId("network-id");
     user.setIsEnabled(true);
     user.setIsLocked(false);
 
@@ -239,9 +239,9 @@ class UserServiceImplTest {
     var user = new Users();
     user.setUserId(userId);
     user.setUsername("old-user");
-    user.setEmail("e");
-    user.setDepartmentId("d");
-    user.setWaterSupplyNetworkId("w");
+    user.setEmail("test@example.com");
+    user.setDepartmentId("department-id");
+    user.setWaterSupplyNetworkId("network-id");
     user.setIsEnabled(true);
     user.setIsLocked(false);
 
@@ -264,7 +264,7 @@ class UserServiceImplTest {
     var userId = "user-id";
     when(repo.findById(userId)).thenReturn(Optional.empty());
 
-    assertThrows(IllegalArgumentException.class, () -> userService.updateUsername(userId, "new"));
+    assertThrows(NotExistingException.class, () -> userService.updateUsername(userId, "new"));
   }
 
   @Test
@@ -276,10 +276,13 @@ class UserServiceImplTest {
     var user = new Users();
     user.setUserId("uid");
     user.setUsername("user");
-    user.setEmail("email");
+    user.setEmail("test@example.com");
+    user.setDepartmentId("dept1");
+    user.setWaterSupplyNetworkId("wsn1");
 
     Page<Users> page = new PageImpl<>(List.of(user));
     when(repo.findAll(pageable)).thenReturn(page);
+    when(profileRepo.findById("uid")).thenReturn(Optional.of(new Profile("pid", user, "Full Name", null, null, null, null, null)));
 
     Page<EmployeeResponse> result = userService.getAllEmployeesWithStatus(pageable, request);
 
@@ -305,8 +308,6 @@ class UserServiceImplTest {
   @DisplayName("should_UpdatePassword_ThrowException_Always")
   void should_UpdatePassword_ThrowException_Always() {
     var email = "email@test.com";
-    var user = new Users();
-    when(repo.findByEmail(email)).thenReturn(Optional.of(user));
 
     assertThrows(IllegalArgumentException.class, () -> userService.updatePassword(email, "old", "new"));
   }
@@ -328,6 +329,10 @@ class UserServiceImplTest {
     var user = new Users();
     user.setUserId("uid");
     user.setEmail(email);
+    user.setDepartmentId("dept1");
+    user.setWaterSupplyNetworkId("wsn1");
+    user.setIsEnabled(true);
+    user.setIsLocked(false);
     user.setRole(new Roles());
     user.getRole().setName(RoleName.IT_STAFF);
 
