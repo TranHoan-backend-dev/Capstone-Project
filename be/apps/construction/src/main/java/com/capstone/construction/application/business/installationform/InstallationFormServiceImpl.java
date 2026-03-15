@@ -143,7 +143,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       .orElseThrow(() -> new IllegalArgumentException(Message.PT_36));
 
     if (request.status()) {
-      // trưởng phòng duyệt đơn
+      // nvks duyệt đơn
       var requestStatus = order.getStatus();
       requestStatus.setRegistration(ProcessingStatus.APPROVED);
       requestStatus.setEstimate(ProcessingStatus.PENDING_FOR_APPROVAL);
@@ -152,9 +152,8 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       if (!Boolean.parseBoolean(status.data().toString())) {
         throw new IllegalArgumentException(Message.PT_35);
       }
-      order.setHandoverBy(request.empId());
     } else {
-      // trưởng phòng hủy đơn
+      // nvks hủy đơn
       var status = order.getStatus();
       status.setRegistration(ProcessingStatus.REJECTED);
     }
@@ -173,6 +172,18 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   public Boolean checkAnyFormsBelongedToNetwork(String id) {
     log.info("Checking if installation form with id: {}", id);
     return ifRepo.existsByNetwork_BranchId(id);
+  }
+
+  @Override
+  public void assignInstallationForm(String id, InstallationFormId installationFormId, @NonNull Boolean status) {
+    log.info("Assigning installation form with id: {}", id);
+    var form = ifRepo.findById(installationFormId).orElseThrow(() -> new IllegalArgumentException(Message.PT_36));
+    if (status) {
+      form.setHandoverBy(id);
+    } else {
+      form.setConstructedBy(id);
+    }
+    ifRepo.save(form);
   }
 
   @Override

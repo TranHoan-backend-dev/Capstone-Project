@@ -37,4 +37,6 @@ public interface UserService {
   EmployeeResponse updateEmployee(String id, UpdateRequest request);
 
   EmployeeResponse deleteEmployee(String id);
+
+  String getRoleOfEmployee(String id);
 }

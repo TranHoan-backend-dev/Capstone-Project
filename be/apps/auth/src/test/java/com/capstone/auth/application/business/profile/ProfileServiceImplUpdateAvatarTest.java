@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -23,6 +24,14 @@ class ProfileServiceImplUpdateAvatarTest {
 
   @InjectMocks
   ProfileServiceImpl profileService;
+
+  @Mock
+  private Logger log;
+
+  @org.junit.jupiter.api.BeforeEach
+  void setUp() {
+    org.springframework.test.util.ReflectionTestUtils.setField(profileService, "log", log);
+  }
 
   @Test
   void updateAvatar_returns_updated_profile_dto_when_successful() {
@@ -195,7 +204,6 @@ class ProfileServiceImplUpdateAvatarTest {
     var dto = profileService.updateAvatar(rawId, avatarUrl);
 
     assertNotNull(dto);
-    assertNotEquals(rawId, dto.id());
     assertEquals(rawId, dto.id());
   }
 
