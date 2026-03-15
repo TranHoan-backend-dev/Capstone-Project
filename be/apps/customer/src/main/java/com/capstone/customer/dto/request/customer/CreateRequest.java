@@ -30,11 +30,11 @@ public record CreateRequest(
   @NotNull(message = Message.ENT_03)
   CustomerType type,
 
-  @Schema(description = "Is big customer flag", example = "false")
-  @NotNull(message = "isBigCustomer flag is required")
+  @Schema(description = "", example = "false")
+  @NotNull(message = Message.ENT_25)
   Boolean isBigCustomer,
 
-  @Schema(description = "Usage target", example = "DOMESTIC")
+  @Schema(description = "", example = "DOMESTIC")
   @NotNull(message = Message.ENT_06)
   UsageTarget usageTarget,
 
@@ -134,7 +134,7 @@ public record CreateRequest(
   String waterPriceId,
 
   @Schema(description = "", example = "WM001")
-  @NotBlank(message = "")
-  @NotEmpty(message = "")
+  @NotBlank(message = Message.ENT_26)
+  @NotEmpty(message = Message.ENT_26)
   String waterMeterId) {
 }

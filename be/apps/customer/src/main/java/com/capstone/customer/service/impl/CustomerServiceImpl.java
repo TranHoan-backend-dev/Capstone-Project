@@ -5,6 +5,7 @@ import com.capstone.customer.dto.response.CustomerResponse;
 import com.capstone.customer.model.Customer;
 import com.capstone.customer.repository.CustomerRepository;
 import com.capstone.customer.service.boundary.CustomerService;
+import com.capstone.customer.utils.Message;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -26,6 +27,10 @@ public class CustomerServiceImpl implements CustomerService {
   @Transactional
   public CustomerResponse createCustomer(@NonNull CreateRequest request) {
     log.info("Creating customer with email: {}", request.email());
+    if (customerRepository.existsByFormCodeAndFormNumber(request.formCode(), request.formNumber())) {
+      throw new IllegalArgumentException(Message.ENT_23);
+    }
+
     var customer = Customer.create(builder -> builder
       .name(request.name())
       .email(request.email())
