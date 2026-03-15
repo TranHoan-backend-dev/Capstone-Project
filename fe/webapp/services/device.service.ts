@@ -52,20 +52,31 @@ export const deleteUnit = (accessToken: string, id: string) => {
   });
 };
 
-export const getAllMaterials = (
-  accessToken: string,
+export const getAllMaterials = async (
+  token: string,
   page: number,
   size: number,
-) =>
-  axios.get(`${API_GATEWAY_URL}/d/materials`, {
+  jobContent: string,
+  laborCode: string,
+  groupId: string,
+  minPrice: string,
+  maxPrice: string,
+) => {
+  return axios.get(`${API_GATEWAY_URL}/d/materials`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
     params: {
       page,
       size,
-    },
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
+      jobContent: jobContent ?? "",
+      laborCode: laborCode ?? "",
+      groupId: groupId ?? "",
+      minPrice: minPrice ?? "",
+      maxPrice: maxPrice ?? "",
     },
   });
+};
 
 export const createMaterial = (
   accessToken: string,

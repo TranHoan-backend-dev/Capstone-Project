@@ -14,8 +14,29 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const page = Number(searchParams.get("page") ?? 0);
     const size = Number(searchParams.get("size") ?? 10);
-    const response = await getAllMaterials(accessToken, page, size);
-
+    const jobContent = searchParams.get("jobContent") ?? "";
+    const laborCode = searchParams.get("laborCode") ?? "";
+    const groupId = searchParams.get("groupId") ?? "";
+    const minPrice = searchParams.get("minPrice") ?? "";
+    const maxPrice = searchParams.get("maxPrice") ?? "";
+    const response = await getAllMaterials(
+      accessToken,
+      page,
+      size,
+      jobContent,
+      laborCode,
+      groupId,
+      minPrice,
+      maxPrice,
+    );
+    console.log("params", {
+      page,
+      size,
+      jobContent,
+      laborCode,
+      groupId,
+      minPrice,
+    });
     return NextResponse.json(
       {
         message: "Lấy danh sách nhóm vật tư thành công",

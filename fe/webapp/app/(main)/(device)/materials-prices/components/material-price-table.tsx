@@ -46,13 +46,15 @@ export const MaterialPriceTable = ({
           page: String(page - 1),
           size: String(pageSize),
           sort: `${sort.field},${sort.direction}`,
+          jobContent: filter.jobContent || "%",
+          laborCode: filter.laborCode || "%",
         });
 
-        const trimmedFilter = filter.name?.trim();
-        if (trimmedFilter) {
-          params.append("filter", trimmedFilter);
-        }
-
+        // if (filter.name) params.append("jobContent", filter.name);
+        // if (filter.symbol) params.append("laborCode", filter.symbol);
+        if (filter.groupId) params.append("groupId", filter.groupId);
+        if (filter.minPrice) params.append("minPrice", filter.minPrice);
+        if (filter.maxPrice) params.append("maxPrice", filter.maxPrice);
         const res = await fetch(
           `/api/device/materials-prices?${params.toString()}`,
         );

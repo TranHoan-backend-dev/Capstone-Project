@@ -22,16 +22,11 @@ export interface MaterialPriceFormProps {
 }
 
 export interface MaterialPriceFilter {
-  materialCode?: string;
-  symbol?: string;
-  name?: string;
-  unit?: string;
-  group?: string;
-  price?: string;
-  laborPrice?: string;
-  laborPriceDistrict?: string;
-  machinePrice?: string;
-  machinePriceDistrict?: string;
+  laborCode?: string;
+  jobContent?: string;
+  groupId?: string;
+  minPrice?: string;
+  maxPrice?: string;
 }
 
 export interface FilterSectionMaterialPriceProps {
