@@ -48,6 +48,15 @@ public interface MaterialService {
      */
     Page<MaterialResponse> getAllMaterials(Pageable pageable);
 
+    /**
+     * Searches materials by job content (name) and/or price range.
+     *
+     * @param searchRequest contains search criteria for jobContent (name) and price range
+     * @param pageable pagination information
+     * @return a page of material responses matching the search criteria
+     */
+    Page<MaterialResponse> searchMaterials(SearchRequest searchRequest, Pageable pageable);
+
   boolean materialExists(String id);
 
   // material group

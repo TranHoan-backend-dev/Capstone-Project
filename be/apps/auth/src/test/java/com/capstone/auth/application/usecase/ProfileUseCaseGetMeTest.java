@@ -4,18 +4,21 @@ import com.capstone.auth.application.business.dto.ProfileDTO;
 import com.capstone.auth.application.business.dto.UserDTO;
 import com.capstone.auth.application.business.profile.ProfileService;
 import com.capstone.auth.application.business.users.UserService;
-import com.capstone.auth.application.exception.NotExistingException;
+import com.capstone.common.exception.NotExistingException;
 import com.capstone.auth.infrastructure.utils.Message;
 
 import java.time.LocalDate;
 
 import com.capstone.common.utils.SharedMessage;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
 import org.springframework.security.authentication.DisabledException;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -31,6 +34,14 @@ class ProfileUseCaseGetMeTest {
 
   @InjectMocks
   ProfileUseCase profileUseCase;
+
+  @Mock
+  private Logger log;
+
+  @BeforeEach
+  void setUp() {
+    ReflectionTestUtils.setField(profileUseCase, "log", log);
+  }
 
   @Test
   void getMe_returns_profile_response_when_successful() {
@@ -139,7 +150,7 @@ class ProfileUseCaseGetMeTest {
 
     var ex = assertThrows(IllegalArgumentException.class,
       () -> profileUseCase.getMe(id, "user@example.com", null));
-    assertEquals(Message.PT_05, ex.getMessage());
+    assertEquals(SharedMessage.MES_18, ex.getMessage());
   }
 
   @Test

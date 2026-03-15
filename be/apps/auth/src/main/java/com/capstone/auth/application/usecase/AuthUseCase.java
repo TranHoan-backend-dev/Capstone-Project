@@ -13,7 +13,7 @@ import com.capstone.auth.application.dto.response.UserProfileResponse;
 import com.capstone.auth.application.event.producer.message.AccountCreationEvent;
 import com.capstone.auth.application.event.producer.MessageProducer;
 import com.capstone.auth.application.exception.AccountBlockedException;
-import com.capstone.auth.application.exception.NotExistingException;
+import com.capstone.common.exception.NotExistingException;
 
 import com.capstone.common.enumerate.RoleName;
 import com.capstone.auth.infrastructure.utils.Message;
@@ -111,6 +111,7 @@ public class AuthUseCase {
     Objects.requireNonNull(request.waterSupplyNetworkId(), Message.PT_10);
 
     var role = rSrv.getRoleByName(RoleName.valueOf(request.role()));
+    Objects.requireNonNull(role, Message.SE_07);
 
     uSrv.createEmployee(
       request.username(), request.email(), role, request.jobIds(),
@@ -247,6 +248,8 @@ public class AuthUseCase {
       profile.birthday() == null ? null : profile.birthday().toString(),
       user.role().toLowerCase(),
       user.username(),
-      user.email());
+      user.email(),
+      user.userId()
+    );
   }
 }

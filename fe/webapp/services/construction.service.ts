@@ -32,6 +32,30 @@ export const createNetwork = (accessToken: string, name: string) => {
   );
 };
 
+export const updateNetwork = (
+  accessToken: string,
+  id: string,
+  name: string,
+) => {
+  return axios.put(
+    `${API_GATEWAY_URL}/construction/networks/${id}`,
+    { name },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+};
+
+export const deleteNetwork = (accessToken: string, id: string) => {
+  return axios.delete(`${API_GATEWAY_URL}/construction/networks/${id}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
 export const getAllLaterals = (
   accessToken: string,
   page: number,
@@ -165,14 +189,16 @@ export const getAllCommunes = (
   page: number,
   size: number,
   sort: string,
-  keyword?: string | null,
+  search?: string | null,
+  type?: string | null,
 ) =>
   axios.get(`${API_GATEWAY_URL}/construction/communes`, {
     params: {
       page,
       size,
       sort,
-      keyword,
+      search,
+      type,
     },
     headers: {
       Authorization: `Bearer ${accessToken}`,

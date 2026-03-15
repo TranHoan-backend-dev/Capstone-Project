@@ -20,4 +20,7 @@ public class SharedMessage {
   public static final String MES_17 = "Nơi cấp tài khoản ngân hàng không được để trống";
   public static final String MES_18 = "Tên đăng nhập không được để trống";
   public static final String MES_19 = "Họ và tên không được để trống";
+  public static final String MES_20 = "Số đơn không được để trống";
+  public static final String MES_21 = "Mã đơn không được để trống";
+  public static final String MES_22 = "Người đại diện không được để trống";
 }
