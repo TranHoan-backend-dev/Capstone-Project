@@ -1,6 +1,8 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { MailerService } from '@nestjs-modules/mailer';
-import { AccountCreationContext, MailInformation, PasswordResetContext } from "../infrastructure/model/mail.entity";
+import {Injectable, Logger} from "@nestjs/common";
+import {MailerService} from '@nestjs-modules/mailer';
+import {
+  MailInformation,
+} from "../infrastructure/model/mail.entity";
 
 @Injectable()
 export class MailServiceImpl {
@@ -11,7 +13,7 @@ export class MailServiceImpl {
 
   public sendNormalEmail(
     info: MailInformation,
-    context: AccountCreationContext | PasswordResetContext
+    context: any
   ): any {
     Logger.log('MailService is serving request')
     return this

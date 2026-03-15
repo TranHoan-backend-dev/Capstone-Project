@@ -2,7 +2,8 @@ package com.capstone.construction.domain.model;
 
 import com.capstone.common.enumerate.ProcessingStatus;
 import jakarta.persistence.*;
-import com.capstone.construction.infrastructure.utils.Constant;
+import com.capstone.common.utils.SharedMessage;
+import com.capstone.construction.infrastructure.utils.Message;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.jspecify.annotations.NonNull;
@@ -63,32 +64,32 @@ public class Settlement implements Serializable {
 
   // <editor-fold> desc="setter"
   public void setStatus(@NonNull ProcessingStatus value) {
-    requireNonNullAndNotEmpty(value.name(), Constant.PT_03);
+    requireNonNullAndNotEmpty(value.name(), Message.PT_03);
     this.status = value;
   }
 
   public void setRegistrationAt(@NonNull LocalDate value) {
-    Objects.requireNonNull(value, Constant.PT_04);
+    Objects.requireNonNull(value, Message.PT_04);
     this.registrationAt = value;
   }
 
   public void setJobContent(String jobContent) {
-    requireNonNullAndNotEmpty(jobContent, Constant.PT_75);
+    requireNonNullAndNotEmpty(jobContent, SharedMessage.MES_14);
     this.jobContent = jobContent;
   }
 
   public void setAddress(String address) {
-    requireNonNullAndNotEmpty(address, Constant.PT_12);
+    requireNonNullAndNotEmpty(address, SharedMessage.MES_06);
     this.address = address;
   }
 
   public void setConnectionFee(BigDecimal connectionFee) {
-    Objects.requireNonNull(connectionFee, Constant.PT_76);
+    Objects.requireNonNull(connectionFee, Message.PT_50);
     this.connectionFee = connectionFee;
   }
 
   public void setNote(String note) {
-    requireNonNullAndNotEmpty(note, Constant.PT_77);
+    requireNonNullAndNotEmpty(note, SharedMessage.MES_08);
     this.note = note;
   }
 

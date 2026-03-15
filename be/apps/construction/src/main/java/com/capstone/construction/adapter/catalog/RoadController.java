@@ -56,7 +56,7 @@ public class RoadController {
     log.info("REST request to create road: {}", request.name());
     var response = roadUseCase.createRoad(request);
     log.info("Created road: {}", response);
-    return Utils.returnCreatedResponse("Road created successfully");
+    return Utils.returnCreatedResponse("Tạo đường phố thành công");
   }
 
   @PutMapping("/{id}")
@@ -84,7 +84,7 @@ public class RoadController {
     @RequestBody @Valid RoadRequest request) {
     log.info("REST request to update road: {}", id);
     var response = roadUseCase.updateRoad(id, request);
-    return Utils.returnOkResponse("Road updated successfully", response);
+    return Utils.returnOkResponse("Cập nhật đường phố thành công", response);
   }
 
   @DeleteMapping("/{id}")
@@ -108,7 +108,7 @@ public class RoadController {
     @PathVariable @Parameter(description = "ID của đường phố cần xóa", required = true) String id) {
     log.info("REST request to delete road: {}", id);
     roadUseCase.deleteRoad(id);
-    return Utils.returnOkResponse("Road deleted successfully", null);
+    return Utils.returnOkResponse("Xóa đường phố thành công", null);
   }
 
   @GetMapping("/{id}")
@@ -128,7 +128,7 @@ public class RoadController {
     @PathVariable @Parameter(description = "ID của đường phố cần lấy thông tin", required = true) String id) {
     log.info("REST request to get road: {}", id);
     var response = roadUseCase.getRoadById(id);
-    return Utils.returnOkResponse("Road retrieved successfully", response);
+    return Utils.returnOkResponse("Lấy thông tin đường phố thành công", response);
   }
 
   @GetMapping
@@ -136,18 +136,21 @@ public class RoadController {
     **Luồng nghiệp vụ:**
     1. Client gửi request lấy danh sách đường phố.
     2. Hỗ trợ phân trang qua tham số page, size, sort.
-    3. Trả về danh sách kết quả phân trang.""", parameters = {
+    3. Hỗ trợ search theo tên qua tham số keyword (contains, không phân biệt hoa thường).
+    4. Trả về danh sách kết quả phân trang.""", parameters = {
     @Parameter(name = "page", description = "Số trang (bắt đầu từ 0)", example = "0"),
     @Parameter(name = "size", description = "Số lượng phần tử trên 1 trang", example = "10"),
-    @Parameter(name = "sort", description = "Sắp xếp (VD: name,asc)", example = "name,asc")
+    @Parameter(name = "sort", description = "Sắp xếp (VD: name,asc)", example = "name,asc"),
+    @Parameter(name = "keyword", description = "Chuỗi search theo tên đường (contains, ignore case)", example = "Trần")
   }, responses = {
     @ApiResponse(responseCode = "200", description = "Lấy danh sách thành công", content = @Content(schema = @Schema(implementation = RoadResponse.class))),
     @ApiResponse(responseCode = "500", description = "Lỗi hệ thống", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   public ResponseEntity<WrapperApiResponse> getAllRoads(
-    @PageableDefault @Parameter(hidden = true) Pageable pageable) {
-    log.info("REST request to get all roads");
-    var response = roadUseCase.getAllRoads(pageable);
-    return Utils.returnOkResponse("Roads retrieved successfully", response);
+    @PageableDefault @Parameter(hidden = true) Pageable pageable,
+    @RequestParam(required = false) String keyword) {
+    log.info("REST request to get all roads with keyword: {}", keyword);
+    var response = roadUseCase.getAllRoads(pageable, keyword);
+    return Utils.returnOkResponse("Lấy danh sách đường phố thành công", response);
   }
 }

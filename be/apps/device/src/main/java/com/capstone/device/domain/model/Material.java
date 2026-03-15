@@ -1,6 +1,7 @@
 package com.capstone.device.domain.model;
 
-import com.capstone.device.infrastructure.util.Constant;
+import com.capstone.common.utils.SharedMessage;
+import com.capstone.device.infrastructure.util.Message;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -71,43 +72,43 @@ public class Material {
   }
 
   public void setJobContent(String jobContent) {
-    Objects.requireNonNull(jobContent, Constant.ENT_05);
+    Objects.requireNonNull(jobContent, SharedMessage.MES_14);
     if (jobContent.trim().isEmpty()) {
-      throw new IllegalArgumentException(Constant.ENT_05);
+      throw new IllegalArgumentException(SharedMessage.MES_14);
     }
     this.jobContent = jobContent;
   }
 
   public void setLaborCode(String value) {
-    Objects.requireNonNull(value, Constant.ENT_47);
+    Objects.requireNonNull(value, Message.ENT_47);
     if (value.trim().isEmpty()) {
-      throw new IllegalArgumentException(Constant.ENT_47);
+      throw new IllegalArgumentException(Message.ENT_47);
     }
     this.laborCode = value;
   }
 
   public void setPrice(BigDecimal price) {
-    requireNonNullAndNotEmpty(price, Constant.ENT_04);
+    requireNonNullAndNotEmpty(price, Message.ENT_04);
     this.price = price;
   }
 
   public void setLaborPrice(BigDecimal laborPrice) {
-    requireNonNullAndNotEmpty(laborPrice, Constant.ENT_06);
+    requireNonNullAndNotEmpty(laborPrice, Message.ENT_06);
     this.laborPrice = laborPrice;
   }
 
   public void setLaborPriceAtRuralCommune(BigDecimal laborPriceAtRuralCommune) {
-    requireNonNullAndNotEmpty(laborPriceAtRuralCommune, Constant.ENT_08);
+    requireNonNullAndNotEmpty(laborPriceAtRuralCommune, Message.ENT_08);
     this.laborPriceAtRuralCommune = laborPriceAtRuralCommune;
   }
 
   public void setConstructionMachineryPrice(BigDecimal constructionMachineryPrice) {
-    requireNonNullAndNotEmpty(constructionMachineryPrice, Constant.ENT_10);
+    requireNonNullAndNotEmpty(constructionMachineryPrice, Message.ENT_10);
     this.constructionMachineryPrice = constructionMachineryPrice;
   }
 
   public void setConstructionMachineryPriceAtRuralCommune(BigDecimal constructionMachineryPriceAtRuralCommune) {
-    requireNonNullAndNotEmpty(constructionMachineryPriceAtRuralCommune, Constant.ENT_21);
+    requireNonNullAndNotEmpty(constructionMachineryPriceAtRuralCommune, Message.ENT_21);
     this.constructionMachineryPriceAtRuralCommune = constructionMachineryPriceAtRuralCommune;
   }
 
@@ -119,11 +120,11 @@ public class Material {
   }
 
   public void setGroup(MaterialsGroup group) {
-    this.group = Objects.requireNonNull(group, Constant.ENT_35);
+    this.group = Objects.requireNonNull(group, Message.ENT_35);
   }
 
   public void setUnit(Unit unit) {
-    this.unit = Objects.requireNonNull(unit, Constant.ENT_36);
+    this.unit = Objects.requireNonNull(unit, Message.ENT_36);
   }
 
   public static Material create(@NonNull Consumer<SupplyBuilder> consumer) {

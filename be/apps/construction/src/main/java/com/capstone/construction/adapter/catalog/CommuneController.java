@@ -51,7 +51,7 @@ public class CommuneController {
   public ResponseEntity<WrapperApiResponse> createCommune(@RequestBody @Valid CreateRequest request) {
     log.info("REST request to create commune: {}", request.name());
     communeUseCase.createCommune(request);
-    return Utils.returnCreatedResponse("Commune created successfully");
+    return Utils.returnCreatedResponse("Tạo xã/phường thành công");
   }
 
   @PutMapping("/{id}")
@@ -79,7 +79,7 @@ public class CommuneController {
     @RequestBody @Valid UpdateRequest request) {
     log.info("REST request to update commune: {}", id);
     var response = communeUseCase.updateCommune(id, request);
-    return Utils.returnOkResponse("Commune updated successfully", response);
+    return Utils.returnOkResponse("Cập nhật xã/phường thành công", response);
   }
 
   @DeleteMapping("/{id}")
@@ -103,7 +103,7 @@ public class CommuneController {
     @PathVariable @Parameter(description = "ID của xã/phường cần xóa") String id) {
     log.info("REST request to delete commune: {}", id);
     communeUseCase.deleteCommune(id);
-    return Utils.returnOkResponse("Commune deleted successfully", null);
+    return Utils.returnOkResponse("Xóa xã/phường thành công", null);
   }
 
   @GetMapping("/{id}")
@@ -122,17 +122,21 @@ public class CommuneController {
     @PathVariable @Parameter(description = "ID của xã/phường cần lấy thông tin") String id) {
     log.info("REST request to get commune: {}", id);
     var response = communeUseCase.getCommuneById(id);
-    return Utils.returnOkResponse("Commune retrieved successfully", response);
+    return Utils.returnOkResponse("Lấy thông tin xã/phường thành công", response);
   }
 
+  // TODO: sua lai
   @GetMapping
   @Operation(summary = "", description = "", responses = {
     @ApiResponse(responseCode = "200", description = "", content = @Content(schema = @Schema(implementation = CommuneResponse.class)))
   })
   public ResponseEntity<WrapperApiResponse> getAllCommunes(
-    @PageableDefault @Parameter(description = "") Pageable pageable) {
+    @PageableDefault @Parameter(description = "") Pageable pageable,
+    @RequestParam(required = false) @Parameter(description = "Từ khóa tìm kiếm theo tên (không phân biệt dấu)") String search,
+    @RequestParam(required = false) @Parameter(description = "Filter theo type: URBAN_WARD | RURAL_COMMUNE") String type
+  ) {
     log.info("REST request to get all communes");
-    var response = communeUseCase.getAllCommunes(pageable);
+    var response = communeUseCase.getAllCommunes(pageable, search, type);
     return Utils.returnOkResponse("Communes retrieved successfully", response);
   }
 }
