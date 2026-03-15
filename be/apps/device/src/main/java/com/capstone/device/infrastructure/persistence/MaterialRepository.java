@@ -16,6 +16,7 @@ public interface MaterialRepository extends JpaRepository<Material, String> {
 
   boolean existsByUnit_Id(String unitId);
 
+  boolean existsByUnit_Id(String unitId);
     @Query("SELECT m FROM Material m WHERE " +
            "(:jobContent IS NULL OR LOWER(m.jobContent) LIKE LOWER(CONCAT('%', :jobContent, '%'))) AND " +
            "(:laborCode IS NULL OR LOWER(m.laborCode) LIKE LOWER(CONCAT('%', :laborCode, '%'))) AND " +
@@ -28,4 +29,8 @@ public interface MaterialRepository extends JpaRepository<Material, String> {
                                    @Param("minPrice") BigDecimal minPrice,
                                    @Param("maxPrice") BigDecimal maxPrice,
                                    Pageable pageable);
+                                   
+  boolean existsByGroup_GroupId(String id);
+
+  boolean existsByUnit_Id(String unitId);
 }

@@ -68,6 +68,10 @@ public class MaterialUseCase {
     return mService.getMaterialById(id);
   }
 
+  public Page<MaterialResponse> getAll(Pageable pageable) {
+    return mService.getAllMaterials(pageable);
+  }
+
   public Page<MaterialResponse> searchMaterials(SearchRequest request, Pageable pageable) {
     return mService.searchMaterials(request, pageable);
   }
