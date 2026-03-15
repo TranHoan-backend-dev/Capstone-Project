@@ -59,9 +59,9 @@ export const MaterialCostCard = () => {
         setTotalPages(pageData?.totalPages ?? 1);
 
         const mapped = items.map((item: EstimateResponse, index: number) => ({
-          id: item.id,
+          id: item.estimationId,
           stt: (page - 1) * pageSize + index + 1,
-          name: item.name,
+          name: item.formCode,
         }));
         setData(mapped);
       } catch (e) {

@@ -17,8 +17,8 @@ export async function GET(req: NextRequest) {
     const size = Number(searchParams.get("size") ?? 10);
     const sort = searchParams.get("sort") || "createdAt,desc";
     const keyword = searchParams.get("keyword") || "";
-    const fromDate = searchParams.get("fromDate") || "";
-    const toDate = searchParams.get("toDate") || "";
+    const from = searchParams.get("from") || "";
+    const to = searchParams.get("to") || "";
 
     const response = await getAllSettlements(
       accessToken,
@@ -26,8 +26,8 @@ export async function GET(req: NextRequest) {
       size,
       sort,
       keyword,
-      fromDate,
-      toDate,
+      from,
+      to,
     );
 
     return NextResponse.json(

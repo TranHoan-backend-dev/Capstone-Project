@@ -365,8 +365,8 @@ export const getAllSettlements = (
   size: number,
   sort: string,
   keyword?: string | null,
-  fromDate?: string,
-  toDate?: string,
+  from?: string,
+  to?: string,
 ) =>
   axios.get(`${API_GATEWAY_URL}/construction/estimates`, {
     params: {
@@ -374,8 +374,8 @@ export const getAllSettlements = (
       size,
       sort,
       keyword,
-      fromDate,
-      toDate,
+      from,
+      to,
     },
     headers: {
       Authorization: `Bearer ${accessToken}`,
