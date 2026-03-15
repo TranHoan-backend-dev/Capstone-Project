@@ -45,11 +45,6 @@ export const siteConfig = {
       label: "Thiết bị",
       items: [
         {
-          key: "materials-group",
-          label: "Quản lý Nhóm vật tư",
-          href: "/materials-group",
-        },
-        {
           key: "materials-prices",
           label: "Quản lý Đơn giá vật tư",
           href: "/materials-prices",
