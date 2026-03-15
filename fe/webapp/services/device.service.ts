@@ -52,6 +52,61 @@ export const deleteUnit = (accessToken: string, id: string) => {
   });
 };
 
+export const getAllMaterialsGroup = (
+  accessToken: string,
+  page: number,
+  size: number,
+) =>
+  axios.get(`${API_GATEWAY_URL}/d/materials/group`, {
+    params: {
+      page,
+      size,
+    },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+export const createMaterialGroup = (
+  accessToken: string,
+  name: string,
+) => {
+  return axios.post(
+    `${API_GATEWAY_URL}/d/materials/group`,
+    { name },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+};
+
+export const updateMaterialGroup = (
+  accessToken: string,
+  id: string,
+  name: string,
+) => {
+  return axios.put(
+    `${API_GATEWAY_URL}/d/materials/${id}`,
+    { name },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+};
+
+export const deleteMaterialGroup = (accessToken: string, id: string) => {
+  return axios.delete(`${API_GATEWAY_URL}/d/materials/group/${id}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
+
 export const getAllMaterials = (
   accessToken: string,
   page: number,
