@@ -111,6 +111,7 @@ public class AuthUseCase {
     Objects.requireNonNull(request.waterSupplyNetworkId(), Message.PT_10);
 
     var role = rSrv.getRoleByName(RoleName.valueOf(request.role()));
+    Objects.requireNonNull(role, Message.SE_07);
 
     uSrv.createEmployee(
       request.username(), request.email(), role, request.jobIds(),
@@ -247,6 +248,8 @@ public class AuthUseCase {
       profile.birthday() == null ? null : profile.birthday().toString(),
       user.role().toLowerCase(),
       user.username(),
-      user.email());
+      user.email(),
+      user.userId()
+    );
   }
 }

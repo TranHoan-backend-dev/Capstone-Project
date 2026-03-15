@@ -1,5 +1,6 @@
 package com.capstone.customer.model;
 
+import com.capstone.common.enumerate.CustomerType;
 import com.capstone.common.enumerate.UsageTarget;
 import com.capstone.common.utils.SharedConstant;
 import com.capstone.common.utils.SharedMessage;
@@ -37,7 +38,8 @@ public class Customer {
   String phoneNumber;
 
   @Column(nullable = false)
-  String type;
+  @Enumerated(EnumType.STRING)
+  CustomerType type; // loai khach hang
 
   @Setter
   @Column(nullable = false)
@@ -156,8 +158,8 @@ public class Customer {
     this.phoneNumber = phoneNumber;
   }
 
-  public void setType(String type) {
-    requireText(type, Message.ENT_03);
+  public void setType(CustomerType type) {
+    Objects.requireNonNull(type, Message.ENT_03);
     this.type = type;
   }
 
@@ -326,7 +328,7 @@ public class Customer {
       return this;
     }
 
-    public CustomerBuilder type(String type) {
+    public CustomerBuilder type(CustomerType type) {
       customer.setType(type);
       return this;
     }

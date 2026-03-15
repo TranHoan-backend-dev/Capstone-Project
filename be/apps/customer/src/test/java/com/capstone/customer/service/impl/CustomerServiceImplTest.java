@@ -1,7 +1,8 @@
 package com.capstone.customer.service.impl;
 
+import com.capstone.common.enumerate.CustomerType;
 import com.capstone.common.enumerate.UsageTarget;
-import com.capstone.customer.dto.request.CustomerRequest;
+import com.capstone.customer.dto.request.customer.CreateRequest;
 import com.capstone.customer.dto.response.CustomerResponse;
 import com.capstone.customer.model.Customer;
 import com.capstone.customer.repository.CustomerRepository;
@@ -36,7 +37,7 @@ class CustomerServiceImplTest {
   private CustomerServiceImpl customerService;
 
   private Customer customer;
-  private CustomerRequest customerRequest;
+  private CreateRequest createRequest;
   private Pageable pageable;
 
   @BeforeEach
@@ -50,7 +51,7 @@ class CustomerServiceImplTest {
     lenient().when(customer.getName()).thenReturn("Trần Văn A");
     lenient().when(customer.getEmail()).thenReturn("tranvana@example.com");
     lenient().when(customer.getPhoneNumber()).thenReturn("0901234567");
-    lenient().when(customer.getType()).thenReturn("CÁ NHÂN");
+    lenient().when(customer.getType()).thenReturn(CustomerType.FAMILY);
     lenient().when(customer.getIsBigCustomer()).thenReturn(false);
     lenient().when(customer.getUsageTarget()).thenReturn(UsageTarget.DOMESTIC);
     lenient().when(customer.getNumberOfHouseholds()).thenReturn(1);
@@ -80,8 +81,8 @@ class CustomerServiceImplTest {
     lenient().when(customer.getWaterPriceId()).thenReturn("WP001");
     lenient().when(customer.getWaterMeterId()).thenReturn("WM001");
 
-    customerRequest = new CustomerRequest(
-      "Trần Văn A", "tranvana@example.com", "0901234567", "CÁ NHÂN", false,
+    createRequest = new CreateRequest(
+      "Trần Văn A", "tranvana@example.com", "0901234567", CustomerType.FAMILY, false,
       UsageTarget.DOMESTIC, 1, 123456, 1000, false, false, "0", "5000",
       1500000, "2023-12", 20000, "CƠ", "012345678901", "Cục CSQLHC về TTXH",
       "TIỀN MẶT", "123456789", "Vietcombank", "TRAN VAN A", "BRC001", "P001",
@@ -96,7 +97,7 @@ class CustomerServiceImplTest {
     when(customerRepository.save(any(Customer.class))).thenReturn(customer);
 
     // When
-    var response = customerService.createCustomer(customerRequest);
+    var response = customerService.createCustomer(createRequest);
 
     // Then
     assertThat(response).isNotNull();
@@ -108,8 +109,8 @@ class CustomerServiceImplTest {
   @DisplayName("Should create customer with default active status when isActive is null")
   void should_CreateCustomerWithDefaultActiveStatus_When_IsActiveIsNull() {
     // Given
-    var requestWithNullActive = new CustomerRequest(
-      "Trần Văn A", "tranvana@example.com", "0901234567", "CÁ NHÂN", false,
+    var requestWithNullActive = new CreateRequest(
+      "Trần Văn A", "tranvana@example.com", "0901234567", CustomerType.FAMILY, false,
       UsageTarget.DOMESTIC, 1, 123456, 1000, false, false, "0", "5000",
       1500000, "2023-12", 20000, "CƠ", "012345678901", "Cục CSQLHC về TTXH",
       "TIỀN MẶT", "123456789", "Vietcombank", "TRAN VAN A", "BRC001", "P001",
@@ -133,11 +134,11 @@ class CustomerServiceImplTest {
     when(customerRepository.save(any(Customer.class))).thenReturn(customer);
 
     // When
-    var response = customerService.updateCustomer(id, customerRequest);
+    var response = customerService.updateCustomer(id, createRequest);
 
     // Then
     assertThat(response).isNotNull();
-    verify(customer).setName(customerRequest.name());
+    verify(customer).setName(createRequest.name());
     verify(customerRepository).save(customer);
   }
 
@@ -149,7 +150,7 @@ class CustomerServiceImplTest {
     when(customerRepository.findById(id)).thenReturn(Optional.empty());
 
     // When & Then
-    assertThrows(IllegalArgumentException.class, () -> customerService.updateCustomer(id, customerRequest));
+    assertThrows(IllegalArgumentException.class, () -> customerService.updateCustomer(id, createRequest));
   }
 
   @Test

@@ -1,5 +1,6 @@
 package com.capstone.auth.adapter;
 
+import com.capstone.auth.application.business.users.UserService;
 import com.capstone.auth.application.dto.request.users.FilterUsersRequest;
 import com.capstone.auth.application.dto.request.UpdateBusinessPageNamesRequest;
 import com.capstone.auth.application.dto.request.users.UpdateRequest;
@@ -44,6 +45,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthorizationController {
   UsersUseCase usersUseCase;
+  UserService userService;
   ProfileUseCase profileUseCase;
   @NonFinal
   Logger log;
@@ -145,6 +147,12 @@ public class AuthorizationController {
     log.info("Deleting employee: {}", id);
     usersUseCase.deleteEmployee(id);
     return Utils.returnOkResponse("Xóa nhân viên thành công", null);
+  }
+
+  @Operation(hidden = true)
+  @GetMapping("/employees/role/{id}")
+  public ResponseEntity<?> getRoleOfEmployeeById(@PathVariable String id) {
+    return Utils.returnOkResponse("", userService.getRoleOfEmployee(id));
   }
   // </editor-fold>
 

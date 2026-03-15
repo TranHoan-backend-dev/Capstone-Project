@@ -175,14 +175,14 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   }
 
   @Override
-  public void assignInstallationForm(String id, InstallationFormId installationFormId) {
+  public void assignInstallationForm(String id, InstallationFormId installationFormId, @NonNull Boolean status) {
     log.info("Assigning installation form with id: {}", id);
-    var status = empSrv.isEmployeeExisting(id).data().toString();
-    if (!Boolean.parseBoolean(status)) {
-      throw new IllegalArgumentException(Message.PT_35);
-    }
     var form = ifRepo.findById(installationFormId).orElseThrow(() -> new IllegalArgumentException(Message.PT_36));
-    form.setHandoverBy(id);
+    if (status) {
+      form.setHandoverBy(id);
+    } else {
+      form.setConstructedBy(id);
+    }
     ifRepo.save(form);
   }
 

@@ -58,7 +58,7 @@ class RoleServiceImplTest {
     when(repo.existsById(id)).thenReturn(false);
 
     NotExistingException ex = assertThrows(NotExistingException.class, () -> roleService.getRoleNameById(id));
-    assertEquals(Message.SE_08, ex.getMessage());
+    assertEquals(Message.SE_07, ex.getMessage());
   }
 
   @Test
@@ -81,7 +81,7 @@ class RoleServiceImplTest {
     when(repo.findById(id)).thenReturn(Optional.empty());
 
     NotExistingException ex = assertThrows(NotExistingException.class, () -> roleService.getRoleById(id));
-    assertEquals(Message.SE_08, ex.getMessage());
+    assertEquals(Message.SE_07, ex.getMessage());
   }
 
   @Test

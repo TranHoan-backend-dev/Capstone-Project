@@ -92,12 +92,7 @@ public class UserServiceImpl implements UserService {
   @Override
   @Transactional(rollbackFor = Exception.class)
   public void updatePassword(String email, @NonNull String password, String newPassword) {
-    var obj = getUsersByEmail(email);
-    // Note: Local password verification is currently skipped because Users entity
-    // does not store passwords (it's managed by Keycloak).
-    // If local verification/storage is needed, re-add the password field to the Users entity.
-    log.info("Local password update for {} - Skipping verification (managed by Keycloak)", email);
-    updateUser(obj, newPassword);
+    throw new IllegalArgumentException("Password managed by Keycloak");
   }
 
   @Override
@@ -286,6 +281,13 @@ public class UserServiceImpl implements UserService {
       bpService.getPagesByEmployeeId(emp.getUserId()).toString(),
       emp.getEmail()
     );
+  }
+
+  @Override
+  public String getRoleOfEmployee(String id) {
+    var user = getById(id);
+    return roleRepo.findByUsers(Set.of(user))
+      .getFirst().getName().toString();
   }
 
   private Users getById(String id) {

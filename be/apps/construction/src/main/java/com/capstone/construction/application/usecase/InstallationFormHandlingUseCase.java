@@ -1,5 +1,6 @@
 package com.capstone.construction.application.usecase;
 
+import com.capstone.common.enumerate.RoleName;
 import com.capstone.construction.application.business.installationform.InstallationFormService;
 import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
@@ -22,6 +23,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -68,8 +71,32 @@ public class InstallationFormHandlingUseCase {
     return savedResponse;
   }
 
-  public void assignInstallationForm(InstallationFormId request, String empId) {
-    ifSrv.assignInstallationForm(empId, request);
+  public void assignInstallationFormToSurveyStaff(InstallationFormId request, String empId) {
+    var role = empSrv.getRoleOfEmployeeById(empId).data();
+    Objects.requireNonNull(role);
+    if (!role.toString().equalsIgnoreCase(RoleName.SURVEY_STAFF.name())) {
+      throw new IllegalArgumentException(String.format(Message.PT_28, "nhân viên khảo sát"));
+    }
+
+    ifSrv.assignInstallationForm(empId, request, true);
+    var form = ifSrv.getByFormCodeAndFormNumber(request.getFormCode(), request.getFormNumber());
+
+    var routingKey = QUEUE_NAME + PREFIX + ASSIGN_ACTION;
+    var event = new AssignEvent(
+      form.formCode(),
+      form.formNumber(),
+      empId);
+    messageProducer.send(routingKey, event);
+  }
+
+  public void assignInstallationFormToConstructionCaptain(InstallationFormId request, String empId) {
+    var role = empSrv.getRoleOfEmployeeById(empId).data();
+    Objects.requireNonNull(role);
+    if (!role.toString().equalsIgnoreCase(RoleName.CONSTRUCTION_DEPARTMENT_STAFF.name())) {
+      throw new IllegalArgumentException(String.format(Message.PT_28, "đội trưởng đội thi công (nhân viên chi nhánh Xây lắp"));
+    }
+
+    ifSrv.assignInstallationForm(empId, request, false);
     var form = ifSrv.getByFormCodeAndFormNumber(request.getFormCode(), request.getFormNumber());
 
     var routingKey = QUEUE_NAME + PREFIX + ASSIGN_ACTION;

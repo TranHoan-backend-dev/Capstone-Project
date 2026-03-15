@@ -125,6 +125,7 @@ public class CommuneController {
     return Utils.returnOkResponse("Lấy thông tin xã/phường thành công", response);
   }
 
+  // TODO: sua lai
   @GetMapping
   @Operation(summary = "", description = "", responses = {
     @ApiResponse(responseCode = "200", description = "", content = @Content(schema = @Schema(implementation = CommuneResponse.class)))

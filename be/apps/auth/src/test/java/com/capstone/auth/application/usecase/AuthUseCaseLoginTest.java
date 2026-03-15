@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -32,6 +33,9 @@ class AuthUseCaseLoginTest {
 
   @InjectMocks
   AuthUseCase authUseCase;
+
+  @Mock
+  private Logger log;
 
   @Test
   void login_returns_profile_response_for_valid_credentials() {
@@ -103,7 +107,7 @@ class AuthUseCaseLoginTest {
       AccountBlockedException.class,
       () -> authUseCase.login(userId, email, username));
 
-    assertEquals(Message.SE_07, ex.getMessage());
+    assertEquals(Message.SE_06, ex.getMessage());
   }
 
   @Test
@@ -122,7 +126,7 @@ class AuthUseCaseLoginTest {
       NotExistingException.class,
       () -> authUseCase.login(userId, email, username));
 
-    assertEquals(Message.SE_05, ex.getMessage());
+    assertEquals(Message.SE_04, ex.getMessage());
   }
 
   @Test
@@ -137,7 +141,7 @@ class AuthUseCaseLoginTest {
       NullPointerException.class,
       () -> authUseCase.login(userId, email, username));
 
-    assertEquals(Message.SE_04, ex.getMessage());
+    assertEquals(Message.SE_03, ex.getMessage());
   }
 
   @Test
@@ -192,6 +196,6 @@ class AuthUseCaseLoginTest {
       NullPointerException.class,
       () -> authUseCase.login(userId, email, username));
 
-    assertEquals(Message.SE_06, ex.getMessage());
+    assertEquals(Message.SE_05, ex.getMessage());
   }
 }
