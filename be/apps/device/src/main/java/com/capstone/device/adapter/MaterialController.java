@@ -4,6 +4,7 @@ import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
 import com.capstone.device.application.business.material.MaterialService;
+import com.capstone.device.application.dto.request.material.GroupRequest;
 import com.capstone.device.application.dto.request.material.CreateRequest;
 import com.capstone.device.application.dto.request.material.SearchRequest;
 import com.capstone.device.application.dto.request.material.UpdateRequest;
@@ -37,6 +38,7 @@ public class MaterialController {
   final MaterialService mService;
   Logger log;
 
+  // <editor-fold> desc="material"
   @Operation(summary = "Tạo mới đơn giá vật tư", description = "Cho phép nhân viên IT tạo mới một bản ghi đơn giá vật tư vào hệ thống. Yêu cầu quyền IT_STAFF.", responses = {
       @ApiResponse(responseCode = "201", description = "Tạo mới thành công"),
       @ApiResponse(responseCode = "400", description = "Dữ liệu đầu vào không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
@@ -46,9 +48,9 @@ public class MaterialController {
   @PreAuthorize("hasAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> createMaterial(@RequestBody @Valid CreateRequest request) {
     log.info("REST request to create material: {}", request.jobContent());
-    var response = mUseCase.create(request);
+    var response = mUseCase.createMaterial(request);
     log.info("Response: {}", response);
-    return Utils.returnCreatedResponse("Material created successfully");
+    return Utils.returnCreatedResponse("Tạo vật tư thành công");
   }
 
   @Operation(summary = "Cập nhật đơn giá vật tư", description = "Cập nhật thông tin đơn giá vật tư dựa trên ID. Sau khi cập nhật thành công, một sự kiện sẽ được gửi đến RabbitMQ để thông báo cho Notification Service.", responses = {
@@ -62,8 +64,8 @@ public class MaterialController {
       @PathVariable @Parameter(description = "ID của vật tư cần cập nhật", example = "VL001") String id,
       @RequestBody @Valid UpdateRequest request) {
     log.info("REST request to update material: {}", id);
-    var response = mUseCase.update(id, request);
-    return Utils.returnOkResponse("Material updated successfully", response);
+    var response = mUseCase.updateMaterial(id, request);
+    return Utils.returnOkResponse("Cập nhật vật tư thành công", response);
   }
 
   @Operation(summary = "Xóa đơn giá vật tư", description = "Xóa bản ghi vật tư khỏi hệ thống dựa trên ID. Thao tác này sẽ kích hoạt sự kiện xóa gửi đến các dịch vụ liên quan.", responses = {
@@ -75,8 +77,8 @@ public class MaterialController {
   public ResponseEntity<WrapperApiResponse> deleteMaterial(
       @PathVariable @Parameter(description = "ID của vật tư cần xóa", example = "VL001") String id) {
     log.info("REST request to delete material: {}", id);
-    mUseCase.delete(id);
-    return Utils.returnOkResponse("Material deleted successfully", null);
+    mUseCase.deleteMaterial(id);
+    return Utils.returnOkResponse("Xóa vật tư thành công", null);
   }
 
   @Operation(summary = "", description = "", responses = {
@@ -88,7 +90,7 @@ public class MaterialController {
       @PathVariable @Parameter(description = "") String id) {
     log.info("REST request to get material: {}", id);
     var response = mUseCase.get(id);
-    return Utils.returnOkResponse("Material retrieved successfully", response);
+    return Utils.returnOkResponse("Lấy thông tin vật tư thành công", response);
   }
 
   @Operation(summary = "", description = "")
@@ -104,6 +106,51 @@ public class MaterialController {
   @GetMapping("/exist")
   public ResponseEntity<?> checkExistence(@RequestParam String id) {
     log.info("REST request to check existence of water meter: {}", id);
-    return Utils.returnNoContentResponse("Check material id successfully", mService.materialExists(id));
+    return Utils.returnOkResponse("Kiểm tra ID vật tư thành công", mService.materialExists(id));
   }
+  // </editor-fold>
+
+  // <editor-fold> desc="material group"
+  @Operation(summary = "Tạo mới nhóm vật tư", description = "Cho phép nhân viên IT tạo mới một nhóm vật tư. Yêu cầu quyền IT_STAFF.", responses = {
+      @ApiResponse(responseCode = "201", description = "Tạo mới thành công"),
+      @ApiResponse(responseCode = "400", description = "Dữ liệu đầu vào không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+      @ApiResponse(responseCode = "403", description = "Không có quyền thực hiện thao tác này", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+  })
+  @PostMapping("/group")
+  @PreAuthorize("hasAuthority('IT_STAFF')")
+  public ResponseEntity<?> createMaterialGroup(@RequestBody @Valid GroupRequest request) {
+    log.info("REST request to create group: {}", request);
+    mUseCase.createMaterialGroup(request);
+    return Utils.returnCreatedResponse("Tạo nhóm vật tư thành công");
+  }
+
+  @Operation(summary = "Cập nhật nhóm vật tư", description = "Cập nhật tên nhóm vật tư dựa trên ID. Yêu cầu quyền IT_STAFF.", responses = {
+      @ApiResponse(responseCode = "200", description = "Cập nhật thành công"),
+      @ApiResponse(responseCode = "400", description = "ID không tồn tại hoặc dữ liệu không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+      @ApiResponse(responseCode = "403", description = "Không có quyền thực hiện", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+  })
+  @PutMapping("/group/{id}")
+  @PreAuthorize("hasAuthority('IT_STAFF')")
+  public ResponseEntity<?> updateMaterialGroup(
+      @PathVariable @Parameter(description = "ID của nhóm vật tư", example = "group-uuid") String id,
+      @RequestBody @Valid GroupRequest request) {
+    log.info("REST request to update group: {}", request);
+    mUseCase.updateGroup(id, request.name());
+    return Utils.returnOkResponse("Cập nhật nhóm vật tư thành công", null);
+  }
+
+  @Operation(summary = "Xóa nhóm vật tư", description = "Xóa nhóm vật tư dựa trên ID. Yêu cầu quyền IT_STAFF.", responses = {
+      @ApiResponse(responseCode = "204", description = "Xóa thành công"),
+      @ApiResponse(responseCode = "400", description = "Không tìm thấy ID nhóm vật tư", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+      @ApiResponse(responseCode = "403", description = "Không có quyền thực hiện", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+  })
+  @DeleteMapping("/group/{id}")
+  @PreAuthorize("hasAuthority('IT_STAFF')")
+  public ResponseEntity<?> deleteMaterialGroup(
+      @PathVariable @Parameter(description = "ID của nhóm vật tư", example = "group-uuid") String id) {
+    log.info("REST request to delete group: {}", id);
+    mUseCase.deleteGroup(id);
+    return Utils.returnNoContentResponse("Xóa nhóm vật tư thành công");
+  }
+  // </editor-fold>
 }

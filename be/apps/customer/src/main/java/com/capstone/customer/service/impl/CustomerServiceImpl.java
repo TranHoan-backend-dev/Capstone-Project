@@ -1,6 +1,6 @@
 package com.capstone.customer.service.impl;
 
-import com.capstone.customer.dto.request.CustomerRequest;
+import com.capstone.customer.dto.request.customer.CreateRequest;
 import com.capstone.customer.dto.response.CustomerResponse;
 import com.capstone.customer.model.Customer;
 import com.capstone.customer.repository.CustomerRepository;
@@ -24,7 +24,7 @@ public class CustomerServiceImpl implements CustomerService {
 
   @Override
   @Transactional
-  public CustomerResponse createCustomer(@NonNull CustomerRequest request) {
+  public CustomerResponse createCustomer(@NonNull CreateRequest request) {
     log.info("Creating customer with email: {}", request.email());
     var customer = Customer.create(builder -> builder
       .name(request.name())
@@ -36,13 +36,6 @@ public class CustomerServiceImpl implements CustomerService {
       .numberOfHouseholds(request.numberOfHouseholds())
       .householdRegistrationNumber(request.householdRegistrationNumber())
       .protectEnvironmentFee(request.protectEnvironmentFee())
-      .isFree(request.isFree())
-      .isSale(request.isSale())
-      .m3Sale(request.m3Sale())
-      .fixRate(request.fixRate())
-      .installationFee(request.installationFee())
-      .deductionPeriod(request.deductionPeriod())
-      .monthlyRent(request.monthlyRent())
       .waterMeterType(request.waterMeterType())
       .citizenIdentificationNumber(request.citizenIdentificationNumber())
       .citizenIdentificationProvideAt(request.citizenIdentificationProvideAt())
@@ -50,21 +43,48 @@ public class CustomerServiceImpl implements CustomerService {
       .bankAccountNumber(request.bankAccountNumber())
       .bankAccountProviderLocation(request.bankAccountProviderLocation())
       .bankAccountName(request.bankAccountName())
-      .budgetRelationshipCode(request.budgetRelationshipCode())
-      .passportCode(request.passportCode())
-      .connectionPoint(request.connectionPoint())
       .isActive(request.isActive() != null ? request.isActive() : true)
-      .cancelReason(request.cancelReason())
-      .installationFormId(request.installationFormId())
+      .formNumber(request.formNumber())
+      .formCode(request.formCode())
       .waterPriceId(request.waterPriceId())
       .waterMeterId(request.waterMeterId()));
+    if (request.isFree() != null) {
+      customer.setIsFree(request.isFree());
+    }
+    if (request.isSale() != null) {
+      customer.setIsSale(request.isSale());
+    }
+    if (request.m3Sale() != null) {
+      customer.setM3Sale(request.m3Sale());
+    }
+    if (request.fixRate() != null) {
+      customer.setFixRate(request.fixRate());
+    }
+    if (request.installationFee() != null) {
+      customer.setInstallationFee(request.installationFee());
+    }
+    if (request.deductionPeriod() != null) {
+      customer.setDeductionPeriod(request.deductionPeriod());
+    }
+    if (request.monthlyRent() != null) {
+      customer.setMonthlyRent(request.monthlyRent());
+    }
+    if (request.budgetRelationshipCode() != null) {
+      customer.setBudgetRelationshipCode(request.budgetRelationshipCode());
+    }
+    if (request.passportCode() != null) {
+      customer.setPassportCode(request.passportCode());
+    }
+    if (request.connectionPoint() != null) {
+      customer.setConnectionPoint(request.connectionPoint());
+    }
     var saved = customerRepository.save(customer);
     return mapToResponse(saved);
   }
 
   @Override
   @Transactional
-  public CustomerResponse updateCustomer(String id, @NonNull CustomerRequest request) {
+  public CustomerResponse updateCustomer(String id, @NonNull CreateRequest request) {
     log.info("Updating customer with ID: {}", id);
     var customer = customerRepository.findById(id)
       .orElseThrow(() -> new IllegalArgumentException("Customer not found with ID: " + id));
@@ -97,7 +117,8 @@ public class CustomerServiceImpl implements CustomerService {
     customer.setConnectionPoint(request.connectionPoint());
     customer.setIsActive(request.isActive());
     customer.setCancelReason(request.cancelReason());
-    customer.setInstallationFormId(request.installationFormId());
+    customer.setFormNumber(request.formNumber());
+    customer.setFormCode(request.formCode());
     customer.setWaterPriceId(request.waterPriceId());
     customer.setWaterMeterId(request.waterMeterId());
 
@@ -129,13 +150,19 @@ public class CustomerServiceImpl implements CustomerService {
     return customerRepository.findAll(pageable).map(this::mapToResponse);
   }
 
-  private CustomerResponse mapToResponse(@NonNull Customer customer) {
+  @Override
+  public boolean areCustomersAppliedThisPrice(String priceId) {
+    log.info("Checking if customers are applied this water price: {}", priceId);
+    return customerRepository.existsByWaterPriceId(priceId);
+  }
+
+  private @NonNull CustomerResponse mapToResponse(@NonNull Customer customer) {
     return new CustomerResponse(
       customer.getCustomerId(),
       customer.getName(),
       customer.getEmail(),
       customer.getPhoneNumber(),
-      customer.getType(),
+      customer.getType().name().toLowerCase(),
       customer.getIsBigCustomer(),
       customer.getUsageTarget(),
       customer.getNumberOfHouseholds(),
@@ -162,7 +189,7 @@ public class CustomerServiceImpl implements CustomerService {
       customer.getCancelReason(),
       customer.getCreatedAt(),
       customer.getUpdatedAt(),
-      customer.getInstallationFormId(),
+      customer.getFormNumber(),
       customer.getWaterPriceId(),
       customer.getWaterMeterId());
   }

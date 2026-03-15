@@ -1,8 +1,8 @@
 package com.capstone.auth.infrastructure.utils;
 
 import com.capstone.auth.application.business.dto.UserDTO;
-import com.capstone.auth.infrastructure.config.Constant;
 import com.capstone.common.utils.SharedConstant;
+import com.capstone.common.utils.SharedMessage;
 
 public class AuthUtils {
   /**
@@ -19,7 +19,7 @@ public class AuthUtils {
         throw new IllegalArgumentException("Email does not match");
       }
     } else {
-      throw new IllegalArgumentException(Constant.PT_01);
+      throw new IllegalArgumentException(SharedMessage.MES_01);
     }
 
     if (username != null) {
@@ -27,7 +27,7 @@ public class AuthUtils {
         throw new IllegalArgumentException("Username does not match");
       }
     } else {
-      throw new IllegalArgumentException(Constant.PT_05);
+      throw new IllegalArgumentException(SharedMessage.MES_18);
     }
   }
 }

@@ -1,0 +1,91 @@
+@baseUrl = http://localhost:9005/api/v1
+@contractsUrl = {{baseUrl}}/contracts
+@keycloak = http://localhost:8080/realms/cmsn/protocol/openid-connect
+@client_secret = t2io8dzbyJ9qdVdR2uoL01L6vBfViILJ
+
+### 0. Lấy Access Token (Keycloak)
+# @name login
+POST {{keycloak}}/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password&
+client_id=cmsn&
+client_secret={{client_secret}}&
+username=test&
+password=12345678&
+scope=openid
+
+> {%
+    client.global.set("access_token", response.body.access_token);
+%}
+
+### 1. Tạo mới hợp đồng (Thành công - 201)
+POST {{contractsUrl}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "contractId": "HD_TEST_001",
+  "customerId": "CUST_001",
+  "formCode": "DK_001",
+  "formNumber": "001",
+  "representatives": [
+    {
+      "name": "Nguyễn Văn A",
+      "position": "Chủ hộ"
+    }
+  ],
+  "appendix": []
+}
+
+### 2. Tạo mới hợp đồng (Lỗi - 400 Dữ liệu không hợp lệ)
+POST {{contractsUrl}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "contractId": "",
+  "customerId": "CUST_001",
+  "formCode": "",
+  "formNumber": ""
+}
+
+### 3. Lấy thông tin hợp đồng theo ID (Thành công - 200)
+GET {{contractsUrl}}/HD_TEST_001
+Authorization: Bearer {{access_token}}
+
+### 3.1 Lấy thông tin hợp đồng theo ID (Lỗi - 404)
+GET {{contractsUrl}}/ID_KHONG_TON_TAI
+Authorization: Bearer {{access_token}}
+
+### 4. Lấy danh sách hợp đồng (Tất cả)
+GET {{contractsUrl}}
+Authorization: Bearer {{access_token}}
+
+### 4.1 Lấy danh sách - Lọc theo từ khóa
+GET {{contractsUrl}}?keyword=Nguyen
+Authorization: Bearer {{access_token}}
+
+### 4.2 Lấy danh sách - Lọc theo ngày bắt đầu
+GET {{contractsUrl}}?from=04-11-2026
+Authorization: Bearer {{access_token}}
+
+### 4.3 Lấy danh sách - Lọc theo ngày kết thúc
+GET {{contractsUrl}}?to=31-12-2025
+Authorization: Bearer {{access_token}}
+
+### 4.4 Lấy danh sách - Lọc theo khoảng thời gian
+GET {{contractsUrl}}?from=01-01-2023&to=31-12-2026
+Authorization: Bearer {{access_token}}
+
+### 4.5 Lấy danh sách - Phân trang & Sắp xếp
+GET {{contractsUrl}}?page=0&size=5&sort=createdAt,desc
+Authorization: Bearer {{access_token}}
+
+### 5. Xóa hợp đồng (Thành công - 200)
+DELETE {{contractsUrl}}/HD_TEST_001
+Authorization: Bearer {{access_token}}
+
+### 5.1 Xóa hợp đồng (Lỗi - 404)
+DELETE {{contractsUrl}}/ID_KHONG_TON_TAI
+Authorization: Bearer {{access_token}}

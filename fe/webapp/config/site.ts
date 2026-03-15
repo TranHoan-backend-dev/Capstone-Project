@@ -11,6 +11,34 @@ export const siteConfig = {
       href: "/home",
     },
 
+    // Danh mục
+    {
+      key: "category",
+      label: "Danh mục",
+      items: [
+        {
+          key: "departments",
+          label: "Quản lý Phòng ban",
+          href: "/departments",
+        },
+        {
+          key: "jobs",
+          label: "Quản lý Công việc",
+          href: "/jobs",
+        },
+        {
+          key: "communes",
+          label: "Quản lý Phường/xã",
+          href: "/communes",
+        },
+        {
+          key: "roads",
+          label: "Quản lý Đường phố",
+          href: "/roads",
+        },
+      ],
+    },
+
     // Thiết bị
     {
       key: "device",
@@ -20,6 +48,11 @@ export const siteConfig = {
           key: "materials-prices",
           label: "Quản lý Đơn giá vật tư",
           href: "/materials-prices",
+        },
+        {
+          key: "units",
+          label: "Quản lý Đơn vị tính",
+          href: "/units",
         },
       ],
     },
@@ -153,6 +186,11 @@ export const siteConfig = {
           key: "laterals",
           label: "Quản lý Nhánh tổng",
           href: "/laterals",
+        },
+        {
+          key: "roadmaps",
+          label: "Quản lý Lộ trình ghi",
+          href: "/roadmaps",
         },
         {
           key: "settlement-lookup",

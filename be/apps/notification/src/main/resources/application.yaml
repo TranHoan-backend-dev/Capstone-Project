@@ -79,18 +79,13 @@ rabbit-mq-config:
     - department
     - employee
     - installation-form
+    - cost-estimate
   actions:
     - update
     - delete
     - create
+    - approve
+    - assign
+#    -
   auth-routingKey: auth.individual-notification.create
   auth-queue: auth.individual-notification.queue
-# spring:
-# data:
-# mongodb:
-# uri: mongodb://guest:guest@mongodb:27017/microservice_db?authSource=admin
-#  rabbitmq:
-#    host: localhost # cua may local
-#    port: 5672
-#    username: guest
-#    password: guest

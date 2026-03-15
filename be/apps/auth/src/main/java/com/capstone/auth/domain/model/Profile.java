@@ -1,7 +1,8 @@
 package com.capstone.auth.domain.model;
 
-import com.capstone.auth.infrastructure.config.Constant;
+import com.capstone.auth.infrastructure.utils.Message;
 import com.capstone.common.utils.SharedConstant;
+import com.capstone.common.utils.SharedMessage;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
@@ -41,30 +42,30 @@ public class Profile {
   LocalDate birthday;
 
   public void setUsers(Users users) {
-    Objects.requireNonNull(users, Constant.PT_09);
+    Objects.requireNonNull(users, Message.PT_02);
     this.users = users;
   }
 
   public void setProfileId(String value) {
-    Objects.requireNonNull(value, Constant.PT_22);
+    Objects.requireNonNull(value, SharedMessage.MES_07);
     this.profileId = value;
   }
 
   public void setFullname(String fullname) {
-    requireNonNullAndNotEmpty(fullname, Constant.PT_10);
+    requireNonNullAndNotEmpty(fullname, SharedMessage.MES_19);
     if (!fullname.chars().allMatch(c -> Character.isLetter(c) || Character.isWhitespace(c))) {
-      throw new IllegalArgumentException(Constant.PT_13);
+      throw new IllegalArgumentException(Message.PT_07);
     }
     this.fullname = fullname;
   }
 
   public void setAvatarUrl(String avatarUrl) {
-    requireNonNullAndNotEmpty(avatarUrl, Constant.PT_11);
+    requireNonNullAndNotEmpty(avatarUrl, Message.PT_06);
     this.avatarUrl = avatarUrl;
   }
 
   public void setAddress(String address) {
-    requireNonNullAndNotEmpty(address, Constant.PT_12);
+    requireNonNullAndNotEmpty(address, SharedMessage.MES_06);
     this.address = address;
   }
 
@@ -76,23 +77,23 @@ public class Profile {
   }
 
   public void setPhoneNumber(String phoneNumber) {
-    Objects.requireNonNull(phoneNumber, Constant.PT_14);
+    Objects.requireNonNull(phoneNumber, SharedMessage.MES_04);
     if (phoneNumber.isBlank()) {
-      throw new IllegalArgumentException(Constant.PT_15);
+      throw new IllegalArgumentException(SharedMessage.MES_03);
     }
     if (!phoneNumber.matches(SharedConstant.PHONE_PATTERN)) {
-      throw new IllegalArgumentException(Constant.PT_14);
+      throw new IllegalArgumentException(SharedMessage.MES_04);
     }
     this.phoneNumber = phoneNumber;
   }
 
   public void setGender(Boolean gender) {
-    Objects.requireNonNull(gender, Constant.PT_16);
+    Objects.requireNonNull(gender, Message.PT_08);
     this.gender = gender;
   }
 
   public void setBirthday(LocalDate birthday) {
-    Objects.requireNonNull(birthday, Constant.PT_17);
+    Objects.requireNonNull(birthday, Message.PT_09);
     this.birthday = birthday;
   }
 

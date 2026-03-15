@@ -1,10 +1,9 @@
 package com.capstone.auth.application.business.profile;
 
 import com.capstone.auth.application.business.dto.ProfileDTO;
-import com.capstone.auth.application.exception.NotExistingException;
+import com.capstone.common.exception.NotExistingException;
 import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.infrastructure.persistence.ProfileRepository;
-import com.capstone.auth.infrastructure.config.Constant;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.utils.SharedConstant;
 import lombok.AccessLevel;
@@ -59,6 +58,12 @@ public class ProfileServiceImpl implements ProfileService {
     log.info("Update avatar with id: {} and avatar url: {}", id, avatar);
     repo.updateAvatarByProfileId(id, avatar);
     return convertToResponse(repo.findById(id));
+  }
+
+  @Override
+  public String getAvatar(String id) {
+    log.info("Getting avatar with id: {}", id);
+    return repo.findAvatarUrlByProfileId(id);
   }
 
   private @NonNull ProfileDTO convertToResponse(@NonNull Optional<Profile> profile) {

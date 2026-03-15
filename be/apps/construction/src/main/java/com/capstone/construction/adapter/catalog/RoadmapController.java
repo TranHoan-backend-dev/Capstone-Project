@@ -60,7 +60,7 @@ public class RoadmapController {
     log.info("REST request to create roadmap: {}", request.name());
     var response = roadmapUseCase.createRoadmap(request);
     log.info("Created roadmap: {}", response);
-    return Utils.returnCreatedResponse("Roadmap created successfully");
+    return Utils.returnCreatedResponse("Tạo lộ trình ghi thành công");
   }
 
   @PutMapping("/{id}")
@@ -85,7 +85,7 @@ public class RoadmapController {
     @RequestBody @Valid RoadmapRequest request) {
     log.info("REST request to update roadmap: {}", id);
     var response = roadmapUseCase.updateRoadmap(id, request);
-    return Utils.returnOkResponse("Roadmap updated successfully", response);
+    return Utils.returnOkResponse("Cập nhật lộ trình ghi thành công", response);
   }
 
   @DeleteMapping("/{id}")
@@ -106,7 +106,7 @@ public class RoadmapController {
     @PathVariable @Parameter(description = "ID của lộ trình ghi cần xóa", required = true) String id) {
     log.info("REST request to delete roadmap: {}", id);
     roadmapUseCase.deleteRoadmap(id);
-    return Utils.returnOkResponse("Roadmap deleted successfully", null);
+    return Utils.returnOkResponse("Xóa lộ trình ghi thành công", null);
   }
 
   @GetMapping("/{id}")
@@ -126,7 +126,7 @@ public class RoadmapController {
     @PathVariable @Parameter(description = "ID của lộ trình ghi cần lấy thông tin", required = true) String id) {
     log.info("REST request to get roadmap: {}", id);
     var response = roadmapUseCase.getRoadmapById(id);
-    return Utils.returnOkResponse("Roadmap retrieved successfully", response);
+    return Utils.returnOkResponse("Lấy thông tin lộ trình ghi thành công", response);
   }
 
   @GetMapping
@@ -143,9 +143,16 @@ public class RoadmapController {
     @ApiResponse(responseCode = "500", description = "Lỗi hệ thống", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   public ResponseEntity<WrapperApiResponse> getAllRoadmaps(
-    @PageableDefault @Parameter(hidden = true) Pageable pageable) {
-    log.info("REST request to get all roadmaps");
-    var response = roadmapUseCase.getAllRoadmaps(pageable);
-    return Utils.returnOkResponse("Roadmaps retrieved successfully", response);
+    @PageableDefault @Parameter(hidden = true) Pageable pageable,
+    @RequestParam(required = false)
+    @Parameter(description = "Từ khóa tìm kiếm theo tên lộ trình ghi") String keyword,
+    @RequestParam(required = false)
+    @Parameter(description = "Lọc theo ID tuyến ống (lateral)") String lateralId,
+    @RequestParam(required = false)
+    @Parameter(description = "Lọc theo ID mạng lưới cấp nước") String networkId
+  ) {
+    log.info("REST request to get all roadmaps with pagination: {}, keyword: {}, lateralId: {}, networkId: {}", pageable, keyword, lateralId, networkId);
+    var response = roadmapUseCase.getAllRoadmaps(pageable, keyword, lateralId, networkId);
+    return Utils.returnOkResponse("Lấy danh sách lộ trình ghi thành công", response);
   }
 }

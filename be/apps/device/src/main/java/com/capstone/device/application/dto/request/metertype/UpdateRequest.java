@@ -1,6 +1,6 @@
 package com.capstone.device.application.dto.request.metertype;
 
-import com.capstone.device.infrastructure.config.Constant;
+import com.capstone.device.infrastructure.util.Message;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Positive;
 
@@ -16,7 +16,7 @@ public record UpdateRequest(
   String meterModel,
 
   @Schema(description = "Kích cỡ (mm)", example = "15")
-  @Positive(message = Constant.ENT_11) Integer size,
+  @Positive(message = Message.ENT_11) Integer size,
 
   @Schema(description = "Chỉ số tối đa", example = "99999")
   String maxIndex,
@@ -31,6 +31,6 @@ public record UpdateRequest(
   String qmin,
 
   @Schema(description = "Đường kính (mm)", example = "21.0")
-  @Positive(message = Constant.ENT_16) Float diameter
+  @Positive(message = Message.ENT_16) Float diameter
 ) {
 }

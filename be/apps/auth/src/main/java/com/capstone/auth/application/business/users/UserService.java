@@ -1,7 +1,8 @@
 package com.capstone.auth.application.business.users;
 
 import com.capstone.auth.application.business.dto.UserDTO;
-import com.capstone.auth.application.dto.request.FilterUsersRequest;
+import com.capstone.auth.application.dto.request.users.FilterUsersRequest;
+import com.capstone.auth.application.dto.request.users.UpdateRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
 import com.capstone.auth.domain.model.Roles;
 import org.springframework.data.domain.Page;
@@ -30,4 +31,12 @@ public interface UserService {
   UserDTO getUserByEmail(String email);
 
   Page<EmployeeResponse> getAllEmployeesWithStatus(Pageable pageable, FilterUsersRequest request);
+
+  boolean isJobAssigned(String jobId);
+
+  EmployeeResponse updateEmployee(String id, UpdateRequest request);
+
+  EmployeeResponse deleteEmployee(String id);
+
+  String getRoleOfEmployee(String id);
 }

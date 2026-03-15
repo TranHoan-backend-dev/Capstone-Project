@@ -6,6 +6,7 @@ import com.capstone.device.application.dto.request.material.SearchRequest;
 import com.capstone.device.application.dto.request.material.UpdateRequest;
 import com.capstone.device.application.dto.response.MaterialResponse;
 import com.capstone.device.domain.model.Material;
+import com.capstone.device.domain.model.MaterialsGroup;
 import com.capstone.device.infrastructure.persistence.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -140,6 +141,39 @@ public class MaterialServiceImpl implements MaterialService {
   public boolean materialExists(String id) {
     log.info("Checking material ID: {}", id);
     return mRepo.existsById(id);
+  }
+
+  @Override
+  public void createGroup(String name) {
+    log.info("Creating group: {}", name);
+    if (gRepo.existsByNameIgnoreCase(name)) {
+      throw new IllegalArgumentException("Material group already exists: " + name);
+    }
+    var entity = MaterialsGroup.create(b -> b.name(name));
+    gRepo.save(entity);
+  }
+
+  @Override
+  public void deleteGroup(String id) {
+    log.info("Deleting group: {}", id);
+    if (!gRepo.existsById(id)) {
+      throw new IllegalArgumentException("Material group not found: " + id);
+    }
+    if (mRepo.existsByGroup_GroupId(id)) {
+      throw new IllegalArgumentException("This material group still in use: " + id);
+    }
+    gRepo.deleteById(id);
+  }
+
+  @Override
+  public void updateGroup(String id, @NonNull String name) {
+    log.info("Updating group: {}", id);
+    var entity = gRepo.findById(id).orElseThrow(() -> new IllegalArgumentException("Material group not found: " + id));
+    if (gRepo.existsByNameIgnoreCase(name) && !entity.getName().equalsIgnoreCase(name)) {
+      throw new IllegalArgumentException("Material group already exists: " + name);
+    }
+    entity.setName(name);
+    gRepo.save(entity);
   }
 
   private @NonNull MaterialResponse mapToResponse(@NonNull Material material) {

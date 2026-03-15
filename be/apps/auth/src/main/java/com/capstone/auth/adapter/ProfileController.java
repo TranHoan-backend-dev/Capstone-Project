@@ -49,7 +49,12 @@ public class ProfileController {
     3. Xác minh rằng email và tên người dùng trong token khớp với hồ sơ trong cơ sở dữ liệu.
     4. Trả về thông tin hồ sơ của người dùng.
     """)
-  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Hồ sơ đã được truy xuất thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserProfileResponse.class))), @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ - Claims trong token (email/tên người dùng) không khớp với hồ sơ cơ sở dữ liệu hoặc không hợp lệ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))), @ApiResponse(responseCode = "401", description = "Không được phép - Token JWT hợp lệ bị thiếu hoặc đã hết hạn", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))), @ApiResponse(responseCode = "403", description = "Bị cấm - Tài khoản người dùng bị khóa hoặc vô hiệu hóa", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))), @ApiResponse(responseCode = "500", description = "Lỗi máy chủ nội bộ - Đã xảy ra lỗi không mong muốn", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))})
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Hồ sơ đã được truy xuất thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserProfileResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ - Claims trong token (email/tên người dùng) không khớp với hồ sơ cơ sở dữ liệu hoặc không hợp lệ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "401", description = "Không được phép - Token JWT hợp lệ bị thiếu hoặc đã hết hạn", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "403", description = "Bị cấm - Tài khoản người dùng bị khóa hoặc vô hiệu hóa", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "500", description = "Lỗi máy chủ nội bộ - Đã xảy ra lỗi không mong muốn", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))})
   @GetMapping()
   public ResponseEntity<WrapperApiResponse> me(@AuthenticationPrincipal Jwt jwt) {
     var id = jwt.getSubject();
@@ -57,11 +62,10 @@ public class ProfileController {
     Map<String, Object> claims = jwt.getClaims();
     log.info("Get profile request comes to endpoint: {}", id);
 
-    return Utils.returnOkResponse("Get profile successfully", profileUC.getMe(
+    return Utils.returnOkResponse("Lấy thông tin hồ sơ người dùng thành công", profileUC.getMe(
       id,
       claims.get("email").toString(),
-      claims.get("preferred_username").toString())
-    );
+      claims.get("preferred_username").toString()));
   }
 
   @Operation(summary = "Cập nhật hồ sơ người dùng hiện tại", description = """
@@ -80,16 +84,12 @@ public class ProfileController {
   @PatchMapping()
   public ResponseEntity<WrapperApiResponse> updateProfile(
     @AuthenticationPrincipal Jwt jwt,
-    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Thông tin hồ sơ cập nhật", required = true, content = @Content(schema = @Schema(implementation = UpdateProfileRequest.class)))
-    @NonNull
-    @RequestBody
-    UpdateProfileRequest request
-  ) {
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Thông tin hồ sơ cập nhật", required = true, content = @Content(schema = @Schema(implementation = UpdateProfileRequest.class))) @NonNull @RequestBody UpdateProfileRequest request) {
     var id = jwt.getSubject();
     log.info("User's id: {}", id);
     var response = profileUC.updateProfile(id, request);
 
-    return Utils.returnOkResponse("Update profile successfully", response);
+    return Utils.returnOkResponse("Cập nhật hồ sơ người dùng thành công", response);
   }
 
   @Operation(summary = "Cập nhật ảnh đại diện người dùng", description = """
@@ -104,20 +104,21 @@ public class ProfileController {
     4. Trả về thông tin hồ sơ người dùng đã cập nhật.
     """)
   @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "File ảnh đại diện của người dùng", required = true, content = @Content(schema = @Schema(implementation = MultipartFile.class)))
-  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Ảnh đại diện đã được cập nhật thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserProfileResponse.class))), @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ - Định dạng tệp không hợp lệ hoặc tải lên tệp thất bại", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))), @ApiResponse(responseCode = "401", description = "Không được phép - Token JWT hợp lệ bị thiếu hoặc đã hết hạn", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))), @ApiResponse(responseCode = "403", description = "Bị cấm - Tài khoản người dùng bị khóa hoặc vô hiệu hóa", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))), @ApiResponse(responseCode = "500", description = "Lỗi máy chủ nội bộ - Đã xảy ra lỗi không mong muốn trong quá trình tải lên ảnh đại diện", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))})
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Ảnh đại diện đã được cập nhật thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserProfileResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Yêu cầu không hợp lệ - Định dạng tệp không hợp lệ hoặc tải lên tệp thất bại", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "401", description = "Không được phép - Token JWT hợp lệ bị thiếu hoặc đã hết hạn", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "403", description = "Bị cấm - Tài khoản người dùng bị khóa hoặc vô hiệu hóa", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "500", description = "Lỗi máy chủ nội bộ - Đã xảy ra lỗi không mong muốn trong quá trình tải lên ảnh đại diện", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))})
   @PatchMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<WrapperApiResponse> updateAvatar(
-    @AuthenticationPrincipal
-    Jwt jwt,
-    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Tệp ảnh đại diện để tải lên. Các định dạng hỗ trợ: JPEG, PNG, GIF", required = true)
-    @RequestParam(value = "avatar")
-    MultipartFile file
-  ) {
+    @AuthenticationPrincipal Jwt jwt,
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Tệp ảnh đại diện để tải lên. Các định dạng hỗ trợ: JPEG, PNG, GIF", required = true) @RequestParam(value = "avatar") MultipartFile file) {
     log.info("Update avatar with file is {}", file == null ? "null" : "not null");
 
     var id = jwt.getSubject();
     log.info("Update avatar of user that has id: {}", id);
 
-    return Utils.returnOkResponse("Update avatar successfully", profileUC.updateAvatar(id, file));
+    return Utils.returnOkResponse("Cập nhật ảnh đại diện thành công", profileUC.updateAvatar(id, file));
   }
 }

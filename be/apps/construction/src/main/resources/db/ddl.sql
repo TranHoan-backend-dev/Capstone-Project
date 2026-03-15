@@ -1,4 +1,6 @@
-create table public.commune
+CREATE EXTENSION IF NOT EXISTS unaccent;
+
+create table if not exists commune
 (
   commune_id varchar(255) not null
     primary key,
@@ -13,10 +15,10 @@ create table public.commune
   updated_at timestamp(6) not null
 );
 
-alter table public.commune
+alter table commune
   owner to postgres;
 
-create table public.construction_request
+create table if not exists construction_request
 (
   installation_form_code varchar(255) not null
     primary key,
@@ -30,45 +32,10 @@ create table public.construction_request
   updated_at             timestamp(6) not null
 );
 
-alter table public.construction_request
+alter table construction_request
   owner to postgres;
 
-create table public.cost_estimate
-(
-  estimation_id                      varchar(255) not null
-    primary key,
-  address                            varchar(255) not null,
-  construction_machinery_coefficient integer      not null,
-  contract_fee                       integer      not null,
-  create_by                          varchar(255) not null,
-  created_at                         timestamp(6) not null,
-  customer_name                      varchar(255) not null,
-  design_coefficient                 integer      not null,
-  design_fee                         integer      not null,
-  design_image_url                   varchar(255) not null,
-  general_cost_coefficient           integer      not null,
-  installation_fee                   integer      not null,
-  installation_form_id               varchar(255) not null,
-  labor_coefficient                  integer      not null,
-  note                               varchar(255),
-  overall_water_meter_id             varchar(255) not null,
-  precalculated_tax_coefficient      integer      not null,
-  registration_at                    date         not null,
-  status                             varchar(255) not null
-    constraint cost_estimate_status_check
-            check ((status)::text = ANY
-                   ((ARRAY ['PROCESSING'::character varying, 'PENDING_FOR_APPROVAL'::character varying, 'APPROVED'::character varying, 'REJECTED'::character varying])::text[])),
-  survey_effort                      integer      not null,
-  survey_fee                         integer      not null,
-  updated_at                         timestamp(6) not null,
-  vat_coefficient                    integer      not null,
-  water_meter_serial                 varchar(255) not null
-);
-
-alter table public.cost_estimate
-  owner to postgres;
-
-create table public.hamlet
+create table if not exists hamlet
 (
   hamlet_id  varchar(255) not null
     primary key,
@@ -76,17 +43,19 @@ create table public.hamlet
   name       varchar(255) not null
     constraint ukg4hiqr6ln2dg5ih0m61pysgxk
             unique,
-  type       varchar(255) not null,
+  type       varchar(255) not null
+    constraint hamlet_type_check
+            check ((type)::text = ANY ((ARRAY ['HAMLET'::character varying, 'VILLAGE'::character varying])::text[])),
   updated_at timestamp(6) not null,
   commune_id varchar(255)
     constraint fkkogj6xatjfux0muqtijayk7l6
-            references public.commune
+            references commune
 );
 
-alter table public.hamlet
+alter table hamlet
   owner to postgres;
 
-create table public.neighborhood_unit
+create table if not exists neighborhood_unit
 (
   unit_id    varchar(255) not null
     primary key,
@@ -97,13 +66,13 @@ create table public.neighborhood_unit
   updated_at timestamp(6) not null,
   commune_id varchar(255)
     constraint fk44wassxu1tvwdtm95v3xt7r4o
-            references public.commune
+            references commune
 );
 
-alter table public.neighborhood_unit
+alter table neighborhood_unit
   owner to postgres;
 
-create table public.road
+create table if not exists road
 (
   road_id    varchar(255) not null
     primary key,
@@ -114,10 +83,10 @@ create table public.road
   updated_at timestamp(6) not null
 );
 
-alter table public.road
+alter table road
   owner to postgres;
 
-create table public.settlement
+create table if not exists settlement
 (
   settlement_id   varchar(255)   not null
     primary key,
@@ -134,10 +103,10 @@ create table public.settlement
   updated_at      timestamp(6)   not null
 );
 
-alter table public.settlement
+alter table settlement
   owner to postgres;
 
-create table public.water_supply_network
+create table if not exists water_supply_network
 (
   branch_id  varchar(255) not null
     primary key,
@@ -148,21 +117,20 @@ create table public.water_supply_network
   updated_at timestamp(6) not null
 );
 
-alter table public.water_supply_network
+alter table water_supply_network
   owner to postgres;
 
-create table public.installation_form
+create table if not exists installation_form
 (
-  form_code                               varchar(255) not null
-    primary key,
+  form_code                               varchar(255) not null,
+  form_number                             varchar(36)  not null,
   address                                 varchar(255) not null,
   bank_account_number                     varchar(255) not null,
   bank_account_provider_location          varchar(255) not null,
-  citizen_identification_number           varchar(12)  not null
-    constraint ukil7wf0twyese54cv09uiwswr5
-            unique,
+  citizen_identification_number           varchar(12)  not null,
   citizen_identification_provide_date     varchar(255) not null,
   citizen_identification_provide_location varchar(255) not null,
+  constructed_by                          varchar(255),
   created_at                              timestamp(6) not null,
   created_by                              varchar(255) not null,
   customer_name                           varchar(255) not null,
@@ -170,9 +138,6 @@ create table public.installation_form
     constraint installation_form_customer_type_check
             check ((customer_type)::text = ANY
                    ((ARRAY ['FAMILY'::character varying, 'COMPANY'::character varying])::text[])),
-  form_number                             varchar(36)
-    constraint uk6x0if5ak390si5y6jggcrfae5
-            unique,
   handover_by                             varchar(255),
   household_registration_number           integer      not null,
   number_of_household                     integer      not null,
@@ -190,13 +155,50 @@ create table public.installation_form
                    ((ARRAY ['DOMESTIC'::character varying, 'INSTITUTIONAL'::character varying, 'INDUSTRIAL'::character varying, 'COMMERCIAL'::character varying])::text[])),
   water_supply_network_id                 varchar(255)
     constraint fkqyc815wmilxlmy6uksjqadjdl
-            references public.water_supply_network
+            references water_supply_network,
+  primary key (form_code, form_number)
 );
 
-alter table public.installation_form
+alter table installation_form
   owner to postgres;
 
-create table public.laterals
+create table if not exists cost_estimate
+(
+  estimation_id                      varchar(255) not null
+    primary key,
+  address                            varchar(255) not null,
+  construction_machinery_coefficient integer      not null,
+  contract_fee                       integer      not null,
+  create_by                          varchar(255) not null,
+  created_at                         timestamp(6) not null,
+  customer_name                      varchar(255) not null,
+  design_coefficient                 integer      not null,
+  design_fee                         integer      not null,
+  design_image_url                   varchar(255) not null,
+  general_cost_coefficient           integer      not null,
+  installation_fee                   integer      not null,
+  labor_coefficient                  integer      not null,
+  note                               varchar(255),
+  overall_water_meter_id             varchar(255) not null,
+  precalculated_tax_coefficient      integer      not null,
+  registration_at                    date         not null,
+  survey_effort                      integer      not null,
+  survey_fee                         integer      not null,
+  updated_at                         timestamp(6) not null,
+  vat_coefficient                    integer      not null,
+  water_meter_serial                 varchar(255) not null,
+  installation_form_form_code        varchar(255),
+  installation_form_form_number      varchar(36),
+  constraint ukoxhdwqay1l4rf08vh8ox7iuou
+    unique (installation_form_form_code, installation_form_form_number),
+  constraint fkd0hrmii0s9vndliepsyjr4y1k
+    foreign key (installation_form_form_code, installation_form_form_number) references installation_form
+);
+
+alter table cost_estimate
+  owner to postgres;
+
+create table if not exists laterals
 (
   lateral_id              varchar(255) not null
     primary key,
@@ -207,31 +209,32 @@ create table public.laterals
   updated_at              timestamp(6) not null,
   water_supply_network_id varchar(255)
     constraint fknd58hto6lft7ym4q37l1mo882
-            references public.water_supply_network
+            references water_supply_network
 );
 
-alter table public.laterals
+alter table laterals
   owner to postgres;
 
-create table public.receipt
+create table if not exists receipt
 (
-  address                     varchar(255) not null,
-  created_at                  timestamp(6) not null,
-  customer_name               varchar(255) not null,
-  is_paid                     boolean      not null,
-  payment_date                date         not null,
-  receipt_number              varchar(255) not null,
-  updated_at                  timestamp(6) not null,
-  installation_form_form_code varchar(255) not null
-    primary key
-    constraint fkjwkeiv8j2ltadyb5c9vl525ug
-            references public.installation_form
+  address                       varchar(255) not null,
+  created_at                    timestamp(6) not null,
+  customer_name                 varchar(255) not null,
+  is_paid                       boolean      not null,
+  payment_date                  date         not null,
+  receipt_number                varchar(255) not null,
+  updated_at                    timestamp(6) not null,
+  installation_form_form_code   varchar(255) not null,
+  installation_form_form_number varchar(36)  not null,
+  primary key (installation_form_form_code, installation_form_form_number),
+  constraint fkjwvoi10c5ywsbf652cxlsp58s
+    foreign key (installation_form_form_code, installation_form_form_number) references installation_form
 );
 
-alter table public.receipt
+alter table receipt
   owner to postgres;
 
-create table public.roadmap
+create table if not exists roadmap
 (
   roadmap_id              varchar(255) not null
     primary key,
@@ -242,12 +245,11 @@ create table public.roadmap
   updated_at              timestamp(6) not null,
   lateral_id              varchar(255)
     constraint fkoedg1n2o1rlegyb2bfy6ll60k
-            references public.laterals,
+            references laterals,
   water_supply_network_id varchar(255)
     constraint fk39pm43hgtx23mxi4t7a6w8m25
-            references public.water_supply_network
+            references water_supply_network
 );
 
-alter table public.roadmap
+alter table roadmap
   owner to postgres;
-

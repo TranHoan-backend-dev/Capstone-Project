@@ -1,9 +1,9 @@
 package com.capstone.organization.service.impl;
 
 import com.capstone.common.annotation.AppLog;
-import com.capstone.organization.dto.request.CreateBusinessPageRequest;
-import com.capstone.organization.dto.request.FilterBusinessPagesRequest;
-import com.capstone.organization.dto.request.UpdateBusinessPageRequest;
+import com.capstone.organization.dto.request.page.CreateBusinessPageRequest;
+import com.capstone.organization.dto.request.page.FilterBusinessPagesRequest;
+import com.capstone.organization.dto.request.page.UpdateBusinessPageRequest;
 import com.capstone.organization.dto.response.BusinessPageResponse;
 import com.capstone.organization.dto.response.PagedBusinessPageResponse;
 import com.capstone.organization.model.BusinessPage;

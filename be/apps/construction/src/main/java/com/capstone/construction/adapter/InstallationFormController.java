@@ -3,11 +3,13 @@ package com.capstone.construction.adapter;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.utils.Utils;
 import com.capstone.common.response.WrapperApiResponse;
-import com.capstone.construction.application.dto.request.installationform.FilterFormRequest;
+import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import com.capstone.construction.application.usecase.InstallationFormHandlingUseCase;
-import com.capstone.construction.infrastructure.config.Constant;
+import com.capstone.construction.domain.model.utils.InstallationFormId;
+import com.capstone.construction.infrastructure.utils.Message;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -56,23 +58,50 @@ public class InstallationFormController {
     if (!Utils.isLocalDate(request.receivedFormAt(), DateTimeFormatter.ISO_LOCAL_DATE) ||
       !Utils.isLocalDate(request.citizenIdentificationProvideDate(), DateTimeFormatter.ISO_LOCAL_DATE) ||
       !Utils.isLocalDate(request.scheduleSurveyAt(), DateTimeFormatter.ISO_LOCAL_DATE)) {
-      throw new IllegalArgumentException(Constant.PT_05);
+      throw new IllegalArgumentException(Message.PT_05);
     }
 
     var response = installationFormHandlingUseCase.createNewInstallationRequest(request);
 
     log.info("Successfully created installation form: {}", response.formNumber());
 
-    return Utils.returnCreatedResponse("Installation form created successfully");
+    return Utils.returnCreatedResponse("Tạo đơn lắp đặt thành công");
   }
 
-  @PatchMapping("/approve/{id}")
-  public ResponseEntity<?> approveInstallationForm(
-    @PathVariable("id") String orderId,
-    @RequestParam String status
+  @Operation(summary = "Phê duyệt hoặc từ chối đơn lắp đặt", description = """
+    API này cho phép cấp nhân viên khảo sát thực hiện phê duyệt hoặc từ chối một đơn yêu cầu lắp đặt nước.
+    """, responses = {
+    @ApiResponse(responseCode = "200", description = "Thay đổi trạng thái thành công"),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy đơn lắp đặt với mã hồ sơ/biểu mẫu đã cung cấp", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "401", description = "Token không hợp lệ hoặc hết hạn", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "403", description = "Không có quyền thực hiện hành động này", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+  })
+  @PatchMapping("/approve")
+  @PreAuthorize("hasAnyAuthority('SURVEY_STAFF', 'IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> approveInstallationForm(@RequestBody @Valid ApproveRequest request) {
+    log.info("Received request to approve installation form: {}", request.formCode());
+    installationFormHandlingUseCase.approveInstallationForm(request);
+    return Utils.returnOkResponse("Thay đổi trạng thái thành công", null);
+  }
+
+  @Operation(summary = "Giao xử lý đơn lắp đặt", description = """
+    API này cho phép Trưởng phòng KH-KT giao việc xử lý một đơn yêu cầu lắp đặt nước cho 1 nhân viên khảo sát. <br/>
+    Nhân viên khảo sát nhận sự kiện thông báo ở cổng socket: /technical/survey-staff
+    """, responses = {
+    @ApiResponse(responseCode = "200", description = "Giao việc thành công"),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy đơn lắp đặt với mã hồ sơ/biểu mẫu đã cung cấp", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "401", description = "Token không hợp lệ hoặc hết hạn", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "403", description = "Không có quyền thực hiện hành động này", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+  })
+  @PatchMapping("/assign/{empId}")
+  @PreAuthorize("hasAnyAuthority('PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> assignInstallationForm(
+    @RequestBody @Valid InstallationFormId request,
+    @PathVariable String empId // nv khao sat duoc giao nhiem vu
   ) {
-    log.info("Received request to approve installation form: {}", orderId);
-    return Utils.returnOkResponse("Change status successfully", null);
+    log.info("Received request to assign installation form: {}", request.getFormCode());
+    installationFormHandlingUseCase.assignInstallationFormToSurveyStaff(request, empId);
+    return Utils.returnOkResponse("Thay đổi trạng thái thành công", null);
   }
 
   @Operation(summary = "Lấy danh sách đơn lắp đặt (có phân trang & lọc)", description = "API này cho phép lấy danh sách các đơn lắp đặt nước. Hỗ trợ phân trang và lọc theo từ khóa (tên khách hàng, địa chỉ) hoặc khoảng thời gian.", responses = {
@@ -84,8 +113,8 @@ public class InstallationFormController {
   @PreAuthorize("hasAnyAuthority('PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF', 'IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> getInstallationForms(
     @Parameter(description = "Thông tin phân trang (page, size, sort)", schema = @Schema(implementation = Pageable.class)) Pageable pageable,
-
-    @Parameter(description = "Thông tin lọc (từ khóa, khoảng thời gian)") FilterFormRequest request) {
+    @Parameter(description = "Thông tin lọc (từ khóa, khoảng thời gian)") BaseFilterRequest request
+  ) {
     log.info("Received request to fetch grouped installation forms");
 
     if (request.from() != null && request.to() != null) {
@@ -93,12 +122,12 @@ public class InstallationFormController {
       LocalDate to = LocalDate.parse(request.to());
 
       if (from.isAfter(to)) {
-        throw new IllegalArgumentException("From date must be before to date");
+        throw new IllegalArgumentException("Ngày bắt đầu phải trước ngày kết thúc");
       }
     }
 
     var response = installationFormHandlingUseCase.getPaginatedInstallationForms(pageable, request);
 
-    return Utils.returnOkResponse("Installation forms retrieved successfully", response);
+    return Utils.returnOkResponse("Lấy danh sách đơn lắp đặt thành công", response);
   }
 }
