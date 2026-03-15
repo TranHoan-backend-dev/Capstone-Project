@@ -1,4 +1,7 @@
-import { getInstallationForms } from "@/services/construction.service";
+import {
+  createNewInstallationForm,
+  getInstallationForms,
+} from "@/services/construction.service";
 import { getAccessToken } from "@/utils/getAccessToken";
 import { NextRequest } from "next/dist/server/web/spec-extension/request";
 import { NextResponse } from "next/server";
@@ -41,6 +44,28 @@ export async function GET(req: NextRequest) {
         error: error?.response?.data ?? null,
       },
       { status },
+    );
+  }
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const accessToken = getAccessToken(req);
+
+    if (!accessToken) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+    const payload = await req.json();
+
+    const response = await createNewInstallationForm(accessToken, payload);
+
+    return NextResponse.json(response.data, { status: 201 });
+  } catch (error: any) {
+    return NextResponse.json(
+      {
+        message: error?.response?.data?.message || "Tạo đơn thất bại",
+      },
+      { status: error.response?.status || 500 },
     );
   }
 }

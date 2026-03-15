@@ -1,3 +1,4 @@
+import { NewInstallationFormPayload } from "@/types";
 import { API_GATEWAY_URL } from "@/utils/constraints";
 import axios from "axios";
 
@@ -373,6 +374,16 @@ export const getInstallationForms = (
       sort,
       keyword,
     },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+export const createNewInstallationForm = (
+  accessToken: string,
+  payload: NewInstallationFormPayload,
+) =>
+  axios.post(`${API_GATEWAY_URL}/construction/installation-forms`, payload, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },

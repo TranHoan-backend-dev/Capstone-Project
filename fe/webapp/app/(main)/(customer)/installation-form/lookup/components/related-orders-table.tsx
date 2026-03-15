@@ -73,8 +73,6 @@ export const RelatedOrdersTable = ({ keyword, reloadKey }: Props) => {
         const mapped = items.map(
           (item: NewInstallationLookupResponse, index: number) => {
             const { stage, status } = getStageAndStatus(item.status);
-console.log(stage);
-console.log(status)
             return {
               id: item.formCode,
               stt: (page - 1) * pageSize + index + 1,
@@ -124,18 +122,20 @@ console.log(status)
   ];
 
   const getStageAndStatus = (statusObj: any) => {
-    if (statusObj.construction)
-      return { stage: "construction", status: statusObj.construction };
+    const stages = ["construction", "contract", "estimate", "registration"];
 
-    if (statusObj.contract)
-      return { stage: "contract", status: statusObj.contract };
-
-    if (statusObj.estimate)
-      return { stage: "estimate", status: statusObj.estimate };
+    for (const stage of stages) {
+      if (statusObj?.[stage]) {
+        return {
+          stage,
+          status: statusObj[stage],
+        };
+      }
+    }
 
     return {
       stage: "registration",
-      status: statusObj.registration,
+      status: "PENDING",
     };
   };
 
@@ -194,12 +194,20 @@ console.log(status)
 
   return (
     <GenericDataTable
+      isLoading={loading}
+      title="Danh sách đơn"
       columns={NEW_INSTALLATION_LOOKUP_COLUMN}
       isCollapsible
       data={data}
-      paginationProps={{ total: 3, page: 1 }}
       renderCellAction={renderCell}
-      title="Danh sách đơn"
+      headerSummary={`${totalItems}`}
+      paginationProps={{
+        total: totalPages,
+        page: page,
+        onChange: setPage,
+        summary: `${data.length}`,
+      }}
+      onSortChange={handleSortChange}
     />
   );
 };

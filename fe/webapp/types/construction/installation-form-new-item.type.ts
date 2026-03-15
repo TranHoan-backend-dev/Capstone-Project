@@ -35,6 +35,47 @@ export interface NewInstallationLookupResponse {
   status: string;
 }
 
-export type OrderStage = "registration" | "estimate" | "contract" | "construction";
+export type OrderStage =
+  | "registration"
+  | "estimate"
+  | "contract"
+  | "construction";
 
 export type OrderStatus = "processing" | "pending" | "approved" | "rejected";
+
+export type UsageTarget =
+  | "DOMESTIC"
+  | "COMMERCIAL"
+  | "INDUSTRIAL"
+  | "INSTITUTIONAL";
+
+export type CustomerType = "FAMILY" | "COMPANY";
+
+export interface NewInstallationFormProps {
+  formData: NewInstallationFormPayload;
+  updateField: (field: keyof NewInstallationFormPayload, value: any) => void;
+}
+
+export interface NewInstallationFormPayload {
+  formCode: string;
+  formNumber: string;
+  customerName: string;
+  representative: string[];
+  address: string;
+  citizenIdentificationNumber: string;
+  citizenIdentificationProvideDate: string;
+  citizenIdentificationProvideLocation: string;
+  phoneNumber: string;
+  taxCode: string;
+  bankAccountNumber: string;
+  bankAccountProviderLocation: string;
+  usageTarget: UsageTarget;
+  customerType: CustomerType;
+  receivedFormAt: string;
+  scheduleSurveyAt: string;
+  numberOfHousehold?: number;
+  householdRegistrationNumber?: number;
+  networkId: string;
+  createdBy: string;
+  overallWaterMeterId: string;
+}

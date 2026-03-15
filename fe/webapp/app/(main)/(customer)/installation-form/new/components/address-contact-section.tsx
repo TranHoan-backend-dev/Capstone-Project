@@ -5,16 +5,96 @@ import React from "react";
 import { TitleDarkColor } from "@/config/chip-and-icon";
 import CustomInput from "@/components/ui/custom/CustomInput";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
+import { NewInstallationFormProps, NewInstallationFormPayload } from "@/types";
 
-export const AddressContactSection = () => {
-  const aboveInputFieldContent = [
-    { label: "Địa chỉ nhà", isRequired: true },
-    { label: "Đường / Thôn / Xóm" },
-    { label: "Điện thoại liên hệ", isRequired: true },
-    { label: "Email" },
+type FieldConfig =
+  | {
+      type: "input";
+      label: string;
+      name: keyof NewInstallationFormPayload;
+      isRequired?: boolean;
+    }
+  | {
+      type: "select";
+      label: string;
+      name: keyof NewInstallationFormPayload;
+      isRequired?: boolean;
+      options: { label: string; value: string }[];
+    };
+
+export const AddressContactSection = ({
+  formData,
+  updateField,
+}: NewInstallationFormProps) => {
+  const fields: FieldConfig[] = [
+    {
+      type: "input",
+      label: "Địa chỉ lắp đặt",
+      name: "address",
+      isRequired: true,
+    },
+    {
+      type: "input",
+      label: "Điện thoại liên hệ",
+      name: "phoneNumber",
+      isRequired: true,
+    },
+    {
+      type: "select",
+      label: "Chi nhánh cấp nước",
+      name: "networkId",
+      options: [{ value: "3ac28a8e-c3a1-4d94-9708-3354437e39f1", label: "Chi nhánh 1" }],
+    },
+    {
+      type: "select",
+      label: "Đồng hồ nước tổng",
+      name: "overallWaterMeterId",
+      options: [{ value: "00000000-0000-0000-0000-400000000001", label: "Đồng hồ 1" }],
+    },
   ];
 
-  const selectFieldContent = ["Chọn phường / xã"];
+  const bankFields: FieldConfig[] = [
+    {
+      type: "input",
+      label: "Số tài khoản ngân hàng",
+      name: "bankAccountNumber",
+      isRequired: true,
+    },
+    {
+      type: "input",
+      label: "Ngân hàng và chi nhánh",
+      name: "bankAccountProviderLocation",
+      isRequired: true,
+    },
+  ];
+
+  const renderField = (field: FieldConfig) => {
+    if (field.type === "input") {
+      return (
+        <CustomInput
+          key={field.name}
+          label={field.label}
+          isRequired={field.isRequired}
+          value={String(formData[field.name] ?? "")}
+          onChange={(e) => updateField(field.name, e.target.value)}
+        />
+      );
+    }
+
+    return (
+      <CustomSelect
+        key={field.name}
+        label={field.label}
+        isRequired={field.isRequired}
+        options={field.options}
+        selectedKeys={new Set([String(formData[field.name] ?? "")])}
+        onSelectionChange={(keys) => {
+          const value = Array.from(keys)[0];
+          updateField(field.name, value);
+        }}
+      />
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -24,22 +104,8 @@ export const AddressContactSection = () => {
         >
           Địa chỉ lắp đặt & Liên hệ
         </h2>
-        <div className="space-y-4">
-          {aboveInputFieldContent.map((item, index) => (
-            <div key={index} className="space-y-1">
-              <CustomInput isRequired={item.isRequired} label={item.label} />
-            </div>
-          ))}
-          {selectFieldContent.map((item, index) => (
-            <div key={index} className="space-y-1">
-              <CustomSelect
-                isRequired
-                label={item}
-                options={[{ value: "p1", label: "Phường 1" }]}
-              />
-            </div>
-          ))}
-        </div>
+
+        <div className="space-y-4">{fields.map(renderField)}</div>
       </div>
 
       <div className="space-y-4 py-2">
@@ -48,15 +114,9 @@ export const AddressContactSection = () => {
         >
           Thông tin ngân hàng
         </h2>
-        <div className="space-y-1 pt-0.5">
-          <CustomSelect
-            defaultSelectedKeys={new Set(["no"])}
-            label="Thanh toán qua ngân hàng"
-            options={[
-              { value: "no", label: "Không" },
-              { value: "bank", label: "Có" },
-            ]}
-          />
+
+        <div className="space-y-4">
+          {bankFields.map(renderField)}
         </div>
       </div>
     </div>
