@@ -227,7 +227,7 @@ class AuthUseCaseTest {
 
     NullPointerException exception = assertThrows(NullPointerException.class,
       () -> authUseCase.register(validRequest));
-    assertEquals(Message.SE_08, exception.getMessage());
+    assertEquals(Message.SE_07, exception.getMessage());
   }
 
   @Test

@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 public class OverallWaterMeter {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  String meterCode;
+  String serial;
 
   @Column(nullable = false, unique = true)
   String name;
