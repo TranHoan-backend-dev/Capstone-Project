@@ -9,6 +9,7 @@ public record UserProfileResponse(
   String birthday,
   String role,
   String username,
-  String email
+  String email,
+  String id
 ) {
 }

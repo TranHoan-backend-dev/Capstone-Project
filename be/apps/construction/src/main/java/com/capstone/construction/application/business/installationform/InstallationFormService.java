@@ -24,5 +24,5 @@ public interface InstallationFormService {
 
   Boolean checkAnyFormsBelongedToNetwork(String id);
 
-  void assignInstallationForm(String id, InstallationFormId installationFormId);
+  void assignInstallationForm(String id, InstallationFormId installationFormId, Boolean status);
 }

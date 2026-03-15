@@ -16,11 +16,13 @@ public final class Message {
   public static final String ENT_13 = "Lý do hủy không được để trống";
   public static final String ENT_14 = "Phí bảo vệ môi trường không được để trống";
   public static final String ENT_15 = "Tiền thuê hàng tháng không được để trống";
-  public static final String ENT_16 = "Id của xã/phường không được để trống";
+  public static final String ENT_16 = "Đơn lắp đặt này không tồn tại";
   public static final String ENT_17 = "Id của thôn/xóm không được để trống";
   public static final String ENT_18 = "Id của giá nước không được để trống";
   public static final String ENT_19 = "Mã giảm giá M3 không được để trống";
   public static final String ENT_20 = "Fix rate không được để trống";
   public static final String ENT_21 = "Kỳ khấu trừ không được để trống"; // Deduction Period
-  public static final String ENT_22 = "Id khách hàng không được để trống";
+  public static final String ENT_22 = "Không tìm thấy hợp đồng với id %s";
+  public static final String ENT_23 = "Không tìm thấy khách hàng với id %s";
+  public static final String ENT_24 = "Phụ lục không được để trống";
 }

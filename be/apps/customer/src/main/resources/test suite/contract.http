@@ -19,7 +19,7 @@ scope=openid
     client.global.set("access_token", response.body.access_token);
 %}
 
-### 1. Tạo mới hợp đồng
+### 1. Tạo mới hợp đồng (Thành công - 201)
 POST {{contractsUrl}}
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
@@ -27,34 +27,35 @@ Content-Type: application/json
 {
   "contractId": "HD_TEST_001",
   "customerId": "CUST_001",
-  "installationFormId": "DK_001",
+  "formCode": "DK_001",
+  "formNumber": "001",
   "representatives": [
     {
       "name": "Nguyễn Văn A",
       "position": "Chủ hộ"
     }
-  ]
+  ],
+  "appendix": []
 }
 
-### 2. Cập nhật hợp đồng
-PUT {{contractsUrl}}/HD_TEST_001
+### 2. Tạo mới hợp đồng (Lỗi - 400 Dữ liệu không hợp lệ)
+POST {{contractsUrl}}
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 {
-  "contractId": "HD_TEST_001_UPDATED",
+  "contractId": "",
   "customerId": "CUST_001",
-  "installationFormId": "DK_001_V2",
-  "representatives": [
-    {
-      "name": "Nguyễn Văn B",
-      "position": "Đại diện"
-    }
-  ]
+  "formCode": "",
+  "formNumber": ""
 }
 
-### 3. Lấy thông tin hợp đồng theo ID
-GET {{contractsUrl}}/HD_TEST_001_UPDATED
+### 3. Lấy thông tin hợp đồng theo ID (Thành công - 200)
+GET {{contractsUrl}}/HD_TEST_001
+Authorization: Bearer {{access_token}}
+
+### 3.1 Lấy thông tin hợp đồng theo ID (Lỗi - 404)
+GET {{contractsUrl}}/ID_KHONG_TON_TAI
 Authorization: Bearer {{access_token}}
 
 ### 4. Lấy danh sách hợp đồng (Tất cả)
@@ -81,6 +82,10 @@ Authorization: Bearer {{access_token}}
 GET {{contractsUrl}}?page=0&size=5&sort=createdAt,desc
 Authorization: Bearer {{access_token}}
 
-### 5. Xóa hợp đồng
-DELETE {{contractsUrl}}/HD_TEST_001_UPDATED
+### 5. Xóa hợp đồng (Thành công - 200)
+DELETE {{contractsUrl}}/HD_TEST_001
+Authorization: Bearer {{access_token}}
+
+### 5.1 Xóa hợp đồng (Lỗi - 404)
+DELETE {{contractsUrl}}/ID_KHONG_TON_TAI
 Authorization: Bearer {{access_token}}

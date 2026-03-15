@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
 
 import java.util.Collections;
 import java.util.List;
@@ -32,8 +33,16 @@ class BusinessPageServiceImplTest {
   @Mock
   private TempService tempSrv;
 
+  @Mock
+  private Logger log;
+
   @InjectMocks
   private BusinessPageServiceImpl businessPageService;
+
+  @org.junit.jupiter.api.BeforeEach
+  void setUp() {
+    org.springframework.test.util.ReflectionTestUtils.setField(businessPageService, "log", log);
+  }
 
   @Test
   @DisplayName("Should return list of pages when employee has pages")

@@ -1,11 +1,10 @@
-package com.capstone.device.adapter;
+package com.capstone.device.adapter.meter;
 
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
 import com.capstone.device.application.business.watermeter.WaterMeterService;
 import com.capstone.device.application.dto.request.WaterMeterRequest;
-import com.capstone.device.application.usecase.WaterMeterUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -19,7 +18,6 @@ import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @AppLog
@@ -30,7 +28,6 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "", description = "")
 public class WaterMeterController {
   WaterMeterService waterMeterService;
-  WaterMeterUseCase waterMeterUseCase;
   @NonFinal
   Logger log;
 
@@ -70,15 +67,6 @@ public class WaterMeterController {
     return Utils.returnOkResponse("Xóa đồng hồ nước thành công", null);
   }
 
-  @DeleteMapping("/overall/lateral")
-  @PreAuthorize("hasAuthority('IT_STAFF')")
-  public ResponseEntity<WrapperApiResponse> deleteByLateral(
-    @RequestParam String id) {
-    log.info("REST request to delete water meter by lateral: {}", id);
-    waterMeterUseCase.deleteOverallWaterMeterByLateralId(id);
-    return Utils.returnOkResponse("Xóa đồng hồ nước thành công", null);
-  }
-
   @Operation(summary = "", description = "", responses = {
     @ApiResponse(responseCode = "200", description = ""),
     @ApiResponse(responseCode = "", description = "")
@@ -97,16 +85,6 @@ public class WaterMeterController {
     log.info("REST request to get all water meters with pagination: {}", pageable);
     var response = waterMeterService.getAllWaterMeters(pageable);
     return Utils.returnOkResponse("Lấy danh sách đồng hồ nước thành công", response);
-  }
-
-  @Operation(summary = "", description = "")
-  @GetMapping("/overall/{id}/exists")
-  public ResponseEntity<WrapperApiResponse> checkOverallWaterMeterExisting(
-    @PathVariable @Parameter(description = "") String id) {
-    log.info("REST request to check existence of overall water meter: {}", id);
-    var response = waterMeterService.isOverallWaterMeterExisting(id);
-    log.info("Meter is existed? {}", response);
-    return Utils.returnOkResponse("Kiểm tra sự tồn tại của đồng hồ nước thành công", response);
   }
 
   @Operation(summary = "", description = "")

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -21,8 +22,16 @@ class ProfileServiceImplTest {
   @Mock
   ProfileRepository profileRepository;
 
+  @Mock
+  Logger log;
+
   @InjectMocks
   ProfileServiceImpl profileService;
+
+  @org.junit.jupiter.api.BeforeEach
+  void setUp() {
+    org.springframework.test.util.ReflectionTestUtils.setField(profileService, "log", log);
+  }
 
   @Test
   void getProfileById_returns_profile_dto_when_exists() {
@@ -102,7 +111,7 @@ class ProfileServiceImplTest {
   }
 
   @Test
-  void getProfileById_returns_profile_with_empty_strings_for_null_optional_fields() {
+  void getProfileById_returns_profile_with_null_for_null_optional_fields() {
     var id = "user-123";
     var profile = new Profile(id, null, "Name", null, null, "0912345678", null, null);
 
@@ -110,10 +119,10 @@ class ProfileServiceImplTest {
 
     var dto = profileService.getProfileById(id);
 
-    assertEquals("", dto.avatarUrl());
-    assertEquals("", dto.address());
-    assertEquals("", dto.gender().toString());
-    assertEquals("", dto.birthday().toString());
+    assertNull(dto.avatarUrl());
+    assertNull(dto.address());
+    assertNull(dto.gender());
+    assertNull(dto.birthday());
   }
 
   @Test
