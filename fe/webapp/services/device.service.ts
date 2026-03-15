@@ -56,6 +56,7 @@ export const getAllMaterials = async (
   token: string,
   page: number,
   size: number,
+  sort: string,
   jobContent: string,
   laborCode: string,
   groupId: string,
@@ -69,6 +70,7 @@ export const getAllMaterials = async (
     params: {
       page,
       size,
+      sort,
       jobContent: jobContent ?? "",
       laborCode: laborCode ?? "",
       groupId: groupId ?? "",
@@ -78,31 +80,21 @@ export const getAllMaterials = async (
   });
 };
 
-export const createMaterial = (
-  accessToken: string,
-  name: string,
-  type: string,
-) => {
-  return axios.post(
-    `${API_GATEWAY_URL}/d/materials`,
-    { name, type },
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
+export const createMaterial = (accessToken: string, payload: any) => {
+  return axios.post(`${API_GATEWAY_URL}/d/materials`, payload, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
     },
-  );
+  });
 };
 
 export const updateMaterial = (
   accessToken: string,
   id: string,
-  name: string,
-  type: string,
+  payload: any
 ) => {
   return axios.put(
-    `${API_GATEWAY_URL}/d/materials/${id}`,
-    { name, type },
+    `${API_GATEWAY_URL}/d/materials/${id}`, payload,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,

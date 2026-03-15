@@ -2,8 +2,10 @@ export interface MaterialPriceItem {
   stt: string;
   id: string;
   laborCode: string;
+  unitId?: string;
   unitName: string;
-  groupName: number;
+  groupId?: string;
+  groupName: string;
   jobContent: string;
   price: string;
   laborPrice: string;
@@ -13,10 +15,7 @@ export interface MaterialPriceItem {
 }
 
 export interface MaterialPriceFormProps {
-  initialData?: {
-    id?: string;
-    name?: string;
-  };
+  initialData?: MaterialPriceItem;
   onSuccess: () => void;
   onClose: () => void;
 }
@@ -45,8 +44,10 @@ export interface MaterialPriceTableProps {
 export interface MaterialPriceResponse {
   id: string;
   laborCode: string;
+  unitId?: string;
   unitName: string;
-  groupName: number;
+  groupId?: string;
+  groupName: string;
   jobContent: string;
   price: string;
   laborPrice: string;

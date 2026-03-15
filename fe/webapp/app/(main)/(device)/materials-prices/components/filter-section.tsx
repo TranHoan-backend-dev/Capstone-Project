@@ -9,7 +9,9 @@ import CustomSelect from "@/components/ui/custom/CustomSelect";
 import FilterButton from "@/components/ui/FilterButton";
 import { AddNewIcon } from "@/config/chip-and-icon";
 import { FilterSectionMaterialPriceProps } from "@/types";
-import { useUnit } from "@/hooks/useUnit";
+import { useMaterialGroup } from "@/hooks/useMaterialGroup";
+import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
+import { LookupModal } from "@/components/ui/modal/LookupModal";
 
 export const FilterSection = ({
   onSearch,
@@ -23,16 +25,25 @@ export const FilterSection = ({
 
   const [group, setGroup] = useState(new Set<string>());
 
-  const { unitOptions } = useUnit();
+  const { materialGroupOptions } = useMaterialGroup();
+  const [showGroupModal, setShowGroupModal] = useState(false);
+  const [selectedGroupName, setSelectedGroupName] = useState("");
+  const [selectedGroupId, setSelectedGroupId] = useState("");
 
   const handleSearch = () => {
     onSearch({
       laborCode,
       jobContent,
-      groupId: Array.from(group)[0] || "",
+      groupId: selectedGroupId,
       minPrice,
       maxPrice,
     });
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
   };
 
   return (
@@ -54,7 +65,7 @@ export const FilterSection = ({
         </div>
       }
     >
-      <div className="space-y-6">
+      <div className="space-y-6" onKeyDown={handleKeyDown}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <CustomInput
             label="Mã hiệu nhân công"
@@ -67,12 +78,31 @@ export const FilterSection = ({
             value={jobContent}
             onChange={(e) => setJobContent(e.target.value)}
           />
-
-          <CustomSelect
+          <SearchInputWithButton
             label="Nhóm vật tư"
-            selectedKeys={group}
-            onSelectionChange={setGroup}
-            options={unitOptions}
+            value={selectedGroupName}
+            onSearch={() => setShowGroupModal(true)}
+            onChange={(e) => {
+              if (e.target.value === "") {
+                setSelectedGroupId("");
+                setSelectedGroupName("");
+              }
+            }}
+          />
+          <LookupModal
+            isOpen={showGroupModal}
+            onClose={() => setShowGroupModal(false)}
+            title="Chọn nhóm vật tư"
+            api="/api/device/materials-group"
+            columns={[{ key: "name", label: "Tên nhóm" }]}
+            mapData={(item, index, page) => ({
+              id: item.groupId,
+              name: item.name,
+            })}
+            onSelect={(item) => {
+              setSelectedGroupId(item.id);
+              setSelectedGroupName(item.name);
+            }}
           />
         </div>
 

@@ -75,8 +75,13 @@ export const MaterialPriceTable = ({
             id: item.id,
             stt: (page - 1) * pageSize + index + 1,
             laborCode: item.laborCode,
+
+            groupId: item.groupId,
+            unitId: item.unitId,
+
             unitName: item.unitName,
             groupName: item.groupName,
+
             jobContent: item.jobContent,
             price: item.price,
             laborPrice: item.laborPrice,

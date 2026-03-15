@@ -8,6 +8,9 @@ import CustomSelect from "@/components/ui/custom/CustomSelect";
 import { CheckApprovalIcon } from "@/config/chip-and-icon";
 import { Card, CardBody } from "@heroui/react";
 import { MaterialPriceFormProps } from "@/types";
+import { LookupModal } from "@/components/ui/modal/LookupModal";
+import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
+import { authFetch } from "@/utils/authFetch";
 
 const unitOptions = [
   { label: "Kg", value: "kg" },
@@ -41,33 +44,70 @@ export const MaterialPriceForm = ({
 
   const [submitLoading, setSubmitLoading] = useState(false);
 
-  useEffect(() => {
-    if (initialData) {
-      setName(initialData.name || "");
-    }
-  }, [initialData]);
+  const [showGroupModal, setShowGroupModal] = useState(false);
+  const [selectedGroupName, setSelectedGroupName] = useState("");
+  const [selectedGroupId, setSelectedGroupId] = useState("");
+
+  const [showUnitModal, setShowUnitModal] = useState(false);
+  const [unitName, setUnitName] = useState("");
+  const [unitId, setUnitId] = useState("");
+
+useEffect(() => {
+  if (initialData) {
+    setSymbol(initialData.laborCode || "");
+    setName(initialData.jobContent || "");
+
+    setPrice(initialData.price?.toString() || "");
+    setLaborPrice(initialData.laborPrice?.toString() || "");
+    setLaborPriceDistrict(initialData.laborPriceAtRuralCommune?.toString() || "");
+
+    setMachinePrice(initialData.constructionMachineryPrice?.toString() || "");
+    setMachinePriceDistrict(
+      initialData.constructionMachineryPriceAtRuralCommune?.toString() || ""
+    );
+
+    setSelectedGroupId(initialData.groupId || "");
+    setSelectedGroupName(initialData.groupName || "");
+
+    setUnitId(initialData.unitId || "");
+    setUnitName(initialData.unitName || "");
+  }
+}, [initialData]);
 
   const handleSubmit = async () => {
     if (submitLoading) return;
 
     try {
       setSubmitLoading(true);
+      const url = isEdit
+        ? `/api/device/materials-prices/${initialData?.id}`
+        : `/api/device/materials-prices`;
+
+      const method = isEdit ? "PUT" : "POST";
 
       const payload = {
-        materialCode,
-        symbol,
-        name,
-        unit,
-        group,
-        price,
-        laborPrice,
-        laborPriceDistrict,
-        machinePrice,
-        machinePriceDistrict,
+        laborCode: symbol,
+        jobContent: name,
+        price: Number(price),
+        laborPrice: Number(laborPrice),
+        laborPriceAtRuralCommune: Number(laborPriceDistrict),
+        constructionMachineryPrice: Number(machinePrice),
+        constructionMachineryPriceAtRuralCommune: Number(machinePriceDistrict),
+        groupId: selectedGroupId,
+        unitId: unitId,
       };
 
-      console.log(payload);
+      const response = await authFetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Save failed");
+      }
       CallToast({
         title: "Thành công",
         message: isEdit ? "Cập nhật thành công!" : "Thêm mới thành công!",
@@ -121,11 +161,25 @@ export const MaterialPriceForm = ({
               value={laborPrice}
               onChange={(e) => setLaborPrice(e.target.value)}
             />
-            <CustomSelect
+            <SearchInputWithButton
               label="Nhóm vật tư"
-              selectedKeys={group}
-              onSelectionChange={setGroup}
-              options={groupOptions}
+              value={selectedGroupName}
+              onSearch={() => setShowGroupModal(true)}
+            />
+            <LookupModal
+              isOpen={showGroupModal}
+              onClose={() => setShowGroupModal(false)}
+              title="Chọn nhóm vật tư"
+              api="/api/device/materials-group"
+              columns={[{ key: "name", label: "Tên nhóm" }]}
+              mapData={(item, index, page) => ({
+                id: item.groupId,
+                name: item.name,
+              })}
+              onSelect={(item) => {
+                setSelectedGroupId(item.id);
+                setSelectedGroupName(item.name);
+              }}
             />
             <CustomInput
               label="Giá máy thi công"
@@ -140,11 +194,26 @@ export const MaterialPriceForm = ({
               value={laborPriceDistrict}
               onChange={(e) => setLaborPriceDistrict(e.target.value)}
             />
-            <CustomSelect
+
+            <SearchInputWithButton
               label="Đơn vị tính"
-              selectedKeys={unit}
-              onSelectionChange={setUnit}
-              options={unitOptions}
+              value={unitName}
+              onSearch={() => setShowUnitModal(true)}
+            />
+            <LookupModal
+              isOpen={showUnitModal}
+              onClose={() => setShowUnitModal(false)}
+              title="Chọn đơn vị"
+              api="/api/device/units"
+              columns={[{ key: "name", label: "Tên đơn vị" }]}
+              mapData={(item, index, page) => ({
+                id: item.id,
+                name: item.name,
+              })}
+              onSelect={(item) => {
+                setUnitId(item.id);
+                setUnitName(item.name);
+              }}
             />
             <CustomInput
               label="Giá máy thi công huyện"

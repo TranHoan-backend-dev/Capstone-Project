@@ -12,11 +12,7 @@ import java.math.BigDecimal;
 
 @Repository
 public interface MaterialRepository extends JpaRepository<Material, String> {
-  boolean existsByGroup_GroupId(String id);
 
-  boolean existsByUnit_Id(String unitId);
-
-  boolean existsByUnit_Id(String unitId);
     @Query("SELECT m FROM Material m WHERE " +
            "(:jobContent IS NULL OR LOWER(m.jobContent) LIKE LOWER(CONCAT('%', :jobContent, '%'))) AND " +
            "(:laborCode IS NULL OR LOWER(m.laborCode) LIKE LOWER(CONCAT('%', :laborCode, '%'))) AND " +
