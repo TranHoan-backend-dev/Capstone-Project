@@ -48,38 +48,38 @@ public class CostEstimateServiceImpl implements CostEstimateService {
     log.info("Creating new cost estimate for customer: {}", request.customerName());
     var installationForm = ifRepo.findById(new InstallationFormId(request.formNumber(), request.formCode()))
       .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_60, request.formCode(), request.formNumber())));
-    var overallMeterStatus = owmSrv.isOverallMeterExisting(request.overallWaterMeterId())
-      .data().toString();
-    var meterStatus = owmSrv.isMeterExisting(request.waterMeterSerial())
-      .data().toString();
-    if (Boolean.parseBoolean(overallMeterStatus) || Boolean.parseBoolean(meterStatus)) {
-      throw new IllegalArgumentException("Đồng hồ nước không tồn tại");
-    }
+//    var overallMeterStatus = owmSrv.isOverallMeterExisting(request.overallWaterMeterId())
+//      .data().toString();
+//    var meterStatus = owmSrv.isMeterExisting(request.waterMeterSerial())
+//      .data().toString();
+//    if (Boolean.parseBoolean(overallMeterStatus) || Boolean.parseBoolean(meterStatus)) {
+//      throw new IllegalArgumentException("Đồng hồ nước không tồn tại");
+//    }
 
     var estimate = CostEstimate.create(builder -> builder
       .customerName(request.customerName())
       .address(request.address())
-      .contractFee(request.contractFee())
-      .surveyFee(request.surveyFee())
-      .surveyEffort(request.surveyEffort())
-      .installationFee(request.installationFee())
-      .laborCoefficient(request.laborCoefficient())
-      .generalCostCoefficient(request.generalCostCoefficient())
-      .precalculatedTaxCoefficient(request.precalculatedTaxCoefficient())
-      .constructionMachineryCoefficient(request.constructionMachineryCoefficient())
-      .vatCoefficient(request.vatCoefficient())
-      .designCoefficient(request.designCoefficient())
-      .designFee(request.designFee())
-      .designImageUrl(request.designImageUrl())
+//      .contractFee(request.contractFee())
+//      .surveyFee(request.surveyFee())
+//      .surveyEffort(request.surveyEffort())
+//      .installationFee(request.installationFee())
+//      .laborCoefficient(request.laborCoefficient())
+//      .generalCostCoefficient(request.generalCostCoefficient())
+//      .precalculatedTaxCoefficient(request.precalculatedTaxCoefficient())
+//      .constructionMachineryCoefficient(request.constructionMachineryCoefficient())
+//      .vatCoefficient(request.vatCoefficient())
+//      .designCoefficient(request.designCoefficient())
+//      .designFee(request.designFee())
+//      .designImageUrl(request.designImageUrl())
       .registrationAt(request.registrationAt())
       .createBy(request.createBy())
-      .waterMeterSerial(request.waterMeterSerial())
-      .overallWaterMeterId(request.overallWaterMeterId())
+//      .waterMeterSerial(request.waterMeterSerial())
+//      .overallWaterMeterId(request.overallWaterMeterId())
       .installationFormId(installationForm)
     );
-    if (request.note() != null && !request.note().isBlank()) {
-      estimate.setNote(request.note());
-    }
+//    if (request.note() != null && !request.note().isBlank()) {
+//      estimate.setNote(request.note());
+//    }
 
     var saved = eRepo.save(estimate);
 

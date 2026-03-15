@@ -3,6 +3,7 @@ package com.capstone.construction.application.usecase;
 import com.capstone.common.enumerate.RoleName;
 import com.capstone.construction.application.business.installationform.InstallationFormService;
 import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.construction.application.dto.request.estimate.CreateRequest;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
@@ -11,6 +12,7 @@ import com.capstone.construction.application.event.producer.order.AssignEvent;
 import com.capstone.construction.application.event.producer.order.CreatedEvent;
 import com.capstone.construction.application.event.producer.MessageProducer;
 import com.capstone.construction.application.exception.ExistingItemException;
+import com.capstone.construction.application.usecase.estimate.CostEstimateUseCase;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
 import com.capstone.construction.infrastructure.utils.Message;
 import com.capstone.construction.infrastructure.service.EmployeeService;
@@ -24,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
 @Component
@@ -32,6 +35,7 @@ import java.util.Objects;
 public class InstallationFormHandlingUseCase {
   final InstallationFormService ifSrv;
   final MessageProducer messageProducer;
+  final CostEstimateUseCase costEstimateUseCase;
   final EmployeeService empSrv;
 
   @Value(".${rabbit-mq-config.entities[5]}.")
@@ -109,6 +113,19 @@ public class InstallationFormHandlingUseCase {
 
   public void approveInstallationForm(ApproveRequest request) {
     ifSrv.approveAndAssignInstallationForm(request);
+
+    var installationForm = ifSrv.getByFormCodeAndFormNumber(request.formCode(), request.formNumber());
+
+    if (request.status()) {
+      costEstimateUseCase.createEstimate(new CreateRequest(
+        installationForm.customerName(),
+        installationForm.address(),
+        LocalDate.parse(installationForm.registrationAt()),
+        installationForm.creator(),
+        request.formCode(),
+        request.formNumber()
+      ));
+    }
   }
 
   public Page<InstallationFormListResponse> getPaginatedConstructionRequest(Pageable pageable, BaseFilterRequest request) {
