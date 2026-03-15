@@ -277,8 +277,3 @@ Authorization: Bearer {{access_token}}
 
 ### 6. Error Case - Unauthorized (Missing Token)
 GET {{uri}}/construction
-
-### 7. Error Case - Forbidden Role
-# Note: Requires a token WITHOUT 'ORDER_RECEIVING_STAFF' role (e.g., 'SURVEY_STAFF')
-GET {{uri}}/construction
-Authorization: Bearer {{access_token}}

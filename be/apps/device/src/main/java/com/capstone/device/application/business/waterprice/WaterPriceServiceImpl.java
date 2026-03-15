@@ -6,8 +6,8 @@ import com.capstone.device.application.dto.request.price.CreateRequest;
 import com.capstone.device.application.dto.request.price.UpdateRequest;
 import com.capstone.device.application.dto.response.WaterPriceResponse;
 import com.capstone.device.domain.model.WaterPrice;
+import com.capstone.device.infrastructure.persistence.PriceTypeRepository;
 import com.capstone.device.infrastructure.persistence.WaterPriceRepository;
-import com.capstone.device.infrastructure.service.EmployeeService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -27,7 +27,7 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class WaterPriceServiceImpl implements WaterPriceService {
   WaterPriceRepository waterPriceRepository;
-  EmployeeService empSrv;
+  PriceTypeRepository ptRepo;
   @NonFinal
   Logger log;
 
@@ -88,10 +88,7 @@ public class WaterPriceServiceImpl implements WaterPriceService {
     if (!waterPriceRepository.existsById(id)) {
       throw new IllegalArgumentException("Water price not found: " + id);
     }
-    var status = (Boolean) empSrv.areEmployeesAppliedThisWaterPrice(id).data();
-    if (status) {
-      throw new ExistingException("This water price " + id + " is still applying");
-    }
+    ptRepo.deleteByWaterPrice_PriceId(id);
     waterPriceRepository.deleteById(id);
   }
 

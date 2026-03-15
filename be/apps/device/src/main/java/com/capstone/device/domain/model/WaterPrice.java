@@ -1,7 +1,7 @@
 package com.capstone.device.domain.model;
 
 import com.capstone.common.enumerate.UsageTarget;
-import com.capstone.device.infrastructure.config.Constant;
+import com.capstone.device.infrastructure.util.Message;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -65,31 +65,31 @@ public class WaterPrice {
   }
 
   public void setUsageTarget(UsageTarget usageTarget) {
-    Objects.requireNonNull(usageTarget, Constant.ENT_17);
+    Objects.requireNonNull(usageTarget, Message.ENT_17);
     this.usageTarget = usageTarget;
   }
 
   public void setTax(BigDecimal tax) {
-    requireNonNullAndNotEmpty(tax, Constant.ENT_19);
+    requireNonNullAndNotEmpty(tax, Message.ENT_19);
     this.tax = tax;
   }
 
   public void setEnvironmentPrice(BigDecimal environmentPrice) {
-    requireNonNullAndNotEmpty(environmentPrice, Constant.ENT_20);
+    requireNonNullAndNotEmpty(environmentPrice, Message.ENT_20);
     this.environmentPrice = environmentPrice;
   }
 
   public void setApplicationPeriod(LocalDate applicationPeriod) {
-    Objects.requireNonNull(applicationPeriod, Constant.ENT_22);
+    Objects.requireNonNull(applicationPeriod, Message.ENT_22);
     this.applicationPeriod = applicationPeriod;
   }
 
   public void setExpirationDate(LocalDate expirationDate) {
-    this.expirationDate = Objects.requireNonNull(expirationDate, Constant.ENT_37);
+    this.expirationDate = Objects.requireNonNull(expirationDate, Message.ENT_37);
   }
 
   public void setDescription(String description) {
-    Objects.requireNonNull(description, Constant.ENT_23);
+    Objects.requireNonNull(description, Message.ENT_23);
     this.description = description;
   }
 

@@ -1,3 +1,6 @@
+# gcs:
+#   credentials: gcs/${GCS_CREDENTIALS}
+#   bucket: ${BUCKET}
 spring:
   application:
     name: image
@@ -6,6 +9,10 @@ spring:
     locale: vi_VN
   profiles:
     active: dev
+  # cloud:
+  #   gcp:
+  #     credentials:
+  #       location: classpath:${gcs.credentials}
 management:
   health:
     rabbit:
@@ -34,11 +41,3 @@ eureka:
       defaultZone: http://localhost:9000/eureka
   instance:
     prefer-ip-address: true
-#spring:
-#  cloud:
-#    gcp:
-#      credentials:
-#        location: classpath:${gcs.credentials}
-#gcs:
-#  credentials: gcs/project-b0d9c9e8-e136-4e83-97e-732cf573e95c.json
-#  bucket: nawaco

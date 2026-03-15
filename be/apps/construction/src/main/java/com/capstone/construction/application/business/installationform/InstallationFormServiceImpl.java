@@ -2,17 +2,17 @@ package com.capstone.construction.application.business.installationform;
 
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.enumerate.ProcessingStatus;
+import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
-import com.capstone.construction.application.dto.request.installationform.FilterConstructionOrderRequest;
-import com.capstone.construction.application.dto.request.installationform.FilterFormRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import com.capstone.construction.application.dto.response.installationform.NewInstallationFormResponse;
 import com.capstone.construction.domain.model.InstallationForm;
 import com.capstone.construction.domain.model.WaterSupplyNetwork;
+import com.capstone.construction.domain.model.utils.InstallationFormId;
 import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
 import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRepository;
-import com.capstone.construction.infrastructure.config.Constant;
+import com.capstone.construction.infrastructure.utils.Message;
 import com.capstone.construction.infrastructure.service.EmployeeService;
 import com.capstone.construction.infrastructure.service.OverallWaterMeterService;
 import lombok.AccessLevel;
@@ -50,11 +50,11 @@ public class InstallationFormServiceImpl implements InstallationFormService {
     log.info("Creating new installation form with number: {}", request.formNumber());
 
     if (!checkAuthorExisting(request.createdBy())) {
-      throw new IllegalArgumentException(Constant.PT_61);
+      throw new IllegalArgumentException(Message.PT_36);
     }
 
     if (!checkMeterExisting(request.overallWaterMeterId())) {
-      throw new IllegalArgumentException(Constant.SE_06);
+      throw new IllegalArgumentException(Message.PT_58);
     }
 
     var entity = InstallationForm.create(builder -> builder
@@ -97,7 +97,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   }
 
   @Override
-  public Page<InstallationFormListResponse> getInstallationForms(Pageable pageable, @NonNull FilterFormRequest request) {
+  public Page<InstallationFormListResponse> getInstallationForms(Pageable pageable, BaseFilterRequest request) {
     log.info("Fetching paginated installation forms with pageable: {}", pageable);
     var startDate = parseFrom(request.from());
     var endDate = parseFrom(request.to());
@@ -115,17 +115,18 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   }
 
   @Override
-  public Page<InstallationFormListResponse> getConstructionRequestsList(Pageable pageable, @NonNull FilterConstructionOrderRequest request) {
+  public Page<InstallationFormListResponse> getConstructionRequestsList(Pageable pageable, @NonNull BaseFilterRequest request) {
     log.info("Fetching paginated construction request with pageable: {}", pageable);
     var startDate = parseFrom(request.from());
     var endDate = parseFrom(request.to());
     var specification = InstallationFormRepository.search(
       request.keyword(), startDate, endDate,
-      ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING
-    );
+      ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING);
 
-    var response = (startDate != null || (request.keyword() != null && !request.keyword().isBlank())) ? ifRepo.findAll(specification, pageable) :
-      ifRepo.findByStatus_ContractAndStatus_Construction(ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING, pageable);
+    var response = (startDate != null || (request.keyword() != null && !request.keyword().isBlank()))
+      ? ifRepo.findAll(specification, pageable)
+      : ifRepo.findByStatus_ContractAndStatus_Construction(ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING,
+      pageable);
     var result = response.getContent()
       .stream()
       .map(this::mapToResponse)
@@ -138,20 +139,21 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   @Transactional(rollbackFor = Exception.class)
   public void approveAndAssignInstallationForm(@NonNull ApproveRequest request) {
     log.info("Approving and assigning installation form with number: {}", request.formNumber());
-    var order = ifRepo.findById_FormCodeAndId_FormNumber(request.formCode(), request.formNumber()).orElseThrow(() -> new IllegalArgumentException(Constant.PT_61));
+    var order = ifRepo.findById(new InstallationFormId(request.formCode(), request.formNumber()))
+      .orElseThrow(() -> new IllegalArgumentException(Message.PT_36));
 
     if (request.status()) {
-      // trưởng phòng duyệt đơn
+      // nvks duyệt đơn
       var requestStatus = order.getStatus();
       requestStatus.setRegistration(ProcessingStatus.APPROVED);
+      requestStatus.setEstimate(ProcessingStatus.PENDING_FOR_APPROVAL);
 
       var status = empSrv.isEmployeeExisting(request.empId());
       if (!Boolean.parseBoolean(status.data().toString())) {
-        throw new IllegalArgumentException(Constant.PT_60);
+        throw new IllegalArgumentException(Message.PT_35);
       }
-      order.setHandoverBy(request.empId());
     } else {
-      // trưởng phòng hủy đơn
+      // nvks hủy đơn
       var status = order.getStatus();
       status.setRegistration(ProcessingStatus.REJECTED);
     }
@@ -161,19 +163,32 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   @Override
   public InstallationFormListResponse getByFormCodeAndFormNumber(String formCode, String formNumber) {
     log.info("Fetching installation form with form number: {}", formNumber);
-    var result = ifRepo.findById_FormCodeAndId_FormNumber(formCode, formNumber).orElseThrow(() -> new IllegalArgumentException(Constant.PT_61));
+    var result = ifRepo.findById(new InstallationFormId(formCode, formNumber))
+      .orElseThrow(() -> new IllegalArgumentException(Message.PT_36));
     return mapToResponse(result);
   }
 
   @Override
-  public Boolean checkFormBelongedToNetwork(String id) {
+  public Boolean checkAnyFormsBelongedToNetwork(String id) {
     log.info("Checking if installation form with id: {}", id);
     return ifRepo.existsByNetwork_BranchId(id);
   }
 
   @Override
+  public void assignInstallationForm(String id, InstallationFormId installationFormId, @NonNull Boolean status) {
+    log.info("Assigning installation form with id: {}", id);
+    var form = ifRepo.findById(installationFormId).orElseThrow(() -> new IllegalArgumentException(Message.PT_36));
+    if (status) {
+      form.setHandoverBy(id);
+    } else {
+      form.setConstructedBy(id);
+    }
+    ifRepo.save(form);
+  }
+
+  @Override
   public boolean isInstallationFormExisting(String formNumber, String formCode) {
-    var status = ifRepo.existsById_FormNumberOrId_FormCode(formNumber, formCode);
+    var status = ifRepo.existsById_FormNumberAndId_FormCode(formNumber, formCode);
     log.info("Installation form with form number: {} and form code {} is exist: {}", formNumber, formCode, status);
     return status;
   }
@@ -193,11 +208,14 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       entity.getScheduleSurveyAt() == null ? null : entity.getScheduleSurveyAt().toString(),
       entity.getCreatedAt().toString(),
       entity.getHandoverBy(),
-      (handOverByFullName != null && handOverByFullName.data() != null) ? handOverByFullName.data().toString() : unknown,
+      (handOverByFullName != null && handOverByFullName.data() != null) ? handOverByFullName.data().toString()
+        : unknown,
       entity.getCreatedBy(),
       (creatorFullName != null && creatorFullName.data() != null) ? creatorFullName.data().toString() : unknown,
       entity.getConstructedBy(),
-      (constructionEmployeeName != null && constructionEmployeeName.data() != null) ? constructionEmployeeName.data().toString() : unknown,
+      (constructionEmployeeName != null && constructionEmployeeName.data() != null)
+        ? constructionEmployeeName.data().toString()
+        : unknown,
       entity.getStatus());
   }
 
@@ -205,7 +223,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
     log.info("Fetching water supply network with ID: {}", networkId);
     return wsnRepo.findById(networkId).orElseThrow(() -> {
       log.error("Water supply network not found: {}", networkId);
-      return new IllegalArgumentException(Constant.PT_59);
+      return new IllegalArgumentException(Message.PT_34);
     });
   }
 
@@ -221,7 +239,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
 
   private boolean checkMeterExisting(String id) {
     log.info("Verifying existence of water meter: {}", id);
-    var response = owmSrv.isMeterExisting(id);
+    var response = owmSrv.isOverallMeterExisting(id);
     boolean exists = Boolean.parseBoolean(response.data().toString());
     if (!exists) {
       log.warn("Water meter not found: {}", id);

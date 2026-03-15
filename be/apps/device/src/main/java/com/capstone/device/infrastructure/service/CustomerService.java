@@ -1,6 +1,6 @@
 package com.capstone.device.infrastructure.service;
 
-import com.capstone.common.config.FeignAuthInterceptor;
+import com.capstone.common.config.feign.FeignAuthInterceptor;
 import com.capstone.common.response.WrapperApiResponse;
 import org.jspecify.annotations.NonNull;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @FeignClient(
   name = "customer",
-  path = "/api/v1/customer",
+  path = "/api/v1/customers",
   configuration = FeignAuthInterceptor.class
 )
 public interface CustomerService {
@@ -18,6 +18,6 @@ public interface CustomerService {
    * @param waterPriceId Id của bản ghi giá nước
    * @return boolean. True for existing, False for not
    */
-  @GetMapping("/{price}")
+  @GetMapping("/water-price/{price}")
   WrapperApiResponse checkWhetherCustomersAreApplied(@PathVariable("price") @NonNull String waterPriceId);
 }

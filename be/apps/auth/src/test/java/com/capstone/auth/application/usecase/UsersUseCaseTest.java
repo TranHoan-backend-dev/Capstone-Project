@@ -2,15 +2,19 @@ package com.capstone.auth.application.usecase;
 
 import com.capstone.auth.application.business.pages.BusinessPageService;
 import com.capstone.auth.application.business.users.UserService;
-import com.capstone.auth.application.dto.request.FilterUsersRequest;
+import com.capstone.auth.application.dto.request.users.FilterUsersRequest;
 import com.capstone.auth.application.dto.request.UpdateBusinessPageNamesRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
+import com.capstone.auth.application.event.producer.MessageProducer;
+
+import com.capstone.auth.application.event.producer.message.AccountDeleteEvent;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -30,8 +34,14 @@ class UsersUseCaseTest {
   @Mock
   private BusinessPageService bpService;
 
+  @Mock
+  private MessageProducer messageProducer;
+
   @InjectMocks
   private UsersUseCase usersUseCase;
+
+  @Mock
+  private Logger log;
 
   @Test
   @DisplayName("Should return paginated list of employees - Success")
@@ -139,14 +149,11 @@ class UsersUseCaseTest {
   @Test
   @DisplayName("Should check if employee exists - Returns True")
   void checkIfEmployeeExists_True() {
-    // Arrange
     var employeeId = "emp123";
     when(userService.isUserExists(employeeId)).thenReturn(true);
 
-    // Act
     var result = usersUseCase.checkIfEmployeeExists(employeeId);
 
-    // Assert
     assertTrue(result);
     verify(userService).isUserExists(employeeId);
   }
@@ -160,5 +167,66 @@ class UsersUseCaseTest {
     var result = usersUseCase.checkIfEmployeeExists(employeeId);
 
     assertFalse(result);
+  }
+
+  @Test
+  @DisplayName("Should check if job is assigned - Returns True")
+  void isJobAssigned_True() {
+    var jobId = "job123";
+    when(userService.isJobAssigned(jobId)).thenReturn(true);
+
+    var result = usersUseCase.isJobAssigned(jobId);
+
+    assertTrue(result);
+    verify(userService).isJobAssigned(jobId);
+  }
+
+  @Test
+  @DisplayName("Should update employee successfully and not send delete email")
+  void updateEmployee_Success() {
+    // Arrange
+    var id = "emp123";
+    var request = new com.capstone.auth.application.dto.request.users.UpdateRequest("New Name", null, null, null, null);
+    var response = new EmployeeResponse(id, "user1", "New Name", "Dept", "Net", "Jobs", "email@test.com");
+
+    when(userService.updateEmployee(id, request)).thenReturn(response);
+
+    // Act
+    var result = usersUseCase.updateEmployee(id, request);
+
+    // Assert
+    assertEquals(response, result);
+    verify(userService).updateEmployee(id, request);
+    verify(messageProducer).sendMessage(any(com.capstone.auth.application.event.producer.message.AccountUpdateEvent.class));
+  }
+
+  @Test
+  @DisplayName("Should delete employee successfully and send notification email")
+  void deleteEmployee_Success() {
+    // Arrange
+    var id = "emp123";
+    var response = new EmployeeResponse(id, "user1", "Old Name", "Dept", "Net", "Jobs", "email@test.com");
+
+    when(userService.deleteEmployee(id)).thenReturn(response);
+
+    // Act
+    usersUseCase.deleteEmployee(id);
+
+    // Assert
+    verify(userService).deleteEmployee(id);
+    verify(messageProducer).sendMessage(any(AccountDeleteEvent.class));
+  }
+
+  @Test
+  @DisplayName("Should propagate exception when delete fails and not send email")
+  void deleteEmployee_Fails() {
+    // Arrange
+    var id = "emp123";
+    when(userService.deleteEmployee(id)).thenThrow(new RuntimeException("Delete failed"));
+
+    // Act & Assert
+    assertThrows(RuntimeException.class, () -> usersUseCase.deleteEmployee(id));
+    verify(userService).deleteEmployee(id);
+    verifyNoInteractions(messageProducer);
   }
 }

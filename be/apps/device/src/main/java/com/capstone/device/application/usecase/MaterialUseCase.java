@@ -2,6 +2,7 @@ package com.capstone.device.application.usecase;
 
 import com.capstone.device.application.business.material.MaterialService;
 import com.capstone.device.application.dto.request.material.CreateRequest;
+import com.capstone.device.application.dto.request.material.GroupRequest;
 import com.capstone.device.application.dto.request.material.UpdateRequest;
 import com.capstone.device.application.dto.response.MaterialResponse;
 import com.capstone.device.application.event.producer.MessageProducer;
@@ -31,12 +32,13 @@ public class MaterialUseCase {
   @Value("${rabbit-mq-config.queue}" + PREFIX + "${rabbit-mq-config.actions[1]}")
   String DELETE_ROUTING_KEY;
 
-  public MaterialResponse create(@NonNull CreateRequest request) {
+  // <editor-fold> desc="material"
+  public MaterialResponse createMaterial(@NonNull CreateRequest request) {
     return mService.createMaterial(request);
   }
 
   @Transactional(rollbackFor = Exception.class)
-  public MaterialResponse update(String id, @NonNull UpdateRequest request) {
+  public MaterialResponse updateMaterial(String id, @NonNull UpdateRequest request) {
     var old = mService.getMaterialById(id);
     var n = mService.updateMaterial(id, request);
 
@@ -51,7 +53,7 @@ public class MaterialUseCase {
   }
 
   @Transactional(rollbackFor = Exception.class)
-  public void delete(String id) {
+  public void deleteMaterial(String id) {
     var old = mService.getMaterialById(id);
     mService.deleteMaterial(id);
 
@@ -68,4 +70,19 @@ public class MaterialUseCase {
   public Page<MaterialResponse> getAll(Pageable pageable) {
     return mService.getAllMaterials(pageable);
   }
+  // </editor-fold>
+
+  // <editor-fold> desc="material group"
+  public void createMaterialGroup(@NonNull GroupRequest request) {
+    mService.createGroup(request.name());
+  }
+
+  public void deleteGroup(String id) {
+    mService.deleteGroup(id);
+  }
+
+  public void updateGroup(String id, String name) {
+    mService.updateGroup(id, name);
+  }
+  // </editor-fold>
 }

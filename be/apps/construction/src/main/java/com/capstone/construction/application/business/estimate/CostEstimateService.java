@@ -1,18 +1,21 @@
 package com.capstone.construction.application.business.estimate;
 
-import com.capstone.construction.application.dto.request.estimate.CostEstimateRequest;
+import com.capstone.common.enumerate.ProcessingStatus;
+import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.construction.application.dto.request.estimate.CreateRequest;
+import com.capstone.construction.application.dto.request.estimate.UpdateRequest;
 import com.capstone.construction.application.dto.response.estimate.CostEstimateResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
 import org.springframework.data.domain.Pageable;
 
 public interface CostEstimateService {
-  CostEstimateResponse createEstimate(CostEstimateRequest request);
+  CostEstimateResponse createEstimate(CreateRequest request);
 
-  CostEstimateResponse updateEstimate(String id, CostEstimateRequest request);
-
-  void deleteEstimate(String id);
+  CostEstimateResponse updateEstimate(String id, UpdateRequest request);
 
   CostEstimateResponse getEstimateById(String id);
 
-  PageResponse<CostEstimateResponse> getAllEstimates(Pageable pageable);
+  PageResponse<CostEstimateResponse> getAllEstimates(Pageable pageable, BaseFilterRequest request);
+
+  void approveEstimate(String id, Boolean status);
 }

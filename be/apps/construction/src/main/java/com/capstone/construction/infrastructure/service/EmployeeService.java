@@ -1,6 +1,6 @@
 package com.capstone.construction.infrastructure.service;
 
-import com.capstone.common.config.FeignAuthInterceptor;
+import com.capstone.common.config.feign.FeignAuthInterceptor;
 import com.capstone.common.response.WrapperApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,5 +25,8 @@ public interface EmployeeService {
   WrapperApiResponse getEmployeeNameById(@PathVariable String id);
 
   @GetMapping("/network")
-  WrapperApiResponse checkIfEmployeeBelongedToNetwork(@RequestParam String id);
+  WrapperApiResponse checkAnyEmployeesBelongedToNetwork(@RequestParam String id);
+
+  @GetMapping("/role/{id}")
+  WrapperApiResponse getRoleOfEmployeeById(@PathVariable String id);
 }

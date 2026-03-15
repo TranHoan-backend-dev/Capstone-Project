@@ -10,7 +10,7 @@ Tài liệu này mô tả đầy đủ các kịch bản kiểm thử (unit test
 
 | ID | Trường hợp test | Đầu vào | Kỳ vọng đầu ra | Điều kiện tiên quyết |
 |:---|:---|:---|:---|:---|
-| UC-01 | Lấy danh sách thành công | Pageable, FilterFormRequest | Trả về Page<InstallationFormListResponse> | Service trả về dữ liệu |
+| UC-01 | Lấy danh sách thành công | Pageable, BaseFilterRequest | Trả về Page<InstallationFormListResponse> | Service trả về dữ liệu |
 
 ### Phương thức: `createNewInstallationRequest`
 
