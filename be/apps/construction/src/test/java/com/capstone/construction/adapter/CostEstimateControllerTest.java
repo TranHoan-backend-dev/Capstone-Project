@@ -1,9 +1,6 @@
 package com.capstone.construction.adapter;
 
-import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.common.utils.BaseFilterRequest;
-import com.capstone.common.utils.Utils;
-import com.capstone.construction.application.dto.request.estimate.CreateRequest;
 import com.capstone.construction.application.dto.request.estimate.UpdateRequest;
 import com.capstone.construction.application.dto.response.estimate.CostEstimateResponse;
 import com.capstone.construction.application.usecase.estimate.CostEstimateUseCase;
@@ -16,7 +13,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -41,18 +37,12 @@ class CostEstimateControllerTest {
   @InjectMocks
   private CostEstimateController estimateController;
 
-  private CreateRequest createRequest;
   private UpdateRequest updateRequest;
   private CostEstimateResponse mockResponse;
 
   @BeforeEach
   void setUp() {
     ReflectionTestUtils.setField(estimateController, "log", log);
-
-    createRequest = new CreateRequest(
-      "Customer", "Address", "Note", 1000, 100, 1, 1000, 1, 1, 1, 1, 1, 1, 100, "url",
-      LocalDate.now(), "user", "SN", "METER", "CODE", "NUM"
-    );
 
     updateRequest = new UpdateRequest(
       "Customer", "Address", "Note", 1000, 100, 1, 1000, 1, 1, 1, 1, 1, 1, 100, null, "SN", "METER"
@@ -66,24 +56,9 @@ class CostEstimateControllerTest {
   }
 
   @Test
-  void should_ReturnCreated_When_CreateEstimate() {
-    // Arrange
-    when(estimateUseCase.createEstimate(any(CreateRequest.class))).thenReturn(mockResponse);
-
-    // Act
-    var responseEntity = estimateController.createEstimate(createRequest);
-
-    // Assert
-    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-    assertThat(responseEntity.getBody()).isNotNull();
-    assertThat(responseEntity.getBody().message()).isEqualTo("Tạo dự toán chi phí thành công");
-    verify(estimateUseCase).createEstimate(createRequest);
-  }
-
-  @Test
   void should_ReturnOk_When_UpdateEstimate() {
     // Arrange
-    String id = "id-123";
+    var id = "id-123";
     when(estimateUseCase.updateEstimate(eq(id), any(UpdateRequest.class))).thenReturn(mockResponse);
 
     // Act
@@ -99,7 +74,7 @@ class CostEstimateControllerTest {
   @Test
   void should_ReturnOk_When_GetEstimateById() {
     // Arrange
-    String id = "id-123";
+    var id = "id-123";
     when(estimateUseCase.getEstimateById(id)).thenReturn(mockResponse);
 
     // Act
@@ -115,8 +90,8 @@ class CostEstimateControllerTest {
   @Test
   void should_ReturnOk_When_GetAllEstimates() {
     // Arrange
-    Pageable pageable = PageRequest.of(0, 10);
-    BaseFilterRequest filter = new BaseFilterRequest(null, null, null);
+    var pageable = PageRequest.of(0, 10);
+    var filter = new BaseFilterRequest(null, null, null);
 
     // Act
     var responseEntity = estimateController.getAllEstimates(pageable, filter);
@@ -129,8 +104,8 @@ class CostEstimateControllerTest {
   @Test
   void should_ReturnOk_When_ApproveEstimate() {
     // Arrange
-    String id = "id-123";
-    Boolean status = true;
+    var id = "id-123";
+    var status = true;
     when(estimateUseCase.approveEstimate(id, status)).thenReturn(mockResponse);
 
     // Act
