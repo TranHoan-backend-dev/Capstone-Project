@@ -1,13 +1,11 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { DateValue } from "@heroui/react";
-
+import { Skeleton, Spinner, DateValue } from "@heroui/react";
 import { ActionsSection } from "./components/actions-section";
 import { OrdersToDesignTable } from "./components/orders-to-design-table";
 import { ProcessedDesignsTable } from "./components/processed-designs-table";
 import { WaitingInputTable } from "./components/waiting-input-table";
-
 import { FilterSection } from "@/components/ui/FilterSection";
 import {
   DesignProcessingItem,
@@ -16,6 +14,7 @@ import {
 } from "@/types";
 import { authFetch } from "@/utils/authFetch";
 import { formatDate1 } from "@/utils/format";
+import { CallToast } from "@/components/ui/CallToast";
 
 const DesignProcessingPage = () => {
   const [keyword, setKeyword] = useState("");
@@ -28,54 +27,80 @@ const DesignProcessingPage = () => {
     DesignProcessingItem[]
   >([]);
   const [waitingInput, setWaitingInput] = useState<DesignProcessingItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const skeletonRows: DesignProcessingItem[] = Array.from({ length: 5 }).map(
+    (_, i) => ({
+      id: `skeleton-${i}`,
+      formNumber: "",
+      customerName: "",
+      phoneNumber: "",
+      address: "",
+      registrationAt: "",
+      scheduleSurveyAt: "",
+      status: "processing",
+    }),
+  );
+
   useEffect(() => {
     const fetchData = async () => {
-      const res = await authFetch("/api/construction/installation-forms");
-      const json = await res.json();
+      try {
+        setLoading(true);
 
-      const items = json?.data?.content ?? [];
+        const res = await authFetch("/api/construction/installation-forms");
+        const json = await res.json();
 
-      const orders: DesignProcessingItem[] = [];
-      const processed: DesignProcessingItem[] = [];
-      const waiting: DesignProcessingItem[] = [];
+        const items = json?.data?.content ?? [];
 
-      items.forEach((item: NewInstallationLookupResponse) => {
-        const estimateStatus = item.status?.estimate;
+        const orders: DesignProcessingItem[] = [];
+        const processed: DesignProcessingItem[] = [];
+        const waiting: DesignProcessingItem[] = [];
 
-        let uiStatus: DesignProcessingStatus = "processing";
+        items.forEach((item: NewInstallationLookupResponse) => {
+          const estimateStatus = item.status?.estimate;
 
-        if (estimateStatus === "APPROVED") {
-          uiStatus = "paid";
-        } else if (estimateStatus === "REJECTED") {
-          uiStatus = "rejected";
-        }
+          let uiStatus: DesignProcessingStatus = "processing";
 
-        const mapped: DesignProcessingItem = {
-          id: item.formCode,
-          formNumber: item.formNumber,
-          customerName: item.customerName,
-          phoneNumber: item.phoneNumber,
-          address: item.address,
-          registrationAt: formatDate1(item.registrationAt),
-          scheduleSurveyAt: formatDate1(item.scheduleSurveyAt),
-          status: uiStatus,
-        };
+          if (estimateStatus === "APPROVED") {
+            uiStatus = "paid";
+          } else if (estimateStatus === "REJECTED") {
+            uiStatus = "rejected";
+          }
 
-        if (
-          estimateStatus === "PENDING_FOR_APPROVAL" ||
-          estimateStatus === "PROCESSING"
-        ) {
-          orders.push(mapped);
-        } else if (estimateStatus === "APPROVED") {
-          processed.push(mapped);
-        } else if (estimateStatus === "REJECTED") {
-          waiting.push(mapped);
-        }
-      });
+          const mapped: DesignProcessingItem = {
+            id: item.formCode,
+            formNumber: item.formNumber,
+            customerName: item.customerName,
+            phoneNumber: item.phoneNumber,
+            address: item.address,
+            registrationAt: formatDate1(item.registrationAt),
+            scheduleSurveyAt: formatDate1(item.scheduleSurveyAt),
+            status: uiStatus,
+          };
 
-      setOrdersToDesign(orders);
-      setProcessedDesigns(processed);
-      setWaitingInput(waiting);
+          if (
+            estimateStatus === "PENDING_FOR_APPROVAL" ||
+            estimateStatus === "PROCESSING"
+          ) {
+            orders.push(mapped);
+          } else if (estimateStatus === "APPROVED") {
+            processed.push(mapped);
+          } else if (estimateStatus === "REJECTED") {
+            waiting.push(mapped);
+          }
+        });
+
+        setOrdersToDesign(orders);
+        setProcessedDesigns(processed);
+        setWaitingInput(waiting);
+      } catch (err: any) {
+        CallToast({
+          title: "Lỗi",
+          message: err.message || "Có lỗi xảy ra",
+          color: "danger",
+        });
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchData();
@@ -83,7 +108,6 @@ const DesignProcessingPage = () => {
 
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Action Handlers
   const handleApprove = (order: DesignProcessingItem) => {
     setOrdersToDesign((prev) => prev.filter((i) => i.id !== order.id));
     setProcessedDesigns((prev) => [...prev, order]);
@@ -132,7 +156,13 @@ const DesignProcessingPage = () => {
       ),
     [waitingInput, searchQuery],
   );
-
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-[400px]">
+        <Spinner size="lg" label="Đang tải dữ liệu..." />
+      </div>
+    );
+  }
   return (
     <>
       {/* <ActionsSection /> */}
@@ -148,7 +178,10 @@ const DesignProcessingPage = () => {
       />
 
       <div className="space-y-8">
-        <OrdersToDesignTable data={filteredOrders} onApprove={handleApprove} />
+        <OrdersToDesignTable
+          data={loading ? skeletonRows : filteredOrders}
+          onApprove={handleApprove}
+        />
         <ProcessedDesignsTable
           data={filteredProcessed}
           onReject={handleReject}

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Chip, Link, Tooltip } from "@heroui/react";
+import { Chip, Link, Skeleton, Tooltip } from "@heroui/react";
 import NextLink from "next/link";
 
 import { DesignProcessingModal } from "./design-processing-modal";
@@ -15,8 +15,12 @@ import {
   DarkRedChip,
   DarkGrayChip,
   TitleDarkColor,
+  RejectIcon,
+  DeleteIcon,
+  ProfileIcon,
+  RedIconColor,
+  BlueYellowIconColor,
 } from "@/config/chip-and-icon";
-
 import { DesignProcessingItem, StatusDetailData } from "@/types";
 import { DESIGN_PROCESSING_COLUMN } from "@/config/table-columns";
 import { authFetch } from "@/utils/authFetch";
@@ -77,7 +81,11 @@ export const OrdersToDesignTable = ({
   const [approveItem, setApproveItem] = useState<DesignProcessingItem | null>(
     null,
   );
+  const [rejectItem, setRejectItem] = useState<DesignProcessingItem | null>(
+    null,
+  );
   const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
 
   const mapDesignToModalData = (
     item: DesignProcessingItem,
@@ -133,6 +141,40 @@ export const OrdersToDesignTable = ({
     }
   };
 
+  const handleRejectConfirm = async () => {
+    if (!approveItem) return;
+
+    try {
+      const res = await authFetch(
+        "/api/construction/installation-forms/approve",
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            formNumber: approveItem.formNumber,
+            formCode: approveItem.id,
+            status: false,
+          }),
+        },
+      );
+
+      const json = await res.json();
+
+      if (res.ok) {
+        onApprove?.(approveItem);
+        setIsRejectModalOpen(false);
+        setRejectItem(null);
+      } else {
+        alert(json.message || "Duyệt đơn thất bại");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Có lỗi xảy ra");
+    }
+  };
+
   const renderCell = (item: DesignProcessingItem, columnKey: string) => {
     switch (columnKey) {
       case "stt":
@@ -143,6 +185,9 @@ export const OrdersToDesignTable = ({
         );
 
       case "code":
+        if (!item.formNumber) {
+          return <Skeleton className="h-4 w-24 rounded-lg" />;
+        }
         return (
           <Link
             as={NextLink}
@@ -154,6 +199,10 @@ export const OrdersToDesignTable = ({
         );
 
       case "customerName":
+        if (!item.customerName) {
+          return <Skeleton className="h-4 w-24 rounded-lg" />;
+        }
+
         return (
           <span className="font-bold text-gray-900 dark:text-foreground">
             {item.customerName}
@@ -161,6 +210,9 @@ export const OrdersToDesignTable = ({
         );
 
       case "status":
+        if (!item.status) {
+          return <Skeleton className="h-4 w-24 rounded-lg" />;
+        }
         const config = statusMap[item.status] ?? statusMap.none;
 
         return (
@@ -181,13 +233,22 @@ export const OrdersToDesignTable = ({
 
       case "activities":
         return (
-          <div className="flex justify-center">
+          <div className="flex justify-center gap-3">
             <Tooltip color="success" content="Duyệt">
               <ApprovalIcon
                 className={GreenIconColor}
                 onClick={() => {
                   setApproveItem(item);
                   setIsApproveModalOpen(true);
+                }}
+              />
+            </Tooltip>
+            <Tooltip color="danger" content="Từ chối">
+              <RejectIcon
+                className={RedIconColor}
+                onClick={() => {
+                  setApproveItem(item);
+                  setIsRejectModalOpen(true);
                 }}
               />
             </Tooltip>
@@ -242,6 +303,30 @@ export const OrdersToDesignTable = ({
             </Button>
 
             <Button color="success" onPress={handleApproveConfirm}>
+              Đồng ý
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <Modal
+        isOpen={isRejectModalOpen}
+        onClose={() => setIsRejectModalOpen(false)}
+      >
+        <ModalContent>
+          <ModalHeader>Xác nhận từ chối</ModalHeader>
+
+          <ModalBody>
+            Bạn có chắc chắn muốn từ chối đơn <b>{approveItem?.formNumber}</b>{" "}
+            không?
+          </ModalBody>
+
+          <ModalFooter>
+            <Button variant="light" onPress={() => setIsRejectModalOpen(false)}>
+              Hủy
+            </Button>
+
+            <Button color="success" onPress={handleRejectConfirm}>
               Đồng ý
             </Button>
           </ModalFooter>

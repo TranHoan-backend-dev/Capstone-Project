@@ -24,6 +24,7 @@ const NewInstallationForm = () => {
   const [keyword, setKeyword] = useState("");
   const [reloadKey, setReloadKey] = useState(0);
   const today = new Date().toISOString().split("T")[0];
+  const [loading, setLoading] = useState(true);
   const initialFormData: NewInstallationFormPayload = {
     formCode: "",
     formNumber: "",
@@ -44,7 +45,6 @@ const NewInstallationForm = () => {
     numberOfHousehold: "",
     householdRegistrationNumber: "",
     networkId: "",
-    createdBy: "38e76664-828b-47e8-9504-a713c92484ac",
     overallWaterMeterId: "",
   };
   const [formData, setFormData] =
@@ -67,6 +67,7 @@ const NewInstallationForm = () => {
 
   const handleCreate = async () => {
     try {
+      setLoading(true);
       const requiredError = validateRequiredFields([
         { value: formData.formCode, fieldName: "Mã biểu mẫu" },
         { value: formData.formNumber, fieldName: "Số hồ sơ" },
@@ -185,6 +186,8 @@ const NewInstallationForm = () => {
         message: e.message || "Có lỗi xảy ra",
         color: "danger",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -192,7 +195,7 @@ const NewInstallationForm = () => {
     setFormData(initialFormData);
     setReloadKey((prev) => prev + 1);
   };
-  
+
   return (
     <>
       <GenericSearchFilter

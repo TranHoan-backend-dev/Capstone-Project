@@ -88,7 +88,6 @@ export interface NewInstallationFormPayload {
   numberOfHousehold?: number | "";
   householdRegistrationNumber?: number | "";
   networkId: string;
-  createdBy: string;
   overallWaterMeterId: string;
 }
 
