@@ -8,7 +8,7 @@ public final class Message {
   public static final String PT_05 = "Định dạng ngày không hợp lệ";
   public static final String PT_06 = "Loại khách hàng không được để trống";
   public static final String PT_07 = "Thôn/làng phải thuộc về một xã nông thôn";
-  public static final String PT_08 = "";
+  public static final String PT_08 = "Trạng thái lưu dự toán không được để trống";
   public static final String PT_09 = "Tên xã/phường không được để trống";
   public static final String PT_10 = "Loại xã/phường không được để trống";
   public static final String PT_11 = "Tên thôn/làng không được để trống";
