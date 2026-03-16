@@ -38,7 +38,10 @@ public class CostEstimateController {
   final CostEstimateUseCase estimateUseCase;
 
   @PutMapping("/{id}")
-  @Operation(summary = "Cập nhật dự toán", description = "Cập nhật thông tin dự toán hiện có theo ID", responses = {
+  @Operation(summary = "Cập nhật dự toán", description = """
+    Cập nhật thông tin dự toán hiện có theo ID.<br/>
+    Nhân viên khảo sát có thể hoàn tất dự toán hoặc lưu bản nháp.
+    """, responses = {
     @ApiResponse(responseCode = "200", description = "Cập nhật dự toán thành công", content = @Content(schema = @Schema(implementation = CostEstimateResponse.class))),
     @ApiResponse(responseCode = "400", description = "Dữ liệu đầu vào không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "404", description = "Không tìm thấy dự toán", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
