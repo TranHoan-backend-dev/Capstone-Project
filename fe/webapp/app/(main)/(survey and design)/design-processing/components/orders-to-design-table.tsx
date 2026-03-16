@@ -111,7 +111,6 @@ export const OrdersToDesignTable = ({
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            empId: "6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20",
             formNumber: approveItem.formNumber,
             formCode: approveItem.id,
             status: true,

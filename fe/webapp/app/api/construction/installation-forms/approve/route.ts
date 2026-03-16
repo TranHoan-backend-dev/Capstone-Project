@@ -4,8 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(req: NextRequest) {
   try {
-    const payload = await req.json();
-
+    const body = await req.json();
     const accessToken = getAccessToken(req);
 
     if (!accessToken) {
@@ -15,9 +14,10 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
+    console.log("payload", body);
     const approveInstallation = await approveInstallationForm(
       accessToken,
-      payload,
+      body,
     );
 
     return NextResponse.json({

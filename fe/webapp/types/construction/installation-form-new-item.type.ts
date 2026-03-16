@@ -96,5 +96,4 @@ export interface ApproveInstallationPayload {
   formCode: string;
   formNumber: string;
   status: boolean;
-  empId: string;
 }
