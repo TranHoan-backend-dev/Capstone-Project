@@ -17,13 +17,22 @@ import {
   NewInstallationLookupResponse,
 } from "@/types";
 import { NEW_INSTALLATION_LOOKUP_COLUMN } from "@/config/table-columns";
+import { authFetch } from "@/utils/authFetch";
+import { formatDate1 } from "@/utils/format";
 
-interface Props {
-  keyword: string;
-  reloadKey: number;
+interface ResultsTableProps {
+  keyword?: string;
+  reloadKey?: number;
+  from?: string | null;
+  to?: string | null;
 }
 
-export const RelatedOrdersTable = ({ keyword, reloadKey }: Props) => {
+export const RelatedOrdersTable = ({
+  keyword,
+  reloadKey,
+  from,
+  to,
+}: ResultsTableProps) => {
   const [data, setData] = useState<NewInstallationLookupItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
@@ -32,7 +41,7 @@ export const RelatedOrdersTable = ({ keyword, reloadKey }: Props) => {
     field: string;
     direction: "asc" | "desc";
   }>({
-    field: "",
+    field: "createdAt",
     direction: "desc",
   });
 
@@ -49,13 +58,11 @@ export const RelatedOrdersTable = ({ keyword, reloadKey }: Props) => {
           size: String(pageSize),
           sort: `${sort.field},${sort.direction}`,
         });
+        if (from) params.append("from", from);
+        if (to) params.append("to", to);
+        if (keyword) params.append("keyword", keyword);
 
-        const trimmedKeyword = keyword.trim();
-        if (trimmedKeyword) {
-          params.append("keyword", trimmedKeyword);
-        }
-
-        const res = await fetch(
+        const res = await authFetch(
           `/api/construction/installation-forms?${params.toString()}`,
         );
 
@@ -78,6 +85,7 @@ export const RelatedOrdersTable = ({ keyword, reloadKey }: Props) => {
               stt: (page - 1) * pageSize + index + 1,
               formNumber: item.formNumber,
               customerName: item.customerName,
+              registrationAt: formatDate1(item.registrationAt),
               address: item.address,
               stage: stage.toLowerCase(),
               status: status?.toLowerCase() ?? "pending",
@@ -96,7 +104,7 @@ export const RelatedOrdersTable = ({ keyword, reloadKey }: Props) => {
     };
 
     fetchData();
-  }, [page, keyword, reloadKey, sort]);
+  }, [page, keyword, reloadKey, sort, from, to]);
 
   const handleSortChange = (columnKey: string) => {
     setPage(1);
@@ -138,6 +146,10 @@ export const RelatedOrdersTable = ({ keyword, reloadKey }: Props) => {
       status: "PENDING",
     };
   };
+
+  useEffect(() => {
+    setPage(1);
+  }, [keyword, from, to]);
 
   const renderCell = (item: any, key: string) => {
     switch (key) {

@@ -366,6 +366,8 @@ export const getInstallationForms = (
   size: number,
   sort: string,
   keyword?: string | null,
+  from?: string | null,
+  to?: string | null,
 ) =>
   axios.get(`${API_GATEWAY_URL}/construction/installation-forms`, {
     params: {
@@ -373,6 +375,8 @@ export const getInstallationForms = (
       size,
       sort,
       keyword,
+      from,
+      to,
     },
     headers: {
       Authorization: `Bearer ${accessToken}`,

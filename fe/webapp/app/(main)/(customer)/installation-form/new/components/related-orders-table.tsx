@@ -14,7 +14,7 @@ import {
 } from "@/config/chip-and-icon";
 import { INSTALLATION_FORM_NEW_COLUMN } from "@/config/table-columns";
 import { NewInstallationFormItem, NewInstallationFormResponse } from "@/types";
-import { formatDate } from "@/utils/format";
+import { formatDate1 } from "@/utils/format";
 
 interface Props {
   keyword: string;
@@ -76,7 +76,7 @@ export const RelatedOrdersTable = ({ keyword, reloadKey }: Props) => {
             customerName: item.customerName,
             phoneNumber: item.phoneNumber,
             address: item.address,
-            registrationAt: formatDate(item.registrationAt),
+            registrationAt: formatDate1(item.registrationAt),
           }),
         );
 
@@ -187,7 +187,6 @@ export const RelatedOrdersTable = ({ keyword, reloadKey }: Props) => {
       }}
       renderCellAction={renderCell}
       title="Danh sách đơn lắp đặt mới"
-      sort={sort}
       onSortChange={handleSortChange}
     />
   );

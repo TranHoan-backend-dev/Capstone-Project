@@ -1,3 +1,5 @@
+import { DateValue } from "@heroui/react";
+
 export interface NewInstallationFormItem {
   id: string;
   stt: number;
@@ -32,6 +34,7 @@ export interface NewInstallationLookupResponse {
   formNumber: string;
   customerName: string;
   address: string;
+  registrationAt: string;
   status: string;
 }
 
