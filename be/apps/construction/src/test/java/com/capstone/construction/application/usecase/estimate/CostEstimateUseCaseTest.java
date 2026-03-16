@@ -59,7 +59,7 @@ class CostEstimateUseCaseTest {
       "Customer Name", "Address", LocalDate.now(), "user-123", formCode, formNumber);
 
     updateRequest = new UpdateRequest(
-      "Name", "Addr", "Note", 100, 100, 1, 100, 1, 1, 1, 1, 1, 1, 100, null, "SN", "METER");
+      "Name", "Addr", "Note", 100, 100, 1, 100, 1, 1, 1, 1, 1, 1, 100, null, "SN", "METER", true);
 
     mockResponse = new CostEstimateResponse(
       "id-123", "Customer Name", "Address", "Note", 1000, 500, 1, 2000, 10, 5, 10, 5, 10, 2, 100, "url",
