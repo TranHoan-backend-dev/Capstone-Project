@@ -1,6 +1,7 @@
 package com.capstone.device.infrastructure.util;
 
 public final class Message {
+  public static final String ENT_01 = "Nhóm đơn giá vật tư với id %s không tìm thấy";
   public static final String ENT_02 = "Id của nhánh tổng không được để trống";
 
   public static final String ENT_03 = "Giá không được để trống";
@@ -52,4 +53,5 @@ public final class Message {
   public static final String ENT_53 = "Giá trị tham số không được là số âm";
   public static final String ENT_54 = "Tên công việc không được để trống";
   public static final String ENT_55 = "Ghi chú không được là số âm";
+  public static final String ENT_56 = "Không tìm thấy đơn vị đo với id %s ";
 }
