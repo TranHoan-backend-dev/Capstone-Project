@@ -129,21 +129,49 @@ export const RelatedOrdersTable = ({
     },
   ];
 
+  const mapStatus = (status: string) => {
+    switch (status) {
+      case "PENDING_FOR_APPROVAL":
+        return "pending";
+      case "PROCESSING":
+        return "processing";
+      case "APPROVED":
+        return "approved";
+      case "REJECTED":
+        return "rejected";
+      default:
+        return "pending";
+    }
+  };
   const getStageAndStatus = (statusObj: any) => {
-    const stages = ["construction", "contract", "estimate", "registration"];
+    if (!statusObj) {
+      return { stage: "registration", status: "pending" };
+    }
 
-    for (const stage of stages) {
-      if (statusObj?.[stage]) {
-        return {
-          stage,
-          status: statusObj[stage],
-        };
-      }
+    if (statusObj.registration !== "APPROVED") {
+      return {
+        stage: "registration",
+        status: mapStatus(statusObj.registration),
+      };
+    }
+
+    if (statusObj.estimate !== "APPROVED") {
+      return {
+        stage: "estimate",
+        status: mapStatus(statusObj.estimate),
+      };
+    }
+
+    if (statusObj.contract !== "APPROVED") {
+      return {
+        stage: "construction",
+        status: mapStatus(statusObj.contract),
+      };
     }
 
     return {
-      stage: "registration",
-      status: "PENDING",
+      stage: "contract",
+      status: mapStatus(statusObj.construction),
     };
   };
 

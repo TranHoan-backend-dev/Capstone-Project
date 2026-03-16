@@ -29,13 +29,20 @@ export interface NewInstallationLookupItem {
   status: OrderStatus;
 }
 
+type FormStatus = {
+  registration: string;
+  estimate: string;
+  contract: string;
+  construction: string;
+};
+
 export interface NewInstallationLookupResponse {
   formCode: string;
   formNumber: string;
   customerName: string;
   address: string;
   registrationAt: string;
-  status: string;
+  status: FormStatus;
 }
 
 export type OrderStage =
