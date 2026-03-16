@@ -10,8 +10,9 @@ import {
 } from "@/config/chip-and-icon";
 interface Props {
   onCreate: () => void;
+  onClear: () => void;
 }
-export const FormActions = ({ onCreate }: Props) => {
+export const FormActions = ({ onCreate, onClear }: Props) => {
   return (
     <div className="flex justify-end items-center pt-8 gap-2 border-t border-gray-100 dark:border-divider">
       <div className="flex gap-3">
@@ -33,6 +34,7 @@ export const FormActions = ({ onCreate }: Props) => {
       </div>
       <div className="flex gap-3">
         <CustomButton
+          onPress={onClear}
           className="bg-gray-100 dark:bg-default-100 text-gray-700 dark:text-foreground font-bold px-6 shadow-none border border-gray-200 dark:border-divider h-9 shrink-0"
           radius="md"
           size="md"

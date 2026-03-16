@@ -121,6 +121,19 @@ export const AddressContactSection = ({
             label={field.label}
             value={value}
             onSearch={field.onSearchClick}
+            onChange={() => {
+              if (field.key === "networkId") {
+                setSelectedNetworkId("");
+                setSelectedNetworkName("");
+                updateField("networkId", "");
+              }
+
+              if (field.key === "overallWaterMeterId") {
+                setSelectedOverallId("");
+                setSelectedOverallName("");
+                updateField("overallWaterMeterId", "");
+              }
+            }}
           />
 
           {field.key === "networkId" && (

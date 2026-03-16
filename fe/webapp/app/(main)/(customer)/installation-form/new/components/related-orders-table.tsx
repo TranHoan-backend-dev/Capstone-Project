@@ -183,7 +183,7 @@ export const RelatedOrdersTable = ({ keyword, reloadKey }: Props) => {
         total: totalPages,
         page: page,
         onChange: setPage,
-        summary: `${totalItems}`,
+        summary: `${data.length}`,
       }}
       renderCellAction={renderCell}
       title="Danh sách đơn lắp đặt mới"

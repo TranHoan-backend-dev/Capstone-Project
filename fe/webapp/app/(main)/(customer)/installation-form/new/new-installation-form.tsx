@@ -18,12 +18,13 @@ import {
   validatePhone,
   validateRequiredFields,
 } from "@/utils/validation";
+import { CallToast } from "@/components/ui/CallToast";
 
 const NewInstallationForm = () => {
   const [keyword, setKeyword] = useState("");
   const [reloadKey, setReloadKey] = useState(0);
   const today = new Date().toISOString().split("T")[0];
-  const [formData, setFormData] = useState<NewInstallationFormPayload>({
+  const initialFormData: NewInstallationFormPayload = {
     formCode: "",
     formNumber: "",
     customerName: "",
@@ -45,7 +46,9 @@ const NewInstallationForm = () => {
     networkId: "",
     createdBy: "38e76664-828b-47e8-9504-a713c92484ac",
     overallWaterMeterId: "",
-  });
+  };
+  const [formData, setFormData] =
+    useState<NewInstallationFormPayload>(initialFormData);
 
   const updateField = (field: keyof NewInstallationFormPayload, value: any) => {
     setFormData((prev) => ({
@@ -53,6 +56,15 @@ const NewInstallationForm = () => {
       [field]: value,
     }));
   };
+
+  const showError = (message: string) => {
+    CallToast({
+      title: "Lỗi",
+      message,
+      color: "danger",
+    });
+  };
+
   const handleCreate = async () => {
     try {
       const requiredError = validateRequiredFields([
@@ -96,39 +108,39 @@ const NewInstallationForm = () => {
         },
       ]);
 
-      if (requiredError) return alert(requiredError);
+      if (requiredError) return showError(requiredError);
       const phoneError = validatePhone(formData.phoneNumber);
-      if (phoneError) return alert(phoneError);
+      if (phoneError) return showError(phoneError);
 
       const nameError = validateName(
         formData.customerName,
         "Họ tên khách hàng",
       );
-      if (nameError) return alert(nameError);
+      if (nameError) return showError(nameError);
 
       const representativeError = validateName(
         formData.representative?.[0]?.name ?? "",
         "Người đại diện",
       );
-      if (representativeError) return alert(representativeError);
+      if (representativeError) return showError(representativeError);
 
       const receivedError = validateNotPastDate(
         formData.receivedFormAt,
         "Ngày nhận đơn",
       );
-      if (receivedError) return alert(receivedError);
+      if (receivedError) return showError(receivedError);
 
       const surveyError = validateNotPastDate(
         formData.scheduleSurveyAt,
         "Ngày hẹn khảo sát",
       );
-      if (surveyError) return alert(surveyError);
+      if (surveyError) return showError(surveyError);
 
       const citizenError = validateNotFutureDate(
         formData.citizenIdentificationProvideDate,
         "Ngày cấp CCCD",
       );
-      if (citizenError) return alert(citizenError);
+      if (citizenError) return showError(citizenError);
 
       const payload = {
         ...formData,
@@ -160,19 +172,32 @@ const NewInstallationForm = () => {
         return;
       }
 
-      alert("Tạo đơn thành công");
-
+      CallToast({
+        title: "Thành công",
+        message: "Tạo đơn lắp đặt thành công",
+        color: "success",
+      });
+      setFormData(initialFormData);
       setReloadKey((prev) => prev + 1);
-    } catch (error) {
-      console.error(error);
-      alert("Có lỗi xảy ra");
+    } catch (e: any) {
+      CallToast({
+        title: "Lỗi",
+        message: e.message || "Có lỗi xảy ra",
+        color: "danger",
+      });
     }
   };
+
+  const handleClear = () => {
+    setFormData(initialFormData);
+    setReloadKey((prev) => prev + 1);
+  };
+  
   return (
     <>
       <GenericSearchFilter
         isCollapsible
-        actions={<FormActions onCreate={handleCreate} />}
+        actions={<FormActions onCreate={handleCreate} onClear={handleClear} />}
         gridClassName="flex flex-col gap-y-2"
         icon={<DocumentPlusIcon className="w-6 h-6" />}
         title="Đơn lắp đặt mới"
@@ -181,6 +206,7 @@ const NewInstallationForm = () => {
           <OrderInfoSection formData={formData} updateField={updateField} />
           <CustomerInfoSection formData={formData} updateField={updateField} />
           <AddressContactSection
+            key={reloadKey}
             formData={formData}
             updateField={updateField}
           />
