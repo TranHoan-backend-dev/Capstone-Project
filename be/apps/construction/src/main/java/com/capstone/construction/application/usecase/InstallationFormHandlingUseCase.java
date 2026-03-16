@@ -55,13 +55,13 @@ public class InstallationFormHandlingUseCase {
   }
 
   @Transactional(rollbackFor = Exception.class)
-  public NewInstallationFormResponse createNewInstallationRequest(@NonNull NewOrderRequest request) {
+  public NewInstallationFormResponse createNewInstallationRequest(String userId, @NonNull NewOrderRequest request) {
     var routingKey = QUEUE_NAME + PREFIX + CREATE_ACTION;
     if (ifSrv.isInstallationFormExisting(request.formNumber(), request.formCode())) {
       throw new ExistingItemException(Message.PT_53);
     }
 
-    var savedResponse = ifSrv.createNewInstallationForm(request);
+    var savedResponse = ifSrv.createNewInstallationForm(userId, request);
 
     // Send notification event using the DTO data
     var event = new CreatedEvent(
