@@ -1,5 +1,3 @@
-import { DateValue } from "@heroui/react";
-
 export interface NewInstallationFormItem {
   id: string;
   stt: number;
@@ -17,6 +15,7 @@ export interface NewInstallationFormResponse {
   address: string;
   phoneNumber: string;
   registrationAt: string;
+  scheduleSurveyAt:string;
 }
 
 export interface NewInstallationLookupItem {
@@ -43,6 +42,9 @@ export interface NewInstallationLookupResponse {
   address: string;
   registrationAt: string;
   status: FormStatus;
+  phoneNumber: string;
+  receivedFormAt: string;
+  scheduleSurveyAt: string;
 }
 
 export type OrderStage =
@@ -88,4 +90,11 @@ export interface NewInstallationFormPayload {
   networkId: string;
   createdBy: string;
   overallWaterMeterId: string;
+}
+
+export interface ApproveInstallationPayload {
+  formCode: string;
+  formNumber: string;
+  status: boolean;
+  empId: string;
 }

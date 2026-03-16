@@ -16,11 +16,22 @@ import {
   DarkGrayChip,
   TitleDarkColor,
 } from "@/config/chip-and-icon";
+
 import { DesignProcessingItem, StatusDetailData } from "@/types";
+import { DESIGN_PROCESSING_COLUMN } from "@/config/table-columns";
+import { authFetch } from "@/utils/authFetch";
+import {
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  Button,
+} from "@heroui/react";
 
 interface OrdersToDesignTableProps {
   data: DesignProcessingItem[];
-  onApprove?: (item: any) => void;
+  onApprove?: (item: DesignProcessingItem) => void;
 }
 
 const statusMap = {
@@ -58,12 +69,22 @@ export const OrdersToDesignTable = ({
   const [selectedDesign, setSelectedDesign] =
     useState<DesignProcessingItem | null>(null);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const rowsPerPage = 10;
+  const totalPages = Math.ceil(data.length / rowsPerPage);
+
+  const [approveItem, setApproveItem] = useState<DesignProcessingItem | null>(
+    null,
+  );
+  const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
+
   const mapDesignToModalData = (
     item: DesignProcessingItem,
   ): StatusDetailData => ({
-    code: item.code,
+    code: item.formNumber,
     address: item.address,
-    registerDate: item.registrationDate,
+    registerDate: item.registrationAt,
     status: statusMap[item.status]?.label ?? "Không xác định",
     creator: "",
     createDate: "",
@@ -73,33 +94,55 @@ export const OrdersToDesignTable = ({
     note: "",
   });
 
-  const columns: any[] = [
-    { key: "no", label: "#", align: "center", width: "60px" },
-    { key: "code", label: "Mã đơn" },
-    { key: "customerName", label: "Tên khách hàng" },
-    { key: "phone", label: "Điện thoại" },
-    { key: "address", label: "Địa chỉ lắp đặt", width: "300px" },
-    { key: "registrationDate", label: "Ngày đăng ký" },
-    { key: "surveyAppointment", label: "Ngày hẹn khảo sát" },
-    { key: "status", label: "Trạng thái đơn", align: "center" },
-    { key: "activities", label: "Hoạt động", align: "center" },
-  ];
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
   const handleStatusClick = (item: DesignProcessingItem) => {
     setSelectedDesign(item);
     setIsModalOpen(true);
   };
 
+  const handleApproveConfirm = async () => {
+    if (!approveItem) return;
+
+    try {
+      const res = await authFetch(
+        "/api/construction/installation-forms/approve",
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            empId: "6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20",
+            formNumber: approveItem.formNumber,
+            formCode: approveItem.id,
+            status: true,
+          }),
+        },
+      );
+
+      const json = await res.json();
+
+      if (res.ok) {
+        onApprove?.(approveItem);
+        setIsApproveModalOpen(false);
+        setApproveItem(null);
+      } else {
+        alert(json.message || "Duyệt đơn thất bại");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Có lỗi xảy ra");
+    }
+  };
+
   const renderCell = (item: DesignProcessingItem, columnKey: string) => {
     switch (columnKey) {
-      case "no":
+      case "stt":
         return (
           <span className="font-medium text-black dark:text-white">
             {data.indexOf(item) + 1}
           </span>
         );
+
       case "code":
         return (
           <Link
@@ -107,17 +150,19 @@ export const OrdersToDesignTable = ({
             className={`font-bold text-blue-600 hover:underline hover:text-blue-800 ${TitleDarkColor}`}
             href="#"
           >
-            {item.code}
+            {item.formNumber}
           </Link>
         );
+
       case "customerName":
         return (
           <span className="font-bold text-gray-900 dark:text-foreground">
             {item.customerName}
           </span>
         );
+
       case "status":
-        const config = statusMap[item.status];
+        const config = statusMap[item.status] ?? statusMap.none;
 
         return (
           <button
@@ -126,7 +171,7 @@ export const OrdersToDesignTable = ({
           >
             <Chip
               className={`font-bold ${config.bg}`}
-              color={`${config.color}`}
+              color={config.color}
               size="sm"
               variant="flat"
             >
@@ -134,17 +179,22 @@ export const OrdersToDesignTable = ({
             </Chip>
           </button>
         );
+
       case "activities":
         return (
           <div className="flex justify-center">
             <Tooltip color="success" content="Duyệt">
               <ApprovalIcon
                 className={GreenIconColor}
-                onClick={() => onApprove?.(item)}
+                onClick={() => {
+                  setApproveItem(item);
+                  setIsApproveModalOpen(true);
+                }}
               />
             </Tooltip>
           </div>
         );
+
       default:
         return item[columnKey as keyof DesignProcessingItem];
     }
@@ -154,22 +204,50 @@ export const OrdersToDesignTable = ({
     <>
       <GenericDataTable
         isCollapsible
-        columns={columns}
+        columns={DESIGN_PROCESSING_COLUMN}
         data={data}
+        title="Danh sách đơn chờ thiết kế"
         headerSummary={`${data.length}`}
+        renderCellAction={renderCell}
         paginationProps={{
-          total: 5,
-          page: 1,
+          total: totalPages,
+          page: page,
+          onChange: setPage,
           summary: `${data.length}`,
         }}
-        renderCellAction={renderCell}
-        title="Danh sách đơn chờ thiết kế"
       />
+
       <DesignProcessingModal
         data={selectedDesign ? mapDesignToModalData(selectedDesign) : undefined}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />
+      <Modal
+        isOpen={isApproveModalOpen}
+        onClose={() => setIsApproveModalOpen(false)}
+      >
+        <ModalContent>
+          <ModalHeader>Xác nhận duyệt</ModalHeader>
+
+          <ModalBody>
+            Bạn có chắc chắn muốn duyệt đơn <b>{approveItem?.formNumber}</b>{" "}
+            không?
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              variant="light"
+              onPress={() => setIsApproveModalOpen(false)}
+            >
+              Hủy
+            </Button>
+
+            <Button color="success" onPress={handleApproveConfirm}>
+              Đồng ý
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   );
 };

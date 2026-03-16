@@ -70,17 +70,6 @@ export type DesignProcessingStatus =
   | "rejected"
   | "none";
 
-export interface DesignProcessingItem {
-  id: string;
-  code: string;
-  customerName: string;
-  phone: string;
-  address: string;
-  registrationDate: string;
-  surveyAppointment: string;
-  status: DesignProcessingStatus;
-}
-
 export interface SettlementDocumentRow {
   id: string;
   stt: number;

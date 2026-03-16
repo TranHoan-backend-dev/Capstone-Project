@@ -1,4 +1,7 @@
-import { NewInstallationFormPayload } from "@/types";
+import {
+  ApproveInstallationPayload,
+  NewInstallationFormPayload,
+} from "@/types";
 import { API_GATEWAY_URL } from "@/utils/constraints";
 import axios from "axios";
 
@@ -368,8 +371,8 @@ export const getInstallationForms = (
   keyword?: string | null,
   from?: string | null,
   to?: string | null,
-) =>
-  axios.get(`${API_GATEWAY_URL}/construction/installation-forms`, {
+) => {
+  return axios.get(`${API_GATEWAY_URL}/construction/installation-forms`, {
     params: {
       page,
       size,
@@ -382,13 +385,41 @@ export const getInstallationForms = (
       Authorization: `Bearer ${accessToken}`,
     },
   });
+};
 
 export const createNewInstallationForm = (
   accessToken: string,
   payload: NewInstallationFormPayload,
-) =>
-  axios.post(`${API_GATEWAY_URL}/construction/installation-forms`, payload, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
+) => {
+  return axios.post(
+    `${API_GATEWAY_URL}/construction/installation-forms`,
+    payload,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
     },
-  });
+  );
+};
+
+export const approveInstallationForm = async (
+  accessToken: string,
+  payload: ApproveInstallationPayload,
+) => {
+  try {
+    const res = await axios.patch(
+      `${API_GATEWAY_URL}/construction/installation-forms/approve`,
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
+
+    return res.data;
+  } catch (error: any) {
+    console.error("Backend error:", error.response?.data);
+    throw error;
+  }
+};

@@ -5,3 +5,4 @@ export * from "./road.type";
 export * from "./job.type";
 export * from "./commune.type";
 export * from "./installation-form-new-item.type";
+export * from "./design-processing.type";
