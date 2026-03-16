@@ -12,16 +12,6 @@ import { LookupModal } from "@/components/ui/modal/LookupModal";
 import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
 import { authFetch } from "@/utils/authFetch";
 
-const unitOptions = [
-  { label: "Kg", value: "kg" },
-  { label: "m", value: "m" },
-  { label: "Cái", value: "piece" },
-];
-
-const groupOptions = [
-  { label: "Ống", value: "pipe" },
-  { label: "Phụ kiện", value: "accessory" },
-];
 export const MaterialPriceForm = ({
   initialData,
   onSuccess,
@@ -52,27 +42,29 @@ export const MaterialPriceForm = ({
   const [unitName, setUnitName] = useState("");
   const [unitId, setUnitId] = useState("");
 
-useEffect(() => {
-  if (initialData) {
-    setSymbol(initialData.laborCode || "");
-    setName(initialData.jobContent || "");
+  useEffect(() => {
+    if (initialData) {
+      setSymbol(initialData.laborCode || "");
+      setName(initialData.jobContent || "");
 
-    setPrice(initialData.price?.toString() || "");
-    setLaborPrice(initialData.laborPrice?.toString() || "");
-    setLaborPriceDistrict(initialData.laborPriceAtRuralCommune?.toString() || "");
+      setPrice(initialData.price?.toString() || "");
+      setLaborPrice(initialData.laborPrice?.toString() || "");
+      setLaborPriceDistrict(
+        initialData.laborPriceAtRuralCommune?.toString() || "",
+      );
 
-    setMachinePrice(initialData.constructionMachineryPrice?.toString() || "");
-    setMachinePriceDistrict(
-      initialData.constructionMachineryPriceAtRuralCommune?.toString() || ""
-    );
+      setMachinePrice(initialData.constructionMachineryPrice?.toString() || "");
+      setMachinePriceDistrict(
+        initialData.constructionMachineryPriceAtRuralCommune?.toString() || "",
+      );
 
-    setSelectedGroupId(initialData.groupId || "");
-    setSelectedGroupName(initialData.groupName || "");
+      setSelectedGroupId(initialData.groupId || "");
+      setSelectedGroupName(initialData.groupName || "");
 
-    setUnitId(initialData.unitId || "");
-    setUnitName(initialData.unitName || "");
-  }
-}, [initialData]);
+      setUnitId(initialData.unitId || "");
+      setUnitName(initialData.unitName || "");
+    }
+  }, [initialData]);
 
   const handleSubmit = async () => {
     if (submitLoading) return;
@@ -171,9 +163,13 @@ useEffect(() => {
               onClose={() => setShowGroupModal(false)}
               title="Chọn nhóm vật tư"
               api="/api/device/materials-group"
-              columns={[{ key: "name", label: "Tên nhóm" }]}
+              columns={[
+                { key: "stt", label: "STT" },
+                { key: "name", label: "Tên nhóm" },
+              ]}
               mapData={(item, index, page) => ({
                 id: item.groupId,
+                stt: index + 1,
                 name: item.name,
               })}
               onSelect={(item) => {
