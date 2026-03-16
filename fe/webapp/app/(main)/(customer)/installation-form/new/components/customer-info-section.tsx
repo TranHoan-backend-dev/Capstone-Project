@@ -4,72 +4,136 @@ import React from "react";
 
 import { TitleDarkColor } from "@/config/chip-and-icon";
 import CustomInput from "@/components/ui/custom/CustomInput";
-import CustomSelect, {
-  SelectOption,
-} from "@/components/ui/custom/CustomSelect";
+import CustomSelect from "@/components/ui/custom/CustomSelect";
+
 import {
   NewInstallationFormPayload,
   NewInstallationFormProps,
-  UsageTarget,
+  FormField,
 } from "@/types";
-type FieldType = "input" | "select" | "date";
 
-interface FieldConfig {
-  type: FieldType;
-  name: keyof NewInstallationFormPayload;
-  label: string;
-  required?: boolean;
-  options?: SelectOption[];
-}
 export const CustomerInfoSection = ({
   formData,
   updateField,
 }: NewInstallationFormProps) => {
-  const fields: FieldConfig[] = [
+  const fields: FormField[] = [
     {
       type: "input",
-      name: "customerName",
+      key: "customerName",
       label: "Họ tên khách hàng",
       required: true,
     },
     {
       type: "input",
-      name: "representative",
+      key: "representative",
       label: "Người đại diện",
       required: true,
     },
     {
       type: "input",
-      name: "citizenIdentificationNumber",
+      key: "citizenIdentificationNumber",
       label: "Số CCCD/CMND",
       required: true,
     },
     {
       type: "date",
-      name: "citizenIdentificationProvideDate",
+      key: "citizenIdentificationProvideDate",
       label: "Ngày cấp CCCD/CMND",
       required: true,
     },
     {
       type: "input",
-      name: "citizenIdentificationProvideLocation",
+      key: "citizenIdentificationProvideLocation",
       label: "Nơi cấp CCCD/CMND",
+      required: true,
     },
     {
       type: "input",
-      name: "taxCode",
+      key: "taxCode",
       label: "Mã số thuế",
+      required: true,
     },
     {
       type: "select",
-      name: "customerType",
+      key: "customerType",
       label: "Loại khách hàng",
+      required: true,
       options: [
-        { value: "FAMILY", label: "Hộ gia đình" },
-        { value: "COMPANY", label: "Công ty" },
+        { key: "FAMILY", label: "Hộ gia đình" },
+        { key: "COMPANY", label: "Công ty" },
       ],
     },
   ];
+
+  const renderField = (field: FormField) => {
+    const value = formData[field.key as keyof NewInstallationFormPayload];
+
+    if (field.type === "input") {
+      return (
+        <CustomInput
+          key={field.key}
+          label={field.label}
+          isRequired={field.required}
+          value={
+            field.key === "representative"
+              ? (formData.representative?.[0]?.name ?? "")
+              : String(
+                  formData[field.key as keyof NewInstallationFormPayload] ?? "",
+                )
+          }
+          onChange={(e) => {
+            const value = e.target.value;
+
+            if (field.key === "representative") {
+              updateField("representative", [{ name: value }]);
+            } else {
+              updateField(field.key as keyof NewInstallationFormPayload, value);
+            }
+          }}
+        />
+      );
+    }
+
+    if (field.type === "date") {
+      return (
+        <CustomInput
+          key={field.key}
+          type="date"
+          label={field.label}
+          isRequired={field.required}
+          value={String(value ?? "")}
+          onChange={(e) =>
+            updateField(
+              field.key as keyof NewInstallationFormPayload,
+              e.target.value,
+            )
+          }
+        />
+      );
+    }
+
+    if (field.type === "select") {
+      return (
+        <CustomSelect
+          key={field.key}
+          label={field.label}
+          options={
+            field.options?.map((o) => ({
+              value: o.key,
+              label: o.label,
+            })) ?? []
+          }
+          selectedKeys={new Set([String(value ?? "")])}
+          onSelectionChange={(keys) => {
+            const val = Array.from(keys)[0];
+            updateField(field.key as keyof NewInstallationFormPayload, val);
+          }}
+        />
+      );
+    }
+
+    return null;
+  };
 
   return (
     <div className="space-y-6">
@@ -78,57 +142,8 @@ export const CustomerInfoSection = ({
       >
         Thông tin khách hàng
       </h2>
-      <div className="space-y-4">
-        {fields.map((field) => {
-          if (field.type === "input") {
-            return (
-              <CustomInput
-                key={field.name}
-                label={field.label}
-                isRequired={field.required}
-                value={String(formData[field.name] ?? "")}
-                onChange={(e) => {
-                  const value = e.target.value;
 
-                  if (field.name === "representative") {
-                    updateField(field.name, [{ name: value }]);
-                  } else {
-                    updateField(field.name, value);
-                  }
-                }}
-              />
-            );
-          }
-          
-          if (field.type === "date") {
-            return (
-              <CustomInput
-                key={field.name}
-                type="date"
-                label={field.label}
-                isRequired={field.required}
-                value={String(formData[field.name] ?? "")}
-                onChange={(e) => updateField(field.name, e.target.value)}
-              />
-            );
-          }
-
-          if (field.type === "select") {
-            return (
-              <CustomSelect
-                key={field.name}
-                label={field.label}
-                options={field.options ?? []}
-                selectedKeys={new Set([String(formData[field.name] ?? "")])}
-                onSelectionChange={(keys) => {
-                  const value = Array.from(keys)[0];
-                  updateField(field.name, value);
-                }}
-              />
-            );
-          }
-        })}
-      </div>
+      <div className="space-y-4">{fields.map(renderField)}</div>
     </div>
   );
 };

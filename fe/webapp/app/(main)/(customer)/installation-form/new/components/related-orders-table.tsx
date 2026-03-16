@@ -30,7 +30,7 @@ export const RelatedOrdersTable = ({ keyword, reloadKey }: Props) => {
     field: string;
     direction: "asc" | "desc";
   }>({
-    field: "",
+    field: "createdAt",
     direction: "desc",
   });
 
@@ -91,7 +91,7 @@ export const RelatedOrdersTable = ({ keyword, reloadKey }: Props) => {
     };
 
     fetchData();
-  }, [page, keyword, reloadKey, sort]);
+  }, [page, keyword, reloadKey, sort, pageSize]);
 
   const handleSortChange = (columnKey: string) => {
     setPage(1);
@@ -121,7 +121,7 @@ export const RelatedOrdersTable = ({ keyword, reloadKey }: Props) => {
       color: "danger" as const,
     },
   ];
-  
+
   const renderCell = (item: any, columnKey: string) => {
     switch (columnKey) {
       case "stt":

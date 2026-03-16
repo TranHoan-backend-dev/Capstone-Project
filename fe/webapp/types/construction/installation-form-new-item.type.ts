@@ -60,7 +60,7 @@ export interface NewInstallationFormPayload {
   formCode: string;
   formNumber: string;
   customerName: string;
-  representative: string[];
+  representative: { name: string }[];
   address: string;
   citizenIdentificationNumber: string;
   citizenIdentificationProvideDate: string;
@@ -73,8 +73,8 @@ export interface NewInstallationFormPayload {
   customerType: CustomerType;
   receivedFormAt: string;
   scheduleSurveyAt: string;
-  numberOfHousehold?: number;
-  householdRegistrationNumber?: number;
+  numberOfHousehold?: number | "";
+  householdRegistrationNumber?: number | "";
   networkId: string;
   createdBy: string;
   overallWaterMeterId: string;

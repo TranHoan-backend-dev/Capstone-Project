@@ -11,10 +11,18 @@ import { BillingInfoSection } from "./components/billing-info-section";
 
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { NewInstallationFormPayload } from "@/types";
+import {
+  validateName,
+  validateNotFutureDate,
+  validateNotPastDate,
+  validatePhone,
+  validateRequiredFields,
+} from "@/utils/validation";
 
 const NewInstallationForm = () => {
   const [keyword, setKeyword] = useState("");
   const [reloadKey, setReloadKey] = useState(0);
+  const today = new Date().toISOString().split("T")[0];
   const [formData, setFormData] = useState<NewInstallationFormPayload>({
     formCode: "",
     formNumber: "",
@@ -30,13 +38,13 @@ const NewInstallationForm = () => {
     bankAccountProviderLocation: "",
     usageTarget: "DOMESTIC",
     customerType: "FAMILY",
-    receivedFormAt: "",
+    receivedFormAt: today,
     scheduleSurveyAt: "",
-    numberOfHousehold: 0,
-    householdRegistrationNumber: 0,
-    networkId: "3ac28a8e-c3a1-4d94-9708-3354437e39f1",
+    numberOfHousehold: "",
+    householdRegistrationNumber: "",
+    networkId: "",
     createdBy: "38e76664-828b-47e8-9504-a713c92484ac",
-    overallWaterMeterId: "00000000-0000-0000-0000-A00000000001",
+    overallWaterMeterId: "",
   });
 
   const updateField = (field: keyof NewInstallationFormPayload, value: any) => {
@@ -47,12 +55,80 @@ const NewInstallationForm = () => {
   };
   const handleCreate = async () => {
     try {
-      const phoneRegex = /^[0-9]{10}$/;
+      const requiredError = validateRequiredFields([
+        { value: formData.formCode, fieldName: "Mã biểu mẫu" },
+        { value: formData.formNumber, fieldName: "Số hồ sơ" },
+        { value: formData.customerName, fieldName: "Họ tên khách hàng" },
+        { value: formData.phoneNumber, fieldName: "Số điện thoại" },
+        { value: formData.address, fieldName: "Địa chỉ" },
+        { value: formData.taxCode, fieldName: "Mã số thuế" },
+        {
+          value: formData.citizenIdentificationNumber,
+          fieldName: "Số CCCD",
+        },
+        {
+          value: formData.citizenIdentificationProvideDate,
+          fieldName: "Ngày cấp CCCD",
+        },
+        {
+          value: formData.citizenIdentificationProvideLocation,
+          fieldName: "Nơi cấp CCCD",
+        },
+        { value: formData.receivedFormAt, fieldName: "Ngày nhận đơn" },
+        { value: formData.scheduleSurveyAt, fieldName: "Ngày hẹn khảo sát" },
+        { value: formData.numberOfHousehold, fieldName: "Số hộ sử dụng" },
+        {
+          value: formData.householdRegistrationNumber,
+          fieldName: "Số nhân khẩu",
+        },
+        { value: formData.networkId, fieldName: "Chi nhánh cấp nước" },
+        {
+          value: formData.overallWaterMeterId,
+          fieldName: "Đồng hồ nước tổng",
+        },
+        {
+          value: formData.bankAccountNumber,
+          fieldName: "Số tài khoản ngân hàng",
+        },
+        {
+          value: formData.bankAccountProviderLocation,
+          fieldName: "Ngân hàng và chi nhánh",
+        },
+      ]);
 
-      if (!phoneRegex.test(formData.phoneNumber)) {
-        alert("Số điện thoại phải có 10 chữ số");
-        return;
-      }  
+      if (requiredError) return alert(requiredError);
+      const phoneError = validatePhone(formData.phoneNumber);
+      if (phoneError) return alert(phoneError);
+
+      const nameError = validateName(
+        formData.customerName,
+        "Họ tên khách hàng",
+      );
+      if (nameError) return alert(nameError);
+
+      const representativeError = validateName(
+        formData.representative?.[0]?.name ?? "",
+        "Người đại diện",
+      );
+      if (representativeError) return alert(representativeError);
+
+      const receivedError = validateNotPastDate(
+        formData.receivedFormAt,
+        "Ngày nhận đơn",
+      );
+      if (receivedError) return alert(receivedError);
+
+      const surveyError = validateNotPastDate(
+        formData.scheduleSurveyAt,
+        "Ngày hẹn khảo sát",
+      );
+      if (surveyError) return alert(surveyError);
+
+      const citizenError = validateNotFutureDate(
+        formData.citizenIdentificationProvideDate,
+        "Ngày cấp CCCD",
+      );
+      if (citizenError) return alert(citizenError);
 
       const payload = {
         ...formData,
@@ -109,7 +185,7 @@ const NewInstallationForm = () => {
             updateField={updateField}
           />
         </div>
-        <BillingInfoSection />
+        {/* <BillingInfoSection /> */}
       </GenericSearchFilter>
 
       <RelatedOrdersTable keyword={keyword} reloadKey={reloadKey} />

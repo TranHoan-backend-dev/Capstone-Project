@@ -13,15 +13,15 @@ interface Props {
 }
 export const FormActions = ({ onCreate }: Props) => {
   return (
-    <div className="flex justify-between items-center pt-8 border-t border-gray-100 dark:border-divider">
+    <div className="flex justify-end items-center pt-8 gap-2 border-t border-gray-100 dark:border-divider">
       <div className="flex gap-3">
-        <CustomButton
+        {/* <CustomButton
           className="bg-blue-600 h-10 px-6 font-bold text-[13px]"
           color="primary"
           startContent={<DocumentCheckedIcon className="w-5 h-5" />}
         >
           Tìm đơn
-        </CustomButton>
+        </CustomButton> */}
         <CustomButton
           onPress={onCreate}
           className="bg-[#10a345] text-white h-10 px-6 font-bold text-[13px]"

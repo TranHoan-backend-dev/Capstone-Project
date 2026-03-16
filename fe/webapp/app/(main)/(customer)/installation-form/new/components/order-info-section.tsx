@@ -14,23 +14,61 @@ interface Props {
   isRequired?: boolean;
   isDisabled?: boolean;
 }
-export const OrderInfoSection = ({ formData, updateField }: any) => {
-  const inputFields = [
+import {
+  FormField,
+  NewInstallationFormPayload,
+  NewInstallationFormProps,
+} from "@/types";
+type OrderField = {
+  type?: "input";
+  name: keyof NewInstallationFormPayload;
+  label: string;
+  isRequired?: boolean;
+};
+type DateField = {
+  label: string;
+  name: keyof NewInstallationFormPayload;
+  isRequired?: boolean;
+};
+export const OrderInfoSection = ({
+  formData,
+  updateField,
+}: NewInstallationFormProps) => {
+  const inputFields: FormField[] = [
     {
       type: "input",
-      name: "formCode",
+      key: "formCode",
       label: "Mã biểu mẫu",
       required: true,
     },
-    { type: "input", name: "formNumber", label: "Số hồ sơ", required: true },
-    { label: "Số hộ sử dụng", name: "numberOfHousehold" },
-    { label: "Số nhân khẩu", name: "householdRegistrationNumber" },
-    { label: "Mục đích sử dụng", name: "usageTarget" },
+    { type: "input", key: "formNumber", label: "Số hồ sơ", required: true },
+    {
+      type: "input",
+      key: "numberOfHousehold",
+      label: "Số hộ sử dụng",
+      required: true,
+    },
+    {
+      type: "input",
+      key: "householdRegistrationNumber",
+      label: "Số nhân khẩu",
+      required: true,
+    },
   ];
 
-  const dateFields = [
-    { label: "Ngày nhận đơn", name: "receivedFormAt", isRequired: true },
-    { label: "Ngày hẹn khảo sát", name: "scheduleSurveyAt" },
+  const dateFields: FormField[] = [
+    {
+      type: "date",
+      label: "Ngày nhận đơn",
+      key: "receivedFormAt",
+      required: true,
+    },
+    {
+      type: "date",
+      label: "Ngày hẹn khảo sát",
+      key: "scheduleSurveyAt",
+      required: true,
+    },
   ];
 
   return (
@@ -42,13 +80,20 @@ export const OrderInfoSection = ({ formData, updateField }: any) => {
       </h2>
       <div className="space-y-4">
         {inputFields
-          .filter((item) => item.name !== "usageTarget")
+          .filter((item) => item.key !== "usageTarget")
           .map((item, index) => (
             <div key={index} className="space-y-1">
               <CustomInput
                 label={item.label}
-                value={String(formData[item.name] ?? "")}
-                onChange={(e) => updateField(item.name, e.target.value)}
+                value={String(
+                  formData[item.key as keyof NewInstallationFormPayload] ?? "",
+                )}
+                onChange={(e) =>
+                  updateField(
+                    item.key as keyof NewInstallationFormPayload,
+                    e.target.value,
+                  )
+                }
               />
             </div>
           ))}
@@ -70,8 +115,15 @@ export const OrderInfoSection = ({ formData, updateField }: any) => {
             <CustomInput
               type="date"
               label={item.label}
-              value={formData[item.name]}
-              onChange={(e) => updateField(item.name, e.target.value)}
+              value={String(
+                formData[item.key as keyof NewInstallationFormPayload] ?? "",
+              )}
+              onChange={(e) =>
+                updateField(
+                  item.key as keyof NewInstallationFormPayload,
+                  e.target.value,
+                )
+              }
             />
           </div>
         ))}
