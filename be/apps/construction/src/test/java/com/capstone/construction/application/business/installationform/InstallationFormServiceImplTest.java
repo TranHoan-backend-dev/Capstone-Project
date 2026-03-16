@@ -377,7 +377,7 @@ class InstallationFormServiceImplTest {
   @Test
   void should_ApproveAndAssign_When_StatusIsTrue() {
     // Given
-    var request = new ApproveRequest("EMP-001", "C-001", "F-001", true);
+    var request = new ApproveRequest("C-001", "F-001", true);
     var entity = createMockEntity();
     var status = new FormProcessingStatus(ProcessingStatus.PENDING_FOR_APPROVAL, ProcessingStatus.PROCESSING,
       ProcessingStatus.PROCESSING, ProcessingStatus.PROCESSING);
@@ -399,7 +399,7 @@ class InstallationFormServiceImplTest {
   @Test
   void should_Reject_When_StatusIsFalse() {
     // Given
-    var request = new ApproveRequest("EMP-001", "C-001", "F-001", false);
+    var request = new ApproveRequest("C-001", "F-001", false);
     var entity = createMockEntity();
     var status = new FormProcessingStatus(ProcessingStatus.PENDING_FOR_APPROVAL, ProcessingStatus.PROCESSING,
       ProcessingStatus.PROCESSING, ProcessingStatus.PROCESSING);
@@ -418,7 +418,7 @@ class InstallationFormServiceImplTest {
   @Test
   void should_ThrowException_When_FormNotFoundInApprove() {
     // Given
-    var request = new ApproveRequest("EMP-001", "C-001", "F-001", true);
+    var request = new ApproveRequest("C-001", "F-001", true);
     when(ifRepo.findById(new InstallationFormId("C-001", "F-001"))).thenReturn(Optional.empty());
 
     // When & Then
@@ -430,7 +430,7 @@ class InstallationFormServiceImplTest {
   @Test
   void should_ThrowException_When_EmployeeNotFoundInApprove() {
     // Given
-    var request = new ApproveRequest("EMP-001", "C-001", "F-001", true);
+    var request = new ApproveRequest("C-001", "F-001", true);
     var entity = createMockEntity();
     when(entity.getStatus()).thenReturn(new FormProcessingStatus(ProcessingStatus.PENDING_FOR_APPROVAL,
       ProcessingStatus.PROCESSING, ProcessingStatus.PROCESSING, ProcessingStatus.PROCESSING));
@@ -487,7 +487,7 @@ class InstallationFormServiceImplTest {
     return form;
   }
 
-  private InstallationForm createMockEntity() {
+  private @NonNull InstallationForm createMockEntity() {
     var entity = mock(InstallationForm.class);
     when(entity.getFormCode()).thenReturn("FC01");
     when(entity.getFormNumber()).thenReturn("FN01");
