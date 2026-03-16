@@ -1,9 +1,9 @@
 package com.capstone.construction.adapter;
 
 import com.capstone.common.annotation.AppLog;
-import com.capstone.common.utils.Utils;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.common.utils.Utils;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
@@ -25,6 +25,8 @@ import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -53,15 +55,20 @@ public class InstallationFormController {
   })
   @PostMapping
   @PreAuthorize("hasAnyAuthority('ORDER_RECEIVING_STAFF', 'IT_STAFF')")
-  public ResponseEntity<WrapperApiResponse> createInstallationForm(@RequestBody @Valid NewOrderRequest request) {
+  public ResponseEntity<WrapperApiResponse> createInstallationForm(
+    @RequestBody @Valid NewOrderRequest request,
+    @AuthenticationPrincipal Jwt jwt
+  ) {
     log.info("Received request to create installation form: {}", request.formNumber());
+    var id = jwt.getSubject();
+
     if (!Utils.isLocalDate(request.receivedFormAt(), DateTimeFormatter.ISO_LOCAL_DATE) ||
       !Utils.isLocalDate(request.citizenIdentificationProvideDate(), DateTimeFormatter.ISO_LOCAL_DATE) ||
       !Utils.isLocalDate(request.scheduleSurveyAt(), DateTimeFormatter.ISO_LOCAL_DATE)) {
       throw new IllegalArgumentException(Message.PT_05);
     }
 
-    var response = installationFormHandlingUseCase.createNewInstallationRequest(request);
+    var response = installationFormHandlingUseCase.createNewInstallationRequest(id, request);
 
     log.info("Successfully created installation form: {}", response.formNumber());
 
