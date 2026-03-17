@@ -8,7 +8,9 @@ import com.capstone.auth.application.dto.response.EmployeeResponse;
 import com.capstone.auth.application.event.producer.MessageProducer;
 
 import com.capstone.auth.application.event.producer.message.AccountDeleteEvent;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -42,6 +44,23 @@ class UsersUseCaseTest {
 
   @Mock
   private Logger log;
+
+  private static final String UPDATE_ROUTING_KEY = "update-key";
+  private static final String DELETE_ROUTING_KEY = "delete-key";
+  private static final String UPDATE_SUBJECT = "Update Subject";
+  private static final String DELETE_SUBJECT = "Delete Subject";
+  private static final String UPDATE_TEMPLATE = "update-template";
+  private static final String DELETE_TEMPLATE = "delete-template";
+
+  @BeforeEach
+  void setUp() {
+    ReflectionTestUtils.setField(usersUseCase, "UPDATE_ROUTING_KEY", UPDATE_ROUTING_KEY);
+    ReflectionTestUtils.setField(usersUseCase, "DELETE_ROUTING_KEY", DELETE_ROUTING_KEY);
+    ReflectionTestUtils.setField(usersUseCase, "UPDATE_SUBJECT", UPDATE_SUBJECT);
+    ReflectionTestUtils.setField(usersUseCase, "DELETE_SUBJECT", DELETE_SUBJECT);
+    ReflectionTestUtils.setField(usersUseCase, "UPDATE_TEMPLATE", UPDATE_TEMPLATE);
+    ReflectionTestUtils.setField(usersUseCase, "DELETE_TEMPLATE", DELETE_TEMPLATE);
+  }
 
   @Test
   @DisplayName("Should return paginated list of employees - Success")
@@ -197,7 +216,7 @@ class UsersUseCaseTest {
     // Assert
     assertEquals(response, result);
     verify(userService).updateEmployee(id, request);
-    verify(messageProducer).sendMessage(any(com.capstone.auth.application.event.producer.message.AccountUpdateEvent.class));
+    verify(messageProducer).sendMessage(eq(UPDATE_ROUTING_KEY), any(com.capstone.auth.application.event.producer.message.AccountUpdateEvent.class));
   }
 
   @Test
@@ -214,7 +233,7 @@ class UsersUseCaseTest {
 
     // Assert
     verify(userService).deleteEmployee(id);
-    verify(messageProducer).sendMessage(any(AccountDeleteEvent.class));
+    verify(messageProducer).sendMessage(eq(DELETE_ROUTING_KEY), any(AccountDeleteEvent.class));
   }
 
   @Test

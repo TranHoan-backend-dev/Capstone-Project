@@ -6,7 +6,6 @@ import com.capstone.auth.application.dto.request.users.FilterUsersRequest;
 import com.capstone.auth.application.dto.request.users.UpdateRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
 import com.capstone.auth.infrastructure.persistence.*;
-import com.capstone.common.exception.ExistingException;
 import com.capstone.common.exception.NotExistingException;
 import com.capstone.auth.domain.model.EmployeeJob;
 import com.capstone.auth.domain.model.Profile;
@@ -55,13 +54,13 @@ public class UserServiceImpl implements UserService {
   @Override
   @Transactional(rollbackFor = Exception.class) // rollback neu co loi
   public void createEmployee(
-    String username, String email, Roles role, @NonNull List<String> jobIds,
+    String userId, String username, String email, Roles role, @NonNull List<String> jobIds,
     String departmentId, String waterSupplyNetworkId, String fullName, String phone
   ) {
     log.info("UsersService is handling the request");
-    validateNewEmployeeInformation(email, phone, waterSupplyNetworkId, departmentId, jobIds);
 
     var user = Users.create(builder -> builder
+      .userId(userId)
       .email(email)
       .username(username)
       .role(role)
@@ -87,19 +86,6 @@ public class UserServiceImpl implements UserService {
       ));
       log.info("New employee's job: {}", job);
     });
-  }
-
-  @Override
-  @Transactional(rollbackFor = Exception.class)
-  public void updatePassword(String email, @NonNull String password, String newPassword) {
-    throw new IllegalArgumentException("Password managed by Keycloak");
-  }
-
-  @Override
-  @Transactional(rollbackFor = Exception.class)
-  public void resetPassword(String email, String newPassword) {
-    var obj = getUsersByEmail(email);
-    updateUser(obj, newPassword);
   }
 
   @Override
@@ -315,27 +301,6 @@ public class UserServiceImpl implements UserService {
       currentUser.getIsEnabled());
   }
 
-  private void validateNewEmployeeInformation(String email, String phone, String networkId, String departmentId, List<String> jobIds) {
-    var obj = repo.findByEmail(email);
-    if (obj.isPresent()) {
-      throw new ExistingException(Message.SE_01);
-    }
-    if (profileRepo.existsByPhoneNumber(phone)) {
-      throw new ExistingException(Message.SE_08);
-    }
-    if (!netWorkService.checkExistence(networkId)) {
-      throw new NotExistingException(Message.SE_09);
-    }
-    if (!organizationService.checkDepartmentExistence(departmentId)) {
-      throw new NotExistingException(Message.SE_10);
-    }
-    var invalidJobs = jobIds.stream()
-      .filter(jid -> !organizationService.checkJobExistence(jid))
-      .toList();
-    if (!invalidJobs.isEmpty())
-      throw new NotExistingException("Jobs not exist: " + invalidJobs);
-  }
-
   private @NonNull Users getUsersByEmail(String email) {
     var obj = repo.findByEmail(email);
     if (obj.isEmpty()) {
@@ -343,11 +308,5 @@ public class UserServiceImpl implements UserService {
     }
     log.info("Find user by email: {}", obj);
     return obj.get();
-  }
-
-  private void updateUser(@NonNull Users obj, String password) {
-    // obj.setPassword(encoder.encode(password));
-    // repo.save(obj);
-    // log.info("Password reset successfully");
   }
 }
