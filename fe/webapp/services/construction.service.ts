@@ -363,6 +363,68 @@ export const deleteRoad = (accessToken: string, id: string) => {
   });
 };
 
+export const getAllNeighborhoodUnits = (
+  accessToken: string,
+  page: number,
+  size: number,
+  sort: string,
+  keyword?: string | null,
+  communeId?: string | null,
+) =>
+  axios.get(`${API_GATEWAY_URL}/construction/units`, {
+    params: {
+      page,
+      size,
+      sort,
+      keyword,
+      communeId,
+    },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+export const createNeighborhoodUnits = (
+  accessToken: string,
+  name: string,
+  communeId: string,
+) => {
+  return axios.post(
+    `${API_GATEWAY_URL}/construction/units`,
+    { name, communeId },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+};
+
+export const updateNeighborhoodUnits = (
+  accessToken: string,
+  id: string,
+  name: string,
+  communeId: string,
+) => {
+  return axios.put(
+    `${API_GATEWAY_URL}/construction/units/${id}`,
+    { name, communeId },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+};
+
+export const deleteNeighborhoodUnits = (accessToken: string, id: string) => {
+  return axios.delete(`${API_GATEWAY_URL}/construction/units/${id}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
 export const getInstallationForms = (
   accessToken: string,
   page: number,

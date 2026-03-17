@@ -59,7 +59,7 @@ public class NeighborhoodUnitUseCase {
     return unitService.getUnitById(id);
   }
 
-  public PageResponse<NeighborhoodUnitResponse> getAllUnits(Pageable pageable) {
-    return unitService.getAllUnits(pageable);
+  public PageResponse<NeighborhoodUnitResponse> getAllUnits(Pageable pageable, String keyword, String communeId) {
+    return unitService.getAllUnits(pageable, keyword, communeId);
   }
 }

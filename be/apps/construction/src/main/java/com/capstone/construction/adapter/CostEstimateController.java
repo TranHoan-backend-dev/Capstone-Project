@@ -106,11 +106,13 @@ public class CostEstimateController {
   @Operation(summary = "Yêu cầu các bên liên quan ký duyệt dự toán", description = """
     Gửi yêu cầu ký duyệt dự toán chi phí đến các bộ phận liên quan: Nhân viên khảo sát, Trưởng phòng Kế hoạch Kỹ thuật và Lãnh đạo công ty.<br/>
     Luồng này sẽ kích hoạt thông báo đến các nhân viên được chỉ định.
+    Người thực hiện phải có quyền tương ứng (SURVEY_STAFF, PLANNING_TECHNICAL_DEPARTMENT_HEAD, hoặc IT_STAFF).
     """, responses = {
     @ApiResponse(responseCode = "200", description = "Gửi yêu cầu ký duyệt thành công"),
     @ApiResponse(responseCode = "400", description = "Dữ liệu yêu cầu không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "404", description = "Không tìm thấy dự toán hoặc nhân viên", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD')")
   public ResponseEntity<?> requireSignificances(@RequestBody @Valid AssignTheSignificanceRequest request) {
     log.info("REST request to sign cost estimate: {}", request);
     estimateUseCase.assignStaffForSignCostEstimate(request);

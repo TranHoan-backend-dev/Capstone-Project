@@ -239,8 +239,11 @@ public class UserServiceImpl implements UserService {
   public EmployeeResponse deleteEmployee(String id) {
     log.info("Delete employee: {}", id);
     var emp = getById(id);
+    if (!emp.getIsEnabled()) {
+      throw new IllegalArgumentException(Message.SE_16);
+    }
     var profile = profileRepo.findById(id)
-      .orElseThrow(() -> new NotExistingException("Không tìm thấy hồ sơ người dùng với id " + id));
+      .orElseThrow(() -> new NotExistingException(String.format(Message.SE_15, id)));
 
     emp.setIsEnabled(false);
     indRepo.deleteByUserId(id);

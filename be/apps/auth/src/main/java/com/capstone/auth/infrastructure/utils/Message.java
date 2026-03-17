@@ -36,4 +36,6 @@ public final class Message {
   public static final String SE_12 = "Có lỗi xảy ra trong khi xử lý mật khẩu %s";
   public static final String SE_13 = "Mật khẩu mới phải khác mật khẩu cũ";
   public static final String SE_14 = "Mật khẩu cũ không chính xác";
+  public static final String SE_15 = "Không tìm thấy hồ sơ người dùng với id %s";
+  public static final String SE_16 = "Tài khoản này đã bị xoá khỏi hệ thống";
 }
