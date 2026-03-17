@@ -23,7 +23,6 @@ import java.util.function.Consumer;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Users {
   @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
   String userId;
 
   @Column(unique = true, nullable = false)

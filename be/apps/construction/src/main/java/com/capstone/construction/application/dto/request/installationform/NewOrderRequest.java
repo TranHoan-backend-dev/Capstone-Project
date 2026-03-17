@@ -91,10 +91,6 @@ public record NewOrderRequest(
   @NotEmpty(message = Message.PT_34)
   String networkId,
 
-  @Schema(description = "ID của nhân viên lập hồ sơ", example = "emp-001")
-  @NotBlank(message = Message.PT_36)
-  String createdBy,
-
   @Schema(description = "ID của đồng hồ nước tổng khu vực", example = "owm-001")
   @NotBlank(message = Message.PT_37)
   String overallWaterMeterId

@@ -8,6 +8,7 @@ import com.capstone.device.application.dto.response.MaterialResponse;
 import com.capstone.device.domain.model.Material;
 import com.capstone.device.domain.model.MaterialsGroup;
 import com.capstone.device.infrastructure.persistence.*;
+import com.capstone.device.infrastructure.util.Message;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -82,6 +83,16 @@ public class MaterialServiceImpl implements MaterialService {
     }
     if (request.constructionMachineryPriceAtRuralCommune() != null) {
       material.setConstructionMachineryPriceAtRuralCommune(request.constructionMachineryPriceAtRuralCommune());
+    }
+    if (request.groupId() != null) {
+      var group = gRepo.findById(request.groupId())
+        .orElseThrow(() -> new IllegalArgumentException(String.format(Message.ENT_01, request.groupId())));
+      material.setGroup(group);
+    }
+    if (request.unitId() != null) {
+      var unit = uRepo.findById(request.unitId())
+        .orElseThrow(() -> new IllegalArgumentException(String.format(Message.ENT_56, request.unitId())));
+      material.setUnit(unit);
     }
 
     var updated = mRepo.save(material);
