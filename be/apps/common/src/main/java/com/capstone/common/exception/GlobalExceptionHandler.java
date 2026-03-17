@@ -24,6 +24,11 @@ public class GlobalExceptionHandler {
     return Utils.returnBadRequestResponse(ex.getMessage(), null);
   }
 
+  @ExceptionHandler(ForbiddenException.class)
+  public ResponseEntity<WrapperApiResponse> handleForbiddenException(@NonNull ForbiddenException ex) {
+    return Utils.returnForbiddenResponse(ex.getMessage(), null);
+  }
+
   @ExceptionHandler(ExistingException.class)
   public ResponseEntity<WrapperApiResponse> handleExistingException(@NonNull ExistingException ex) {
     return Utils.returnBadRequestResponse(ex.getMessage(), null);

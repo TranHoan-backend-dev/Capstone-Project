@@ -1,9 +1,12 @@
 package com.capstone.construction.application.usecase;
 
 import com.capstone.common.enumerate.RoleName;
+import com.capstone.common.exception.ForbiddenException;
+import com.capstone.common.utils.SharedMessage;
 import com.capstone.construction.application.business.installationform.InstallationFormService;
 import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.construction.application.dto.request.estimate.CreateRequest;
+import com.capstone.construction.application.dto.request.estimate.SignRequest;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
@@ -38,6 +41,7 @@ public class InstallationFormHandlingUseCase {
   final CostEstimateUseCase costEstimateUseCase;
   final EmployeeService empSrv;
 
+  // <editor-fold> desc="constant"
   @Value(".${rabbit-mq-config.entities[5]}.")
   String PREFIX;
 
@@ -49,6 +53,7 @@ public class InstallationFormHandlingUseCase {
 
   @Value("${rabbit-mq-config.queue_name}")
   String QUEUE_NAME;
+  // </editor-fold>
 
   public Page<InstallationFormListResponse> getPaginatedInstallationForms(Pageable pageable, BaseFilterRequest request) {
     return ifSrv.getInstallationForms(pageable, request);
