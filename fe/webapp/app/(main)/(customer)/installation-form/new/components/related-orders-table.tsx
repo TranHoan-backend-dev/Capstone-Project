@@ -30,7 +30,7 @@ export const RelatedOrdersTable = ({ keyword, reloadKey }: Props) => {
     field: string;
     direction: "asc" | "desc";
   }>({
-    field: "createdAt",
+    field: "",
     direction: "desc",
   });
 

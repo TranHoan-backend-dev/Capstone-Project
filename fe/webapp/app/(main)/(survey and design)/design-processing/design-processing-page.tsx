@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { Skeleton, Spinner, DateValue } from "@heroui/react";
+import { Spinner, DateValue } from "@heroui/react";
 import { ActionsSection } from "./components/actions-section";
 import { OrdersToDesignTable } from "./components/orders-to-design-table";
 import { ProcessedDesignsTable } from "./components/processed-designs-table";
@@ -28,19 +28,7 @@ const DesignProcessingPage = () => {
   >([]);
   const [waitingInput, setWaitingInput] = useState<DesignProcessingItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const skeletonRows: DesignProcessingItem[] = Array.from({ length: 5 }).map(
-    (_, i) => ({
-      id: `skeleton-${i}`,
-      formNumber: "",
-      customerName: "",
-      phoneNumber: "",
-      address: "",
-      registrationAt: "",
-      scheduleSurveyAt: "",
-      status: "processing",
-    }),
-  );
-
+ 
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -179,7 +167,7 @@ const DesignProcessingPage = () => {
 
       <div className="space-y-8">
         <OrdersToDesignTable
-          data={loading ? skeletonRows : filteredOrders}
+          data={filteredOrders}
           onApprove={handleApprove}
         />
         <ProcessedDesignsTable

@@ -41,7 +41,7 @@ export const RelatedOrdersTable = ({
     field: string;
     direction: "asc" | "desc";
   }>({
-    field: "createdAt",
+    field: "",
     direction: "desc",
   });
 

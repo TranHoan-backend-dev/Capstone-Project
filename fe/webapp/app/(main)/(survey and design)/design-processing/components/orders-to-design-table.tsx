@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Chip, Link, Skeleton, Tooltip } from "@heroui/react";
+import { Chip, Link, Tooltip } from "@heroui/react";
 import NextLink from "next/link";
 
 import { DesignProcessingModal } from "./design-processing-modal";
@@ -186,7 +186,6 @@ export const OrdersToDesignTable = ({
 
       case "code":
         if (!item.formNumber) {
-          return <Skeleton className="h-4 w-24 rounded-lg" />;
         }
         return (
           <Link
@@ -200,7 +199,6 @@ export const OrdersToDesignTable = ({
 
       case "customerName":
         if (!item.customerName) {
-          return <Skeleton className="h-4 w-24 rounded-lg" />;
         }
 
         return (
@@ -211,7 +209,6 @@ export const OrdersToDesignTable = ({
 
       case "status":
         if (!item.status) {
-          return <Skeleton className="h-4 w-24 rounded-lg" />;
         }
         const config = statusMap[item.status] ?? statusMap.none;
 

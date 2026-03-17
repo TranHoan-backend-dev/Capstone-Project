@@ -14,23 +14,42 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
-    console.log("payload", body);
+    if (!body?.formCode || !body?.formNumber) {
+      return NextResponse.json(
+        { message: "Thiếu thông tin form" },
+        { status: 400 },
+      );
+    }
+
     const approveInstallation = await approveInstallationForm(
       accessToken,
       body,
     );
 
+    if (!approveInstallation?.ok) {
+      return NextResponse.json(
+        {
+          message: approveInstallation?.message || "Cập nhật thất bại",
+        },
+        { status: approveInstallation?.status || 400 },
+      );
+    }
+
     return NextResponse.json({
-      status: 200,
       message: "Cập nhật thành công",
       data: approveInstallation,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Approve installation error:", error);
 
     return NextResponse.json(
-      { message: "Không thể cập nhật thông tin đơn" },
-      { status: 500 },
+      {
+        message:
+          error?.response?.data?.message ||
+          error?.message ||
+          "Không thể cập nhật thông tin đơn",
+      },
+      { status: error?.response?.status || 500 },
     );
   }
 }
