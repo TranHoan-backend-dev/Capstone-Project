@@ -36,40 +36,28 @@ public class CostEstimate implements Serializable {
 
   String note;
 
-  @Column(nullable = false)
   Integer contractFee;
 
-  @Column(nullable = false)
   Integer surveyFee;
 
-  @Column(nullable = false)
   Integer surveyEffort;
 
-  @Column(nullable = false)
   Integer installationFee;
 
-  @Column(nullable = false)
   Integer laborCoefficient;
 
-  @Column(nullable = false)
   Integer generalCostCoefficient;
 
-  @Column(nullable = false)
   Integer precalculatedTaxCoefficient;
 
-  @Column(nullable = false)
   Integer constructionMachineryCoefficient;
 
-  @Column(nullable = false)
   Integer vatCoefficient;
 
-  @Column(nullable = false)
   Integer designCoefficient;
 
-  @Column(nullable = false)
   Integer designFee;
 
-  @Column(nullable = false)
   String designImageUrl;
 
   @Column(nullable = false)
@@ -84,7 +72,6 @@ public class CostEstimate implements Serializable {
   @Column(nullable = false)
   String createBy; // reference to Users, describe which employee has been processing
 
-  @Column(nullable = false)
   String waterMeterSerial;
 
   @Column(nullable = false)
@@ -114,7 +101,7 @@ public class CostEstimate implements Serializable {
     this.registrationAt = value;
   }
 
-  public void setInstallationFormId(InstallationForm value) {
+  public void setInstallationForm(InstallationForm value) {
     Objects.requireNonNull(value, Message.PT_41);
     this.installationForm = value;
   }
@@ -302,8 +289,8 @@ public class CostEstimate implements Serializable {
       return this;
     }
 
-    public EstimationBuilder installationFormId(InstallationForm value) {
-      instance.setInstallationFormId(value);
+    public EstimationBuilder installationForm(InstallationForm value) {
+      instance.setInstallationForm(value);
       return this;
     }
 

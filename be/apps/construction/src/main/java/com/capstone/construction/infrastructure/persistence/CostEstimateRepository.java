@@ -1,6 +1,7 @@
 package com.capstone.construction.infrastructure.persistence;
 
 import com.capstone.construction.domain.model.CostEstimate;
+import com.capstone.construction.domain.model.InstallationForm;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -39,7 +40,8 @@ public interface CostEstimateRepository extends JpaRepository<CostEstimate, Stri
     };
   }
 
-  private @NonNull static ArrayList<Predicate> getPredicates(@NonNull String keyword, @NonNull Root<CostEstimate> root, @NonNull CriteriaBuilder cb) {
+  private @NonNull
+  static ArrayList<Predicate> getPredicates(@NonNull String keyword, @NonNull Root<CostEstimate> root, @NonNull CriteriaBuilder cb) {
     var orPredicates = new ArrayList<Predicate>();
     var lowerCaseKeyword = "%" + keyword.toLowerCase() + "%";
     var unaccent = "unaccent";
@@ -54,4 +56,6 @@ public interface CostEstimateRepository extends JpaRepository<CostEstimate, Stri
       )));
     return orPredicates;
   }
+
+  Boolean existsByInstallationForm(InstallationForm installationForm);
 }

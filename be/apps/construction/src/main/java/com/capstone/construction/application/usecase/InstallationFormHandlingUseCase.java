@@ -1,12 +1,9 @@
 package com.capstone.construction.application.usecase;
 
 import com.capstone.common.enumerate.RoleName;
-import com.capstone.common.exception.ForbiddenException;
-import com.capstone.common.utils.SharedMessage;
 import com.capstone.construction.application.business.installationform.InstallationFormService;
 import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.construction.application.dto.request.estimate.CreateRequest;
-import com.capstone.construction.application.dto.request.estimate.SignRequest;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
@@ -29,7 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Component
@@ -125,10 +122,11 @@ public class InstallationFormHandlingUseCase {
       costEstimateUseCase.createEstimate(new CreateRequest(
         installationForm.customerName(),
         installationForm.address(),
-        LocalDate.parse(installationForm.registrationAt()),
+        LocalDateTime.parse(installationForm.registrationAt()),
         installationForm.creator(),
         request.formCode(),
-        request.formNumber()
+        request.formNumber(),
+        installationForm.overallWaterMeterId()
       ));
     }
   }
