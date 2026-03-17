@@ -9,6 +9,11 @@ import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.application.event.producer.MessageProducer;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
 import com.capstone.construction.infrastructure.service.EmployeeService;
+import com.capstone.common.enumerate.RoleName;
+import com.capstone.common.exception.ForbiddenException;
+import com.capstone.common.exception.NotExistingException;
+import com.capstone.construction.application.dto.request.estimate.AssignTheSignificanceRequest;
+import com.capstone.construction.application.dto.request.estimate.SignRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,8 +27,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -139,5 +143,101 @@ class CostEstimateUseCaseTest {
 
     // Assert
     verify(estSrv).getAllEstimates(null, null);
+  }
+
+  @Test
+  void should_AssignStaffForSignCostEstimate_Success() {
+    // Arrange
+    var request = new AssignTheSignificanceRequest(
+      "EST001", "EMP001", "EMP002", "EMP003");
+    when(estSrv.isExisting("EST001")).thenReturn(true);
+    when(empSrv.isEmployeeExisting(anyString())).thenReturn(new WrapperApiResponse(200, "Success", "true", LocalDateTime.now()));
+
+    // Act
+    costEstimateUseCase.assignStaffForSignCostEstimate(request);
+
+    // Assert
+    verify(messageProducer).send(anyString(), any());
+  }
+
+  @Test
+  void should_ThrowException_When_EstimateNotExisting_In_AssignStaff() {
+    // Arrange
+    var request = new AssignTheSignificanceRequest(
+      "EST001", "EMP001", "EMP002", "EMP003");
+    when(estSrv.isExisting("EST001")).thenReturn(false);
+
+    // Act & Assert
+    assertThrows(NotExistingException.class,
+      () -> costEstimateUseCase.assignStaffForSignCostEstimate(request));
+  }
+
+  @Test
+  void should_ThrowException_When_AllEmployeesNotExisting_In_AssignStaff() {
+    // Arrange
+    var request = new AssignTheSignificanceRequest(
+      "EST001", "EMP001", "EMP002", "EMP003");
+    when(estSrv.isExisting("EST001")).thenReturn(true);
+    when(empSrv.isEmployeeExisting(anyString())).thenReturn(new WrapperApiResponse(200, "Success", "false", LocalDateTime.now()));
+
+    // Act & Assert
+    assertThrows(NotExistingException.class,
+      () -> costEstimateUseCase.assignStaffForSignCostEstimate(request));
+  }
+
+  @Test
+  void should_SignForInstallationRequest_Success_As_SurveyStaff() {
+    // Arrange
+    var request = new SignRequest("EST001", "url");
+    when(empSrv.getRoleOfEmployeeById("user-123")).thenReturn(new WrapperApiResponse(200, "Success", "SURVEY_STAFF", LocalDateTime.now()));
+    when(empSrv.getElectronicSignificance("user-123")).thenReturn(new WrapperApiResponse(200, "Success", "sign-data", LocalDateTime.now()));
+    when(estSrv.signForCostEstimate(anyString(), eq(RoleName.SURVEY_STAFF), eq("EST001"))).thenReturn(true);
+
+    // Act
+    costEstimateUseCase.signForInstallationRequest("user-123", request);
+
+    // Assert
+    verify(estSrv).signForCostEstimate("sign-data", RoleName.SURVEY_STAFF, "EST001");
+  }
+
+  @Test
+  void should_SignForInstallationRequest_Success_As_PlanningHead() {
+    // Arrange
+    var request = new SignRequest("EST001", "url");
+    when(empSrv.getRoleOfEmployeeById("user-123")).thenReturn(new WrapperApiResponse(200, "Success", "PLANNING_TECHNICAL_DEPARTMENT_HEAD", LocalDateTime.now()));
+    when(empSrv.getElectronicSignificance("user-123")).thenReturn(new WrapperApiResponse(200, "Success", "sign-data", LocalDateTime.now()));
+    when(estSrv.signForCostEstimate(anyString(), eq(RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD), eq("EST001"))).thenReturn(true);
+
+    // Act
+    costEstimateUseCase.signForInstallationRequest("user-123", request);
+
+    // Assert
+    verify(estSrv).signForCostEstimate("sign-data", RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD, "EST001");
+  }
+
+  @Test
+  void should_SignForInstallationRequest_Success_As_Leadership() {
+    // Arrange
+    var request = new SignRequest("EST001", "url");
+    when(empSrv.getRoleOfEmployeeById("user-123")).thenReturn(new WrapperApiResponse(200, "Success", "COMPANY_LEADERSHIP", LocalDateTime.now()));
+    when(empSrv.getElectronicSignificance("user-123")).thenReturn(new WrapperApiResponse(200, "Success", "sign-data", LocalDateTime.now()));
+    when(estSrv.signForCostEstimate(anyString(), eq(RoleName.COMPANY_LEADERSHIP), eq("EST001"))).thenReturn(true);
+
+    // Act
+    costEstimateUseCase.signForInstallationRequest("user-123", request);
+
+    // Assert
+    verify(estSrv).signForCostEstimate("sign-data", RoleName.COMPANY_LEADERSHIP, "EST001");
+  }
+
+  @Test
+  void should_ThrowException_When_UserHasInvalidRole() {
+    // Arrange
+    var request = new SignRequest("EST001", "url");
+    when(empSrv.getRoleOfEmployeeById("user-123")).thenReturn(new WrapperApiResponse(200, "Success", "IT_STAFF", LocalDateTime.now()));
+
+    // Act & Assert
+    assertThrows(ForbiddenException.class,
+      () -> costEstimateUseCase.signForInstallationRequest("user-123", request));
   }
 }
