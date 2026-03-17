@@ -1,17 +1,20 @@
 package com.capstone.construction.application.usecase;
 
+import com.capstone.common.enumerate.RoleName;
 import com.capstone.construction.application.business.installationform.InstallationFormService;
 import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.construction.application.dto.request.estimate.CreateRequest;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import com.capstone.construction.application.dto.response.installationform.NewInstallationFormResponse;
-import com.capstone.construction.application.event.producer.order.ApproveEvent;
+import com.capstone.construction.application.event.producer.order.AssignEvent;
 import com.capstone.construction.application.event.producer.order.CreatedEvent;
 import com.capstone.construction.application.event.producer.MessageProducer;
-import com.capstone.construction.application.event.producer.order.RejectEvent;
 import com.capstone.construction.application.exception.ExistingItemException;
-import com.capstone.construction.infrastructure.utils.Constant;
+import com.capstone.construction.application.usecase.estimate.CostEstimateUseCase;
+import com.capstone.construction.domain.model.utils.InstallationFormId;
+import com.capstone.construction.infrastructure.utils.Message;
 import com.capstone.construction.infrastructure.service.EmployeeService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -23,12 +26,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.Objects;
+
 @Component
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InstallationFormHandlingUseCase {
   final InstallationFormService ifSrv;
   final MessageProducer messageProducer;
+  final CostEstimateUseCase costEstimateUseCase;
   final EmployeeService empSrv;
 
   @Value(".${rabbit-mq-config.entities[5]}.")
@@ -37,11 +44,8 @@ public class InstallationFormHandlingUseCase {
   @Value("${rabbit-mq-config.actions[2]}")
   String CREATE_ACTION;
 
-  @Value("${rabbit-mq-config.actions[3]}")
-  String APPROVE_ACTION;
-
   @Value("${rabbit-mq-config.actions[4]}")
-  String REJECT_ACTION;
+  String ASSIGN_ACTION;
 
   @Value("${rabbit-mq-config.queue_name}")
   String QUEUE_NAME;
@@ -51,13 +55,13 @@ public class InstallationFormHandlingUseCase {
   }
 
   @Transactional(rollbackFor = Exception.class)
-  public NewInstallationFormResponse createNewInstallationRequest(@NonNull NewOrderRequest request) {
+  public NewInstallationFormResponse createNewInstallationRequest(String userId, @NonNull NewOrderRequest request) {
     var routingKey = QUEUE_NAME + PREFIX + CREATE_ACTION;
     if (ifSrv.isInstallationFormExisting(request.formNumber(), request.formCode())) {
-      throw new ExistingItemException(Constant.SE_01);
+      throw new ExistingItemException(Message.PT_53);
     }
 
-    var savedResponse = ifSrv.createNewInstallationForm(request);
+    var savedResponse = ifSrv.createNewInstallationForm(userId, request);
 
     // Send notification event using the DTO data
     var event = new CreatedEvent(
@@ -71,33 +75,61 @@ public class InstallationFormHandlingUseCase {
     return savedResponse;
   }
 
+  public void assignInstallationFormToSurveyStaff(InstallationFormId id, String empId) {
+    var role = empSrv.getRoleOfEmployeeById(empId).data();
+    Objects.requireNonNull(role);
+    if (!role.toString().equalsIgnoreCase(RoleName.SURVEY_STAFF.name())) {
+      throw new IllegalArgumentException(String.format(Message.PT_28, "nhân viên khảo sát"));
+    }
+
+    ifSrv.assignInstallationForm(empId, id, true);
+    var form = ifSrv.getByFormCodeAndFormNumber(id.getFormCode(), id.getFormNumber());
+
+    var routingKey = QUEUE_NAME + PREFIX + ASSIGN_ACTION;
+    var event = new AssignEvent(
+      form.formCode(),
+      form.formNumber(),
+      empId);
+    messageProducer.send(routingKey, event);
+  }
+
+  public void assignInstallationFormToConstructionCaptain(InstallationFormId request, String empId) {
+    var role = empSrv.getRoleOfEmployeeById(empId).data();
+    Objects.requireNonNull(role);
+    if (!role.toString().equalsIgnoreCase(RoleName.CONSTRUCTION_DEPARTMENT_STAFF.name())) {
+      throw new IllegalArgumentException(String.format(Message.PT_28, "đội trưởng đội thi công (nhân viên chi nhánh Xây lắp"));
+    }
+
+    ifSrv.assignInstallationForm(empId, request, false);
+    var form = ifSrv.getByFormCodeAndFormNumber(request.getFormCode(), request.getFormNumber());
+
+    var routingKey = QUEUE_NAME + PREFIX + ASSIGN_ACTION;
+    var event = new AssignEvent(
+      form.formCode(),
+      form.formNumber(),
+      empId);
+    messageProducer.send(routingKey, event);
+  }
+
   public void approveInstallationForm(ApproveRequest request) {
     ifSrv.approveAndAssignInstallationForm(request);
-    var order = ifSrv.getByFormCodeAndFormNumber(request.formCode(), request.formNumber());
+
+    var installationForm = ifSrv.getByFormCodeAndFormNumber(request.formCode(), request.formNumber());
+
     if (request.status()) {
-      // gui su kien cho nhan vien khao sat
-      var routingKey = QUEUE_NAME + PREFIX + APPROVE_ACTION;
-      messageProducer.send(routingKey, new ApproveEvent(
-        request.empId(),
-        order.formCode(),
-        order.formNumber(),
-        order.creatorFullName(),
-        order.customerName(),
-        order.registrationAt()
-      ));
-    } else {
-      var routingKey = QUEUE_NAME + PREFIX + REJECT_ACTION;
-      messageProducer.send(routingKey, new RejectEvent(
-        order.creator(),
-        order.formCode(),
-        order.formNumber(),
-        order.customerName()
+      costEstimateUseCase.createEstimate(new CreateRequest(
+        installationForm.customerName(),
+        installationForm.address(),
+        LocalDate.parse(installationForm.registrationAt()),
+        installationForm.creator(),
+        request.formCode(),
+        request.formNumber()
       ));
     }
   }
 
   public Page<InstallationFormListResponse> getPaginatedConstructionRequest(Pageable pageable, BaseFilterRequest request) {
-    return null;
+    return ifSrv.getConstructionRequestsList(pageable, request);
   }
 
   private String getCreatorName(String creator) {

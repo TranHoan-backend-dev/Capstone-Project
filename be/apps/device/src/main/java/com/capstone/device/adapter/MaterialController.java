@@ -49,7 +49,7 @@ public class MaterialController {
     log.info("REST request to create material: {}", request.jobContent());
     var response = mUseCase.createMaterial(request);
     log.info("Response: {}", response);
-    return Utils.returnCreatedResponse("Material created successfully");
+    return Utils.returnCreatedResponse("Tạo vật tư thành công");
   }
 
   @Operation(summary = "Cập nhật đơn giá vật tư", description = "Cập nhật thông tin đơn giá vật tư dựa trên ID. Sau khi cập nhật thành công, một sự kiện sẽ được gửi đến RabbitMQ để thông báo cho Notification Service.", responses = {
@@ -61,10 +61,11 @@ public class MaterialController {
   @PreAuthorize("hasAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> updateMaterial(
       @PathVariable @Parameter(description = "ID của vật tư cần cập nhật", example = "VL001") String id,
-      @RequestBody @Valid UpdateRequest request) {
+      @RequestBody @Valid UpdateRequest request
+  ) {
     log.info("REST request to update material: {}", id);
     var response = mUseCase.updateMaterial(id, request);
-    return Utils.returnOkResponse("Material updated successfully", response);
+    return Utils.returnOkResponse("Cập nhật vật tư thành công", response);
   }
 
   @Operation(summary = "Xóa đơn giá vật tư", description = "Xóa bản ghi vật tư khỏi hệ thống dựa trên ID. Thao tác này sẽ kích hoạt sự kiện xóa gửi đến các dịch vụ liên quan.", responses = {
@@ -77,7 +78,7 @@ public class MaterialController {
       @PathVariable @Parameter(description = "ID của vật tư cần xóa", example = "VL001") String id) {
     log.info("REST request to delete material: {}", id);
     mUseCase.deleteMaterial(id);
-    return Utils.returnOkResponse("Material deleted successfully", null);
+    return Utils.returnOkResponse("Xóa vật tư thành công", null);
   }
 
   @Operation(summary = "", description = "", responses = {
@@ -89,7 +90,7 @@ public class MaterialController {
       @PathVariable @Parameter(description = "") String id) {
     log.info("REST request to get material: {}", id);
     var response = mUseCase.get(id);
-    return Utils.returnOkResponse("Material retrieved successfully", response);
+    return Utils.returnOkResponse("Lấy thông tin vật tư thành công", response);
   }
 
   @Operation(summary = "", description = "")
@@ -97,7 +98,7 @@ public class MaterialController {
   public ResponseEntity<WrapperApiResponse> getAllMaterials(@PageableDefault Pageable pageable) {
     log.info("REST request to get all materials with pagination: {}", pageable);
     var response = mUseCase.getAll(pageable);
-    return Utils.returnOkResponse("Materials retrieved successfully", response);
+    return Utils.returnOkResponse("Lấy danh sách vật tư thành công", response);
   }
 
   // internal api, do not expose
@@ -105,7 +106,7 @@ public class MaterialController {
   @GetMapping("/exist")
   public ResponseEntity<?> checkExistence(@RequestParam String id) {
     log.info("REST request to check existence of water meter: {}", id);
-    return Utils.returnOkResponse("Check material id successfully", mService.materialExists(id));
+    return Utils.returnOkResponse("Kiểm tra ID vật tư thành công", mService.materialExists(id));
   }
   // </editor-fold>
 
@@ -120,7 +121,7 @@ public class MaterialController {
   public ResponseEntity<?> createMaterialGroup(@RequestBody @Valid GroupRequest request) {
     log.info("REST request to create group: {}", request);
     mUseCase.createMaterialGroup(request);
-    return Utils.returnCreatedResponse("Create material group successfully");
+    return Utils.returnCreatedResponse("Tạo nhóm vật tư thành công");
   }
 
   @Operation(summary = "Cập nhật nhóm vật tư", description = "Cập nhật tên nhóm vật tư dựa trên ID. Yêu cầu quyền IT_STAFF.", responses = {
@@ -135,7 +136,7 @@ public class MaterialController {
       @RequestBody @Valid GroupRequest request) {
     log.info("REST request to update group: {}", request);
     mUseCase.updateGroup(id, request.name());
-    return Utils.returnOkResponse("Update material group successfully", null);
+    return Utils.returnOkResponse("Cập nhật nhóm vật tư thành công", null);
   }
 
   @Operation(summary = "Xóa nhóm vật tư", description = "Xóa nhóm vật tư dựa trên ID. Yêu cầu quyền IT_STAFF.", responses = {
@@ -149,7 +150,7 @@ public class MaterialController {
       @PathVariable @Parameter(description = "ID của nhóm vật tư", example = "group-uuid") String id) {
     log.info("REST request to delete group: {}", id);
     mUseCase.deleteGroup(id);
-    return Utils.returnNoContentResponse("Delete material group successfully");
+    return Utils.returnNoContentResponse("Xóa nhóm vật tư thành công");
   }
   // </editor-fold>
 }

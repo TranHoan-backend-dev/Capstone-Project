@@ -41,7 +41,7 @@ public class NeighborhoodUnitController {
   public ResponseEntity<WrapperApiResponse> createUnit(@RequestBody @Valid NeighborhoodUnitRequest request) {
     log.info("REST request to create unit: {}", request.name());
     unitUseCase.createUnit(request);
-    return Utils.returnCreatedResponse("Neighborhood unit created successfully");
+    return Utils.returnCreatedResponse("Tạo tổ/khu/xóm thành công");
   }
 
   @PutMapping("/{id}")
@@ -61,7 +61,7 @@ public class NeighborhoodUnitController {
     @RequestBody @Valid NeighborhoodUnitRequest request) {
     log.info("REST request to update unit: {}", id);
     var response = unitUseCase.updateUnit(id, request);
-    return Utils.returnOkResponse("Neighborhood unit updated successfully", response);
+    return Utils.returnOkResponse("Cập nhật tổ/khu/xóm thành công", response);
   }
 
   @DeleteMapping("/{id}")
@@ -79,7 +79,7 @@ public class NeighborhoodUnitController {
     @PathVariable @Parameter(description = "ID của đơn vị hành chính cần xóa", required = true) String id) {
     log.info("REST request to delete unit: {}", id);
     unitUseCase.deleteUnit(id);
-    return Utils.returnOkResponse("Neighborhood unit deleted successfully", null);
+    return Utils.returnOkResponse("Xóa tổ/khu/xóm thành công", null);
   }
 
   @GetMapping("/{id}")
@@ -92,7 +92,7 @@ public class NeighborhoodUnitController {
     log.info("REST request to get unit: {}", id);
     var response = unitUseCase.getUnitById(id);
     return ResponseEntity.ok(new WrapperApiResponse(
-      HttpStatus.OK.value(), "Neighborhood unit retrieved successfully", response, LocalDateTime.now()));
+      HttpStatus.OK.value(), "Lấy thông tin tổ/khu/xóm thành công", response, LocalDateTime.now()));
   }
 
   @GetMapping
@@ -107,6 +107,6 @@ public class NeighborhoodUnitController {
     log.info("REST request to get all units");
     var response = unitUseCase.getAllUnits(pageable, keyword, communeId);
     return ResponseEntity.ok(new WrapperApiResponse(
-      HttpStatus.OK.value(), "Neighborhood units retrieved successfully", response, LocalDateTime.now()));
+      HttpStatus.OK.value(), "Lấy danh sách tổ/khu/xóm thành công", response, LocalDateTime.now()));
   }
 }

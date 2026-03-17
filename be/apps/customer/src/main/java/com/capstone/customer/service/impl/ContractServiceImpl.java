@@ -1,74 +1,78 @@
 package com.capstone.customer.service.impl;
 
-import com.capstone.customer.dto.request.ContractRequest;
+import com.capstone.common.annotation.AppLog;
+import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.common.utils.SharedConstant;
+import com.capstone.customer.dto.request.contract.CreateRequest;
 import com.capstone.customer.dto.response.ContractResponse;
 import com.capstone.customer.model.WaterUsageContract;
 import com.capstone.customer.repository.ContractRepository;
 import com.capstone.customer.repository.CustomerRepository;
+import com.capstone.customer.service.boundary.ConstructionService;
 import com.capstone.customer.service.boundary.ContractService;
+import com.capstone.customer.utils.Message;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+
+@AppLog
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ContractServiceImpl implements ContractService {
   ContractRepository contractRepository;
   CustomerRepository customerRepository;
+  ConstructionService cSrv;
+  @NonFinal
+  Logger log;
 
   @Override
-  @Transactional
-  public ContractResponse createContract(@NonNull ContractRequest request) {
+  @Transactional(rollbackFor = Exception.class)
+  public ContractResponse createContract(@NonNull CreateRequest request) {
     log.info("Creating contract with ID: {}", request.contractId());
-    var customer = customerRepository.findById(request.customerId())
-      .orElseThrow(() -> new IllegalArgumentException("Customer not found with ID: " + request.customerId()));
+    var status = cSrv.checkExistence(request.formCode(), request.formNumber()).data().toString();
+    if (!Boolean.parseBoolean(status)) {
+      throw new IllegalArgumentException(Message.ENT_16);
+    }
 
     var contract = WaterUsageContract.create(builder -> builder
       .id(request.contractId())
-      .customer(customer)
-      .installationFormId(request.installationFormId())
-      .representative(request.representatives()));
+      .formNumber(request.formNumber())
+      .formCode(request.formCode()));
+    if (request.customerId() != null) {
+      var customer = customerRepository.findById(request.customerId())
+        .orElseThrow(() -> new IllegalArgumentException("Customer not found with ID: " + request.customerId()));
+      contract.setCustomer(customer);
+    }
+    if (request.representatives() != null && !request.representatives().isEmpty()) {
+      contract.setRepresentative(request.representatives());
+    }
+    if (request.appendix() != null && !request.appendix().isEmpty()) {
+      contract.setAppendix(request.appendix());
+    }
 
     var saved = contractRepository.save(contract);
     return mapToResponse(saved);
   }
 
   @Override
-  @Transactional
-  public ContractResponse updateContract(String id, @NonNull ContractRequest request) {
-    log.info("Updating contract with ID: {}", id);
-    var contract = contractRepository.findById(id)
-      .orElseThrow(() -> new IllegalArgumentException("Contract not found with ID: " + id));
-
-    if (!contract.getCustomer().getCustomerId().equals(request.customerId())) {
-      var newCustomer = customerRepository.findById(request.customerId())
-        .orElseThrow(
-          () -> new IllegalArgumentException("Customer not found with ID: " + request.customerId()));
-      contract.setCustomer(newCustomer);
-    }
-
-    contract.setContractId(request.contractId());
-    contract.setInstallationFormId(request.installationFormId());
-    contract.setRepresentative(request.representatives());
-
-    var updated = contractRepository.save(contract);
-    return mapToResponse(updated);
-  }
-
-  @Override
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public void deleteContract(String id) {
     log.info("Deleting contract with ID: {}", id);
     if (!contractRepository.existsById(id)) {
-      throw new IllegalArgumentException("Contract not found with ID: " + id);
+      throw new IllegalArgumentException(String.format(Message.ENT_22, id));
     }
     contractRepository.deleteById(id);
   }
@@ -78,23 +82,49 @@ public class ContractServiceImpl implements ContractService {
     log.info("Fetching contract with ID: {}", id);
     return contractRepository.findById(id)
       .map(this::mapToResponse)
-      .orElseThrow(() -> new IllegalArgumentException("Contract not found with ID: " + id));
+      .orElseThrow(() -> new IllegalArgumentException(String.format(Message.ENT_22, id)));
   }
 
   @Override
-  public Page<ContractResponse> getAllContracts(Pageable pageable) {
-    log.debug("Fetching all contracts with pagination: {}", pageable);
-    return contractRepository.findAll(pageable).map(this::mapToResponse);
+  public Page<ContractResponse> getAllContracts(Pageable pageable, BaseFilterRequest request) {
+    log.info("Fetching all contracts with pagination: {}", pageable);
+    var startDate = parseFrom(request != null ? request.from() : null);
+    var endDate = parseTo(request != null ? request.to() : null);
+    var keyword = request == null ? null : request.keyword();
+
+    var result = (startDate != null || endDate != null || (keyword != null && !keyword.isBlank())) ? contractRepository.findAll(
+      ContractRepository.search(
+        keyword,
+        startDate,
+        endDate
+      ), pageable) : contractRepository.findAll(pageable);
+    log.info(result.toString());
+
+    return result.map(this::mapToResponse);
   }
 
-  private ContractResponse mapToResponse(@NonNull WaterUsageContract contract) {
+  private LocalDateTime parseFrom(String from) {
+    if (from == null || from.isBlank()) {
+      return null;
+    }
+    return LocalDate.parse(from, DateTimeFormatter.ofPattern(SharedConstant.DATE_PATTERN)).atStartOfDay();
+  }
+
+  private LocalDateTime parseTo(String to) {
+    if (to == null || to.isBlank()) {
+      return null;
+    }
+    return LocalDate.parse(to, DateTimeFormatter.ofPattern(SharedConstant.DATE_PATTERN)).atTime(LocalTime.MAX);
+  }
+
+  private @NonNull ContractResponse mapToResponse(@NonNull WaterUsageContract contract) {
     return new ContractResponse(
       contract.getContractId(),
       contract.getCreatedAt(),
       contract.getUpdatedAt(),
       contract.getCustomer().getName(),
       contract.getCustomer().getCustomerId(),
-      contract.getInstallationFormId(),
+      contract.getFormCode(),
       contract.getRepresentative());
   }
 }

@@ -1,4 +1,4 @@
-@uri = http://localhost:9004/api/v1/installation-forms
+@uri = http://localhost:9004/api/v1
 @keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
 @client_secret=
 
@@ -19,38 +19,67 @@ scope=openid
   client.global.set("refresh_token", response.body.refresh_token);
 %}
 
-### R
-### No param
+### R - Get Installation Forms (Read)
+
+### 1. No param (Default: page 0, size 20)
 GET {{uri}}/installation-forms
 Authorization: Bearer {{access_token}}
 
-### pageable
+### 2. Pagination (page 1, size 10)
 GET {{uri}}/installation-forms?page=1&size=10
 Authorization: Bearer {{access_token}}
 
-### keyword, from, to
+### 3. Sorting (Sort by createdAt descending)
+GET {{uri}}/installation-forms?sort=createdAt,desc
+Authorization: Bearer {{access_token}}
+
+### 4. Filter by keyword only
+GET {{uri}}/installation-forms?keyword=Nguyễn
+Authorization: Bearer {{access_token}}
+
+### 5. Filter by 'from' date only
+GET {{uri}}/installation-forms?from=2024-01-01
+Authorization: Bearer {{access_token}}
+
+### 6. Filter by 'to' date only
+GET {{uri}}/installation-forms?to=2024-12-31
+Authorization: Bearer {{access_token}}
+
+### 7. Filter by both 'from' and 'to' (Date range)
+GET {{uri}}/installation-forms?from=2024-01-01&to=2024-12-31
+Authorization: Bearer {{access_token}}
+
+### 8. Filter by keyword and date range
 GET {{uri}}/installation-forms?keyword=HCMC&from=2023-01-01&to=2025-01-01
 Authorization: Bearer {{access_token}}
 
-### keyword, from, to
-GET {{uri}}/installation-forms?keyword=hcmc&from=2024-12-01&to=2025-12-01
+### 9. Filter with unfamiliar parameter (Should be ignored)
+GET {{uri}}/installation-forms?unknown_param=value
 Authorization: Bearer {{access_token}}
 
-### keyword
-GET {{uri}}/installation-forms?keyword=ap
+### 10. Keyword matching other fields (e.g., Phone Number)
+GET {{uri}}/installation-forms?keyword=0987
 Authorization: Bearer {{access_token}}
 
-### keyword
-GET {{uri}}/installation-forms?keyword=nam
+### 11. Edge Case: 'from' date after 'to' date (Should return 400)
+GET {{uri}}/installation-forms?from=2025-01-01&to=2024-01-01
 Authorization: Bearer {{access_token}}
 
-### unfnfamiliar param
-GET {{uri}}/installation-forms?hehe=nam
+### 12. Edge Case: Invalid date format (Should return 400)
+GET {{uri}}/installation-forms?from=01-01-2024
+Authorization: Bearer {{access_token}}
+
+### 13. Case/Accent Insensitive Search
+GET {{uri}}/installation-forms?keyword=hcmc
+Authorization: Bearer {{access_token}}
+
+### 14. Keyword with no results
+GET {{uri}}/installation-forms?keyword=nonexistentkeyword123
 Authorization: Bearer {{access_token}}
 
 ### C
 ### 1. Happy Path - Create Installation Form
-POST {{uri}}
+POST {{uri}}/installation-forms
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 Accept: application/json
@@ -79,7 +108,7 @@ Accept: application/json
 }
 
 ### 2. Error case: Missing required fields (Validation)
-POST {{uri}}
+POST {{uri}}/installation-forms
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
@@ -89,7 +118,7 @@ Authorization: Bearer {{access_token}}
 }
 
 ### 3. Error case: Invalid Date Format
-POST {{uri}}
+POST {{uri}}/installation-forms
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
@@ -115,7 +144,7 @@ Authorization: Bearer {{access_token}}
 }
 
 ### 4. Error case: Invalid Phone Number Pattern
-POST {{uri}}
+POST {{uri}}/installation-forms
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
@@ -141,7 +170,7 @@ Authorization: Bearer {{access_token}}
 }
 
 ### 5. Error case: Duplicate Form Number (Logic)
-POST {{uri}}
+POST {{uri}}/installation-forms
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
@@ -169,7 +198,7 @@ Authorization: Bearer {{access_token}}
 }
 
 ### 6. Error case: Non-existent dependency (Staff)
-POST {{uri}}
+POST {{uri}}/installation-forms
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
@@ -196,7 +225,7 @@ Authorization: Bearer {{access_token}}
 
 ### U - Approve/Reject Installation Form
 ### 1. Happy Path - Approve Installation Form (Status: true)
-PATCH {{uri}}/approve
+PATCH {{uri}}/installation-forms/approve
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
@@ -208,7 +237,7 @@ Authorization: Bearer {{access_token}}
 }
 
 ### 2. Happy Path - Reject Installation Form (Status: false)
-PATCH {{uri}}/approve
+PATCH {{uri}}/installation-forms/approve
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
@@ -220,7 +249,7 @@ Authorization: Bearer {{access_token}}
 }
 
 ### 3. Error Case - Missing Required Fields (Validation)
-PATCH {{uri}}/approve
+PATCH {{uri}}/installation-forms/approve
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
@@ -232,7 +261,7 @@ Authorization: Bearer {{access_token}}
 }
 
 ### 4. Error Case - Form Not Found (404)
-PATCH {{uri}}/approve
+PATCH {{uri}}/installation-forms/approve
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
@@ -244,7 +273,7 @@ Authorization: Bearer {{access_token}}
 }
 
 ### 5. Error Case - Missing Authorization Header (401)
-PATCH {{uri}}/approve
+PATCH {{uri}}/installation-forms/approve
 Content-Type: application/json
 
 {
@@ -256,29 +285,24 @@ Content-Type: application/json
 
 ### L - Get Construction Orders List (đơn chờ thi công)
 ### 1. Happy Path - Get all construction orders (No param)
-GET {{uri}}/construction
+GET {{uri}}/construction/construction
 Authorization: Bearer {{access_token}}
 
 ### 2. Happy Path - Pagination and Sort
-GET {{uri}}/construction?page=0&size=10&sort=createdAt,desc
+GET {{uri}}/construction/construction?page=0&size=10&sort=createdAt,desc
 Authorization: Bearer {{access_token}}
 
 ### 3. Happy Path - Filtering by keyword, from, and to
-GET {{uri}}/construction?keyword=Nguyễn&from=01-01-2024&to=31-12-2024
+GET {{uri}}/construction/construction?keyword=Nguyễn&from=2024-01-01&to=2024-12-31
 Authorization: Bearer {{access_token}}
 
 ### 4. Error Case - Invalid Date Format (from)
-GET {{uri}}/construction?from=2024-01-01
+GET {{uri}}/construction/construction?from=01-01-2024
 Authorization: Bearer {{access_token}}
 
 ### 5. Error Case - Invalid Date Format (to)
-GET {{uri}}/construction?to=01/01/2024
+GET {{uri}}/construction/construction?to=01/01/2024
 Authorization: Bearer {{access_token}}
 
 ### 6. Error Case - Unauthorized (Missing Token)
-GET {{uri}}/construction
-
-### 7. Error Case - Forbidden Role
-# Note: Requires a token WITHOUT 'ORDER_RECEIVING_STAFF' role (e.g., 'SURVEY_STAFF')
-GET {{uri}}/construction
-Authorization: Bearer {{access_token}}
+GET {{uri}}/construction/construction

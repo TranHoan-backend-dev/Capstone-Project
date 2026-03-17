@@ -1,7 +1,6 @@
 import { createCommune, getAllCommunes } from "@/services/construction.service";
 import { getAccessToken } from "@/utils/getAccessToken";
-import { NextRequest } from "next/dist/server/web/spec-extension/request";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
@@ -15,23 +14,19 @@ export async function GET(req: NextRequest) {
     const page = searchParams.get("page");
     const size = searchParams.get("size");
     const sort = searchParams.get("sort") || "createdAt,desc";
-    const keyword = searchParams.get("keyword") || undefined;
+    const search = searchParams.get("search") || "";
+    const type = searchParams.get("type") || "";
 
     const response = await getAllCommunes(
       accessToken,
       page ? Number(page) : 0,
       size ? Number(size) : 1000,
       sort,
-      keyword,
+      search,
+      type,
     );
 
-    return NextResponse.json(
-      {
-        message: "Lấy danh sách chi nhánh cấp nước thành công",
-        data: response.data.data,
-      },
-      { status: 200 },
-    );
+    return NextResponse.json(response.data.data, { status: 200 });
   } catch (error: any) {
     const status = error?.response?.status ?? 500;
 
@@ -60,7 +55,7 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     return NextResponse.json(
       {
-        message: error.response?.data?.message || "Create network failed",
+        message: error.response?.data?.message || "Tạo phường xã thất bại",
       },
       { status: error.response?.status || 500 },
     );

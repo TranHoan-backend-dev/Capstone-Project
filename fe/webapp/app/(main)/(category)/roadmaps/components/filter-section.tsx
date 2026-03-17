@@ -19,7 +19,7 @@ export const FilterSection = ({
   onAddNew,
 }: FilterRoadmapProps) => {
   const [keyword, setKeyword] = useState(filter.keyword ?? "");
-  
+
   const [selectedNetwork, setSelectedNetwork] = useState<Set<string>>(
     new Set(),
   );
@@ -43,6 +43,14 @@ export const FilterSection = ({
     }
   }, [filter]);
 
+  const handleSearch = () => {
+    onSearch({
+      keyword: keyword.trim(),
+      networkId: Array.from(selectedNetwork)[0],
+      lateralId: Array.from(selectedLateral)[0],
+    });
+  };
+
   return (
     <GenericSearchFilter
       title="Tìm kiếm"
@@ -58,41 +66,32 @@ export const FilterSection = ({
             label="Thêm mới"
             onPress={onAddNew}
           />
-          <FilterButton
-            onPress={() =>
-              onSearch({
-                keyword: keyword.trim(),
-                networkId: Array.from(selectedNetwork)[0],
-                lateralId: Array.from(selectedLateral)[0],
-              })
-            }
-          />
+          <FilterButton onPress={() => handleSearch()} />
         </div>
       }
     >
       <section className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="md:col-span-1 flex flex-col gap-4">
-            <CustomInput
-              label="Tên lộ trình ghi"
-              value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
-            />
-          </div>
-          <div className="md:col-span-1 flex flex-col gap-4">
-            <CustomSelect
-              label="Nhánh tổng"
-              options={lateralOptions}
-              selectedKeys={selectedLateral}
-              onSelectionChange={setSelectedLateral}
-            />
-            <CustomSelect
-              label="Chi nhánh"
-              options={networkOptions}
-              selectedKeys={selectedNetwork}
-              onSelectionChange={setSelectedNetwork}
-            />
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <CustomInput
+            label="Tên lộ trình ghi"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSearch();
+            }}
+          />
+          <CustomSelect
+            label="Nhánh tổng"
+            options={lateralOptions}
+            selectedKeys={selectedLateral}
+            onSelectionChange={setSelectedLateral}
+          />
+          <CustomSelect
+            label="Chi nhánh"
+            options={networkOptions}
+            selectedKeys={selectedNetwork}
+            onSelectionChange={setSelectedNetwork}
+          />
         </div>
       </section>
     </GenericSearchFilter>

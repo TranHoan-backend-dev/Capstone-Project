@@ -1,40 +1,29 @@
 package com.capstone.construction.application.business.installationform;
 
-import com.capstone.common.enumerate.CustomerType;
-import com.capstone.common.enumerate.ProcessingStatus;
-import com.capstone.common.enumerate.UsageTarget;
+import com.capstone.common.enumerate.*;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
-import com.capstone.construction.domain.model.InstallationForm;
-import com.capstone.construction.domain.model.WaterSupplyNetwork;
-import com.capstone.construction.domain.model.utils.FormProcessingStatus;
-import com.capstone.construction.infrastructure.utils.Constant;
-import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
-import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRepository;
-import com.capstone.construction.infrastructure.service.EmployeeService;
-import com.capstone.construction.infrastructure.service.OverallWaterMeterService;
+import com.capstone.construction.domain.model.*;
+import com.capstone.construction.domain.model.utils.*;
+import com.capstone.construction.infrastructure.utils.Message;
+import com.capstone.construction.infrastructure.persistence.*;
+import com.capstone.construction.infrastructure.service.*;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.time.*;
+import java.util.*;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,6 +41,8 @@ class InstallationFormServiceImplTest {
   @InjectMocks
   private InstallationFormServiceImpl service;
 
+  private static final String USER_ID = "EMP-001";
+
   @Test
   void should_CreateNewInstallationForm_When_ValidRequest() {
     // Given
@@ -59,15 +50,13 @@ class InstallationFormServiceImplTest {
     var network = mock(WaterSupplyNetwork.class);
     var savedEntity = createSavedInstallationForm(request);
 
-    when(empSrv.isEmployeeExisting(request.createdBy()))
-      .thenReturn(new WrapperApiResponse(200, "OK", true, LocalDateTime.now()));
-    when(owmSrv.isMeterExisting(request.overallWaterMeterId()))
+    when(owmSrv.isOverallMeterExisting(request.overallWaterMeterId()))
       .thenReturn(new WrapperApiResponse(200, "OK", true, LocalDateTime.now()));
     when(wsnRepo.findById(request.networkId())).thenReturn(Optional.of(network));
     when(ifRepo.save(any(InstallationForm.class))).thenReturn(savedEntity);
 
     // When
-    var response = service.createNewInstallationForm(request);
+    var response = service.createNewInstallationForm(USER_ID, request);
 
     // Then
     assertThat(response).isNotNull();
@@ -81,19 +70,17 @@ class InstallationFormServiceImplTest {
     var request = new NewOrderRequest(
       "CODE", "NUM", "Name", "Address", "123456789012", "2020-01-01", "Loc", "0901234567",
       "TAX01", "BANK01", "LOC", UsageTarget.INSTITUTIONAL, CustomerType.FAMILY,
-      "2024-01-01", "2024-01-05", 1, 1, null, "net1", "emp1", "meter1");
+      "2024-01-01", "2024-01-05", 1, 1, null, "net1", "meter1");
     var network = mock(WaterSupplyNetwork.class);
     var savedEntity = createSavedInstallationForm(request);
 
-    when(empSrv.isEmployeeExisting(request.createdBy()))
-      .thenReturn(new WrapperApiResponse(200, "OK", true, LocalDateTime.now()));
-    when(owmSrv.isMeterExisting(request.overallWaterMeterId()))
+    when(owmSrv.isOverallMeterExisting(request.overallWaterMeterId()))
       .thenReturn(new WrapperApiResponse(200, "OK", true, LocalDateTime.now()));
     when(wsnRepo.findById(request.networkId())).thenReturn(Optional.of(network));
     when(ifRepo.save(any(InstallationForm.class))).thenReturn(savedEntity);
 
     // When
-    var response = service.createNewInstallationForm(request);
+    var response = service.createNewInstallationForm(USER_ID, request);
 
     // Then
     assertThat(response).isNotNull();
@@ -101,52 +88,39 @@ class InstallationFormServiceImplTest {
   }
 
   @Test
-  void should_ThrowException_When_AuthorDoesNotExist() {
-    // Given
-    var request = createValidNewOrderRequest();
-    when(empSrv.isEmployeeExisting(request.createdBy()))
-      .thenReturn(new WrapperApiResponse(200, "OK", false, LocalDateTime.now()));
-
-    // When & Then
-    assertThatThrownBy(() -> service.createNewInstallationForm(request))
-      .isInstanceOf(IllegalArgumentException.class)
-      .hasMessage(Constant.PT_61);
-  }
-
-  @Test
   void should_ThrowException_When_MeterDoesNotExist() {
     // Given
     var request = createValidNewOrderRequest();
-    when(empSrv.isEmployeeExisting(request.createdBy()))
+    when(empSrv.isEmployeeExisting(USER_ID))
       .thenReturn(new WrapperApiResponse(200, "OK", true, LocalDateTime.now()));
-    when(owmSrv.isMeterExisting(request.overallWaterMeterId()))
+    when(owmSrv.isOverallMeterExisting(request.overallWaterMeterId()))
       .thenReturn(new WrapperApiResponse(200, "OK", false, LocalDateTime.now()));
 
     // When & Then
-    assertThatThrownBy(() -> service.createNewInstallationForm(request))
+    assertThatThrownBy(() -> service.createNewInstallationForm(USER_ID, request))
       .isInstanceOf(IllegalArgumentException.class)
-      .hasMessage(Constant.SE_06);
+      .hasMessage(Message.PT_58);
   }
 
   @Test
   void should_ThrowException_When_NetworkDoesNotExist() {
     // Given
     var request = createValidNewOrderRequest();
-    when(empSrv.isEmployeeExisting(request.createdBy()))
+    when(empSrv.isEmployeeExisting(USER_ID))
       .thenReturn(new WrapperApiResponse(200, "OK", true, LocalDateTime.now()));
-    when(owmSrv.isMeterExisting(request.overallWaterMeterId()))
+    when(owmSrv.isOverallMeterExisting(request.overallWaterMeterId()))
       .thenReturn(new WrapperApiResponse(200, "OK", true, LocalDateTime.now()));
     when(wsnRepo.findById(request.networkId())).thenReturn(Optional.empty());
 
     // When & Then
-    assertThatThrownBy(() -> service.createNewInstallationForm(request))
+    assertThatThrownBy(() -> service.createNewInstallationForm(USER_ID, request))
       .isInstanceOf(IllegalArgumentException.class)
-      .hasMessage(Constant.PT_59);
+      .hasMessage(Message.PT_34);
   }
 
   @Test
   void should_ThrowException_When_CreateRequestIsNull() {
-    assertThatThrownBy(() -> service.createNewInstallationForm(null))
+    assertThatThrownBy(() -> service.createNewInstallationForm(USER_ID, null))
       .isInstanceOf(NullPointerException.class);
   }
 
@@ -259,7 +233,7 @@ class InstallationFormServiceImplTest {
     var result = service.getInstallationForms(pageable, request);
 
     // Then
-    assertThat(result.getContent().getFirst().handoverBy()).isEqualTo("Unknown");
+    assertThat(result.getContent().getFirst().handoverByFullName()).isEqualTo("Trống");
   }
 
   @Test
@@ -276,7 +250,7 @@ class InstallationFormServiceImplTest {
     var result = service.getInstallationForms(pageable, request);
 
     // Then
-    assertThat(result.getContent().getFirst().handoverBy()).isEqualTo("Unknown");
+    assertThat(result.getContent().getFirst().handoverByFullName()).isEqualTo("Trống");
   }
 
   @Test
@@ -300,7 +274,7 @@ class InstallationFormServiceImplTest {
   @Test
   void should_ReturnTrue_When_FormExistsByNumberOrCode() {
     // When
-    when(ifRepo.existsById_FormNumberOrId_FormCode("NUM", "CODE")).thenReturn(true);
+    when(ifRepo.existsById_FormNumberAndId_FormCode("NUM", "CODE")).thenReturn(true);
     var result = service.isInstallationFormExisting("NUM", "CODE");
 
     // Then
@@ -310,7 +284,7 @@ class InstallationFormServiceImplTest {
   @Test
   void should_ReturnFalse_When_FormDoesNotExist() {
     // When
-    when(ifRepo.existsById_FormNumberOrId_FormCode("NUM", "CODE")).thenReturn(false);
+    when(ifRepo.existsById_FormNumberAndId_FormCode("NUM", "CODE")).thenReturn(false);
     var result = service.isInstallationFormExisting("NUM", "CODE");
 
     // Then
@@ -403,13 +377,13 @@ class InstallationFormServiceImplTest {
   @Test
   void should_ApproveAndAssign_When_StatusIsTrue() {
     // Given
-    var request = new ApproveRequest("EMP-001", "F-001", "C-001", true);
+    var request = new ApproveRequest("C-001", "F-001", true);
     var entity = createMockEntity();
     var status = new FormProcessingStatus(ProcessingStatus.PENDING_FOR_APPROVAL, ProcessingStatus.PROCESSING,
       ProcessingStatus.PROCESSING, ProcessingStatus.PROCESSING);
     when(entity.getStatus()).thenReturn(status);
 
-    when(ifRepo.findById_FormCodeAndId_FormNumber("C-001", "F-001")).thenReturn(Optional.of(entity));
+    when(ifRepo.findById(new InstallationFormId("C-001", "F-001"))).thenReturn(Optional.of(entity));
     when(empSrv.isEmployeeExisting("EMP-001"))
       .thenReturn(new WrapperApiResponse(200, "OK", "true", LocalDateTime.now()));
 
@@ -425,13 +399,13 @@ class InstallationFormServiceImplTest {
   @Test
   void should_Reject_When_StatusIsFalse() {
     // Given
-    var request = new ApproveRequest("EMP-001", "F-001", "C-001", false);
+    var request = new ApproveRequest("C-001", "F-001", false);
     var entity = createMockEntity();
     var status = new FormProcessingStatus(ProcessingStatus.PENDING_FOR_APPROVAL, ProcessingStatus.PROCESSING,
       ProcessingStatus.PROCESSING, ProcessingStatus.PROCESSING);
     when(entity.getStatus()).thenReturn(status);
 
-    when(ifRepo.findById_FormCodeAndId_FormNumber("C-001", "F-001")).thenReturn(Optional.of(entity));
+    when(ifRepo.findById(new InstallationFormId("C-001", "F-001"))).thenReturn(Optional.of(entity));
 
     // When
     service.approveAndAssignInstallationForm(request);
@@ -444,38 +418,38 @@ class InstallationFormServiceImplTest {
   @Test
   void should_ThrowException_When_FormNotFoundInApprove() {
     // Given
-    var request = new ApproveRequest("EMP-001", "F-001", "C-001", true);
-    when(ifRepo.findById_FormCodeAndId_FormNumber("C-001", "F-001")).thenReturn(Optional.empty());
+    var request = new ApproveRequest("C-001", "F-001", true);
+    when(ifRepo.findById(new InstallationFormId("C-001", "F-001"))).thenReturn(Optional.empty());
 
     // When & Then
     assertThatThrownBy(() -> service.approveAndAssignInstallationForm(request))
       .isInstanceOf(IllegalArgumentException.class)
-      .hasMessage(Constant.PT_61);
+      .hasMessage(Message.PT_36);
   }
 
   @Test
   void should_ThrowException_When_EmployeeNotFoundInApprove() {
     // Given
-    var request = new ApproveRequest("EMP-001", "F-001", "C-001", true);
+    var request = new ApproveRequest("C-001", "F-001", true);
     var entity = createMockEntity();
     when(entity.getStatus()).thenReturn(new FormProcessingStatus(ProcessingStatus.PENDING_FOR_APPROVAL,
       ProcessingStatus.PROCESSING, ProcessingStatus.PROCESSING, ProcessingStatus.PROCESSING));
 
-    when(ifRepo.findById_FormCodeAndId_FormNumber("C-001", "F-001")).thenReturn(Optional.of(entity));
+    when(ifRepo.findById(new InstallationFormId("C-001", "F-001"))).thenReturn(Optional.of(entity));
     when(empSrv.isEmployeeExisting("EMP-001"))
       .thenReturn(new WrapperApiResponse(200, "OK", "false", LocalDateTime.now()));
 
     // When & Then
     assertThatThrownBy(() -> service.approveAndAssignInstallationForm(request))
       .isInstanceOf(IllegalArgumentException.class)
-      .hasMessage(Constant.PT_60);
+      .hasMessage(Message.PT_35);
   }
 
   @Test
   void should_GetByFormCodeAndNumber_When_Exists() {
     // Given
     var entity = createMockEntity();
-    when(ifRepo.findById_FormCodeAndId_FormNumber("C-001", "F-001")).thenReturn(Optional.of(entity));
+    when(ifRepo.findById(new InstallationFormId("C-001", "F-001"))).thenReturn(Optional.of(entity));
     when(empSrv.getEmployeeNameById(any())).thenReturn(new WrapperApiResponse(200, "OK", "Staff", LocalDateTime.now()));
 
     // When
@@ -489,10 +463,10 @@ class InstallationFormServiceImplTest {
   @Test
   void should_ThrowException_When_NotFoundInGetByCodeAndNumber() {
     // When & Then
-    when(ifRepo.findById_FormCodeAndId_FormNumber("C-001", "F-001")).thenReturn(Optional.empty());
+    when(ifRepo.findById(new InstallationFormId("C-001", "F-001"))).thenReturn(Optional.empty());
     assertThatThrownBy(() -> service.getByFormCodeAndFormNumber("C-001", "F-001"))
       .isInstanceOf(IllegalArgumentException.class)
-      .hasMessage(Constant.PT_61);
+      .hasMessage(Message.PT_36);
   }
 
   // Helper methods
@@ -500,7 +474,7 @@ class InstallationFormServiceImplTest {
     return new NewOrderRequest(
       "F-001", "NUM-001", "Customer Name", "123 Address", "123456789012", "2000-01-01", "Hanoi",
       "0912345678", "TAX-001", "BANK-001", "Hanoi", UsageTarget.COMMERCIAL, CustomerType.COMPANY,
-      "2024-01-01", "2024-01-05", 4, 1, new ArrayList<>(), "NET-001", "EMP-001", "METER-001");
+      "2024-01-01", "2024-01-05", 4, 1, new ArrayList<>(), "NET-001", "METER-001");
   }
 
   private @NonNull InstallationForm createSavedInstallationForm(@NonNull NewOrderRequest request) {
@@ -508,12 +482,12 @@ class InstallationFormServiceImplTest {
     when(form.getFormNumber()).thenReturn(request.formNumber());
     when(form.getCustomerName()).thenReturn(request.customerName());
     when(form.getFormCode()).thenReturn(request.formCode());
-    when(form.getCreatedBy()).thenReturn(request.createdBy());
+    when(form.getCreatedBy()).thenReturn(USER_ID);
     when(form.getCreatedAt()).thenReturn(LocalDateTime.now());
     return form;
   }
 
-  private InstallationForm createMockEntity() {
+  private @NonNull InstallationForm createMockEntity() {
     var entity = mock(InstallationForm.class);
     when(entity.getFormCode()).thenReturn("FC01");
     when(entity.getFormNumber()).thenReturn("FN01");
@@ -523,6 +497,8 @@ class InstallationFormServiceImplTest {
     when(entity.getScheduleSurveyAt()).thenReturn(LocalDate.now());
     when(entity.getCreatedAt()).thenReturn(LocalDateTime.now());
     when(entity.getCreatedBy()).thenReturn("EMP01");
+    when(entity.getHandoverBy()).thenReturn("EMP02");
+    when(entity.getConstructedBy()).thenReturn("EMP03");
     var status = new FormProcessingStatus();
     status.setRegistration(ProcessingStatus.PROCESSING);
     when(entity.getStatus()).thenReturn(status);

@@ -1,6 +1,6 @@
 package com.capstone.auth.infrastructure.service;
 
-import com.capstone.auth.infrastructure.config.FeignMultipartConfig;
+import com.capstone.common.config.feign.FeignMultipartConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;

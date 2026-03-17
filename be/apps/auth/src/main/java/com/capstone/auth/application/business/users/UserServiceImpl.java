@@ -1,20 +1,19 @@
 package com.capstone.auth.application.business.users;
 
 import com.capstone.auth.application.business.dto.UserDTO;
-import com.capstone.auth.application.dto.request.FilterUsersRequest;
+import com.capstone.auth.application.business.pages.BusinessPageService;
+import com.capstone.auth.application.dto.request.users.FilterUsersRequest;
+import com.capstone.auth.application.dto.request.users.UpdateRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
+import com.capstone.auth.infrastructure.persistence.*;
 import com.capstone.common.exception.ExistingException;
-import com.capstone.auth.application.exception.NotExistingException;
+import com.capstone.common.exception.NotExistingException;
 import com.capstone.auth.domain.model.EmployeeJob;
 import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.domain.model.Roles;
 import com.capstone.auth.domain.model.Users;
 import com.capstone.auth.domain.model.utils.EmployeeJobId;
-import com.capstone.auth.infrastructure.persistence.BusinessPagesOfEmployeeRepository;
-import com.capstone.auth.infrastructure.persistence.EmployeeJobRepository;
-import com.capstone.auth.infrastructure.persistence.ProfileRepository;
-import com.capstone.auth.infrastructure.persistence.UserRepository;
-import com.capstone.auth.infrastructure.utils.Constant;
+import com.capstone.auth.infrastructure.utils.Message;
 import com.capstone.auth.infrastructure.service.NetworkService;
 import com.capstone.auth.infrastructure.service.OrganizationService;
 import com.capstone.common.annotation.AppLog;
@@ -28,14 +27,12 @@ import org.slf4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
+import java.util.Set;
 
 @AppLog
 @Service
@@ -43,12 +40,14 @@ import java.util.concurrent.CompletableFuture;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserServiceImpl implements UserService {
   UserRepository repo;
-  PasswordEncoder encoder;
   BusinessPagesOfEmployeeRepository bpRepo;
   ProfileRepository profileRepo;
   EmployeeJobRepository employeeJobRepo;
   NetworkService netWorkService;
   OrganizationService organizationService;
+  BusinessPageService bpService;
+  IndividualNotificationRepository indRepo;
+  RoleRepository roleRepo;
 
   @NonFinal
   Logger log;
@@ -90,20 +89,10 @@ public class UserServiceImpl implements UserService {
     });
   }
 
-  @Async("passwordEncoderExecutor")
-  public CompletableFuture<String> hashPassword(String password) {
-    return CompletableFuture.completedFuture(encoder.encode(password));
-  }
-
   @Override
   @Transactional(rollbackFor = Exception.class)
   public void updatePassword(String email, @NonNull String password, String newPassword) {
-    var obj = getUsersByEmail(email);
-    // Note: Local password verification is currently skipped because Users entity
-    // does not store passwords (it's managed by Keycloak).
-    // If local verification/storage is needed, re-add the password field to the Users entity.
-    log.info("Local password update for {} - Skipping verification (managed by Keycloak)", email);
-    updateUser(obj, newPassword);
+    throw new IllegalArgumentException("Password managed by Keycloak");
   }
 
   @Override
@@ -141,9 +130,7 @@ public class UserServiceImpl implements UserService {
   @Override
   public UserDTO getUserById(String id) {
     log.info("Getting user by id: {}", id);
-    var user = repo
-      .findById(id)
-      .orElseThrow(() -> new NotExistingException("User with id does not exist"));
+    var user = getById(id);
     log.info("User found: {}", user);
     return returnUserDTO(user);
   }
@@ -152,8 +139,7 @@ public class UserServiceImpl implements UserService {
   @Transactional(rollbackFor = Exception.class)
   public UserDTO updateUsername(String id, String username) {
     log.info("Saving user: {}", username);
-    var currentUser = repo.findById(id)
-      .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
+    var currentUser = getById(id);
 
     currentUser.setUsername(username);
     repo.save(currentUser);
@@ -190,29 +176,22 @@ public class UserServiceImpl implements UserService {
       usersList = repo.findAll(pageable);
     }
 
-    var content = usersList.getContent().stream().map(c -> new EmployeeResponse(
-      c.getUserId(),
-      c.getUsername(),
-      c.getEmail())).toList();
-    return new PageImpl<>(
-      content,
-      pageable,
-      content.size());
-  }
-
-  private @NonNull Users getUsersByEmail(String email) {
-    var obj = repo.findByEmail(email);
-    if (obj.isEmpty()) {
-      throw new NotExistingException(Constant.SE_02);
-    }
-    log.info("Find user by email: {}", obj);
-    return obj.get();
-  }
-
-  private void updateUser(@NonNull Users obj, String password) {
-    // obj.setPassword(encoder.encode(password));
-    // repo.save(obj);
-    // log.info("Password reset successfully");
+    var content = usersList.getContent().stream().map(c -> {
+      var profile = profileRepo.findById(c.getUserId());
+      if (profile.isEmpty()) {
+        throw new InternalError("Hồ sơ người dùng không tồn tại");
+      }
+      return new EmployeeResponse(
+        c.getUserId(),
+        c.getUsername(),
+        profile.get().getFullname(),
+        null,
+        null,
+        null,
+        c.getEmail()
+      );
+    }).toList();
+    return new PageImpl<>(content, pageable, content.size());
   }
 
   @Override
@@ -220,6 +199,101 @@ public class UserServiceImpl implements UserService {
     log.info("Getting user by email: {}", email);
     var user = getUsersByEmail(email);
     return returnUserDTO(user);
+  }
+
+  @Override
+  public boolean isJobAssigned(String jobId) {
+    log.info("Checking if job is assigned to any employee: {}", jobId);
+    return employeeJobRepo.existsByIdJobId(jobId);
+  }
+
+  @Override
+  public EmployeeResponse updateEmployee(String id, @NonNull UpdateRequest request) {
+    var user = getById(id);
+    var profile = profileRepo
+      .findByUsersUsername(user.getUsername())
+      .orElseThrow(() -> new NotExistingException("Không tìm thấy hồ sơ người dùng với id " + id));
+
+    if (request.name() != null && !request.name().isBlank()) {
+      profile.setFullname(request.name());
+    }
+    if (request.phone() != null && !request.phone().isBlank()) {
+      profile.setPhoneNumber(request.phone());
+    }
+    if (request.isActive() != null) {
+      user.setIsEnabled(request.isActive());
+    }
+    if (request.departmentId() != null && !request.departmentId().isBlank()) {
+      var status = organizationService.checkDepartmentExistence(request.departmentId());
+      if (!status) {
+        throw new IllegalArgumentException("Phòng ban này không tồn tại: " + request.departmentId());
+      }
+      user.setDepartmentId(request.departmentId());
+    }
+    if (request.networkId() != null && !request.networkId().isBlank()) {
+      var status = netWorkService.checkExistence(request.networkId());
+      if (!status) {
+        throw new IllegalArgumentException("Chi nhánh cấp nước này không tồn tại: " + request.networkId());
+      }
+      user.setWaterSupplyNetworkId(request.networkId());
+    }
+
+    return new EmployeeResponse(
+      user.getUserId(),
+      user.getUsername(),
+      profile.getFullname(),
+      organizationService.getDepartmentName(request.departmentId()),
+      netWorkService.getNameById(request.networkId()),
+      bpService.getPagesByEmployeeId(user.getUserId()).toString(),
+      user.getEmail()
+    );
+  }
+
+  @Override
+  public EmployeeResponse deleteEmployee(String id) {
+    log.info("Delete employee: {}", id);
+    var emp = getById(id);
+    var profile = profileRepo.findById(id)
+      .orElseThrow(() -> new NotExistingException("Không tìm thấy hồ sơ người dùng với id " + id));
+
+    emp.setIsEnabled(false);
+    indRepo.deleteByUserId(id);
+    bpRepo.deleteByUsers(emp);
+
+    var rolesList = roleRepo.findByUsers(Set.of(emp));
+    if (rolesList != null && !rolesList.isEmpty()) {
+      var role = rolesList.getFirst();
+      role.getUsers().removeIf(u -> u
+        .getUserId()
+        .equals(emp.getUserId())
+      );
+      roleRepo.save(role);
+    }
+
+    repo.save(emp);
+
+    return new EmployeeResponse(
+      emp.getUserId(),
+      emp.getUsername(),
+      profile.getFullname(),
+      organizationService.getDepartmentName(emp.getDepartmentId()),
+      netWorkService.getNameById(emp.getWaterSupplyNetworkId()),
+      bpService.getPagesByEmployeeId(emp.getUserId()).toString(),
+      emp.getEmail()
+    );
+  }
+
+  @Override
+  public String getRoleOfEmployee(String id) {
+    var user = getById(id);
+    return roleRepo.findByUsers(Set.of(user))
+      .getFirst().getName().toString();
+  }
+
+  private Users getById(String id) {
+    return repo
+      .findById(id)
+      .orElseThrow(() -> new NotExistingException(Message.SE_03 + ": " + id));
   }
 
   private @NonNull UserDTO returnUserDTO(@NonNull Users currentUser) {
@@ -244,21 +318,36 @@ public class UserServiceImpl implements UserService {
   private void validateNewEmployeeInformation(String email, String phone, String networkId, String departmentId, List<String> jobIds) {
     var obj = repo.findByEmail(email);
     if (obj.isPresent()) {
-      throw new ExistingException(Constant.SE_01);
+      throw new ExistingException(Message.SE_01);
     }
     if (profileRepo.existsByPhoneNumber(phone)) {
-      throw new ExistingException(Constant.SE_09);
+      throw new ExistingException(Message.SE_08);
     }
     if (!netWorkService.checkExistence(networkId)) {
-      throw new NotExistingException(Constant.SE_10);
+      throw new NotExistingException(Message.SE_09);
     }
     if (!organizationService.checkDepartmentExistence(departmentId)) {
-      throw new NotExistingException(Constant.SE_11);
+      throw new NotExistingException(Message.SE_10);
     }
     var invalidJobs = jobIds.stream()
       .filter(jid -> !organizationService.checkJobExistence(jid))
       .toList();
     if (!invalidJobs.isEmpty())
       throw new NotExistingException("Jobs not exist: " + invalidJobs);
+  }
+
+  private @NonNull Users getUsersByEmail(String email) {
+    var obj = repo.findByEmail(email);
+    if (obj.isEmpty()) {
+      throw new NotExistingException(Message.SE_02);
+    }
+    log.info("Find user by email: {}", obj);
+    return obj.get();
+  }
+
+  private void updateUser(@NonNull Users obj, String password) {
+    // obj.setPassword(encoder.encode(password));
+    // repo.save(obj);
+    // log.info("Password reset successfully");
   }
 }

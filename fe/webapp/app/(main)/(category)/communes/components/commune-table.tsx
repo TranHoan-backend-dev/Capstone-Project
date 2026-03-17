@@ -3,40 +3,30 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Tooltip, Button } from "@heroui/react";
 import { DeleteIcon, EditIcon } from "@/config/chip-and-icon";
-import { CommuneItem } from "@/types";
+import { CommuneItem, CommuneResponse, CommuneTableProps } from "@/types";
 import { COMMUNE_COLUMN } from "@/config/table-columns";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-
-interface Props {
-  keyword: string;
-  reloadKey: number;
-  onEdit: (item: CommuneItem) => void;
-  onDeleted: () => void;
-}
-
-interface CommuneResponse {
-  communeId: string;
-  name: string;
-  type: string;
-}
+import { CallToast } from "@/components/ui/CallToast";
+import { authFetch } from "@/utils/authFetch";
+import { ConfirmDialog } from "@/components/ui/modal/ConfirmDialog";
 
 const typeLabel: Record<string, string> = {
-  URBAN_WARD: "Phường (Đô thị)",
-  RURAL_COMMUNE: "Xã (Nông thôn)",
+  URBAN_WARD: "Phường",
+  RURAL_COMMUNE: "Xã",
 };
 
 export const CommuneTable = ({
-  keyword,
+  filter,
   reloadKey,
   onEdit,
   onDeleted,
-}: Props) => {
+}: CommuneTableProps) => {
   const [data, setData] = useState<CommuneItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const [editingItem, setEditingItem] = useState<CommuneItem | null>(null);
-  const [openForm, setOpenForm] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [sort, setSort] = useState<{
     field: string;
     direction: "asc" | "desc";
@@ -59,12 +49,15 @@ export const CommuneTable = ({
           sort: `${sort.field},${sort.direction}`,
         });
 
-        const trimmedKeyword = keyword.trim();
-        if (trimmedKeyword) {
-          params.append("keyword", trimmedKeyword);
+        if (filter.name) {
+          params.append("search", filter.name);
         }
 
-        const res = await fetch(
+        if (filter.type) {
+          params.append("type", filter.type);
+        }
+
+        const res = await authFetch(
           `/api/construction/communes?${params.toString()}`,
         );
 
@@ -73,11 +66,17 @@ export const CommuneTable = ({
           return;
         }
 
-        const json = await res.json();
-        const pageData = json?.data;
+        const pageData = await res.json();
         const items = pageData?.content ?? [];
-        setTotalItems(pageData?.totalElements ?? 0);
-        setTotalPages(pageData?.totalPages ?? 1);
+        const totalElements = pageData?.totalElements ?? 0;
+        const totalPagesApi = pageData?.totalPages ?? 1;
+
+        if (page > totalPagesApi && totalPagesApi > 0) {
+          setPage(totalPagesApi);
+          return;
+        }
+        setTotalItems(totalElements);
+        setTotalPages(totalPagesApi);
 
         const mapped = items.map((item: CommuneResponse, index: number) => ({
           id: item.communeId,
@@ -96,7 +95,7 @@ export const CommuneTable = ({
     };
 
     fetchData();
-  }, [page, keyword, reloadKey, sort]);
+  }, [page, filter, reloadKey, sort]);
 
   const handleSortChange = (columnKey: string) => {
     setPage(1);
@@ -112,9 +111,40 @@ export const CommuneTable = ({
     });
   };
 
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return;
+
+    try {
+      setDeleteLoading(true);
+
+      const res = await authFetch(`/api/construction/communes/${deleteId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Access Denied");
+
+      CallToast({
+        title: "Thành công",
+        message: "Xóa phường/xã thành công",
+        color: "success",
+      });
+
+      setDeleteId(null);
+      onDeleted();
+    } catch (e: any) {
+      CallToast({
+        title: "Lỗi",
+        message: e.message || "Có lỗi xảy ra",
+        color: "danger",
+      });
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
   useEffect(() => {
     setPage(1);
-  }, [keyword]);
+  }, [filter]);
 
   const actionItems = useMemo(
     () => [
@@ -132,24 +162,12 @@ export const CommuneTable = ({
         content: "Xóa",
         icon: DeleteIcon,
         className: "text-red-500 hover:bg-red-50",
-        onClick: async (id: string) => {
-          if (!confirm("Bạn có chắc muốn xóa phường/xã này?")) return;
-
-          try {
-            const res = await fetch(`/api/construction/communes/${id}`, {
-              method: "DELETE",
-            });
-
-            if (!res.ok) throw new Error("Delete failed");
-
-            onDeleted();
-          } catch (e) {
-            console.error(e);
-          }
+        onClick: (id: string) => {
+          setDeleteId(id);
         },
       },
     ],
-    [data, onEdit, onDeleted],
+    [data, onEdit],
   );
 
   const renderCell = (item: CommuneItem, columnKey: string) => {
@@ -216,10 +234,19 @@ export const CommuneTable = ({
           total: totalPages,
           page: page,
           onChange: setPage,
-          summary: `${totalItems}`,
+          summary: `${data.length}`,
         }}
-        sort={sort}
         onSortChange={handleSortChange}
+      />
+      <ConfirmDialog
+        isOpen={!!deleteId}
+        title="Xác nhận xoá"
+        message="Bạn có chắc muốn xoá phường/xã này không?"
+        confirmText="Xoá"
+        confirmColor="danger"
+        isLoading={deleteLoading}
+        onClose={() => setDeleteId(null)}
+        onConfirm={handleConfirmDelete}
       />
     </>
   );

@@ -1,9 +1,10 @@
 package com.capstone.organization.model;
 
 import com.capstone.common.utils.SharedConstant;
+import com.capstone.common.utils.SharedMessage;
 import jakarta.persistence.*;
 
-import com.capstone.organization.utils.Constant;
+import com.capstone.organization.utils.Message;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.jspecify.annotations.NonNull;
@@ -30,19 +31,19 @@ public class Department {
   String phoneNumber;
 
   public void setDepartmentId(String departmentId) {
-    requireNonNullAndNotEmpty(departmentId, Constant.ORG_04);
+    requireNonNullAndNotEmpty(departmentId, SharedMessage.MES_05);
     this.departmentId = departmentId;
   }
 
   public void setName(String name) {
-    requireNonNullAndNotEmpty(name, Constant.ORG_04);
+    requireNonNullAndNotEmpty(name, SharedMessage.MES_05);
     this.name = name;
   }
 
   public void setPhoneNumber(String phoneNumber) {
-    requireNonNullAndNotEmpty(phoneNumber, Constant.ORG_08);
+    requireNonNullAndNotEmpty(phoneNumber, SharedMessage.MES_03);
     if (!phoneNumber.matches(SharedConstant.PHONE_PATTERN)) {
-      throw new IllegalArgumentException(Constant.ORG_10);
+      throw new IllegalArgumentException(SharedMessage.MES_04);
     }
     this.phoneNumber = phoneNumber;
   }

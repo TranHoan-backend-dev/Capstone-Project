@@ -1,7 +1,7 @@
 package com.capstone.auth.application.business.profile;
 
 import com.capstone.auth.application.business.dto.ProfileDTO;
-import com.capstone.auth.application.exception.NotExistingException;
+import com.capstone.common.exception.NotExistingException;
 import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.infrastructure.persistence.ProfileRepository;
 import com.capstone.common.annotation.AppLog;

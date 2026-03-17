@@ -1,16 +1,17 @@
 spring:
   application:
     name: common
-  profiles:
-    active: dev
-#keycloak:
-#  server-url:
-#  issuer-uri: ${keycloak.server-url}/realms/${keycloak.realms}
-#  aud:
-#  realms:
-#  username:
-#  password:
-#  token-uri: ${keycloak.server-url}/realms/${keycloak.realms}/protocol/openid-connect/token
-#  client-id:
-#  client-secret:
-#  scope:
+#  profiles:
+#    active: dev
+keycloak:
+  server-url: http://${KEYCLOAK_HOST}:8080
+  issuer-uri: ${keycloak.server-url}/realms/${keycloak.realms}
+  aud:
+    - ${KEYCLOAK_AUD}
+  realms: ${KEYCLOAK_REALMS}
+  username: ${KEYCLOAK_USERNAME}
+  password: ${KEYCLOAK_PASSWORD}
+  token-uri: ${keycloak.server-url}/realms/${keycloak.realms}/protocol/openid-connect/token
+  client-id: ${KEYCLOAK_CLIENT_ID}
+  client-secret: ${KEYCLOAK_CLIENT_SECRET}
+  scope: openid profile email

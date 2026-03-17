@@ -19,5 +19,5 @@ public interface LateralService {
                                                String networkId,
                                                Boolean networkAssigned);
 
-  Boolean checkLateralBelongedToNetwork(String id);
+  Boolean checkAnyLateralsBelongedToNetwork(String id);
 }
