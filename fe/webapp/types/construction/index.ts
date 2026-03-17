@@ -5,3 +5,4 @@ export * from "./commune.type";
 export * from "./hamlet.type";
 export * from "./road.type";
 export * from "./job.type";
+export * from "./neighborhood-unit.type";
