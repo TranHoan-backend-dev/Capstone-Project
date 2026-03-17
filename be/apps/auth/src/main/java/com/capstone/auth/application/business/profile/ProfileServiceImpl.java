@@ -66,6 +66,11 @@ public class ProfileServiceImpl implements ProfileService {
     return repo.findAvatarUrlByProfileId(id);
   }
 
+  @Override
+  public boolean existsByPhone(String phone) {
+    return repo.existsByPhoneNumber(phone);
+  }
+
   private @NonNull ProfileDTO convertToResponse(@NonNull Optional<Profile> profile) {
     if (profile.isEmpty()) {
       throw new NotExistingException("Profile does not exist");

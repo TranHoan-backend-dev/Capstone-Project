@@ -10,7 +10,7 @@ export type AccountCreationContext = {
   password: string,
 }
 
-export type PasswordResetContext = {
+export type OtpContext = {
   name: string,
   otp: string,
 }

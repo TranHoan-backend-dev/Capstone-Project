@@ -3,29 +3,30 @@ package com.capstone.auth.application.dto.request.users;
 import com.capstone.auth.infrastructure.utils.Message;
 import com.capstone.common.utils.SharedConstant;
 import com.capstone.common.utils.SharedMessage;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 
 import java.util.List;
 
 public record NewUserRequest(
-  @NotBlank
-  @NotEmpty
+  @NotBlank(message = SharedMessage.MES_18)
+  @NotEmpty(message = SharedMessage.MES_18)
   String username,
 
-  @NotBlank
-  @NotEmpty
+  @NotBlank(message = Message.PT_16)
+  @NotEmpty(message = Message.PT_16)
   @Pattern(regexp = SharedConstant.PASSWORD_PATTERN, message = Message.PT_01)
   String password,
 
   @NotBlank
   @NotEmpty
-  String fullName,
+  String firstName,
 
   @NotBlank
   @NotEmpty
+  String lastName,
+
+  @NotBlank(message = SharedMessage.MES_02)
+  @NotEmpty(message = SharedMessage.MES_02)
   @Email(message = SharedMessage.MES_01)
   String email,
 
@@ -34,18 +35,19 @@ public record NewUserRequest(
   @Pattern(regexp = SharedConstant.PHONE_PATTERN, message = SharedMessage.MES_04)
   String phoneNumber,
 
-  @NotBlank
-  @NotEmpty
+  @NotBlank(message = Message.PT_13)
+  @NotEmpty(message = Message.PT_13)
   String role,
 
+  @NotNull(message = Message.PT_12)
   List<String> jobIds,
 
-  @NotBlank
-  @NotEmpty
+  @NotBlank(message = Message.PT_11)
+  @NotEmpty(message = Message.PT_11)
   String departmentId,
 
-  @NotBlank
-  @NotEmpty
+  @NotBlank(message = Message.PT_10)
+  @NotEmpty(message = Message.PT_10)
   String waterSupplyNetworkId
 ) {
 }

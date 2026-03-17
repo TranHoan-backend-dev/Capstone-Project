@@ -1,4 +1,4 @@
-@uri = http://localhost:8000
+@uri = http://localhost:9003/api/v1
 @keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
 @client_secret=
 
@@ -26,11 +26,11 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "hoantxhe",
-  "password": "",
+  "username": "hoantxhe2",
+  "password": "Hoan2709@",
   "fullName": "Trần Xuân Hoàn",
-  "email": "",
-  "phoneNumber": "",
+  "email": "hoantxhe180030@fpt.edu.vn",
+  "phoneNumber": "0912345678",
   "role": "ORDER_RECEIVING_STAFF",
   "jobIds": [
     "66332255-7744-4455-8844-551122336699",
@@ -38,7 +38,7 @@ Accept: application/json
     "44115599-6633-4411-2288-112233445566"
   ],
   "departmentId": "29f12d88-7517-482a-9f44-8d9124443183",
-  "waterSupplyNetworkId": "fe7b6c2e-3401-4cb7-8b07-6a65de654094"
+  "waterSupplyNetworkId": "550e8400-e29b-41d4-a716-446655440001"
 }
 
 ### wrong email format

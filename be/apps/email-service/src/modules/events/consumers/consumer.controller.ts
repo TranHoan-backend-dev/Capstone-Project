@@ -1,7 +1,13 @@
 import { Controller, Logger } from '@nestjs/common';
 import { EventPattern, Payload } from '@nestjs/microservices';
 import { MailServiceImpl } from '../../../service/mail.service';
-import {AccountCreationContext, DeleteAccount, MailInformation, UpdateAccount} from '../../../infrastructure/model/mail.entity';
+import {
+  AccountCreationContext,
+  DeleteAccount,
+  MailInformation,
+  OtpContext,
+  UpdateAccount
+} from '../../../infrastructure/model/mail.entity';
 
 @Controller()
 export class ConsumerController {
@@ -74,6 +80,31 @@ export class ConsumerController {
     const context: UpdateAccount = {
       fullName: data.fullName,
       departmentName: data.departmentName,
+    }
+
+    Logger.log('Info: ', info);
+    Logger.log('Context: ', context);
+
+    await this.service.sendNormalEmail(info, context);
+
+    Logger.log('Email sent successfully');
+  }
+
+  @EventPattern('verify-otp')
+  async sendOtpEvent(@Payload() data: any) {
+    Logger.log('Otp event request received');
+    Logger.log(data);
+
+    if (!data.name || !data.otp) {
+      Logger.log('Fields cannot be missing');
+      return;
+    }
+
+    const info = this.createMailTemplate(data)
+
+    const context: OtpContext = {
+      name: data.name,
+      otp: data.otp,
     }
 
     Logger.log('Info: ', info);
