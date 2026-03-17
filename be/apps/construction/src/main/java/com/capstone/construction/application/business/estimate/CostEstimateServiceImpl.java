@@ -47,15 +47,21 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   @Transactional(rollbackFor = Exception.class)
   public CostEstimateResponse createEstimate(@NonNull CreateRequest request) {
     log.info("Creating new cost estimate for customer: {}", request.customerName());
-    var installationForm = ifRepo.findById(new InstallationFormId(request.formNumber(), request.formCode()))
+    var installationForm = ifRepo.findById(new InstallationFormId(request.formCode(), request.formNumber()))
       .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_60, request.formCode(), request.formNumber())));
+
+    var est = eRepo.existsByInstallationForm(installationForm);
+    if (est) {
+      throw new IllegalArgumentException(Message.PT_29);
+    }
 
     var estimate = CostEstimate.create(builder -> builder
       .customerName(request.customerName())
       .address(request.address())
-      .registrationAt(request.registrationAt())
+      .registrationAt(LocalDate.from(request.registrationAt()))
       .createBy(request.createBy())
-      .installationFormId(installationForm)
+      .installationForm(installationForm)
+      .overallWaterMeterId(request.overallWaterMeterId())
     );
 
     var saved = eRepo.save(estimate);
@@ -63,7 +69,6 @@ public class CostEstimateServiceImpl implements CostEstimateService {
     // cap nhat trang thai cua installation form
     var status = installationForm.getStatus();
     status.setEstimate(ProcessingStatus.PROCESSING);
-    System.out.println(installationForm);
     ifRepo.save(installationForm);
 
     return mapToResponse(saved);
