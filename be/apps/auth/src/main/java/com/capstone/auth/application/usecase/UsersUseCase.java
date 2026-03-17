@@ -45,6 +45,14 @@ public class UsersUseCase {
   @Value("${sending_mail.update_account.template}")
   String UPDATE_TEMPLATE;
 
+  @Value("${rabbit-mq-config.update_account_routing_key}")
+  @NonFinal
+  String UPDATE_ROUTING_KEY;
+
+  @Value("${rabbit-mq-config.delete_account_routing_key}")
+  @NonFinal
+  String DELETE_ROUTING_KEY;
+
   public Page<EmployeeResponse> getPaginatedListOfEmployees(Pageable pageable, FilterUsersRequest request) {
     return userService.getAllEmployeesWithStatus(pageable, request);
   }
@@ -67,21 +75,21 @@ public class UsersUseCase {
 
   public EmployeeResponse updateEmployee(String id, UpdateRequest request) {
     var response = userService.updateEmployee(id, request);
-    template.sendMessage(new AccountUpdateEvent(
+    template.sendMessage(UPDATE_ROUTING_KEY, new AccountUpdateEvent(
+      response.email(),
       response.fullName(),
       response.departmentName(),
-      UPDATE_SUBJECT, UPDATE_TEMPLATE
-    ));
+      UPDATE_SUBJECT, UPDATE_TEMPLATE));
     return response;
   }
 
   public void deleteEmployee(String id) {
     var response = userService.deleteEmployee(id);
-    template.sendMessage(new AccountDeleteEvent(
+    template.sendMessage(DELETE_ROUTING_KEY, new AccountDeleteEvent(
+      response.email(),
       response.fullName(),
       response.departmentName(),
       response.email(),
-      DELETE_SUBJECT, DELETE_TEMPLATE
-    ));
+      DELETE_SUBJECT, DELETE_TEMPLATE));
   }
 }

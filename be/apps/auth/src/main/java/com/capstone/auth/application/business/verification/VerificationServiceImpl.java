@@ -1,7 +1,6 @@
 package com.capstone.auth.application.business.verification;
 
 import com.capstone.auth.application.business.users.UserService;
-import com.capstone.auth.application.event.producer.MessageProducer;
 import com.capstone.auth.domain.model.utils.VerificationCode;
 import com.capstone.auth.infrastructure.persistence.VerificationCodeRepository;
 import com.capstone.common.annotation.AppLog;
@@ -10,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,21 +20,12 @@ import java.util.Random;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class VerificationServiceImpl implements VerificationService {
   VerificationCodeRepository repo;
-  MessageProducer producer;
   UserService uSrv;
   @NonFinal
   Logger log;
 
-  @NonFinal
-  @Value("${sending_mail.otp_verification.subject}")
-  String SUBJECT;
-
-  @NonFinal
-  @Value("${sending_mail.otp_verification.template}")
-  String TEMPLATE;
-
   @Override
-  public void sendOtp(String email) {
+  public String createOtp(String email) {
     log.info("Sending OTP to email: {}", email);
 
     var verificationCode = repo.findByEmail(email).orElse(VerificationCode.builder()
@@ -76,12 +65,11 @@ public class VerificationServiceImpl implements VerificationService {
 
     repo.save(verificationCode);
 
-    // Send event
-    // producer.sendMessage(new OtpEvent(email, SUBJECT, TEMPLATE, otp));
     log.info("==================================================");
     log.info("OTP for {}: {}", email, otp);
     log.info("==================================================");
     log.info("OTP sent successfully to {}", email);
+    return otp;
   }
 
   @Override
@@ -109,10 +97,6 @@ public class VerificationServiceImpl implements VerificationService {
     if (!verifyOtp(email, otp)) {
       throw new IllegalArgumentException("Invalid OTP");
     }
-
-    // At this point, OTP is valid (checked by verifyOtp)
-    // Reset password
-    uSrv.resetPassword(email, newPassword);
 
     // Clear OTP after successful reset
     var verificationCode = repo.findByEmail(email).get(); // Safe get because verifyOtp checks existence

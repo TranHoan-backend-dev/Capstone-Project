@@ -15,4 +15,6 @@ public interface NeighborhoodUnitService {
   NeighborhoodUnitResponse getUnitById(String id);
 
   PageResponse<NeighborhoodUnitResponse> getAllUnits(Pageable pageable);
+
+  PageResponse<NeighborhoodUnitResponse> getAllUnits(Pageable pageable, String keyword, String communeId);
 }

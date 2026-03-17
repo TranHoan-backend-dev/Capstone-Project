@@ -29,4 +29,7 @@ public interface EmployeeService {
 
   @GetMapping("/role/{id}")
   WrapperApiResponse getRoleOfEmployeeById(@PathVariable String id);
+
+  @GetMapping("/significance/{id}")
+  WrapperApiResponse getElectronicSignificance(@PathVariable String id);
 }
