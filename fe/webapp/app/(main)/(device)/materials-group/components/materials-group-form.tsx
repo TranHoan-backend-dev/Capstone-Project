@@ -68,9 +68,16 @@ export const MaterialsGroupForm = ({
       });
       onSuccess();
     } catch (e: any) {
+      let message = e.message || "Có lỗi xảy ra";
+
+      if (message.includes("Material group already exists")) {
+        const name = message.split(":")[1]?.trim();
+        message = `Nhóm vật tư đã tồn tại: ${name}`;
+      }
+
       CallToast({
         title: "Lỗi",
-        message: e.message || "Có lỗi xảy ra",
+        message,
         color: "danger",
       });
     } finally {
