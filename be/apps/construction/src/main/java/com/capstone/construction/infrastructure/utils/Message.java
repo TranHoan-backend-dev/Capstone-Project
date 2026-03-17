@@ -29,7 +29,7 @@ public final class Message {
   public static final String PT_26 = "Người tạo không được để trống";
   public static final String PT_27 = "Id của đồng hồ nước không được để trống";
   public static final String PT_28 = "Nhân viên được giao nhiệm vụ phải là %s";
-  public static final String PT_29 = "Nhân viên đợ";
+  public static final String PT_29 = "";
   public static final String PT_30 = "Ngày cấp chứng minh nhân dân/Căn cước công dân không được để trống";
   public static final String PT_31 = "Mã số thuế không được để trống";
   public static final String PT_32 = "Đối tượng sử dụng không được để trống";
