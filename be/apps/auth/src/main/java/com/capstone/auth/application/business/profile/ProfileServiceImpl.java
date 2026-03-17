@@ -71,6 +71,11 @@ public class ProfileServiceImpl implements ProfileService {
     return repo.existsByPhoneNumber(phone);
   }
 
+  @Override
+  public String getFullName(String id) {
+    return repo.findFullNameByProfileId(id);
+  }
+
   private @NonNull ProfileDTO convertToResponse(@NonNull Optional<Profile> profile) {
     if (profile.isEmpty()) {
       throw new NotExistingException("Profile does not exist");

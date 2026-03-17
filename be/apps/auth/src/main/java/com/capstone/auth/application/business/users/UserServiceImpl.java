@@ -6,7 +6,6 @@ import com.capstone.auth.application.dto.request.users.FilterUsersRequest;
 import com.capstone.auth.application.dto.request.users.UpdateRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
 import com.capstone.auth.infrastructure.persistence.*;
-import com.capstone.common.exception.ExistingException;
 import com.capstone.common.exception.NotExistingException;
 import com.capstone.auth.domain.model.EmployeeJob;
 import com.capstone.auth.domain.model.Profile;

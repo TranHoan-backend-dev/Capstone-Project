@@ -3,10 +3,10 @@ import { EventPattern, Payload } from '@nestjs/microservices';
 import { MailServiceImpl } from '../../../service/mail.service';
 import {
   AccountCreationContext,
-  DeleteAccount,
+  DeleteAccountContext,
   MailInformation,
   OtpContext,
-  UpdateAccount
+  UpdateAccountContext, UpdatePasswordContext
 } from '../../../infrastructure/model/mail.entity';
 
 @Controller()
@@ -51,7 +51,7 @@ export class ConsumerController {
 
     const info = this.createMailTemplate(data)
 
-    const context: DeleteAccount = {
+    const context: DeleteAccountContext = {
       fullName: data.fullName,
       departmentName: data.departmentName,
       email: data.email
@@ -77,7 +77,7 @@ export class ConsumerController {
 
     const info = this.createMailTemplate(data)
 
-    const context: UpdateAccount = {
+    const context: UpdateAccountContext = {
       fullName: data.fullName,
       departmentName: data.departmentName,
     }
@@ -105,6 +105,30 @@ export class ConsumerController {
     const context: OtpContext = {
       name: data.name,
       otp: data.otp,
+    }
+
+    Logger.log('Info: ', info);
+    Logger.log('Context: ', context);
+
+    await this.service.sendNormalEmail(info, context);
+
+    Logger.log('Email sent successfully');
+  }
+
+  @EventPattern('update-password')
+  async updatePasswordEvent(@Payload() data: any) {
+    Logger.log('Update password event request received');
+    Logger.log(data);
+
+    if (!data.name || !data.otp) {
+      Logger.log('Fields cannot be missing');
+      return;
+    }
+
+    const info = this.createMailTemplate(data)
+
+    const context: UpdatePasswordContext = {
+      fullName: data.fullName,
     }
 
     Logger.log('Info: ', info);

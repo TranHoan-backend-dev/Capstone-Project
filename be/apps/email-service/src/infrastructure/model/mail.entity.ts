@@ -15,12 +15,17 @@ export type OtpContext = {
   otp: string,
 }
 
-export type DeleteAccount = {
+export type DeleteAccountContext = {
   fullName: string,
   departmentName: string,
   email: string
 }
-export type UpdateAccount = {
+
+export type UpdateAccountContext = {
   fullName: string,
   departmentName: string,
+}
+
+export type UpdatePasswordContext = {
+  fullName: string,
 }

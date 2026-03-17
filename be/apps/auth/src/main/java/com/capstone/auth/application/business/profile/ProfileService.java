@@ -15,4 +15,6 @@ public interface ProfileService {
   String getAvatar(String id);
 
   boolean existsByPhone(String phone);
+
+  String getFullName(String id);
 }

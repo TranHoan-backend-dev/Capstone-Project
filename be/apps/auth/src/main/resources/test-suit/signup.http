@@ -27,10 +27,10 @@ Accept: application/json
 
 {
   "username": "hoantxhe2",
-  "password": "Hoan2709@",
+  "password": "",
   "fullName": "Trần Xuân Hoàn",
-  "email": "hoantxhe180030@fpt.edu.vn",
-  "phoneNumber": "0912345678",
+  "email": "",
+  "phoneNumber": "",
   "role": "ORDER_RECEIVING_STAFF",
   "jobIds": [
     "66332255-7744-4455-8844-551122336699",

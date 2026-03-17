@@ -28,6 +28,7 @@ rabbit-mq-config:
   delete_account_routing_key: delete-account
   update_account_routing_key: update-account
   verify_otp_routing_key: verify-otp
+  update_password_routing_key: update-password
 management:
   health:
     rabbit:
@@ -81,3 +82,6 @@ sending_mail:
   update_account:
     subject: 'Cập nhật tài khoản của nhân viên'
     template: account-update
+  change_password:
+    subject: 'Cập nhật mật khẩu'
+    template: password-update

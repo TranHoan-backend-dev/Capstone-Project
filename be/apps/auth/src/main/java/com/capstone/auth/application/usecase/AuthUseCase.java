@@ -12,10 +12,12 @@ import com.capstone.auth.application.dto.request.keycloakparam.UserCreationParam
 import com.capstone.auth.application.dto.response.UserProfileResponse;
 import com.capstone.auth.application.event.producer.message.AccountCreationEvent;
 import com.capstone.auth.application.event.producer.MessageProducer;
+import com.capstone.auth.application.event.producer.message.UpdatePasswordEvent;
 import com.capstone.auth.application.exception.AccountBlockedException;
 import com.capstone.auth.infrastructure.service.NetworkService;
 import com.capstone.auth.infrastructure.service.OrganizationService;
 import com.capstone.auth.infrastructure.service.keycloak.KeycloakService;
+import com.capstone.common.exception.ExistingException;
 import com.capstone.common.exception.NotExistingException;
 
 import com.capstone.common.enumerate.RoleName;
@@ -50,13 +52,33 @@ public class AuthUseCase {
   NetworkService netWorkService;
   OrganizationService organizationService;
 
+  // <editor-fold> desc="creating new account"
   @NonFinal
   @Value("${sending_mail.account_creation.subject}")
-  String SUBJECT;
+  String CREATION_SUBJECT;
 
   @NonFinal
   @Value("${sending_mail.account_creation.template}")
-  String TEMPLATE;
+  String CREATION_TEMPLATE;
+
+  @Value("${rabbit-mq-config.routing_key}")
+  @NonFinal
+  String CREATED_ROUTING_KEY;
+  // </editor-fold>
+
+  // <editor-fold> desc="updating password"
+  @NonFinal
+  @Value("${sending_mail.change_password.subject}")
+  String CHANGE_PASSWORD_SUBJECT;
+
+  @NonFinal
+  @Value("${sending_mail.change_password.template}")
+  String CHANGE_PASSWORD_TEMPLATE;
+
+  @Value("${rabbit-mq-config.update_password_routing_key}")
+  @NonFinal
+  String UPDATE_PASSWORD_ROUTING_KEY;
+  // </editor-fold>
 
   @Value("${keycloak.realms}")
   @NonFinal
@@ -69,10 +91,6 @@ public class AuthUseCase {
   @Value("${keycloak.client-secret-admin}")
   @NonFinal
   String adminClientSecret;
-
-  @Value("${rabbit-mq-config.routing_key}")
-  @NonFinal
-  String ROUTING_KEY;
 
   public UserProfileResponse login(String userId, String email, String username) {
     var user = uSrv.getUserById(userId);
@@ -110,12 +128,16 @@ public class AuthUseCase {
       request.departmentId(), request.waterSupplyNetworkId(), fullName,
       request.phoneNumber());
 
-    template.sendMessage(ROUTING_KEY, new AccountCreationEvent(
-      request.email(), SUBJECT, TEMPLATE,
+    template.sendMessage(CREATED_ROUTING_KEY, new AccountCreationEvent(
+      request.email(), CREATION_SUBJECT, CREATION_TEMPLATE,
       fullName, request.username(), request.password()));
   }
 
   public void changePassword(String userId, String email, @NonNull String oldPassword, @NonNull String newPassword) {
+    if (!uSrv.checkExistence(email) && !uSrv.isUserExists(userId)) {
+      throw new IllegalArgumentException(Message.SE_03);
+    }
+
     if (oldPassword.equals(newPassword)) {
       throw new IllegalArgumentException(Message.SE_13);
     }
@@ -126,7 +148,10 @@ public class AuthUseCase {
     // Cập nhật mật khẩu mới trên Keycloak
     keycloakService.updatePasswordOnKeycloak(userId, newPassword);
 
-    // TODO: gửi mail cho người dùng
+    var fullName = pSrv.getFullName(userId);
+
+    template.sendMessage(UPDATE_PASSWORD_ROUTING_KEY, new UpdatePasswordEvent(
+      email, CHANGE_PASSWORD_SUBJECT, CHANGE_PASSWORD_TEMPLATE, fullName));
   }
 
   public boolean checkExistence(String value) {
@@ -208,7 +233,9 @@ public class AuthUseCase {
   }
 
   private void validateNewUserInformation(@NonNull NewUserRequest request) {
-    uSrv.getUserByEmail(request.email());
+    if (uSrv.checkExistence(request.email())) {
+      throw new ExistingException(Message.SE_01);
+    }
     if (pSrv.existsByPhone(request.phoneNumber())) {
       throw new IllegalArgumentException(Message.SE_08);
     }
