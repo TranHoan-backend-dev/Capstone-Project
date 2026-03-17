@@ -8,6 +8,7 @@ import { NeighborhoodUnitFilter, NeighborhoodUnitItem } from "@/types";
 import { NeighborhoodUnitForm } from "./components/neighborhood-unit-form";
 import { NeighborhoodUnitTable } from "./components/neighborhood-unit-table";
 import { Modal, ModalContent } from "@heroui/react";
+import { useEmployeeProfile } from "@/hooks/useEmployeeProfile";
 
 const NeighborhoodUnitPage = () => {
   const [filter, setFilter] = useState<NeighborhoodUnitFilter>({});
@@ -16,6 +17,8 @@ const NeighborhoodUnitPage = () => {
   const [editingItem, setEditingItem] = useState<NeighborhoodUnitItem | null>(
     null,
   );
+  const { profile, loading } = useEmployeeProfile();
+
   const handleReload = () => setReloadKey((prev) => prev + 1);
   const handleAddNew = () => {
     setEditingItem(null);
@@ -37,6 +40,21 @@ const NeighborhoodUnitPage = () => {
     handleCloseForm();
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
+  if (!profile) {
+    return (
+      <div className="text-center text-red-500 py-10">
+        Không thể tải thông tin người dùng
+      </div>
+    );
+  }
+  
   return (
     <>
       <FilterSection

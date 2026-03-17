@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Card, CardBody } from "@heroui/react";
+import { Card, CardBody, Spinner } from "@heroui/react";
 import CustomButton from "@/components/ui/custom/CustomButton";
 import CustomInput from "@/components/ui/custom/CustomInput";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
@@ -10,6 +10,7 @@ import { NeighborhoodUnitFormProps } from "@/types";
 import { CheckApprovalIcon } from "@/config/chip-and-icon";
 import { useCommune } from "@/hooks/useCommunes";
 import { authFetch } from "@/utils/authFetch";
+import { validateBranchName, validateSelectRequired } from "@/utils/validation";
 
 export const NeighborhoodUnitForm = ({
   initialData,
@@ -51,6 +52,15 @@ export const NeighborhoodUnitForm = ({
 
       const selectedCommuneId = Array.from(selectedCommune)[0];
 
+      const communeError = validateSelectRequired(selectedCommune, "Phường/xã");
+      if (communeError) {
+        CallToast({
+          title: "Lỗi",
+          message: communeError,
+          color: "danger",
+        });
+        return;
+      }
       const payload = {
         name: name.trim(),
         communeId: selectedCommuneId,
@@ -91,6 +101,14 @@ export const NeighborhoodUnitForm = ({
     }
   };
 
+  if (communeLoading && !communeOptions.length) {
+    return (
+      <div className="flex justify-center py-10">
+        <Spinner />
+      </div>
+    );
+  }
+
   return (
     <Card shadow="sm" className="rounded-2xl border border-divider bg-content1">
       <CardBody className="p-0">
@@ -112,6 +130,7 @@ export const NeighborhoodUnitForm = ({
               options={communeOptions}
               selectedKeys={selectedCommune}
               onSelectionChange={(keys) => setSelectedCommune(keys)}
+              isDisabled={communeLoading}
             />
           </div>
 

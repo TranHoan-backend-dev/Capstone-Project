@@ -21,7 +21,6 @@ export const FilterSection = ({
   const [selectedCommune, setSelectedCommune] = useState<Set<string>>(
     new Set(),
   );
-
   const { communeOptions } = useCommune();
 
   useEffect(() => {
