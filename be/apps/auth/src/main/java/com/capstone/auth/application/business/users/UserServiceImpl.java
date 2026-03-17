@@ -6,6 +6,7 @@ import com.capstone.auth.application.dto.request.users.FilterUsersRequest;
 import com.capstone.auth.application.dto.request.users.UpdateRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
 import com.capstone.auth.infrastructure.persistence.*;
+import com.capstone.common.enumerate.RoleName;
 import com.capstone.common.exception.NotExistingException;
 import com.capstone.auth.domain.model.EmployeeJob;
 import com.capstone.auth.domain.model.Profile;
@@ -32,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @AppLog
 @Service
@@ -279,6 +281,15 @@ public class UserServiceImpl implements UserService {
       .getFirst().getName().toString();
   }
 
+  @Override
+  public List<EmployeeResponse> getAllSurveyStaffs() {
+    log.info("Getting all survey staff");
+    var employees = repo.findByRoleNameIn(List.of(RoleName.SURVEY_STAFF));
+    return employees.stream()
+      .map(this::mapToEmployeeResponse)
+      .collect(Collectors.toList());
+  }
+
   private Users getById(String id) {
     return repo
       .findById(id)
@@ -311,5 +322,19 @@ public class UserServiceImpl implements UserService {
     }
     log.info("Find user by email: {}", obj);
     return obj.get();
+  }
+
+  private @NonNull EmployeeResponse mapToEmployeeResponse(@NonNull Users user) {
+    var profile = profileRepo.findById(user.getUserId())
+      .orElseThrow(() -> new NotExistingException(String.format(Message.SE_15, user.getUserId())));
+    return new EmployeeResponse(
+      user.getUserId(),
+      null,
+      profile.getFullname(),
+      null,
+      null,
+      null,
+      null
+    );
   }
 }
