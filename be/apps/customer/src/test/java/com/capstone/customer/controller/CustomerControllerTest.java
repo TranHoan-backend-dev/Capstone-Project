@@ -2,6 +2,7 @@ package com.capstone.customer.controller;
 
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.customer.dto.request.customer.CreateRequest;
+import com.capstone.customer.dto.request.customer.CustomerFilterRequest;
 import com.capstone.customer.dto.response.CustomerResponse;
 import com.capstone.customer.service.boundary.CustomerService;
 import org.junit.jupiter.api.BeforeEach;
@@ -130,17 +131,19 @@ class CustomerControllerTest {
   @DisplayName("should_ReturnOk_When_GetAllCustomersWithSearch_IsSuccessful")
   void should_ReturnOk_When_GetAllCustomersWithSearch_IsSuccessful() {
     Pageable pageable = PageRequest.of(0, 10);
-    String search = "test";
+    CustomerFilterRequest filter = new CustomerFilterRequest(
+      "test", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null
+    );
     Page<CustomerResponse> page = new PageImpl<>(List.of(customerResponse));
-    when(customerService.getAllCustomers(pageable, search)).thenReturn(page);
+    when(customerService.getAllCustomers(pageable, filter)).thenReturn(page);
 
-    ResponseEntity<WrapperApiResponse> response = customerController.getAllCustomers(pageable, search);
+    ResponseEntity<WrapperApiResponse> response = customerController.getAllCustomers(pageable, filter);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody().data()).isEqualTo(page);
     assertThat(response.getBody().message()).isEqualTo("Lấy danh sách khách hàng thành công");
 
-    verify(customerService).getAllCustomers(pageable, search);
+    verify(customerService).getAllCustomers(pageable, filter);
   }
 
   @Test

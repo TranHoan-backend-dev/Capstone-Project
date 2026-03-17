@@ -4,6 +4,7 @@ import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
 import com.capstone.customer.dto.request.customer.CreateRequest;
+import com.capstone.customer.dto.request.customer.CustomerFilterRequest;
 import com.capstone.customer.dto.response.CustomerResponse;
 import com.capstone.customer.service.boundary.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -89,15 +90,15 @@ public class CustomerController {
     return Utils.returnOkResponse("Lấy thông tin khách hàng thành công", response);
   }
 
-  @Operation(summary = "Lấy danh sách khách hàng", description = "Lấy danh sách khách hàng có hỗ trợ phân trang, sắp xếp và tìm kiếm theo tên, email, số điện thoại hoặc mã biểu mẫu.", responses = {
+  @Operation(summary = "Lấy danh sách khách hàng", description = "Lấy danh sách khách hàng có hỗ trợ phân trang, sắp xếp và tìm kiếm/lọc theo tất cả các trường.", responses = {
     @ApiResponse(responseCode = "200", description = "Lấy danh sách thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = CustomerResponse.class)))
   })
   @GetMapping
   public ResponseEntity<WrapperApiResponse> getAllCustomers(
     @PageableDefault @ParameterObject Pageable pageable,
-    @RequestParam(required = false) @Parameter(description = "Từ khóa tìm kiếm (tên, email, số điện thoại, mã biểu mẫu)") String search) {
-    log.info("REST request to get all customers with pagination: {} and search: {}", pageable, search);
-    Page<CustomerResponse> response = customerService.getAllCustomers(pageable, search);
+    @ParameterObject CustomerFilterRequest filter) {
+    log.info("REST request to get all customers with pagination: {} and filter: {}", pageable, filter);
+    Page<CustomerResponse> response = customerService.getAllCustomers(pageable, filter);
     return Utils.returnOkResponse("Lấy danh sách khách hàng thành công", response);
   }
 

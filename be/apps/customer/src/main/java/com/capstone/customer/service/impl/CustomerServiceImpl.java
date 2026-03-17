@@ -13,6 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import com.capstone.customer.dto.request.customer.CustomerFilterRequest;
+import com.capstone.customer.repository.CustomerSpecification;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -150,9 +153,10 @@ public class CustomerServiceImpl implements CustomerService {
   }
 
   @Override
-  public Page<CustomerResponse> getAllCustomers(Pageable pageable, String search) {
-    log.debug("Fetching all customers with pagination: {} and search: {}", pageable, search);
-    return customerRepository.searchCustomers(search, pageable).map(this::mapToResponse);
+  public Page<CustomerResponse> getAllCustomers(Pageable pageable, CustomerFilterRequest filter) {
+    log.debug("Fetching all customers with pagination: {} and filter: {}", pageable, filter);
+    Specification<Customer> spec = CustomerSpecification.filter(filter);
+    return customerRepository.findAll(spec, pageable).map(this::mapToResponse);
   }
 
   @Override

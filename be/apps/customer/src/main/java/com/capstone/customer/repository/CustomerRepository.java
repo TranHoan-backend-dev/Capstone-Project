@@ -8,17 +8,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
 @Repository
-public interface CustomerRepository extends JpaRepository<Customer, String> {
+public interface CustomerRepository extends JpaRepository<Customer, String>, JpaSpecificationExecutor<Customer> {
   boolean existsByWaterPriceId(String waterPriceId);
 
   boolean existsByFormCodeAndFormNumber(String formCode, String formNumber);
-
-  @Query("SELECT c FROM Customer c WHERE " +
-         "(:search IS NULL OR :search = '' OR " +
-         "LOWER(c.name) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-         "LOWER(c.email) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-         "LOWER(c.phoneNumber) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-         "LOWER(c.formCode) LIKE LOWER(CONCAT('%', :search, '%')))")
-  Page<Customer> searchCustomers(@Param("search") String search, Pageable pageable);
 }

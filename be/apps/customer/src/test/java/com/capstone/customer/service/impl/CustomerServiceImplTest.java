@@ -22,6 +22,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.jpa.domain.Specification;
+import com.capstone.customer.dto.request.customer.CustomerFilterRequest;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -209,7 +212,7 @@ class CustomerServiceImplTest {
   void should_ReturnPaginatedCustomers_When_Called() {
     // Given
     Page<Customer> customerPage = new PageImpl<>(List.of(customer));
-    when(customerRepository.searchCustomers(null, pageable)).thenReturn(customerPage);
+    when(customerRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(customerPage);
 
     // When
     Page<CustomerResponse> response = customerService.getAllCustomers(pageable, null);
@@ -217,24 +220,26 @@ class CustomerServiceImplTest {
     // Then
     assertThat(response).isNotNull();
     assertThat(response.getContent()).hasSize(1);
-    verify(customerRepository).searchCustomers(null, pageable);
+    verify(customerRepository).findAll(any(Specification.class), eq(pageable));
   }
 
   @Test
   @DisplayName("Should return paginated customers with search")
   void should_ReturnPaginatedCustomers_When_SearchIsProvided() {
     // Given
-    String search = "Trần";
+    CustomerFilterRequest filter = new CustomerFilterRequest(
+      "Trần", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null
+    );
     Page<Customer> customerPage = new PageImpl<>(List.of(customer));
-    when(customerRepository.searchCustomers(search, pageable)).thenReturn(customerPage);
+    when(customerRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(customerPage);
 
     // When
-    Page<CustomerResponse> response = customerService.getAllCustomers(pageable, search);
+    Page<CustomerResponse> response = customerService.getAllCustomers(pageable, filter);
 
     // Then
     assertThat(response).isNotNull();
     assertThat(response.getContent()).hasSize(1);
-    verify(customerRepository).searchCustomers(search, pageable);
+    verify(customerRepository).findAll(any(Specification.class), eq(pageable));
   }
 
   @Test

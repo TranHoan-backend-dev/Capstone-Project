@@ -495,6 +495,26 @@ client.test("Status is 200", function() {
 });
 %}
 
+### TC16.3 - Get all customers with filter (type)
+GET {{customersUrl}}?type=FAMILY
+Authorization: Bearer {{access_token}}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+### TC16.4 - Get all customers with filter (isBigCustomer and isFree)
+GET {{customersUrl}}?isBigCustomer=false&isFree=false
+Authorization: Bearer {{access_token}}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
 ### TC17 - Check whether customers are applied with water price
 GET {{customersUrl}}/water-price/00000000-0000-0000-0000-B00000000001
 Authorization: Bearer {{access_token}}

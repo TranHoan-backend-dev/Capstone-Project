@@ -4,6 +4,7 @@ import com.capstone.customer.dto.request.customer.CreateRequest;
 import com.capstone.customer.dto.response.CustomerResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import com.capstone.customer.dto.request.customer.CustomerFilterRequest;
 
 /**
  * Service interface for managing Customer operations.
@@ -42,13 +43,13 @@ public interface CustomerService {
   CustomerResponse getCustomerById(String id);
 
   /**
-   * Retrieves all customers with pagination and optional search.
+   * Retrieves all customers with pagination and optional filters.
    *
    * @param pageable pagination information
-   * @param search   optional search string
+   * @param filter   filter criteria
    * @return a page of customer responses
    */
-  Page<CustomerResponse> getAllCustomers(Pageable pageable, String search);
+  Page<CustomerResponse> getAllCustomers(Pageable pageable, CustomerFilterRequest filter);
 
   boolean areCustomersAppliedThisPrice(String priceId);
 }
