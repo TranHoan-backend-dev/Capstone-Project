@@ -1,4 +1,4 @@
-package com.capstone.auth.infrastructure.service;
+package com.capstone.auth.infrastructure.service.keycloak;
 
 import com.capstone.auth.application.dto.request.keycloakparam.TokenExchangeParam;
 import com.capstone.auth.application.dto.request.keycloakparam.UserCreationParam;
@@ -19,7 +19,7 @@ import java.util.Map;
   url = "${keycloak.server-url}",
   configuration = FeignMultipartConfig.class
 )
-public interface KeycloakService {
+public interface KeycloakFeignClient {
   String TOKEN_URL = "/realms/cmsn/protocol/openid-connect/token";
   String ADMIN_URL = "/admin/realms/cmsn";
 

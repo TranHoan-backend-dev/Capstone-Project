@@ -1,10 +1,13 @@
 package com.capstone.construction.domain.model;
 
+import com.capstone.construction.domain.model.utils.Significance;
 import jakarta.persistence.*;
 import com.capstone.common.utils.SharedMessage;
 import com.capstone.construction.infrastructure.utils.Message;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.jspecify.annotations.NonNull;
 
 import java.io.Serializable;
@@ -90,6 +93,10 @@ public class CostEstimate implements Serializable {
   @OneToOne
   InstallationForm installationForm;
 
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(columnDefinition = "jsonb")
+  Significance significance;
+
   @PrePersist
   void onCreate() {
     this.createdAt = LocalDateTime.now();
@@ -110,6 +117,11 @@ public class CostEstimate implements Serializable {
   public void setInstallationFormId(InstallationForm value) {
     Objects.requireNonNull(value, Message.PT_41);
     this.installationForm = value;
+  }
+
+  public void setSignificance(Significance value) {
+    Objects.requireNonNull(value, Message.PT_64);
+    this.significance = value;
   }
 
   public void setCustomerName(String customerName) {

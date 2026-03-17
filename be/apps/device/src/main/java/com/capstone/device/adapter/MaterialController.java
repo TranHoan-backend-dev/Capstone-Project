@@ -62,7 +62,8 @@ public class MaterialController {
   @PreAuthorize("hasAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> updateMaterial(
       @PathVariable @Parameter(description = "ID của vật tư cần cập nhật", example = "VL001") String id,
-      @RequestBody @Valid UpdateRequest request) {
+      @RequestBody @Valid UpdateRequest request
+  ) {
     log.info("REST request to update material: {}", id);
     var response = mUseCase.updateMaterial(id, request);
     return Utils.returnOkResponse("Cập nhật vật tư thành công", response);

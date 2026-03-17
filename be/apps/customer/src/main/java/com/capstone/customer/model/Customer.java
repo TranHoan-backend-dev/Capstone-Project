@@ -72,7 +72,7 @@ public class Customer {
   @Column(nullable = false)
   String waterMeterType;
 
-  @Column(nullable = false, unique = true)
+  @Column(nullable = false)
   String citizenIdentificationNumber;
 
   @Column(nullable = false)

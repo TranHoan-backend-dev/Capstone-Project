@@ -1,9 +1,12 @@
 package com.capstone.construction.application.usecase;
 
 import com.capstone.common.enumerate.RoleName;
+import com.capstone.common.exception.ForbiddenException;
+import com.capstone.common.utils.SharedMessage;
 import com.capstone.construction.application.business.installationform.InstallationFormService;
 import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.construction.application.dto.request.estimate.CreateRequest;
+import com.capstone.construction.application.dto.request.estimate.SignRequest;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
@@ -38,6 +41,7 @@ public class InstallationFormHandlingUseCase {
   final CostEstimateUseCase costEstimateUseCase;
   final EmployeeService empSrv;
 
+  // <editor-fold> desc="constant"
   @Value(".${rabbit-mq-config.entities[5]}.")
   String PREFIX;
 
@@ -49,19 +53,20 @@ public class InstallationFormHandlingUseCase {
 
   @Value("${rabbit-mq-config.queue_name}")
   String QUEUE_NAME;
+  // </editor-fold>
 
   public Page<InstallationFormListResponse> getPaginatedInstallationForms(Pageable pageable, BaseFilterRequest request) {
     return ifSrv.getInstallationForms(pageable, request);
   }
 
   @Transactional(rollbackFor = Exception.class)
-  public NewInstallationFormResponse createNewInstallationRequest(@NonNull NewOrderRequest request) {
+  public NewInstallationFormResponse createNewInstallationRequest(String userId, @NonNull NewOrderRequest request) {
     var routingKey = QUEUE_NAME + PREFIX + CREATE_ACTION;
     if (ifSrv.isInstallationFormExisting(request.formNumber(), request.formCode())) {
       throw new ExistingItemException(Message.PT_53);
     }
 
-    var savedResponse = ifSrv.createNewInstallationForm(request);
+    var savedResponse = ifSrv.createNewInstallationForm(userId, request);
 
     // Send notification event using the DTO data
     var event = new CreatedEvent(
@@ -75,15 +80,15 @@ public class InstallationFormHandlingUseCase {
     return savedResponse;
   }
 
-  public void assignInstallationFormToSurveyStaff(InstallationFormId request, String empId) {
+  public void assignInstallationFormToSurveyStaff(InstallationFormId id, String empId) {
     var role = empSrv.getRoleOfEmployeeById(empId).data();
     Objects.requireNonNull(role);
     if (!role.toString().equalsIgnoreCase(RoleName.SURVEY_STAFF.name())) {
       throw new IllegalArgumentException(String.format(Message.PT_28, "nhân viên khảo sát"));
     }
 
-    ifSrv.assignInstallationForm(empId, request, true);
-    var form = ifSrv.getByFormCodeAndFormNumber(request.getFormCode(), request.getFormNumber());
+    ifSrv.assignInstallationForm(empId, id, true);
+    var form = ifSrv.getByFormCodeAndFormNumber(id.getFormCode(), id.getFormNumber());
 
     var routingKey = QUEUE_NAME + PREFIX + ASSIGN_ACTION;
     var event = new AssignEvent(

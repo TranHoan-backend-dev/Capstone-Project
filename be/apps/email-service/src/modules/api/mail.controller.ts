@@ -1,7 +1,7 @@
 import { Body, Controller, HttpStatus, Logger, Post } from "@nestjs/common";
 import { MailServiceImpl } from "../../service/mail.service";
 import { SendMailDto } from "../../common/dtos/request/send-mail.dto";
-import { AccountCreationContext, MailInformation, PasswordResetContext } from "../../infrastructure/model/mail.entity";
+import { AccountCreationContext, MailInformation, OtpContext } from "../../infrastructure/model/mail.entity";
 import { WrapperApiDto } from "../../common/dtos/response/wrapper-api.dto";
 import { ApiBody, ApiOperation, ApiResponse } from "@nestjs/swagger";
 
@@ -85,7 +85,7 @@ export class MailController {
       template: sendMailDto.template ?? 'password-reset',
     }
 
-    const context: PasswordResetContext = {
+    const context: OtpContext = {
       name: sendMailDto.name,
       otp: sendMailDto.otp,
     }

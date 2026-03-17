@@ -17,6 +17,9 @@ public final class Message {
   public static final String PT_13 = "Id của vai trò không được để trống";
   public static final String PT_14 = "URL chữ ký điện tử không được để trống";
   public static final String PT_15 = "Định dạng ngày sinh không chính xác. Phải đảm bảo định dạng là yyyy-MM-dd";
+  public static final String PT_16 = "Mật khẩu không được để trống";
+  public static final String PT_17 = "Mật khẩu cũ không được để trống";
+  public static final String PT_18 = "Mật khẩu mới không được để trống";
 
   // for service layer
   public static final String SE_01 = "Email đã tồn tại";
@@ -29,4 +32,10 @@ public final class Message {
   public static final String SE_08 = "Số điện thoại đã tồn tại";
   public static final String SE_09 = "Chi nhánh cấp nước không tồn tại";
   public static final String SE_10 = "Phòng ban không tồn tại";
+  public static final String SE_11 = "Xử lý mật khẩu thất bại";
+  public static final String SE_12 = "Có lỗi xảy ra trong khi xử lý mật khẩu %s";
+  public static final String SE_13 = "Mật khẩu mới phải khác mật khẩu cũ";
+  public static final String SE_14 = "Mật khẩu cũ không chính xác";
+  public static final String SE_15 = "Không tìm thấy hồ sơ người dùng với id %s";
+  public static final String SE_16 = "Tài khoản này đã bị xoá khỏi hệ thống";
 }

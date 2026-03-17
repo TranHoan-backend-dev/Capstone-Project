@@ -1,11 +1,11 @@
 package com.capstone.construction.adapter;
 
 import com.capstone.common.annotation.AppLog;
-import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.common.utils.Utils;
-import com.capstone.construction.application.dto.request.estimate.CreateRequest;
+import com.capstone.construction.application.dto.request.estimate.AssignTheSignificanceRequest;
+import com.capstone.construction.application.dto.request.estimate.SignRequest;
 import com.capstone.construction.application.dto.request.estimate.UpdateRequest;
 import com.capstone.construction.application.dto.response.estimate.CostEstimateResponse;
 import com.capstone.construction.application.usecase.estimate.CostEstimateUseCase;
@@ -25,6 +25,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 @AppLog
@@ -38,7 +40,10 @@ public class CostEstimateController {
   final CostEstimateUseCase estimateUseCase;
 
   @PutMapping("/{id}")
-  @Operation(summary = "Cập nhật dự toán", description = "Cập nhật thông tin dự toán hiện có theo ID", responses = {
+  @Operation(summary = "Cập nhật dự toán", description = """
+    Cập nhật thông tin dự toán hiện có theo ID.<br/>
+    Nhân viên khảo sát có thể hoàn tất dự toán hoặc lưu bản nháp.
+    """, responses = {
     @ApiResponse(responseCode = "200", description = "Cập nhật dự toán thành công", content = @Content(schema = @Schema(implementation = CostEstimateResponse.class))),
     @ApiResponse(responseCode = "400", description = "Dữ liệu đầu vào không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "404", description = "Không tìm thấy dự toán", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
@@ -95,5 +100,44 @@ public class CostEstimateController {
     log.info("REST request to get all cost estimates");
     var response = estimateUseCase.getAllEstimates(pageable, request);
     return Utils.returnOkResponse("Lấy danh sách dự toán chi phí thành công", response);
+  }
+
+  @PostMapping("/sign")
+  @Operation(summary = "Yêu cầu các bên liên quan ký duyệt dự toán", description = """
+    Gửi yêu cầu ký duyệt dự toán chi phí đến các bộ phận liên quan: Nhân viên khảo sát, Trưởng phòng Kế hoạch Kỹ thuật và Lãnh đạo công ty.<br/>
+    Luồng này sẽ kích hoạt thông báo đến các nhân viên được chỉ định.
+    Người thực hiện phải có quyền tương ứng (SURVEY_STAFF, PLANNING_TECHNICAL_DEPARTMENT_HEAD, hoặc IT_STAFF).
+    """, responses = {
+    @ApiResponse(responseCode = "200", description = "Gửi yêu cầu ký duyệt thành công"),
+    @ApiResponse(responseCode = "400", description = "Dữ liệu yêu cầu không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy dự toán hoặc nhân viên", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+  })
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD')")
+  public ResponseEntity<?> requireSignificances(@RequestBody @Valid AssignTheSignificanceRequest request) {
+    log.info("REST request to sign cost estimate: {}", request);
+    estimateUseCase.assignStaffForSignCostEstimate(request);
+    return Utils.returnOkResponse("Yêu cầu ký duyệt dự toán thành công", null);
+  }
+
+  @PatchMapping("/sign")
+  @Operation(summary = "Ký duyệt dự toán chi phí", description = """
+    Thực hiện ký điện tử cho dự toán chi phí.<br/>
+    Người ký phải có quyền tương ứng (SURVEY_STAFF, PLANNING_TECHNICAL_DEPARTMENT_HEAD, hoặc COMPANY_LEADERSHIP).
+    """, responses = {
+    @ApiResponse(responseCode = "200", description = "Ký duyệt thành công"),
+    @ApiResponse(responseCode = "400", description = "Dữ liệu ký không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "403", description = "Không có quyền ký duyệt", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy dự toán", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+  })
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'SURVEY_STAFF')")
+  public ResponseEntity<?> sign(
+    @RequestBody @Valid SignRequest request,
+    @AuthenticationPrincipal Jwt jwt
+  ) {
+    log.info("Received request to sign installation forms");
+    var id = jwt.getSubject();
+    estimateUseCase.signForInstallationRequest(id, request);
+
+    return Utils.returnOkResponse("Ký dự toán thành công", null);
   }
 }

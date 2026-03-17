@@ -6,5 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, String> {
-    boolean existsByWaterPriceId(String waterPriceId);
+  boolean existsByWaterPriceId(String waterPriceId);
+
+  boolean existsByFormCodeAndFormNumber(String formCode, String formNumber);
 }
