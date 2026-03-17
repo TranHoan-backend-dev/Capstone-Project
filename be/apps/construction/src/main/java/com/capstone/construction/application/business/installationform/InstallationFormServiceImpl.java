@@ -138,7 +138,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   public void approveAndAssignInstallationForm(@NonNull ApproveRequest request) {
     log.info("Approving and assigning installation form with number: {}", request.formNumber());
     var order = ifRepo.findById(new InstallationFormId(request.formCode(), request.formNumber()))
-        .orElseThrow(() -> new IllegalArgumentException(Message.PT_36));
+        .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_60, request.formNumber(), request.formCode())));
 
     if (request.status()) {
       // nvks duyệt đơn
