@@ -26,4 +26,7 @@ public interface EmployeeService {
 
   @GetMapping("/network")
   WrapperApiResponse checkAnyEmployeesBelongedToNetwork(@RequestParam String id);
+
+  @GetMapping("/role/{id}")
+  WrapperApiResponse getRoleOfEmployeeById(@PathVariable String id);
 }

@@ -45,6 +45,10 @@ public class WaterUsageContract {
   @Column(columnDefinition = "jsonb")
   List<Representative> representative;
 
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(columnDefinition = "jsonb")
+  List<Appendix> appendix;
+
   @PrePersist
   void onCreate() {
     this.createdAt = LocalDateTime.now();
@@ -82,8 +86,12 @@ public class WaterUsageContract {
     this.formNumber = value;
   }
 
+  public void setAppendix(List<Appendix> value) {
+    Objects.requireNonNull(value, Message.ENT_24);
+    this.appendix = value;
+  }
+
   public void setRepresentative(List<Representative> representative) {
-    // Note: Assuming ENT_42 is a constant for "Representatives cannot be null"
     Objects.requireNonNull(representative, "Representatives cannot be null");
     this.representative = representative;
   }
@@ -102,24 +110,25 @@ public class WaterUsageContract {
       return this;
     }
 
-    public ContractBuilder customer(Customer customer) {
+    public void customer(Customer customer) {
       waterUsageContract.setCustomer(customer);
-      return this;
     }
 
-    public ContractBuilder formCode(String value) {
+    public void formCode(String value) {
       waterUsageContract.setFormCode(value);
-      return this;
     }
 
     public ContractBuilder formNumber(String value) {
-      waterUsageContract.setFormCode(value);
+      waterUsageContract.setFormNumber(value);
       return this;
     }
 
-    public ContractBuilder representative(List<Representative> representative) {
+    public void representative(List<Representative> representative) {
       waterUsageContract.setRepresentative(representative);
-      return this;
+    }
+
+    public void appendix(List<Appendix> value) {
+      waterUsageContract.setAppendix(value);
     }
 
     public WaterUsageContract build() {

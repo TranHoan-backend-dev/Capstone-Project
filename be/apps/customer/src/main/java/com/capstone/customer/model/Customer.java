@@ -1,5 +1,6 @@
 package com.capstone.customer.model;
 
+import com.capstone.common.enumerate.CustomerType;
 import com.capstone.common.enumerate.UsageTarget;
 import com.capstone.common.utils.SharedConstant;
 import com.capstone.common.utils.SharedMessage;
@@ -37,7 +38,8 @@ public class Customer {
   String phoneNumber;
 
   @Column(nullable = false)
-  String type;
+  @Enumerated(EnumType.STRING)
+  CustomerType type; // loai khach hang
 
   @Setter
   @Column(nullable = false)
@@ -70,7 +72,7 @@ public class Customer {
   @Column(nullable = false)
   String waterMeterType;
 
-  @Column(nullable = false, unique = true)
+  @Column(nullable = false)
   String citizenIdentificationNumber;
 
   @Column(nullable = false)
@@ -103,7 +105,10 @@ public class Customer {
   LocalDateTime updatedAt;
 
   @Column(nullable = false)
-  String installationFormId;
+  String formNumber;
+
+  @Column(nullable = false, unique = true)
+  String formCode;
 
   @Column(nullable = false)
   String waterPriceId;
@@ -153,8 +158,8 @@ public class Customer {
     this.phoneNumber = phoneNumber;
   }
 
-  public void setType(String type) {
-    requireText(type, Message.ENT_03);
+  public void setType(CustomerType type) {
+    Objects.requireNonNull(type, Message.ENT_03);
     this.type = type;
   }
 
@@ -245,9 +250,14 @@ public class Customer {
     this.monthlyRent = value;
   }
 
-  public void setInstallationFormId(String value) {
-    requireId(value, Message.ENT_16);
-    this.installationFormId = value;
+  public void setFormNumber(String value) {
+    requireId(value, SharedMessage.MES_20);
+    this.formNumber = value;
+  }
+
+  public void setFormCode(String value) {
+    requireId(value, SharedMessage.MES_21);
+    this.formCode = value;
   }
 
   public void setWaterPriceId(String value) {
@@ -318,7 +328,7 @@ public class Customer {
       return this;
     }
 
-    public CustomerBuilder type(String type) {
+    public CustomerBuilder type(CustomerType type) {
       customer.setType(type);
       return this;
     }
@@ -453,8 +463,13 @@ public class Customer {
       return this;
     }
 
-    public CustomerBuilder installationFormId(String value) {
-      customer.setInstallationFormId(value);
+    public CustomerBuilder formNumber(String value) {
+      customer.setFormNumber(value);
+      return this;
+    }
+
+    public CustomerBuilder formCode(String value) {
+      customer.setFormCode(value);
       return this;
     }
 

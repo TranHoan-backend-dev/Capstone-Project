@@ -3,7 +3,7 @@ package com.capstone.customer.controller;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
-import com.capstone.customer.dto.request.CustomerRequest;
+import com.capstone.customer.dto.request.customer.CreateRequest;
 import com.capstone.customer.dto.response.CustomerResponse;
 import com.capstone.customer.service.boundary.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,12 +24,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @AppLog
 @RestController
 @RequestMapping("/customers")
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF')")
 @Tag(name = "Quản lý khách hàng", description = "Các API phục vụ việc quản lý thông tin khách hàng, bao cập nhật, truy vấn và xóa khách hàng.")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CustomerController {
@@ -39,10 +41,11 @@ public class CustomerController {
 
   @Operation(summary = "Tạo mới khách hàng", description = "Thêm một khách hàng mới vào hệ thống với đầy đủ thông tin cá nhân và kỹ thuật.", responses = {
     @ApiResponse(responseCode = "201", description = "Khách hàng đã được tạo thành công"),
-    @ApiResponse(responseCode = "400", description = "Dữ liệu đầu vào không hợp lệ (ví dụ: sai định dạng email, số điện thoại)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
+    @ApiResponse(responseCode = "400", description = "Dữ liệu đầu vào không hợp lệ (ví dụ: sai định dạng email, số điện thoại)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "500", description = "Lỗi hệ thống nội bộ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PostMapping
-  public ResponseEntity<WrapperApiResponse> createCustomer(@RequestBody @Valid CustomerRequest request) {
+  public ResponseEntity<WrapperApiResponse> createCustomer(@RequestBody @Valid CreateRequest request) {
     log.info("REST request to create customer: {}", request.email());
     var response = customerService.createCustomer(request);
     log.info("New customer created: {}", response);
@@ -56,7 +59,7 @@ public class CustomerController {
   @PutMapping("/{id}")
   public ResponseEntity<WrapperApiResponse> updateCustomer(
     @PathVariable @Parameter(description = "Mã định danh duy nhất của khách hàng (UUID)", example = "550e8400-e29b-41d4-a716-446655440000") String id,
-    @RequestBody @Valid CustomerRequest request) {
+    @RequestBody @Valid CreateRequest request) {
     log.info("REST request to update customer: {}", id);
     var response = customerService.updateCustomer(id, request);
     return Utils.returnOkResponse("Cập nhật khách hàng thành công", response);

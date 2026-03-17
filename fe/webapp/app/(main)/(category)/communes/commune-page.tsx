@@ -6,16 +6,36 @@ import { Spinner } from "@heroui/react";
 import { CommuneTable } from "./components/commune-table";
 import { FilterSection } from "./components/filter-section";
 import { CommuneForm } from "./components/commune-form";
-import { CommuneItem } from "@/types";
+import { CommuneFilter, CommuneItem } from "@/types";
+import { Modal, ModalContent } from "@heroui/react";
 
 const CommunePage = () => {
-  const [keyword, setKeyword] = useState("");
+  const [keyword, setKeyword] = useState<CommuneFilter>({
+    name: "",
+    type: "",
+  });
   const [showAddForm, setShowAddForm] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
   const [editingItem, setEditingItem] = useState<CommuneItem | null>(null);
+  const handleReload = () => setReloadKey((prev) => prev + 1);
   const handleAddNew = () => {
     setEditingItem(null);
     setShowAddForm(true);
+  };
+
+  const handleEdit = (item: CommuneItem) => {
+    setEditingItem(item);
+    setShowAddForm(true);
+  };
+
+  const handleCloseForm = () => {
+    setShowAddForm(false);
+    setEditingItem(null);
+  };
+
+  const handleSuccess = () => {
+    handleReload();
+    handleCloseForm();
   };
 
   return (
@@ -26,25 +46,28 @@ const CommunePage = () => {
         onAddNew={handleAddNew}
       />
 
-      {showAddForm && (
-        <CommuneForm
-          initialData={editingItem || undefined}
-          onSuccess={() => {
-            setShowAddForm(false);
-            setEditingItem(null);
-            setReloadKey((prev) => prev + 1);
-          }}
-        />
-      )}
+      <Modal
+        isOpen={showAddForm}
+        onClose={handleCloseForm}
+        size="3xl"
+        placement="top-center"
+        scrollBehavior="inside"
+      >
+        <ModalContent>
+          <CommuneForm
+            key={editingItem?.id || "create"}
+            initialData={editingItem || undefined}
+            onSuccess={handleSuccess}
+            onClose={handleCloseForm}
+          />
+        </ModalContent>
+      </Modal>
 
       <CommuneTable
-        keyword={keyword}
+        filter={keyword}
         reloadKey={reloadKey}
-        onEdit={(item) => {
-          setEditingItem(item);
-          setShowAddForm(true);
-        }}
-        onDeleted={() => setReloadKey((prev) => prev + 1)}
+        onEdit={handleEdit}
+        onDeleted={handleReload}
       />
     </>
   );

@@ -1,6 +1,7 @@
 package com.capstone.device.application.business.watermeter;
 
 import com.capstone.device.application.dto.request.WaterMeterRequest;
+import com.capstone.device.application.dto.response.OverallWaterMeterResponse;
 import com.capstone.device.application.dto.response.WaterMeterResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -60,4 +61,6 @@ public interface WaterMeterService {
   boolean isOverallWaterMeterExisting(String id);
 
   void deleteOverallWaterMeterByLateralId(String id);
+
+  Page<OverallWaterMeterResponse> getAllOverallWaterMeters(Pageable pageable, String keyword);
 }

@@ -4,6 +4,7 @@ import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
 import org.jspecify.annotations.NonNull;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.validation.FieldError;
@@ -26,6 +27,11 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(ExistingException.class)
   public ResponseEntity<WrapperApiResponse> handleExistingException(@NonNull ExistingException ex) {
     return Utils.returnBadRequestResponse(ex.getMessage(), null);
+  }
+
+  @ExceptionHandler(HttpMessageNotReadableException.class)
+  public ResponseEntity<WrapperApiResponse> handleHttpMessageNotReadableException(@NonNull HttpMessageNotReadableException ex) {
+    return Utils.returnBadRequestResponse("Đầu vào dữ liệu không hợp lệ", null);
   }
 
   @ExceptionHandler(BadCredentialsException.class)

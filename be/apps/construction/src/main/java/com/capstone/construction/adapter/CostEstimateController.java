@@ -1,11 +1,9 @@
 package com.capstone.construction.adapter;
 
 import com.capstone.common.annotation.AppLog;
-import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.common.utils.Utils;
-import com.capstone.construction.application.dto.request.estimate.CreateRequest;
 import com.capstone.construction.application.dto.request.estimate.UpdateRequest;
 import com.capstone.construction.application.dto.response.estimate.CostEstimateResponse;
 import com.capstone.construction.application.usecase.estimate.CostEstimateUseCase;
@@ -37,22 +35,11 @@ public class CostEstimateController {
   Logger log;
   final CostEstimateUseCase estimateUseCase;
 
-  @PostMapping
-  @Operation(summary = "Tạo mới dự toán chi phí", description = "Tạo bản ghi dự toán chi phí mới dựa trên thông tin từ đơn đăng ký lắp đặt", responses = {
-    @ApiResponse(responseCode = "201", description = "Tạo dự toán chi phí thành công"),
-    @ApiResponse(responseCode = "400", description = "Dữ liệu đầu vào không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "404", description = "Không tìm thấy đơn đăng ký lắp đặt liên quan", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
-  })
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF')")
-  public ResponseEntity<WrapperApiResponse> createEstimate(@RequestBody @Valid CreateRequest request) {
-    log.info("REST request to create cost estimate for customer: {}", request.customerName());
-    var response = estimateUseCase.createEstimate(request);
-    log.info(response.toString());
-    return Utils.returnCreatedResponse("Tạo dự toán chi phí thành công");
-  }
-
   @PutMapping("/{id}")
-  @Operation(summary = "Cập nhật dự toán", description = "Cập nhật thông tin dự toán hiện có theo ID", responses = {
+  @Operation(summary = "Cập nhật dự toán", description = """
+    Cập nhật thông tin dự toán hiện có theo ID.<br/>
+    Nhân viên khảo sát có thể hoàn tất dự toán hoặc lưu bản nháp.
+    """, responses = {
     @ApiResponse(responseCode = "200", description = "Cập nhật dự toán thành công", content = @Content(schema = @Schema(implementation = CostEstimateResponse.class))),
     @ApiResponse(responseCode = "400", description = "Dữ liệu đầu vào không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "404", description = "Không tìm thấy dự toán", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))

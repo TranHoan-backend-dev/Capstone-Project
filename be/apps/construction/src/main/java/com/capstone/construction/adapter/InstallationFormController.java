@@ -1,9 +1,9 @@
 package com.capstone.construction.adapter;
 
 import com.capstone.common.annotation.AppLog;
-import com.capstone.common.utils.Utils;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.common.utils.Utils;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
@@ -25,6 +25,8 @@ import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -53,15 +55,20 @@ public class InstallationFormController {
   })
   @PostMapping
   @PreAuthorize("hasAnyAuthority('ORDER_RECEIVING_STAFF', 'IT_STAFF')")
-  public ResponseEntity<WrapperApiResponse> createInstallationForm(@RequestBody @Valid NewOrderRequest request) {
+  public ResponseEntity<WrapperApiResponse> createInstallationForm(
+    @RequestBody @Valid NewOrderRequest request,
+    @AuthenticationPrincipal Jwt jwt
+  ) {
     log.info("Received request to create installation form: {}", request.formNumber());
+    var id = jwt.getSubject();
+
     if (!Utils.isLocalDate(request.receivedFormAt(), DateTimeFormatter.ISO_LOCAL_DATE) ||
       !Utils.isLocalDate(request.citizenIdentificationProvideDate(), DateTimeFormatter.ISO_LOCAL_DATE) ||
       !Utils.isLocalDate(request.scheduleSurveyAt(), DateTimeFormatter.ISO_LOCAL_DATE)) {
       throw new IllegalArgumentException(Message.PT_05);
     }
 
-    var response = installationFormHandlingUseCase.createNewInstallationRequest(request);
+    var response = installationFormHandlingUseCase.createNewInstallationRequest(id, request);
 
     log.info("Successfully created installation form: {}", response.formNumber());
 
@@ -69,10 +76,7 @@ public class InstallationFormController {
   }
 
   @Operation(summary = "Phê duyệt hoặc từ chối đơn lắp đặt", description = """
-    API này cho phép cấp quản lý (Trưởng phòng KH-KT) thực hiện phê duyệt hoặc từ chối một đơn yêu cầu lắp đặt nước. <br/>
-    Nếu được phê duyệt (status=true), hệ thống sẽ gửi một sự kiện (event) để thông báo cho nhân viên khảo sát/thi công bắt đầu quy trình tiếp theo.
-
-    Nhân viên khảo sát nhận sự kiện thông báo ở cổng socket: /technical/survey-staff
+    API này cho phép cấp nhân viên khảo sát thực hiện phê duyệt hoặc từ chối một đơn yêu cầu lắp đặt nước.
     """, responses = {
     @ApiResponse(responseCode = "200", description = "Thay đổi trạng thái thành công"),
     @ApiResponse(responseCode = "404", description = "Không tìm thấy đơn lắp đặt với mã hồ sơ/biểu mẫu đã cung cấp", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
@@ -87,13 +91,11 @@ public class InstallationFormController {
     return Utils.returnOkResponse("Thay đổi trạng thái thành công", null);
   }
 
-  @Operation(summary = "Phê duyệt hoặc từ chối đơn lắp đặt", description = """
-    API này cho phép cấp quản lý (Trưởng phòng KH-KT) thực hiện phê duyệt hoặc từ chối một đơn yêu cầu lắp đặt nước. <br/>
-    Nếu được phê duyệt (status=true), hệ thống sẽ gửi một sự kiện (event) để thông báo cho nhân viên khảo sát/thi công bắt đầu quy trình tiếp theo.
-
+  @Operation(summary = "Giao xử lý đơn lắp đặt", description = """
+    API này cho phép Trưởng phòng KH-KT giao việc xử lý một đơn yêu cầu lắp đặt nước cho 1 nhân viên khảo sát. <br/>
     Nhân viên khảo sát nhận sự kiện thông báo ở cổng socket: /technical/survey-staff
     """, responses = {
-    @ApiResponse(responseCode = "200", description = "Thay đổi trạng thái thành công"),
+    @ApiResponse(responseCode = "200", description = "Giao việc thành công"),
     @ApiResponse(responseCode = "404", description = "Không tìm thấy đơn lắp đặt với mã hồ sơ/biểu mẫu đã cung cấp", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "401", description = "Token không hợp lệ hoặc hết hạn", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "403", description = "Không có quyền thực hiện hành động này", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
@@ -105,7 +107,7 @@ public class InstallationFormController {
     @PathVariable String empId // nv khao sat duoc giao nhiem vu
   ) {
     log.info("Received request to assign installation form: {}", request.getFormCode());
-    installationFormHandlingUseCase.assignInstallationForm(request, empId);
+    installationFormHandlingUseCase.assignInstallationFormToSurveyStaff(request, empId);
     return Utils.returnOkResponse("Thay đổi trạng thái thành công", null);
   }
 
@@ -118,8 +120,8 @@ public class InstallationFormController {
   @PreAuthorize("hasAnyAuthority('PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF', 'IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> getInstallationForms(
     @Parameter(description = "Thông tin phân trang (page, size, sort)", schema = @Schema(implementation = Pageable.class)) Pageable pageable,
-
-    @Parameter(description = "Thông tin lọc (từ khóa, khoảng thời gian)") BaseFilterRequest request) {
+    @Parameter(description = "Thông tin lọc (từ khóa, khoảng thời gian)") BaseFilterRequest request
+  ) {
     log.info("Received request to fetch grouped installation forms");
 
     if (request.from() != null && request.to() != null) {
@@ -135,25 +137,4 @@ public class InstallationFormController {
 
     return Utils.returnOkResponse("Lấy danh sách đơn lắp đặt thành công", response);
   }
-
-  // <editor-fold> desc="đơn chờ thi công"
-  @Operation(summary = "Lấy danh sách đơn lắp đặt chờ thi công", description = """
-    API này cho phép nhân viên tiếp nhận hồ sơ lấy danh sách các đơn yêu cầu lắp đặt nước đã được duyệt và đang ở trạng thái chờ thi công. <br/>
-    Hỗ trợ phân trang và lọc theo từ khóa hoặc khoảng thời gian.
-    """, responses = {
-    @ApiResponse(responseCode = "200", description = "Lấy danh sách thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "403", description = "Không có quyền thực hiện hành động này", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "400", description = "Định dạng ngày không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
-  })
-  @GetMapping("/construction")
-  @PreAuthorize("hasAnyAuthority('ORDER_RECEIVING_STAFF', 'IT_STAFF')")
-  public ResponseEntity<WrapperApiResponse> getConstructionOrdersList(
-    @Parameter(description = "Thông tin phân trang (page, size, sort)") Pageable pageable,
-    @Parameter(description = "Thông tin lọc (từ khóa, khoảng thời gian)") BaseFilterRequest request) {
-    log.info("Received request to fetch construction orders list");
-    var response = installationFormHandlingUseCase.getPaginatedConstructionRequest(pageable, request);
-    return Utils.returnOkResponse("Lấy danh sách đơn chờ thi công thành công", response);
-  }
-  // </editor-fold>
-
 }

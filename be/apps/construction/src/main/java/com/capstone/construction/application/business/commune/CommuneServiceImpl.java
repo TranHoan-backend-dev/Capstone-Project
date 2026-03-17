@@ -5,6 +5,8 @@ import com.capstone.construction.application.dto.request.commune.CreateRequest;
 import com.capstone.construction.application.dto.request.commune.UpdateRequest;
 import com.capstone.construction.application.dto.response.catalog.CommuneResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
+import com.capstone.common.utils.TextNormalizer;
+import com.capstone.construction.domain.enumerate.CommuneType;
 import com.capstone.construction.domain.model.Commune;
 import com.capstone.construction.infrastructure.persistence.CommuneRepository;
 import com.capstone.construction.application.exception.ExistingItemException;
@@ -94,9 +96,23 @@ public class CommuneServiceImpl implements CommuneService {
   }
 
   @Override
-  public PageResponse<CommuneResponse> getAllCommunes(Pageable pageable) {
-    log.info("Fetching all communes with pageable: {}", pageable);
-    var page = communeRepository.findAll(pageable);
+  public PageResponse<CommuneResponse> getAllCommunes(Pageable pageable, String search, String type) {
+    log.info("Fetching all communes with pageable: {}, search: {}, type: {}", pageable, search, type);
+
+    CommuneType communeType = null;
+    if (type != null && !type.isBlank()) {
+      communeType = CommuneType.valueOf(type.trim());
+    }
+
+    var normalizedSearch = TextNormalizer.normalizeForSearch(search);
+    var page = normalizedSearch == null || normalizedSearch.isBlank()
+      ? (communeType == null
+        ? communeRepository.findAll(pageable)
+        : communeRepository.findAllByType(communeType, pageable))
+      : (communeType == null
+        ? communeRepository.findAllByNameSearchContains(normalizedSearch, pageable)
+        : communeRepository.findAllByNameSearchContainsAndType(normalizedSearch, communeType, pageable));
+
     return PageResponse.fromPage(page, this::mapToResponse);
   }
 

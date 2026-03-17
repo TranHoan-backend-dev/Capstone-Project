@@ -10,7 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface InstallationFormService {
-  NewInstallationFormResponse createNewInstallationForm(NewOrderRequest request);
+  NewInstallationFormResponse createNewInstallationForm(String userId, NewOrderRequest request);
 
   boolean isInstallationFormExisting(String formNumber, String formCode);
 
@@ -24,5 +24,5 @@ public interface InstallationFormService {
 
   Boolean checkAnyFormsBelongedToNetwork(String id);
 
-  void assignInstallationForm(String id, InstallationFormId installationFormId);
+  void assignInstallationForm(String id, InstallationFormId installationFormId, Boolean status);
 }

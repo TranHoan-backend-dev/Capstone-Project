@@ -1,3 +1,4 @@
-export * from "./road_column"
-export * from "./hamlet-column";
+export * from "./road_column";
+export * from "./networks-column";
 export * from "./commune-column";
+export * from "./hamlet-column";
