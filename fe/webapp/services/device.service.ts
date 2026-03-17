@@ -70,3 +70,15 @@ export const getAllParams = (
       Authorization: `Bearer ${accessToken}`,
     },
   });
+
+  export const updateParam = (
+  accessToken: string,
+  id: string,
+  name: string,
+  value: number,
+) =>
+  axios.put(`${API_GATEWAY_URL}/d/params/${id}`,{name, value}, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });

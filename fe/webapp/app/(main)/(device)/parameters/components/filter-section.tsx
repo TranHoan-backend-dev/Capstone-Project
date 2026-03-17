@@ -1,19 +1,15 @@
-
 "use client";
 
 import React, { useState, useEffect } from "react";
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
-import { FilterActionButton } from "@/components/ui/FilterActionButton";
 import { SearchIcon } from "@/components/ui/Icons";
 import CustomInput from "@/components/ui/custom/CustomInput";
 import FilterButton from "@/components/ui/FilterButton";
-import { AddNewIcon } from "@/config/chip-and-icon";
 import { FilterSectionParameterProps } from "@/types";
 
 export const FilterSection = ({
   filter,
   onSearch,
-  onAddNew,
 }: FilterSectionParameterProps) => {
   const [inputValue, setInputValue] = useState(filter);
   useEffect(() => {
@@ -28,13 +24,6 @@ export const FilterSection = ({
       isCollapsible={false}
       actions={
         <div className="flex justify-end gap-3">
-          <FilterActionButton
-            className="bg-green-500 hover:bg-green-600 dark:shadow-md dark:shadow-success/40 mr-2"
-            color="success"
-            icon={<AddNewIcon className="w-4 h-4" />}
-            label="Thêm mới"
-            onPress={onAddNew}
-          />
           <FilterButton onPress={() => onSearch(inputValue)} />
         </div>
       }
@@ -46,6 +35,11 @@ export const FilterSection = ({
               label="Từ khóa"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  onSearch(inputValue);
+                }
+              }}
             />
           </div>
         </div>

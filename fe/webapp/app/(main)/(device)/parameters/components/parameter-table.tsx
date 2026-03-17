@@ -2,17 +2,17 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { Tooltip, Button } from "@heroui/react";
-import { DeleteIcon, EditIcon } from "@/config/chip-and-icon";
+import { EditIcon } from "@/config/chip-and-icon";
 import { ParameterItem, ParameterResponse, ParameterTableProps } from "@/types";
 import { PARAMETER_COLUMN } from "@/config/table-columns";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import { CallToast } from "@/components/ui/CallToast";
+import { authFetch } from "@/utils/authFetch";
 
 export const ParameterTable = ({
   filter,
   reloadKey,
   onEdit,
-  onDeleted,
 }: ParameterTableProps) => {
   const [data, setData] = useState<ParameterItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
@@ -44,8 +44,8 @@ export const ParameterTable = ({
         if (trimmedFilter) {
           params.append("filter", trimmedFilter);
         }
-        
-        const res = await fetch(`/api/device/parameters?${params.toString()}`);
+
+        const res = await authFetch(`/api/device/parameters?${params.toString()}`);
 
         if (!res.ok) {
           console.error("Fetch failed", res.status);
@@ -109,36 +109,8 @@ export const ParameterTable = ({
           if (found) onEdit(found);
         },
       },
-      {
-        content: "Xóa",
-        icon: DeleteIcon,
-        className: "text-red-500 hover:bg-red-50",
-        onClick: async (id: string) => {
-          if (!confirm("Bạn có chắc muốn xóa tham số này?")) return;
-
-          try {
-            const res = await fetch(`/api/device/parameters/${id}`, {
-              method: "DELETE",
-            });
-
-            if (!res.ok) throw new Error("Delete failed");
-            CallToast({
-              title: "Thành công",
-              message: "Xóa nhánh tổng thành công",
-              color: "success",
-            });
-            onDeleted();
-          } catch (e: any) {
-            CallToast({
-              title: "Lỗi",
-              message: e.message || "Có lỗi xảy ra",
-              color: "danger",
-            });
-          }
-        },
-      },
     ],
-    [data, onEdit, onDeleted],
+    [data, onEdit],
   );
 
   const renderCell = (item: ParameterItem, columnKey: string) => {
@@ -200,7 +172,6 @@ export const ParameterTable = ({
           onChange: setPage,
           summary: `${data.length}`,
         }}
-        sort={sort}
         onSortChange={handleSortChange}
       />
     </>

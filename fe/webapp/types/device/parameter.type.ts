@@ -11,6 +11,7 @@ export interface ParameterFormProps {
   initialData?: {
     id?: string;
     name?: string;
+    value?: number;
   };
   onSuccess: () => void;
   onClose: () => void;
@@ -19,14 +20,12 @@ export interface ParameterFormProps {
 export interface FilterSectionParameterProps {
   filter: string;
   onSearch: (value: string) => void;
-  onAddNew: () => void;
 }
 
 export interface ParameterTableProps {
   filter: string;
   reloadKey: number;
   onEdit: (item: ParameterItem) => void;
-  onDeleted: () => void;
 }
 
 export interface ParameterResponse {

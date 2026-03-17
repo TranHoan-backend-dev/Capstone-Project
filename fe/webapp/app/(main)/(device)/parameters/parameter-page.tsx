@@ -8,25 +8,24 @@ import { FilterSection } from "./components/filter-section";
 import { ParameterForm } from "./components/parameter-form";
 import { ParameterItem } from "@/types";
 import { Modal, ModalContent } from "@heroui/react";
+import { useEmployeeProfile } from "@/hooks/useEmployeeProfile";
 
 const ParameterPage = () => {
   const [filter, setFilter] = useState("");
-  const [showAddForm, setShowAddForm] = useState(false);
+  const [showForm, setShowForm] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
   const [editingItem, setEditingItem] = useState<ParameterItem | null>(null);
+  const { profile, loading } = useEmployeeProfile();
+
   const handleReload = () => setReloadKey((prev) => prev + 1);
-  const handleAddNew = () => {
-    setEditingItem(null);
-    setShowAddForm(true);
-  };
 
   const handleEdit = (item: ParameterItem) => {
     setEditingItem(item);
-    setShowAddForm(true);
+    setShowForm(true);
   };
 
   const handleCloseForm = () => {
-    setShowAddForm(false);
+    setShowForm(false);
     setEditingItem(null);
   };
 
@@ -34,17 +33,26 @@ const ParameterPage = () => {
     handleReload();
     handleCloseForm();
   };
-
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
+  if (!profile) {
+    return (
+      <div className="text-center text-red-500 py-10">
+        Không thể tải thông tin người dùng
+      </div>
+    );
+  }
   return (
     <>
-      <FilterSection
-        filter={filter}
-        onSearch={setFilter}
-        onAddNew={handleAddNew}
-      />
+      <FilterSection filter={filter} onSearch={setFilter} />
 
       <Modal
-        isOpen={showAddForm}
+        isOpen={showForm}
         onClose={handleCloseForm}
         size="3xl"
         placement="top-center"
@@ -64,7 +72,6 @@ const ParameterPage = () => {
         filter={filter}
         reloadKey={reloadKey}
         onEdit={handleEdit}
-        onDeleted={handleReload}
       />
     </>
   );
