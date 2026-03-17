@@ -1,6 +1,10 @@
-import { createCommune, getAllCommunes } from "@/services/construction.service";
+import {
+  createNeighborhoodUnits,
+  getAllNeighborhoodUnits,
+} from "@/services/construction.service";
 import { getAccessToken } from "@/utils/getAccessToken";
-import { NextResponse, NextRequest } from "next/server";
+import { NextRequest } from "next/dist/server/web/spec-extension/request";
+import { NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
@@ -14,19 +18,25 @@ export async function GET(req: NextRequest) {
     const page = searchParams.get("page");
     const size = searchParams.get("size");
     const sort = searchParams.get("sort") || "createdAt,desc";
-    const search = searchParams.get("search") || "";
-    const type = searchParams.get("type") || "";
+    const keyword = searchParams.get("keyword") || undefined;
+    const communeId = searchParams.get("communeId") || undefined;
 
-    const response = await getAllCommunes(
+    const response = await getAllNeighborhoodUnits(
       accessToken,
       page ? Number(page) : 0,
       size ? Number(size) : 1000,
       sort,
-      search,
-      type,
+      keyword,
+      communeId,
     );
 
-    return NextResponse.json(response.data.data, { status: 200 });
+    return NextResponse.json(
+      {
+        message: "Lấy danh sách chi nhánh cấp nước thành công",
+        data: response.data.data,
+      },
+      { status: 200 },
+    );
   } catch (error: any) {
     const status = error?.response?.status ?? 500;
 
@@ -47,15 +57,19 @@ export async function POST(req: NextRequest) {
     if (!accessToken) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
-    const { name, type } = await req.json();
+    const { name, communeId } = await req.json();
 
-    const response = await createCommune(accessToken, name, type);
+    const response = await createNeighborhoodUnits(
+      accessToken,
+      name,
+      communeId,
+    );
 
     return NextResponse.json(response.data, { status: 201 });
   } catch (error: any) {
     return NextResponse.json(
       {
-        message: error.response?.data?.message || "Tạo phường xã thất bại",
+        message: error.response?.data?.message || "Create network failed",
       },
       { status: error.response?.status || 500 },
     );

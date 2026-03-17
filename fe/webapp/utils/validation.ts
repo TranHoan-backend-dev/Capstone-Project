@@ -41,3 +41,13 @@ export const validateBranchName = (value: string, fieldName: string) => {
 
   return null;
 };
+
+export const validateSelectRequired = (
+  value: Set<string>,
+  fieldName: string,
+) => {
+  if (!value || value.size === 0) {
+    return `${fieldName} không được để trống`;
+  }
+  return null;
+};
