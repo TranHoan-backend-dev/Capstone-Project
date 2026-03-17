@@ -5,11 +5,9 @@ import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { FilterActionButton } from "@/components/ui/FilterActionButton";
 import { SearchIcon } from "@/components/ui/Icons";
 import CustomInput from "@/components/ui/custom/CustomInput";
-import CustomSelect from "@/components/ui/custom/CustomSelect";
 import FilterButton from "@/components/ui/FilterButton";
 import { AddNewIcon } from "@/config/chip-and-icon";
 import { FilterSectionMaterialPriceProps } from "@/types";
-import { useMaterialGroup } from "@/hooks/useMaterialGroup";
 import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
 import { LookupModal } from "@/components/ui/modal/LookupModal";
 
@@ -23,9 +21,6 @@ export const FilterSection = ({
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
 
-  const [group, setGroup] = useState(new Set<string>());
-
-  const { materialGroupOptions } = useMaterialGroup();
   const [showGroupModal, setShowGroupModal] = useState(false);
   const [selectedGroupName, setSelectedGroupName] = useState("");
   const [selectedGroupId, setSelectedGroupId] = useState("");
@@ -83,9 +78,10 @@ export const FilterSection = ({
             value={selectedGroupName}
             onSearch={() => setShowGroupModal(true)}
             onChange={(e) => {
-              if (e.target.value === "") {
+              setSelectedGroupName(e.target.value);
+
+              if (!e.target.value) {
                 setSelectedGroupId("");
-                setSelectedGroupName("");
               }
             }}
           />
@@ -94,8 +90,12 @@ export const FilterSection = ({
             onClose={() => setShowGroupModal(false)}
             title="Chọn nhóm vật tư"
             api="/api/device/materials-group"
-            columns={[{ key: "name", label: "Tên nhóm" }]}
+            columns={[
+              { key: "stt", label: "STT" },
+              { key: "name", label: "Tên nhóm" },
+            ]}
             mapData={(item, index, page) => ({
+              stt: index + 1,
               id: item.groupId,
               name: item.name,
             })}

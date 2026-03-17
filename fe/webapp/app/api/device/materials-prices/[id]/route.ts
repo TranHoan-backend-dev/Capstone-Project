@@ -23,7 +23,7 @@ export async function PUT(
     return NextResponse.json(
       {
         message:
-          error.response?.data?.message || "Update material price failed",
+          error.response?.data?.message || "Cập nhật đơn giá vật tư thất bại",
       },
       { status: error.response?.status || 500 },
     );
@@ -50,7 +50,7 @@ export async function DELETE(
     return NextResponse.json(
       {
         message:
-          error.response?.data?.message || "Delete material price failed",
+          error.response?.data?.message || "Xóa đơn giá vật tư thất bại",
       },
       { status: error.response?.status || 500 },
     );

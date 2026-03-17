@@ -6,7 +6,7 @@ import CustomButton from "@/components/ui/custom/CustomButton";
 import CustomInput from "@/components/ui/custom/CustomInput";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
 import { CheckApprovalIcon } from "@/config/chip-and-icon";
-import { Card, CardBody } from "@heroui/react";
+import { Card, CardBody, Spinner } from "@heroui/react";
 import { MaterialPriceFormProps } from "@/types";
 import { LookupModal } from "@/components/ui/modal/LookupModal";
 import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
@@ -41,6 +41,7 @@ export const MaterialPriceForm = ({
   const [showUnitModal, setShowUnitModal] = useState(false);
   const [unitName, setUnitName] = useState("");
   const [unitId, setUnitId] = useState("");
+  const [initLoading, setInitLoading] = useState(false);
 
   useEffect(() => {
     if (initialData) {
@@ -58,12 +59,37 @@ export const MaterialPriceForm = ({
         initialData.constructionMachineryPriceAtRuralCommune?.toString() || "",
       );
 
-      setSelectedGroupId(initialData.groupId || "");
       setSelectedGroupName(initialData.groupName || "");
-
-      setUnitId(initialData.unitId || "");
       setUnitName(initialData.unitName || "");
     }
+  }, [initialData]);
+
+  useEffect(() => {
+    const load = async () => {
+      if (!initialData) return;
+
+      setInitLoading(true);
+      try {
+        if (initialData?.groupName) {
+          fetch(`/api/device/materials-group?filter=${initialData.groupName}`)
+            .then((res) => res.json())
+            .then((data) => {
+              setSelectedGroupId(data?.data?.content?.[0]?.groupId || "");
+            });
+        }
+
+        if (initialData?.unitName) {
+          fetch(`/api/device/units?filter=${initialData.unitName}`)
+            .then((res) => res.json())
+            .then((data) => {
+              setUnitId(data?.data?.content?.[0]?.id || "");
+            });
+        }
+      } finally {
+        setInitLoading(false);
+      }
+    };
+    load();
   }, [initialData]);
 
   const handleSubmit = async () => {
@@ -117,7 +143,13 @@ export const MaterialPriceForm = ({
       setSubmitLoading(false);
     }
   };
-
+  if (initLoading) {
+    return (
+      <div className="flex justify-center py-10">
+        <Spinner />
+      </div>
+    );
+  }
   return (
     <Card shadow="sm" className="rounded-2xl border border-divider bg-content1">
       <CardBody className="p-0">
@@ -157,6 +189,10 @@ export const MaterialPriceForm = ({
               label="Nhóm vật tư"
               value={selectedGroupName}
               onSearch={() => setShowGroupModal(true)}
+              onChange={(e) => {
+                setSelectedGroupName(e.target.value);
+                if (!e.target.value) setSelectedGroupId("");
+              }}
             />
             <LookupModal
               isOpen={showGroupModal}
@@ -201,8 +237,12 @@ export const MaterialPriceForm = ({
               onClose={() => setShowUnitModal(false)}
               title="Chọn đơn vị"
               api="/api/device/units"
-              columns={[{ key: "name", label: "Tên đơn vị" }]}
+              columns={[
+                { key: "stt", label: "STT" },
+                { key: "name", label: "Tên đơn vị" },
+              ]}
               mapData={(item, index, page) => ({
+                stt: index + 1,
                 id: item.id,
                 name: item.name,
               })}
