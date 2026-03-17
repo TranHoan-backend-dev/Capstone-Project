@@ -110,7 +110,7 @@ class InstallationFormHandlingUseCaseTest {
   @Test
   void should_ApproveAndCreateEstimate_When_StatusIsTrue() {
     // Given
-    var request = new ApproveRequest("EMP-001", "F-001", "C-001", true);
+    var request = new ApproveRequest( "F-001", "C-001", true);
     var order = mock(InstallationFormListResponse.class);
     when(order.formCode()).thenReturn("C-001");
     when(order.formNumber()).thenReturn("F-001");
@@ -129,7 +129,7 @@ class InstallationFormHandlingUseCaseTest {
   @Test
   void should_ApproveAndNotCreateEstimate_When_StatusIsFalse() {
     // Given
-    var request = new ApproveRequest("EMP-001", "F-001", "C-001", false);
+    var request = new ApproveRequest("F-001", "C-001", false);
     var order = mock(InstallationFormListResponse.class);
     when(ifSrv.getByFormCodeAndFormNumber("C-001", "F-001")).thenReturn(order);
 

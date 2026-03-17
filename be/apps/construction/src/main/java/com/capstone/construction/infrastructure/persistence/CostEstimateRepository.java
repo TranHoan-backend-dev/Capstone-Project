@@ -49,7 +49,7 @@ public interface CostEstimateRepository extends JpaRepository<CostEstimate, Stri
 
     list.forEach(field ->
       orPredicates.add(cb.like(
-        cb.function(unaccent, String.class, cb.lower(root.get(field).as(String.class))),
+        cb.function(unaccent, String.class, cb.lower(cb.function("concat", String.class, cb.literal(""), root.get(field)))),
         cb.function(unaccent, String.class, cb.literal(lowerCaseKeyword))
       )));
     return orPredicates;

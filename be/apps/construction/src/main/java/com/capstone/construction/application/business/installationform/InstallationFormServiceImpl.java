@@ -97,11 +97,11 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       @NonNull BaseFilterRequest request) {
     log.info("Fetching paginated installation forms with pageable: {}", pageable);
     var startDate = parseFrom(request.from());
-    var endDate = parseFrom(request.to());
+    var endDate = parseTo(request.to());
 
-    var result = (startDate != null || (request.keyword() != null && !request.keyword().isBlank())) ? ifRepo.findAll(
+    var result = (startDate != null || endDate != null || (request.keyword() != null && !request.keyword().isBlank())) ? ifRepo.findAll(
         InstallationFormRepository.search(request.keyword(), startDate, endDate, null, null),
-        pageable) : ifRepo.findAll(pageable);
+        pageable) : ifRepo.findAllNotRejectedInstallationForms(pageable);
 
     var content = result.getContent()
         .stream()
@@ -116,12 +116,12 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       @NonNull BaseFilterRequest request) {
     log.info("Fetching paginated construction request with pageable: {}", pageable);
     var startDate = parseFrom(request.from());
-    var endDate = parseFrom(request.to());
+    var endDate = parseTo(request.to());
     var specification = InstallationFormRepository.search(
         request.keyword(), startDate, endDate,
         ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING);
 
-    var response = (startDate != null || (request.keyword() != null && !request.keyword().isBlank()))
+    var response = (startDate != null || endDate != null || (request.keyword() != null && !request.keyword().isBlank()))
         ? ifRepo.findAll(specification, pageable)
         : ifRepo.findByStatus_ContractAndStatus_Construction(ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING,
             pageable);
