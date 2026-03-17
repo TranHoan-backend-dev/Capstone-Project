@@ -150,9 +150,9 @@ public class CustomerServiceImpl implements CustomerService {
   }
 
   @Override
-  public Page<CustomerResponse> getAllCustomers(Pageable pageable) {
-    log.debug("Fetching all customers with pagination: {}", pageable);
-    return customerRepository.findAll(pageable).map(this::mapToResponse);
+  public Page<CustomerResponse> getAllCustomers(Pageable pageable, String search) {
+    log.debug("Fetching all customers with pagination: {} and search: {}", pageable, search);
+    return customerRepository.searchCustomers(search, pageable).map(this::mapToResponse);
   }
 
   @Override

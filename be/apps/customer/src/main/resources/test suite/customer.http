@@ -1,5 +1,5 @@
 @keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
-@client_secret=t2io8dzbyJ9qdVdR2uoL01L6vBfViILJ
+@client_secret=
 @baseUrl = http://localhost:9005/api/v1
 @customersUrl = {{baseUrl}}/customers
 
@@ -10,10 +10,10 @@ Content-Type: application/x-www-form-urlencoded
 Accept: application/json
 
 grant_type = password &
-client_id = cmsn &
+client_id =  &
 client_secret = {{client_secret}} &
-username = test &
-password = 12345678 &
+username =  &
+password = &
 scope = openid
 
 > {%
@@ -467,6 +467,26 @@ client.test("Status is 404", function() {
 
 ### TC16 - Get all customers with pagination
 GET {{customersUrl}}?page=0&size=10&sort=name,asc
+Authorization: Bearer {{access_token}}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+### TC16.1 - Get all customers with search (name)
+GET {{customersUrl}}?search=Trần Văn A
+Authorization: Bearer {{access_token}}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+### TC16.2 - Get all customers with search (phone)
+GET {{customersUrl}}?search=090123
 Authorization: Bearer {{access_token}}
 
 > {%

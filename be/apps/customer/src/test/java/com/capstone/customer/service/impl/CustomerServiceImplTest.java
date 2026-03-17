@@ -209,15 +209,32 @@ class CustomerServiceImplTest {
   void should_ReturnPaginatedCustomers_When_Called() {
     // Given
     Page<Customer> customerPage = new PageImpl<>(List.of(customer));
-    when(customerRepository.findAll(pageable)).thenReturn(customerPage);
+    when(customerRepository.searchCustomers(null, pageable)).thenReturn(customerPage);
 
     // When
-    Page<CustomerResponse> response = customerService.getAllCustomers(pageable);
+    Page<CustomerResponse> response = customerService.getAllCustomers(pageable, null);
 
     // Then
     assertThat(response).isNotNull();
     assertThat(response.getContent()).hasSize(1);
-    verify(customerRepository).findAll(pageable);
+    verify(customerRepository).searchCustomers(null, pageable);
+  }
+
+  @Test
+  @DisplayName("Should return paginated customers with search")
+  void should_ReturnPaginatedCustomers_When_SearchIsProvided() {
+    // Given
+    String search = "Trần";
+    Page<Customer> customerPage = new PageImpl<>(List.of(customer));
+    when(customerRepository.searchCustomers(search, pageable)).thenReturn(customerPage);
+
+    // When
+    Page<CustomerResponse> response = customerService.getAllCustomers(pageable, search);
+
+    // Then
+    assertThat(response).isNotNull();
+    assertThat(response.getContent()).hasSize(1);
+    verify(customerRepository).searchCustomers(search, pageable);
   }
 
   @Test

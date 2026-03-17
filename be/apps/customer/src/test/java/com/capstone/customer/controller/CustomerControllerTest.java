@@ -115,15 +115,32 @@ class CustomerControllerTest {
   void should_ReturnOk_When_GetAllCustomers_IsSuccessful() {
     Pageable pageable = PageRequest.of(0, 10);
     Page<CustomerResponse> page = new PageImpl<>(List.of(customerResponse));
-    when(customerService.getAllCustomers(pageable)).thenReturn(page);
+    when(customerService.getAllCustomers(pageable, null)).thenReturn(page);
 
-    ResponseEntity<WrapperApiResponse> response = customerController.getAllCustomers(pageable);
+    ResponseEntity<WrapperApiResponse> response = customerController.getAllCustomers(pageable, null);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody().data()).isEqualTo(page);
     assertThat(response.getBody().message()).isEqualTo("Lấy danh sách khách hàng thành công");
     
-    verify(customerService).getAllCustomers(pageable);
+    verify(customerService).getAllCustomers(pageable, null);
+  }
+
+  @Test
+  @DisplayName("should_ReturnOk_When_GetAllCustomersWithSearch_IsSuccessful")
+  void should_ReturnOk_When_GetAllCustomersWithSearch_IsSuccessful() {
+    Pageable pageable = PageRequest.of(0, 10);
+    String search = "test";
+    Page<CustomerResponse> page = new PageImpl<>(List.of(customerResponse));
+    when(customerService.getAllCustomers(pageable, search)).thenReturn(page);
+
+    ResponseEntity<WrapperApiResponse> response = customerController.getAllCustomers(pageable, search);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(response.getBody().data()).isEqualTo(page);
+    assertThat(response.getBody().message()).isEqualTo("Lấy danh sách khách hàng thành công");
+
+    verify(customerService).getAllCustomers(pageable, search);
   }
 
   @Test

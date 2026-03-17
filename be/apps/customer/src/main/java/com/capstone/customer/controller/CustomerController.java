@@ -89,13 +89,15 @@ public class CustomerController {
     return Utils.returnOkResponse("Lấy thông tin khách hàng thành công", response);
   }
 
-  @Operation(summary = "Lấy danh sách khách hàng", description = "Lấy danh sách khách hàng có hỗ trợ phân trang và sắp xếp.", responses = {
+  @Operation(summary = "Lấy danh sách khách hàng", description = "Lấy danh sách khách hàng có hỗ trợ phân trang, sắp xếp và tìm kiếm theo tên, email, số điện thoại hoặc mã biểu mẫu.", responses = {
     @ApiResponse(responseCode = "200", description = "Lấy danh sách thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = CustomerResponse.class)))
   })
   @GetMapping
-  public ResponseEntity<WrapperApiResponse> getAllCustomers(@PageableDefault @ParameterObject Pageable pageable) {
-    log.info("REST request to get all customers with pagination: {}", pageable);
-    Page<CustomerResponse> response = customerService.getAllCustomers(pageable);
+  public ResponseEntity<WrapperApiResponse> getAllCustomers(
+    @PageableDefault @ParameterObject Pageable pageable,
+    @RequestParam(required = false) @Parameter(description = "Từ khóa tìm kiếm (tên, email, số điện thoại, mã biểu mẫu)") String search) {
+    log.info("REST request to get all customers with pagination: {} and search: {}", pageable, search);
+    Page<CustomerResponse> response = customerService.getAllCustomers(pageable, search);
     return Utils.returnOkResponse("Lấy danh sách khách hàng thành công", response);
   }
 

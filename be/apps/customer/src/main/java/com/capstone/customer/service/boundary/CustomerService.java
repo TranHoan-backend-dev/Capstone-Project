@@ -42,12 +42,13 @@ public interface CustomerService {
   CustomerResponse getCustomerById(String id);
 
   /**
-   * Retrieves all customers with pagination.
+   * Retrieves all customers with pagination and optional search.
    *
    * @param pageable pagination information
+   * @param search   optional search string
    * @return a page of customer responses
    */
-  Page<CustomerResponse> getAllCustomers(Pageable pageable);
+  Page<CustomerResponse> getAllCustomers(Pageable pageable, String search);
 
   boolean areCustomersAppliedThisPrice(String priceId);
 }
