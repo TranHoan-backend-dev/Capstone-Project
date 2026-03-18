@@ -32,6 +32,30 @@ export const createNetwork = (accessToken: string, name: string) => {
   );
 };
 
+export const updateNetwork = (
+  accessToken: string,
+  id: string,
+  name: string,
+) => {
+  return axios.put(
+    `${API_GATEWAY_URL}/construction/networks/${id}`,
+    { name },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+};
+
+export const deleteNetwork = (accessToken: string, id: string) => {
+  return axios.delete(`${API_GATEWAY_URL}/construction/networks/${id}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
 export const getAllLaterals = (
   accessToken: string,
   page: number,
@@ -165,14 +189,16 @@ export const getAllCommunes = (
   page: number,
   size: number,
   sort: string,
-  keyword?: string | null,
+  search?: string | null,
+  type?: string | null,
 ) =>
   axios.get(`${API_GATEWAY_URL}/construction/communes`, {
     params: {
       page,
       size,
       sort,
-      keyword,
+      search,
+      type,
     },
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -327,6 +353,68 @@ export const updateRoad = (accessToken: string, id: string, name: string) => {
 
 export const deleteRoad = (accessToken: string, id: string) => {
   return axios.delete(`${API_GATEWAY_URL}/construction/roads/${id}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
+export const getAllNeighborhoodUnits = (
+  accessToken: string,
+  page: number,
+  size: number,
+  sort: string,
+  keyword?: string | null,
+  communeId?: string | null,
+) =>
+  axios.get(`${API_GATEWAY_URL}/construction/units`, {
+    params: {
+      page,
+      size,
+      sort,
+      keyword,
+      communeId,
+    },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+export const createNeighborhoodUnits = (
+  accessToken: string,
+  name: string,
+  communeId: string,
+) => {
+  return axios.post(
+    `${API_GATEWAY_URL}/construction/units`,
+    { name, communeId },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+};
+
+export const updateNeighborhoodUnits = (
+  accessToken: string,
+  id: string,
+  name: string,
+  communeId: string,
+) => {
+  return axios.put(
+    `${API_GATEWAY_URL}/construction/units/${id}`,
+    { name, communeId },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+};
+
+export const deleteNeighborhoodUnits = (accessToken: string, id: string) => {
+  return axios.delete(`${API_GATEWAY_URL}/construction/units/${id}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },

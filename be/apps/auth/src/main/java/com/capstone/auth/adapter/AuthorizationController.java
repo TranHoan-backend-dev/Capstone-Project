@@ -1,24 +1,15 @@
 package com.capstone.auth.adapter;
 
-import com.capstone.auth.application.dto.request.users.FilterUsersRequest;
+import com.capstone.auth.application.business.users.UserService;
 import com.capstone.auth.application.dto.request.UpdateBusinessPageNamesRequest;
+import com.capstone.auth.application.dto.request.users.FilterUsersRequest;
 import com.capstone.auth.application.dto.request.users.UpdateRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
-import com.capstone.common.annotation.AppLog;
-import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.auth.application.usecase.ProfileUseCase;
 import com.capstone.auth.application.usecase.UsersUseCase;
+import com.capstone.common.annotation.AppLog;
+import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import lombok.experimental.NonFinal;
-import org.slf4j.Logger;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -26,12 +17,19 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
-import org.springdoc.core.annotations.ParameterObject;
-
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+import org.slf4j.Logger;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -44,6 +42,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthorizationController {
   UsersUseCase usersUseCase;
+  UserService userService;
   ProfileUseCase profileUseCase;
   @NonFinal
   Logger log;
@@ -65,7 +64,7 @@ public class AuthorizationController {
   @GetMapping("/employees")
   public ResponseEntity<WrapperApiResponse> getAllEmployees(
     @ParameterObject Pageable pageable,
-    @Parameter(description = "Filter criteria for users (isEnabled, username)") FilterUsersRequest request
+    @Parameter(description = "") FilterUsersRequest request
   ) {
     log.info("Getting all employees with page index {} and page size {}", pageable.getPageNumber(),
       pageable.getPageSize());
@@ -145,6 +144,21 @@ public class AuthorizationController {
     log.info("Deleting employee: {}", id);
     usersUseCase.deleteEmployee(id);
     return Utils.returnOkResponse("Xóa nhân viên thành công", null);
+  }
+
+  @Operation(hidden = true)
+  @GetMapping("/employees/role/{id}")
+  public ResponseEntity<?> getRoleOfEmployeeById(@PathVariable String id) {
+    return Utils.returnOkResponse("", userService.getRoleOfEmployee(id));
+  }
+
+  @Operation(description = "Lay ra toan bo nhan vien khao sat")
+  @GetMapping("/employee/survey-staff")
+  public ResponseEntity<?> getAllSurveyStaffs() {
+    log.info("Get all survey staffs");
+    var response = userService.getAllSurveyStaffs();
+    log.info("Get all survey staffs: {}", response);
+    return Utils.returnOkResponse("Lay toan bo nhan vien khao sat thanh cong", response);
   }
   // </editor-fold>
 

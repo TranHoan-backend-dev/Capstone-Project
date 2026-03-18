@@ -8,23 +8,25 @@ import CustomInput from "@/components/ui/custom/CustomInput";
 import { AddNewIcon } from "@/config/chip-and-icon";
 import FilterButton from "@/components/ui/FilterButton";
 import { FilterActionButton } from "@/components/ui/FilterActionButton";
-
-interface FilterSectionProps {
-  keyword: string;
-  onSearch: (value: string) => void;
-  onAddNew: () => void;
-}
+import { FilterSectionNetworksProps } from "@/types";
+import { useIsITStaff } from "@/hooks/useHasRole";
 
 export const FilterSection = ({
   keyword,
   onSearch,
   onAddNew,
-}: FilterSectionProps) => {
-  const [inputValue, setInputValue] = useState(keyword);
+}: FilterSectionNetworksProps) => {
+  const { isITStaff } = useIsITStaff();
+  const [name, setName] = useState("");
   useEffect(() => {
-    setInputValue(keyword);
+    setName(keyword.name || "");
   }, [keyword]);
 
+  const handleSearch = () => {
+    onSearch({
+      name,
+    });
+  };
   return (
     <GenericSearchFilter
       title="Tìm kiếm"
@@ -33,14 +35,16 @@ export const FilterSection = ({
       isCollapsible={false}
       actions={
         <div className="flex justify-end gap-3">
-          <FilterActionButton
-            className="bg-green-500 hover:bg-green-600 dark:shadow-md dark:shadow-success/40 mr-2"
-            color="success"
-            icon={<AddNewIcon className="w-4 h-4" />}
-            label="Thêm mới"
-            onPress={onAddNew}
-          />
-          <FilterButton onPress={() => onSearch(inputValue)} />
+          {isITStaff && (
+            <FilterActionButton
+              className="bg-green-500 hover:bg-green-600 dark:shadow-md dark:shadow-success/40 mr-2"
+              color="success"
+              icon={<AddNewIcon className="w-4 h-4" />}
+              label="Thêm mới"
+              onPress={onAddNew}
+            />
+          )}
+          <FilterButton onPress={handleSearch} />
         </div>
       }
     >
@@ -49,8 +53,11 @@ export const FilterSection = ({
           <div className="md:col-span-1">
             <CustomInput
               label="Từ khóa"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSearch();
+              }}
             />
           </div>
         </div>

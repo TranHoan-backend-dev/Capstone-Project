@@ -2,6 +2,7 @@ package com.capstone.construction.application.business.estimate;
 
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.enumerate.ProcessingStatus;
+import com.capstone.common.enumerate.RoleName;
 import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.common.utils.SharedConstant;
 import com.capstone.construction.application.dto.request.estimate.CreateRequest;
@@ -46,47 +47,28 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   @Transactional(rollbackFor = Exception.class)
   public CostEstimateResponse createEstimate(@NonNull CreateRequest request) {
     log.info("Creating new cost estimate for customer: {}", request.customerName());
-    var installationForm = ifRepo.findById(new InstallationFormId(request.formNumber(), request.formCode()))
+    var installationForm = ifRepo.findById(new InstallationFormId(request.formCode(), request.formNumber()))
       .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_60, request.formCode(), request.formNumber())));
-    var overallMeterStatus = owmSrv.isOverallMeterExisting(request.overallWaterMeterId())
-      .data().toString();
-    var meterStatus = owmSrv.isMeterExisting(request.waterMeterSerial())
-      .data().toString();
-    if (Boolean.parseBoolean(overallMeterStatus) || Boolean.parseBoolean(meterStatus)) {
-      throw new IllegalArgumentException("Đồng hồ nước không tồn tại");
+
+    var est = eRepo.existsByInstallationForm(installationForm);
+    if (est) {
+      throw new IllegalArgumentException(Message.PT_29);
     }
 
     var estimate = CostEstimate.create(builder -> builder
       .customerName(request.customerName())
       .address(request.address())
-      .contractFee(request.contractFee())
-      .surveyFee(request.surveyFee())
-      .surveyEffort(request.surveyEffort())
-      .installationFee(request.installationFee())
-      .laborCoefficient(request.laborCoefficient())
-      .generalCostCoefficient(request.generalCostCoefficient())
-      .precalculatedTaxCoefficient(request.precalculatedTaxCoefficient())
-      .constructionMachineryCoefficient(request.constructionMachineryCoefficient())
-      .vatCoefficient(request.vatCoefficient())
-      .designCoefficient(request.designCoefficient())
-      .designFee(request.designFee())
-      .designImageUrl(request.designImageUrl())
-      .registrationAt(request.registrationAt())
+      .registrationAt(LocalDate.from(request.registrationAt()))
       .createBy(request.createBy())
-      .waterMeterSerial(request.waterMeterSerial())
+      .installationForm(installationForm)
       .overallWaterMeterId(request.overallWaterMeterId())
-      .installationFormId(installationForm)
     );
-    if (request.note() != null && !request.note().isBlank()) {
-      estimate.setNote(request.note());
-    }
 
     var saved = eRepo.save(estimate);
 
     // cap nhat trang thai cua installation form
     var status = installationForm.getStatus();
     status.setEstimate(ProcessingStatus.PROCESSING);
-    System.out.println(installationForm);
     ifRepo.save(installationForm);
 
     return mapToResponse(saved);
@@ -199,6 +181,26 @@ public class CostEstimateServiceImpl implements CostEstimateService {
     var status = form.getStatus();
     status.setEstimate(request ? ProcessingStatus.APPROVED : ProcessingStatus.REJECTED);
     ifRepo.save(form);
+  }
+
+  @Override
+  public boolean signForCostEstimate(String significance, @NonNull RoleName role, String estimateId) {
+    var costEstimate = eRepo.findById(estimateId)
+      .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_61, estimateId)));
+    var costEstSignificance = costEstimate.getSignificance();
+    switch (role) {
+      case COMPANY_LEADERSHIP -> costEstSignificance.setCompanyLeaderShip(significance);
+      case SURVEY_STAFF -> costEstSignificance.setSurveyStaff(significance);
+      case PLANNING_TECHNICAL_DEPARTMENT_HEAD -> costEstSignificance.setPlanningTechnicalHead(significance);
+    }
+    eRepo.save(costEstimate);
+
+    return costEstSignificance.isCostEstimateFullySigned();
+  }
+
+  @Override
+  public boolean isExisting(String id) {
+    return eRepo.existsById(id);
   }
 
   private LocalDateTime parseFrom(String from) {

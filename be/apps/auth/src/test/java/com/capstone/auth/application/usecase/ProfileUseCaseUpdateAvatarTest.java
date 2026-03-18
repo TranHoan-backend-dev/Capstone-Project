@@ -7,13 +7,18 @@ import com.capstone.auth.application.business.users.UserService;
 import com.capstone.auth.application.exception.IncompatibleAvatarException;
 import com.capstone.common.exception.NotExistingException;
 import com.capstone.auth.infrastructure.utils.Message;
+import com.capstone.auth.infrastructure.service.GcsService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.keycloak.admin.client.Keycloak;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.DisabledException;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
@@ -32,8 +37,22 @@ class ProfileUseCaseUpdateAvatarTest {
   @Mock
   ProfileService profileService;
 
+  @Mock
+  GcsService gcsSrv;
+
+  @Mock
+  Keycloak keycloak;
+
   @InjectMocks
   ProfileUseCase profileUseCase;
+
+  @Mock
+  private Logger log;
+
+  @BeforeEach
+  void setUp() {
+    ReflectionTestUtils.setField(profileUseCase, "log", log);
+  }
 
   @Test
   void updateAvatar_returns_profile_response_when_successful() {
@@ -44,6 +63,7 @@ class ProfileUseCaseUpdateAvatarTest {
     var profileDTO = createProfileDTO("hehe");
 
     when(userService.getUserById(id)).thenReturn(userDTO);
+    when(gcsSrv.upload(any())).thenReturn("hehe");
     when(profileService.updateAvatar(eq(id), eq("hehe"))).thenReturn(profileDTO);
 
     var response = profileUseCase.updateAvatar(id, file);
@@ -97,7 +117,8 @@ class ProfileUseCaseUpdateAvatarTest {
     var profileDTO = createProfileDTO("different-avatar-url");
 
     when(userService.getUserById(id)).thenReturn(userDTO);
-    when(profileService.updateAvatar(eq(id), eq("hehe"))).thenReturn(profileDTO);
+    when(gcsSrv.upload(any())).thenReturn("hehe");
+    when(profileService.updateAvatar(eq(id), eq("hehe"))).thenThrow(new IncompatibleAvatarException());
 
     IncompatibleAvatarException ex = assertThrows(IncompatibleAvatarException.class,
       () -> profileUseCase.updateAvatar(id, file));
@@ -115,6 +136,7 @@ class ProfileUseCaseUpdateAvatarTest {
     var profileDTO = createProfileDTO("hehe");
 
     when(userService.getUserById(id)).thenReturn(userDTO);
+    when(gcsSrv.upload(any())).thenReturn("hehe");
     when(profileService.updateAvatar(eq(id), eq("hehe"))).thenReturn(profileDTO);
 
     var response = profileUseCase.updateAvatar(id, file);
@@ -132,6 +154,7 @@ class ProfileUseCaseUpdateAvatarTest {
       LocalDate.parse("1990-01-01"));
 
     when(userService.getUserById(id)).thenReturn(userDTO);
+    when(gcsSrv.upload(any())).thenReturn("hehe");
     when(profileService.updateAvatar(eq(id), eq("hehe"))).thenReturn(profileDTO);
 
     var response = profileUseCase.updateAvatar(id, file);
@@ -149,6 +172,7 @@ class ProfileUseCaseUpdateAvatarTest {
       LocalDate.parse("1990-01-01"));
 
     when(userService.getUserById(id)).thenReturn(userDTO);
+    when(gcsSrv.upload(any())).thenReturn("hehe");
     when(profileService.updateAvatar(eq(id), eq("hehe"))).thenReturn(profileDTO);
 
     var response = profileUseCase.updateAvatar(id, file);
@@ -165,6 +189,7 @@ class ProfileUseCaseUpdateAvatarTest {
     var profileDTO = new ProfileDTO("encoded-id", "Full Name", "hehe", "Address", "0912345678", true, null);
 
     when(userService.getUserById(id)).thenReturn(userDTO);
+    when(gcsSrv.upload(any())).thenReturn("hehe");
     when(profileService.updateAvatar(eq(id), eq("hehe"))).thenReturn(profileDTO);
 
     var response = profileUseCase.updateAvatar(id, file);
@@ -182,6 +207,7 @@ class ProfileUseCaseUpdateAvatarTest {
     var profileDTO = createProfileDTO("hehe");
 
     when(userService.getUserById(id)).thenReturn(userDTO);
+    when(gcsSrv.upload(any())).thenReturn("hehe");
     when(profileService.updateAvatar(eq(id), eq("hehe"))).thenReturn(profileDTO);
 
     var response = profileUseCase.updateAvatar(id, file);
@@ -198,6 +224,7 @@ class ProfileUseCaseUpdateAvatarTest {
     var profileDTO = createProfileDTO("hehe");
 
     when(userService.getUserById(id)).thenReturn(userDTO);
+    when(gcsSrv.upload(any())).thenReturn("hehe");
     when(profileService.updateAvatar(eq(id), eq("hehe"))).thenReturn(profileDTO);
 
     profileUseCase.updateAvatar(id, file);
@@ -216,6 +243,7 @@ class ProfileUseCaseUpdateAvatarTest {
       LocalDate.of(1995, 12, 25));
 
     when(userService.getUserById(id)).thenReturn(userDTO);
+    when(gcsSrv.upload(any())).thenReturn("hehe");
     when(profileService.updateAvatar(eq(id), eq("hehe"))).thenReturn(profileDTO);
 
     var response = profileUseCase.updateAvatar(id, file);
@@ -233,6 +261,7 @@ class ProfileUseCaseUpdateAvatarTest {
       LocalDate.of(1985, 5, 15));
 
     when(userService.getUserById(id)).thenReturn(userDTO);
+    when(gcsSrv.upload(any())).thenReturn("hehe");
     when(profileService.updateAvatar(eq(id), eq("hehe"))).thenReturn(profileDTO);
 
     var response = profileUseCase.updateAvatar(id, file);

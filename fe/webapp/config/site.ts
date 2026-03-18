@@ -27,9 +27,37 @@ export const siteConfig = {
           href: "/employees",
         },
         {
+          key: "jobs",
+          label: "Quản lý Công việc",
+          href: "/jobs",
+        },
+        {
+          key: "communes",
+          label: "Quản lý Phường/xã",
+          href: "/communes",
+        },
+        {
+          key: "neighborhood-units",
+          label: "Quản lý Tổ/Khu phố",
+          href: "/neighborhood-units",
+        },
+        {
           key: "roads",
           label: "Quản lý Đường phố",
           href: "/roads",
+        },
+      ],
+    },
+
+    // Thiết bị
+    {
+      key: "device",
+      label: "Thiết bị",
+      items: [
+        {
+          key: "units",
+          label: "Quản lý Đơn vị tính",
+          href: "/units",
         },
       ],
     },

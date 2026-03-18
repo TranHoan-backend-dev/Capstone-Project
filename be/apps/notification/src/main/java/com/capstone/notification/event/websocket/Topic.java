@@ -41,15 +41,9 @@ public enum Topic {
   public static @NonNull String getTopicOfPlanningTechnicalDepartment(@NonNull RoleName roleName, String suffix) {
     var str = "";
     switch (roleName) {
-      case ORDER_RECEIVING_STAFF -> {
-        str = "/technical/order-receiving-staff";
-      }
-      case SURVEY_STAFF -> {
-        str = "/technical/survey-staff";
-      }
-      default -> {
-        str = "/technical/head";
-      }
+      case ORDER_RECEIVING_STAFF -> str = "/technical/order-receiving-staff";
+      case SURVEY_STAFF -> str = "/technical/survey-staff";
+      default -> str = "/technical/head";
     }
     return str + suffix;
   }

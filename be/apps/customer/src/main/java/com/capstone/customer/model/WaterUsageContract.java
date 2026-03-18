@@ -1,5 +1,6 @@
 package com.capstone.customer.model;
 
+import com.capstone.common.utils.SharedMessage;
 import com.capstone.customer.utils.Message;
 import jakarta.persistence.*;
 import lombok.*;
@@ -34,11 +35,19 @@ public class WaterUsageContract {
   @OneToOne(fetch = FetchType.EAGER)
   Customer customer;
 
-  String installationFormId;
+  @Column(nullable = false, unique = true)
+  String formCode;
+
+  @Column(nullable = false)
+  String formNumber;
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(columnDefinition = "jsonb")
   List<Representative> representative;
+
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(columnDefinition = "jsonb")
+  List<Appendix> appendix;
 
   @PrePersist
   void onCreate() {
@@ -52,25 +61,37 @@ public class WaterUsageContract {
   }
 
   public void setContractId(String id) {
-    Objects.requireNonNull(id, Message.ENT_06);
+    Objects.requireNonNull(id, Message.ENT_02);
     this.contractId = id;
   }
 
   public void setCustomer(Customer customer) {
-    Objects.requireNonNull(customer, Message.ENT_11);
+    Objects.requireNonNull(customer, Message.ENT_04);
     this.customer = customer;
   }
 
-  public void setInstallationFormId(String value) {
-    Objects.requireNonNull(value, Message.ENT_09);
+  public void setFormCode(String value) {
+    Objects.requireNonNull(value, SharedMessage.MES_21);
     if (value.trim().isEmpty()) {
-      throw new IllegalArgumentException(Message.ENT_09);
+      throw new IllegalArgumentException(SharedMessage.MES_21);
     }
-    this.installationFormId = value;
+    this.formCode = value;
+  }
+
+  public void setFormNumber(String value) {
+    Objects.requireNonNull(value, SharedMessage.MES_20);
+    if (value.trim().isEmpty()) {
+      throw new IllegalArgumentException(SharedMessage.MES_20);
+    }
+    this.formNumber = value;
+  }
+
+  public void setAppendix(List<Appendix> value) {
+    Objects.requireNonNull(value, Message.ENT_24);
+    this.appendix = value;
   }
 
   public void setRepresentative(List<Representative> representative) {
-    // Note: Assuming ENT_42 is a constant for "Representatives cannot be null"
     Objects.requireNonNull(representative, "Representatives cannot be null");
     this.representative = representative;
   }
@@ -89,19 +110,25 @@ public class WaterUsageContract {
       return this;
     }
 
-    public ContractBuilder customer(Customer customer) {
+    public void customer(Customer customer) {
       waterUsageContract.setCustomer(customer);
+    }
+
+    public void formCode(String value) {
+      waterUsageContract.setFormCode(value);
+    }
+
+    public ContractBuilder formNumber(String value) {
+      waterUsageContract.setFormNumber(value);
       return this;
     }
 
-    public ContractBuilder installationFormId(String installationFormId) {
-      waterUsageContract.setInstallationFormId(installationFormId);
-      return this;
-    }
-
-    public ContractBuilder representative(List<Representative> representative) {
+    public void representative(List<Representative> representative) {
       waterUsageContract.setRepresentative(representative);
-      return this;
+    }
+
+    public void appendix(List<Appendix> value) {
+      waterUsageContract.setAppendix(value);
     }
 
     public WaterUsageContract build() {

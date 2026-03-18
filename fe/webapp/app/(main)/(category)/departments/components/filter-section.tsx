@@ -48,7 +48,7 @@ export const FilterSection = ({
         <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
           <div className="md:col-span-1">
             <CustomInput
-              label="Tên phòng ban"
+              label="Từ khóa"
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
               onKeyDown={(e) => {

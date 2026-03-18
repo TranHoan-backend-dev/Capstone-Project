@@ -132,7 +132,7 @@ public class InstallationForm {
   }
 
   public void setFormNumber(String formNumber) {
-    requireNonNullAndNotEmpty(formNumber, Message.PT_28);
+    requireNonNullAndNotEmpty(formNumber, SharedMessage.MES_20);
     this.id.setFormNumber(formNumber);
   }
 
@@ -152,7 +152,7 @@ public class InstallationForm {
   }
 
   public void setRepresentative(List<Representative> representative) {
-    Objects.requireNonNull(representative, Message.PT_29);
+    Objects.requireNonNull(representative, SharedMessage.MES_22);
     this.representative = representative;
   }
 
@@ -252,7 +252,7 @@ public class InstallationForm {
   }
 
   public void setFormCode(String value) {
-    requireNonNullAndNotEmpty(value, Message.PT_08);
+    requireNonNullAndNotEmpty(value, SharedMessage.MES_21);
     this.id.setFormCode(value);
   }
 

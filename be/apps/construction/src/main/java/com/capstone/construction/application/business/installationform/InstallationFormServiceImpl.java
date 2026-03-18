@@ -46,12 +46,8 @@ public class InstallationFormServiceImpl implements InstallationFormService {
 
   @Override
   @Transactional(rollbackFor = Exception.class)
-  public NewInstallationFormResponse createNewInstallationForm(@NonNull NewOrderRequest request) {
+  public NewInstallationFormResponse createNewInstallationForm(String userId, @NonNull NewOrderRequest request) {
     log.info("Creating new installation form with number: {}", request.formNumber());
-
-    if (!checkAuthorExisting(request.createdBy())) {
-      throw new IllegalArgumentException(Message.PT_36);
-    }
 
     if (!checkMeterExisting(request.overallWaterMeterId())) {
       throw new IllegalArgumentException(Message.PT_58);
@@ -76,7 +72,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       .numberOfHousehold(request.numberOfHousehold())
       .householdRegistrationNumber(request.householdRegistrationNumber())
       .network(getNetwork(request.networkId()))
-      .createdBy(request.createdBy())
+      .createdBy(userId)
       .overallWaterMeterId(request.overallWaterMeterId()));
     if (request.representative() != null) {
       entity.setRepresentative(request.representative());
@@ -97,14 +93,15 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   }
 
   @Override
-  public Page<InstallationFormListResponse> getInstallationForms(Pageable pageable, BaseFilterRequest request) {
+  public Page<InstallationFormListResponse> getInstallationForms(Pageable pageable,
+                                                                 @NonNull BaseFilterRequest request) {
     log.info("Fetching paginated installation forms with pageable: {}", pageable);
     var startDate = parseFrom(request.from());
-    var endDate = parseFrom(request.to());
+    var endDate = parseTo(request.to());
 
-    var result = (startDate != null || (request.keyword() != null && !request.keyword().isBlank())) ? ifRepo.findAll(
+    var result = (startDate != null || endDate != null || (request.keyword() != null && !request.keyword().isBlank())) ? ifRepo.findAll(
       InstallationFormRepository.search(request.keyword(), startDate, endDate, null, null),
-      pageable) : ifRepo.findAll(pageable);
+      pageable) : ifRepo.findAllNotRejectedInstallationForms(pageable);
 
     var content = result.getContent()
       .stream()
@@ -115,15 +112,16 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   }
 
   @Override
-  public Page<InstallationFormListResponse> getConstructionRequestsList(Pageable pageable, @NonNull BaseFilterRequest request) {
+  public Page<InstallationFormListResponse> getConstructionRequestsList(Pageable pageable,
+                                                                        @NonNull BaseFilterRequest request) {
     log.info("Fetching paginated construction request with pageable: {}", pageable);
     var startDate = parseFrom(request.from());
-    var endDate = parseFrom(request.to());
+    var endDate = parseTo(request.to());
     var specification = InstallationFormRepository.search(
       request.keyword(), startDate, endDate,
       ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING);
 
-    var response = (startDate != null || (request.keyword() != null && !request.keyword().isBlank()))
+    var response = (startDate != null || endDate != null || (request.keyword() != null && !request.keyword().isBlank()))
       ? ifRepo.findAll(specification, pageable)
       : ifRepo.findByStatus_ContractAndStatus_Construction(ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING,
       pageable);
@@ -140,21 +138,14 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   public void approveAndAssignInstallationForm(@NonNull ApproveRequest request) {
     log.info("Approving and assigning installation form with number: {}", request.formNumber());
     var order = ifRepo.findById(new InstallationFormId(request.formCode(), request.formNumber()))
-      .orElseThrow(() -> new IllegalArgumentException(Message.PT_36));
-
+      .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_60, request.formNumber(), request.formCode())));
     if (request.status()) {
-      // trưởng phòng duyệt đơn
+      // nvks duyệt đơn
       var requestStatus = order.getStatus();
       requestStatus.setRegistration(ProcessingStatus.APPROVED);
       requestStatus.setEstimate(ProcessingStatus.PENDING_FOR_APPROVAL);
-
-      var status = empSrv.isEmployeeExisting(request.empId());
-      if (!Boolean.parseBoolean(status.data().toString())) {
-        throw new IllegalArgumentException(Message.PT_35);
-      }
-      order.setHandoverBy(request.empId());
     } else {
-      // trưởng phòng hủy đơn
+      // nvks hủy đơn
       var status = order.getStatus();
       status.setRegistration(ProcessingStatus.REJECTED);
     }
@@ -173,6 +164,18 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   public Boolean checkAnyFormsBelongedToNetwork(String id) {
     log.info("Checking if installation form with id: {}", id);
     return ifRepo.existsByNetwork_BranchId(id);
+  }
+
+  @Override
+  public void assignInstallationForm(String id, InstallationFormId installationFormId, @NonNull Boolean status) {
+    log.info("Assigning installation form with id: {}", id);
+    var form = ifRepo.findById(installationFormId).orElseThrow(() -> new IllegalArgumentException(Message.PT_36));
+    if (status) {
+      form.setHandoverBy(id);
+    } else {
+      form.setConstructedBy(id);
+    }
+    ifRepo.save(form);
   }
 
   @Override
@@ -205,7 +208,9 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       (constructionEmployeeName != null && constructionEmployeeName.data() != null)
         ? constructionEmployeeName.data().toString()
         : unknown,
-      entity.getStatus());
+      entity.getStatus(),
+      entity.getOverallWaterMeterId()
+    );
   }
 
   private WaterSupplyNetwork getNetwork(String networkId) {
@@ -214,16 +219,6 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       log.error("Water supply network not found: {}", networkId);
       return new IllegalArgumentException(Message.PT_34);
     });
-  }
-
-  private boolean checkAuthorExisting(String authorId) {
-    log.info("Verifying existence of employee: {}", authorId);
-    var response = empSrv.isEmployeeExisting(authorId);
-    boolean exists = Boolean.parseBoolean(response.data().toString());
-    if (!exists) {
-      log.warn("Employee not found: {}", authorId);
-    }
-    return exists;
   }
 
   private boolean checkMeterExisting(String id) {

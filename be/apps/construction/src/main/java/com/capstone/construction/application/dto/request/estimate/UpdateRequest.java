@@ -1,6 +1,8 @@
 package com.capstone.construction.application.dto.request.estimate;
 
+import com.capstone.construction.infrastructure.utils.Message;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.web.multipart.MultipartFile;
 
 @Schema(description = "Yêu cầu cập nhật dự toán")
@@ -54,6 +56,10 @@ public record UpdateRequest(
   String waterMeterSerial,
 
   @Schema(description = "ID đồng hồ nước tổng", example = "OWM-98765")
-  String overallWaterMeterId
+  String overallWaterMeterId,
+
+  @Schema(description = "Trạng thái đã hoàn tất hay chưa. Mặc định khi lưu bản nháp thì là false, khi hoàn tất sẽ là true", example = "true")
+  @NotNull(message = Message.PT_08)
+  Boolean isFinished
 ) {
 }

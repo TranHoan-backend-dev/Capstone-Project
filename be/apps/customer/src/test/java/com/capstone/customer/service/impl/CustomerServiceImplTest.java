@@ -1,7 +1,8 @@
 package com.capstone.customer.service.impl;
 
+import com.capstone.common.enumerate.CustomerType;
 import com.capstone.common.enumerate.UsageTarget;
-import com.capstone.customer.dto.request.CustomerRequest;
+import com.capstone.customer.dto.request.customer.CreateRequest;
 import com.capstone.customer.dto.response.CustomerResponse;
 import com.capstone.customer.model.Customer;
 import com.capstone.customer.repository.CustomerRepository;
@@ -36,22 +37,21 @@ class CustomerServiceImplTest {
   private CustomerServiceImpl customerService;
 
   private Customer customer;
-  private CustomerRequest customerRequest;
+  private CreateRequest createRequest;
   private Pageable pageable;
-  private LocalDateTime now;
 
   @BeforeEach
   void setUp() {
     pageable = PageRequest.of(0, 10);
-    now = LocalDateTime.now();
+    var now = LocalDateTime.now();
     customer = mock(Customer.class);
-    
+
     // Mocking common get methods used in mapToResponse
     lenient().when(customer.getCustomerId()).thenReturn("CUST-123");
     lenient().when(customer.getName()).thenReturn("Trần Văn A");
     lenient().when(customer.getEmail()).thenReturn("tranvana@example.com");
     lenient().when(customer.getPhoneNumber()).thenReturn("0901234567");
-    lenient().when(customer.getType()).thenReturn("CÁ NHÂN");
+    lenient().when(customer.getType()).thenReturn(CustomerType.FAMILY);
     lenient().when(customer.getIsBigCustomer()).thenReturn(false);
     lenient().when(customer.getUsageTarget()).thenReturn(UsageTarget.DOMESTIC);
     lenient().when(customer.getNumberOfHouseholds()).thenReturn(1);
@@ -77,16 +77,16 @@ class CustomerServiceImplTest {
     lenient().when(customer.getIsActive()).thenReturn(true);
     lenient().when(customer.getCreatedAt()).thenReturn(now);
     lenient().when(customer.getUpdatedAt()).thenReturn(now);
-    lenient().when(customer.getInstallationFormId()).thenReturn("IF001");
+    lenient().when(customer.getFormNumber()).thenReturn("IF001");
     lenient().when(customer.getWaterPriceId()).thenReturn("WP001");
     lenient().when(customer.getWaterMeterId()).thenReturn("WM001");
 
-    customerRequest = new CustomerRequest(
-      "Trần Văn A", "tranvana@example.com", "0901234567", "CÁ NHÂN", false,
+    createRequest = new CreateRequest(
+      "Trần Văn A", "tranvana@example.com", "0901234567", CustomerType.FAMILY, false,
       UsageTarget.DOMESTIC, 1, 123456, 1000, false, false, "0", "5000",
       1500000, "2023-12", 20000, "CƠ", "012345678901", "Cục CSQLHC về TTXH",
       "TIỀN MẶT", "123456789", "Vietcombank", "TRAN VAN A", "BRC001", "P001",
-      "CP001", true, null, "IF001", "WP001", "WM001"
+      "CP001", true, null, "IF001", "FORMCODE-1", "WP001", "WM001"
     );
   }
 
@@ -97,7 +97,7 @@ class CustomerServiceImplTest {
     when(customerRepository.save(any(Customer.class))).thenReturn(customer);
 
     // When
-    CustomerResponse response = customerService.createCustomer(customerRequest);
+    var response = customerService.createCustomer(createRequest);
 
     // Then
     assertThat(response).isNotNull();
@@ -109,12 +109,12 @@ class CustomerServiceImplTest {
   @DisplayName("Should create customer with default active status when isActive is null")
   void should_CreateCustomerWithDefaultActiveStatus_When_IsActiveIsNull() {
     // Given
-    CustomerRequest requestWithNullActive = new CustomerRequest(
-      "Trần Văn A", "tranvana@example.com", "0901234567", "CÁ NHÂN", false,
+    var requestWithNullActive = new CreateRequest(
+      "Trần Văn A", "tranvana@example.com", "0901234567", CustomerType.FAMILY, false,
       UsageTarget.DOMESTIC, 1, 123456, 1000, false, false, "0", "5000",
       1500000, "2023-12", 20000, "CƠ", "012345678901", "Cục CSQLHC về TTXH",
       "TIỀN MẶT", "123456789", "Vietcombank", "TRAN VAN A", "BRC001", "P001",
-      "CP001", null, null, "IF001", "WP001", "WM001"
+      "CP001", null, null, "IF001", "FORMCODE-2", "WP001", "WM001"
     );
     when(customerRepository.save(any(Customer.class))).thenReturn(customer);
 
@@ -129,16 +129,16 @@ class CustomerServiceImplTest {
   @DisplayName("Should update customer successfully")
   void should_UpdateCustomer_When_CustomerExists() {
     // Given
-    String id = "CUST-123";
+    var id = "CUST-123";
     when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
     when(customerRepository.save(any(Customer.class))).thenReturn(customer);
 
     // When
-    CustomerResponse response = customerService.updateCustomer(id, customerRequest);
+    var response = customerService.updateCustomer(id, createRequest);
 
     // Then
     assertThat(response).isNotNull();
-    verify(customer).setName(customerRequest.name());
+    verify(customer).setName(createRequest.name());
     verify(customerRepository).save(customer);
   }
 
@@ -146,18 +146,18 @@ class CustomerServiceImplTest {
   @DisplayName("Should throw exception when updating non-existent customer")
   void should_ThrowException_When_UpdateNonExistentCustomer() {
     // Given
-    String id = "NON-EXISTENT";
+    var id = "NON-EXISTENT";
     when(customerRepository.findById(id)).thenReturn(Optional.empty());
 
     // When & Then
-    assertThrows(IllegalArgumentException.class, () -> customerService.updateCustomer(id, customerRequest));
+    assertThrows(IllegalArgumentException.class, () -> customerService.updateCustomer(id, createRequest));
   }
 
   @Test
   @DisplayName("Should delete customer successfully")
   void should_DeleteCustomer_When_CustomerExists() {
     // Given
-    String id = "CUST-123";
+    var id = "CUST-123";
     when(customerRepository.existsById(id)).thenReturn(true);
 
     // When
@@ -171,7 +171,7 @@ class CustomerServiceImplTest {
   @DisplayName("Should throw exception when deleting non-existent customer")
   void should_ThrowException_When_DeleteNonExistentCustomer() {
     // Given
-    String id = "NON-EXISTENT";
+    var id = "NON-EXISTENT";
     when(customerRepository.existsById(id)).thenReturn(false);
 
     // When & Then
@@ -182,11 +182,11 @@ class CustomerServiceImplTest {
   @DisplayName("Should return customer by ID when exists")
   void should_ReturnCustomer_When_IdExists() {
     // Given
-    String id = "CUST-123";
+    var id = "CUST-123";
     when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
 
     // When
-    CustomerResponse response = customerService.getCustomerById(id);
+    var response = customerService.getCustomerById(id);
 
     // Then
     assertThat(response).isNotNull();
@@ -197,7 +197,7 @@ class CustomerServiceImplTest {
   @DisplayName("Should throw exception when fetching non-existent customer")
   void should_ThrowException_When_GetNonExistentCustomer() {
     // Given
-    String id = "NON-EXISTENT";
+    var id = "NON-EXISTENT";
     when(customerRepository.findById(id)).thenReturn(Optional.empty());
 
     // When & Then
@@ -224,11 +224,11 @@ class CustomerServiceImplTest {
   @DisplayName("Should return true when customers are applied this price")
   void should_ReturnTrue_When_PriceIsApplied() {
     // Given
-    String priceId = "WP001";
+    var priceId = "WP001";
     when(customerRepository.existsByWaterPriceId(priceId)).thenReturn(true);
 
     // When
-    boolean result = customerService.areCustomersAppliedThisPrice(priceId);
+    var result = customerService.areCustomersAppliedThisPrice(priceId);
 
     // Then
     assertThat(result).isTrue();
@@ -238,11 +238,11 @@ class CustomerServiceImplTest {
   @DisplayName("Should return false when no customers are applied this price")
   void should_ReturnFalse_When_PriceIsNotApplied() {
     // Given
-    String priceId = "WP002";
+    var priceId = "WP002";
     when(customerRepository.existsByWaterPriceId(priceId)).thenReturn(false);
 
     // When
-    boolean result = customerService.areCustomersAppliedThisPrice(priceId);
+    var result = customerService.areCustomersAppliedThisPrice(priceId);
 
     // Then
     assertThat(result).isFalse();

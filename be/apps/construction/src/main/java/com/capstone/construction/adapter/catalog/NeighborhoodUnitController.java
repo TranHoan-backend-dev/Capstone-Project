@@ -100,9 +100,12 @@ public class NeighborhoodUnitController {
     @ApiResponse(responseCode = "200", description = "Trả về danh sách đơn vị hành chính theo trang", content = @Content(schema = @Schema(implementation = NeighborhoodUnitResponse.class)))
   })
   public ResponseEntity<WrapperApiResponse> getAllUnits(
-    @PageableDefault @Parameter(description = "Pagination parameters") Pageable pageable) {
+    @PageableDefault @Parameter(description = "Pagination parameters") Pageable pageable,
+    @RequestParam(required = false) @Parameter(description = "Từ khóa tìm kiếm theo tên đơn vị hành chính") String keyword,
+    @RequestParam(required = false) @Parameter(description = "Lọc theo Commune ID") String communeId
+  ) {
     log.info("REST request to get all units");
-    var response = unitUseCase.getAllUnits(pageable);
+    var response = unitUseCase.getAllUnits(pageable, keyword, communeId);
     return ResponseEntity.ok(new WrapperApiResponse(
       HttpStatus.OK.value(), "Lấy danh sách tổ/khu/xóm thành công", response, LocalDateTime.now()));
   }

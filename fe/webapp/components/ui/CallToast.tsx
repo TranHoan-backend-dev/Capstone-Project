@@ -27,11 +27,11 @@ export const CallToast = ({
   addToast({
     ...(title && { title }),
     description: (
-      <div className="flex items-center gap-2">
+      <div className="flex items-start gap-2 max-w-sm">
         {isCircularProgress && (
           <CircularProgress aria-label="Loading..." size="sm" />
         )}
-        <span>{message}</span>
+        <span className="break-words whitespace-pre-wrap">{message}</span>
       </div>
     ),
     color: color,

@@ -3,6 +3,7 @@ package com.capstone.construction.infrastructure.persistence;
 import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.construction.domain.model.InstallationForm;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
 import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Page;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -30,12 +32,14 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
    * - query -> object dai dien cho query<br/>
    * - cb (CriteriaBuilder) -> tao dieu kien (Predicate)
    *
-   * @param keyword
-   * @param start
-   * @param end
-   * @return
+   * @param keyword tu khoa, tim kiem theo cac truong address, customerName, citizenIdentificationNumber, citizenIdentificationProvideLocation,
+   *                phoneNumber, taxCode, bankAccountNumber, bankAccountProviderLocation, usageTarget, householdRegistrationNumber,
+   *                customerType
+   * @param start   thoi gian bat dau loc. Tinh theo createdAt
+   * @param end     thoi gian ket thuc loc. Tinh theo createdAt
+   * @return Specification&lt;InstallationForm&gt;
    */
-  static @NonNull Specification<InstallationForm> search(String keyword, LocalDateTime start, LocalDateTime end, ProcessingStatus statusContract, ProcessingStatus statusConstruction) {
+  static @NonNull Specification<InstallationForm> search(String keyword, LocalDateTime start, LocalDateTime end, ProcessingStatus statusEstimate, ProcessingStatus statusConstruction) {
     return (root, query, cb) -> {
       // tao danh sach cac dieu kien
       List<Predicate> predicates = new ArrayList<>();
@@ -53,33 +57,51 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
 
         list.forEach(field ->
           orPredicates.add(cb.like(
-            cb.function(unaccent, String.class, cb.lower(root.get(field).as(String.class))),
+            cb.function(unaccent, String.class, cb.lower(cb.function("concat", String.class, cb.literal(""), root.get(field)))),
             cb.function(unaccent, String.class, cb.literal(lowerCaseKeyword))
           )));
-
-        orPredicates.add(
-          cb.like(
-            cb.function(unaccent, String.class, cb.lower(root.get("representative").get("name"))),
-            cb.function(unaccent, String.class, cb.literal(lowerCaseKeyword))
-          ));
-
-        orPredicates.add(
-          cb.like(
-            cb.function(unaccent, String.class, cb.lower(root.get("representative").get("position"))),
-            cb.function(unaccent, String.class, cb.literal(lowerCaseKeyword))
-          ));
 
         // gop 2 dieu kien tren bang OR
         predicates.add(cb.or(orPredicates.toArray(new Predicate[0])));
       }
 
-      if (start != null && end != null) {
-        predicates.add(cb.between(root.get("createdAt"), start, end));
+      if (start != null) {
+        predicates.add(cb.greaterThanOrEqualTo(root.get("createdAt"), start));
       }
 
-      if (statusConstruction != null && statusContract != null) {
-        predicates.add(cb.equal(root.get("status").get("contract"), statusContract));
-        predicates.add(cb.equal(root.get("status").get("construction"), statusConstruction));
+      if (end != null) {
+        predicates.add(cb.lessThanOrEqualTo(root.get("createdAt"), end));
+      }
+
+      Expression<String> registration =
+        cb.function(
+          "jsonb_extract_path_text",
+          String.class,
+          root.get("status"),
+          cb.literal("registration")
+        );
+      Expression<String> estimate =
+        cb.function(
+          "jsonb_extract_path_text",
+          String.class,
+          root.get("status"),
+          cb.literal("estimate")
+        );
+      Expression<String> construction =
+        cb.function(
+          "jsonb_extract_path_text",
+          String.class,
+          root.get("status"),
+          cb.literal("construction")
+        );
+
+      predicates.add(
+        cb.notEqual(registration, ProcessingStatus.REJECTED.name())
+      );
+
+      if (statusConstruction != null && statusEstimate != null) {
+        predicates.add(cb.equal(estimate, statusEstimate.name()));
+        predicates.add(cb.equal(construction, statusConstruction.name()));
       }
 
       // gop cac dieu kien bang toan tu AND
@@ -88,4 +110,11 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
   }
 
   Boolean existsByNetwork_BranchId(String id);
+
+  @Query(value = """
+    SELECT *
+    FROM installation_form i
+    WHERE i.status->>'registration' <> 'REJECTED'
+    """, nativeQuery = true)
+  Page<InstallationForm> findAllNotRejectedInstallationForms(Pageable pageable);
 }
