@@ -1,0 +1,216 @@
+### TC01 - Create notification successfully
+POST http://localhost:9007/api/v1/notification
+Content-Type: application/json
+
+{
+  "title": "Welcome",
+  "message": "Welcome to the system",
+  "link": "/dashboard"
+}
+
+> {%
+client.test("Status is 201", function() {
+  client.assert(response.status === 201);
+});
+%}
+
+
+### TC02 - Create notification with missing title (Optional)
+POST http://localhost:9007/api/v1/notification
+Content-Type: application/json
+
+{
+  "message": "System Update",
+  "link": "/updates"
+}
+
+> {%
+client.test("Status is 201", function() {
+  client.assert(response.status === 201);
+});
+%}
+
+
+### TC03 - Create notification with missing message (Required - @NotBlank)
+POST http://localhost:9007/api/v1/notification
+Content-Type: application/json
+
+{
+  "title": "Alert",
+  "link": "/alert"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC04 - Create notification with null message
+POST http://localhost:9007/api/v1/notification
+Content-Type: application/json
+
+{
+  "title": "Alert",
+  "message": null,
+  "link": "/alert"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC05 - Create notification with empty message
+POST http://localhost:9007/api/v1/notification
+Content-Type: application/json
+
+{
+  "title": "Alert",
+  "message": "",
+  "link": "/alert"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC06 - Create notification with malformed JSON
+POST http://localhost:9007/api/v1/notification
+Content-Type: application/json
+
+{
+  "title": "Broken",
+  "message": "Broken"
+  "link": "/broken"
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC07 - Create notification with empty body
+POST http://localhost:9007/api/v1/notification
+Content-Type: application/json
+
+{
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC08 - Get notifications successfully
+GET http://localhost:9007/api/v1/notification?page=0&size=10
+Authorization: Bearer {{jwt}}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC09 - Get notifications without authentication
+GET http://localhost:9007/api/v1/notification?page=0&size=10
+
+> {%
+client.test("Status is 401", function() {
+  client.assert(response.status === 401);
+});
+%}
+
+
+### TC10 - Get notifications with invalid page
+GET http://localhost:9007/api/v1/notification?page=-1&size=10
+Authorization: Bearer {{jwt}}
+
+> {%
+client.test("Status is 400 or 200 depending on config", function() {
+  client.assert(response.status === 400 || response.status === 200);
+});
+%}
+
+
+### TC11 - Get notifications with large size
+GET http://localhost:9007/api/v1/notification?page=0&size=1000
+Authorization: Bearer {{jwt}}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC12 - Create notification with very long title
+POST http://localhost:9007/api/v1/notification
+Content-Type: application/json
+
+{
+  "title": "A".repeat(1000),
+  "message": "Long title test",
+  "link": "/test"
+}
+
+> {%
+client.test("Status is 201 or 400", function() {
+  client.assert(response.status === 201 || response.status === 400);
+});
+%}
+
+
+### TC13 - Create notification with special characters
+POST http://localhost:9007/api/v1/notification
+Content-Type: application/json
+
+{
+  "title": "Special chars !@#$%^&*()_+",
+  "message": "Testing special chars in message \n \t \" '",
+  "link": "/test?param=value"
+}
+
+> {%
+client.test("Status is 201", function() {
+  client.assert(response.status === 201);
+});
+%}
+
+
+### TC14 - Create notification with HTML content (XSS test)
+POST http://localhost:9007/api/v1/notification
+Content-Type: application/json
+
+{
+  "title": "<script>alert('xss')</script>",
+  "message": "<img src=x onerror=alert('xss')>",
+  "link": "javascript:alert('xss')"
+}
+
+> {%
+client.test("Status is 201 or 400", function() {
+  client.assert(response.status === 201 || response.status === 400);
+});
+%}
+
+
+### TC15 - Get notifications with invalid sort parameter
+GET http://localhost:9007/api/v1/notification?sort=invalidField,asc
+Authorization: Bearer {{jwt}}
+
+> {%
+client.test("Status is 500 or 200 with default sort", function() {
+  client.assert(response.status === 500 || response.status === 200);
+});
+%}

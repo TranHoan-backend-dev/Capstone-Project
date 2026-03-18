@@ -6,15 +6,15 @@ import com.capstone.common.utils.Utils;
 import com.capstone.notification.dto.request.CreateNotificationRequest;
 import com.capstone.notification.service.boundary.NotificationService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Positive;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.slf4j.Logger;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,20 +23,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
-
 @AppLog
 @RestController
 @Validated
 @RequiredArgsConstructor
-@RequestMapping("/")
+@RequestMapping("/notification")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class NotificationController {
   NotificationService notificationService;
   @NonFinal
   Logger log;
 
-  @PostMapping("/notifications")
+  @PostMapping
   public ResponseEntity<WrapperApiResponse> createNotification(
     @RequestBody @Valid CreateNotificationRequest request
   ) {
@@ -46,16 +44,13 @@ public class NotificationController {
     return Utils.returnCreatedResponse("Tạo thông báo thành công");
   }
 
-  @GetMapping("/notifications")
+  @GetMapping
   public ResponseEntity<WrapperApiResponse> getNotifications(
-    @RequestParam @NotEmpty List<@NotBlank String> notificationIds,
-    @RequestParam(defaultValue = "20") @Positive int size
+    @AuthenticationPrincipal Jwt jwt,
+    @RequestParam Pageable pageable
   ) {
-    if (notificationIds.size() != size) {
-      return Utils.returnBadRequestResponse("Số lượng ID thông báo phải khớp với kích thước yêu cầu", null);
-    }
-
-    var response = notificationService.getNotificationsByIds(notificationIds, size);
+    var id = jwt.getSubject();
+    var response = notificationService.getNotificationsOfAnEmployee(pageable, id);
     log.info("Get notifications successfully: {}", response);
     return Utils.returnOkResponse("Lấy danh sách thông báo thành công", response);
   }
