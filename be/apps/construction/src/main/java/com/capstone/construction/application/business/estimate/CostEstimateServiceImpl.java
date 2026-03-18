@@ -5,6 +5,7 @@ import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.common.enumerate.RoleName;
 import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.common.utils.SharedConstant;
+import com.capstone.common.utils.SharedMessage;
 import com.capstone.construction.application.dto.request.estimate.CreateRequest;
 import com.capstone.construction.application.dto.request.estimate.UpdateRequest;
 import com.capstone.construction.application.dto.response.estimate.CostEstimateResponse;
@@ -48,7 +49,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   public CostEstimateResponse createEstimate(@NonNull CreateRequest request) {
     log.info("Creating new cost estimate for customer: {}", request.customerName());
     var installationForm = ifRepo.findById(new InstallationFormId(request.formCode(), request.formNumber()))
-      .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_60, request.formCode(), request.formNumber())));
+      .orElseThrow(() -> new IllegalArgumentException(String.format(SharedMessage.MES_24, request.formCode(), request.formNumber())));
 
     var est = eRepo.existsByInstallationForm(installationForm);
     if (est) {

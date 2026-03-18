@@ -3,6 +3,7 @@ package com.capstone.construction.application.business.installationform;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.common.utils.SharedMessage;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
@@ -138,7 +139,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   public void approveAndAssignInstallationForm(@NonNull ApproveRequest request) {
     log.info("Approving and assigning installation form with number: {}", request.formNumber());
     var order = ifRepo.findById(new InstallationFormId(request.formCode(), request.formNumber()))
-      .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_60, request.formNumber(), request.formCode())));
+      .orElseThrow(() -> new IllegalArgumentException(String.format(SharedMessage.MES_24, request.formNumber(), request.formCode())));
     if (request.status()) {
       // nvks duyệt đơn
       var requestStatus = order.getStatus();

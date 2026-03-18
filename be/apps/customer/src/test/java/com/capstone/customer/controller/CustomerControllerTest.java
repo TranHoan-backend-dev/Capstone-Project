@@ -2,6 +2,7 @@ package com.capstone.customer.controller;
 
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.customer.dto.request.customer.CreateRequest;
+import com.capstone.customer.dto.request.customer.UpdateRequest;
 import com.capstone.customer.dto.response.CustomerResponse;
 import com.capstone.customer.service.boundary.CustomerService;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,7 +40,8 @@ class CustomerControllerTest {
   @InjectMocks
   private CustomerController customerController;
 
-  private CreateRequest createRequest;
+  private CreateRequest createRequest;UpdateRequest
+  private UpdateRequest updateRequest;
   private CustomerResponse customerResponse;
 
   @BeforeEach
@@ -47,6 +49,7 @@ class CustomerControllerTest {
     ReflectionTestUtils.setField(customerController, "log", log);
 
     createRequest = mock(CreateRequest.class);
+    updateRequest = mock(UpdateRequest.class);
     customerResponse = mock(CustomerResponse.class);
   }
 
@@ -61,7 +64,7 @@ class CustomerControllerTest {
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     assertThat(response.getBody()).isNotNull();
     assertThat(response.getBody().message()).isEqualTo("Tạo khách hàng thành công");
-    
+
     verify(customerService).createCustomer(createRequest);
     verify(log).info("REST request to create customer: {}", "test@example.com");
   }
@@ -70,15 +73,28 @@ class CustomerControllerTest {
   @DisplayName("should_ReturnOk_When_UpdateCustomer_IsSuccessful")
   void should_ReturnOk_When_UpdateCustomer_IsSuccessful() {
     String id = "uuid-123";
-    when(customerService.updateCustomer(eq(id), any(CreateRequest.class))).thenReturn(customerResponse);
+    when(customerService.updateCustomer(eq(id), any(UpdateRequest.class))).thenReturn(customerResponse);
 
-    ResponseEntity<WrapperApiResponse> response = customerController.updateCustomer(id, createRequest);
+    ResponseEntity<WrapperApiResponse> response = customerController.updateCustomer(id, updateRequest);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody()).isNotNull();
     assertThat(response.getBody().message()).isEqualTo("Cập nhật khách hàng thành công");
-    
-    verify(customerService).updateCustomer(id, createRequest);
+    assertThat(response.getBody().data()).isEqualTo(customerResponse);
+
+    verify(customerService).updateCustomer(id, updateRequest);
+  }
+
+  @Test
+  @DisplayName("should_ThrowException_When_UpdateCustomer_ServiceThrowsException")
+  void should_ThrowException_When_UpdateCustomer_ServiceThrowsException() {
+    String id = "uuid-123";
+    when(customerService.updateCustomer(eq(id), any(UpdateRequest.class)))
+      .thenThrow(new IllegalArgumentException("Customer not found"));
+
+    assertThrows(IllegalArgumentException.class, () -> customerController.updateCustomer(id, updateRequest));
+
+    verify(customerService).updateCustomer(id, updateRequest);
   }
 
   @Test
@@ -91,7 +107,7 @@ class CustomerControllerTest {
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody().message()).isEqualTo("Xóa khách hàng thành công");
-    
+
     verify(customerService).deleteCustomer(id);
   }
 
@@ -106,7 +122,7 @@ class CustomerControllerTest {
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody().data()).isEqualTo(customerResponse);
     assertThat(response.getBody().message()).isEqualTo("Lấy thông tin khách hàng thành công");
-    
+
     verify(customerService).getCustomerById(id);
   }
 
@@ -122,7 +138,7 @@ class CustomerControllerTest {
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody().data()).isEqualTo(page);
     assertThat(response.getBody().message()).isEqualTo("Lấy danh sách khách hàng thành công");
-    
+
     verify(customerService).getAllCustomers(pageable);
   }
 

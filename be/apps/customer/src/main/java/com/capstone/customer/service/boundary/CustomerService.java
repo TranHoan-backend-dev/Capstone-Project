@@ -1,6 +1,7 @@
 package com.capstone.customer.service.boundary;
 
 import com.capstone.customer.dto.request.customer.CreateRequest;
+import com.capstone.customer.dto.request.customer.UpdateRequest;
 import com.capstone.customer.dto.response.CustomerResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +25,7 @@ public interface CustomerService {
    * @param request the customer update request
    * @return the updated customer response
    */
-  CustomerResponse updateCustomer(String id, CreateRequest request);
+  CustomerResponse updateCustomer(String id, UpdateRequest request);
 
   /**
    * Deletes a customer by ID.
