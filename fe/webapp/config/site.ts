@@ -150,6 +150,11 @@ export const siteConfig = {
           href: "/assigning-survey",
         },
         {
+          key: "estimate-preparation",
+          label: "Lập dự toán",
+          href: "/estimate/preparation",
+        },
+        {
           key: "estimate-approval",
           label: "Duyệt dự toán",
           href: "/estimate/approval",

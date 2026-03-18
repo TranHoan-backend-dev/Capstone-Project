@@ -12,55 +12,69 @@ import {
   DocumentChartIcon,
 } from "@/config/chip-and-icon";
 import CustomButton from "@/components/ui/custom/CustomButton";
+import { EstimateItem, EstimateResponse } from "@/types";
+import { ESTIMATE_COLUMN } from "@/config/table-columns";
 
 export const MaterialCostCard = () => {
-  const materials = [
-    {
-      id: "1",
-      index: 1,
-      code: "ONG80-20",
-      description: "Ống nhựa HDPE",
-      note: "",
-      unit: "Mét",
-      reductionFactor: 1,
-      quantity: 3,
-      materialPrice: 7600,
-      laborPrice: 4189,
-      materialTotal: 22800,
-      laborTotal: 12567,
-    },
-    {
-      id: "2",
-      index: 2,
-      code: "ONG80-20",
-      description: "Ống nhựa HDPE",
-      note: "",
-      unit: "Mét",
-      reductionFactor: 1,
-      quantity: 3,
-      materialPrice: 7600,
-      laborPrice: 4189,
-      materialTotal: 22800,
-      laborTotal: 12567,
-    },
-  ];
+  const [data, setData] = useState<EstimateItem[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [sort, setSort] = useState<{
+    field: string;
+    direction: "asc" | "desc";
+  }>({
+    field: "createdAt",
+    direction: "desc",
+  });
 
-  const columns = [
-    { key: "index", label: "#", width: "50px" },
-    { key: "code", label: "Mã vật tư" },
-    { key: "description", label: "Nội dung công việc" },
-    { key: "note", label: "Ghi chú" },
-    { key: "unit", label: "ĐVT" },
-    { key: "reductionFactor", label: "Hệ số giảm", align: "center" as const },
-    { key: "quantity", label: "Khối lượng", align: "center" as const },
-    { key: "materialPrice", label: "Đơn giá vật tư", align: "end" as const },
-    { key: "laborPrice", label: "Đơn giá nhân công", align: "end" as const },
-    { key: "materialTotal", label: "Thành tiền vật tư", align: "end" as const },
-    { key: "laborTotal", label: "Thành tiền nhân công", align: "end" as const },
-    { key: "actions", label: "Hoạt động", align: "center" as const },
-  ];
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
   const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setLoading(true);
+
+    const fetchData = async () => {
+      try {
+        const params = new URLSearchParams({
+          page: String(page - 1),
+          size: String(pageSize),
+          sort: `${sort.field},${sort.direction}`,
+        });
+
+        const res = await fetch(
+          `/api/construction/estimates?${params.toString()}`,
+        );
+
+        if (!res.ok) {
+          console.error("Fetch failed", res.status);
+          return;
+        }
+
+        const json = await res.json();
+        const pageData = json?.data;
+        const items = pageData?.content ?? [];
+        setTotalItems(pageData?.totalElements ?? 0);
+        setTotalPages(pageData?.totalPages ?? 1);
+
+        const mapped = items.map((item: EstimateResponse, index: number) => ({
+          id: item.estimationId,
+          stt: (page - 1) * pageSize + index + 1,
+          name: item.formCode,
+        }));
+        setData(mapped);
+      } catch (e) {
+        setData([]);
+        setTotalItems(0);
+        setTotalPages(1);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [page, sort]);
 
   useEffect(() => {
     setIsMounted(true);
@@ -70,10 +84,10 @@ export const MaterialCostCard = () => {
     switch (columnKey) {
       case "note":
         return <CustomInputField className="min-w-[100px]" />;
-      case "reductionFactor":
-        return (
-          <CustomInputField defaultValue={item.reductionFactor.toString()} />
-        );
+      // case "reductionFactor":
+      //   return (
+      //     <CustomInputField defaultValue={item.reductionFactor.toString()} />
+      //   );
       case "quantity":
         return <CustomInputField defaultValue={item.quantity.toString()} />;
       case "materialPrice":
@@ -104,8 +118,8 @@ export const MaterialCostCard = () => {
   return (
     <div className="space-y-4">
       <GenericDataTable
-        columns={columns}
-        data={materials}
+        columns={ESTIMATE_COLUMN}
+        data={data}
         renderCellAction={renderCell}
         tableProps={{
           className: "pt-0",
