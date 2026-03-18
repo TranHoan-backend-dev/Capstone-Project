@@ -7,3 +7,4 @@ export * from "./commune.type";
 export * from "./neighborhood-unit.type";
 export * from "./installation-form-new-item.type";
 export * from "./design-processing.type";
+export * from "./survey-assignment.type";

@@ -138,6 +138,7 @@ export const AddressContactSection = ({
 
           {field.key === "networkId" && (
             <LookupModal
+              dataKey="content"
               isOpen={showNetworkModal}
               onClose={() => setShowNetworkModal(false)}
               title="Chọn chi nhánh cấp nước"
@@ -162,6 +163,7 @@ export const AddressContactSection = ({
 
           {field.key === "overallWaterMeterId" && (
             <LookupModal
+              dataKey="content"
               isOpen={showOverallModal}
               onClose={() => setShowOverallModal(false)}
               title="Chọn đồng hồ nước tổng"

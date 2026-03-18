@@ -468,20 +468,32 @@ export const approveInstallationForm = async (
   accessToken: string,
   payload: ApproveInstallationPayload,
 ) => {
-  try {
-    const res = await axios.patch(
-      `${API_GATEWAY_URL}/construction/installation-forms/approve`,
-      payload,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
+  const res = await axios.patch(
+    `${API_GATEWAY_URL}/construction/installation-forms/approve`,
+    payload,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
       },
-    );
+    },
+  );
+  return res.data;
+};
 
-    return res.data;
-  } catch (error: any) {
-    console.error("Backend error:", error.response?.data);
-    throw error;
-  }
+export const assignInstallationForm = async (
+  accessToken: string,
+  empId: string,
+  formCode: string,
+  formNumber: string,
+) => {
+  const res = await axios.patch(
+    `${API_GATEWAY_URL}/construction/installation-forms/assign/${empId}`,
+    { formCode, formNumber },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+  return res.data;
 };

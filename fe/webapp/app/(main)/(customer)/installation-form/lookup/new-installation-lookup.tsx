@@ -20,40 +20,6 @@ const NewInstallationLookup = () => {
   const [reloadKey, setReloadKey] = useState(0);
   const [from, setFrom] = useState<DateValue | null | undefined>(null);
   const [to, setTo] = useState<DateValue | null | undefined>(null);
-  // const relatedOrders = [
-  //   {
-  //     id: "1",
-  //     code: "DH001234",
-  //     customerName: "Nguyễn Văn An",
-  //     address: "123 Đường ABC, Quận 1",
-  //     stage: "register",
-  //     status: "processing",
-  //   },
-  //   {
-  //     id: "2",
-  //     code: "DH001235",
-  //     customerName: "Trần Thị Bình",
-  //     address: "456 Đường DEF, Quận 3",
-  //     stage: "estimate",
-  //     status: "pending",
-  //   },
-  //   {
-  //     id: "3",
-  //     code: "DH001236",
-  //     customerName: "Lê Minh Cường",
-  //     address: "789 Đường GHI, Quận 5",
-  //     stage: "contract",
-  //     status: "approved",
-  //   },
-  //   {
-  //     id: "4",
-  //     code: "DH001237",
-  //     customerName: "Phạm Thị D",
-  //     address: "111 Đường XYZ",
-  //     stage: "construction",
-  //     status: "rejected",
-  //   },
-  // ];
   const [keywordInput, setKeywordInput] = useState("");
   const [keywordSearch, setKeywordSearch] = useState("");
 

@@ -9,24 +9,26 @@ interface LookupModalProps<T> {
   isOpen: boolean;
   onClose: () => void;
   onSelect: (item: T) => void;
-
+  dataKey?: string;
   title: string;
   api: string;
   columns: { key: string; label: string }[];
-
   mapData: (item: any, index: number, page: number) => T;
   searchKey?: string;
+  enableSearch?: boolean;
 }
 
 export function LookupModal<T extends { id: string }>({
   isOpen,
   onClose,
   onSelect,
+  dataKey,
   title,
   api,
   columns,
   mapData,
   searchKey = "name",
+  enableSearch = true,
 }: LookupModalProps<T>) {
   const [data, setData] = useState<T[]>([]);
   const [page, setPage] = useState(1);
@@ -44,13 +46,15 @@ export function LookupModal<T extends { id: string }>({
         page: String(page - 1),
         size: String(pageSize),
       });
-      if (search) {
-        params.append(searchKey ?? "name", search);
+      if (enableSearch && search) {
+        params.append(searchKey, search);
       }
       const res = await authFetch(`${api}?${params.toString()}`);
       const json = await res.json();
 
-      const items = json?.data?.content ?? [];
+      const items = dataKey
+        ? (json?.data?.[dataKey] ?? [])
+        : (json?.data ?? []);
       const pageInfo = json?.data?.page;
 
       const mapped = items.map((item: any, index: number) =>
@@ -76,13 +80,17 @@ export function LookupModal<T extends { id: string }>({
           columns={columns}
           data={data}
           isLoading={loading}
-          search={{
-            value: search,
-            onChange: (v) => {
-              setSearch(v);
-              setPage(1);
-            },
-          }}
+          search={
+            enableSearch
+              ? {
+                  value: search,
+                  onChange: (v) => {
+                    setSearch(v);
+                    setPage(1);
+                  },
+                }
+              : undefined
+          }
           paginationProps={{
             total: totalPages,
             page,

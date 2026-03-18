@@ -32,6 +32,7 @@ import {
   ModalHeader,
   Button,
 } from "@heroui/react";
+import { CallToast } from "@/components/ui/CallToast";
 
 interface OrdersToDesignTableProps {
   data: DesignProcessingItem[];
@@ -115,9 +116,7 @@ export const OrdersToDesignTable = ({
         "/api/construction/installation-forms/approve",
         {
           method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             formNumber: approveItem.formNumber,
             formCode: approveItem.id,
@@ -132,12 +131,26 @@ export const OrdersToDesignTable = ({
         onApprove?.(approveItem);
         setIsApproveModalOpen(false);
         setApproveItem(null);
+
+        CallToast({
+          title: "Thành công",
+          message: "Duyệt đơn thành công",
+          color: "success",
+        });
       } else {
-        alert(json.message || "Duyệt đơn thất bại");
+        CallToast({
+          title: "Lỗi",
+          message: json.message || "Duyệt đơn thất bại",
+          color: "danger",
+        });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert("Có lỗi xảy ra");
+      CallToast({
+        title: "Lỗi",
+        message: error.message || "Có lỗi xảy ra",
+        color: "danger",
+      });
     }
   };
 
@@ -149,9 +162,7 @@ export const OrdersToDesignTable = ({
         "/api/construction/installation-forms/approve",
         {
           method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             formNumber: approveItem.formNumber,
             formCode: approveItem.id,
@@ -166,12 +177,26 @@ export const OrdersToDesignTable = ({
         onApprove?.(approveItem);
         setIsRejectModalOpen(false);
         setRejectItem(null);
+
+        CallToast({
+          title: "Thành công",
+          message: "Từ chối đơn thành công",
+          color: "success",
+        });
       } else {
-        alert(json.message || "Duyệt đơn thất bại");
+        CallToast({
+          title: "Lỗi",
+          message: json.message || "Từ chối đơn thất bại",
+          color: "danger",
+        });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert("Có lỗi xảy ra");
+      CallToast({
+        title: "Lỗi",
+        message: error.message || "Có lỗi xảy ra",
+        color: "danger",
+      });
     }
   };
 

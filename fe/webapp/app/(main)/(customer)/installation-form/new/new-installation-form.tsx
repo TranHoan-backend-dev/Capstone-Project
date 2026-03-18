@@ -75,10 +75,7 @@ const NewInstallationForm = () => {
         { value: formData.phoneNumber, fieldName: "Số điện thoại" },
         { value: formData.address, fieldName: "Địa chỉ" },
         { value: formData.taxCode, fieldName: "Mã số thuế" },
-        {
-          value: formData.citizenIdentificationNumber,
-          fieldName: "Số CCCD",
-        },
+        { value: formData.citizenIdentificationNumber, fieldName: "Số CCCD" },
         {
           value: formData.citizenIdentificationProvideDate,
           fieldName: "Ngày cấp CCCD",
@@ -95,10 +92,7 @@ const NewInstallationForm = () => {
           fieldName: "Số nhân khẩu",
         },
         { value: formData.networkId, fieldName: "Chi nhánh cấp nước" },
-        {
-          value: formData.overallWaterMeterId,
-          fieldName: "Đồng hồ nước tổng",
-        },
+        { value: formData.overallWaterMeterId, fieldName: "Đồng hồ nước tổng" },
         {
           value: formData.bankAccountNumber,
           fieldName: "Số tài khoản ngân hàng",
@@ -108,8 +102,8 @@ const NewInstallationForm = () => {
           fieldName: "Ngân hàng và chi nhánh",
         },
       ]);
-
       if (requiredError) return showError(requiredError);
+
       const phoneError = validatePhone(formData.phoneNumber);
       if (phoneError) return showError(phoneError);
 
@@ -161,15 +155,20 @@ const NewInstallationForm = () => {
 
       const res = await fetch("/api/construction/installation-forms", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
-        const err = await res.json();
-        alert(err.message);
+        let userFriendlyMsg = "Có lỗi xảy ra khi tạo đơn. Vui lòng thử lại.";
+        try {
+          const errJson = await res.json();
+          if (errJson?.message?.includes("duplicate key")) {
+            userFriendlyMsg = "Số hồ sơ đã tồn tại. Vui lòng nhập số khác.";
+          }
+        } catch {}
+
+        CallToast({ title: "Lỗi", message: userFriendlyMsg, color: "danger" });
         return;
       }
 
@@ -183,7 +182,7 @@ const NewInstallationForm = () => {
     } catch (e: any) {
       CallToast({
         title: "Lỗi",
-        message: e.message || "Có lỗi xảy ra",
+        message: "Có lỗi xảy ra khi tạo đơn",
         color: "danger",
       });
     } finally {

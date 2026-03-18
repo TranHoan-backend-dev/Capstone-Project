@@ -96,19 +96,6 @@ export interface StatusDetailData {
   note: string | null;
 }
 
-export interface SurveyAssignmentItem {
-  id: number;
-  code: string;
-  customerName: string;
-  phone: string;
-  address: string;
-  registrationDate: string;
-  surveyDate: string;
-  surveyorId?: string;
-  surveyorName?: string;
-  status: "pending" | "assigned";
-}
-
 export type FieldType =
   | "input"
   | "date"

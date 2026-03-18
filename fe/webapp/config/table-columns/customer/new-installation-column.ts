@@ -15,7 +15,6 @@ export const INSTALLATION_FORM_NEW_COLUMN = [
     align: "center" as const,
     sortable: false,
   },
-  { key: "actions", label: "Thao tác", align: "center" as const },
 ];
 
 export const NEW_INSTALLATION_LOOKUP_COLUMN = [
@@ -30,5 +29,5 @@ export const NEW_INSTALLATION_LOOKUP_COLUMN = [
     sortable: false,
   },
   { key: "status", label: "Trạng thái", align: "center" as const },
-  { key: "actions", label: "Hoạt động", align: "center" as const },
+  // { key: "actions", label: "Hoạt động", align: "center" as const },
 ];
