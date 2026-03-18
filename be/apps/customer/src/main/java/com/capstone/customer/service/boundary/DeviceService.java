@@ -1,0 +1,19 @@
+package com.capstone.customer.service.boundary;
+
+import com.capstone.common.config.feign.FeignAuthInterceptor;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+@FeignClient(
+  name = "device",
+  path = "/api/v1",
+  configuration = FeignAuthInterceptor.class
+)
+public interface DeviceService {
+  @GetMapping("/water-prices/check/{id}")
+  Boolean checkExistenceOfWaterPrice(@PathVariable String id);
+
+  @GetMapping("/water-meters/{id}/exists")
+  Boolean checkExistenceOfWaterMeter(@PathVariable String id);
+}
