@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -80,6 +81,7 @@ class NotificationControllerTest {
   @Test
   void getNotifications_returnsPagedResponse() throws Exception {
     // Given
+    var pageable = PageRequest.of(0, 10);
     var response = new NotificationBatchResponse(
       List.of(new NotificationResponse(
         "noti-1",
@@ -91,7 +93,7 @@ class NotificationControllerTest {
       1,
       1);
 
-    when(notificationService.getNotificationsByIds(List.of("noti-1"), 1))
+    when(notificationService.getNotificationsOfAnEmployee(pageable, "USER_1"))
       .thenReturn(response);
 
     // When & Then
