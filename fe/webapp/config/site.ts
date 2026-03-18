@@ -54,6 +54,11 @@ export const siteConfig = {
           label: "Quản lý Đơn vị tính",
           href: "/units",
         },
+        {
+          key: "water-price",
+          label: "Quản lý Giá nước",
+          href: "/water-price",
+        },
       ],
     },
 
