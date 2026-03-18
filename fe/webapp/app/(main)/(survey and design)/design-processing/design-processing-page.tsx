@@ -28,7 +28,7 @@ const DesignProcessingPage = () => {
   >([]);
   const [waitingInput, setWaitingInput] = useState<DesignProcessingItem[]>([]);
   const [loading, setLoading] = useState(true);
- 
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -44,15 +44,7 @@ const DesignProcessingPage = () => {
         const waiting: DesignProcessingItem[] = [];
 
         items.forEach((item: NewInstallationLookupResponse) => {
-          const estimateStatus = item.status?.estimate;
-
-          let uiStatus: DesignProcessingStatus = "processing";
-
-          if (estimateStatus === "APPROVED") {
-            uiStatus = "paid";
-          } else if (estimateStatus === "REJECTED") {
-            uiStatus = "rejected";
-          }
+          const regStatus = item.status?.registration?.toUpperCase();
 
           const mapped: DesignProcessingItem = {
             id: item.formCode,
@@ -62,17 +54,17 @@ const DesignProcessingPage = () => {
             address: item.address,
             registrationAt: formatDate1(item.registrationAt),
             scheduleSurveyAt: formatDate1(item.scheduleSurveyAt),
-            status: uiStatus,
+            status: "processing", // default
           };
 
-          if (
-            estimateStatus === "PENDING_FOR_APPROVAL" ||
-            estimateStatus === "PROCESSING"
-          ) {
+          if (regStatus === "PENDING_FOR_APPROVAL") {
+            mapped.status = "processing";
             orders.push(mapped);
-          } else if (estimateStatus === "APPROVED") {
+          } else if (regStatus === "APPROVED") {
+            mapped.status = "paid";
             processed.push(mapped);
-          } else if (estimateStatus === "REJECTED") {
+          } else if (regStatus === "REJECTED") {
+            mapped.status = "rejected";
             waiting.push(mapped);
           }
         });
@@ -166,10 +158,7 @@ const DesignProcessingPage = () => {
       />
 
       <div className="space-y-8">
-        <OrdersToDesignTable
-          data={filteredOrders}
-          onApprove={handleApprove}
-        />
+        <OrdersToDesignTable data={filteredOrders} onApprove={handleApprove} />
         <ProcessedDesignsTable
           data={filteredProcessed}
           onReject={handleReject}
