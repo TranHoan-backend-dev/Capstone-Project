@@ -29,7 +29,7 @@ public final class Message {
   public static final String PT_26 = "Người tạo không được để trống";
   public static final String PT_27 = "Id của đồng hồ nước không được để trống";
   public static final String PT_28 = "Nhân viên được giao nhiệm vụ phải là %s";
-  public static final String PT_29 = "Nhân viên đợ";
+  public static final String PT_29 = "Dự toán với đơn lắp đặt này đã tồn tại";
   public static final String PT_30 = "Ngày cấp chứng minh nhân dân/Căn cước công dân không được để trống";
   public static final String PT_31 = "Mã số thuế không được để trống";
   public static final String PT_32 = "Đối tượng sử dụng không được để trống";
@@ -59,10 +59,10 @@ public final class Message {
   public static final String PT_56 = "Không tìm thấy xã/phường";
   public static final String PT_57 = "Tên chi nhánh cấp nước đã tồn tại";
   public static final String PT_58 = "Không tìm thấy đồng hồ tổng";
-  public static final String PT_59 = "Số seri đồng hồ không được để trống";
-  public static final String PT_60 = "Đơn lắp đặt với số đơn %s và mã đơn %s không tồn tại";
+  public static final String PT_59 = "Không tìm thấy nhân viên";
+  public static final String PT_60 = "";
   public static final String PT_61 = "Dự toán với id %s không tồn tại";
   public static final String PT_62 = "Thôn/Làng với id %s không tìm thấy";
   public static final String PT_63 = "Thôn/Làng với tên %s đã tồn tại";
-  public static final String PT_64 = "Id đồng hồ tổng không được để trống";
+  public static final String PT_64 = "Chữ ký không được bỏ trống";
 }

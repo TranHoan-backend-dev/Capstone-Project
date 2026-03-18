@@ -589,3 +589,110 @@ Authorization: Bearer {{access_token}}
     client.assert(response.status === 400);
   });
 %}
+
+### TC20 - Update customer with invalid email format
+PUT {{customersUrl}}/{{customer_id}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "email": "not-an-email"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+### TC21 - Update customer with invalid phone number
+PUT {{customersUrl}}/{{customer_id}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "phoneNumber": "123"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+### TC22 - Update customer with very long name (boundary case)
+PUT {{customersUrl}}/{{customer_id}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "name": "Tên khách hàng cực kỳ dài".repeat(20)
+}
+
+> {%
+client.test("Status is 200 or 400 depending on length constraints", function() {
+  client.assert(response.status === 200 || response.status === 400);
+});
+%}
+
+### TC23 - Update customer with special characters and unicode
+PUT {{customersUrl}}/{{customer_id}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "name": "Trần @#$%^&*()_+ 😊 Ứng dụng"
+}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+### TC24 - Update customer with SQL Injection attempt
+PUT {{customersUrl}}/{{customer_id}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "name": "admin' --",
+  "cancelReason": "DROP TABLE customers;"
+}
+
+> {%
+client.test("Status is 200 or 400 (if sanitized/blocked)", function() {
+  client.assert(response.status === 200 || response.status === 400);
+});
+%}
+
+### TC25 - Update customer with non-existent waterPriceId
+PUT {{customersUrl}}/{{customer_id}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "waterPriceId": "NON_EXISTENT_PRICE"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+### TC26 - Update customer with non-existent formCode/Number
+PUT {{customersUrl}}/{{customer_id}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "formCode": "invalid-code",
+  "formNumber": "invalid-number"
+}
+
+> {%
+client.test("Status is 404 (NotExistingException)", function() {
+  client.assert(response.status === 404);
+});
+%}

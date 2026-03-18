@@ -3,6 +3,7 @@ package com.capstone.device.adapter;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
+import com.capstone.device.application.business.waterprice.WaterPriceService;
 import com.capstone.device.application.dto.request.price.CreateRequest;
 import com.capstone.device.application.dto.request.price.UpdateRequest;
 import com.capstone.device.application.dto.response.WaterPriceResponse;
@@ -38,6 +39,7 @@ import java.time.LocalDate;
 @Tag(name = "Water Price", description = "Quản lý các loại bảng giá nước trong hệ thống")
 public class WaterPriceController {
   WaterPriceUseCase useCase;
+  WaterPriceService waterPriceService;
   @NonFinal
   Logger log;
 
@@ -114,5 +116,11 @@ public class WaterPriceController {
     log.info("REST request to get all water prices with pagination: {}", pageable);
     var response = useCase.getPricesList(pageable, applicationPeriod);
     return Utils.returnOkResponse("Lấy danh sách bảng giá nước thành công", response);
+  }
+
+  @Operation(hidden = true)
+  @GetMapping("/check/{id}")
+  public Boolean check(@PathVariable String id) {
+    return waterPriceService.isExisting(id);
   }
 }

@@ -63,14 +63,15 @@ class ParameterUseCaseTest {
   @Test
   void should_UpdateParameterAndSendEvent_When_ValidRequest() {
     var id = "1";
-    var request = new UpdateParameterRequest("VAT", new BigDecimal("0.08"), "Admin");
+    var updatorId = "admin-uuid";
+    var request = new UpdateParameterRequest("VAT", new BigDecimal("0.08"));
     var oldData = new ParameterResponse(id, "VAT", "0.1", "Admin", "Admin", "2023-01-01", "2023-01-01");
     var newData = new ParameterResponse(id, "VAT", "0.08", "Admin", "Admin", "2023-01-01", "2023-01-02");
 
     when(parameterService.getParameterById(id)).thenReturn(oldData);
-    when(parameterService.updateParameter(id, request)).thenReturn(newData);
+    when(parameterService.updateParameter(updatorId, id, request)).thenReturn(newData);
 
-    var result = parameterUseCase.updateParameter(id, request);
+    var result = parameterUseCase.updateParameter(updatorId, id, request);
 
     assertEquals(newData, result);
     verify(log).info("UseCase: Updating parameter with id: {}", id);

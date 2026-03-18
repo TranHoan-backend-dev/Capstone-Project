@@ -2,10 +2,15 @@ package com.capstone.customer.service.impl;
 
 import com.capstone.common.enumerate.CustomerType;
 import com.capstone.common.enumerate.UsageTarget;
+import com.capstone.common.exception.NotExistingException;
+import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.customer.dto.request.customer.CreateRequest;
+import com.capstone.customer.dto.request.customer.UpdateRequest;
 import com.capstone.customer.dto.response.CustomerResponse;
 import com.capstone.customer.model.Customer;
 import com.capstone.customer.repository.CustomerRepository;
+import com.capstone.customer.service.boundary.ConstructionService;
+import com.capstone.customer.service.boundary.DeviceService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,11 +41,18 @@ class CustomerServiceImplTest {
   @Mock
   private CustomerRepository customerRepository;
 
+  @Mock
+  private ConstructionService constructionService;
+
+  @Mock
+  private DeviceService deviceService;
+
   @InjectMocks
   private CustomerServiceImpl customerService;
 
   private Customer customer;
   private CreateRequest createRequest;
+  private UpdateRequest updateRequest;
   private Pageable pageable;
 
   @BeforeEach
@@ -56,7 +68,7 @@ class CustomerServiceImplTest {
     lenient().when(customer.getPhoneNumber()).thenReturn("0901234567");
     lenient().when(customer.getType()).thenReturn(CustomerType.FAMILY);
     lenient().when(customer.getIsBigCustomer()).thenReturn(false);
-    lenient().when(customer.getUsageTarget()).thenReturn(UsageTarget.DOMESTIC);
+    lenient().when(customer.getUsageTarget()).thenReturn(UsageTarget.DOMESTIC.name());
     lenient().when(customer.getNumberOfHouseholds()).thenReturn(1);
     lenient().when(customer.getHouseholdRegistrationNumber()).thenReturn(123456);
     lenient().when(customer.getProtectEnvironmentFee()).thenReturn(1000);
@@ -91,12 +103,24 @@ class CustomerServiceImplTest {
       "TIỀN MẶT", "123456789", "Vietcombank", "TRAN VAN A", "BRC001", "P001",
       "CP001", true, null, "IF001", "FORMCODE-1", "WP001", "WM001"
     );
+
+    updateRequest = new UpdateRequest(
+      "Update Name", "update@example.com", "0987654321", CustomerType.COMPANY, true,
+      UsageTarget.INDUSTRIAL, 2, 654321, 2000, true, true, "10", "10000",
+      2000000, "2024-01", 30000, "ĐIỆN TỬ", "987654321098", "Hà Nội",
+      "CHUYỂN KHOẢN", "987654321", "Agribank", "TRAN VAN B", "BRC002", "P002",
+      "CP002", true, "Reason", "IF002", "FORMCODE-2", "WP002", "WM002"
+    );
   }
 
   @Test
-  @DisplayName("Should create customer successfully")
+  @DisplayName("should_CreateCustomer_When_InputIsValid")
   void should_CreateCustomer_When_InputIsValid() {
     // Given
+    when(customerRepository.existsByFormCodeAndFormNumber(any(), any())).thenReturn(false);
+    when(constructionService.checkExistence(any(), any())).thenReturn(new WrapperApiResponse(null, true));
+    when(deviceService.checkExistenceOfWaterPrice(any())).thenReturn(true);
+    when(deviceService.checkExistenceOfWaterMeter(any())).thenReturn(true);
     when(customerRepository.save(any(Customer.class))).thenReturn(customer);
 
     // When
@@ -109,55 +133,130 @@ class CustomerServiceImplTest {
   }
 
   @Test
-  @DisplayName("Should create customer with default active status when isActive is null")
-  void should_CreateCustomerWithDefaultActiveStatus_When_IsActiveIsNull() {
-    // Given
-    var requestWithNullActive = new CreateRequest(
-      "Trần Văn A", "tranvana@example.com", "0901234567", CustomerType.FAMILY, false,
-      UsageTarget.DOMESTIC, 1, 123456, 1000, false, false, "0", "5000",
-      1500000, "2023-12", 20000, "CƠ", "012345678901", "Cục CSQLHC về TTXH",
-      "TIỀN MẶT", "123456789", "Vietcombank", "TRAN VAN A", "BRC001", "P001",
-      "CP001", null, null, "IF001", "FORMCODE-2", "WP001", "WM001"
-    );
-    when(customerRepository.save(any(Customer.class))).thenReturn(customer);
-
-    // When
-    customerService.createCustomer(requestWithNullActive);
-
-    // Then
-    verify(customerRepository).save(argThat(c -> c.getIsActive() != null && c.getIsActive()));
+  @DisplayName("should_ThrowException_When_FormExists")
+  void should_ThrowException_When_FormExists() {
+    when(customerRepository.existsByFormCodeAndFormNumber(any(), any())).thenReturn(true);
+    assertThrows(IllegalArgumentException.class, () -> customerService.createCustomer(createRequest));
   }
 
   @Test
-  @DisplayName("Should update customer successfully")
+  @DisplayName("should_UpdateCustomer_When_CustomerExists")
   void should_UpdateCustomer_When_CustomerExists() {
     // Given
     var id = "CUST-123";
     when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
+    when(constructionService.checkExistence(any(), any())).thenReturn(new WrapperApiResponse(null, true));
+    when(deviceService.checkExistenceOfWaterPrice(any())).thenReturn(true);
+    when(deviceService.checkExistenceOfWaterMeter(any())).thenReturn(true);
     when(customerRepository.save(any(Customer.class))).thenReturn(customer);
 
     // When
-    var response = customerService.updateCustomer(id, createRequest);
+    var response = customerService.updateCustomer(id, updateRequest);
 
     // Then
     assertThat(response).isNotNull();
-    verify(customer).setName(createRequest.name());
+    verify(customer).setName(updateRequest.name());
+    verify(customer).setEmail(updateRequest.email());
+    verify(customer).setPhoneNumber(updateRequest.phoneNumber());
     verify(customerRepository).save(customer);
   }
 
   @Test
-  @DisplayName("Should throw exception when updating non-existent customer")
+  @DisplayName("should_UpdateCustomer_WithNullFields_When_FieldsAreMissing")
+  void should_UpdateCustomer_WithNullFields_When_FieldsAreMissing() {
+    // Given
+    var id = "CUST-123";
+    var minimalRequest = new UpdateRequest(
+      null, null, null, null, null, null, null, null, null, null,
+      null, null, null, null, null, null, null, null, null, null,
+      null, null, null, null, null, null, null, null, null, null,
+      null, null
+    );
+    when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
+    when(customerRepository.save(any(Customer.class))).thenReturn(customer);
+
+    // When
+    customerService.updateCustomer(id, minimalRequest);
+
+    // Then
+    verify(customerRepository).save(customer);
+    verify(customer, never()).setName(any());
+  }
+
+  @Test
+  @DisplayName("should_SkipFormCheck_When_OnlyPartiallyProvided")
+  void should_SkipFormCheck_When_OnlyPartiallyProvided() {
+    // Given
+    var id = "CUST-123";
+    var partialRequest = new UpdateRequest(
+      null, null, null, null, null, null, null, null, null, null,
+      null, null, null, null, null, null, null, null, null, null,
+      null, null, null, null, null, null, null, null, "ONLY_CODE", null,
+      null, null
+    );
+    when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
+    when(customerRepository.save(any(Customer.class))).thenReturn(customer);
+
+    // When
+    customerService.updateCustomer(id, partialRequest);
+
+    // Then
+    verify(constructionService, never()).checkExistence(any(), any());
+    verify(customerRepository).save(customer);
+  }
+
+  @Test
+  @DisplayName("should_ThrowNotExistingException_When_FormNotFound")
+  void should_ThrowNotExistingException_When_FormNotFound() {
+    // Given
+    var id = "CUST-123";
+    when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
+    when(constructionService.checkExistence(any(), any())).thenReturn(new WrapperApiResponse(null, false));
+
+    // When & Then
+    assertThrows(NotExistingException.class, () -> customerService.updateCustomer(id, updateRequest));
+  }
+
+  @Test
+  @DisplayName("should_ThrowException_When_WaterPriceNotFound")
+  void should_ThrowException_When_WaterPriceNotFound() {
+    // Given
+    var id = "CUST-123";
+    when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
+    when(constructionService.checkExistence(any(), any())).thenReturn(new WrapperApiResponse(null, true));
+    when(deviceService.checkExistenceOfWaterPrice(any())).thenReturn(false);
+
+    // When & Then
+    assertThrows(IllegalArgumentException.class, () -> customerService.updateCustomer(id, updateRequest));
+  }
+
+  @Test
+  @DisplayName("should_ThrowException_When_WaterMeterNotFound")
+  void should_ThrowException_When_WaterMeterNotFound() {
+    // Given
+    var id = "CUST-123";
+    when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
+    when(constructionService.checkExistence(any(), any())).thenReturn(new WrapperApiResponse(null, true));
+    when(deviceService.checkExistenceOfWaterPrice(any())).thenReturn(true);
+    when(deviceService.checkExistenceOfWaterMeter(any())).thenReturn(false);
+
+    // When & Then
+    assertThrows(IllegalArgumentException.class, () -> customerService.updateCustomer(id, updateRequest));
+  }
+
+  @Test
+  @DisplayName("should_ThrowException_When_UpdateNonExistentCustomer")
   void should_ThrowException_When_UpdateNonExistentCustomer() {
     // Given
     var id = "NON-EXISTENT";
     when(customerRepository.findById(id)).thenReturn(Optional.empty());
 
     // When & Then
-    assertThrows(IllegalArgumentException.class, () -> customerService.updateCustomer(id, createRequest));
+    assertThrows(IllegalArgumentException.class, () -> customerService.updateCustomer(id, updateRequest));
   }
 
   @Test
-  @DisplayName("Should delete customer successfully")
+  @DisplayName("should_DeleteCustomer_When_CustomerExists")
   void should_DeleteCustomer_When_CustomerExists() {
     // Given
     var id = "CUST-123";
@@ -171,7 +270,7 @@ class CustomerServiceImplTest {
   }
 
   @Test
-  @DisplayName("Should throw exception when deleting non-existent customer")
+  @DisplayName("should_ThrowException_When_DeleteNonExistentCustomer")
   void should_ThrowException_When_DeleteNonExistentCustomer() {
     // Given
     var id = "NON-EXISTENT";
@@ -182,7 +281,7 @@ class CustomerServiceImplTest {
   }
 
   @Test
-  @DisplayName("Should return customer by ID when exists")
+  @DisplayName("should_ReturnCustomer_When_IdExists")
   void should_ReturnCustomer_When_IdExists() {
     // Given
     var id = "CUST-123";
@@ -197,7 +296,7 @@ class CustomerServiceImplTest {
   }
 
   @Test
-  @DisplayName("Should throw exception when fetching non-existent customer")
+  @DisplayName("should_ThrowException_When_GetNonExistentCustomer")
   void should_ThrowException_When_GetNonExistentCustomer() {
     // Given
     var id = "NON-EXISTENT";
@@ -208,7 +307,7 @@ class CustomerServiceImplTest {
   }
 
   @Test
-  @DisplayName("Should return paginated customers")
+  @DisplayName("should_ReturnPaginatedCustomers_When_Called")
   void should_ReturnPaginatedCustomers_When_Called() {
     // Given
     Page<Customer> customerPage = new PageImpl<>(List.of(customer));
@@ -243,7 +342,7 @@ class CustomerServiceImplTest {
   }
 
   @Test
-  @DisplayName("Should return true when customers are applied this price")
+  @DisplayName("should_ReturnTrue_When_PriceIsApplied")
   void should_ReturnTrue_When_PriceIsApplied() {
     // Given
     var priceId = "WP001";
@@ -257,7 +356,7 @@ class CustomerServiceImplTest {
   }
 
   @Test
-  @DisplayName("Should return false when no customers are applied this price")
+  @DisplayName("should_ReturnFalse_When_PriceIsNotApplied")
   void should_ReturnFalse_When_PriceIsNotApplied() {
     // Given
     var priceId = "WP002";

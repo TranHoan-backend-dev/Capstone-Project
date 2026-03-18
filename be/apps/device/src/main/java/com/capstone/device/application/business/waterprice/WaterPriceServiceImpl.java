@@ -108,6 +108,11 @@ public class WaterPriceServiceImpl implements WaterPriceService {
     return response.map(this::mapToResponse);
   }
 
+  @Override
+  public Boolean isExisting(String id) {
+    return waterPriceRepository.existsById(id);
+  }
+
   private WaterPriceResponse mapToResponse(WaterPrice wp) {
     return new WaterPriceResponse(
       wp.getPriceId(),

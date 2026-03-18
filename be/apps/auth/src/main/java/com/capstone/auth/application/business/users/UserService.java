@@ -35,4 +35,6 @@ public interface UserService {
   EmployeeResponse deleteEmployee(String id);
 
   String getRoleOfEmployee(String id);
+
+  List<EmployeeResponse> getAllSurveyStaffs();
 }

@@ -49,7 +49,8 @@ public class WaterMeterController {
   @PutMapping("/{id}")
   public ResponseEntity<WrapperApiResponse> updateWaterMeter(
     @PathVariable @Parameter(description = "") String id,
-    @RequestBody @Valid WaterMeterRequest request) {
+    @RequestBody @Valid WaterMeterRequest request
+  ) {
     log.info("REST request to update water meter: {}", id);
     var response = waterMeterService.updateWaterMeter(id, request);
     return Utils.returnOkResponse("Cập nhật đồng hồ nước thành công", response);
@@ -87,7 +88,7 @@ public class WaterMeterController {
     return Utils.returnOkResponse("Lấy danh sách đồng hồ nước thành công", response);
   }
 
-  @Operation(summary = "", description = "")
+  @Operation(hidden = true)
   @GetMapping("/{id}/exists")
   public ResponseEntity<WrapperApiResponse> checkWaterMeterExisting(
     @PathVariable @Parameter(description = "") String id) {

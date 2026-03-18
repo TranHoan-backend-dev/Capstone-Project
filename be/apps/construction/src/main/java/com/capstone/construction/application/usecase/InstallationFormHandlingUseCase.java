@@ -26,7 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Component
@@ -38,6 +38,7 @@ public class InstallationFormHandlingUseCase {
   final CostEstimateUseCase costEstimateUseCase;
   final EmployeeService empSrv;
 
+  // <editor-fold> desc="constant"
   @Value(".${rabbit-mq-config.entities[5]}.")
   String PREFIX;
 
@@ -49,6 +50,7 @@ public class InstallationFormHandlingUseCase {
 
   @Value("${rabbit-mq-config.queue_name}")
   String QUEUE_NAME;
+  // </editor-fold>
 
   public Page<InstallationFormListResponse> getPaginatedInstallationForms(Pageable pageable, BaseFilterRequest request) {
     return ifSrv.getInstallationForms(pageable, request);
@@ -120,10 +122,11 @@ public class InstallationFormHandlingUseCase {
       costEstimateUseCase.createEstimate(new CreateRequest(
         installationForm.customerName(),
         installationForm.address(),
-        LocalDate.parse(installationForm.registrationAt()),
+        LocalDateTime.parse(installationForm.registrationAt()),
         installationForm.creator(),
         request.formCode(),
-        request.formNumber()
+        request.formNumber(),
+        installationForm.overallWaterMeterId()
       ));
     }
   }
