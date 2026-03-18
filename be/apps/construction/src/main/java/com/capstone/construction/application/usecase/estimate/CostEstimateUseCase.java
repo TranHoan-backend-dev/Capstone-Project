@@ -3,6 +3,7 @@ package com.capstone.construction.application.usecase.estimate;
 import com.capstone.construction.application.business.estimate.CostEstimateService;
 import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.construction.application.dto.request.estimate.CreateRequest;
+import com.capstone.construction.application.dto.request.estimate.EstimateFilterRequest;
 import com.capstone.construction.application.dto.request.estimate.UpdateRequest;
 import com.capstone.construction.application.dto.response.estimate.CostEstimateResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
@@ -82,7 +83,7 @@ public class CostEstimateUseCase {
     return estSrv.getEstimateById(id);
   }
 
-  public PageResponse<CostEstimateResponse> getAllEstimates(Pageable pageable, BaseFilterRequest request) {
+  public PageResponse<CostEstimateResponse> getAllEstimates(Pageable pageable, EstimateFilterRequest request) {
     return estSrv.getAllEstimates(pageable, request);
   }
 }

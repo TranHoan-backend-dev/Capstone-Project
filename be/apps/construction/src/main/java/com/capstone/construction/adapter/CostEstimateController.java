@@ -4,6 +4,7 @@ import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.common.utils.Utils;
+import com.capstone.construction.application.dto.request.estimate.EstimateFilterRequest;
 import com.capstone.construction.application.dto.request.estimate.UpdateRequest;
 import com.capstone.construction.application.dto.response.estimate.CostEstimateResponse;
 import com.capstone.construction.application.usecase.estimate.CostEstimateUseCase;
@@ -91,7 +92,7 @@ public class CostEstimateController {
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'SURVEY_STAFF')")
   public ResponseEntity<WrapperApiResponse> getAllEstimates(
     @PageableDefault @Parameter(description = "Pagination parameters") Pageable pageable,
-    @Parameter(description = "Thông tin lọc (từ khóa, khoảng thời gian)") BaseFilterRequest request
+    @Parameter(description = "Thông tin lọc (từ khóa, khoảng thời gian)") EstimateFilterRequest request
   ) {
     log.info("REST request to get all cost estimates");
     var response = estimateUseCase.getAllEstimates(pageable, request);
