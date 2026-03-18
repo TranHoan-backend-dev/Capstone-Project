@@ -8,7 +8,7 @@ import SurveyTabs from "./components/survey-tabs";
 
 import { FilterSection } from "@/components/ui/FilterSection";
 import { SurveyAssignmentFormResponse, SurveyAssignmentItem } from "@/types";
-import { formatDate1 } from "@/utils/format";
+import { formatDate1, formatDateValueToString } from "@/utils/format";
 
 const AssigningSurveyPage = () => {
   const [reloadKey, setReloadKey] = useState(0);
@@ -45,7 +45,12 @@ const AssigningSurveyPage = () => {
         if (trimmedKeyword) {
           params.append("keyword", trimmedKeyword);
         }
-
+        if (from) {
+          params.append("from", formatDateValueToString(from)); // formatDate1 là hàm bạn đang dùng
+        }
+        if (to) {
+          params.append("to", formatDateValueToString(to));
+        }
         const res = await fetch(
           `/api/construction/installation-forms?${params.toString()}`,
         );
@@ -96,7 +101,7 @@ const AssigningSurveyPage = () => {
     };
 
     fetchData();
-  }, [page, keyword, reloadKey, sort, pageSize]);
+  }, [page, keyword, reloadKey, sort, pageSize, from, to]);
 
   const filteredData = data.filter((item) => {
     const hasValue =

@@ -27,3 +27,17 @@ export const formatDate2 = (date: DateValue | null | undefined) => {
 
   return `${year}-${month}-${day}`;
 };
+
+export const formatDateValueToString = (date: DateValue | null | undefined) => {
+  if (!date) return "";
+  
+  if (typeof date === "string") return date;
+
+  if ("year" in date && "month" in date && "day" in date) {
+    const month = String(date.month).padStart(2, "0");
+    const day = String(date.day).padStart(2, "0");
+    return `${date.year}-${month}-${day}`;
+  }
+
+  return "";
+};
