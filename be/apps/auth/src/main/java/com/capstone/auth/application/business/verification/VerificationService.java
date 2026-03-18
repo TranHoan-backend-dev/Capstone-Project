@@ -1,9 +1,9 @@
 package com.capstone.auth.application.business.verification;
 
 public interface VerificationService {
-    void sendOtp(String email);
+  String createOtp(String email);
 
-    boolean verifyOtp(String email, String otp);
+  boolean verifyOtp(String email, String otp);
 
-    void verifyAndResetPassword(String email, String otp, String newPassword);
+  void verifyAndResetPassword(String email, String otp, String newPassword);
 }

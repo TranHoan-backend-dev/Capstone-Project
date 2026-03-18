@@ -11,16 +11,16 @@ export async function GET(req: NextRequest) {
     }
 
     const { searchParams } = new URL(req.url);
-    const page = Number(searchParams.get("page") ?? 0);
-    const size = Number(searchParams.get("size") ?? 10);
+    const page = searchParams.get("page");
+    const size = searchParams.get("size");
     const sort = searchParams.get("sort") || "createdAt,desc";
     const search = searchParams.get("search") || "";
     const type = searchParams.get("type") || "";
 
     const response = await getAllCommunes(
       accessToken,
-      page,
-      size,
+      page ? Number(page) : 0,
+      size ? Number(size) : 1000,
       sort,
       search,
       type,

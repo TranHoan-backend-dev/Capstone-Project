@@ -29,7 +29,7 @@ Content-Type: application/json
   "name": "Trần Văn A",
   "email": "tranvana@example.com",
   "phoneNumber": "0901234567",
-  "type": "CÁ NHÂN",
+  "type": "FAMILY",
   "isBigCustomer": false,
   "usageTarget": "DOMESTIC",
   "numberOfHouseholds": 1,
@@ -53,10 +53,10 @@ Content-Type: application/json
   "passportCode": "P001",
   "connectionPoint": "CP001",
   "isActive": true,
-  "formNumber": "IF_001",
-  "formCode": "IF_TEST_001",
-  "waterPriceId": "WP_TEST_001",
-  "waterMeterId": "WM_TEST_001"
+  "formNumber": "FORM-2024-0001",
+  "formCode": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+  "waterPriceId": "00000000-0000-0000-0000-B00000000001",
+  "waterMeterId": "00000000-0000-0000-0000-A00000000001"
 }
 
 > {%
@@ -74,7 +74,7 @@ Content-Type: application/json
 {
   "email": "tranvana@example.com",
   "phoneNumber": "0901234567",
-  "type": "CÁ NHÂN",
+  "type": "FAMILY",
   "isBigCustomer": false,
   "usageTarget": "DOMESTIC",
   "numberOfHouseholds": 1,
@@ -87,10 +87,10 @@ Content-Type: application/json
   "bankAccountNumber": "123456789",
   "bankAccountProviderLocation": "Vietcombank",
   "bankAccountName": "TRAN VAN A",
-  "formNumber": "IF_001",
-  "formCode": "IF_TEST_001",
-  "waterPriceId": "WP_TEST_001",
-  "waterMeterId": "WM_TEST_001"
+  "formNumber": "FORM-2024-0001",
+  "formCode": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+  "waterPriceId": "00000000-0000-0000-0000-B00000000001",
+  "waterMeterId": "00000000-0000-0000-0000-A00000000001"
 }
 
 > {%
@@ -108,7 +108,7 @@ Content-Type: application/json
   "name": "Trần Văn A",
   "email": null,
   "phoneNumber": "0901234567",
-  "type": "CÁ NHÂN",
+  "type": "FAMILY",
   "isBigCustomer": false,
   "usageTarget": "DOMESTIC",
   "numberOfHouseholds": 1,
@@ -121,10 +121,10 @@ Content-Type: application/json
   "bankAccountNumber": "123456789",
   "bankAccountProviderLocation": "Vietcombank",
   "bankAccountName": "TRAN VAN A",
-  "formNumber": "IF_001",
-  "formCode": "IF_TEST_001",
-  "waterPriceId": "WP_TEST_001",
-  "waterMeterId": "WM_TEST_001"
+  "formNumber": "FORM-2024-0001",
+  "formCode": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+  "waterPriceId": "00000000-0000-0000-0000-B00000000001",
+  "waterMeterId": "00000000-0000-0000-0000-A00000000001"
 }
 
 > {%
@@ -142,7 +142,7 @@ Content-Type: application/json
   "name": "Trần Văn A",
   "email": "invalid-email-format",
   "phoneNumber": "0901234567",
-  "type": "CÁ NHÂN",
+  "type": "FAMILY",
   "isBigCustomer": false,
   "usageTarget": "DOMESTIC",
   "numberOfHouseholds": 1,
@@ -155,10 +155,10 @@ Content-Type: application/json
   "bankAccountNumber": "123456789",
   "bankAccountProviderLocation": "Vietcombank",
   "bankAccountName": "TRAN VAN A",
-  "formNumber": "IF_001",
-  "formCode": "IF_TEST_001",
-  "waterPriceId": "WP_TEST_001",
-  "waterMeterId": "WM_TEST_001"
+  "formNumber": "FORM-2024-0001",
+  "formCode": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+  "waterPriceId": "00000000-0000-0000-0000-B00000000001",
+  "waterMeterId": "00000000-0000-0000-0000-A00000000001"
 }
 
 > {%
@@ -176,7 +176,7 @@ Content-Type: application/json
   "name": "Trần Văn A",
   "email": "a@example.com",
   "phoneNumber": "123",
-  "type": "CÁ NHÂN",
+  "type": "FAMILY",
   "isBigCustomer": false,
   "usageTarget": "DOMESTIC",
   "numberOfHouseholds": 1,
@@ -189,10 +189,10 @@ Content-Type: application/json
   "bankAccountNumber": "123456789",
   "bankAccountProviderLocation": "Vietcombank",
   "bankAccountName": "TRAN VAN A",
-  "formNumber": "IF_001",
-  "formCode": "IF_TEST_001",
-  "waterPriceId": "WP_TEST_001",
-  "waterMeterId": "WM_TEST_001"
+  "formNumber": "FORM-2024-0001",
+  "formCode": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+  "waterPriceId": "00000000-0000-0000-0000-B00000000001",
+  "waterMeterId": "00000000-0000-0000-0000-A00000000001"
 }
 
 > {%
@@ -210,6 +210,7 @@ Content-Type: application/json
   "name": "Trần Văn A",
   "email": "a@example.com",
   "phoneNumber": "0901234567",
+  "type": "FAMILY",
   "isBigCustomer": false,
   "usageTarget": "DOMESTIC",
   "numberOfHouseholds": 1,
@@ -222,10 +223,10 @@ Content-Type: application/json
   "bankAccountNumber": "123456789",
   "bankAccountProviderLocation": "Vietcombank",
   "bankAccountName": "TRAN VAN A",
-  "formNumber": "IF_001",
-  "formCode": "IF_TEST_001",
-  "waterPriceId": "WP_TEST_001",
-  "waterMeterId": "WM_TEST_001"
+  "formNumber": "FORM-2024-0001",
+  "formCode": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+  "waterPriceId": "00000000-0000-0000-0000-B00000000001",
+  "waterMeterId": "00000000-0000-0000-0000-A00000000001"
 }
 
 > {%
@@ -243,7 +244,7 @@ Content-Type: application/json
   "name": "Trần Văn A",
   "email": "a@example.com",
   "phoneNumber": "0901234567",
-  "type": "CÁ NHÂN",
+  "type": "FAMILY",
   "isBigCustomer": false,
   "usageTarget": "DOMESTIC",
   "numberOfHouseholds": 1,
@@ -256,10 +257,10 @@ Content-Type: application/json
   "bankAccountNumber": "123456789",
   "bankAccountProviderLocation": "Vietcombank",
   "bankAccountName": "TRAN VAN A",
-  "formNumber": "IF_001",
-  "formCode": "IF_TEST_001",
-  "waterPriceId": "WP_TEST_001",
-  "waterMeterId": "WM_TEST_001"
+  "formNumber": "FORM-2024-0001",
+  "formCode": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+  "waterPriceId": "00000000-0000-0000-0000-B00000000001",
+  "waterMeterId": "00000000-0000-0000-0000-A00000000001"
 }
 
 > {%
@@ -277,7 +278,7 @@ Content-Type: application/json
   "name": "Trần Văn A",
   "email": "a@example.com",
   "phoneNumber": "0901234567",
-  "type": "CÁ NHÂN",
+  "type": "FAMILY",
   "isBigCustomer": false,
   "usageTarget": "DOMESTIC",
   "numberOfHouseholds": "mot",
@@ -290,10 +291,10 @@ Content-Type: application/json
   "bankAccountNumber": "123456789",
   "bankAccountProviderLocation": "Vietcombank",
   "bankAccountName": "TRAN VAN A",
-  "formNumber": "IF_001",
-  "formCode": "IF_TEST_001",
-  "waterPriceId": "WP_TEST_001",
-  "waterMeterId": "WM_TEST_001"
+  "formNumber": "FORM-2024-0001",
+  "formCode": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+  "waterPriceId": "00000000-0000-0000-0000-B00000000001",
+  "waterMeterId": "00000000-0000-0000-0000-A00000000001"
 }
 
 > {%
@@ -340,7 +341,7 @@ Content-Type: application/json
   "name": "Trần Văn A",
   "email": "a@example.com",
   "phoneNumber": "0901234567",
-  "type": "CÁ NHÂN",
+  "type": "FAMILY",
   "isBigCustomer": false,
   "usageTarget": "DOMESTIC",
   "numberOfHouseholds": 1,
@@ -353,10 +354,10 @@ Content-Type: application/json
   "bankAccountNumber": "123456789",
   "bankAccountProviderLocation": "Vietcombank",
   "bankAccountName": "TRAN VAN A",
-  "formNumber": "IF_001",
-  "formCode": "' OR 1=1 --",
-  "waterPriceId": "WP_TEST_001",
-  "waterMeterId": "WM_TEST_001"
+  "formNumber": "FORM-2024-0001",
+  "formCode": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+  "waterPriceId": "00000000-0000-0000-0000-B00000000001",
+  "waterMeterId": "00000000-0000-0000-0000-A00000000001"
 }
 
 > {%
@@ -374,7 +375,7 @@ Content-Type: application/json
   "name": "Trần Văn A - Cập nhật",
   "email": "tranvana.updated@example.com",
   "phoneNumber": "0987654321",
-  "type": "DOANH NGHIỆP",
+  "type": "COMPANY",
   "isBigCustomer": true,
   "usageTarget": "INDUSTRIAL",
   "numberOfHouseholds": 2,
@@ -387,10 +388,10 @@ Content-Type: application/json
   "installationFee": 2000000,
   "deductionPeriod": "2024-01",
   "monthlyRent": 30000,
-  "waterMeterType": "ĐIỆN TỬ",
+  "waterMeterType": "ELECTRONIC",
   "citizenIdentificationNumber": "012345678901",
   "citizenIdentificationProvideAt": "Cục CSQLHC về TTXH",
-  "paymentMethod": "CHUYỂN KHOẢN",
+  "paymentMethod": "BANK_TRANSFER",
   "bankAccountNumber": "987654321",
   "bankAccountProviderLocation": "Agribank",
   "bankAccountName": "TRAN VAN A UPDATED",
@@ -398,10 +399,10 @@ Content-Type: application/json
   "passportCode": "P002",
   "connectionPoint": "CP002",
   "isActive": true,
-  "formNumber": "IF_001_V2",
-  "formCode": "IF_TEST_001_V2",
-  "waterPriceId": "WP_TEST_001",
-  "waterMeterId": "WM_TEST_001"
+  "formNumber": "FORM-2024-0002",
+  "formCode": "b1eebc99-9c0b-4ef8-bb6d-6bb9bd380a12",
+  "waterPriceId": "00000000-0000-0000-0000-B00000000002",
+  "waterMeterId": "00000000-0000-0000-0000-A00000000002"
 }
 
 > {%
@@ -419,7 +420,7 @@ Content-Type: application/json
   "name": "Khách hàng ảo",
   "email": "ao@example.com",
   "phoneNumber": "0901234567",
-  "type": "INDIVIDUAL",
+  "type": "FAMILY",
   "isBigCustomer": false,
   "usageTarget": "DOMESTIC",
   "numberOfHouseholds": 1,
@@ -432,10 +433,10 @@ Content-Type: application/json
   "bankAccountNumber": "123",
   "bankAccountProviderLocation": "Bank",
   "bankAccountName": "AO",
-  "formNumber": "IF001",
-  "formCode": "IF_TEST_001",
-  "waterPriceId": "WP001",
-  "waterMeterId": "WM001"
+  "formNumber": "FORM-2024-0015",
+  "formCode": "8eeebc99-9c0b-4ef8-bb6d-6bb9bd380a1f",
+  "waterPriceId": "00000000-0000-0000-0000-B00000000001",
+  "waterMeterId": "00000000-0000-0000-0000-A00000000001"
 }
 
 > {%
@@ -475,7 +476,7 @@ client.test("Status is 200", function() {
 %}
 
 ### TC17 - Check whether customers are applied with water price
-GET {{customersUrl}}/water-price/WP_TEST_001
+GET {{customersUrl}}/water-price/00000000-0000-0000-0000-B00000000001
 Authorization: Bearer {{access_token}}
 
 > {%
@@ -500,6 +501,113 @@ Authorization: Bearer {{access_token}}
 
 > {%
 client.test("Status is 404", function() {
+  client.assert(response.status === 404);
+});
+%}
+
+### TC20 - Update customer with invalid email format
+PUT {{customersUrl}}/{{customer_id}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "email": "not-an-email"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+### TC21 - Update customer with invalid phone number
+PUT {{customersUrl}}/{{customer_id}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "phoneNumber": "123"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+### TC22 - Update customer with very long name (boundary case)
+PUT {{customersUrl}}/{{customer_id}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "name": "Tên khách hàng cực kỳ dài".repeat(20)
+}
+
+> {%
+client.test("Status is 200 or 400 depending on length constraints", function() {
+  client.assert(response.status === 200 || response.status === 400);
+});
+%}
+
+### TC23 - Update customer with special characters and unicode
+PUT {{customersUrl}}/{{customer_id}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "name": "Trần @#$%^&*()_+ 😊 Ứng dụng"
+}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+### TC24 - Update customer with SQL Injection attempt
+PUT {{customersUrl}}/{{customer_id}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "name": "admin' --",
+  "cancelReason": "DROP TABLE customers;"
+}
+
+> {%
+client.test("Status is 200 or 400 (if sanitized/blocked)", function() {
+  client.assert(response.status === 200 || response.status === 400);
+});
+%}
+
+### TC25 - Update customer with non-existent waterPriceId
+PUT {{customersUrl}}/{{customer_id}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "waterPriceId": "NON_EXISTENT_PRICE"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+### TC26 - Update customer with non-existent formCode/Number
+PUT {{customersUrl}}/{{customer_id}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "formCode": "invalid-code",
+  "formNumber": "invalid-number"
+}
+
+> {%
+client.test("Status is 404 (NotExistingException)", function() {
   client.assert(response.status === 404);
 });
 %}

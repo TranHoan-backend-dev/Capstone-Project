@@ -28,7 +28,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.mock.web.MockMultipartFile;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,25 +66,11 @@ class CostEstimateServiceImplTest {
     createRequest = new CreateRequest(
       "Customer Name",
       "Address",
-      "Note",
-      1000,
-      500,
-      1,
-      2000,
-      10,
-      5,
-      10,
-      5,
-      10,
-      2,
-      100,
-      "http://image.url",
-      LocalDate.now(),
+      LocalDateTime.now(),
       "user-123",
-      "SN123",
-      "METER-123",
       formCode,
-      formNumber
+      formNumber,
+      "METER-123"
     );
 
     updateRequest = new UpdateRequest(
@@ -105,7 +90,8 @@ class CostEstimateServiceImplTest {
       120,
       null,
       "SN123-UPDATED",
-      "METER-123-UPDATED"
+      "METER-123-UPDATED",
+      true
     );
 
     installationForm = new InstallationForm();
@@ -115,25 +101,11 @@ class CostEstimateServiceImplTest {
     costEstimate = CostEstimate.create(b -> b
       .customerName(createRequest.customerName())
       .address(createRequest.address())
-      .contractFee(createRequest.contractFee())
-      .surveyFee(createRequest.surveyFee())
-      .surveyEffort(createRequest.surveyEffort())
-      .installationFee(createRequest.installationFee())
-      .laborCoefficient(createRequest.laborCoefficient())
-      .generalCostCoefficient(createRequest.generalCostCoefficient())
-      .precalculatedTaxCoefficient(createRequest.precalculatedTaxCoefficient())
-      .constructionMachineryCoefficient(createRequest.constructionMachineryCoefficient())
-      .vatCoefficient(createRequest.vatCoefficient())
-      .designCoefficient(createRequest.designCoefficient())
-      .designFee(createRequest.designFee())
-      .designImageUrl(createRequest.designImageUrl())
-      .registrationAt(createRequest.registrationAt())
+      .registrationAt(createRequest.registrationAt().toLocalDate())
       .createBy(createRequest.createBy())
-      .waterMeterSerial(createRequest.waterMeterSerial())
       .overallWaterMeterId(createRequest.overallWaterMeterId())
-      .installationFormId(installationForm)
+      .installationForm(installationForm)
     );
-    // Reflection or setter to set ID if needed, but here we mock saved object
   }
 
   @Test
@@ -141,11 +113,8 @@ class CostEstimateServiceImplTest {
     // Arrange
     installationForm.setStatus(new FormProcessingStatus(ProcessingStatus.PROCESSING, ProcessingStatus.PENDING_FOR_APPROVAL, ProcessingStatus.PENDING_FOR_APPROVAL, ProcessingStatus.PENDING_FOR_APPROVAL));
 
-    when(ifRepo.findById(new InstallationFormId(formNumber, formCode))).thenReturn(Optional.of(installationForm));
-    when(owmSrv.isOverallMeterExisting(createRequest.overallWaterMeterId()))
-      .thenReturn(new WrapperApiResponse(200, "Success", "false", LocalDateTime.now()));
-    when(owmSrv.isMeterExisting(createRequest.waterMeterSerial()))
-      .thenReturn(new WrapperApiResponse(200, "Success", "false", LocalDateTime.now()));
+    when(ifRepo.findById(new InstallationFormId(formCode, formNumber))).thenReturn(Optional.of(installationForm));
+    when(eRepo.existsByInstallationForm(installationForm)).thenReturn(false);
     when(eRepo.save(any(CostEstimate.class))).thenReturn(costEstimate);
 
     // Act
@@ -162,7 +131,7 @@ class CostEstimateServiceImplTest {
   @Test
   void should_ThrowException_When_InstallationFormNotFoundDuringCreation() {
     // Arrange
-    when(ifRepo.findById(new InstallationFormId(formNumber, formCode))).thenReturn(Optional.empty());
+    when(ifRepo.findById(new InstallationFormId(formCode, formNumber))).thenReturn(Optional.empty());
 
     // Act & Assert
     assertThrows(IllegalArgumentException.class, () -> costEstimateService.createEstimate(createRequest));
@@ -191,7 +160,7 @@ class CostEstimateServiceImplTest {
     // Arrange
     var image = new MockMultipartFile("designImage", "test.jpg", "image/jpeg", "test content".getBytes());
     var requestWithImage = new UpdateRequest(
-      "Name", "Addr", "Note", 100, 100, 1, 100, 1, 1, 1, 1, 1, 1, 100, image, "SN", "METER"
+      "Name", "Addr", "Note", 100, 100, 1, 100, 1, 1, 1, 1, 1, 1, 100, image, "SN", "METER", true
     );
 
     when(eRepo.findById(estimateId)).thenReturn(Optional.of(costEstimate));
@@ -274,3 +243,4 @@ class CostEstimateServiceImplTest {
     verify(eRepo).findAll(pageable);
   }
 }
+

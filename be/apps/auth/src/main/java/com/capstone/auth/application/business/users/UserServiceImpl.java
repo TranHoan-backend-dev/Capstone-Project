@@ -6,7 +6,7 @@ import com.capstone.auth.application.dto.request.users.FilterUsersRequest;
 import com.capstone.auth.application.dto.request.users.UpdateRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
 import com.capstone.auth.infrastructure.persistence.*;
-import com.capstone.common.exception.ExistingException;
+import com.capstone.common.enumerate.RoleName;
 import com.capstone.common.exception.NotExistingException;
 import com.capstone.auth.domain.model.EmployeeJob;
 import com.capstone.auth.domain.model.Profile;
@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @AppLog
 @Service
@@ -43,7 +44,7 @@ public class UserServiceImpl implements UserService {
   BusinessPagesOfEmployeeRepository bpRepo;
   ProfileRepository profileRepo;
   EmployeeJobRepository employeeJobRepo;
-  NetworkService netWorkService;
+  NetworkService networkService;
   OrganizationService organizationService;
   BusinessPageService bpService;
   IndividualNotificationRepository indRepo;
@@ -55,13 +56,13 @@ public class UserServiceImpl implements UserService {
   @Override
   @Transactional(rollbackFor = Exception.class) // rollback neu co loi
   public void createEmployee(
-    String username, String email, Roles role, @NonNull List<String> jobIds,
+    String userId, String username, String email, Roles role, @NonNull List<String> jobIds,
     String departmentId, String waterSupplyNetworkId, String fullName, String phone
   ) {
     log.info("UsersService is handling the request");
-    validateNewEmployeeInformation(email, phone, waterSupplyNetworkId, departmentId, jobIds);
 
     var user = Users.create(builder -> builder
+      .userId(userId)
       .email(email)
       .username(username)
       .role(role)
@@ -87,19 +88,6 @@ public class UserServiceImpl implements UserService {
       ));
       log.info("New employee's job: {}", job);
     });
-  }
-
-  @Override
-  @Transactional(rollbackFor = Exception.class)
-  public void updatePassword(String email, @NonNull String password, String newPassword) {
-    throw new IllegalArgumentException("Password managed by Keycloak");
-  }
-
-  @Override
-  @Transactional(rollbackFor = Exception.class)
-  public void resetPassword(String email, String newPassword) {
-    var obj = getUsersByEmail(email);
-    updateUser(obj, newPassword);
   }
 
   @Override
@@ -181,15 +169,7 @@ public class UserServiceImpl implements UserService {
       if (profile.isEmpty()) {
         throw new InternalError("Hồ sơ người dùng không tồn tại");
       }
-      return new EmployeeResponse(
-        c.getUserId(),
-        c.getUsername(),
-        profile.get().getFullname(),
-        null,
-        null,
-        null,
-        c.getEmail()
-      );
+      return mapToEmployeeResponse(c);
     }).toList();
     return new PageImpl<>(content, pageable, content.size());
   }
@@ -231,30 +211,25 @@ public class UserServiceImpl implements UserService {
       user.setDepartmentId(request.departmentId());
     }
     if (request.networkId() != null && !request.networkId().isBlank()) {
-      var status = netWorkService.checkExistence(request.networkId());
+      var status = networkService.checkExistence(request.networkId());
       if (!status) {
         throw new IllegalArgumentException("Chi nhánh cấp nước này không tồn tại: " + request.networkId());
       }
       user.setWaterSupplyNetworkId(request.networkId());
     }
 
-    return new EmployeeResponse(
-      user.getUserId(),
-      user.getUsername(),
-      profile.getFullname(),
-      organizationService.getDepartmentName(request.departmentId()),
-      netWorkService.getNameById(request.networkId()),
-      bpService.getPagesByEmployeeId(user.getUserId()).toString(),
-      user.getEmail()
-    );
+    return mapToEmployeeResponse(user);
   }
 
   @Override
   public EmployeeResponse deleteEmployee(String id) {
     log.info("Delete employee: {}", id);
     var emp = getById(id);
+    if (!emp.getIsEnabled()) {
+      throw new IllegalArgumentException(Message.SE_16);
+    }
     var profile = profileRepo.findById(id)
-      .orElseThrow(() -> new NotExistingException("Không tìm thấy hồ sơ người dùng với id " + id));
+      .orElseThrow(() -> new NotExistingException(String.format(Message.SE_15, id)));
 
     emp.setIsEnabled(false);
     indRepo.deleteByUserId(id);
@@ -272,15 +247,7 @@ public class UserServiceImpl implements UserService {
 
     repo.save(emp);
 
-    return new EmployeeResponse(
-      emp.getUserId(),
-      emp.getUsername(),
-      profile.getFullname(),
-      organizationService.getDepartmentName(emp.getDepartmentId()),
-      netWorkService.getNameById(emp.getWaterSupplyNetworkId()),
-      bpService.getPagesByEmployeeId(emp.getUserId()).toString(),
-      emp.getEmail()
-    );
+    return mapToEmployeeResponse(emp);
   }
 
   @Override
@@ -288,6 +255,15 @@ public class UserServiceImpl implements UserService {
     var user = getById(id);
     return roleRepo.findByUsers(Set.of(user))
       .getFirst().getName().toString();
+  }
+
+  @Override
+  public List<EmployeeResponse> getAllSurveyStaffs() {
+    log.info("Getting all survey staff");
+    var employees = repo.findByRoleNameIn(List.of(RoleName.SURVEY_STAFF));
+    return employees.stream()
+      .map(this::mapToEmployeeResponse)
+      .collect(Collectors.toList());
   }
 
   private Users getById(String id) {
@@ -315,27 +291,6 @@ public class UserServiceImpl implements UserService {
       currentUser.getIsEnabled());
   }
 
-  private void validateNewEmployeeInformation(String email, String phone, String networkId, String departmentId, List<String> jobIds) {
-    var obj = repo.findByEmail(email);
-    if (obj.isPresent()) {
-      throw new ExistingException(Message.SE_01);
-    }
-    if (profileRepo.existsByPhoneNumber(phone)) {
-      throw new ExistingException(Message.SE_08);
-    }
-    if (!netWorkService.checkExistence(networkId)) {
-      throw new NotExistingException(Message.SE_09);
-    }
-    if (!organizationService.checkDepartmentExistence(departmentId)) {
-      throw new NotExistingException(Message.SE_10);
-    }
-    var invalidJobs = jobIds.stream()
-      .filter(jid -> !organizationService.checkJobExistence(jid))
-      .toList();
-    if (!invalidJobs.isEmpty())
-      throw new NotExistingException("Jobs not exist: " + invalidJobs);
-  }
-
   private @NonNull Users getUsersByEmail(String email) {
     var obj = repo.findByEmail(email);
     if (obj.isEmpty()) {
@@ -345,9 +300,17 @@ public class UserServiceImpl implements UserService {
     return obj.get();
   }
 
-  private void updateUser(@NonNull Users obj, String password) {
-    // obj.setPassword(encoder.encode(password));
-    // repo.save(obj);
-    // log.info("Password reset successfully");
+  private @NonNull EmployeeResponse mapToEmployeeResponse(@NonNull Users user) {
+    var profile = profileRepo.findById(user.getUserId())
+      .orElseThrow(() -> new NotExistingException(String.format(Message.SE_15, user.getUserId())));
+    return new EmployeeResponse(
+      user.getUserId(),
+      null,
+      profile.getFullname(),
+      organizationService.getDepartmentName(user.getDepartmentId()),
+      networkService.getNameById(user.getWaterSupplyNetworkId()),
+      bpService.getPagesByEmployeeId(user.getUserId()).toString(),
+      user.getEmail()
+    );
   }
 }
