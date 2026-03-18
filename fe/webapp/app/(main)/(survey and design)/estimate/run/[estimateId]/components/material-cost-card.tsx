@@ -10,6 +10,8 @@ import {
   ApprovalIcon,
   DeleteIcon,
   DocumentChartIcon,
+  DocumentMagnifyGlassIcon,
+  SaveDocumentCheckIcon,
 } from "@/config/chip-and-icon";
 import CustomButton from "@/components/ui/custom/CustomButton";
 import { EstimateItem, EstimateResponse } from "@/types";
@@ -75,7 +77,17 @@ export const MaterialCostCard = () => {
 
     fetchData();
   }, [page, sort]);
-
+  const handleSave = async () => {
+    try {
+      const res = await fetch("/api/construction/estimates/save", {
+        method: "POST",
+      });
+      if (!res.ok) throw new Error("Save failed");
+      alert("Hoàn tất dự toán thành công");
+    } catch (err) {
+      console.error(err);
+    }
+  };
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -88,15 +100,15 @@ export const MaterialCostCard = () => {
       //   return (
       //     <CustomInputField defaultValue={item.reductionFactor.toString()} />
       //   );
-      case "quantity":
-        return <CustomInputField defaultValue={item.quantity.toString()} />;
+      // case "quantity":
+      //   return <CustomInputField defaultValue={item.quantity.toString()} />;
       case "materialPrice":
       case "laborPrice":
       case "materialTotal":
-      case "laborTotal":
-        if (!isMounted) return item[columnKey];
+      // case "laborTotal":
+      //   if (!isMounted) return item[columnKey];
 
-        return (item[columnKey] as number).toLocaleString("vi-VN");
+      //   return (item[columnKey] as number).toLocaleString("vi-VN");
       case "actions":
         return (
           <Tooltip closeDelay={0} color="danger" content="Xóa">
@@ -135,11 +147,19 @@ export const MaterialCostCard = () => {
 
       <div className="flex flex-wrap gap-3 p-4">
         <CustomButton
-          className="text-white font-bold ml-auto shadow-md shadow-success/20"
           color="success"
-          startContent={<ApprovalIcon className="w-4 h-4" />}
+          startContent={<DocumentMagnifyGlassIcon className="w-4 h-4" />}
+          onClick={() => handleSave()}
         >
           Hoàn tất dự toán
+        </CustomButton>
+
+        <CustomButton
+          color="primary"
+          startContent={<SaveDocumentCheckIcon className="w-4 h-4" />}
+          onClick={() => handleSave()}
+        >
+          Lưu nháp
         </CustomButton>
         <CustomButton
           className="font-bold shadow-md shadow-primary/20"

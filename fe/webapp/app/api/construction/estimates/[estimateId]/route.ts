@@ -1,10 +1,9 @@
-import {
-  getAllEstimates,
-} from "@/services/construction.service";
+import { getEstimateById } from "@/services/construction.service";
 import { getAccessToken } from "@/utils/getAccessToken";
 import { NextResponse, NextRequest } from "next/server";
 
-export async function GET(req: NextRequest) {
+export async function GET(req: NextRequest, { params }: { params: { estimateId: string } }) {
+  const { estimateId } = params;
   try {
     const accessToken = getAccessToken(req);
 
@@ -12,23 +11,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const { searchParams } = new URL(req.url);
-    const page = Number(searchParams.get("page") ?? 0);
-    const size = Number(searchParams.get("size") ?? 10);
-    const sort = searchParams.get("sort") || "createdAt,desc";
-    const keyword = searchParams.get("keyword") || "";
-    const from = searchParams.get("from") || "";
-    const to = searchParams.get("to") || "";
-
-    const response = await getAllEstimates(
-      accessToken,
-      page,
-      size,
-      sort,
-      keyword,
-      from,
-      to,
-    );
+    const response = await getEstimateById(accessToken, estimateId);
 
     return NextResponse.json(
       {

@@ -57,7 +57,6 @@ export const EstimateDetailModal = ({ isOpen, onClose, data }: any) => {
               value={data.createDate}
             />
 
-            <InfoRow label="Người duyệt chiết tính" value={data.approver} />
             <InfoRow
               icon={<InformationCircleIcon className="w-4 h-4 text-gray-400" />}
               label="Ngày duyệt chiết tính"

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@heroui/react";
 
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
@@ -17,14 +17,47 @@ import {
 import CustomSelect from "@/components/ui/custom/CustomSelect";
 import CustomButton from "@/components/ui/custom/CustomButton";
 import CustomTextarea from "@/components/ui/custom/CustomTextarea";
+import { EstimateResponse } from "@/types";
+interface TechnicalInfoCardProps {
+  estimateData: EstimateResponse | null;
+  setEstimateData: React.Dispatch<
+    React.SetStateAction<EstimateResponse | null>
+  >;
+  estimateId: string;
+}
+export const TechnicalInfoCard = ({
+  estimateData,
+  setEstimateData,
+  estimateId,
+}: TechnicalInfoCardProps) => {
+  // const [estimateData, setEstimateData] = useState({
+  //   customerName: "",
+  //   address: "",
+  //   note: "",
+  //   contractFee: 0,
+  //   surveyFee: 0,
+  //   surveyEffort: 0,
+  //   installationFee: 0,
+  //   laborCoefficient: 0,
+  //   generalCostCoefficient: 0,
+  //   precalculatedTaxCoefficient: 0,
+  //   constructionMachineryCoefficient: 0,
+  //   vatCoefficient: 0,
+  //   designCoefficient: 0,
+  //   designFee: 0,
+  //   designImage: null as File | null,
+  //   waterMeterSerial: "",
+  //   overallWaterMeterId: "",
+  //   isFinished: false,
+  // });
 
-export const TechnicalInfoCard = () => {
   const customerInfoFields = [
-    { label: "Tên khách hàng", isRequired: true },
-    { label: "Công tác" },
-    { label: "Số nhà" },
+    { label: "Tên khách hàng", key: "customerName", isRequired: true },
+    { label: "Công tác", key: "note" },
+    { label: "Số nhà", key: "houseNumber" },
     {
       label: "Đường phố",
+      key: "street",
       endContent: (
         <DocumentMagnifyGlassIcon className="w-5 h-5 text-gray-400 dark:text-default-400" />
       ),
@@ -37,22 +70,23 @@ export const TechnicalInfoCard = () => {
         { key: "p2", label: "Phường 2" },
       ],
     },
-    { label: "Địa chỉ đầy đủ" },
-    { label: "Ghi chú", type: "textarea", minRows: 3 },
+    { label: "Địa chỉ đầy đủ", key: "address" },
+    { label: "Ghi chú", key: "note",type: "textarea", minRows: 3 },
   ];
 
+
   const technicalSpecsFields = [
-    { label: "Lệ phí hợp đồng" },
-    { label: "Công khảo sát" },
-    { label: "Giá khảo sát" },
-    { label: "Phí đấu nối" },
-    { label: "Hệ số nhân công" },
-    { label: "Hệ số chi phí chung" },
-    { label: "Hệ số thuế tính trước" },
-    { label: "Hệ số máy thi công" },
-    { label: "Hệ số VAT" },
-    { label: "Hệ số thiết kế" },
-    { label: "Phí thiết kế", className: "md:col-span-2" },
+    { label: "Lệ phí hợp đồng", key: "contractFee", type: "input" },
+    { label: "Công khảo sát", key: "surveyFee", type: "input" },
+    { label: "Khối lượng khảo sát", key: "surveyEffort", type: "input" },
+    { label: "Phí đấu nối", key: "installationFee", type: "input" },
+    { label: "Hệ số nhân công", key: "laborCoefficient", type: "input" },
+    { label: "Hệ số chi phí chung", key: "generalCostCoefficient", type: "input" },
+    { label: "Hệ số thuế tính trước", key: "precalculatedTaxCoefficient", type: "input" },
+    { label: "Hệ số máy thi công", key: "constructionMachineryCoefficient", type: "input" },
+    { label: "Hệ số VAT", key: "vatCoefficient", type: "input" },
+    { label: "Hệ số thiết kế", key: "designCoefficient", type: "input" },
+    { label: "Phí thiết kế", key: "designFee", type: "input" },
   ];
 
   const [representatives, setRepresentatives] = React.useState([
@@ -91,13 +125,41 @@ export const TechnicalInfoCard = () => {
     { key: "truong-phong", label: "Trưởng phòng" },
   ];
 
+  const handleSave = async () => {
+    if (!estimateData) return;
+
+    const formData = new FormData();
+    Object.entries(estimateData).forEach(([key, value]) => {
+      if (value !== null && value !== undefined) {
+        formData.append(key, value as any);
+      }
+    });
+
+    const res = await fetch(`/api/construction/estimates/${estimateId}`, {
+      method: "PUT",
+      body: formData,
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      console.error("Update failed", err);
+      return;
+    }
+
+    const json = await res.json();
+    console.log("Updated estimate", json.data);
+    alert("Cập nhật dự toán thành công");
+  };
+
   const renderField = (field: any) => {
+    const value = estimateData ? ((estimateData as any)[field.key] ?? "") : "";
+
     if (field.type === "select") {
       return (
         <CustomSelect
-          key={field.label}
+          key={field.key}
           className={field.className}
-          defaultSelectedKeys={field.defaultSelectedKeys}
+          defaultSelectedKeys={value ? [value] : field.defaultSelectedKeys}
           isRequired={field.isRequired}
           label={field.label}
           options={(field.options || []).map((opt: any) => ({
@@ -107,23 +169,36 @@ export const TechnicalInfoCard = () => {
         />
       );
     }
+
     if (field.type === "textarea") {
       return (
         <CustomTextarea
-          key={field.label}
+          key={field.key}
           label={field.label}
           rows={field.minRows}
+          value={value}
+          onChange={(val) => {
+            setEstimateData((prev) =>
+              prev ? { ...prev, [field.key]: val } : prev,
+            );
+          }}
         />
       );
     }
 
     return (
       <CustomInput
-        key={field.label}
+        key={field.key}
         className={field.className}
         endContent={field.endContent}
         isRequired={field.isRequired}
         label={field.label}
+        value={value}
+        onChange={(val) => {
+          setEstimateData((prev) =>
+            prev ? { ...prev, [field.key]: val } : prev,
+          );
+        }}
       />
     );
   };
@@ -160,14 +235,18 @@ export const TechnicalInfoCard = () => {
       title="Lập hồ sơ kỹ thuật & chi phí vật tư"
     >
       <div className="lg:col-span-1 space-y-4">
-        <h3 className={`text-sm font-bold ${TitleDarkColor} uppercase tracking-wider`}>
+        <h3
+          className={`text-sm font-bold ${TitleDarkColor} uppercase tracking-wider`}
+        >
           Thông tin khách hàng & công trình
         </h3>
         {customerInfoFields.map(renderField)}
       </div>
 
       <div className="lg:col-span-1 space-y-4">
-        <h3 className={`text-sm font-bold ${TitleDarkColor} uppercase tracking-wider`}>
+        <h3
+          className={`text-sm font-bold ${TitleDarkColor} uppercase tracking-wider`}
+        >
           Thông số kỹ thuật lắp đặt
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -177,7 +256,9 @@ export const TechnicalInfoCard = () => {
 
       {/* Meter Section - Wide */}
       <div className="lg:col-span-2 pt-8 border-t border-divider space-y-4">
-        <h3 className={`text-sm font-bold ${TitleDarkColor} uppercase tracking-wider`}>
+        <h3
+          className={`text-sm font-bold ${TitleDarkColor} uppercase tracking-wider`}
+        >
           Đồng hồ & đơn vị liên quan
         </h3>
 

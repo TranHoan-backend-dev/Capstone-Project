@@ -421,7 +421,7 @@ export const deleteNeighborhoodUnits = (accessToken: string, id: string) => {
   });
 };
 
-export const getAllSettlements = (
+export const getAllEstimates = (
   accessToken: string,
   page: number,
   size: number,
@@ -439,6 +439,13 @@ export const getAllSettlements = (
       from,
       to,
     },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+export const getEstimateById = (accessToken: string, estimateId: string) =>
+  axios.get(`${API_GATEWAY_URL}/construction/estimates/${estimateId}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },

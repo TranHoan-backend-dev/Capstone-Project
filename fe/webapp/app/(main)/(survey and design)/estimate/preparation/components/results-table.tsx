@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Chip, Link, Tooltip, Button } from "@heroui/react";
 import NextLink from "next/link";
-
+import { useRouter } from "next/navigation";
 import { EstimateDetailModal } from "./estimate-detail-modal";
 
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
@@ -54,23 +54,23 @@ export const ResultsTable = ({ keyword, from, to }: ResultsTableProps) => {
     field: "createdAt",
     direction: "desc",
   });
-const mapEstimateToModalData = (item: EstimateItem) => {
-  return {
-    code: item.formNumber,
-    address: item.address,
-    registerDate: item.registerDate,
-    status: item.status,
+  const mapEstimateToModalData = (item: EstimateItem) => {
+    return {
+      code: item.formNumber,
+      address: item.address,
+      registerDate: item.registerDate,
+      status: item.status,
 
-    creator: "Chưa có",
-    createDate: item.registerDate,
+      creator: "Chưa có",
+      createDate: item.registerDate,
 
-    approver: "Chưa có",
-    approveDate: "",
+      approver: "Chưa có",
+      approveDate: "",
 
-    totalPrice: 0,
-    note: "",
+      totalPrice: 0,
+      note: "",
+    };
   };
-};
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
@@ -157,7 +157,12 @@ const mapEstimateToModalData = (item: EstimateItem) => {
   useEffect(() => {
     setPage(1);
   }, [keyword, from, to]);
+  const router = useRouter();
 
+  const handleRunEstimate = (item: EstimateItem) => {
+    // Truyền estimateId qua URL
+    router.push(`/estimate/run/${item.id}`);
+  };
   const renderCell = (item: EstimateItem, columnKey: string) => {
     switch (columnKey) {
       case "stt":
@@ -166,15 +171,14 @@ const mapEstimateToModalData = (item: EstimateItem) => {
             {data.indexOf(item) + 1}
           </span>
         );
-      case "code":
+      case "formNumber":
         return (
-          <Link
-            as={NextLink}
+          <button
             className={`font-bold text-blue-600 hover:underline hover:text-blue-800 ${TitleDarkColor}`}
-            href=""
+            onClick={() => handleStatusClick(item)}
           >
             {item.formNumber}
-          </Link>
+          </button>
         );
       case "customerName":
         return (
@@ -204,10 +208,9 @@ const mapEstimateToModalData = (item: EstimateItem) => {
           <Tooltip closeDelay={0} color="success" content="Chạy dự toán">
             <Button
               isIconOnly
-              as={NextLink}
-              href="/estimate-preparation"
               size="sm"
               variant="light"
+              onPress={() => handleRunEstimate(item)}
             >
               <EstimationIcon className={GreenIconColor} />
             </Button>
