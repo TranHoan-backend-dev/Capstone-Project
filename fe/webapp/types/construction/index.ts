@@ -4,4 +4,5 @@ export * from "./roadmap.type";
 export * from "./road.type";
 export * from "./job.type";
 export * from "./commune.type";
+export * from "./neighborhood-unit.type";
 export * from "./estimate.type";

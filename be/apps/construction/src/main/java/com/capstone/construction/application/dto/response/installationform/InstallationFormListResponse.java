@@ -16,6 +16,7 @@ public record InstallationFormListResponse(
   String creatorFullName,
   String constructedBy,
   String constructedByFullName,
-  FormProcessingStatus status
+  FormProcessingStatus status,
+  String overallWaterMeterId
 ) {
 }

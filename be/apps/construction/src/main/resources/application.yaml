@@ -68,3 +68,4 @@ rabbit-mq-config:
     - create
     - approve
     - assign
+    - require-significance

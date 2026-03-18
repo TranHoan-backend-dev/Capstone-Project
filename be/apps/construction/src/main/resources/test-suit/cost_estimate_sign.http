@@ -1,0 +1,254 @@
+### Cost Estimate Signing Test Cases
+@baseUrl = http://localhost:9004/api/v1/estimates
+
+### TC01 - Gửi yêu cầu ký duyệt dự toán thành công
+POST {{baseUrl}}/sign
+Content-Type: application/json
+
+{
+  "estId": "EST001",
+  "surveyStaff": "EMP001",
+  "plHead": "EMP002",
+  "companyLeadership": "EMP003"
+}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC02 - Thiếu estId
+POST {{baseUrl}}/sign
+Content-Type: application/json
+
+{
+  "surveyStaff": "EMP001",
+  "plHead": "EMP002",
+  "companyLeadership": "EMP003"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC03 - estId để trống
+POST {{baseUrl}}/sign
+Content-Type: application/json
+
+{
+  "estId": "",
+  "surveyStaff": "EMP001",
+  "plHead": "EMP002",
+  "companyLeadership": "EMP003"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC04 - Thiếu surveyStaff
+POST {{baseUrl}}/sign
+Content-Type: application/json
+
+{
+  "estId": "EST001",
+  "plHead": "EMP002",
+  "companyLeadership": "EMP003"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC05 - Thiếu plHead
+POST {{baseUrl}}/sign
+Content-Type: application/json
+
+{
+  "estId": "EST001",
+  "surveyStaff": "EMP001",
+  "companyLeadership": "EMP003"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC06 - Thiếu companyLeadership
+POST {{baseUrl}}/sign
+Content-Type: application/json
+
+{
+  "estId": "EST001",
+  "surveyStaff": "EMP001",
+  "plHead": "EMP002"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC07 - Request body trống
+POST {{baseUrl}}/sign
+Content-Type: application/json
+
+{}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC08 - Ký duyệt dự toán thành công (SURVEY_STAFF)
+PATCH {{baseUrl}}/sign
+Content-Type: application/json
+Authorization: Bearer {{survey_staff_token}}
+
+{
+  "estimateId": "EST001",
+  "electronicSignUrl": "https://example.com/sign1.png"
+}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC09 - Ký duyệt dự toán thành công (PLANNING_HEAD)
+PATCH {{baseUrl}}/sign
+Content-Type: application/json
+Authorization: Bearer {{pl_head_token}}
+
+{
+  "estimateId": "EST001",
+  "electronicSignUrl": "https://example.com/sign2.png"
+}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC10 - Ký duyệt dự toán thành công (LEADERSHIP)
+PATCH {{baseUrl}}/sign
+Content-Type: application/json
+Authorization: Bearer {{leadership_token}}
+
+{
+  "estimateId": "EST001",
+  "electronicSignUrl": "https://example.com/sign3.png"
+}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC11 - Thiếu estimateId khi ký
+PATCH {{baseUrl}}/sign
+Content-Type: application/json
+Authorization: Bearer {{survey_staff_token}}
+
+{
+  "electronicSignUrl": "https://example.com/sign1.png"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC12 - Thiếu electronicSignUrl khi ký
+PATCH {{baseUrl}}/sign
+Content-Type: application/json
+Authorization: Bearer {{survey_staff_token}}
+
+{
+  "estimateId": "EST001"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC13 - Không có quyền ký (User không có role phù hợp)
+PATCH {{baseUrl}}/sign
+Content-Type: application/json
+Authorization: Bearer {{normal_user_token}}
+
+{
+  "estimateId": "EST001",
+  "electronicSignUrl": "https://example.com/sign1.png"
+}
+
+> {%
+client.test("Status is 403", function() {
+  client.assert(response.status === 403);
+});
+%}
+
+
+### TC14 - Dự toán không tồn tại khi yêu cầu ký
+POST {{baseUrl}}/sign
+Content-Type: application/json
+
+{
+  "estId": "NON_EXISTENT",
+  "surveyStaff": "EMP001",
+  "plHead": "EMP002",
+  "companyLeadership": "EMP003"
+}
+
+> {%
+client.test("Status is 404", function() {
+  client.assert(response.status === 404);
+});
+%}
+
+
+### TC15 - Malformed JSON
+POST {{baseUrl}}/sign
+Content-Type: application/json
+
+{
+  "estId": "EST001",
+  "surveyStaff": "EMP001",
+  "plHead": "EMP002"
+  "companyLeadership": "EMP003"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}

@@ -4,6 +4,7 @@ import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
 import com.capstone.customer.dto.request.customer.CreateRequest;
+import com.capstone.customer.dto.request.customer.UpdateRequest;
 import com.capstone.customer.dto.response.CustomerResponse;
 import com.capstone.customer.service.boundary.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -58,8 +59,9 @@ public class CustomerController {
   })
   @PutMapping("/{id}")
   public ResponseEntity<WrapperApiResponse> updateCustomer(
-    @PathVariable @Parameter(description = "Mã định danh duy nhất của khách hàng (UUID)", example = "550e8400-e29b-41d4-a716-446655440000") String id,
-    @RequestBody @Valid CreateRequest request) {
+    @PathVariable @Parameter(description = "Id của khách hàng", example = "550e8400-e29b-41d4-a716-446655440000") String id,
+    @RequestBody @Valid UpdateRequest request
+  ) {
     log.info("REST request to update customer: {}", id);
     var response = customerService.updateCustomer(id, request);
     return Utils.returnOkResponse("Cập nhật khách hàng thành công", response);

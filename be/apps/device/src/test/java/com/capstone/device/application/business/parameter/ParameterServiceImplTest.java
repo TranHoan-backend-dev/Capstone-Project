@@ -6,6 +6,7 @@ import com.capstone.device.application.dto.response.ParameterResponse;
 import com.capstone.device.domain.model.Parameters;
 import com.capstone.device.infrastructure.persistence.ParameterRepository;
 import com.capstone.device.infrastructure.service.EmployeeService;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -81,29 +82,43 @@ class ParameterServiceImplTest {
   @Test
   void should_UpdateParameter_When_ValidRequest() {
     var id = "1";
-    var request = new UpdateParameterRequest("New Name", new BigDecimal("0.08"), "Admin-ID");
+    var updatorId = "Admin-ID";
+    var request = new UpdateParameterRequest("New Name", new BigDecimal("0.08"));
     var existingParam = createMockParam(id, "Old Name", new BigDecimal("0.1"));
 
-    when(employeeService.checkAuthorExisting(any())).thenReturn(new WrapperApiResponse(200, "Success", true, LocalDateTime.now()));
-
     when(repository.findById(id)).thenReturn(Optional.of(existingParam));
-    when(repository.save(any(Parameters.class))).thenReturn(existingParam);
+    when(employeeService.checkAuthorExisting(updatorId)).thenReturn(new WrapperApiResponse(200, "Success", true, LocalDateTime.now()));
+    when(repository.save(any(Parameters.class))).thenAnswer(invocation -> invocation.getArgument(0));
     when(employeeService.getEmployeeName(any())).thenReturn(new WrapperApiResponse(200, "Admin", true, LocalDateTime.now()));
 
-    var result = parameterService.updateParameter(id, request);
+    var result = parameterService.updateParameter(updatorId, id, request);
 
     assertEquals("New Name", result.name());
     assertEquals("0.08", result.value());
-    verify(repository).save(existingParam);
+    verify(repository).save(any(Parameters.class));
   }
 
   @Test
   void should_ThrowException_When_UpdateParameterNotFound() {
     var id = "not-found";
-    var request = new UpdateParameterRequest("VAT", new BigDecimal("0.08"), "Admin-ID");
+    var updatorId = "Admin-ID";
+    var request = new UpdateParameterRequest("VAT", new BigDecimal("0.08"));
     when(repository.findById(id)).thenReturn(Optional.empty());
 
-    assertThrows(IllegalArgumentException.class, () -> parameterService.updateParameter(id, request));
+    assertThrows(IllegalArgumentException.class, () -> parameterService.updateParameter(updatorId, id, request));
+  }
+
+  @Test
+  void should_ThrowException_When_AuthorNotFound() {
+    var id = "1";
+    var updatorId = "Invalid-ID";
+    var request = new UpdateParameterRequest("New Name", new BigDecimal("0.08"));
+    var existingParam = createMockParam(id, "Old Name", new BigDecimal("0.1"));
+
+    when(repository.findById(id)).thenReturn(Optional.of(existingParam));
+    when(employeeService.checkAuthorExisting(updatorId)).thenReturn(new WrapperApiResponse(200, "Not Found", false, LocalDateTime.now()));
+
+    assertThrows(IllegalArgumentException.class, () -> parameterService.updateParameter(updatorId, id, request));
   }
 
   @Test
@@ -118,7 +133,7 @@ class ParameterServiceImplTest {
     assertEquals("VAT", result.name());
   }
 
-  private Parameters createMockParam(String id, String name, BigDecimal value) {
+  private @NonNull Parameters createMockParam(String id, String name, BigDecimal value) {
     var param = new Parameters();
     ReflectionTestUtils.setField(param, "paramId", id);
     ReflectionTestUtils.setField(param, "name", name);

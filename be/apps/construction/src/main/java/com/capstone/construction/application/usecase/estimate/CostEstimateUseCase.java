@@ -1,17 +1,23 @@
 package com.capstone.construction.application.usecase.estimate;
 
-import com.capstone.common.enumerate.ProcessingStatus;
+import com.capstone.common.enumerate.RoleName;
+import com.capstone.common.exception.ForbiddenException;
+import com.capstone.common.exception.NotExistingException;
+import com.capstone.common.utils.SharedMessage;
 import com.capstone.construction.application.business.estimate.CostEstimateService;
 import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.construction.application.dto.request.estimate.AssignTheSignificanceRequest;
 import com.capstone.construction.application.dto.request.estimate.CreateRequest;
+import com.capstone.construction.application.dto.request.estimate.SignRequest;
 import com.capstone.construction.application.dto.request.estimate.UpdateRequest;
 import com.capstone.construction.application.dto.response.estimate.CostEstimateResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.application.event.producer.MessageProducer;
 import com.capstone.construction.application.event.producer.estimate.ApproveEvent;
-import com.capstone.construction.application.event.producer.estimate.CreatedEvent;
+import com.capstone.construction.application.event.producer.estimate.RequireSignificanceEvent;
 import com.capstone.construction.application.event.producer.estimate.UpdatedEvent;
 import com.capstone.construction.infrastructure.service.EmployeeService;
+import com.capstone.construction.infrastructure.utils.Message;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -28,11 +34,9 @@ public class CostEstimateUseCase {
   final EmployeeService empSrv;
   final MessageProducer messageProducer;
 
+  // <editor-fold> desc="constant"
   @Value(".${rabbit-mq-config.entities[6]}.")
   String PREFIX;
-
-  @Value("${rabbit-mq-config.actions[2]}")
-  String CREATE_ACTION;
 
   @Value("${rabbit-mq-config.actions[3]}")
   String APPROVE_ACTION;
@@ -40,35 +44,30 @@ public class CostEstimateUseCase {
   @Value("${rabbit-mq-config.actions[0]}")
   String UPDATE_ACTION;
 
+  @Value("${rabbit-mq-config.actions[5]}")
+  String REQUIRE_SIGNIFICANCE_ACTION;
+
   @Value("${rabbit-mq-config.queue_name}")
   String QUEUE_NAME;
+  // </editor-fold>
 
   public CostEstimateResponse createEstimate(@NonNull CreateRequest request) {
-    var result = estSrv.createEstimate(request);
-
-    var routingKey = QUEUE_NAME + PREFIX + CREATE_ACTION;
-    var employee = empSrv.getEmployeeNameById(result.createBy());
-    var event = new CreatedEvent(
-      result.customerName(),
-      result.installationFormId().getFormCode(),
-      result.installationFormId().getFormNumber(),
-      employee.data().toString());
-    messageProducer.send(routingKey, event);
-
-    return result;
+    return estSrv.createEstimate(request);
   }
 
   public CostEstimateResponse updateEstimate(String id, @NonNull UpdateRequest request) {
     var result = estSrv.updateEstimate(id, request);
 
-    var routingKey = QUEUE_NAME + PREFIX + UPDATE_ACTION;
-    var employee = empSrv.getEmployeeNameById(result.createBy());
-    var event = new UpdatedEvent(
-      result.customerName(),
-      result.installationFormId().getFormCode(),
-      result.installationFormId().getFormNumber(),
-      employee.data().toString());
-    messageProducer.send(routingKey, event);
+    if (request.isFinished()) {
+      var routingKey = QUEUE_NAME + PREFIX + UPDATE_ACTION;
+      var employee = empSrv.getEmployeeNameById(result.createBy());
+      var event = new UpdatedEvent(
+        result.customerName(),
+        result.installationFormId().getFormCode(),
+        result.installationFormId().getFormNumber(),
+        employee.data().toString());
+      messageProducer.send(routingKey, event);
+    }
 
     return result;
   }
@@ -98,5 +97,44 @@ public class CostEstimateUseCase {
 
   public PageResponse<CostEstimateResponse> getAllEstimates(Pageable pageable, BaseFilterRequest request) {
     return estSrv.getAllEstimates(pageable, request);
+  }
+
+  public void assignStaffForSignCostEstimate(@NonNull AssignTheSignificanceRequest request) {
+    var status = estSrv.isExisting(request.estId());
+    var status1 = empSrv.isEmployeeExisting(request.surveyStaff()).data().toString();
+    var status2 = empSrv.isEmployeeExisting(request.plHead()).data().toString();
+    var status3 = empSrv.isEmployeeExisting(request.companyLeadership()).data().toString();
+
+    if (!status) {
+      throw new NotExistingException(String.format(Message.PT_61, request.estId()));
+    }
+    if (!Boolean.parseBoolean(status1) && !Boolean.parseBoolean(status2) && !Boolean.parseBoolean(status3)) {
+      throw new NotExistingException(Message.PT_59);
+    }
+
+    messageProducer.send(QUEUE_NAME + PREFIX + REQUIRE_SIGNIFICANCE_ACTION, new RequireSignificanceEvent(
+      request.estId(),
+      request.surveyStaff(),
+      request.plHead(),
+      request.companyLeadership()
+    ));
+  }
+
+  public void signForInstallationRequest(String currentUserId, @NonNull SignRequest request) {
+    var role = empSrv.getRoleOfEmployeeById(currentUserId).data().toString();
+    if (!role.equalsIgnoreCase(RoleName.SURVEY_STAFF.name()) &&
+      !role.equalsIgnoreCase(RoleName.COMPANY_LEADERSHIP.name()) &&
+      !role.equalsIgnoreCase(RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD.name())) {
+      throw new ForbiddenException(SharedMessage.MES_23);
+    }
+
+    var electronicSignificance = empSrv.getElectronicSignificance(currentUserId).data().toString();
+
+    // ký với chữ ký. Đủ 3 chữ ký rồi thì mới làm được bước kế tiếp
+    var status = estSrv.signForCostEstimate(electronicSignificance, RoleName.valueOf(role), request.estimateId());
+
+    if (status) {
+      // TODO: ban su kien cho phong tai vu
+    }
   }
 }
