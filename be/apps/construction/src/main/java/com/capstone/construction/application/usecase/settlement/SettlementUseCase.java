@@ -1,6 +1,7 @@
 package com.capstone.construction.application.usecase.settlement;
 
 import com.capstone.construction.application.business.settlement.SettlementService;
+import com.capstone.construction.application.dto.request.settlement.SettlementFilterRequest;
 import com.capstone.construction.application.dto.request.settlement.SettlementRequest;
 import com.capstone.construction.application.dto.response.settlement.SettlementResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
@@ -14,25 +15,29 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SettlementUseCase {
-  SettlementService settlementService;
+    SettlementService settlementService;
 
-  public SettlementResponse createSettlement(SettlementRequest request) {
-    return settlementService.createSettlement(request);
-  }
+    public SettlementResponse createSettlement(SettlementRequest request) {
+        return settlementService.createSettlement(request);
+    }
 
-  public SettlementResponse updateSettlement(String id, SettlementRequest request) {
-    return settlementService.updateSettlement(id, request);
-  }
+    public SettlementResponse updateSettlement(String id, SettlementRequest request) {
+        return settlementService.updateSettlement(id, request);
+    }
 
-  public void deleteSettlement(String id) {
-    settlementService.deleteSettlement(id);
-  }
+    public void deleteSettlement(String id) {
+        settlementService.deleteSettlement(id);
+    }
 
-  public SettlementResponse getSettlementById(String id) {
-    return settlementService.getSettlementById(id);
-  }
+    public SettlementResponse getSettlementById(String id) {
+        return settlementService.getSettlementById(id);
+    }
 
-  public PageResponse<SettlementResponse> getAllSettlements(Pageable pageable) {
-    return settlementService.getAllSettlements(pageable);
-  }
+    public PageResponse<SettlementResponse> getAllSettlements(Pageable pageable) {
+        return settlementService.getAllSettlements(pageable);
+    }
+
+    public PageResponse<SettlementResponse> filterSettlements(SettlementFilterRequest filterRequest, Pageable pageable) {
+        return settlementService.filterSettlements(filterRequest, pageable);
+    }
 }
