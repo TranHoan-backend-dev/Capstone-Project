@@ -4,6 +4,7 @@ import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
 import com.capstone.device.application.dto.request.metertype.CreateRequest;
+import com.capstone.device.application.dto.request.metertype.SearchWaterMeterTypeRequest;
 import com.capstone.device.application.dto.request.metertype.UpdateRequest;
 import com.capstone.device.application.dto.response.WaterMeterTypeResponse;
 import com.capstone.device.application.usecase.MeterTypeUseCase;
@@ -109,5 +110,15 @@ public class WaterMeterTypeController {
     log.info("REST request to get all water meter types");
     var response = mtUseCase.getAllMeterTypes(pageable);
     return Utils.returnOkResponse("Lấy danh sách chủng loại đồng hồ thành công", response);
+  }
+
+  @PostMapping("/search")
+  @Operation(summary = "Tìm kiếm và lọc loại đồng hồ", description = "Tìm kiếm và lọc loại đồng hồ theo nhiều tiêu chí với phân trang")
+  public ResponseEntity<WrapperApiResponse> searchTypes(
+      @RequestBody SearchWaterMeterTypeRequest request,
+      @PageableDefault Pageable pageable) {
+    log.info("REST request to search water meter types: {}", request);
+    var response = mtUseCase.searchMeterTypes(request, pageable);
+    return Utils.returnOkResponse("Tìm kiếm chủng loại đồng hồ thành công", response);
   }
 }

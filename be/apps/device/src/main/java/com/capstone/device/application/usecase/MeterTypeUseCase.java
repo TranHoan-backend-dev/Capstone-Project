@@ -2,6 +2,7 @@ package com.capstone.device.application.usecase;
 
 import com.capstone.device.application.business.metertype.MeterTypeService;
 import com.capstone.device.application.dto.request.metertype.CreateRequest;
+import com.capstone.device.application.dto.request.metertype.SearchWaterMeterTypeRequest;
 import com.capstone.device.application.dto.request.metertype.UpdateRequest;
 import com.capstone.device.application.dto.response.PageResponse;
 import com.capstone.device.application.dto.response.WaterMeterTypeResponse;
@@ -64,5 +65,9 @@ public class MeterTypeUseCase {
 
   public PageResponse<WaterMeterTypeResponse> getAllMeterTypes(Pageable pageable) {
     return meterTypeService.getAllMeterTypes(pageable);
+  }
+
+  public PageResponse<WaterMeterTypeResponse> searchMeterTypes(SearchWaterMeterTypeRequest request, Pageable pageable) {
+    return meterTypeService.searchMeterTypes(request, pageable);
   }
 }

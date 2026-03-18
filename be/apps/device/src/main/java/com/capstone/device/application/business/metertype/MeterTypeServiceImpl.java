@@ -3,6 +3,7 @@ package com.capstone.device.application.business.metertype;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.exception.ExistingException;
 import com.capstone.device.application.dto.request.metertype.CreateRequest;
+import com.capstone.device.application.dto.request.metertype.SearchWaterMeterTypeRequest;
 import com.capstone.device.application.dto.request.metertype.UpdateRequest;
 import com.capstone.device.application.dto.response.PageResponse;
 import com.capstone.device.application.dto.response.WaterMeterTypeResponse;
@@ -117,6 +118,13 @@ public class MeterTypeServiceImpl implements MeterTypeService {
   public PageResponse<WaterMeterTypeResponse> getAllMeterTypes(Pageable pageable) {
     log.info("Fetching all water meter types with pageable: {}", pageable);
     var page = waterMeterTypeRepository.findAll(pageable);
+    return PageResponse.fromPage(page, this::mapToResponse);
+  }
+
+  @Override
+  public PageResponse<WaterMeterTypeResponse> searchMeterTypes(SearchWaterMeterTypeRequest request, Pageable pageable) {
+    log.info("Searching water meter types with request: {}", request);
+    var page = waterMeterTypeRepository.searchMeterTypes(request, pageable);
     return PageResponse.fromPage(page, this::mapToResponse);
   }
 
