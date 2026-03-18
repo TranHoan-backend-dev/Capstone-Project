@@ -8,10 +8,10 @@ Content-Type: application/x-www-form-urlencoded
 Accept: application/json
 
 grant_type=password&
-client_id=&
+client_id= &
 client_secret={{client_secret}}&
-username=&
-password=&
+username= &
+password= &
 scope=openid
 
 > {%
@@ -59,6 +59,131 @@ GET {{uri}}?from=2023-01-01
 Authorization: Bearer {{access_token}}
 Accept: application/json
 
+### Filter by customerName
+GET {{uri}}?customerName=Trần Văn A
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Filter by address
+GET {{uri}}?address=123 Đường ABC
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Filter by note
+GET {{uri}}?note=lắp nhanh
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Filter by contractFee
+GET {{uri}}?contractFee=2000000
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Filter by surveyFee
+GET {{uri}}?surveyFee=100000
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Filter by surveyEffort
+GET {{uri}}?surveyEffort=1
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Filter by installationFee
+GET {{uri}}?installationFee=1500000
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Filter by laborCoefficient
+GET {{uri}}?laborCoefficient=20
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Filter by generalCostCoefficient
+GET {{uri}}?generalCostCoefficient=5
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Filter by precalculatedTaxCoefficient
+GET {{uri}}?precalculatedTaxCoefficient=10
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Filter by constructionMachineryCoefficient
+GET {{uri}}?constructionMachineryCoefficient=0
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Filter by vatCoefficient
+GET {{uri}}?vatCoefficient=10
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Filter by designCoefficient
+GET {{uri}}?designCoefficient=2
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Filter by designFee
+GET {{uri}}?designFee=500000
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Filter by registrationAt
+GET {{uri}}?registrationAt=27-10-2023
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Filter by createBy
+GET {{uri}}?createBy=6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Filter by waterMeterSerial
+GET {{uri}}?waterMeterSerial=SN12345678
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Filter by overallWaterMeterId
+GET {{uri}}?overallWaterMeterId=METER-001
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Filter by designImageUrl
+GET {{uri}}?designImageUrl=http://storage.com/design.png
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Combined filter - customerName + address
+GET {{uri}}?customerName=Trần Văn A&address=123 Đường ABC
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Combined filter - Multiple fields
+GET {{uri}}?customerName=Trần Văn A&contractFee=2000000&surveyFee=100000&registrationAt=27-10-2023
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Combined filter - With pagination and sorting
+GET {{uri}}?customerName=Trần Văn A&page=0&size=5&sort=contractFee,desc
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Filter with invalid registrationAt format (Should return 400)
+GET {{uri}}?registrationAt=2023-10-27
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Filter with empty customerName
+GET {{uri}}?customerName=
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Filter with non-existent customerName
+GET {{uri}}?customerName=NonexistentCustomer
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
 ### C - Create estimate (Validation Failure - missing required fields)
 POST {{uri}}
 Content-Type: application/json
@@ -66,9 +191,9 @@ Authorization: Bearer {{access_token}}
 Accept: application/json
 
 {
-  "customerName": "",
-  "address": "",
-  "formCode": "CODE-01"
+ "customerName": "",
+ "address": "",
+ "formCode": "CODE-01"
 }
 
 ### C - Create estimate
@@ -78,27 +203,27 @@ Authorization: Bearer {{access_token}}
 Accept: application/json
 
 {
-  "customerName": "Trần Văn A",
-  "address": "123 Đường ABC, Phường X, Quận Y",
-  "note": "Khách hàng yêu cầu lắp nhanh",
-  "contractFee": 2000000,
-  "surveyFee": 100000,
-  "surveyEffort": 1,
-  "installationFee": 1500000,
-  "laborCoefficient": 20,
-  "generalCostCoefficient": 5,
-  "precalculatedTaxCoefficient": 10,
-  "constructionMachineryCoefficient": 0,
-  "vatCoefficient": 10,
-  "designCoefficient": 2,
-  "designFee": 500000,
-  "designImageUrl": "http://storage.com/design.png",
-  "registrationAt": "2023-10-27",
-  "createBy": "6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20",
-  "waterMeterSerial": "SN12345678",
-  "overallWaterMeterId": "METER-001",
-  "formNumber": "7dfebc99-9c0b-4ef8-bb6d-6bb9bd380a2e",
-  "formCode": "FORM-2024-0030"
+ "customerName": "Trần Văn A",
+ "address": "123 Đường ABC, Phường X, Quận Y",
+ "note": "Khách hàng yêu cầu lắp nhanh",
+ "contractFee": 2000000,
+ "surveyFee": 100000,
+ "surveyEffort": 1,
+ "installationFee": 1500000,
+ "laborCoefficient": 20,
+ "generalCostCoefficient": 5,
+ "precalculatedTaxCoefficient": 10,
+ "constructionMachineryCoefficient": 0,
+ "vatCoefficient": 10,
+ "designCoefficient": 2,
+ "designFee": 500000,
+ "designImageUrl": "http://storage.com/design.png",
+ "registrationAt": "2023-10-27",
+ "createBy": "6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20",
+ "waterMeterSerial": "SN12345678",
+ "overallWaterMeterId": "METER-001",
+ "formNumber": "7dfebc99-9c0b-4ef8-bb6d-6bb9bd380a2e",
+ "formCode": "FORM-2024-0030"
 }
 
 ###
@@ -111,22 +236,22 @@ Authorization: Bearer {{access_token}}
 Accept: application/json
 
 {
-  "customerName": "Trần Văn A Updated",
-  "address": "456 Đường XYZ, Phường X, Quận Y",
-  "note": "Cập nhật ghi chú",
-  "contractFee": 2500000,
-  "surveyFee": 120000,
-  "surveyEffort": 2,
-  "installationFee": 1800000,
-  "laborCoefficient": 25,
-  "generalCostCoefficient": 6,
-  "precalculatedTaxCoefficient": 10,
-  "constructionMachineryCoefficient": 5,
-  "vatCoefficient": 10,
-  "designCoefficient": 3,
-  "designFee": 600000,
-  "waterMeterSerial": "SN12345678",
-  "overallWaterMeterId": "METER-001"
+ "customerName": "Trần Văn A Updated",
+ "address": "456 Đường XYZ, Phường X, Quận Y",
+ "note": "Cập nhật ghi chú",
+ "contractFee": 2500000,
+ "surveyFee": 120000,
+ "surveyEffort": 2,
+ "installationFee": 1800000,
+ "laborCoefficient": 25,
+ "generalCostCoefficient": 6,
+ "precalculatedTaxCoefficient": 10,
+ "constructionMachineryCoefficient": 5,
+ "vatCoefficient": 10,
+ "designCoefficient": 3,
+ "designFee": 600000,
+ "waterMeterSerial": "SN12345678",
+ "overallWaterMeterId": "METER-001"
 }
 
 ### U - Update estimate (Not found)
@@ -136,11 +261,11 @@ Authorization: Bearer {{access_token}}
 Accept: application/json
 
 {
-  "customerName": "Test",
-  "address": "Test",
-  "status": "PROCESSING",
-  "waterMeterSerial": "SN123",
-  "overallWaterMeterId": "METER-001"
+ "customerName": "Test",
+ "address": "Test",
+ "status": "PROCESSING",
+ "waterMeterSerial": "SN123",
+ "overallWaterMeterId": "METER-001"
 }
 
 ### U - Blank params
@@ -150,11 +275,11 @@ Authorization: Bearer {{access_token}}
 Accept: application/json
 
 {
-  "customerName": "",
-  "address": "",
-  "status": "",
-  "waterMeterSerial": "",
-  "overallWaterMeterId": ""
+ "customerName": "",
+ "address": "",
+ "status": "",
+ "waterMeterSerial": "",
+ "overallWaterMeterId": ""
 }
 
 ### P - Approve estimate

@@ -20,10 +20,7 @@ export const getAllUnits = (
     },
   });
 
-export const createUnit = (
-  accessToken: string,
-  name: string,
-) => {
+export const createUnit = (accessToken: string, name: string) => {
   return axios.post(
     `${API_GATEWAY_URL}/d/units`,
     { name },
@@ -35,11 +32,7 @@ export const createUnit = (
   );
 };
 
-export const updateUnit = (
-  accessToken: string,
-  id: string,
-  name: string,
-) => {
+export const updateUnit = (accessToken: string, id: string, name: string) => {
   return axios.put(
     `${API_GATEWAY_URL}/d/units/${id}`,
     { name },
@@ -58,3 +51,19 @@ export const deleteUnit = (accessToken: string, id: string) => {
     },
   });
 };
+
+export const getAllMaterials = (
+  accessToken: string,
+  page: number,
+  size: number,
+) =>
+  axios.get(`${API_GATEWAY_URL}/d/materials`, {
+    params: {
+      page,
+      size,
+    },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  

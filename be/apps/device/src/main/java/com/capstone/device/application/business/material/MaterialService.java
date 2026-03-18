@@ -2,6 +2,7 @@ package com.capstone.device.application.business.material;
 
 import com.capstone.device.application.dto.request.material.CreateRequest;
 import com.capstone.device.application.dto.request.material.UpdateRequest;
+import com.capstone.device.application.dto.request.material.SearchRequest;
 import com.capstone.device.application.dto.response.MaterialResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,13 +40,22 @@ public interface MaterialService {
    */
   MaterialResponse getMaterialById(String id);
 
-  /**
-   * Retrieves all materials with pagination.
-   *
-   * @param pageable pagination information
-   * @return a page of material responses
-   */
-  Page<MaterialResponse> getAllMaterials(Pageable pageable);
+    /**
+     * Retrieves all materials with pagination.
+     *
+     * @param pageable pagination information
+     * @return a page of material responses
+     */
+    Page<MaterialResponse> getAllMaterials(Pageable pageable);
+
+    /**
+     * Searches materials by job content (name) and/or price range.
+     *
+     * @param searchRequest contains search criteria for jobContent (name) and price range
+     * @param pageable pagination information
+     * @return a page of material responses matching the search criteria
+     */
+    Page<MaterialResponse> searchMaterials(SearchRequest searchRequest, Pageable pageable);
 
   boolean materialExists(String id);
 
