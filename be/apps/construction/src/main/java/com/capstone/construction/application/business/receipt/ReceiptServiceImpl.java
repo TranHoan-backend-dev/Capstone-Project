@@ -4,7 +4,6 @@ import com.capstone.common.annotation.AppLog;
 import com.capstone.construction.application.dto.request.receipt.CreateRequest;
 import com.capstone.construction.application.dto.request.receipt.UpdateRequest;
 import com.capstone.construction.application.dto.response.receipt.ReceiptResponse;
-import com.capstone.construction.application.event.receipt.ReceiptCreatedEvent;
 import com.capstone.construction.domain.model.Receipt;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
 import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
@@ -14,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReceiptServiceImpl implements ReceiptService {
   ReceiptRepository receiptRepo;
   InstallationFormRepository ifRepo;
-  ApplicationEventPublisher eventPublisher;
 
   @Override
   @Transactional
@@ -51,18 +48,19 @@ public class ReceiptServiceImpl implements ReceiptService {
     var saved = receiptRepo.save(receipt);
     log.info("Receipt saved with id: {}", saved.getInstallationFormId());
 
-    eventPublisher.publishEvent(new ReceiptCreatedEvent(this, saved));
-
     return mapToResponse(saved);
   }
 
   @Override
   @Transactional
-  public ReceiptResponse updateReceipt(String formCode, String formNumber, @NonNull UpdateRequest request) {
-    log.info("Updating receipt for form: {}/{}", formCode, formNumber);
-    var formId = new InstallationFormId(formCode, formNumber);
+  public ReceiptResponse updateReceipt(@NonNull UpdateRequest request) {
+    log.info("Updating receipt for form: {}/{}", request.formCode(), request.formNumber());
+    if (request.formCode() == null || request.formNumber() == null) {
+      throw new IllegalArgumentException("Form code and number must not be null for update");
+    }
+    var formId = new InstallationFormId(request.formCode(), request.formNumber());
     var receipt = receiptRepo.findById(formId)
-      .orElseThrow(() -> new IllegalArgumentException("Receipt not found for form: " + formNumber));
+      .orElseThrow(() -> new IllegalArgumentException("Receipt not found for form: " + request.formNumber()));
 
     if (request.receiptNumber() != null) {
       receipt.setReceiptNumber(request.receiptNumber());

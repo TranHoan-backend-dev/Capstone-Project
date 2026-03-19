@@ -3,9 +3,9 @@ package com.capstone.construction.adapter;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
-import com.capstone.construction.application.business.receipt.ReceiptService;
 import com.capstone.construction.application.dto.request.receipt.CreateRequest;
 import com.capstone.construction.application.dto.request.receipt.UpdateRequest;
+import com.capstone.construction.application.usecase.ReceiptUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -25,27 +25,26 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Quản lý biên lai", description = "Các API phục vụ việc quản lý biên lai thanh toán.")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ReceiptController {
-  ReceiptService receiptService;
+  ReceiptUseCase receiptUseCase;
 
   @PostMapping
   @PreAuthorize("hasAnyAuthority('FINANCE_STAFF', 'IT_STAFF')")
   @Operation(summary = "Tạo mới biên lai", description = "Tạo mới biên lai thanh toán cho một đơn lắp đặt.")
   public ResponseEntity<WrapperApiResponse> createReceipt(@RequestBody @Valid CreateRequest request) {
     log.info("REST request to create receipt for form: {}/{}", request.formCode(), request.formNumber());
-    var response = receiptService.createReceipt(request);
+    var response = receiptUseCase.createReceipt(request);
+    log.info(response.toString());
     return Utils.returnCreatedResponse("Tạo biên lai thành công");
   }
 
-  @PutMapping("/{formCode}/{formNumber}")
+  @PutMapping
   @PreAuthorize("hasAnyAuthority('FINANCE_STAFF', 'IT_STAFF')")
   @Operation(summary = "Cập nhật biên lai", description = "Cập nhật thông tin biên lai hiện có.")
   public ResponseEntity<WrapperApiResponse> updateReceipt(
-    @PathVariable String formCode,
-    @PathVariable String formNumber,
     @RequestBody @Valid UpdateRequest request
   ) {
-    log.info("REST request to update receipt for form: {}/{}", formCode, formNumber);
-    var response = receiptService.updateReceipt(formCode, formNumber, request);
+    log.info("REST request to update receipt for form: {}/{}", request.formCode(), request.formNumber());
+    var response = receiptUseCase.updateReceipt(request);
     return Utils.returnOkResponse("Cập nhật biên lai thành công", response);
   }
 
@@ -57,18 +56,19 @@ public class ReceiptController {
     @PathVariable String formNumber
   ) {
     log.info("REST request to delete receipt for form: {}/{}", formCode, formNumber);
-    receiptService.deleteReceipt(formCode, formNumber);
+    receiptUseCase.deleteReceipt(formCode, formNumber);
     return Utils.returnOkResponse("Xóa biên lai thành công", null);
   }
 
   @GetMapping("/{formCode}/{formNumber}")
   @Operation(summary = "Lấy chi tiết biên lai", description = "Truy xuất thông tin chi tiết một biên lai.")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'FINANCE_STAFF', 'ORDER_RECEIVING_STAFF')")
   public ResponseEntity<WrapperApiResponse> getReceipt(
     @PathVariable String formCode,
     @PathVariable String formNumber
   ) {
     log.info("REST request to get receipt for form: {}/{}", formCode, formNumber);
-    var response = receiptService.getReceipt(formCode, formNumber);
+    var response = receiptUseCase.getReceipt(formCode, formNumber);
     return Utils.returnOkResponse("Lấy thông tin biên lai thành công", response);
   }
 }
