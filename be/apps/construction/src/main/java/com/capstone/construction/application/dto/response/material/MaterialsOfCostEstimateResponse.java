@@ -9,6 +9,10 @@ public record MaterialsOfCostEstimateResponse(
   String totalMaterialCost,
   String note,
   Float mass,
-  Float reductionCoefficient
+  Float reductionCoefficient,
+  String jobContent,
+  String unitName,
+  String laborPriceAtRuralCommune,
+  String usedLaborCost
 ) {
 }

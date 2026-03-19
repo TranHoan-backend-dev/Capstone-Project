@@ -1,5 +1,6 @@
 package com.capstone.customer.repository;
 
+import com.capstone.common.utils.SharedConstant;
 import com.capstone.customer.model.WaterUsageContract;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;
@@ -43,20 +44,19 @@ public interface ContractRepository extends JpaRepository<WaterUsageContract, St
   static ArrayList<Predicate> getPredicates(@NonNull String keyword, @NonNull Root<WaterUsageContract> root, @NonNull CriteriaBuilder cb) {
     var orPredicates = new ArrayList<Predicate>();
     var lowerCaseKeyword = "%" + keyword.toLowerCase() + "%";
-    var unaccent = "unaccent";
 
     var list = List.of("contractId", "installationFormId");
 
     list.forEach(field ->
       orPredicates.add(cb.like(
-        cb.function(unaccent, String.class, cb.lower(root.get(field).as(String.class))),
-        cb.function(unaccent, String.class, cb.literal(lowerCaseKeyword))
+        cb.function(SharedConstant.UNACCENT, String.class, cb.lower(root.get(field).as(String.class))),
+        cb.function(SharedConstant.UNACCENT, String.class, cb.literal(lowerCaseKeyword))
       )));
 
     // Search by customer name (unaccent)
     orPredicates.add(cb.like(
-      cb.function(unaccent, String.class, cb.lower(root.get("customer").get("name").as(String.class))),
-      cb.function(unaccent, String.class, cb.literal(lowerCaseKeyword))
+      cb.function(SharedConstant.UNACCENT, String.class, cb.lower(root.get("customer").get("name").as(String.class))),
+      cb.function(SharedConstant.UNACCENT, String.class, cb.literal(lowerCaseKeyword))
     ));
 
     // Search by customer phone number

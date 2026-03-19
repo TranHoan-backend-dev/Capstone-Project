@@ -1,0 +1,174 @@
+### TC01 - Tạo mới biên lai thành công (Happy Path)
+POST http://localhost:9004/api/v1/receipts
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "formCode": "LD",
+  "formNumber": "20240319001",
+  "receiptNumber": "BL-99999",
+  "customerName": "Nguyễn Văn A",
+  "address": "123 Đường ABC, Quận 1, TP.HCM",
+  "paymentDate": "2024-03-19",
+  "isPaid": true
+}
+
+> {%
+client.test("Status is 201", function() {
+  client.assert(response.status === 201);
+});
+%}
+
+
+### TC02 - Thiếu trường mã đơn (formNumber)
+POST http://localhost:9004/api/v1/receipts
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "formCode": "LD",
+  "receiptNumber": "BL-99999",
+  "customerName": "A",
+  "address": "Addr",
+  "paymentDate": "2024-03-19",
+  "isPaid": true
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC03 - Số biên lai rỗng (Empty String)
+POST http://localhost:9004/api/v1/receipts
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "formCode": "LD",
+  "formNumber": "20240319001",
+  "receiptNumber": "",
+  "customerName": "A",
+  "address": "Addr",
+  "paymentDate": "2024-03-19",
+  "isPaid": true
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC04 - Ngày thanh toán sai định dạng
+POST http://localhost:9004/api/v1/receipts
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "formCode": "LD",
+  "formNumber": "20240319001",
+  "receiptNumber": "BL-001",
+  "paymentDate": "19/03/2024"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC05 - Cập nhật biên lai thành công
+PUT http://localhost:9004/api/v1/receipts
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "formCode": "LD",
+  "formNumber": "20240319001",
+  "receiptNumber": "BL-UPDATED",
+  "isPaid": false
+}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC06 - Lấy chi tiết biên lai thành công
+GET http://localhost:9004/api/v1/receipts/LD/20240319001
+Authorization: Bearer {{auth_token}}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC07 - Xoá biên lai thành công
+DELETE http://localhost:9004/api/v1/receipts/LD/20240319001
+Authorization: Bearer {{auth_token}}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC08 - Truy cập không có quyền (Security)
+GET http://localhost:9004/api/v1/receipts/LD/20240319001
+
+> {%
+client.test("Status is 401", function() {
+  client.assert(response.status === 401);
+});
+%}
+
+
+### TC09 - Lỗi nghiệp vụ: Đơn chưa có dự toán được duyệt
+POST http://localhost:9004/api/v1/receipts
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "formCode": "LD",
+  "formNumber": "FORM_UNAUTHORIZED_ESTIMATE",
+  "receiptNumber": "BL-001",
+  "customerName": "A",
+  "address": "Addr",
+  "paymentDate": "2024-03-19",
+  "isPaid": true
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC10 - Malformed JSON
+POST http://localhost:9004/api/v1/receipts
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "formCode": "LD",
+  "formNumber": "2024001",
+  "receiptNumber": "BL001"
+  "isPaid": true 
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}

@@ -28,16 +28,22 @@ public class MaterialsOfCostEstimateServiceImpl implements MaterialsOfCostEstima
   }
 
   private @NonNull MaterialsOfCostEstimateResponse mapToResponse(@NonNull MaterialsOfCostEstimate m) {
+    var material = m.getMaterial();
+
     return new MaterialsOfCostEstimateResponse(
       m.getId().getMaterialId(),
-      m.getMaterial().getPrice().toString(),
+      material.getPrice().toString(),
       m.getLaborCost(),
       m.getTotalLaborCost(),
       m.getMaterialCost(),
       m.getTotalMaterialCost(),
       m.getNote(),
       m.getMass(),
-      m.getReductionCoefficient()
+      m.getReductionCoefficient(),
+      material.getJobContent(),
+      material.getUnit().getName(),
+      material.getLaborPriceAtRuralCommune().toString(),
+      m.getUsedLaborCost().toString()
     );
   }
 }

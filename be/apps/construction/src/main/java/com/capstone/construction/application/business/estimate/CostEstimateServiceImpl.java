@@ -52,8 +52,8 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   public CostEstimateResponse createEstimate(@NonNull CreateRequest request) {
     log.info("Creating new cost estimate for customer: {}", request.customerName());
     var installationForm = ifRepo.findById(new InstallationFormId(request.formCode(), request.formNumber()))
-        .orElseThrow(() -> new IllegalArgumentException(
-            String.format(SharedMessage.MES_24, request.formCode(), request.formNumber())));
+      .orElseThrow(() -> new IllegalArgumentException(
+        String.format(SharedMessage.MES_24, request.formCode(), request.formNumber())));
 
     var est = eRepo.existsByInstallationForm(installationForm);
     if (est) {
@@ -61,12 +61,12 @@ public class CostEstimateServiceImpl implements CostEstimateService {
     }
 
     var estimate = CostEstimate.create(builder -> builder
-        .customerName(request.customerName())
-        .address(request.address())
-        .registrationAt(LocalDate.from(request.registrationAt()))
-        .createBy(request.createBy())
-        .installationForm(installationForm)
-        .overallWaterMeterId(request.overallWaterMeterId()));
+      .customerName(request.customerName())
+      .address(request.address())
+      .registrationAt(LocalDate.from(request.registrationAt()))
+      .createBy(request.createBy())
+      .installationForm(installationForm)
+      .overallWaterMeterId(request.overallWaterMeterId()));
 
     var saved = eRepo.save(estimate);
 
@@ -75,24 +75,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
     status.setEstimate(ProcessingStatus.PROCESSING);
     ifRepo.save(installationForm);
 
-    var defaultMaterials = deviceSrv.getDefaultMaterials();
-    var materials = new ArrayList<CostEstimateResponse.Material>();
-    defaultMaterials.forEach(defaultMaterial -> {
-      var m = new CostEstimateResponse.Material(
-          defaultMaterial.id(),
-          defaultMaterial.jobContent(),
-          null,
-          defaultMaterial.unitName(),
-          null,
-          null,
-          defaultMaterial.price().toString(),
-          defaultMaterial.laborPrice().toString(),
-          defaultMaterial.laborPriceAtRuralCommune().toString(),
-          null,
-          null,
-          null);
-      materials.add(m);
-    });
+    var materials = getMaterials();
 
     return mapToResponse(saved, materials);
   }
@@ -102,8 +85,9 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   public CostEstimateResponse updateEstimate(String id, @NonNull UpdateRequest request) {
     log.info("Updating cost estimate with id: {}", id);
     var estimate = eRepo.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_61, id)));
+      .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_61, id)));
 
+    // <editor-fold> desc="setter"
     if (request.customerName() != null && !request.customerName().isBlank()) {
       estimate.setCustomerName(request.customerName());
     }
@@ -152,7 +136,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
     }
     if (request.waterMeterSerial() != null && !request.waterMeterSerial().isBlank()) {
       var meterStatus = deviceSrv.isMeterExisting(request.waterMeterSerial())
-          .data().toString();
+        .data().toString();
       if (!Boolean.parseBoolean(meterStatus)) {
         throw new IllegalArgumentException("Đồng hồ nước không tồn tại");
       }
@@ -160,12 +144,13 @@ public class CostEstimateServiceImpl implements CostEstimateService {
     }
     if (request.overallWaterMeterId() != null && !request.overallWaterMeterId().isBlank()) {
       var overallMeterStatus = deviceSrv.isOverallMeterExisting(request.overallWaterMeterId())
-          .data().toString();
+        .data().toString();
       if (!Boolean.parseBoolean(overallMeterStatus)) {
         throw new IllegalArgumentException("Đồng hồ tổng không tồn tại");
       }
       estimate.setOverallWaterMeterId(request.overallWaterMeterId());
     }
+    // </editor-fold>
 
     var saved = eRepo.save(estimate);
     var materials = deviceSrv.getMaterialsOfCostEstimate(estimate.getEstimationId());
@@ -177,7 +162,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   public CostEstimateResponse getEstimateById(String id) {
     log.info("Fetching cost estimate with id: {}", id);
     var costEst = eRepo.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_61, id)));
+      .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_61, id)));
     var materials = deviceSrv.getMaterialsOfCostEstimate(id);
     return mapToResponse(costEst, mapMaterials(materials));
   }
@@ -191,18 +176,18 @@ public class CostEstimateServiceImpl implements CostEstimateService {
     var keyword = request == null ? null : request.keyword();
 
     var page = (startDate != null || endDate != null || (keyword != null && !keyword.isBlank())) ? eRepo.findAll(
-        CostEstimateRepository.search(
-            keyword,
-            startDate,
-            endDate),
-        pageable) : eRepo.findAll(pageable);
+      CostEstimateRepository.search(
+        keyword,
+        startDate,
+        endDate),
+      pageable) : eRepo.findAll(pageable);
     return PageResponse.fromPage(page, estimate -> mapToResponse(estimate, new ArrayList<>()));
   }
 
   @Override
   public void approveEstimate(String id, Boolean request) {
     var est = eRepo.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_61, id)));
+      .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_61, id)));
     var form = est.getInstallationForm();
     var status = form.getStatus();
     status.setEstimate(request ? ProcessingStatus.APPROVED : ProcessingStatus.REJECTED);
@@ -212,7 +197,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   @Override
   public boolean signForCostEstimate(String significance, @NonNull RoleName role, String estimateId) {
     var costEstimate = eRepo.findById(estimateId)
-        .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_61, estimateId)));
+      .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_61, estimateId)));
     var costEstSignificance = costEstimate.getSignificance();
     switch (role) {
       case COMPANY_LEADERSHIP -> costEstSignificance.setCompanyLeaderShip(significance);
@@ -248,47 +233,70 @@ public class CostEstimateServiceImpl implements CostEstimateService {
       return new ArrayList<>();
     }
     return materials.stream().map(m -> new CostEstimateResponse.Material(
-        m.materialId(),
-        null, // jobContent - not available in MaterialsOfCostEstimateResponse
-        m.note(),
-        null, // unit - not available in MaterialsOfCostEstimateResponse
-        m.reductionCoefficient() != null ? m.reductionCoefficient().toString() : null,
-        m.mass() != null ? m.mass().toString() : null,
-        m.materialCost(),
-        m.laborCost(),
-        null, // laborPriceAtRuralCommune - not available
-        null, // usedLaborCost - not available
-        m.totalMaterialCost(),
-        m.totalLaborCost())).toList();
+      m.materialId(),
+      m.jobContent(),
+      m.note(),
+      m.unitName(),
+      m.reductionCoefficient() != null ? m.reductionCoefficient().toString() : null,
+      m.mass() != null ? m.mass().toString() : null,
+      m.materialCost(),
+      m.laborCost(),
+      m.laborPriceAtRuralCommune(),
+      m.usedLaborCost(),
+      m.totalMaterialCost(),
+      m.totalLaborCost())).toList();
   }
 
-  private @NonNull CostEstimateResponse mapToResponse(@NonNull CostEstimate estimate,
-      List<CostEstimateResponse.Material> material) {
+  private @NonNull CostEstimateResponse mapToResponse(
+    @NonNull CostEstimate estimate, List<CostEstimateResponse.Material> material
+  ) {
     return new CostEstimateResponse(
-        new CostEstimateResponse.GeneralInformation(
-            estimate.getEstimationId(),
-            estimate.getCustomerName(),
-            estimate.getAddress(),
-            estimate.getNote(),
-            estimate.getContractFee(),
-            estimate.getSurveyFee(),
-            estimate.getSurveyEffort(),
-            estimate.getInstallationFee(),
-            estimate.getLaborCoefficient(),
-            estimate.getGeneralCostCoefficient(),
-            estimate.getPrecalculatedTaxCoefficient(),
-            estimate.getConstructionMachineryCoefficient(),
-            estimate.getVatCoefficient(),
-            estimate.getDesignCoefficient(),
-            estimate.getDesignFee(),
-            estimate.getDesignImageUrl(),
-            estimate.getCreatedAt(),
-            estimate.getUpdatedAt(),
-            estimate.getRegistrationAt(),
-            estimate.getCreateBy(),
-            estimate.getWaterMeterSerial(),
-            estimate.getOverallWaterMeterId(),
-            estimate.getInstallationForm().getId()),
-        material);
+      new CostEstimateResponse.GeneralInformation(
+        estimate.getEstimationId(),
+        estimate.getCustomerName(),
+        estimate.getAddress(),
+        estimate.getNote(),
+        estimate.getContractFee(),
+        estimate.getSurveyFee(),
+        estimate.getSurveyEffort(),
+        estimate.getInstallationFee(),
+        estimate.getLaborCoefficient(),
+        estimate.getGeneralCostCoefficient(),
+        estimate.getPrecalculatedTaxCoefficient(),
+        estimate.getConstructionMachineryCoefficient(),
+        estimate.getVatCoefficient(),
+        estimate.getDesignCoefficient(),
+        estimate.getDesignFee(),
+        estimate.getDesignImageUrl(),
+        estimate.getCreatedAt(),
+        estimate.getUpdatedAt(),
+        estimate.getRegistrationAt(),
+        estimate.getCreateBy(),
+        estimate.getWaterMeterSerial(),
+        estimate.getOverallWaterMeterId(),
+        estimate.getInstallationForm().getId()),
+      material);
+  }
+
+  private @NonNull ArrayList<CostEstimateResponse.Material> getMaterials() {
+    var defaultMaterials = deviceSrv.getDefaultMaterials();
+    var materials = new ArrayList<CostEstimateResponse.Material>();
+    defaultMaterials.forEach(defaultMaterial -> {
+      var m = new CostEstimateResponse.Material(
+        defaultMaterial.id(),
+        defaultMaterial.jobContent(),
+        null,
+        defaultMaterial.unitName(),
+        null,
+        null,
+        defaultMaterial.price().toString(),
+        defaultMaterial.laborPrice().toString(),
+        defaultMaterial.laborPriceAtRuralCommune().toString(),
+        null,
+        null,
+        null);
+      materials.add(m);
+    });
+    return materials;
   }
 }
