@@ -62,6 +62,8 @@ rabbit-mq-config:
     - road
     - installation-form
     - cost-estimate
+    - receipt
+    - finance
   actions:
     - update
     - delete
@@ -69,3 +71,4 @@ rabbit-mq-config:
     - approve
     - assign
     - require-significance
+    - view

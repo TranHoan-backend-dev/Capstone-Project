@@ -1,8 +1,8 @@
-package com.capstone.construction.application.dto.request.receipt;
+package com.capstone.construction.application.event.producer.receipt;
 
 import java.time.LocalDate;
 
-public record UpdateRequest(
+public record CreatedEvent(
   String formCode,
   String formNumber,
   String receiptNumber,

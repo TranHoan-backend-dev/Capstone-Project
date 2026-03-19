@@ -80,6 +80,8 @@ rabbit-mq-config:
     - employee
     - installation-form
     - cost-estimate
+    - receipt
+    - finance
   actions:
     - update
     - delete
@@ -87,5 +89,6 @@ rabbit-mq-config:
     - approve
     - assign
     - require-significance
+    - view
   auth-routingKey: auth.individual-notification.create
   auth-queue: auth.individual-notification.queue

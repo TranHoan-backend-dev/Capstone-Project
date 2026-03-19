@@ -8,7 +8,7 @@ import com.capstone.construction.application.dto.request.estimate.AssignTheSigni
 import com.capstone.construction.application.dto.request.estimate.SignRequest;
 import com.capstone.construction.application.dto.request.estimate.UpdateRequest;
 import com.capstone.construction.application.dto.response.estimate.CostEstimateResponse;
-import com.capstone.construction.application.usecase.estimate.CostEstimateUseCase;
+import com.capstone.construction.application.usecase.CostEstimateUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/estimates")
 @RequiredArgsConstructor
-@Tag(name = "Dự toán chi phí", description = "API quản lý dự toán chi phí lắp đặt nước")
+@Tag(name = "Dự toán", description = "API quản lý dự toán lắp đặt nước")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CostEstimateController {
   Logger log;
@@ -50,7 +50,7 @@ public class CostEstimateController {
   })
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF')")
   public ResponseEntity<WrapperApiResponse> updateEstimate(
-    @PathVariable @Parameter(description = "ID của dự toán chi phí", required = true) String id,
+    @PathVariable @Parameter(description = "ID của dự toán", required = true) String id,
     @RequestBody @Valid UpdateRequest request
   ) {
     log.info("REST request to update cost estimate with id: {}", id);
@@ -66,7 +66,7 @@ public class CostEstimateController {
   })
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD')")
   public ResponseEntity<WrapperApiResponse> approveEstimate(
-    @PathVariable @Parameter(description = "ID của dự toán chi phí", required = true) String id,
+    @PathVariable @Parameter(description = "ID của dự toán", required = true) String id,
     @RequestBody @NonNull @Parameter(description = "Trạng thái duyệt (true = Duyệt, false = Từ chối)") Boolean status
   ) {
     log.info("REST request to update cost estimate's status with id: {}", id);
@@ -94,7 +94,7 @@ public class CostEstimateController {
   })
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'SURVEY_STAFF')")
   public ResponseEntity<WrapperApiResponse> getAllEstimates(
-    @PageableDefault @Parameter(description = "Pagination parameters") Pageable pageable,
+    @PageableDefault @Parameter(description = "") Pageable pageable,
     @Parameter(description = "Thông tin lọc (từ khóa, khoảng thời gian)") BaseFilterRequest request
   ) {
     log.info("REST request to get all cost estimates");
@@ -104,7 +104,7 @@ public class CostEstimateController {
 
   @PostMapping("/sign")
   @Operation(summary = "Yêu cầu các bên liên quan ký duyệt dự toán", description = """
-    Gửi yêu cầu ký duyệt dự toán chi phí đến các bộ phận liên quan: Nhân viên khảo sát, Trưởng phòng Kế hoạch Kỹ thuật và Lãnh đạo công ty.<br/>
+    Gửi yêu cầu ký duyệt dự toán đến các bộ phận liên quan: Nhân viên khảo sát, Trưởng phòng Kế hoạch Kỹ thuật và Lãnh đạo công ty.<br/>
     Luồng này sẽ kích hoạt thông báo đến các nhân viên được chỉ định.
     Người thực hiện phải có quyền tương ứng (SURVEY_STAFF, PLANNING_TECHNICAL_DEPARTMENT_HEAD, hoặc IT_STAFF).
     """, responses = {
@@ -120,8 +120,8 @@ public class CostEstimateController {
   }
 
   @PatchMapping("/sign")
-  @Operation(summary = "Ký duyệt dự toán chi phí", description = """
-    Thực hiện ký điện tử cho dự toán chi phí.<br/>
+  @Operation(summary = "Ký duyệt dự toán", description = """
+    Thực hiện ký điện tử cho dự toán.<br/>
     Người ký phải có quyền tương ứng (SURVEY_STAFF, PLANNING_TECHNICAL_DEPARTMENT_HEAD, hoặc COMPANY_LEADERSHIP).
     """, responses = {
     @ApiResponse(responseCode = "200", description = "Ký duyệt thành công"),
