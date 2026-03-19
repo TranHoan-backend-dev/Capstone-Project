@@ -46,7 +46,7 @@ class CostEstimateControllerTest {
 
     updateRequest = new UpdateRequest(
       "Customer", "Address", "Note", 1000, 100, 1, 1000, 1, 1, 1, 1, 1, 1, 100, null, "SN", "METER"
-    );
+      , false);
 
     mockResponse = new CostEstimateResponse(
       "id", "Customer", "Address", "Note", 1000, 100, 1, 1000, 1, 1, 1, 1, 1, 1, 100, "url",
