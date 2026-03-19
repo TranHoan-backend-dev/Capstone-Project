@@ -55,4 +55,17 @@ class MeterRepositoryImpl @Inject constructor(
         println("Saving meter reading to DB: ${reading.serialNumber} - ${reading.readingValue}")
         return true
     }
+
+    override suspend fun updateManualMeterReading(readingId: String, serialNumber: String, readingValue: Double): Boolean {
+        // Tìm bản ghi trong local database hoặc gọi API cập nhật
+        val index = localDb.indexOfFirst { it.id == readingId }
+        if (index != -1) {
+            val old = localDb[index]
+            localDb[index] = old.copy(serialNumber = serialNumber, readingValue = readingValue)
+        }
+        
+        // TODO: Call backend API PUT /water-meters/{id} or reading API
+        println("Manually updated reading for $readingId: $serialNumber - $readingValue")
+        return true
+    }
 }

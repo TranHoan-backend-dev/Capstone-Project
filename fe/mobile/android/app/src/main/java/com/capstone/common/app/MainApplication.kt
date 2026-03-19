@@ -17,6 +17,8 @@ import com.capstone.bridge.NotificationBridgePackage
 import com.capstone.domain.repository.AuthRepository
 import com.capstone.domain.repository.MediaRepository
 import com.capstone.domain.repository.NotificationRepository
+import com.capstone.domain.repository.PaymentRepository
+import com.capstone.domain.repository.MeterRepository
 
 @HiltAndroidApp
 class MainApplication : Application(), ReactApplication {
@@ -52,6 +54,18 @@ class MainApplication : Application(), ReactApplication {
           add(NotificationBridgePackage(notificationRepository, permissionManager))
 
           add(com.capstone.bridge.PermissionBridgePackage(permissionManager))
+
+          val paymentRepository = EntryPointAccessors.fromApplication(
+            this@MainApplication,
+            PaymentEntryPoint::class.java
+          ).paymentRepository()
+          add(com.capstone.bridge.PaymentBridgePackage(paymentRepository, permissionManager))
+
+          val meterRepository = EntryPointAccessors.fromApplication(
+            this@MainApplication,
+            MeterEntryPoint::class.java
+          ).meterRepository()
+          add(com.capstone.bridge.MeterBridgePackage(meterRepository, permissionManager))
         },
     )
   }
@@ -78,6 +92,18 @@ class MainApplication : Application(), ReactApplication {
   @InstallIn(SingletonComponent::class)
   interface PermissionEntryPoint {
     fun permissionManager(): com.capstone.infrastructure.security.PermissionManager
+  }
+
+  @EntryPoint
+  @InstallIn(SingletonComponent::class)
+  interface PaymentEntryPoint {
+    fun paymentRepository(): PaymentRepository
+  }
+
+  @EntryPoint
+  @InstallIn(SingletonComponent::class)
+  interface MeterEntryPoint {
+    fun meterRepository(): MeterRepository
   }
 
   override fun onCreate() {

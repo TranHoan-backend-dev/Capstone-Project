@@ -29,4 +29,9 @@ interface MeterRepository {
      * Lưu chỉ số nước vào database sau khi người dùng xác nhận hoặc nhập tay.
      */
     suspend fun saveMeterReading(reading: MeterReading): Boolean
+
+    /**
+     * Cập nhật thủ công lại chỉ số đồng hồ & số seri nếu có sai sót.
+     */
+    suspend fun updateManualMeterReading(readingId: String, serialNumber: String, readingValue: Double): Boolean
 }
