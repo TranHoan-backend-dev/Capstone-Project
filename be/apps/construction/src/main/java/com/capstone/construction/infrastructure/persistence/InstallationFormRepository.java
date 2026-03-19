@@ -39,7 +39,10 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
    * @param end     thoi gian ket thuc loc. Tinh theo createdAt
    * @return Specification&lt;InstallationForm&gt;
    */
-  static @NonNull Specification<InstallationForm> search(String keyword, LocalDateTime start, LocalDateTime end, ProcessingStatus statusEstimate, ProcessingStatus statusConstruction) {
+  static @NonNull Specification<InstallationForm> search(
+    String keyword, LocalDateTime start, LocalDateTime end,
+    ProcessingStatus statusEstimate, ProcessingStatus statusConstruction
+  ) {
     return (root, query, cb) -> {
       // tao danh sach cac dieu kien
       List<Predicate> predicates = new ArrayList<>();
@@ -73,13 +76,6 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
         predicates.add(cb.lessThanOrEqualTo(root.get("createdAt"), end));
       }
 
-      Expression<String> registration =
-        cb.function(
-          "jsonb_extract_path_text",
-          String.class,
-          root.get("status"),
-          cb.literal("registration")
-        );
       Expression<String> estimate =
         cb.function(
           "jsonb_extract_path_text",
@@ -94,10 +90,6 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
           root.get("status"),
           cb.literal("construction")
         );
-
-      predicates.add(
-        cb.notEqual(registration, ProcessingStatus.REJECTED.name())
-      );
 
       if (statusConstruction != null && statusEstimate != null) {
         predicates.add(cb.equal(estimate, statusEstimate.name()));

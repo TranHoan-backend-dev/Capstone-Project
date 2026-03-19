@@ -1,11 +1,9 @@
 package com.capstone.construction.application.dto.request.installationform;
 
 import com.capstone.common.utils.SharedMessage;
-import com.capstone.construction.infrastructure.utils.Message;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 
 public record ApproveRequest(
   @Schema(description = "Số đơn", example = "HS2024-001")
@@ -16,7 +14,7 @@ public record ApproveRequest(
   @NotBlank(message = SharedMessage.MES_21)
   @NotEmpty(message = SharedMessage.MES_21) String formCode,
 
-  @Schema(description = "Trạng thái (true: Phê duyệt, false: Từ chối)", example = "true")
-  @NotNull(message = "Status cannot be null") Boolean status
+  @Schema(description = "Trạng thái (true: Phê duyệt, false: Từ chối, null: Chuyển từ đã duyệt sang đang chờ)", example = "true")
+  Boolean status
 ) {
 }

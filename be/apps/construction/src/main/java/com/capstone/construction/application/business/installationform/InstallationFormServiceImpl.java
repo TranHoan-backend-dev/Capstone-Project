@@ -94,8 +94,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   }
 
   @Override
-  public Page<InstallationFormListResponse> getInstallationForms(Pageable pageable,
-                                                                 @NonNull BaseFilterRequest request) {
+  public Page<InstallationFormListResponse> getInstallationForms(Pageable pageable, @NonNull BaseFilterRequest request) {
     log.info("Fetching paginated installation forms with pageable: {}", pageable);
     var startDate = parseFrom(request.from());
     var endDate = parseTo(request.to());
@@ -140,15 +139,22 @@ public class InstallationFormServiceImpl implements InstallationFormService {
     log.info("Approving and assigning installation form with number: {}", request.formNumber());
     var order = ifRepo.findById(new InstallationFormId(request.formCode(), request.formNumber()))
       .orElseThrow(() -> new IllegalArgumentException(String.format(SharedMessage.MES_24, request.formNumber(), request.formCode())));
-    if (request.status()) {
-      // nvks duyệt đơn
+    // nvks chuyen tu don da duyet => don chua duyet
+    if (request.status() == null) {
       var requestStatus = order.getStatus();
-      requestStatus.setRegistration(ProcessingStatus.APPROVED);
-      requestStatus.setEstimate(ProcessingStatus.PENDING_FOR_APPROVAL);
+      requestStatus.setRegistration(ProcessingStatus.PENDING_FOR_APPROVAL);
+      requestStatus.setEstimate(ProcessingStatus.PROCESSING);
     } else {
-      // nvks hủy đơn
-      var status = order.getStatus();
-      status.setRegistration(ProcessingStatus.REJECTED);
+      if (request.status()) {
+        // nvks duyệt đơn
+        var requestStatus = order.getStatus();
+        requestStatus.setRegistration(ProcessingStatus.APPROVED);
+        requestStatus.setEstimate(ProcessingStatus.PENDING_FOR_APPROVAL);
+      } else {
+        // nvks hủy đơn
+        var status = order.getStatus();
+        status.setRegistration(ProcessingStatus.REJECTED);
+      }
     }
     ifRepo.save(order);
   }

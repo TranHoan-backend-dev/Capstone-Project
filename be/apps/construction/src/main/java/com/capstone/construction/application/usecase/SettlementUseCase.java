@@ -1,4 +1,4 @@
-package com.capstone.construction.application.usecase.settlement;
+package com.capstone.construction.application.usecase;
 
 import com.capstone.construction.application.business.settlement.SettlementService;
 import com.capstone.construction.application.dto.request.settlement.SettlementFilterRequest;

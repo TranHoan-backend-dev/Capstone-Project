@@ -20,7 +20,10 @@ export const getAllUnits = (
     },
   });
 
-export const createUnit = (accessToken: string, name: string) => {
+export const createUnit = (
+  accessToken: string,
+  name: string,
+) => {
   return axios.post(
     `${API_GATEWAY_URL}/d/units`,
     { name },
@@ -32,7 +35,11 @@ export const createUnit = (accessToken: string, name: string) => {
   );
 };
 
-export const updateUnit = (accessToken: string, id: string, name: string) => {
+export const updateUnit = (
+  accessToken: string,
+  id: string,
+  name: string,
+) => {
   return axios.put(
     `${API_GATEWAY_URL}/d/units/${id}`,
     { name },
@@ -52,18 +59,21 @@ export const deleteUnit = (accessToken: string, id: string) => {
   });
 };
 
-export const getAllMaterials = (
+export const getAllOverallWaterMeters = (
   accessToken: string,
   page: number,
   size: number,
+  sort: string,
+  keyword?: string | null,
 ) =>
-  axios.get(`${API_GATEWAY_URL}/d/materials`, {
+  axios.get(`${API_GATEWAY_URL}/d/water-meters/overall`, {
     params: {
       page,
       size,
+      sort,
+      keyword,
     },
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
   });
-  

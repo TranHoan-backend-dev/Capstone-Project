@@ -1,52 +1,143 @@
 "use client";
 
-import React from "react";
-import { Link, Chip, Tooltip, Button } from "@heroui/react";
+import React, { useState, useEffect } from "react";
+import { Link, Tooltip, Button } from "@heroui/react";
 import NextLink from "next/link";
 
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import {
   BlueYellowIconColor,
-  DarkGreenChip,
-  DarkYellowChip,
   DeleteIcon,
   PrintReceiptIcon,
   RedIconColor,
   TitleDarkColor,
 } from "@/config/chip-and-icon";
+import { INSTALLATION_FORM_NEW_COLUMN } from "@/config/table-columns";
+import { NewInstallationFormItem, NewInstallationFormResponse } from "@/types";
+import { formatDate1 } from "@/utils/format";
 
-interface RelatedOrdersTableProps {
-  data: any[];
+interface Props {
+  keyword: string;
+  reloadKey: number;
 }
 
-export const RelatedOrdersTable = ({ data }: RelatedOrdersTableProps) => {
-  const columns = [
-    { key: "no", label: "#", width: "40px" },
-    { key: "code", label: "Mã đơn" },
-    { key: "customerName", label: "Tên khách hàng" },
-    { key: "phone", label: "Điện thoại" },
-    { key: "address", label: "Địa chỉ lắp đặt" },
-    { key: "createdDate", label: "Ngày tạo" },
-    { key: "status", label: "Trạng thái", align: "center" as const },
-    { key: "actions", label: "Thao tác", align: "center" as const },
+export const RelatedOrdersTable = ({ keyword, reloadKey }: Props) => {
+  const [data, setData] = useState<NewInstallationFormItem[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [sort, setSort] = useState<{
+    field: string;
+    direction: "asc" | "desc";
+  }>({
+    field: "",
+    direction: "desc",
+  });
+
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+
+  useEffect(() => {
+    setLoading(true);
+
+    const fetchData = async () => {
+      try {
+        const params = new URLSearchParams({
+          page: String(page - 1),
+          size: String(pageSize),
+          sort: `${sort.field},${sort.direction}`,
+        });
+
+        const trimmedKeyword = keyword.trim();
+        if (trimmedKeyword) {
+          params.append("keyword", trimmedKeyword);
+        }
+
+        const res = await fetch(
+          `/api/construction/installation-forms?${params.toString()}`,
+        );
+
+        if (!res.ok) {
+          console.error("Fetch failed", res.status);
+          return;
+        }
+
+        const json = await res.json();
+        const pageData = json?.data;
+        const items = pageData?.content ?? [];
+        setTotalItems(pageData?.page.totalElements ?? 0);
+        setTotalPages(pageData?.page.totalPages ?? 1);
+
+        const mapped = items.map(
+          (item: NewInstallationFormResponse, index: number) => ({
+            id: item.formCode,
+            stt: (page - 1) * pageSize + index + 1,
+            formNumber: item.formNumber,
+            customerName: item.customerName,
+            phoneNumber: item.phoneNumber,
+            address: item.address,
+            registrationAt: formatDate1(item.registrationAt),
+          }),
+        );
+
+        setData(mapped);
+      } catch (e) {
+        setData([]);
+        setTotalItems(0);
+        setTotalPages(1);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [page, keyword, reloadKey, sort, pageSize]);
+
+  const handleSortChange = (columnKey: string) => {
+    setPage(1);
+
+    setSort((prev) => {
+      const direction =
+        prev.field === columnKey && prev.direction === "asc" ? "desc" : "asc";
+
+      return {
+        field: columnKey === "stt" ? "createdAt" : columnKey,
+        direction,
+      };
+    });
+  };
+
+  const actionButtons = [
+    {
+      content: "In biên nhận",
+      icon: PrintReceiptIcon,
+      className: BlueYellowIconColor,
+      color: "primary" as const,
+    },
+    {
+      content: "Xóa",
+      icon: DeleteIcon,
+      className: RedIconColor,
+      color: "danger" as const,
+    },
   ];
 
   const renderCell = (item: any, columnKey: string) => {
     switch (columnKey) {
-      case "no":
+      case "stt":
         return (
           <span className="font-medium text-black dark:text-white">
-            {data.indexOf(item) + 1}
+            {item.stt}
           </span>
         );
-      case "code":
+      case "formNumber":
         return (
           <Link
             as={NextLink}
             className={`font-bold text-blue-600 hover:underline hover:text-blue-800 ${TitleDarkColor}`}
             href="#"
           >
-            {item.code}
+            {item.formNumber}
           </Link>
         );
       case "customerName":
@@ -55,46 +146,7 @@ export const RelatedOrdersTable = ({ data }: RelatedOrdersTableProps) => {
             {item.customerName}
           </span>
         );
-      case "status":
-        if (item.status === "completed") {
-          return (
-            <Chip
-              className={`font-bold ${DarkGreenChip}`}
-              color="success"
-              size="sm"
-              variant="flat"
-            >
-              Hoàn thành
-            </Chip>
-          );
-        }
-
-        return (
-          <Chip
-            className={`font-bold ${DarkYellowChip}`}
-            color="warning"
-            size="sm"
-            variant="flat"
-          >
-            Đang lắp đặt
-          </Chip>
-        );
       case "actions":
-        const actionButtons = [
-          {
-            content: "In biên nhận",
-            icon: PrintReceiptIcon,
-            className: BlueYellowIconColor,
-            color: "primary" as const,
-          },
-          {
-            content: "Xóa",
-            icon: DeleteIcon,
-            className: RedIconColor,
-            color: "danger" as const,
-          },
-        ];
-
         return (
           <div className="flex items-center gap-2 justify-center">
             {actionButtons.map((action, idx) => (
@@ -124,17 +176,18 @@ export const RelatedOrdersTable = ({ data }: RelatedOrdersTableProps) => {
   return (
     <GenericDataTable
       isCollapsible
-      columns={columns}
+      columns={INSTALLATION_FORM_NEW_COLUMN}
       data={data}
-      headerSummary={`${data.length}`}
+      headerSummary={`${totalItems}`}
       paginationProps={{
-        total: 1,
-        page: 1,
-        onChange: (page) => console.log(page),
+        total: totalPages,
+        page: page,
+        onChange: setPage,
         summary: `${data.length}`,
       }}
       renderCellAction={renderCell}
-      title="Danh sách đơn liên quan"
+      title="Danh sách đơn lắp đặt mới"
+      onSortChange={handleSortChange}
     />
   );
 };

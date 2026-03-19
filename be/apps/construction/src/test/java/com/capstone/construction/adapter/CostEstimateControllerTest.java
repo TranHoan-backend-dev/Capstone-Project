@@ -3,7 +3,7 @@ package com.capstone.construction.adapter;
 import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.construction.application.dto.request.estimate.UpdateRequest;
 import com.capstone.construction.application.dto.response.estimate.CostEstimateResponse;
-import com.capstone.construction.application.usecase.estimate.CostEstimateUseCase;
+import com.capstone.construction.application.usecase.CostEstimateUseCase;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,7 +46,7 @@ class CostEstimateControllerTest {
 
     updateRequest = new UpdateRequest(
       "Customer", "Address", "Note", 1000, 100, 1, 1000, 1, 1, 1, 1, 1, 1, 100, null, "SN", "METER"
-    );
+      , false);
 
     mockResponse = new CostEstimateResponse(
       "id", "Customer", "Address", "Note", 1000, 100, 1, 1000, 1, 1, 1, 1, 1, 1, 100, "url",

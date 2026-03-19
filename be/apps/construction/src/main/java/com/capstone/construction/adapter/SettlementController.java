@@ -3,7 +3,7 @@ package com.capstone.construction.adapter;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.construction.application.dto.request.settlement.SettlementFilterRequest;
 import com.capstone.construction.application.dto.request.settlement.SettlementRequest;
-import com.capstone.construction.application.usecase.settlement.SettlementUseCase;
+import com.capstone.construction.application.usecase.SettlementUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
