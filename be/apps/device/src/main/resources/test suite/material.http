@@ -83,6 +83,41 @@ Content-Type: application/json
 }
 
 ### R
+@base_url = http://localhost:8080/api/v1/materials
+
+### Get All Materials
+GET {{base_url}}
+
+### Search Materials by Name (jobContent)
+GET {{base_url}}?jobContent=Concrete
+
+### Search Materials by Price Range
+GET {{base_url}}?minPrice=100&maxPrice=500
+
+### Search Materials by Name and Price Range
+GET {{base_url}}?jobContent=Steel&minPrice=200&maxPrice=800
+
+### Search Materials with Pagination
+GET {{base_url}}?jobContent=Material&page=0&size=5&sort=jobContent,asc
+
+### Get Material by ID
+GET {{base_url}}/{materialId}
+
+### Create Material (for testing)
+POST {{base_url}}
+Content-Type: application/json
+
+{
+  "jobContent": "Test Material",
+  "laborCode": "LC001",
+  "price": 300.0,
+  "laborPrice": 50.0,
+  "laborPriceAtRuralCommune": 45.0,
+  "constructionMachineryPrice": 100.0,
+  "constructionMachineryPriceAtRuralCommune": 90.0,
+  "groupId": "group123",
+  "unitId": "unit456"
+}
 
 ### U
 ### Case 1: Cập nhật vật tư thành công

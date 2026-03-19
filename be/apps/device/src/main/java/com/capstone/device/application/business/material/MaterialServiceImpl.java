@@ -2,6 +2,7 @@ package com.capstone.device.application.business.material;
 
 import com.capstone.common.annotation.AppLog;
 import com.capstone.device.application.dto.request.material.CreateRequest;
+import com.capstone.device.application.dto.request.material.SearchRequest;
 import com.capstone.device.application.dto.request.material.UpdateRequest;
 import com.capstone.device.application.dto.response.MaterialResponse;
 import com.capstone.device.domain.model.Material;
@@ -126,6 +127,25 @@ public class MaterialServiceImpl implements MaterialService {
   public Page<MaterialResponse> getAllMaterials(Pageable pageable) {
     log.debug("Fetching all materials with pagination: {}", pageable);
     return mRepo.findAll(pageable).map(this::mapToResponse);
+  }
+
+  @Override
+  public Page<MaterialResponse> searchMaterials(SearchRequest request, Pageable pageable) {
+    log.info("Searching materials with criteria: jobContent={}, laborCode={}, groupId={}, minPrice={}, maxPrice={}",
+        request.getJobContent(), request.getLaborCode(), request.getGroupId(), request.getMinPrice(), request.getMaxPrice());
+
+    String jobContent = (request.getJobContent() != null && !request.getJobContent().isBlank()) ? request.getJobContent() : null;
+    String laborCode = (request.getLaborCode() != null && !request.getLaborCode().isBlank()) ? request.getLaborCode() : null;
+    String groupId = (request.getGroupId() != null && !request.getGroupId().isBlank()) ? request.getGroupId() : null;
+
+    return mRepo.searchMaterials(
+        jobContent,
+        laborCode,
+        groupId,
+        request.getMinPrice(),
+        request.getMaxPrice(),
+        pageable
+    ).map(this::mapToResponse);
   }
 
   @Override
