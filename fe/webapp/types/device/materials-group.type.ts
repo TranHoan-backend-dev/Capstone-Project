@@ -1,8 +1,4 @@
 export interface MaterialGroupItem {
-  id: string;
-  name: string;
-}
-export interface MaterialGroupItem {
   stt: string;
   id: string;
   name: string;
@@ -35,6 +31,6 @@ export interface MaterialGroupTableProps {
 }
 
 export interface MaterialGroupResponse {
-  id: string;
+  groupId: string;
   name: string;
 }

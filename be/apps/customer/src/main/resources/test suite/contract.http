@@ -1,7 +1,7 @@
 @baseUrl = http://localhost:9005/api/v1
 @contractsUrl = {{baseUrl}}/contracts
 @keycloak = http://localhost:8080/realms/cmsn/protocol/openid-connect
-@client_secret = t2io8dzbyJ9qdVdR2uoL01L6vBfViILJ
+@client_secret =
 
 ### 0. Lấy Access Token (Keycloak)
 # @name login
@@ -9,14 +9,14 @@ POST {{keycloak}}/token
 Content-Type: application/x-www-form-urlencoded
 
 grant_type=password&
-client_id=cmsn&
+client_id=&
 client_secret={{client_secret}}&
-username=test&
-password=12345678&
+username=&
+password=&
 scope=openid
 
 > {%
-    client.global.set("access_token", response.body.access_token);
+ client.global.set("access_token", response.body.access_token);
 %}
 
 ### 1. Tạo mới hợp đồng (Thành công - 201)
@@ -26,7 +26,7 @@ Content-Type: application/json
 
 {
   "contractId": "HD_TEST_001",
-  "customerId": "CUST_001",
+  "customerId": "C001",
   "formCode": "DK_001",
   "formNumber": "001",
   "representatives": [
@@ -62,30 +62,66 @@ Authorization: Bearer {{access_token}}
 GET {{contractsUrl}}
 Authorization: Bearer {{access_token}}
 
-### 4.1 Lấy danh sách - Lọc theo từ khóa
-GET {{contractsUrl}}?keyword=Nguyen
+### 4.1 Lấy danh sách - Lọc theo từ khóa (tìm kiếm trên tất cả các trường)
+GET {{contractsUrl}}?keyword=HD_TEST_001
 Authorization: Bearer {{access_token}}
 
-### 4.2 Lấy danh sách - Lọc theo ngày bắt đầu
-GET {{contractsUrl}}?from=04-11-2026
+### 4.2 Lấy danh sách - Lọc theo mã hợp đồng
+GET {{contractsUrl}}?contractId=HDN_001
 Authorization: Bearer {{access_token}}
 
-### 4.3 Lấy danh sách - Lọc theo ngày kết thúc
-GET {{contractsUrl}}?to=31-12-2025
+### 4.3 Lấy danh sách - Lọc theo mã form
+GET {{contractsUrl}}?formCode=DK_001
 Authorization: Bearer {{access_token}}
 
-### 4.4 Lấy danh sách - Lọc theo khoảng thời gian
-GET {{contractsUrl}}?from=01-01-2023&to=31-12-2026
+### 4.4 Lấy danh sách - Lọc theo số form
+GET {{contractsUrl}}?formNumber=001
 Authorization: Bearer {{access_token}}
 
-### 4.5 Lấy danh sách - Phân trang & Sắp xếp
+### 4.5 Lấy danh sách - Lọc theo ID khách hàng
+GET {{contractsUrl}}?customerId=C002
+Authorization: Bearer {{access_token}}
+
+### 4.6 Lấy danh sách - Lọc theo tên khách hàng
+GET {{contractsUrl}}?customerName=Nguyễn
+Authorization: Bearer {{access_token}}
+
+### 4.7 Lấy danh sách - Lọc theo số điện thoại khách hàng
+GET {{contractsUrl}}?customerPhoneNumber=090
+Authorization: Bearer {{access_token}}
+
+### 4.8 Lấy danh sách - Lọc theo ngày bắt đầu
+GET {{contractsUrl}}?from=04-11-2026%2000:00:00
+Authorization: Bearer {{access_token}}
+
+### 4.9 Lấy danh sách - Lọc theo ngày kết thúc
+GET {{contractsUrl}}?to=31-12-2025%2023:59:59
+Authorization: Bearer {{access_token}}
+
+### 4.10 Lấy danh sách - Lọc theo khoảng thời gian
+GET {{contractsUrl}}?from=01-01-2023%2000:00:00&to=31-12-2026%2023:59:59
+Authorization: Bearer {{access_token}}
+
+### 4.11 Lấy danh sách - Phân trang & Sắp xếp
 GET {{contractsUrl}}?page=0&size=5&sort=createdAt,desc
 Authorization: Bearer {{access_token}}
 
-### 5. Xóa hợp đồng (Thành công - 200)
-DELETE {{contractsUrl}}/HD_TEST_001
+### 4.12 Lấy danh sách - Kết hợp nhiều filter
+GET {{contractsUrl}}?keyword=HD_TEST_001&customerName=Nguyễn&from=01-01-2023%2000:00:00&page=0&size=10
 Authorization: Bearer {{access_token}}
 
-### 5.1 Xóa hợp đồng (Lỗi - 404)
-DELETE {{contractsUrl}}/ID_KHONG_TON_TAI
+### 4.13 Lấy danh sách - Lọc theo đại diện (tên)
+GET {{contractsUrl}}?representatives[0].name=Nguyễn%20Văn%20A
+Authorization: Bearer {{access_token}}
+
+### 4.14 Lấy danh sách - Lọc theo đại diện (chức vụ)
+GET {{contractsUrl}}?representatives[0].position=Chủ%20hộ
+Authorization: Bearer {{access_token}}
+
+### 4.15 Lấy danh sách - Lọc theo phụ lục (nội dung)
+GET {{contractsUrl}}?appendix[0].content=Hợp%20đồng%20phụ
+Authorization: Bearer {{access_token}}
+
+### 4.16 Lấy danh sách - Lọc theo phụ lục (thời gian)
+GET {{contractsUrl}}?appendix[0].time=2026-03-18T00:00:00
 Authorization: Bearer {{access_token}}

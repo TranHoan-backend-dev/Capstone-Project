@@ -59,7 +59,6 @@ export const ResultsTable = ({ keyword, from, to }: ResultsTableProps) => {
       code: item.formNumber,
       address: item.address,
       registerDate: item.registerDate,
-      status: item.status,
 
       creator: "Chưa có",
       createDate: item.registerDate,
@@ -109,16 +108,8 @@ export const ResultsTable = ({ keyword, from, to }: ResultsTableProps) => {
           formNumber: item.installationFormId.formNumber,
 
           customerName: item.customerName,
-          phone: item.installationFormId.phoneNumber,
-
           address: item.address,
           registerDate: new Date(item.createdAt).toLocaleDateString("vi-VN"),
-
-          status: item.installationFormId.status as
-            | "pending_estimate"
-            | "processing"
-            | "approved"
-            | "rejected",
         }));
         setData(mapped);
       } catch (e) {
@@ -160,7 +151,6 @@ export const ResultsTable = ({ keyword, from, to }: ResultsTableProps) => {
   const router = useRouter();
 
   const handleRunEstimate = (item: EstimateItem) => {
-    // Truyền estimateId qua URL
     router.push(`/estimate/run/${item.id}`);
   };
   const renderCell = (item: EstimateItem, columnKey: string) => {

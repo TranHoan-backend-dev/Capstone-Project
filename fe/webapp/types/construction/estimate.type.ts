@@ -7,8 +7,6 @@ export interface EstimateItem {
   address: string;
 
   registerDate: string;
-
-  status: "pending_estimate" | "processing" | "approved" | "rejected";
 }
 
 export interface EstimateResponse {
@@ -49,8 +47,6 @@ export interface EstimateResponse {
   installationFormId: {
     formCode: string;
     formNumber: string;
-    status: string;
-    phoneNumber: string;
   };
 }
 
@@ -71,6 +67,6 @@ export interface UpdateEstimateRequest {
   designFee?: number;
   waterMeterSerial?: string;
   overallWaterMeterId?: string;
-  designImage?: string; // URL của ảnh sau khi upload
+  designImage?: string;
   isFinished?: boolean;
 }
