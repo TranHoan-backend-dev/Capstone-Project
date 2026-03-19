@@ -11,7 +11,7 @@ import com.capstone.construction.domain.model.utils.InstallationFormId;
 import com.capstone.construction.infrastructure.persistence.CostEstimateRepository;
 import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
 import com.capstone.construction.infrastructure.service.GcsService;
-import com.capstone.construction.infrastructure.service.OverallWaterMeterService;
+import com.capstone.construction.infrastructure.service.DeviceService;
 import com.capstone.common.response.WrapperApiResponse;
 
 import java.time.LocalDateTime;
@@ -48,7 +48,7 @@ class CostEstimateServiceImplTest {
   private GcsService gcsService;
 
   @Mock
-  private OverallWaterMeterService owmSrv;
+  private DeviceService owmSrv;
 
   @InjectMocks
   private CostEstimateServiceImpl costEstimateService;

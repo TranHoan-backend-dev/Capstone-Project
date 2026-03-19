@@ -1,4 +1,4 @@
-package com.capstone.device.application.dto.response;
+package com.capstone.device.application.dto.response.water;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

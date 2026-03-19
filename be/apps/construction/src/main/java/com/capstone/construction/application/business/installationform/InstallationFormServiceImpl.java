@@ -15,7 +15,7 @@ import com.capstone.construction.infrastructure.persistence.InstallationFormRepo
 import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRepository;
 import com.capstone.construction.infrastructure.utils.Message;
 import com.capstone.construction.infrastructure.service.EmployeeService;
-import com.capstone.construction.infrastructure.service.OverallWaterMeterService;
+import com.capstone.construction.infrastructure.service.DeviceService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -41,7 +41,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   InstallationFormRepository ifRepo;
   WaterSupplyNetworkRepository wsnRepo;
   EmployeeService empSrv;
-  OverallWaterMeterService owmSrv;
+  DeviceService owmSrv;
   @NonFinal
   Logger log;
 

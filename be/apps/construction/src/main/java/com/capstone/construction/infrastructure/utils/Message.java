@@ -65,4 +65,8 @@ public final class Message {
   public static final String PT_62 = "Thôn/Làng với id %s không tìm thấy";
   public static final String PT_63 = "Thôn/Làng với tên %s đã tồn tại";
   public static final String PT_64 = "Chữ ký không được bỏ trống";
+  public static final String ENT_30 = "Đơn giá nhân công không được để trống";
+  public static final String ENT_31 = "Đơn giá vật tư không được để trống";
+  public static final String ENT_33 = "Vật tư không được để trống";
+  public static final String ENT_55 = "Ghi chú không được là số âm";
 }

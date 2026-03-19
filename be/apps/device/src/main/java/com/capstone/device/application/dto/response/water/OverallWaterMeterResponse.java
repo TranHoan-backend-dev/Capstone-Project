@@ -1,4 +1,4 @@
-package com.capstone.device.application.dto.response;
+package com.capstone.device.application.dto.response.water;
 
 public record OverallWaterMeterResponse(
   String serial,

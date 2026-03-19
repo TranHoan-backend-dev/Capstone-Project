@@ -3,7 +3,7 @@ package com.capstone.device.application.business.material;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.device.application.dto.request.material.CreateRequest;
 import com.capstone.device.application.dto.request.material.UpdateRequest;
-import com.capstone.device.application.dto.response.MaterialResponse;
+import com.capstone.device.application.dto.response.material.MaterialResponse;
 import com.capstone.device.domain.model.Material;
 import com.capstone.device.domain.model.MaterialsGroup;
 import com.capstone.device.infrastructure.persistence.*;
@@ -15,9 +15,12 @@ import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @AppLog
 @Service
@@ -165,6 +168,12 @@ public class MaterialServiceImpl implements MaterialService {
     }
     entity.setName(name);
     gRepo.save(entity);
+  }
+
+  @Override
+  public List<MaterialResponse> getDefaultMaterial() {
+    return mRepo.findAll(PageRequest.of(0, 20))
+      .getContent().stream().map(this::mapToResponse).toList();
   }
 
   private @NonNull MaterialResponse mapToResponse(@NonNull Material material) {
