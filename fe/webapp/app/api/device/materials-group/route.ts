@@ -1,5 +1,7 @@
-
-import { getAllMaterials } from "@/services/device.service";
+import {
+  createMaterialGroup,
+  getAllMaterialsGroup,
+} from "@/services/device.service";
 import { getAccessToken } from "@/utils/getAccessToken";
 import { NextRequest } from "next/dist/server/web/spec-extension/request";
 import { NextResponse } from "next/server";
@@ -15,7 +17,16 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const page = Number(searchParams.get("page") ?? 0);
     const size = Number(searchParams.get("size") ?? 10);
-    const response = await getAllMaterials(accessToken, page, size);
+    const sort = searchParams.get("sort") || "name,desc";
+    const filter = searchParams.get("filter") || "";
+
+    const response = await getAllMaterialsGroup(
+      accessToken,
+      page,
+      size,
+      sort,
+      filter,
+    );
 
     return NextResponse.json(
       {
@@ -33,6 +44,29 @@ export async function GET(req: NextRequest) {
         error: error?.response?.data ?? null,
       },
       { status },
+    );
+  }
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const accessToken = getAccessToken(req);
+
+    if (!accessToken) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+    const { name } = await req.json();
+
+    const response = await createMaterialGroup(accessToken, name);
+
+    return NextResponse.json(response.data, { status: 201 });
+  } catch (error: any) {
+    return NextResponse.json(
+      {
+        message:
+          error.response?.data?.message || "Thêm mới nhóm vật tư thất bại",
+      },
+      { status: error.response?.status || 500 },
     );
   }
 }

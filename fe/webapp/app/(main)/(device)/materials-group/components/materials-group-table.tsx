@@ -3,20 +3,24 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Tooltip, Button } from "@heroui/react";
 import { DeleteIcon, EditIcon } from "@/config/chip-and-icon";
-import { UnitItem, UnitResponse, UnitTableProps } from "@/types";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import { UNIT_COLUMN } from "@/config/table-columns";
+import {
+  MaterialGroupItem,
+  MaterialGroupResponse,
+  MaterialGroupTableProps,
+} from "@/types";
+import { MATERIALS_GROUP_COLUMN } from "@/config/table-columns";
 import { CallToast } from "@/components/ui/CallToast";
 import { authFetch } from "@/utils/authFetch";
 import { ConfirmDialog } from "@/components/ui/modal/ConfirmDialog";
 
-export const UnitTable = ({
+export const MaterialsGroupTable = ({
   filter,
   reloadKey,
   onEdit,
   onDeleted,
-}: UnitTableProps) => {
-  const [data, setData] = useState<UnitItem[]>([]);
+}: MaterialGroupTableProps) => {
+  const [data, setData] = useState<MaterialGroupItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -44,13 +48,15 @@ export const UnitTable = ({
           sort: `${sort.field},${sort.direction}`,
         });
 
-        const trimmedFilter = filter.name?.trim() || "";
+        const trimmedFilter = filter.name?.trim();
 
         if (trimmedFilter) {
           params.append("filter", trimmedFilter);
         }
 
-        const res = await authFetch(`/api/device/units?${params.toString()}`);
+        const res = await authFetch(
+          `/api/device/materials-group?${params.toString()}`,
+        );
 
         if (!res.ok) {
           console.error("Fetch failed", res.status);
@@ -60,14 +66,19 @@ export const UnitTable = ({
         const json = await res.json();
         const pageData = json?.data;
         const items = pageData?.content ?? [];
+        const pageInfo = pageData?.page;
 
-        setTotalItems(pageData?.page?.totalElements ?? 0);
-        setTotalPages(pageData?.page?.totalPages ?? 1);
-        const mapped = items.map((item: UnitResponse, index: number) => ({
-          id: item.id,
-          stt: (page - 1) * pageSize + index + 1,
-          name: item.name,
-        }));
+        setTotalItems(pageInfo?.totalElements ?? 0);
+        setTotalPages(pageInfo?.totalPages ?? 1);
+
+        const mapped = items.map(
+          (item: MaterialGroupResponse, index: number) => ({
+            id: item.groupId,
+            stt: (page - 1) * pageSize + index + 1,
+            name: item.name,
+          }),
+        );
+
         setData(mapped);
       } catch (e) {
         setData([]);
@@ -81,27 +92,13 @@ export const UnitTable = ({
     fetchData();
   }, [page, filter, reloadKey, sort]);
 
-  const handleSortChange = (columnKey: string) => {
-    setPage(1);
-
-    setSort((prev) => {
-      const direction =
-        prev.field === columnKey && prev.direction === "asc" ? "desc" : "asc";
-
-      return {
-        field: columnKey === "stt" ? "createdAt" : columnKey,
-        direction,
-      };
-    });
-  };
-
   const handleConfirmDelete = async () => {
     if (!deleteId) return;
 
     try {
       setDeleteLoading(true);
 
-      const res = await authFetch(`/api/device/units/${deleteId}`, {
+      const res = await authFetch(`/api/device/materials-group/${deleteId}`, {
         method: "DELETE",
       });
 
@@ -109,7 +106,7 @@ export const UnitTable = ({
 
       CallToast({
         title: "Thành công",
-        message: "Xóa đơn vị tính thành công",
+        message: "Xóa nhóm vật tư thành công",
         color: "success",
       });
 
@@ -129,9 +126,23 @@ export const UnitTable = ({
     }
   };
 
+  const handleSortChange = (columnKey: string) => {
+    setPage(1);
+
+    setSort((prev) => {
+      const direction =
+        prev.field === columnKey && prev.direction === "asc" ? "desc" : "asc";
+
+      return {
+        field: columnKey === "stt" ? "createdAt" : columnKey,
+        direction,
+      };
+    });
+  };
+
   useEffect(() => {
     setPage(1);
-  }, [filter]);
+  }, [filter, reloadKey]);
 
   const actionItems = useMemo(
     () => [
@@ -156,8 +167,7 @@ export const UnitTable = ({
     ],
     [data, onEdit],
   );
-
-  const renderCell = (item: UnitItem, columnKey: string) => {
+  const renderCell = (item: MaterialGroupItem, columnKey: string) => {
     switch (columnKey) {
       case "stt":
         return (
@@ -165,7 +175,6 @@ export const UnitTable = ({
             {item.stt}
           </span>
         );
-
       case "name":
         return (
           <span className="font-bold text-gray-900 dark:text-foreground">
@@ -194,7 +203,7 @@ export const UnitTable = ({
       default:
         return (
           <span className="text-gray-600 dark:text-default-600">
-            {item[columnKey as keyof UnitItem]}
+            {item[columnKey as keyof MaterialGroupItem]}
           </span>
         );
     }
@@ -204,8 +213,8 @@ export const UnitTable = ({
     <>
       <GenericDataTable
         isLoading={loading}
-        title="Danh sách Đơn vị tính"
-        columns={UNIT_COLUMN}
+        title="Quản lý nhóm vật tư"
+        columns={MATERIALS_GROUP_COLUMN}
         data={data}
         isCollapsible
         renderCellAction={renderCell}
@@ -218,10 +227,11 @@ export const UnitTable = ({
         }}
         onSortChange={handleSortChange}
       />
+
       <ConfirmDialog
         isOpen={!!deleteId}
         title="Xác nhận xoá"
-        message="Bạn có chắc muốn xoá đơn vị tính này không?"
+        message="Bạn có chắc muốn xoá nhóm vật tư này không?"
         confirmText="Xoá"
         confirmColor="danger"
         isLoading={deleteLoading}
