@@ -58,3 +58,22 @@ export const deleteUnit = (accessToken: string, id: string) => {
     },
   });
 };
+
+export const getAllOverallWaterMeters = (
+  accessToken: string,
+  page: number,
+  size: number,
+  sort: string,
+  keyword?: string | null,
+) =>
+  axios.get(`${API_GATEWAY_URL}/d/water-meters/overall`, {
+    params: {
+      page,
+      size,
+      sort,
+      keyword,
+    },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
