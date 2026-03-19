@@ -37,7 +37,7 @@ export interface EstimateResponse {
 
   surveyEffort: number;
 
-  designImageUrl: string;
+  designImage: string;
   note: string;
 
   createdAt: string;
@@ -52,4 +52,25 @@ export interface EstimateResponse {
     status: string;
     phoneNumber: string;
   };
+}
+
+export interface UpdateEstimateRequest {
+  customerName?: string;
+  address?: string;
+  note?: string;
+  contractFee?: number;
+  surveyFee?: number;
+  surveyEffort?: number;
+  installationFee?: number;
+  laborCoefficient?: number;
+  generalCostCoefficient?: number;
+  precalculatedTaxCoefficient?: number;
+  constructionMachineryCoefficient?: number;
+  vatCoefficient?: number;
+  designCoefficient?: number;
+  designFee?: number;
+  waterMeterSerial?: string;
+  overallWaterMeterId?: string;
+  designImage?: string; // URL của ảnh sau khi upload
+  isFinished?: boolean;
 }

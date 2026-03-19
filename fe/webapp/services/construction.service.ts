@@ -1,3 +1,4 @@
+import { UpdateEstimateRequest } from "@/types";
 import { API_GATEWAY_URL } from "@/utils/constraints";
 import axios from "axios";
 
@@ -444,9 +445,22 @@ export const getAllEstimates = (
     },
   });
 
+// services/construction.service.ts
 export const getEstimateById = (accessToken: string, estimateId: string) =>
   axios.get(`${API_GATEWAY_URL}/construction/estimates/${estimateId}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+export const updateEstimate = (
+  accessToken: string,
+  estimateId: string,
+  data: UpdateEstimateRequest,
+) =>
+  axios.put(`${API_GATEWAY_URL}/construction/estimates/${estimateId}`, data, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
     },
   });

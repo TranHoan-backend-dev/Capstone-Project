@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@heroui/react";
 
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
@@ -18,6 +18,7 @@ import CustomSelect from "@/components/ui/custom/CustomSelect";
 import CustomButton from "@/components/ui/custom/CustomButton";
 import CustomTextarea from "@/components/ui/custom/CustomTextarea";
 import { EstimateResponse } from "@/types";
+
 interface TechnicalInfoCardProps {
   estimateData: EstimateResponse | null;
   setEstimateData: React.Dispatch<
@@ -25,73 +26,74 @@ interface TechnicalInfoCardProps {
   >;
   estimateId: string;
 }
+
 export const TechnicalInfoCard = ({
   estimateData,
   setEstimateData,
   estimateId,
 }: TechnicalInfoCardProps) => {
-  // const [estimateData, setEstimateData] = useState({
-  //   customerName: "",
-  //   address: "",
-  //   note: "",
-  //   contractFee: 0,
-  //   surveyFee: 0,
-  //   surveyEffort: 0,
-  //   installationFee: 0,
-  //   laborCoefficient: 0,
-  //   generalCostCoefficient: 0,
-  //   precalculatedTaxCoefficient: 0,
-  //   constructionMachineryCoefficient: 0,
-  //   vatCoefficient: 0,
-  //   designCoefficient: 0,
-  //   designFee: 0,
-  //   designImage: null as File | null,
-  //   waterMeterSerial: "",
-  //   overallWaterMeterId: "",
-  //   isFinished: false,
-  // });
+  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
 
-  const customerInfoFields = [
-    { label: "Tên khách hàng", key: "customerName", isRequired: true },
-    { label: "Công tác", key: "note" },
-    { label: "Số nhà", key: "houseNumber" },
-    {
-      label: "Đường phố",
-      key: "street",
-      endContent: (
-        <DocumentMagnifyGlassIcon className="w-5 h-5 text-gray-400 dark:text-default-400" />
-      ),
-    },
-    {
-      label: "Phường / Xã",
-      type: "select",
-      options: [
-        { key: "p1", label: "Phường 1" },
-        { key: "p2", label: "Phường 2" },
-      ],
-    },
-    { label: "Địa chỉ đầy đủ", key: "address" },
-    { label: "Ghi chú", key: "note",type: "textarea", minRows: 3 },
-  ];
-
-
-  const technicalSpecsFields = [
-    { label: "Lệ phí hợp đồng", key: "contractFee", type: "input" },
-    { label: "Công khảo sát", key: "surveyFee", type: "input" },
-    { label: "Khối lượng khảo sát", key: "surveyEffort", type: "input" },
-    { label: "Phí đấu nối", key: "installationFee", type: "input" },
-    { label: "Hệ số nhân công", key: "laborCoefficient", type: "input" },
-    { label: "Hệ số chi phí chung", key: "generalCostCoefficient", type: "input" },
-    { label: "Hệ số thuế tính trước", key: "precalculatedTaxCoefficient", type: "input" },
-    { label: "Hệ số máy thi công", key: "constructionMachineryCoefficient", type: "input" },
-    { label: "Hệ số VAT", key: "vatCoefficient", type: "input" },
-    { label: "Hệ số thiết kế", key: "designCoefficient", type: "input" },
-    { label: "Phí thiết kế", key: "designFee", type: "input" },
-  ];
+  // Tạo state riêng cho từng field
+  const [customerName, setCustomerName] = useState("");
+  const [address, setAddress] = useState("");
+  const [note, setNote] = useState("");
+  const [contractFee, setContractFee] = useState("");
+  const [surveyFee, setSurveyFee] = useState("");
+  const [surveyEffort, setSurveyEffort] = useState("");
+  const [installationFee, setInstallationFee] = useState("");
+  const [laborCoefficient, setLaborCoefficient] = useState("");
+  const [generalCostCoefficient, setGeneralCostCoefficient] = useState("");
+  const [precalculatedTaxCoefficient, setPrecalculatedTaxCoefficient] =
+    useState("");
+  const [
+    constructionMachineryCoefficient,
+    setConstructionMachineryCoefficient,
+  ] = useState("");
+  const [vatCoefficient, setVatCoefficient] = useState("");
+  const [designCoefficient, setDesignCoefficient] = useState("");
+  const [designFee, setDesignFee] = useState("");
+  const [waterMeterSerial, setWaterMeterSerial] = useState("");
+  const [overallWaterMeterId, setOverallWaterMeterId] = useState("");
+  const [designImage, setDesignImage] = useState<File | null>(null);
 
   const [representatives, setRepresentatives] = React.useState([
     { id: 1, name: "", position: "giam-doc" },
   ]);
+
+  const positionOptions = [
+    { label: "Giám đốc", key: "head_company" },
+    { label: "Trưởng phòng", key: "head" },
+  ];
+
+  // Load dữ liệu từ estimateData vào state
+  useEffect(() => {
+    if (estimateData) {
+      setCustomerName(estimateData.customerName || "");
+      setAddress(estimateData.address || "");
+      setNote(estimateData.note || "");
+      setContractFee(estimateData.contractFee?.toString() || "");
+      setSurveyFee(estimateData.surveyFee?.toString() || "");
+      setSurveyEffort(estimateData.surveyEffort?.toString() || "");
+      setInstallationFee(estimateData.installationFee?.toString() || "");
+      setLaborCoefficient(estimateData.laborCoefficient?.toString() || "");
+      setGeneralCostCoefficient(
+        estimateData.generalCostCoefficient?.toString() || "",
+      );
+      setPrecalculatedTaxCoefficient(
+        estimateData.precalculatedTaxCoefficient?.toString() || "",
+      );
+      setConstructionMachineryCoefficient(
+        estimateData.constructionMachineryCoefficient?.toString() || "",
+      );
+      setVatCoefficient(estimateData.vatCoefficient?.toString() || "");
+      setDesignCoefficient(estimateData.designCoefficient?.toString() || "");
+      setDesignFee(estimateData.designFee?.toString() || "");
+      setWaterMeterSerial(estimateData.waterMeterSerial || "");
+      setOverallWaterMeterId(estimateData.overallWaterMeterId || "");
+      // designImage là string URL từ API, không phải File
+    }
+  }, [estimateData]);
 
   const addRepresentative = () => {
     setRepresentatives([
@@ -106,34 +108,39 @@ export const TechnicalInfoCard = ({
     }
   };
 
-  const meterFields = [
-    {
-      label: "Loại đồng hồ",
-      type: "select",
-      isRequired: true,
-      defaultSelectedKeys: ["sensus"],
-      options: [
-        { key: "sensus", label: "Sensus" },
-        { key: "itron", label: "Itron" },
-      ],
-    },
-    { label: "Mã đồng hồ" },
-  ];
-
-  const positionOptions = [
-    { key: "giam-doc", label: "Giám đốc" },
-    { key: "truong-phong", label: "Trưởng phòng" },
-  ];
-
-  const handleSave = async () => {
-    if (!estimateData) return;
-
+  const handleSave = async (isFinished: boolean) => {
     const formData = new FormData();
-    Object.entries(estimateData).forEach(([key, value]) => {
-      if (value !== null && value !== undefined) {
-        formData.append(key, value as any);
-      }
-    });
+
+    // Append từng field cụ thể vào FormData từ state
+    formData.append("customerName", customerName);
+    formData.append("address", address);
+    formData.append("note", note);
+    formData.append("contractFee", contractFee || "0");
+    formData.append("surveyFee", surveyFee || "0");
+    formData.append("surveyEffort", surveyEffort || "0");
+    formData.append("installationFee", installationFee || "0");
+    formData.append("laborCoefficient", laborCoefficient || "0");
+    formData.append("generalCostCoefficient", generalCostCoefficient || "0");
+    formData.append(
+      "precalculatedTaxCoefficient",
+      precalculatedTaxCoefficient || "0",
+    );
+    formData.append(
+      "constructionMachineryCoefficient",
+      constructionMachineryCoefficient || "0",
+    );
+    formData.append("vatCoefficient", vatCoefficient || "0");
+    formData.append("designCoefficient", designCoefficient || "0");
+    formData.append("designFee", designFee || "0");
+    formData.append("waterMeterSerial", waterMeterSerial);
+    formData.append("overallWaterMeterId", overallWaterMeterId);
+
+    // Xử lý file riêng
+    if (designImage instanceof File) {
+      formData.append("designImage", designImage);
+    }
+
+    formData.append("isFinished", String(isFinished));
 
     const res = await fetch(`/api/construction/estimates/${estimateId}`, {
       method: "PUT",
@@ -148,59 +155,11 @@ export const TechnicalInfoCard = ({
 
     const json = await res.json();
     console.log("Updated estimate", json.data);
-    alert("Cập nhật dự toán thành công");
-  };
 
-  const renderField = (field: any) => {
-    const value = estimateData ? ((estimateData as any)[field.key] ?? "") : "";
+    // Cập nhật estimateData với dữ liệu mới từ API
+    setEstimateData(json.data);
 
-    if (field.type === "select") {
-      return (
-        <CustomSelect
-          key={field.key}
-          className={field.className}
-          defaultSelectedKeys={value ? [value] : field.defaultSelectedKeys}
-          isRequired={field.isRequired}
-          label={field.label}
-          options={(field.options || []).map((opt: any) => ({
-            label: opt.label,
-            value: opt.key,
-          }))}
-        />
-      );
-    }
-
-    if (field.type === "textarea") {
-      return (
-        <CustomTextarea
-          key={field.key}
-          label={field.label}
-          rows={field.minRows}
-          value={value}
-          onChange={(val) => {
-            setEstimateData((prev) =>
-              prev ? { ...prev, [field.key]: val } : prev,
-            );
-          }}
-        />
-      );
-    }
-
-    return (
-      <CustomInput
-        key={field.key}
-        className={field.className}
-        endContent={field.endContent}
-        isRequired={field.isRequired}
-        label={field.label}
-        value={value}
-        onChange={(val) => {
-          setEstimateData((prev) =>
-            prev ? { ...prev, [field.key]: val } : prev,
-          );
-        }}
-      />
-    );
+    alert(isFinished ? "Hoàn thành dự toán" : "Lưu bản nháp thành công");
   };
 
   return (
@@ -208,11 +167,19 @@ export const TechnicalInfoCard = ({
       actions={
         <div className="flex flex-wrap gap-3 pt-6 border-t border-divider">
           <CustomButton
+            onPress={() => handleSave(false)}
             className="font-bold px-6 shadow-md shadow-primary/20"
             color="primary"
             startContent={<SaveDocumentCheckIcon className="w-4 h-4" />}
           >
-            Lưu
+            Lưu bản nháp
+          </CustomButton>
+          <CustomButton
+            onPress={() => handleSave(true)}
+            className="text-white font-bold px-6 shadow-md shadow-success/20"
+            color="success"
+          >
+            Hoàn thành
           </CustomButton>
           <CustomButton
             className="bg-background dark:bg-default-100 font-bold px-6"
@@ -221,40 +188,142 @@ export const TechnicalInfoCard = ({
           >
             Xem hồ sơ
           </CustomButton>
-          <CustomButton
-            className="text-white font-bold px-6 shadow-md shadow-success/20"
-            color="success"
-            startContent={<DocumentMagnifyGlassIcon className="w-4 h-4" />}
-          >
-            Ảnh cụm đồng hồ
-          </CustomButton>
+          <>
+            <input
+              type="file"
+              ref={fileInputRef}
+              hidden
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                setDesignImage(file);
+              }}
+            />
+
+            <CustomButton
+              onPress={() => fileInputRef.current?.click()}
+              className="text-white font-bold px-6 shadow-md shadow-success/20"
+              color="success"
+              startContent={<DocumentMagnifyGlassIcon className="w-4 h-4" />}
+            >
+              Ảnh cụm đồng hồ
+            </CustomButton>
+          </>
         </div>
       }
-      gridClassName="grid grid-cols-1 lg:grid-cols-2 gap-12"
+      gridClassName="grid grid-cols-1 lg:grid-cols-3 gap-12"
       icon={<SaveDocumentCheckIcon className="w-6 h-6" />}
       title="Lập hồ sơ kỹ thuật & chi phí vật tư"
     >
+      {/* Thông tin khách hàng & công trình */}
       <div className="lg:col-span-1 space-y-4">
         <h3
           className={`text-sm font-bold ${TitleDarkColor} uppercase tracking-wider`}
         >
           Thông tin khách hàng & công trình
         </h3>
-        {customerInfoFields.map(renderField)}
+
+        <CustomInput
+          isRequired
+          label="Tên khách hàng"
+          value={customerName}
+          onChange={(e) => setCustomerName(e.target.value)}
+        />
+
+        <CustomInput
+          label="Địa chỉ thi công"
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+        />
+
+        <CustomTextarea
+          label="Ghi chú thêm"
+          rows={3}
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+        />
       </div>
 
-      <div className="lg:col-span-1 space-y-4">
+      {/* Thông số kỹ thuật lắp đặt */}
+      <div className="lg:col-span-2 space-y-4">
         <h3
           className={`text-sm font-bold ${TitleDarkColor} uppercase tracking-wider`}
         >
           Thông số kỹ thuật lắp đặt
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {technicalSpecsFields.map(renderField)}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <CustomInput
+            label="Phí hợp đồng"
+            value={contractFee}
+            onChange={(e) => setContractFee(e.target.value)}
+          />
+
+          <CustomInput
+            label="Phí khảo sát"
+            value={surveyFee}
+            onChange={(e) => setSurveyFee(e.target.value)}
+          />
+
+          <CustomInput
+            label="Ngày công khảo sát"
+            value={surveyEffort}
+            onChange={(e) => setSurveyEffort(e.target.value)}
+          />
+
+          <CustomInput
+            label="Phí lắp đặt"
+            value={installationFee}
+            onChange={(e) => setInstallationFee(e.target.value)}
+          />
+
+          <CustomInput
+            label="Hệ số nhân công (%)"
+            value={laborCoefficient}
+            onChange={(e) => setLaborCoefficient(e.target.value)}
+          />
+
+          <CustomInput
+            label="Hệ số chi phí chung (%)"
+            value={generalCostCoefficient}
+            onChange={(e) => setGeneralCostCoefficient(e.target.value)}
+          />
+
+          <CustomInput
+            label="Hệ số thuế tính trước (%)"
+            value={precalculatedTaxCoefficient}
+            onChange={(e) => setPrecalculatedTaxCoefficient(e.target.value)}
+          />
+
+          <CustomInput
+            label="Hệ số máy thi công (%)"
+            value={constructionMachineryCoefficient}
+            onChange={(e) =>
+              setConstructionMachineryCoefficient(e.target.value)
+            }
+          />
+
+          <CustomInput
+            label="Hệ số thuế GTGT (VAT) (%)"
+            value={vatCoefficient}
+            onChange={(e) => setVatCoefficient(e.target.value)}
+          />
+
+          <CustomInput
+            label="Hệ số thiết kế (%)"
+            value={designCoefficient}
+            onChange={(e) => setDesignCoefficient(e.target.value)}
+          />
+
+          <CustomInput
+            label="Phí thiết kế"
+            value={designFee}
+            onChange={(e) => setDesignFee(e.target.value)}
+          />
         </div>
       </div>
 
-      {/* Meter Section - Wide */}
+      {/* Đồng hồ & đơn vị liên quan */}
       <div className="lg:col-span-2 pt-8 border-t border-divider space-y-4">
         <h3
           className={`text-sm font-bold ${TitleDarkColor} uppercase tracking-wider`}
@@ -263,90 +332,19 @@ export const TechnicalInfoCard = ({
         </h3>
 
         {/* Meter Row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {meterFields.map(renderField)}
-        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+          <CustomInput
+            label="Số sê-ri đồng hồ nước"
+            value={waterMeterSerial}
+            onChange={(e) => setWaterMeterSerial(e.target.value)}
+          />
 
-        {/* Representatives Rows */}
-        <div className="space-y-4">
-          {representatives.map((rep, index) => (
-            <div
-              key={rep.id}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end"
-            >
-              <CustomInput className="lg:col-span-1" label="Người đại diện" />
-              <div className="flex gap-2 items-end lg:col-span-1">
-                <CustomSelect
-                  className="flex-1"
-                  defaultSelectedKeys={[rep.position]}
-                  label="Chức vụ"
-                  options={positionOptions.map((opt) => ({
-                    label: opt.label,
-                    value: opt.key,
-                  }))}
-                />
-                <div className="flex gap-1 mb-3">
-                  {representatives.length > 1 && (
-                    <Button
-                      isIconOnly
-                      className="bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white h-8 w-8 min-w-8 shrink-0 transition-colors"
-                      color="danger"
-                      radius="full"
-                      size="sm"
-                      onPress={() => removeRepresentative(rep.id)}
-                    >
-                      <DeleteIcon className="w-4 h-4" />
-                    </Button>
-                  )}
-                  {index === representatives.length - 1 && (
-                    <Button
-                      isIconOnly
-                      className="h-8 w-8 min-w-8 shrink-0 shadow-md shadow-primary/20"
-                      color="primary"
-                      radius="full"
-                      size="sm"
-                      onPress={addRepresentative}
-                    >
-                      <SumIcon className="w-4 h-4" />
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
+          <CustomInput
+            label="ID đồng hồ nước tổng"
+            value={overallWaterMeterId}
+            onChange={(e) => setOverallWaterMeterId(e.target.value)}
+          />
         </div>
-      </div>
-
-      <div className="lg:col-span-2 pt-8 border-t border-divider">
-        <div className="flex flex-wrap items-end gap-4">
-          <div className="w-full md:w-80">
-            <CustomSelect
-              label="Mẫu bốc vật tư"
-              options={[
-                {
-                  label: "Mẫu 1",
-                  value: "m1",
-                },
-                {
-                  label: "Mẫu 2",
-                  value: "m2",
-                },
-              ]}
-            />
-          </div>
-          <CustomButton
-            className="text-default-700 font-medium h-14 rounded-xl"
-            color="default"
-            startContent={<RestoreIcon className="w-4 h-4" />}
-            variant="flat"
-          >
-            Reset về mẫu bốc vật tư mặc định
-          </CustomButton>
-        </div>
-        <p className="text-red-500 text-xs mt-2 italic flex items-center gap-1">
-          <RestoreIcon className="w-4 h-4" />
-          Chú ý: Thay đổi mẫu bốc vật tư sẽ xóa hết danh sách vật tư hiện tại
-        </p>
       </div>
     </GenericSearchFilter>
   );

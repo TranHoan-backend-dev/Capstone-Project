@@ -18,6 +18,23 @@ export const ESTIMATE_PREPARATION_COLUMN = [
   { key: "formNumber", label: "Mã đơn" },
   { key: "customerName", label: "Tên khách hàng" },
   { key: "address", label: "Địa chỉ lắp đặt", width: "300px" },
-  { key: "registerDate", label: "Ngày đăng ký", sortable: true , align: "center" as const },
+  {
+    key: "registerDate",
+    label: "Ngày đăng ký",
+    sortable: true,
+    align: "center" as const,
+  },
   { key: "actions", label: "Hoạt động", align: "center" as const },
+];
+
+export const ESTIMATE_APPROVAL_COLUMN = [
+  { key: "stt", label: "STT", align: "center", width: "50px" },
+  { key: "code", label: "Mã đơn", align: "start" },
+  { key: "designProfileName", label: "Tên hồ sơ thiết kế", align: "start" },
+  { key: "phone", label: "Điện thoại", align: "start" },
+  { key: "installationAddress", label: "Địa chỉ lắp đặt", align: "start" },
+  { key: "totalAmount", label: "Tổng tiền", align: "end" },
+  { key: "createdDate", label: "Ngày lập", align: "center" },
+  { key: "creator", label: "Người lập", align: "start" },
+  { key: "actions", label: "Hành động", align: "center" },
 ];
