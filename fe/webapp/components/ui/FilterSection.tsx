@@ -40,7 +40,7 @@ export const FilterSection = ({
       gridClassName="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-3"
       icon={<SearchIcon size={18} />}
       title={title || "Tra cứu đơn"}
-      onFilter={() => {}} // Could trigger search here if preferred
+      onFilter={() => onSearch?.(keyword)}
     >
       <div className="lg:col-span-2 space-y-1">
         <div className="flex gap-2">
@@ -48,9 +48,11 @@ export const FilterSection = ({
             className="font-bold"
             label="Nhập từ khóa tìm kiếm"
             value={keyword}
-            onChange={(e) => {
-              onSearch?.(e.target.value);
-              setKeywordAction?.(e.target.value);
+            onChange={(e) => setKeywordAction(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                onSearch?.(keyword);
+              }
             }}
           />
         </div>

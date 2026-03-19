@@ -60,17 +60,6 @@ export type DesignProcessingStatus =
   | "rejected"
   | "none";
 
-export interface DesignProcessingItem {
-  id: string;
-  code: string;
-  customerName: string;
-  phone: string;
-  address: string;
-  registrationDate: string;
-  surveyAppointment: string;
-  status: DesignProcessingStatus;
-}
-
 export interface SettlementDocumentRow {
   id: string;
   stt: number;
@@ -95,19 +84,6 @@ export interface StatusDetailData {
   approveDate: string | null;
   totalPrice: string | null;
   note: string | null;
-}
-
-export interface SurveyAssignmentItem {
-  id: number;
-  code: string;
-  customerName: string;
-  phone: string;
-  address: string;
-  registrationDate: string;
-  surveyDate: string;
-  surveyorId?: string;
-  surveyorName?: string;
-  status: "pending" | "assigned";
 }
 
 export type FieldType =
@@ -183,7 +159,5 @@ export type FormField =
   | SearchInputField
   | CheckboxField
   | TextareaField;
-
-export type OrderStage = "register" | "estimate" | "contract" | "construction";
 
 export type OrderStatus = "processing" | "pending" | "approved" | "rejected";

@@ -1,4 +1,4 @@
-package com.capstone.construction.application.usecase.estimate;
+package com.capstone.construction.application.usecase;
 
 import com.capstone.common.enumerate.RoleName;
 import com.capstone.common.exception.ForbiddenException;
@@ -37,7 +37,10 @@ public class CostEstimateUseCase {
 
   // <editor-fold> desc="constant"
   @Value(".${rabbit-mq-config.entities[6]}.")
-  String PREFIX;
+  String COST_ESTIMATE_PREFIX;
+
+  @Value(".${rabbit-mq-config.entities[8]}.")
+  String FINANCE_PREFIX;
 
   @Value("${rabbit-mq-config.actions[3]}")
   String APPROVE_ACTION;
@@ -47,6 +50,9 @@ public class CostEstimateUseCase {
 
   @Value("${rabbit-mq-config.actions[5]}")
   String REQUIRE_SIGNIFICANCE_ACTION;
+
+  @Value("${rabbit-mq-config.actions[6]}")
+  String VIEW_ACTION;
 
   @Value("${rabbit-mq-config.queue_name}")
   String QUEUE_NAME;
@@ -60,7 +66,7 @@ public class CostEstimateUseCase {
     var result = estSrv.updateEstimate(id, request);
 
     if (request.isFinished()) {
-      var routingKey = QUEUE_NAME + PREFIX + UPDATE_ACTION;
+      var routingKey = QUEUE_NAME + COST_ESTIMATE_PREFIX + UPDATE_ACTION;
       var employee = empSrv.getEmployeeNameById(result.createBy());
       var event = new UpdatedEvent(
         result.customerName(),
@@ -78,7 +84,7 @@ public class CostEstimateUseCase {
 
     var result = estSrv.getEstimateById(id);
 
-    var routingKey = QUEUE_NAME + PREFIX + APPROVE_ACTION;
+    var routingKey = QUEUE_NAME + COST_ESTIMATE_PREFIX + APPROVE_ACTION;
     var employee = empSrv.getEmployeeNameById(result.createBy());
     var event = new ApproveEvent(
       result.customerName(),
@@ -113,7 +119,7 @@ public class CostEstimateUseCase {
       throw new NotExistingException(Message.PT_59);
     }
 
-    messageProducer.send(QUEUE_NAME + PREFIX + REQUIRE_SIGNIFICANCE_ACTION, new RequireSignificanceEvent(
+    messageProducer.send(QUEUE_NAME + COST_ESTIMATE_PREFIX + REQUIRE_SIGNIFICANCE_ACTION, new RequireSignificanceEvent(
       request.estId(),
       request.surveyStaff(),
       request.plHead(),
@@ -136,6 +142,8 @@ public class CostEstimateUseCase {
 
     if (status) {
       // TODO: ban su kien cho phong tai vu
+      // Thong diep khong di kem noi dung
+      messageProducer.send(QUEUE_NAME + FINANCE_PREFIX + VIEW_ACTION, null);
     }
   }
 }

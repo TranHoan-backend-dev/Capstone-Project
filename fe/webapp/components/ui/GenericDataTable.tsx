@@ -32,6 +32,12 @@ interface GenericDataTableProps<T> {
   columns: Column[];
   data: T[];
   renderCellAction: (item: T, columnKey: string) => React.ReactNode;
+
+  search?: {
+    value: string;
+    placeholder?: string;
+    onChange: (value: string) => void;
+  };
   paginationProps?: {
     total: number;
     page: number;
@@ -59,6 +65,7 @@ export const GenericDataTable = <T extends { id: string | number }>({
   columns,
   data,
   renderCellAction,
+  search,
   paginationProps,
   tableProps,
   isCollapsible = false,
@@ -117,6 +124,21 @@ export const GenericDataTable = <T extends { id: string | number }>({
         >
           {topContent && (
             <div className="p-6 pt-2 border-b border-divider">{topContent}</div>
+          )}
+          {(search || topContent) && (
+            <div className="p-6 pt-2 border-b border-divider flex gap-4 items-center">
+              {search && (
+                <input
+                  type="text"
+                  placeholder={search.placeholder ?? "Tìm kiếm..."}
+                  className="w-72 border rounded-lg px-3 py-2 text-sm"
+                  value={search.value}
+                  onChange={(e) => search.onChange(e.target.value)}
+                />
+              )}
+
+              {topContent}
+            </div>
           )}
           <div className="overflow-x-auto">
             <Table

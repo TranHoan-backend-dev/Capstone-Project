@@ -1,3 +1,7 @@
+import {
+  ApproveInstallationPayload,
+  NewInstallationFormPayload,
+} from "@/types";
 import { UpdateEstimateRequest } from "@/types";
 import { API_GATEWAY_URL } from "@/utils/constraints";
 import axios from "axios";
@@ -420,6 +424,79 @@ export const deleteNeighborhoodUnits = (accessToken: string, id: string) => {
       Authorization: `Bearer ${accessToken}`,
     },
   });
+};
+
+export const getInstallationForms = (
+  accessToken: string,
+  page: number,
+  size: number,
+  sort: string,
+  keyword?: string | null,
+  from?: string | null,
+  to?: string | null,
+) => {
+  return axios.get(`${API_GATEWAY_URL}/construction/installation-forms`, {
+    params: {
+      page,
+      size,
+      sort,
+      keyword,
+      from,
+      to,
+    },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
+export const createNewInstallationForm = (
+  accessToken: string,
+  payload: NewInstallationFormPayload,
+) => {
+  return axios.post(
+    `${API_GATEWAY_URL}/construction/installation-forms`,
+    payload,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+};
+
+export const approveInstallationForm = async (
+  accessToken: string,
+  payload: ApproveInstallationPayload,
+) => {
+  const res = await axios.patch(
+    `${API_GATEWAY_URL}/construction/installation-forms/approve`,
+    payload,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+  return res.data;
+};
+
+export const assignInstallationForm = async (
+  accessToken: string,
+  empId: string,
+  formCode: string,
+  formNumber: string,
+) => {
+  const res = await axios.patch(
+    `${API_GATEWAY_URL}/construction/installation-forms/assign/${empId}`,
+    { formCode, formNumber },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+  return res.data;
 };
 
 export const getAllEstimates = (
