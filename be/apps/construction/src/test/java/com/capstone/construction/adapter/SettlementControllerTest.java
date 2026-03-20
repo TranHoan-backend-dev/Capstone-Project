@@ -1,7 +1,5 @@
 package com.capstone.construction.adapter;
 
-import com.capstone.common.response.WrapperApiResponse;
-import com.capstone.common.utils.Utils;
 import com.capstone.construction.application.dto.request.settlement.AssignTheSignificanceRequest;
 import com.capstone.construction.application.dto.request.settlement.SettlementFilterRequest;
 import com.capstone.construction.application.dto.request.settlement.SettlementRequest;
@@ -24,14 +22,13 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class SettlementControllerTest {
@@ -125,7 +122,7 @@ class SettlementControllerTest {
     var responseEntity = settlementController.filterSettlements(filterRequest, pageable);
 
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(responseEntity.getBody().data()).isEqualTo(pageResponse);
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).data()).isEqualTo(pageResponse);
     verify(settlementUseCase).filterSettlements(filterRequest, pageable);
   }
 
@@ -138,7 +135,7 @@ class SettlementControllerTest {
     var responseEntity = settlementController.sign(significanceRequest, id);
 
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(responseEntity.getBody().message()).isEqualTo("Ký quyết toán thành công");
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).message()).isEqualTo("Ký quyết toán thành công");
     verify(settlementUseCase).significance(significanceRequest, id);
   }
 

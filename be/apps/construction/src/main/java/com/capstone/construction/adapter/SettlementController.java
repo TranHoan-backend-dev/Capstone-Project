@@ -104,7 +104,7 @@ public class SettlementController {
     @ApiResponse(responseCode = "403", description = "Không có quyền thực hiện hành động này")
   })
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'SURVEY_STAFF')")
-  public ResponseEntity<?> sign(
+  public ResponseEntity<WrapperApiResponse> sign(
     @RequestBody SignificanceRequest request,
     @PathVariable @Parameter(description = "ID của bản quyết toán cần ký", required = true) String id) {
     log.info("Received request to sign construction request: {}", request);

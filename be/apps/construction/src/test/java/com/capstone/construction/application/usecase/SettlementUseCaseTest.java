@@ -100,7 +100,7 @@ class SettlementUseCaseTest {
   @DisplayName("Get all settlements successfully")
   void getAllSettlements_ShouldReturnPageResponse() {
     var pageable = mock(Pageable.class);
-    PageResponse<SettlementResponse> pageResponse = new PageResponse<>(List.of(), 0, 0, 0);
+    PageResponse<SettlementResponse> pageResponse = new PageResponse<>(List.of(), 0, 10, 0, 0, true);
 
     when(settlementService.getAllSettlements(pageable)).thenReturn(pageResponse);
 
@@ -141,7 +141,7 @@ class SettlementUseCaseTest {
   void assignStaffForSignCostEstimate_ShouldSendMessage() {
     var request = new AssignTheSignificanceRequest("sid", "ss", "ph", "cl", "cp");
 
-    when(employeeService.isEmployeeExisting(anyString())).thenReturn(new WrapperApiResponse("ok", true));
+    when(employeeService.isEmployeeExisting(anyString())).thenReturn(new WrapperApiResponse(200, "ok", true, null));
     when(settlementService.isExistingSettlement("sid")).thenReturn(true);
 
     settlementUseCase.assignStaffForSignCostEstimate(request);
@@ -154,7 +154,7 @@ class SettlementUseCaseTest {
   void assignStaffForSignCostEstimate_ShouldThrow_WhenEmployeeNotFound() {
     var request = new AssignTheSignificanceRequest("sid", "ss", "ph", "cl", "cp");
 
-    when(employeeService.isEmployeeExisting(anyString())).thenReturn(new WrapperApiResponse("err", false));
+    when(employeeService.isEmployeeExisting(anyString())).thenReturn(new WrapperApiResponse(200, "err", false, null));
 
     assertThatThrownBy(() -> settlementUseCase.assignStaffForSignCostEstimate(request))
         .isInstanceOf(NotExistingException.class);
@@ -167,7 +167,7 @@ class SettlementUseCaseTest {
   void assignStaffForSignCostEstimate_ShouldThrow_WhenSettlementNotFound() {
     var request = new AssignTheSignificanceRequest("sid", "ss", "ph", "cl", "cp");
 
-    when(employeeService.isEmployeeExisting(anyString())).thenReturn(new WrapperApiResponse("ok", true));
+    when(employeeService.isEmployeeExisting(anyString())).thenReturn(new WrapperApiResponse(200, "ok", true, null));
     when(settlementService.isExistingSettlement("sid")).thenReturn(false);
 
     assertThatThrownBy(() -> settlementUseCase.assignStaffForSignCostEstimate(request))
