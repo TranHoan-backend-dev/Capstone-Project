@@ -68,7 +68,7 @@ class CustomerServiceImplTest {
     lenient().when(customer.getPhoneNumber()).thenReturn("0901234567");
     lenient().when(customer.getType()).thenReturn(CustomerType.FAMILY);
     lenient().when(customer.getIsBigCustomer()).thenReturn(false);
-    lenient().when(customer.getUsageTarget()).thenReturn(UsageTarget.DOMESTIC.name());
+    lenient().when(customer.getUsageTarget()).thenReturn(UsageTarget.DOMESTIC);
     lenient().when(customer.getNumberOfHouseholds()).thenReturn(1);
     lenient().when(customer.getHouseholdRegistrationNumber()).thenReturn(123456);
     lenient().when(customer.getProtectEnvironmentFee()).thenReturn(1000);
@@ -118,7 +118,7 @@ class CustomerServiceImplTest {
   void should_CreateCustomer_When_InputIsValid() {
     // Given
     when(customerRepository.existsByFormCodeAndFormNumber(any(), any())).thenReturn(false);
-    when(constructionService.checkExistence(any(), any())).thenReturn(new WrapperApiResponse(null, true));
+    when(constructionService.checkExistence(any(), any())).thenReturn(new WrapperApiResponse(200, "Success", true, LocalDateTime.now()));
     when(deviceService.checkExistenceOfWaterPrice(any())).thenReturn(true);
     when(deviceService.checkExistenceOfWaterMeter(any())).thenReturn(true);
     when(customerRepository.save(any(Customer.class))).thenReturn(customer);
@@ -145,7 +145,7 @@ class CustomerServiceImplTest {
     // Given
     var id = "CUST-123";
     when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
-    when(constructionService.checkExistence(any(), any())).thenReturn(new WrapperApiResponse(null, true));
+    when(constructionService.checkExistence(any(), any())).thenReturn(new WrapperApiResponse(200, "Success", true, LocalDateTime.now()));
     when(deviceService.checkExistenceOfWaterPrice(any())).thenReturn(true);
     when(deviceService.checkExistenceOfWaterMeter(any())).thenReturn(true);
     when(customerRepository.save(any(Customer.class))).thenReturn(customer);
@@ -211,7 +211,7 @@ class CustomerServiceImplTest {
     // Given
     var id = "CUST-123";
     when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
-    when(constructionService.checkExistence(any(), any())).thenReturn(new WrapperApiResponse(null, false));
+    when(constructionService.checkExistence(any(), any())).thenReturn(new WrapperApiResponse(200, "Success", false, LocalDateTime.now()));
 
     // When & Then
     assertThrows(NotExistingException.class, () -> customerService.updateCustomer(id, updateRequest));
@@ -223,7 +223,7 @@ class CustomerServiceImplTest {
     // Given
     var id = "CUST-123";
     when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
-    when(constructionService.checkExistence(any(), any())).thenReturn(new WrapperApiResponse(null, true));
+    when(constructionService.checkExistence(any(), any())).thenReturn(new WrapperApiResponse(200, "Success", true, LocalDateTime.now()));
     when(deviceService.checkExistenceOfWaterPrice(any())).thenReturn(false);
 
     // When & Then
@@ -236,7 +236,7 @@ class CustomerServiceImplTest {
     // Given
     var id = "CUST-123";
     when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
-    when(constructionService.checkExistence(any(), any())).thenReturn(new WrapperApiResponse(null, true));
+    when(constructionService.checkExistence(any(), any())).thenReturn(new WrapperApiResponse(200, "Success", true, LocalDateTime.now()));
     when(deviceService.checkExistenceOfWaterPrice(any())).thenReturn(true);
     when(deviceService.checkExistenceOfWaterMeter(any())).thenReturn(false);
 

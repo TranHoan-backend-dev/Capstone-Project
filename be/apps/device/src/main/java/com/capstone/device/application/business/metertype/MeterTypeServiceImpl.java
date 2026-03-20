@@ -5,7 +5,7 @@ import com.capstone.common.exception.ExistingException;
 import com.capstone.device.application.dto.request.metertype.CreateRequest;
 import com.capstone.device.application.dto.request.metertype.UpdateRequest;
 import com.capstone.device.application.dto.response.PageResponse;
-import com.capstone.device.application.dto.response.WaterMeterTypeResponse;
+import com.capstone.device.application.dto.response.water.WaterMeterTypeResponse;
 import com.capstone.device.domain.model.WaterMeterType;
 import com.capstone.device.infrastructure.persistence.WaterMeterRepository;
 import com.capstone.device.infrastructure.persistence.WaterMeterTypeRepository;

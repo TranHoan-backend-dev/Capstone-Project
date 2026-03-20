@@ -25,7 +25,7 @@ public class ReceiptUseCase {
   final ReceiptService receiptService;
   final MessageProducer messageProducer;
 
-  @Value("${rabbit-mq-config.entities[7]:receipt}")
+  @Value("${rabbit-mq-config.entities[7]}")
   String ENTITY_NAME;
 
   @Value("${rabbit-mq-config.actions[2]}")
