@@ -242,6 +242,11 @@ public class CustomerServiceImpl implements CustomerService {
     return customerRepository.existsByWaterPriceId(priceId);
   }
 
+  @Override
+  public boolean isExistingCustomer(String id) {
+    return customerRepository.existsById(id);
+  }
+
   private @NonNull CustomerResponse mapToResponse(@NonNull Customer customer) {
     return new CustomerResponse(
       customer.getCustomerId(),

@@ -4,3 +4,4 @@ export * from "./commune-column";
 export * from "./neighborhood-unit-column";
 export * from "./design-processing-column";
 export * from "./survey-assignment-column";
+export * from "./settlement-column";
