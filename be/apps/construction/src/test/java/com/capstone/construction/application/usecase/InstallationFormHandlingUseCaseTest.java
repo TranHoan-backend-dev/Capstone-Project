@@ -70,8 +70,8 @@ class InstallationFormHandlingUseCaseTest {
 
     // When & Then
     assertThatThrownBy(() -> useCase.createNewInstallationRequest(USER_ID, request))
-        .isInstanceOf(ExistingItemException.class)
-        .hasMessage(Message.PT_53);
+      .isInstanceOf(ExistingItemException.class)
+      .hasMessage(Message.PT_53);
 
     verify(ifSrv).isInstallationFormExisting("FORM-001", "CODE-001");
     verify(ifSrv, never()).createNewInstallationForm(anyString(), any());
@@ -84,10 +84,10 @@ class InstallationFormHandlingUseCaseTest {
     when(ifSrv.isInstallationFormExisting("FORM-001", "CODE-001")).thenReturn(false);
 
     var formResponse = new NewInstallationFormResponse(
-        "FORM-001", "Customer", "CODE-001", USER_ID, LocalDateTime.now());
+      "FORM-001", "Customer", "CODE-001", USER_ID, LocalDateTime.now());
     when(ifSrv.createNewInstallationForm(USER_ID, request)).thenReturn(formResponse);
     when(empSrv.getEmployeeNameById(USER_ID))
-        .thenReturn(new WrapperApiResponse(200, "OK", "Staff Name", LocalDateTime.now()));
+      .thenReturn(new WrapperApiResponse(200, "OK", "Staff Name", LocalDateTime.now()));
 
     // When
     var result = useCase.createNewInstallationRequest(USER_ID, request);
@@ -103,13 +103,13 @@ class InstallationFormHandlingUseCaseTest {
   @DisplayName("Should throw NPE when request is null")
   void should_ThrowException_When_RequestIsNull() {
     assertThatThrownBy(() -> useCase.createNewInstallationRequest(USER_ID, null))
-        .isInstanceOf(NullPointerException.class);
+      .isInstanceOf(NullPointerException.class);
   }
 
   @Test
   void should_ApproveAndCreateEstimate_When_StatusIsTrue() {
     // Given
-    var request = new ApproveRequest( "F-001", "C-001", true);
+    var request = new ApproveRequest("F-001", "C-001", true);
     var order = mock(InstallationFormListResponse.class);
     when(order.formCode()).thenReturn("C-001");
     when(order.formNumber()).thenReturn("F-001");

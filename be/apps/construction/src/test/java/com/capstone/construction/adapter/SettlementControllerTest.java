@@ -67,7 +67,7 @@ class SettlementControllerTest {
     var responseEntity = settlementController.createSettlement(settlementRequest);
 
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-    assertThat(responseEntity.getBody().message()).isEqualTo("Tạo quyết toán công trình thành công");
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).message()).isEqualTo("Tạo quyết toán công trình thành công");
     verify(settlementUseCase).createSettlement(settlementRequest);
   }
 
@@ -80,7 +80,7 @@ class SettlementControllerTest {
     var responseEntity = settlementController.updateSettlement(id, settlementRequest);
 
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(responseEntity.getBody().message()).isEqualTo("Cập nhật quyết toán công trình thành công");
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).message()).isEqualTo("Cập nhật quyết toán công trình thành công");
     verify(settlementUseCase).updateSettlement(id, settlementRequest);
   }
 
@@ -93,7 +93,7 @@ class SettlementControllerTest {
     var responseEntity = settlementController.getSettlementById(id);
 
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(responseEntity.getBody().data()).isEqualTo(mockResponse);
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).data()).isEqualTo(mockResponse);
     verify(settlementUseCase).getSettlementById(id);
   }
 
@@ -107,7 +107,7 @@ class SettlementControllerTest {
     var responseEntity = settlementController.getAllSettlements(pageable);
 
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(responseEntity.getBody().data()).isEqualTo(pageResponse);
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).data()).isEqualTo(pageResponse);
     verify(settlementUseCase).getAllSettlements(pageable);
   }
 
@@ -147,7 +147,7 @@ class SettlementControllerTest {
     var responseEntity = settlementController.requireSignificances(assignRequest);
 
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(responseEntity.getBody().message()).isEqualTo("Yêu cầu ký duyệt quyết toán thành công");
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).message()).isEqualTo("Yêu cầu ký duyệt quyết toán thành công");
     verify(settlementUseCase).assignStaffForSignCostEstimate(assignRequest);
   }
 }

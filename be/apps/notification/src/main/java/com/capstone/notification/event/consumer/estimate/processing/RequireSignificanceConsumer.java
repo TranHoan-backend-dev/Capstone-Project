@@ -1,7 +1,6 @@
 package com.capstone.notification.event.consumer.estimate.processing;
 
 import com.capstone.common.enumerate.RoleName;
-import com.capstone.notification.event.consumer.estimate.message.ApproveEventMessage;
 import com.capstone.notification.event.consumer.estimate.message.RequireSignificanceEvent;
 import com.capstone.notification.event.producer.MessageProducer;
 import com.capstone.notification.event.websocket.GeneralEventConsumer;

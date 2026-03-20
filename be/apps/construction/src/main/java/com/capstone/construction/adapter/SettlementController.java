@@ -1,6 +1,5 @@
 package com.capstone.construction.adapter;
 
-import com.capstone.common.enumerate.RoleName;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
 import com.capstone.construction.application.dto.request.settlement.AssignTheSignificanceRequest;

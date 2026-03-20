@@ -38,9 +38,9 @@ public final class Message {
   public static final String PT_35 = "Nhân viên này không tồn tại";
   public static final String PT_36 = "Nhân viên phòng Kế hoạch - Kỹ thuật lập phiếu lắp đặt không được để trống";
   public static final String PT_37 = "Id của đồng hồ tổng không được để trống";
-  public static final String PT_38 = "Id của hợp đồng không được để trống";
+  public static final String PT_38 = "";
   public static final String PT_39 = "Ngày đăng ký không được để trống";
-  public static final String PT_40 = "Id của nhân viên phụ trách không được để trống";
+  public static final String PT_40 = "";
   public static final String PT_41 = "Phiếu lắp đặt không được để trống";
   public static final String PT_42 = "Số biên lai không được để trống";
   public static final String PT_43 = "Ngày thanh toán không được để trống";
@@ -65,8 +65,4 @@ public final class Message {
   public static final String PT_62 = "Thôn/Làng với id %s không tìm thấy";
   public static final String PT_63 = "Thôn/Làng với tên %s đã tồn tại";
   public static final String PT_64 = "Chữ ký không được bỏ trống";
-  public static final String ENT_30 = "Đơn lắp đặt không tồn tại";
-  public static final String ENT_31 = "Đơn giá vật tư không được để trống";
-  public static final String ENT_33 = "Vật tư không được để trống";
-  public static final String ENT_55 = "Ghi chú không được là số âm";
 }
