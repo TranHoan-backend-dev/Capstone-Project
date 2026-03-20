@@ -90,25 +90,9 @@ public class InstallationFormHandlingUseCase {
     var event = new AssignEvent(
       form.formCode(),
       form.formNumber(),
-      empId);
-    messageProducer.send(routingKey, event);
-  }
-
-  public void assignInstallationFormToConstructionCaptain(InstallationFormId request, String empId) {
-    var role = empSrv.getRoleOfEmployeeById(empId).data();
-    Objects.requireNonNull(role);
-    if (!role.toString().equalsIgnoreCase(RoleName.CONSTRUCTION_DEPARTMENT_STAFF.name())) {
-      throw new IllegalArgumentException(String.format(Message.PT_28, "đội trưởng đội thi công (nhân viên chi nhánh Xây lắp"));
-    }
-
-    ifSrv.assignInstallationForm(empId, request, false);
-    var form = ifSrv.getByFormCodeAndFormNumber(request.getFormCode(), request.getFormNumber());
-
-    var routingKey = QUEUE_NAME + PREFIX + ASSIGN_ACTION;
-    var event = new AssignEvent(
-      form.formCode(),
-      form.formNumber(),
-      empId);
+      empId,
+      true
+    );
     messageProducer.send(routingKey, event);
   }
 
@@ -128,10 +112,6 @@ public class InstallationFormHandlingUseCase {
         installationForm.overallWaterMeterId()
       ));
     }
-  }
-
-  public Page<InstallationFormListResponse> getPaginatedConstructionRequest(Pageable pageable, BaseFilterRequest request) {
-    return ifSrv.getConstructionRequestsList(pageable, request);
   }
 
   private String getCreatorName(String creator) {
