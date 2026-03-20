@@ -22,13 +22,7 @@ public class MaterialsOfCostEstimate {
   @MapsId("materialId")
   Material material;
 
-  @Column(nullable = false)
-  String laborCost;
-
   String totalLaborCost;
-
-  @Column(nullable = false)
-  String materialCost;
 
   String totalMaterialCost;
 
@@ -39,6 +33,4 @@ public class MaterialsOfCostEstimate {
 
   @Column(nullable = false, columnDefinition = "NUMERIC(38,2) DEFAULT 0")
   Float reductionCoefficient;
-
-  Float usedLaborCost;
 }

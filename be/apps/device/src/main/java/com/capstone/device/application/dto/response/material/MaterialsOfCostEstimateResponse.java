@@ -1,18 +1,16 @@
 package com.capstone.device.application.dto.response.material;
 
 public record MaterialsOfCostEstimateResponse(
-  String materialId,
-  String price,
-  String laborCost,
-  String totalLaborCost,
-  String materialCost,
-  String totalMaterialCost,
-  String note,
-  Float mass,
-  Float reductionCoefficient,
+  String id,
   String jobContent,
+  String note,
   String unitName,
+  Float reductionCoefficient,
+  Float mass,
+  String materialCost,
+  String laborPrice,
   String laborPriceAtRuralCommune,
-  String usedLaborCost
+  String totalLaborCost,
+  String totalMaterialCost
 ) {
 }

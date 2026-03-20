@@ -1,5 +1,6 @@
 package com.capstone.construction.application.dto.response.estimate;
 
+import com.capstone.common.request.BaseMaterial;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
 
 import java.time.LocalDate;
@@ -8,7 +9,7 @@ import java.util.List;
 
 public record CostEstimateResponse(
   GeneralInformation generalInformation,
-  List<Material> material
+  List<BaseMaterial> material
 ) {
   public record GeneralInformation(
     String estimationId,
@@ -34,23 +35,6 @@ public record CostEstimateResponse(
     String waterMeterSerial,
     String overallWaterMeterId,
     InstallationFormId installationFormId
-  ) {
-
-  }
-
-  public record Material(
-    String materialCode,
-    String jobContent,
-    String note,
-    String unit,
-    String reductionCoefficient,
-    String mass,
-    String materialCost,
-    String laborCost,
-    String laborPriceAtRuralCommune,
-    String usedLaborCost,
-    String totalMaterialCost,
-    String totalLaborCost
   ) {
 
   }

@@ -14,4 +14,6 @@ public interface MaterialsOfCostEstimateRepository extends JpaRepository<Materia
   void deleteByMaterial_MaterialId(String materialMaterialId);
 
   List<MaterialsOfCostEstimate> findById_CostEstId(String idCostEstId);
+
+  void deleteById_CostEstId(String estimateId);
 }

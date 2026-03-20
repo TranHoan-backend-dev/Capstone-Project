@@ -6,10 +6,11 @@ import com.capstone.common.enumerate.RoleName;
 import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.common.utils.SharedConstant;
 import com.capstone.common.utils.SharedMessage;
+import com.capstone.common.request.BaseMaterial;
 import com.capstone.construction.application.dto.request.estimate.CreateRequest;
 import com.capstone.construction.application.dto.request.estimate.UpdateRequest;
 import com.capstone.construction.application.dto.response.estimate.CostEstimateResponse;
-import com.capstone.construction.application.dto.response.material.MaterialsOfCostEstimateResponse;
+import com.capstone.construction.application.dto.response.estimate.MaterialsOfCostEstimateResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.domain.model.CostEstimate;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
@@ -75,7 +76,11 @@ public class CostEstimateServiceImpl implements CostEstimateService {
     status.setEstimate(ProcessingStatus.PROCESSING);
     ifRepo.save(installationForm);
 
-    var materials = getMaterials();
+    var materials = getMaterials(null);
+    var response = deviceSrv.updateMaterialsOfCostEstimate(estimate.getEstimationId(), materials);
+    if (response.status() != 200) {
+      throw new IllegalArgumentException(response.message());
+    }
 
     return mapToResponse(saved, materials);
   }
@@ -87,72 +92,78 @@ public class CostEstimateServiceImpl implements CostEstimateService {
     var estimate = eRepo.findById(id)
       .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_61, id)));
 
-    // <editor-fold> desc="setter"
-    if (request.customerName() != null && !request.customerName().isBlank()) {
-      estimate.setCustomerName(request.customerName());
+    var generalInformation = request.generalInformation();
+
+    // <editor-fold> desc="setter for general information"
+    if (generalInformation.customerName() != null && !generalInformation.customerName().isBlank()) {
+      estimate.setCustomerName(generalInformation.customerName());
     }
-    if (request.address() != null && !request.address().isBlank()) {
-      estimate.setAddress(request.address());
+    if (generalInformation.address() != null && !generalInformation.address().isBlank()) {
+      estimate.setAddress(generalInformation.address());
     }
-    if (request.note() != null && !request.note().isBlank()) {
-      estimate.setNote(request.note());
+    if (generalInformation.note() != null && !generalInformation.note().isBlank()) {
+      estimate.setNote(generalInformation.note());
     }
-    if (request.contractFee() != null) {
-      estimate.setContractFee(request.contractFee());
+    if (generalInformation.contractFee() != null) {
+      estimate.setContractFee(generalInformation.contractFee());
     }
-    if (request.surveyFee() != null) {
-      estimate.setSurveyFee(request.surveyFee());
+    if (generalInformation.surveyFee() != null) {
+      estimate.setSurveyFee(generalInformation.surveyFee());
     }
-    if (request.surveyEffort() != null) {
-      estimate.setSurveyEffort(request.surveyEffort());
+    if (generalInformation.surveyEffort() != null) {
+      estimate.setSurveyEffort(generalInformation.surveyEffort());
     }
-    if (request.installationFee() != null) {
-      estimate.setInstallationFee(request.installationFee());
+    if (generalInformation.installationFee() != null) {
+      estimate.setInstallationFee(generalInformation.installationFee());
     }
-    if (request.laborCoefficient() != null) {
-      estimate.setLaborCoefficient(request.laborCoefficient());
+    if (generalInformation.laborCoefficient() != null) {
+      estimate.setLaborCoefficient(generalInformation.laborCoefficient());
     }
-    if (request.generalCostCoefficient() != null) {
-      estimate.setGeneralCostCoefficient(request.generalCostCoefficient());
+    if (generalInformation.generalCostCoefficient() != null) {
+      estimate.setGeneralCostCoefficient(generalInformation.generalCostCoefficient());
     }
-    if (request.precalculatedTaxCoefficient() != null) {
-      estimate.setPrecalculatedTaxCoefficient(request.precalculatedTaxCoefficient());
+    if (generalInformation.precalculatedTaxCoefficient() != null) {
+      estimate.setPrecalculatedTaxCoefficient(generalInformation.precalculatedTaxCoefficient());
     }
-    if (request.constructionMachineryCoefficient() != null) {
-      estimate.setConstructionMachineryCoefficient(request.constructionMachineryCoefficient());
+    if (generalInformation.constructionMachineryCoefficient() != null) {
+      estimate.setConstructionMachineryCoefficient(generalInformation.constructionMachineryCoefficient());
     }
-    if (request.vatCoefficient() != null) {
-      estimate.setVatCoefficient(request.vatCoefficient());
+    if (generalInformation.vatCoefficient() != null) {
+      estimate.setVatCoefficient(generalInformation.vatCoefficient());
     }
-    if (request.designCoefficient() != null) {
-      estimate.setDesignCoefficient(request.designCoefficient());
+    if (generalInformation.designCoefficient() != null) {
+      estimate.setDesignCoefficient(generalInformation.designCoefficient());
     }
-    if (request.designFee() != null) {
-      estimate.setDesignFee(request.designFee());
+    if (generalInformation.designFee() != null) {
+      estimate.setDesignFee(generalInformation.designFee());
     }
-    if (request.designImage() != null) {
-      var url = gcsService.upload(request.designImage());
+    if (generalInformation.designImage() != null) {
+      var url = gcsService.upload(generalInformation.designImage());
       estimate.setDesignImageUrl(url);
     }
-    if (request.waterMeterSerial() != null && !request.waterMeterSerial().isBlank()) {
-      var meterStatus = deviceSrv.isMeterExisting(request.waterMeterSerial())
+    if (generalInformation.waterMeterSerial() != null && !generalInformation.waterMeterSerial().isBlank()) {
+      var meterStatus = deviceSrv.isMeterExisting(generalInformation.waterMeterSerial())
         .data().toString();
       if (!Boolean.parseBoolean(meterStatus)) {
         throw new IllegalArgumentException("Đồng hồ nước không tồn tại");
       }
-      estimate.setWaterMeterSerial(request.waterMeterSerial());
+      estimate.setWaterMeterSerial(generalInformation.waterMeterSerial());
     }
-    if (request.overallWaterMeterId() != null && !request.overallWaterMeterId().isBlank()) {
-      var overallMeterStatus = deviceSrv.isOverallMeterExisting(request.overallWaterMeterId())
+    if (generalInformation.overallWaterMeterId() != null && !generalInformation.overallWaterMeterId().isBlank()) {
+      var overallMeterStatus = deviceSrv.isOverallMeterExisting(generalInformation.overallWaterMeterId())
         .data().toString();
       if (!Boolean.parseBoolean(overallMeterStatus)) {
         throw new IllegalArgumentException("Đồng hồ tổng không tồn tại");
       }
-      estimate.setOverallWaterMeterId(request.overallWaterMeterId());
+      estimate.setOverallWaterMeterId(generalInformation.overallWaterMeterId());
     }
     // </editor-fold>
 
     var saved = eRepo.save(estimate);
+    var response = deviceSrv.updateMaterialsOfCostEstimate(estimate.getEstimationId(), request.material());
+    if (response.status() != 200) {
+      throw new IllegalArgumentException(response.message());
+    }
     var materials = deviceSrv.getMaterialsOfCostEstimate(estimate.getEstimationId());
 
     return mapToResponse(saved, mapMaterials(materials));
@@ -181,7 +192,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
         startDate,
         endDate),
       pageable) : eRepo.findAll(pageable);
-    return PageResponse.fromPage(page, estimate -> mapToResponse(estimate, new ArrayList<>()));
+    return PageResponse.fromPage(page, estimate -> mapToResponse(estimate, getMaterials(estimate.getEstimationId())));
   }
 
   @Override
@@ -228,27 +239,26 @@ public class CostEstimateServiceImpl implements CostEstimateService {
     return LocalDate.parse(to, DateTimeFormatter.ofPattern(SharedConstant.DATE_PATTERN)).atTime(LocalTime.MAX);
   }
 
-  private List<CostEstimateResponse.Material> mapMaterials(List<MaterialsOfCostEstimateResponse> materials) {
+  private List<BaseMaterial> mapMaterials(List<MaterialsOfCostEstimateResponse> materials) {
     if (materials == null) {
       return new ArrayList<>();
     }
-    return materials.stream().map(m -> new CostEstimateResponse.Material(
-      m.materialId(),
+    return materials.stream().map(m -> new BaseMaterial(
+      m.id(),
       m.jobContent(),
       m.note(),
       m.unitName(),
       m.reductionCoefficient() != null ? m.reductionCoefficient().toString() : null,
       m.mass() != null ? m.mass().toString() : null,
       m.materialCost(),
-      m.laborCost(),
+      m.laborPrice(),
       m.laborPriceAtRuralCommune(),
-      m.usedLaborCost(),
       m.totalMaterialCost(),
       m.totalLaborCost())).toList();
   }
 
   private @NonNull CostEstimateResponse mapToResponse(
-    @NonNull CostEstimate estimate, List<CostEstimateResponse.Material> material
+    @NonNull CostEstimate estimate, List<BaseMaterial> material
   ) {
     return new CostEstimateResponse(
       new CostEstimateResponse.GeneralInformation(
@@ -278,23 +288,22 @@ public class CostEstimateServiceImpl implements CostEstimateService {
       material);
   }
 
-  private @NonNull ArrayList<CostEstimateResponse.Material> getMaterials() {
-    var defaultMaterials = deviceSrv.getDefaultMaterials();
-    var materials = new ArrayList<CostEstimateResponse.Material>();
+  private @NonNull ArrayList<BaseMaterial> getMaterials(String id) {
+    var defaultMaterials = id == null ? deviceSrv.getDefaultMaterials() : deviceSrv.getMaterialsOfCostEstimate(id);
+    var materials = new ArrayList<BaseMaterial>();
     defaultMaterials.forEach(defaultMaterial -> {
-      var m = new CostEstimateResponse.Material(
+      var m = new BaseMaterial(
         defaultMaterial.id(),
         defaultMaterial.jobContent(),
-        null,
+        defaultMaterial.note(),
         defaultMaterial.unitName(),
-        null,
-        null,
-        defaultMaterial.price().toString(),
-        defaultMaterial.laborPrice().toString(),
-        defaultMaterial.laborPriceAtRuralCommune().toString(),
-        null,
-        null,
-        null);
+        defaultMaterial.reductionCoefficient().toString(),
+        defaultMaterial.mass().toString(),
+        defaultMaterial.materialCost(),
+        defaultMaterial.laborPrice(),
+        defaultMaterial.laborPriceAtRuralCommune(),
+        defaultMaterial.totalMaterialCost(),
+        defaultMaterial.totalLaborCost());
       materials.add(m);
     });
     return materials;

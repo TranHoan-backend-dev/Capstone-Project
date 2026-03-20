@@ -1,4 +1,4 @@
-package com.capstone.construction.application.dto.response.material;
+package com.capstone.construction.application.dto.response.estimate;
 
 public record MaterialsOfCostEstimateResponse(
   String id,
