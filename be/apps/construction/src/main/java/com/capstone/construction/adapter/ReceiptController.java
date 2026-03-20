@@ -7,6 +7,9 @@ import com.capstone.construction.application.dto.request.receipt.CreateRequest;
 import com.capstone.construction.application.dto.request.receipt.UpdateRequest;
 import com.capstone.construction.application.usecase.ReceiptUseCase;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -28,8 +31,10 @@ public class ReceiptController {
   ReceiptUseCase receiptUseCase;
 
   @PostMapping
-  @PreAuthorize("hasAnyAuthority('FINANCE_STAFF', 'IT_STAFF')")
-  @Operation(summary = "Tạo mới biên lai", description = "Tạo mới biên lai thanh toán cho một đơn lắp đặt.")
+  @PreAuthorize("hasAnyAuthority('FINANCE_DEPARTMENT', 'IT_STAFF')")
+  @Operation(summary = "Tạo mới biên lai", description = "Tạo mới biên lai thanh toán. Yêu cầu hồ sơ đã có dự toán được duyệt đầy đủ.")
+  @ApiResponse(responseCode = "201", description = "Tạo biên lai thành công")
+  @ApiResponse(responseCode = "400", description = "Dữ liệu không hợp lệ hoặc dự toán chưa được duyệt", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   public ResponseEntity<WrapperApiResponse> createReceipt(@RequestBody @Valid CreateRequest request) {
     log.info("REST request to create receipt for form: {}/{}", request.formCode(), request.formNumber());
     var response = receiptUseCase.createReceipt(request);
@@ -38,8 +43,10 @@ public class ReceiptController {
   }
 
   @PutMapping
-  @PreAuthorize("hasAnyAuthority('FINANCE_STAFF', 'IT_STAFF')")
+  @PreAuthorize("hasAnyAuthority('FINANCE_DEPARTMENT', 'IT_STAFF')")
   @Operation(summary = "Cập nhật biên lai", description = "Cập nhật thông tin biên lai hiện có.")
+  @ApiResponse(responseCode = "200", description = "Cập nhật thành công")
+  @ApiResponse(responseCode = "404", description = "Không tìm thấy biên lai")
   public ResponseEntity<WrapperApiResponse> updateReceipt(
     @RequestBody @Valid UpdateRequest request
   ) {
@@ -49,8 +56,9 @@ public class ReceiptController {
   }
 
   @DeleteMapping("/{formCode}/{formNumber}")
-  @PreAuthorize("hasAnyAuthority('FINANCE_STAFF', 'IT_STAFF')")
+  @PreAuthorize("hasAnyAuthority('FINANCE_DEPARTMENT', 'IT_STAFF')")
   @Operation(summary = "Xóa biên lai", description = "Xóa biên lai thanh toán.")
+  @ApiResponse(responseCode = "200", description = "Xoá thành công")
   public ResponseEntity<WrapperApiResponse> deleteReceipt(
     @PathVariable String formCode,
     @PathVariable String formNumber
@@ -62,7 +70,8 @@ public class ReceiptController {
 
   @GetMapping("/{formCode}/{formNumber}")
   @Operation(summary = "Lấy chi tiết biên lai", description = "Truy xuất thông tin chi tiết một biên lai.")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'FINANCE_STAFF', 'ORDER_RECEIVING_STAFF')")
+  @ApiResponse(responseCode = "200", description = "Lấy thông tin thành công")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'FINANCE_DEPARTMENT', 'ORDER_RECEIVING_STAFF')")
   public ResponseEntity<WrapperApiResponse> getReceipt(
     @PathVariable String formCode,
     @PathVariable String formNumber

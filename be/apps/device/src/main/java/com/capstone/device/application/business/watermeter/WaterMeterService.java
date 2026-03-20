@@ -1,8 +1,8 @@
 package com.capstone.device.application.business.watermeter;
 
 import com.capstone.device.application.dto.request.WaterMeterRequest;
-import com.capstone.device.application.dto.response.OverallWaterMeterResponse;
-import com.capstone.device.application.dto.response.WaterMeterResponse;
+import com.capstone.device.application.dto.response.water.OverallWaterMeterResponse;
+import com.capstone.device.application.dto.response.water.WaterMeterResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

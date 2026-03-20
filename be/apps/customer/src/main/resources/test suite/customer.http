@@ -12,12 +12,12 @@ Accept: application/json
 grant_type = password &
 client_id = cmsn &
 client_secret = {{client_secret}} &
-username = test &
-password = 12345678 &
+username =  test &
+password = 123456 &
 scope = openid
 
 > {%
-    client.global.set("access_token", response.body.access_token);
+  client.global.set("access_token", response.body.access_token);
 %}
 
 ### TC01 - Create customer successfully
@@ -60,10 +60,10 @@ Content-Type: application/json
 }
 
 > {%
-client.test("Status is 201", function() {
-  client.assert(response.status === 201);
-});
-client.global.set("customer_id", response.body.data.customerId);
+  client.test("Status is 201", function() {
+    client.assert(response.status === 201);
+  });
+  client.global.set("customer_id", response.body.data.customerId);
 %}
 
 ### TC02 - Missing required field (name)
@@ -94,9 +94,9 @@ Content-Type: application/json
 }
 
 > {%
-client.test("Status is 400", function() {
-  client.assert(response.status === 400);
-});
+  client.test("Status is 400", function() {
+    client.assert(response.status === 400);
+  });
 %}
 
 ### TC03 - Null email
@@ -128,9 +128,9 @@ Content-Type: application/json
 }
 
 > {%
-client.test("Status is 400", function() {
-  client.assert(response.status === 400);
-});
+  client.test("Status is 400", function() {
+    client.assert(response.status === 400);
+  });
 %}
 
 ### TC04 - Invalid email format
@@ -162,9 +162,9 @@ Content-Type: application/json
 }
 
 > {%
-client.test("Status is 400", function() {
-  client.assert(response.status === 400);
-});
+  client.test("Status is 400", function() {
+    client.assert(response.status === 400);
+  });
 %}
 
 ### TC05 - Invalid phone number format
@@ -196,9 +196,9 @@ Content-Type: application/json
 }
 
 > {%
-client.test("Status is 400", function() {
-  client.assert(response.status === 400);
-});
+  client.test("Status is 400", function() {
+    client.assert(response.status === 400);
+  });
 %}
 
 ### TC06 - Missing type
@@ -230,9 +230,9 @@ Content-Type: application/json
 }
 
 > {%
-client.test("Status is 400", function() {
-  client.assert(response.status === 400);
-});
+  client.test("Status is 400", function() {
+    client.assert(response.status === 400);
+  });
 %}
 
 ### TC07 - Empty string for citizenIdentificationNumber
@@ -264,9 +264,9 @@ Content-Type: application/json
 }
 
 > {%
-client.test("Status is 400", function() {
-  client.assert(response.status === 400);
-});
+  client.test("Status is 400", function() {
+    client.assert(response.status === 400);
+  });
 %}
 
 ### TC08 - Invalid data type for numberOfHouseholds
@@ -298,9 +298,9 @@ Content-Type: application/json
 }
 
 > {%
-client.test("Status is 400", function() {
-  client.assert(response.status === 400);
-});
+  client.test("Status is 400", function() {
+    client.assert(response.status === 400);
+  });
 %}
 
 ### TC09 - Empty JSON body
@@ -311,9 +311,9 @@ Content-Type: application/json
 {}
 
 > {%
-client.test("Status is 400", function() {
-  client.assert(response.status === 400);
-});
+  client.test("Status is 400", function() {
+    client.assert(response.status === 400);
+  });
 %}
 
 ### TC10 - Malformed JSON body
@@ -327,9 +327,9 @@ Content-Type: application/json
 }
 
 > {%
-client.test("Status is 400", function() {
-  client.assert(response.status === 400);
-});
+  client.test("Status is 400", function() {
+    client.assert(response.status === 400);
+  });
 %}
 
 ### TC11 - SQL Injection attempt in formCode
@@ -361,9 +361,9 @@ Content-Type: application/json
 }
 
 > {%
-client.test("Status is 400 or 201 depending validation", function() {
-  client.assert(response.status === 400 || response.status === 201);
-});
+  client.test("Status is 400 or 201 depending validation", function() {
+    client.assert(response.status === 400 || response.status === 201);
+  });
 %}
 
 ### TC12 - Update customer successfully (200)
@@ -406,9 +406,9 @@ Content-Type: application/json
 }
 
 > {%
-client.test("Status is 200", function() {
-  client.assert(response.status === 200);
-});
+  client.test("Status is 200", function() {
+    client.assert(response.status === 200);
+  });
 %}
 
 ### TC13 - Update non-existent customer (404)
@@ -440,9 +440,9 @@ Content-Type: application/json
 }
 
 > {%
-client.test("Status is 404", function() {
-  client.assert(response.status === 404);
-});
+  client.test("Status is 404", function() {
+    client.assert(response.status === 404);
+  });
 %}
 
 ### TC14 - Get customer by current ID (200)
@@ -450,9 +450,9 @@ GET {{customersUrl}}/{{customer_id}}
 Authorization: Bearer {{access_token}}
 
 > {%
-client.test("Status is 200", function() {
-  client.assert(response.status === 200);
-});
+  client.test("Status is 200", function() {
+    client.assert(response.status === 200);
+  });
 %}
 
 ### TC15 - Get non-existent customer (404)
@@ -460,9 +460,9 @@ GET {{customersUrl}}/ID_KHONG_TON_TAI
 Authorization: Bearer {{access_token}}
 
 > {%
-client.test("Status is 404", function() {
-  client.assert(response.status === 404);
-});
+  client.test("Status is 404", function() {
+    client.assert(response.status === 404);
+  });
 %}
 
 ### TC16 - Get all customers with pagination
@@ -470,9 +470,49 @@ GET {{customersUrl}}?page=0&size=10&sort=name,asc
 Authorization: Bearer {{access_token}}
 
 > {%
-client.test("Status is 200", function() {
-  client.assert(response.status === 200);
-});
+  client.test("Status is 200", function() {
+    client.assert(response.status === 200);
+  });
+%}
+
+### TC16.1 - Get all customers with search (name)
+GET {{customersUrl}}?search=Trần Văn A
+Authorization: Bearer {{access_token}}
+
+> {%
+  client.test("Status is 200", function() {
+    client.assert(response.status === 200);
+  });
+%}
+
+### TC16.2 - Get all customers with search (phone)
+GET {{customersUrl}}?search=090123
+Authorization: Bearer {{access_token}}
+
+> {%
+  client.test("Status is 200", function() {
+    client.assert(response.status === 200);
+  });
+%}
+
+### TC16.3 - Get all customers with filter (type)
+GET {{customersUrl}}?type=FAMILY
+Authorization: Bearer {{access_token}}
+
+> {%
+  client.test("Status is 200", function() {
+    client.assert(response.status === 200);
+  });
+%}
+
+### TC16.4 - Get all customers with filter (isBigCustomer and isFree)
+GET {{customersUrl}}?isBigCustomer=false&isFree=false
+Authorization: Bearer {{access_token}}
+
+> {%
+  client.test("Status is 200", function() {
+    client.assert(response.status === 200);
+  });
 %}
 
 ### TC17 - Check whether customers are applied with water price
@@ -480,9 +520,9 @@ GET {{customersUrl}}/water-price/00000000-0000-0000-0000-B00000000001
 Authorization: Bearer {{access_token}}
 
 > {%
-client.test("Status is 200", function() {
-  client.assert(response.status === 200);
-});
+  client.test("Status is 200", function() {
+    client.assert(response.status === 200);
+  });
 %}
 
 ### TC18 - Delete current customer (200)
@@ -490,9 +530,9 @@ DELETE {{customersUrl}}/{{customer_id}}
 Authorization: Bearer {{access_token}}
 
 > {%
-client.test("Status is 200", function() {
-  client.assert(response.status === 200);
-});
+  client.test("Status is 200", function() {
+    client.assert(response.status === 200);
+  });
 %}
 
 ### TC19 - Delete non-existent customer (404)
@@ -500,9 +540,54 @@ DELETE {{customersUrl}}/ID_KHONG_TON_TAI
 Authorization: Bearer {{access_token}}
 
 > {%
-client.test("Status is 404", function() {
-  client.assert(response.status === 404);
-});
+  client.test("Status is 404", function() {
+    client.assert(response.status === 404);
+  });
+%}
+
+
+### TC20 - Get customer details by ID (200)
+GET {{customersUrl}}/4ed20252-52cb-4ef7-ba5e-d6d307aa0537
+Authorization: Bearer {{access_token}}
+
+> {%
+  client.test("Status is 200", function() {
+    client.assert(response.status === 200);
+  });
+  client.test("Response contains customer data", function() {
+    client.assert(response.body.data.customerId === "C001");
+    client.assert(response.body.data.name === "Nguyễn Văn An");
+    client.assert(response.body.data.email === "an.nv@gmail.com");
+  });
+%}
+
+### TC21 - Get non-existent customer (404)
+GET {{customersUrl}}/NON_EXISTENT_ID
+Authorization: Bearer {{access_token}}
+
+> {%
+  client.test("Status is 404", function() {
+    client.assert(response.status === 404);
+  });
+%}
+
+### TC22 - Get customer details without auth (401)
+GET {{customersUrl}}/C001
+
+> {%
+  client.test("Status is 401", function() {
+    client.assert(response.status === 401);
+  });
+%}
+
+### TC23 - Get customer details with invalid format ID (400)
+GET {{customersUrl}}/invalid-id-format
+Authorization: Bearer {{access_token}}
+
+> {%
+  client.test("Status is 400", function() {
+    client.assert(response.status === 400);
+  });
 %}
 
 ### TC20 - Update customer with invalid email format

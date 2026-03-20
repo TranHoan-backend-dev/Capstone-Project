@@ -66,11 +66,11 @@ public class CostEstimateUseCase {
 
     if (request.isFinished()) {
       var routingKey = QUEUE_NAME + COST_ESTIMATE_PREFIX + UPDATE_ACTION;
-      var employee = empSrv.getEmployeeNameById(result.createBy());
+      var employee = empSrv.getEmployeeNameById(result.generalInformation().createBy());
       var event = new UpdatedEvent(
-        result.customerName(),
-        result.installationFormId().getFormCode(),
-        result.installationFormId().getFormNumber(),
+        result.generalInformation().customerName(),
+        result.generalInformation().installationFormId().getFormCode(),
+        result.generalInformation().installationFormId().getFormNumber(),
         employee.data().toString());
       messageProducer.send(routingKey, event);
     }
@@ -84,14 +84,14 @@ public class CostEstimateUseCase {
     var result = estSrv.getEstimateById(id);
 
     var routingKey = QUEUE_NAME + COST_ESTIMATE_PREFIX + APPROVE_ACTION;
-    var employee = empSrv.getEmployeeNameById(result.createBy());
+    var employee = empSrv.getEmployeeNameById(result.generalInformation().createBy());
     var event = new ApproveEvent(
-      result.customerName(),
-      result.installationFormId().getFormCode(),
-      result.installationFormId().getFormNumber(),
+      result.generalInformation().customerName(),
+      result.generalInformation().installationFormId().getFormCode(),
+      result.generalInformation().installationFormId().getFormNumber(),
       employee.data().toString(),
       status,
-      result.createBy());
+      result.generalInformation().createBy());
     messageProducer.send(routingKey, event);
 
     return result;

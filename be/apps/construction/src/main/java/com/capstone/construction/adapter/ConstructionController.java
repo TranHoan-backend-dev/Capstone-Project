@@ -4,6 +4,7 @@ import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.common.utils.Utils;
+import com.capstone.construction.application.business.constructionrequest.ConstructionRequestService;
 import com.capstone.construction.application.usecase.InstallationFormHandlingUseCase;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "", description = "")
 public class ConstructionController {
   InstallationFormHandlingUseCase useCase;
+  ConstructionRequestService constructionRequestService;
   @NonFinal
   Logger log;
 
@@ -60,5 +62,35 @@ public class ConstructionController {
     log.info("Received request to assign construction order");
     useCase.assignInstallationFormToConstructionCaptain(request, id);
     return Utils.returnOkResponse("Giao thi công thành công", null);
+  }
+
+  /**
+   * Tạo mới đơn chờ thi công.
+   * Người thực hiện: nhân viên nhận đơn (ORDER_RECEIVING_STAFF).
+   * Đảm bảo hợp đồng và khách hàng đã được tạo thành công trước khi gọi API này.
+   */
+  @PostMapping("/pending-requests")
+  @PreAuthorize("hasAnyAuthority('ORDER_RECEIVING_STAFF', 'IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> createConstructionPendingRequest(
+    @RequestParam String contractId,
+    @RequestParam String employeeId
+  ) {
+    log.info("Received request to create pending construction request for contractId={}, employeeId={}", contractId, employeeId);
+    var pending = constructionRequestService.createPendingRequest(employeeId, contractId);
+    return Utils.returnCreatedResponse("Tạo đơn chờ thi công thành công");
+  }
+
+  /**
+   * Cập nhật đơn chờ thi công.
+   * Sau khi cập nhật, chi nhánh thi công có thể nhận thông báo từ notification service.
+   */
+  @PatchMapping("/pending-requests/{installationFormCode}")
+  @PreAuthorize("hasAnyAuthority('ORDER_RECEIVING_STAFF', 'IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> updateConstructionPendingRequest(
+    @PathVariable String installationFormCode
+  ) {
+    log.info("Received request to update pending construction request: {}", installationFormCode);
+    constructionRequestService.updatePendingRequest(installationFormCode);
+    return Utils.returnOkResponse("Cập nhật đơn chờ thi công thành công", null);
   }
 }

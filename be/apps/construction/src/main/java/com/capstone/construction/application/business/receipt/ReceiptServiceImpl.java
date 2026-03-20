@@ -6,6 +6,7 @@ import com.capstone.construction.application.dto.request.receipt.UpdateRequest;
 import com.capstone.construction.application.dto.response.receipt.ReceiptResponse;
 import com.capstone.construction.domain.model.Receipt;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
+import com.capstone.construction.infrastructure.persistence.CostEstimateRepository;
 import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
 import com.capstone.construction.infrastructure.persistence.ReceiptRepository;
 import lombok.AccessLevel;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReceiptServiceImpl implements ReceiptService {
   ReceiptRepository receiptRepo;
   InstallationFormRepository ifRepo;
+  CostEstimateRepository ceRepo;
 
   @Override
   @Transactional
@@ -35,6 +37,15 @@ public class ReceiptServiceImpl implements ReceiptService {
 
     if (receiptRepo.existsById(formId)) {
       throw new IllegalArgumentException("Receipt already exists for this form");
+    }
+
+    // Kiểm tra xem dự toán đã được tạo hay chưa
+    var costEstimate = ceRepo.findByInstallationForm(form)
+      .orElseThrow(() -> new IllegalArgumentException("Chưa tạo dự toán cho đơn lắp đặt này."));
+
+    // Kiểm tra xem dự toán đã được duyệt hoàn toàn bởi nhân viên khảo sát, trưởng phòng KH-KT và lãnh đạo hay chưa
+    if (costEstimate.getSignificance() == null || !costEstimate.getSignificance().isCostEstimateFullySigned()) {
+      throw new IllegalArgumentException("Dự toán chưa được ký duyệt đầy đủ bởi các bộ phận liên quan.");
     }
 
     var receipt = Receipt.create(builder -> builder
