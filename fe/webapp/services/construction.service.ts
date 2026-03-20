@@ -2,6 +2,7 @@ import {
   ApiResponse,
   ApproveInstallationPayload,
   NewInstallationFormPayload,
+  ReceiptRequest,
   SettlementItem,
 } from "@/types";
 import {
@@ -505,25 +506,6 @@ export const assignInstallationForm = async (
   return res.data;
 };
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
-
-// Tạo instance axios với cấu hình mặc định
-const settlementApi = (accessToken?: string) => {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-
-  if (accessToken) {
-    headers["Authorization"] = `Bearer ${accessToken}`;
-  }
-
-  return axios.create({
-    baseURL: API_BASE_URL,
-    headers,
-  });
-};
-
 export const getAllSettlements = (
   accessToken: string,
   page: number,
@@ -540,22 +522,6 @@ export const getAllSettlements = (
       Authorization: `Bearer ${accessToken}`,
     },
   });
-// // Lấy tất cả settlements với phân trang
-// export const getAllSettlements = async (
-//   accessToken: string,
-//   page: number = 0,
-//   size: number = 10,
-//   sort: string = 'registerDate,desc'
-// ): Promise<ApiResponse<PageResponse<SettlementItem>>> => {
-//   try {
-//     const response = await settlementApi(accessToken).get('/settlements', {
-//       params: { page, size, sort },
-//     });
-//     return response.data;
-//   } catch (error) {
-//     throw error;
-//   }
-// };
 
 export const filterSettlements = async (
   accessToken: string,
@@ -576,7 +542,7 @@ export const filterSettlements = async (
       Authorization: `Bearer ${accessToken}`,
     },
   });
-// Lấy settlement theo ID
+
 export const getSettlementById = async (
   accessToken: string,
   settlementId: string,
@@ -587,7 +553,6 @@ export const getSettlementById = async (
     },
   });
 
-// Tạo mới settlement
 export const createSettlement = (
   accessToken: string,
   request: SettlementRequest,
@@ -618,6 +583,62 @@ export const updateSettlement = (
 export const deleteSettlement = (accessToken: string, settlementId: string) => {
   return axios.delete(
     `${API_GATEWAY_URL}/construction/settlements/${settlementId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+};
+
+export const getAllReceipts = (
+  accessToken: string,
+  page: number,
+  size: number,
+  sort: string,
+  keyword?: string,
+  from?: string,
+  to?: string,
+  isPaid?: string,
+) =>
+  axios.get(`${API_GATEWAY_URL}/construction/receipts`, {
+    params: {
+      page,
+      size,
+      sort,
+      keyword,
+      from,
+      to,
+      isPaid,
+    },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+export const createReceipt = (accessToken: string, request: ReceiptRequest) => {
+  return axios.post(`${API_GATEWAY_URL}/construction/receipts`, request, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
+export const updateReceipt = (accessToken: string, request: ReceiptRequest) => {
+  return axios.put(`${API_GATEWAY_URL}/construction/receipts`, request, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
+export const deleteReceipt = (
+  accessToken: string,
+  formCode: string,
+  formNumber: string,
+) => {
+  return axios.delete(
+    `${API_GATEWAY_URL}/construction/receipts/${formCode}/${formNumber}`,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,

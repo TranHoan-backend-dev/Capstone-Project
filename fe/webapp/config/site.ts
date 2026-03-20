@@ -219,7 +219,11 @@ export const siteConfig = {
           key: "meter-verification",
           label: "Kiểm tra chỉ số bằng hình ảnh",
           href: "/meter-verification",
-        },
+        },{
+          key: "installation-fee-collection",
+          label: "Thu phí lắp đặt",
+          href: "/installation-fee-collection",
+        }
       ],
     },
   ],

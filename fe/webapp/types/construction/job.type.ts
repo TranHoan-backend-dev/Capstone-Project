@@ -11,7 +11,7 @@ export type JobFilter = {
 };
 
 export interface FilterSectionJobProps {
-  keyword: JobFilter;
+  filter: JobFilter;
   onSearch: (value: JobFilter) => void;
   onAddNew: () => void;
 }
@@ -26,7 +26,7 @@ export interface JobFormProps {
 }
 
 export interface JobTableProps {
-  keyword: JobFilter;
+  filter: JobFilter;
   reloadKey: number;
   onEdit: (item: JobItem) => void;
   onDeleted: () => void;
