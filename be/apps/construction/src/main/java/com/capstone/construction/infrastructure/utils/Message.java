@@ -38,9 +38,9 @@ public final class Message {
   public static final String PT_35 = "Nhân viên này không tồn tại";
   public static final String PT_36 = "Nhân viên phòng Kế hoạch - Kỹ thuật lập phiếu lắp đặt không được để trống";
   public static final String PT_37 = "Id của đồng hồ tổng không được để trống";
-  public static final String PT_38 = "";
+  public static final String PT_38 = "Không tìm thấy đơn lắp đặt";
   public static final String PT_39 = "Ngày đăng ký không được để trống";
-  public static final String PT_40 = "";
+  public static final String PT_40 = "Đơn lắp đặt không được để trống";
   public static final String PT_41 = "Phiếu lắp đặt không được để trống";
   public static final String PT_42 = "Số biên lai không được để trống";
   public static final String PT_43 = "Ngày thanh toán không được để trống";

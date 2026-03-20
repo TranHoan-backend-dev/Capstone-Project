@@ -1,13 +1,17 @@
 package com.capstone.construction.application.business.settlement;
 
 import com.capstone.common.annotation.AppLog;
+import com.capstone.common.exception.NotExistingException;
 import com.capstone.construction.application.dto.request.settlement.SettlementFilterRequest;
 import com.capstone.construction.application.dto.request.settlement.SettlementRequest;
 import com.capstone.construction.application.dto.request.settlement.SignificanceRequest;
 import com.capstone.construction.application.dto.response.settlement.SettlementResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.domain.model.Settlement;
+import com.capstone.construction.domain.model.utils.InstallationFormId;
+import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
 import com.capstone.construction.infrastructure.persistence.SettlementRepository;
+import com.capstone.construction.infrastructure.utils.Message;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -25,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SettlementServiceImpl implements SettlementService {
   SettlementRepository settlementRepository;
+  InstallationFormRepository formRepository;
   @NonFinal
   Logger log;
 
@@ -32,12 +37,15 @@ public class SettlementServiceImpl implements SettlementService {
   @Transactional(rollbackFor = Exception.class)
   public SettlementResponse createSettlement(@NonNull SettlementRequest request) {
     log.info("Creating new settlement for address: {}", request.address());
+    var form = formRepository.findById(new InstallationFormId(request.formCode(), request.formNumber()))
+      .orElseThrow(() -> new NotExistingException(Message.PT_38));
 
     var settlement = Settlement.create(builder -> builder
       .jobContent(request.jobContent())
       .address(request.address())
       .connectionFee(request.connectionFee())
       .note(request.note())
+      .installationForm(form)
       .registrationAt(request.registrationAt()));
 
     var saved = settlementRepository.save(settlement);

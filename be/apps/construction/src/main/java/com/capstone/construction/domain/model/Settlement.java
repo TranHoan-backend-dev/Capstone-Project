@@ -53,6 +53,9 @@ public class Settlement implements Serializable {
   @Column(columnDefinition = "jsonb")
   SettlementSignificance significance;
 
+  @OneToOne(fetch = FetchType.EAGER)
+  InstallationForm installationForm;
+
   @PrePersist
   void onCreate() {
     this.createdAt = LocalDateTime.now();
@@ -68,6 +71,11 @@ public class Settlement implements Serializable {
   public void setRegistrationAt(@NonNull LocalDate value) {
     Objects.requireNonNull(value, Message.PT_04);
     this.registrationAt = value;
+  }
+
+  public void setInstallationForm(@NonNull InstallationForm value) {
+    Objects.requireNonNull(value, Message.PT_40);
+    this.installationForm = value;
   }
 
   public void setJobContent(String jobContent) {
@@ -125,6 +133,11 @@ public class Settlement implements Serializable {
 
     public SettlementBuilder connectionFee(BigDecimal connectionFee) {
       instance.setConnectionFee(connectionFee);
+      return this;
+    }
+
+    public SettlementBuilder installationForm(InstallationForm value) {
+      instance.setInstallationForm(value);
       return this;
     }
 

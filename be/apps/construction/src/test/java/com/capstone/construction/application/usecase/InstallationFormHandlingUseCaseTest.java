@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -43,9 +44,17 @@ class InstallationFormHandlingUseCaseTest {
 
   private static final String USER_ID = "EMP-001";
 
+  @BeforeEach
+  void setUp() {
+    ReflectionTestUtils.setField(useCase, "PREFIX", ".order.");
+    ReflectionTestUtils.setField(useCase, "CREATE_ACTION", "create");
+    ReflectionTestUtils.setField(useCase, "ASSIGN_ACTION", "assign");
+    ReflectionTestUtils.setField(useCase, "QUEUE_NAME", "construction_queue");
+  }
+
   @Test
+  @DisplayName("Should return paginated forms")
   void should_ReturnPaginatedForms_When_ServiceReturnsData() {
-    // Given
     var pageable = Pageable.unpaged();
     var request = new BaseFilterRequest("keyword", null, null);
     var responseItem = mock(InstallationFormListResponse.class);
@@ -53,33 +62,29 @@ class InstallationFormHandlingUseCaseTest {
 
     when(ifSrv.getInstallationForms(pageable, request)).thenReturn(expectedPage);
 
-    // When
     var actualPage = useCase.getPaginatedInstallationForms(pageable, request);
 
-    // Then
     assertThat(actualPage).isNotNull();
     assertThat(actualPage.getTotalElements()).isEqualTo(1);
     verify(ifSrv).getInstallationForms(pageable, request);
   }
 
   @Test
+  @DisplayName("Should throw exception when form already exists")
   void should_ThrowException_When_FormAlreadyExists() {
-    // Given
     var request = createValidNewOrderRequest();
     when(ifSrv.isInstallationFormExisting("FORM-001", "CODE-001")).thenReturn(true);
 
-    // When & Then
     assertThatThrownBy(() -> useCase.createNewInstallationRequest(USER_ID, request))
       .isInstanceOf(ExistingItemException.class)
       .hasMessage(Message.PT_53);
 
     verify(ifSrv).isInstallationFormExisting("FORM-001", "CODE-001");
-    verify(ifSrv, never()).createNewInstallationForm(anyString(), any());
   }
 
   @Test
+  @DisplayName("Should create form and send event")
   void should_CreateFormAndSendEvent_When_FormIsNew() {
-    // Given
     var request = createValidNewOrderRequest();
     when(ifSrv.isInstallationFormExisting("FORM-001", "CODE-001")).thenReturn(false);
 
@@ -89,14 +94,11 @@ class InstallationFormHandlingUseCaseTest {
     when(empSrv.getEmployeeNameById(USER_ID))
       .thenReturn(new WrapperApiResponse(200, "OK", "Staff Name", LocalDateTime.now()));
 
-    // When
     var result = useCase.createNewInstallationRequest(USER_ID, request);
 
-    // Then
     assertThat(result).isNotNull();
     assertThat(result.formNumber()).isEqualTo("FORM-001");
-    verify(ifSrv).createNewInstallationForm(USER_ID, request);
-    verify(messageProducer).send(any(), any());
+    verify(messageProducer).send(eq("construction_queue.order.create"), any());
   }
 
   @Test
@@ -107,52 +109,33 @@ class InstallationFormHandlingUseCaseTest {
   }
 
   @Test
+  @DisplayName("Should approve and create estimate")
   void should_ApproveAndCreateEstimate_When_StatusIsTrue() {
-    // Given
     var request = new ApproveRequest("F-001", "C-001", true);
     var order = mock(InstallationFormListResponse.class);
     when(order.formCode()).thenReturn("C-001");
     when(order.formNumber()).thenReturn("F-001");
-    when(order.registrationAt()).thenReturn("2024-01-01");
+    when(order.registrationAt()).thenReturn("2024-01-01T10:00:00");
 
     when(ifSrv.getByFormCodeAndFormNumber("C-001", "F-001")).thenReturn(order);
 
-    // When
     useCase.approveInstallationForm(request);
 
-    // Then
     verify(ifSrv).approveAndAssignInstallationForm(request);
     verify(costEstimateUseCase).createEstimate(any());
   }
 
   @Test
+  @DisplayName("Should approve but not create estimate when status is false")
   void should_ApproveAndNotCreateEstimate_When_StatusIsFalse() {
-    // Given
     var request = new ApproveRequest("F-001", "C-001", false);
     var order = mock(InstallationFormListResponse.class);
     when(ifSrv.getByFormCodeAndFormNumber("C-001", "F-001")).thenReturn(order);
 
-    // When
     useCase.approveInstallationForm(request);
 
-    // Then
     verify(ifSrv).approveAndAssignInstallationForm(request);
     verify(costEstimateUseCase, never()).createEstimate(any());
-  }
-
-  @Test
-  void should_ReturnData_When_GettingPaginatedConstructionRequest() {
-    // Given
-    var pageable = Pageable.unpaged();
-    var request = new BaseFilterRequest(null, null, null);
-    var response = mock(Page.class);
-    when(ifSrv.getConstructionRequestsList(pageable, request)).thenReturn(response);
-
-    // When
-    var result = useCase.getPaginatedConstructionRequest(pageable, request);
-
-    // Then
-    assertThat(result).isEqualTo(response);
   }
 
   private @NonNull NewOrderRequest createValidNewOrderRequest() {

@@ -8,6 +8,8 @@ Content-Type: application/json
 Authorization: Bearer {{it_staff_token}}
 
 {
+  "formCode": "CODE-001",
+  "formNumber": "FORM-001",
   "jobContent": "Lắp đặt hệ thống cấp nước D110 cho khu dân cư A",
   "address": "123 Đường ABC, Quận 1, TP.HCM",
   "connectionFee": 500000.00,
@@ -27,6 +29,8 @@ Content-Type: application/json
 Authorization: Bearer {{it_staff_token}}
 
 {
+  "formCode": "",
+  "formNumber": "",
   "jobContent": "",
   "address": "",
   "connectionFee": -100,
@@ -46,6 +50,8 @@ Content-Type: application/json
 Authorization: Bearer {{it_staff_token}}
 
 {
+  "formCode": "CODE-001",
+  "formNumber": "FORM-001",
   "jobContent": "Cập nhật: Lắp đặt hệ thống cấp nước D150",
   "address": "124 Đường ABC, Quận 1, TP.HCM",
   "connectionFee": 750000.00,

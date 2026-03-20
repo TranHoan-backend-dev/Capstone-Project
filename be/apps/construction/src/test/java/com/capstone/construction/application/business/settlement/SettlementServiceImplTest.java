@@ -40,7 +40,7 @@ class SettlementServiceImplTest {
   @Test
   @DisplayName("Create settlement successfully")
   void createSettlement_ShouldSaveAndReturnResponse() {
-    var request = new SettlementRequest("Job", "Addr", BigDecimal.TEN, "Note", LocalDate.now());
+    var request = new SettlementRequest("CODE-001", "FORM-001", "Job", "Addr", BigDecimal.TEN, "Note", LocalDate.now());
     var settlement = Settlement.create(b -> b
         .jobContent(request.jobContent())
         .address(request.address())
@@ -60,7 +60,7 @@ class SettlementServiceImplTest {
   @DisplayName("Update settlement successfully")
   void updateSettlement_ShouldUpdateAndReturnResponse() {
     var id = "id123";
-    var request = new SettlementRequest("New Job", "New Addr", BigDecimal.ONE, "New Note", LocalDate.now());
+    var request = new SettlementRequest("CODE-001", "FORM-001", "New Job", "New Addr", BigDecimal.ONE, "New Note", LocalDate.now());
     var existing = Settlement.create(b -> b.jobContent("Old").address("Old").connectionFee(BigDecimal.ZERO).note("Old").registrationAt(LocalDate.now()));
 
     when(settlementRepository.findById(id)).thenReturn(Optional.of(existing));
