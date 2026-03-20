@@ -7,16 +7,13 @@ import {
   deleteSettlement,
 } from "@/services/construction.service";
 
-interface RouteParams {
-  params: {
-    settlementId: string;
-  };
-}
-
-export async function GET(req: NextRequest, { params }: RouteParams) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ settlementId: string }> },
+) {
   try {
     const accessToken = getAccessToken(req);
-    const { settlementId } = params;
+    const { settlementId } = await params;
 
     if (!accessToken) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -44,10 +41,13 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
   }
 }
 
-export async function PUT(req: NextRequest, { params }: RouteParams) {
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: Promise<{ settlementId: string }> },
+) {
   try {
     const accessToken = getAccessToken(req);
-    const { settlementId } = params;
+    const { settlementId } = await params;
 
     if (!accessToken) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -75,10 +75,13 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: RouteParams) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ settlementId: string }> },
+) {
   try {
     const accessToken = getAccessToken(req);
-    const { settlementId } = params;
+    const { settlementId } = await params;
 
     if (!accessToken) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
