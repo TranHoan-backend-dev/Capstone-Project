@@ -127,10 +127,7 @@ export const getAllMaterialsGroup = (
     },
   });
 
-export const createMaterialGroup = (
-  accessToken: string,
-  name: string,
-) => {
+export const createMaterialGroup = (accessToken: string, name: string) => {
   return axios.post(
     `${API_GATEWAY_URL}/d/materials/group`,
     { name },
@@ -166,22 +163,21 @@ export const deleteMaterialGroup = (accessToken: string, id: string) => {
   });
 };
 
-
 export const getAllOverallWaterMeters = (
-    accessToken: string,
-    page: number,
-    size: number,
-    sort: string,
-    keyword?: string | null,
+  accessToken: string,
+  page: number,
+  size: number,
+  sort: string,
+  keyword?: string | null,
 ) =>
-    axios.get(`${API_GATEWAY_URL}/d/water-meters/overall`, {
-        params: {
-            page,
-            size,
-            sort,
-            keyword,
-        },
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-        },
-    });
+  axios.get(`${API_GATEWAY_URL}/d/water-meters/overall`, {
+    params: {
+      page,
+      size,
+      sort,
+      keyword,
+    },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
