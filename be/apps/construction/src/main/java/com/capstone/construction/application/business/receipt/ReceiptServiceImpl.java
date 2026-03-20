@@ -2,7 +2,9 @@ package com.capstone.construction.application.business.receipt;
 
 import com.capstone.common.annotation.AppLog;
 import com.capstone.construction.application.dto.request.receipt.CreateRequest;
+import com.capstone.construction.application.dto.request.receipt.ReceiptFilterRequest;
 import com.capstone.construction.application.dto.request.receipt.UpdateRequest;
+import com.capstone.construction.application.dto.response.receipt.ReceiptListResponse;
 import com.capstone.construction.application.dto.response.receipt.ReceiptResponse;
 import com.capstone.construction.domain.model.Receipt;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
@@ -14,8 +16,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @AppLog
@@ -102,6 +109,39 @@ public class ReceiptServiceImpl implements ReceiptService {
       throw new IllegalArgumentException("Receipt not found for form: " + formNumber);
     }
     receiptRepo.deleteById(formId);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Page<ReceiptListResponse> getReceipts(ReceiptFilterRequest filter, Pageable pageable) {
+    log.info("Fetching receipts with filter: {}", filter);
+
+    var spec = ReceiptRepository.search(
+      filter.keyword(),
+      filter.from() != null ? LocalDate.parse(filter.from(), DateTimeFormatter.ofPattern("dd-MM-yyyy")) : null,
+      filter.to() != null ? LocalDate.parse(filter.to(), DateTimeFormatter.ofPattern("dd-MM-yyyy")) : null,
+      filter.isPaid(),
+      filter.formCode(),
+      filter.formNumber(),
+      filter.receiptNumber()
+    );
+
+    return receiptRepo.findAll(spec, pageable)
+      .map(this::mapToListResponse);
+  }
+
+  private ReceiptListResponse mapToListResponse(Receipt receipt) {
+    return new ReceiptListResponse(
+      receipt.getInstallationFormId().getFormCode(),
+      receipt.getInstallationFormId().getFormNumber(),
+      receipt.getReceiptNumber(),
+      receipt.getCustomerName(),
+      receipt.getAddress(),
+      receipt.getPaymentDate(),
+      receipt.getIsPaid(),
+      receipt.getCreatedAt(),
+      receipt.getUpdatedAt()
+    );
   }
 
   @Override
