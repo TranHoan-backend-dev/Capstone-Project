@@ -28,6 +28,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.mock.web.MockMultipartFile;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -74,23 +75,26 @@ class CostEstimateServiceImplTest {
     );
 
     updateRequest = new UpdateRequest(
-      "Updated Name",
-      "Updated Address",
-      "Updated Note",
-      1200,
-      600,
-      2,
-      2200,
-      15,
-      6,
-      10,
-      6,
-      10,
-      3,
-      120,
-      null,
-      "SN123-UPDATED",
-      "METER-123-UPDATED",
+      new UpdateRequest.GeneralInformation(
+        "Updated Name",
+        "Updated Address",
+        "Updated Note",
+        1200,
+        600,
+        2,
+        2200,
+        15,
+        6,
+        10,
+        6,
+        10,
+        3,
+        120,
+        null,
+        "SN123-UPDATED",
+        "METER-123-UPDATED"
+      ),
+      Collections.emptyList(),
       true
     );
 
@@ -116,13 +120,15 @@ class CostEstimateServiceImplTest {
     when(ifRepo.findById(new InstallationFormId(formCode, formNumber))).thenReturn(Optional.of(installationForm));
     when(eRepo.existsByInstallationForm(installationForm)).thenReturn(false);
     when(eRepo.save(any(CostEstimate.class))).thenReturn(costEstimate);
+    when(owmSrv.updateMaterialsOfCostEstimate(any(), any())).thenReturn(new WrapperApiResponse(200, "Success", null, LocalDateTime.now()));
+    when(owmSrv.getDefaultMaterials()).thenReturn(Collections.emptyList());
 
     // Act
     var response = costEstimateService.createEstimate(createRequest);
 
     // Assert
     assertNotNull(response);
-    assertEquals(createRequest.customerName(), response.customerName());
+    assertEquals(createRequest.customerName(), response.generalInformation().customerName());
     verify(eRepo).save(any(CostEstimate.class));
     verify(ifRepo).save(any(InstallationForm.class));
     assertEquals(ProcessingStatus.PROCESSING, installationForm.getStatus().getEstimate());
@@ -142,10 +148,12 @@ class CostEstimateServiceImplTest {
     // Arrange
     when(eRepo.findById(estimateId)).thenReturn(Optional.of(costEstimate));
     when(owmSrv.isOverallMeterExisting("METER-123-UPDATED"))
-      .thenReturn(new WrapperApiResponse(200, "Success", "false", LocalDateTime.now()));
+      .thenReturn(new WrapperApiResponse(200, "Success", "true", LocalDateTime.now()));
     when(owmSrv.isMeterExisting("SN123-UPDATED"))
-      .thenReturn(new WrapperApiResponse(200, "Success", "false", LocalDateTime.now()));
+      .thenReturn(new WrapperApiResponse(200, "Success", "true", LocalDateTime.now()));
     when(eRepo.save(any(CostEstimate.class))).thenReturn(costEstimate);
+    when(owmSrv.updateMaterialsOfCostEstimate(any(), any())).thenReturn(new WrapperApiResponse(200, "Success", null, LocalDateTime.now()));
+    when(owmSrv.getMaterialsOfCostEstimate(any())).thenReturn(Collections.emptyList());
 
     // Act
     var response = costEstimateService.updateEstimate(estimateId, updateRequest);
@@ -160,16 +168,22 @@ class CostEstimateServiceImplTest {
     // Arrange
     var image = new MockMultipartFile("designImage", "test.jpg", "image/jpeg", "test content".getBytes());
     var requestWithImage = new UpdateRequest(
-      "Name", "Addr", "Note", 100, 100, 1, 100, 1, 1, 1, 1, 1, 1, 100, image, "SN", "METER", true
+      new UpdateRequest.GeneralInformation(
+        "Name", "Addr", "Note", 100, 100, 1, 100, 1, 1, 1, 1, 1, 1, 100, image, "SN", "METER"
+      ),
+      Collections.emptyList(),
+      true
     );
 
     when(eRepo.findById(estimateId)).thenReturn(Optional.of(costEstimate));
     when(owmSrv.isOverallMeterExisting("METER"))
-      .thenReturn(new WrapperApiResponse(200, "Success", "false", LocalDateTime.now()));
+      .thenReturn(new WrapperApiResponse(200, "Success", "true", LocalDateTime.now()));
     when(owmSrv.isMeterExisting("SN"))
-      .thenReturn(new WrapperApiResponse(200, "Success", "false", LocalDateTime.now()));
+      .thenReturn(new WrapperApiResponse(200, "Success", "true", LocalDateTime.now()));
     when(gcsService.upload(image)).thenReturn("http://new-image.url");
     when(eRepo.save(any(CostEstimate.class))).thenReturn(costEstimate);
+    when(owmSrv.updateMaterialsOfCostEstimate(any(), any())).thenReturn(new WrapperApiResponse(200, "Success", null, LocalDateTime.now()));
+    when(owmSrv.getMaterialsOfCostEstimate(any())).thenReturn(Collections.emptyList());
 
     // Act
     costEstimateService.updateEstimate(estimateId, requestWithImage);
@@ -192,13 +206,14 @@ class CostEstimateServiceImplTest {
   void should_GetEstimateById_When_Found() {
     // Arrange
     when(eRepo.findById(estimateId)).thenReturn(Optional.of(costEstimate));
+    when(owmSrv.getMaterialsOfCostEstimate(estimateId)).thenReturn(Collections.emptyList());
 
     // Act
     var response = costEstimateService.getEstimateById(estimateId);
 
     // Assert
     assertNotNull(response);
-    assertEquals(costEstimate.getCustomerName(), response.customerName());
+    assertEquals(costEstimate.getCustomerName(), response.generalInformation().customerName());
   }
 
   @Test
@@ -218,6 +233,7 @@ class CostEstimateServiceImplTest {
     Page<CostEstimate> page = new PageImpl<>(List.of(costEstimate));
 
     when(eRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(page);
+    when(owmSrv.getMaterialsOfCostEstimate(any())).thenReturn(Collections.emptyList());
 
     // Act
     var response = costEstimateService.getAllEstimates(pageable, filter);
@@ -234,6 +250,7 @@ class CostEstimateServiceImplTest {
     Page<CostEstimate> page = new PageImpl<>(List.of(costEstimate));
 
     when(eRepo.findAll(pageable)).thenReturn(page);
+    when(owmSrv.getMaterialsOfCostEstimate(any())).thenReturn(Collections.emptyList());
 
     // Act
     var response = costEstimateService.getAllEstimates(pageable, null);

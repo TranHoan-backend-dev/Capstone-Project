@@ -51,8 +51,12 @@ class CostEstimateControllerTest {
     ReflectionTestUtils.setField(estimateController, "log", log);
 
     updateRequest = new UpdateRequest(
-      "Customer", "Address", "Note", 1000, 100, 1, 1000, 1, 1, 1, 1, 1, 1, 100, null, "SN", "METER"
-      , false);
+      new UpdateRequest.GeneralInformation(
+        "Customer", "Address", "Note", 1000, 100, 1, 1000, 1, 1, 1, 1, 1, 1, 100, null, "SN", "METER"
+      ),
+      Collections.emptyList(),
+      false
+    );
 
     mockResponse = new CostEstimateResponse(
       new CostEstimateResponse.GeneralInformation(
