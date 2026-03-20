@@ -114,6 +114,9 @@ export const UnitTable = ({
       });
 
       setDeleteId(null);
+      if (data.length === 1 && page > 1) {
+        setPage(page - 1);
+      }
       onDeleted();
     } catch (e: any) {
       CallToast({
