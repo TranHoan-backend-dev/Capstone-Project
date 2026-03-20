@@ -89,7 +89,7 @@ public class AuthBridgeModule extends ReactContextBaseJavaModule {
                 map.putString("email", profile.getEmail());
                 promise.resolve(map);
             } catch (Exception e) {
-                promise.reject("GET_ME_ERROR", e.message, e);
+                promise.reject("GET_ME_ERROR", e.getMessage(), e);
             }
         });
     }

@@ -38,6 +38,11 @@ public class MeterReading {
         this.aiResult = aiResult;
     }
 
+    // Constructor for saving reading
+    public MeterReading(String id, String serialNumber, double readingValue, String imagePath) {
+        this(id, serialNumber, readingValue, imagePath, Status.PENDING, null);
+    }
+
     // Convenience constructor for new readings
     public MeterReading(String imagePath, Status status) {
         this("", "", 0.0, imagePath, status, null);
