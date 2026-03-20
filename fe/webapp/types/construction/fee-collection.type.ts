@@ -30,7 +30,7 @@ export type FeeCollectionFilter = {
 };
 
 export interface FilterSectionFeeCollectionProps {
-  keyword: FeeCollectionFilter;
+  filter: FeeCollectionFilter;
   onSearch: (value: FeeCollectionFilter) => void;
   onAddNew: () => void;
 }

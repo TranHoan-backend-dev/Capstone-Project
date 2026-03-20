@@ -8,14 +8,14 @@ import CustomInput from "@/components/ui/custom/CustomInput";
 import { AddNewIcon } from "@/config/chip-and-icon";
 import FilterButton from "@/components/ui/FilterButton";
 import { FilterActionButton } from "@/components/ui/FilterActionButton";
-import { FilterSectionJobProps } from "@/types";
+import { FilterSectionFeeCollectionProps, FilterSectionJobProps } from "@/types";
 import { useIsITStaff } from "@/hooks/useHasRole";
 
 export const FilterSection = ({
   filter,
   onSearch,
   onAddNew,
-}: FilterSectionJobProps) => {
+}: FilterSectionFeeCollectionProps) => {
   const [name, setName] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
