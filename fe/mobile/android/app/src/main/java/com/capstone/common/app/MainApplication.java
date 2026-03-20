@@ -4,6 +4,7 @@ import android.app.Application;
 import com.capstone.bridge.*;
 import com.capstone.domain.repository.*;
 import com.capstone.infrastructure.security.PermissionManager;
+import com.capstone.BuildConfig;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactHost;
@@ -36,12 +37,12 @@ public class MainApplication extends Application implements ReactApplication {
         }
 
         @Override
-        protected boolean getUseDeveloperSupport() {
+        public boolean getUseDeveloperSupport() {
           return BuildConfig.DEBUG;
         }
 
         @Override
-        protected Boolean isHermesEnabled() {
+        protected boolean isHermesEnabled() {
           return BuildConfig.IS_HERMES_ENABLED;
         }
       };
@@ -56,7 +57,11 @@ public class MainApplication extends Application implements ReactApplication {
     @Override
     public ReactHost getReactHost() {
         if (reactHost == null) {
-            reactHost = DefaultReactHost.getDefaultReactHost(this.getApplicationContext(), mReactNativeHost);
+            reactHost = DefaultReactHost.getDefaultReactHost(
+                this.getApplicationContext(),
+                mReactNativeHost,
+                null
+            );
         }
         return reactHost;
     }

@@ -53,4 +53,6 @@ public interface CustomerService {
   Page<CustomerResponse> getAllCustomers(Pageable pageable, CustomerFilterRequest filter);
 
   boolean areCustomersAppliedThisPrice(String priceId);
+
+  boolean isExistingCustomer(String id);
 }

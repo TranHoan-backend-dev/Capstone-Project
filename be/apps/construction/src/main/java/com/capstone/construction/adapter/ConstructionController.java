@@ -5,8 +5,9 @@ import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.common.utils.Utils;
 import com.capstone.construction.application.business.constructionrequest.ConstructionRequestService;
-import com.capstone.construction.application.usecase.InstallationFormHandlingUseCase;
-import com.capstone.construction.domain.model.utils.InstallationFormId;
+import com.capstone.construction.application.dto.request.construction.AssignRequest;
+import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
+import com.capstone.construction.application.usecase.ConstructionRequestUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -28,9 +29,9 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/construction")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@Tag(name = "", description = "")
+@Tag(name = "Construction", description = "Quản lý đơn chờ thi công")
 public class ConstructionController {
-  InstallationFormHandlingUseCase useCase;
+  ConstructionRequestUseCase useCase;
   ConstructionRequestService constructionRequestService;
   @NonFinal
   Logger log;
@@ -39,58 +40,54 @@ public class ConstructionController {
     API này cho phép nhân viên tiếp nhận hồ sơ lấy danh sách các đơn yêu cầu lắp đặt nước đã được duyệt và đang ở trạng thái chờ thi công. <br/>
     Hỗ trợ phân trang và lọc theo từ khóa hoặc khoảng thời gian.
     """, responses = {
-    @ApiResponse(responseCode = "200", description = "Lấy danh sách thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "200", description = "Lấy danh sách thành công", content = @Content(schema = @Schema(implementation = InstallationFormListResponse.class))),
     @ApiResponse(responseCode = "403", description = "Không có quyền thực hiện hành động này", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "400", description = "Định dạng ngày không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @GetMapping("/construction")
-  @PreAuthorize("hasAnyAuthority('ORDER_RECEIVING_STAFF', 'IT_STAFF')")
+  @PreAuthorize("hasAnyAuthority('ORDER_RECEIVING_STAFF', 'IT_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF')")
   public ResponseEntity<WrapperApiResponse> getConstructionOrdersList(
     @Parameter(description = "Thông tin phân trang (page, size, sort)") Pageable pageable,
-    @Parameter(description = "Thông tin lọc (từ khóa, khoảng thời gian)") BaseFilterRequest request) {
+    @Parameter(description = "Thông tin lọc (từ khóa, khoảng thời gian)") BaseFilterRequest request
+  ) {
     log.info("Received request to fetch construction orders list");
     var response = useCase.getPaginatedConstructionRequest(pageable, request);
     return Utils.returnOkResponse("Lấy danh sách đơn chờ thi công thành công", response);
   }
 
-  // TODO: test api, unit test, swagger doc
+  @Operation(summary = "Giao thi công cho đội trưởng", description = """
+    API này cho phép nhân viên tiếp nhận hồ sơ gán đơn chờ lắp đặt cho một đội trưởng đội thi công. <br/>
+    Đồng thời tạo đơn chờ thi công mới và gửi thông báo qua RabbitMQ cho trưởng phòng chi nhánh Xây lắp.
+    """, responses = {
+    @ApiResponse(responseCode = "200", description = "Giao thi công thành công"),
+    @ApiResponse(responseCode = "400", description = "Dữ liệu không hợp lệ hoặc sai vai trò nhân viên", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "403", description = "Không có quyền thực hiện hành động này", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+  })
   @PatchMapping("/{id}")
+  @PreAuthorize("hasAnyAuthority('ORDER_RECEIVING_STAFF', 'IT_STAFF')")
   public ResponseEntity<?> assignConstructionOrder(
-    @PathVariable String id, // nv se duoc giao cong trinh
-    @RequestBody InstallationFormId request
+    @Parameter(description = "ID của đội trưởng được giao việc") @PathVariable String id,
+    @RequestBody AssignRequest request
   ) {
     log.info("Received request to assign construction order");
-    useCase.assignInstallationFormToConstructionCaptain(request, id);
+    useCase.assignToConstructionCaptain(request, id);
     return Utils.returnOkResponse("Giao thi công thành công", null);
   }
 
-  /**
-   * Tạo mới đơn chờ thi công.
-   * Người thực hiện: nhân viên nhận đơn (ORDER_RECEIVING_STAFF).
-   * Đảm bảo hợp đồng và khách hàng đã được tạo thành công trước khi gọi API này.
-   */
-  @PostMapping("/pending-requests")
-  @PreAuthorize("hasAnyAuthority('ORDER_RECEIVING_STAFF', 'IT_STAFF')")
-  public ResponseEntity<WrapperApiResponse> createConstructionPendingRequest(
-    @RequestParam String contractId,
-    @RequestParam String employeeId
-  ) {
-    log.info("Received request to create pending construction request for contractId={}, employeeId={}", contractId, employeeId);
-    var pending = constructionRequestService.createPendingRequest(employeeId, contractId);
-    return Utils.returnCreatedResponse("Tạo đơn chờ thi công thành công");
-  }
-
-  /**
-   * Cập nhật đơn chờ thi công.
-   * Sau khi cập nhật, chi nhánh thi công có thể nhận thông báo từ notification service.
-   */
-  @PatchMapping("/pending-requests/{installationFormCode}")
+  @Operation(summary = "Cập nhật đội trưởng đội thi công trong đơn chờ", description = """
+    API này cho phép cập nhật nhân viên trực tiếp thực hiện thi công.
+    """, responses = {
+    @ApiResponse(responseCode = "200", description = "Cập nhật thành công"),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy đơn chờ thi công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+  })
+  @PatchMapping("/pending-requests/{id}/{empId}")
   @PreAuthorize("hasAnyAuthority('ORDER_RECEIVING_STAFF', 'IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> updateConstructionPendingRequest(
-    @PathVariable String installationFormCode
+    @Parameter(description = "ID của đơn chờ thi công") @PathVariable String id,
+    @Parameter(description = "ID của đội trưởng đội thi công") @PathVariable String empId
   ) {
-    log.info("Received request to update pending construction request: {}", installationFormCode);
-    constructionRequestService.updatePendingRequest(installationFormCode);
+    log.info("Received request to update pending construction request: {}", id);
+    constructionRequestService.updatePendingRequest(id, empId);
     return Utils.returnOkResponse("Cập nhật đơn chờ thi công thành công", null);
   }
 }
