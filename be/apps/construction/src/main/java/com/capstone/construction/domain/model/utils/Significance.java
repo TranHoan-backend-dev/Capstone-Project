@@ -4,9 +4,11 @@ import lombok.AccessLevel;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+import java.io.Serializable;
+
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Significance {
+public class Significance implements Serializable {
   String surveyStaff = "";
   String planningTechnicalHead = "";
   String companyLeaderShip = "";

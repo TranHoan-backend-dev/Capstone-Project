@@ -565,19 +565,28 @@ INSERT INTO cost_estimate (estimation_id, address, construction_machinery_coeffi
                            labor_coefficient, note, overall_water_meter_id,
                            precalculated_tax_coefficient, registration_at,
                            survey_effort, survey_fee, updated_at, vat_coefficient, water_meter_serial,
-                           installation_form_form_code, installation_form_form_number)
-VALUES ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', 'Address 1', 1, 1000000, 'admin', now(), 'Customer 1', 1, 200000,
+                           installation_form_form_code, installation_form_form_number, significance)
+VALUES
+  ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', 'Address 1', 1, 1000000, 'admin', now(), 'Customer 1', 1, 200000,
         'img1', 1, 300000, 1, 'Note 1', 'WM1', 1, current_date, 1, 150000, now(), 1, 'SER1',
-        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'FORM-2024-0001'),
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'FORM-2024-0001', '{"surveyStaff": "hehe", "companyLeaderShip": "kaka", "planningTechnicalHead": "huhu"}'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg0002', 'Address 2', 1, 1000000, 'admin', now(), 'Customer 2', 1, 200000,
         'img2', 1, 300000, 1, 'Note 2', 'WM2', 1, current_date, 1, 150000, now(), 1, 'SER2',
-        'b1eebc99-9c0b-4ef8-bb6d-6bb9bd380a12', 'FORM-2024-0002'),
+        'b1eebc99-9c0b-4ef8-bb6d-6bb9bd380a12', 'FORM-2024-0002', '{"surveyStaff": "hehe", "companyLeaderShip": "kaka", "planningTechnicalHead": "huhu"}'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg0003', 'Address 3', 1, 1000000, 'admin', now(), 'Customer 3', 1, 200000,
         'img3', 1, 300000, 1, 'Note 3', 'WM3', 1, current_date, 1, 150000, now(), 1, 'SER3',
-        'c2eebc99-9c0b-4ef8-bb6d-6bb9bd380a13', 'FORM-2024-0003'),
+        'c2eebc99-9c0b-4ef8-bb6d-6bb9bd380a13', 'FORM-2024-0003', '{"surveyStaff": "hehe", "companyLeaderShip": "kaka", "planningTechnicalHead": "huhu"}'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg0004', 'Address 4', 1, 1000000, 'admin', now(), 'Customer 4', 1, 200000,
         'img4', 1, 300000, 1, 'Note 4', 'WM4', 1, current_date, 1, 150000, now(),
-        1, 'SER4', 'd3eebc99-9c0b-4ef8-bb6d-6bb9bd380a14', 'FORM-2024-0004'),
+        1, 'SER4', 'd3eebc99-9c0b-4ef8-bb6d-6bb9bd380a14', 'FORM-2024-0004', '{
+         "surveyStaff": "hehe",
+         "companyLeaderShip": "kaka",
+         "planningTechnicalHead": "huhu"
+       }'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg0005', 'Address 5', 1, 1000000, 'admin', now(), 'Customer 5', 1, 200000,
         'img5', 1, 300000, 1, 'Note 5', 'WM5', 1, current_date, 1, 150000, now(), 1, 'SER5',
-        'e4eebc99-9c0b-4ef8-bb6d-6bb9bd380a15', 'FORM-2024-0005');
+        'e4eebc99-9c0b-4ef8-bb6d-6bb9bd380a15', 'FORM-2024-0005', '{
+         "surveyStaff": "hehe",
+         "companyLeaderShip": "kaka",
+         "planningTechnicalHead": "huhu"
+       }');
