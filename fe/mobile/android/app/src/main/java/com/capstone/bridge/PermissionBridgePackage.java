@@ -3,7 +3,7 @@ package com.capstone.bridge;
 import com.capstone.infrastructure.security.PermissionManager;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactPackage;
+import com.facebook.react.ReactPackage;
 import com.facebook.react.uimanager.ViewManager;
 
 import java.util.ArrayList;
