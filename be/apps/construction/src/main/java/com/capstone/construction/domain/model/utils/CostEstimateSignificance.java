@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Significance implements Serializable {
+public class CostEstimateSignificance implements Serializable {
   String surveyStaff = "";
   String planningTechnicalHead = "";
   String companyLeaderShip = "";

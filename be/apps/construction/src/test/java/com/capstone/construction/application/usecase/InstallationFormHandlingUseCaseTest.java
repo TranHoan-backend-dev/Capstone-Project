@@ -39,7 +39,7 @@ class InstallationFormHandlingUseCaseTest {
   private CostEstimateUseCase costEstimateUseCase;
 
   @InjectMocks
-  private InstallationFormHandlingUseCase useCase;
+  private InstallationFormUseCase useCase;
 
   private static final String USER_ID = "EMP-001";
 

@@ -12,8 +12,8 @@ import java.util.List;
 
 @Slf4j
 @Component
-public class FinanceConsumer extends GeneralEventConsumer<Object> {
-  public FinanceConsumer(MessageProducer producer) {
+public class FinanceConsumerForCostEstimate extends GeneralEventConsumer<Object> {
+  public FinanceConsumerForCostEstimate(MessageProducer producer) {
     super(producer);
   }
 

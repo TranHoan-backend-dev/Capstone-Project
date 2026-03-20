@@ -3,7 +3,7 @@ package com.capstone.construction.infrastructure.utils;
 public final class Message {
   public static final String PT_01 = "Thôn/Làng %s đã tồn tại";
   public static final String PT_02 = "Nhân viên chi nhánh Xây lắp không được để trống";
-  public static final String PT_03 = "Trạng thái xử lý không được để trống";
+  public static final String PT_03 = "Không tìm thấy quyết toán";
   public static final String PT_04 = "Ngày đăng ký không được để trống";
   public static final String PT_05 = "Định dạng ngày không hợp lệ";
   public static final String PT_06 = "Loại khách hàng không được để trống";

@@ -31,7 +31,7 @@ import java.util.Objects;
 @Component
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class InstallationFormHandlingUseCase {
+public class InstallationFormUseCase {
   final InstallationFormService ifSrv;
   final MessageProducer messageProducer;
   final CostEstimateUseCase costEstimateUseCase;
