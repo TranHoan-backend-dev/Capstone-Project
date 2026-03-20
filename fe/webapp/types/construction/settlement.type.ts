@@ -43,7 +43,6 @@ export type SettlementFilter = {
 export interface SettlementTableProps {
   keyword: SettlementFilter;
   reloadKey: number;
-  from: 
   onEdit: (item: SettlementItem) => void;
   onDeleted: () => void;
 }
