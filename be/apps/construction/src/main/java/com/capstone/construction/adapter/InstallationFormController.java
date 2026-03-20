@@ -9,7 +9,7 @@ import com.capstone.construction.application.business.installationform.Installat
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
-import com.capstone.construction.application.usecase.InstallationFormHandlingUseCase;
+import com.capstone.construction.application.usecase.InstallationFormUseCase;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
 import com.capstone.construction.infrastructure.utils.Message;
 import io.swagger.v3.oas.annotations.Operation;

@@ -1,11 +1,13 @@
 package com.capstone.construction.domain.model;
 
-import com.capstone.common.enumerate.ProcessingStatus;
+import com.capstone.construction.domain.model.utils.SettlementSignificance;
 import jakarta.persistence.*;
 import com.capstone.common.utils.SharedMessage;
 import com.capstone.construction.infrastructure.utils.Message;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.jspecify.annotations.NonNull;
 
 import java.io.Serializable;
@@ -44,12 +46,15 @@ public class Settlement implements Serializable {
   @Column(nullable = false)
   LocalDateTime updatedAt;
 
-  @Enumerated(EnumType.STRING)
-  @Column(nullable = false)
-  ProcessingStatus status;
-
   @Column(nullable = false)
   LocalDate registrationAt;
+
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(columnDefinition = "jsonb")
+  SettlementSignificance significance;
+
+  @OneToOne(fetch = FetchType.EAGER)
+  InstallationForm installationForm;
 
   @PrePersist
   void onCreate() {
@@ -63,14 +68,14 @@ public class Settlement implements Serializable {
   }
 
   // <editor-fold> desc="setter"
-  public void setStatus(@NonNull ProcessingStatus value) {
-    requireNonNullAndNotEmpty(value.name(), Message.PT_03);
-    this.status = value;
-  }
-
   public void setRegistrationAt(@NonNull LocalDate value) {
     Objects.requireNonNull(value, Message.PT_04);
     this.registrationAt = value;
+  }
+
+  public void setInstallationForm(@NonNull InstallationForm value) {
+    Objects.requireNonNull(value, Message.PT_40);
+    this.installationForm = value;
   }
 
   public void setJobContent(String jobContent) {
@@ -126,13 +131,13 @@ public class Settlement implements Serializable {
       return this;
     }
 
-    public SettlementBuilder status(ProcessingStatus address) {
-      instance.setStatus(address);
+    public SettlementBuilder connectionFee(BigDecimal connectionFee) {
+      instance.setConnectionFee(connectionFee);
       return this;
     }
 
-    public SettlementBuilder connectionFee(BigDecimal connectionFee) {
-      instance.setConnectionFee(connectionFee);
+    public SettlementBuilder installationForm(InstallationForm value) {
+      instance.setInstallationForm(value);
       return this;
     }
 
