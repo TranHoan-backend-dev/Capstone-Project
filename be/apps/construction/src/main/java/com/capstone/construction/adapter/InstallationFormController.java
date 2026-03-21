@@ -41,7 +41,7 @@ import java.time.format.DateTimeFormatter;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Tag(name = "Installation Form", description = "Quản lý đơn lắp đặt (Tiếp nhận và xử lý hồ sơ lắp đặt nước)")
 public class InstallationFormController {
-    InstallationFormHandlingUseCase installationFormHandlingUseCase;
+    InstallationFormUseCase installationFormHandlingUseCase;
     InstallationFormService installationFormService;
     @NonFinal
     Logger log;
