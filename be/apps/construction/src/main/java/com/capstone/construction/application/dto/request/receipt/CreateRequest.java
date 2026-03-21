@@ -45,9 +45,6 @@ public record CreateRequest(
   Boolean isPaid,
 
   @Schema(description = "Url chữ ký của người tạo phiếu thu")
-  String significanceOfReceiptCreator,
-
-  @Schema(description = "Url chữ ký của thủ quỹ")
-  String significanceOfTreasurer
+  String significanceOfReceiptCreator
 ) {
 }
