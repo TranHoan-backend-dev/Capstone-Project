@@ -201,7 +201,17 @@ export const getAllWaterPrices = (
     },
   });
 
-  export const getAllWaterMeters = (
+export const getWaterPriceById = async (
+  accessToken: string,
+  id: string,
+) =>
+  axios.get(`${API_GATEWAY_URL}/d/water-prices/${id}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+export const getAllWaterMeters = (
   accessToken: string,
   page: number,
   size: number,
@@ -220,3 +230,12 @@ export const getAllWaterPrices = (
     },
   });
 
+export const getWaterMeterById = async (
+  accessToken: string,
+  id: string,
+) =>
+  axios.get(`${API_GATEWAY_URL}/d/water-meters/${id}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });

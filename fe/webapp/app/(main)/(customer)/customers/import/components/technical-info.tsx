@@ -38,7 +38,9 @@ export const TechnicalInfo = ({ formData, onUpdate }: TechnicalInfoProps) => {
             { value: "PRODUCTION", label: "Sản xuất" },
             { value: "BUSINESS", label: "Kinh doanh dịch vụ" },
           ]}
-          selectedKeys={formData.type ? new Set([formData.type]) : new Set()}
+          selectedKeys={
+            formData.type ? new Set([formData.type.toUpperCase()]) : new Set()
+          }
           onSelectionChange={(keys) => {
             const value = Array.from(keys)[0] as string;
             onUpdate("type", value);
@@ -94,10 +96,7 @@ export const TechnicalInfo = ({ formData, onUpdate }: TechnicalInfoProps) => {
           type="number"
           value={formData.householdRegistrationNumber?.toString()}
           onChange={(e) =>
-            onUpdate(
-              "householdRegistrationNumber",
-              parseInt(e.target.value),
-            )
+            onUpdate("householdRegistrationNumber", parseInt(e.target.value))
           }
         />
 
@@ -129,9 +128,7 @@ export const TechnicalInfo = ({ formData, onUpdate }: TechnicalInfoProps) => {
           label="Tiền thuê hàng tháng"
           type="number"
           value={formData.monthlyRent?.toString()}
-          onChange={(e) =>
-            onUpdate("monthlyRent", parseInt(e.target.value))
-          }
+          onChange={(e) => onUpdate("monthlyRent", parseInt(e.target.value))}
         />
 
         <CustomInput

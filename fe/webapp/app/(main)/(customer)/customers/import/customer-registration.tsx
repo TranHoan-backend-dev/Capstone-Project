@@ -22,7 +22,7 @@ const CustomerRegistration = ({
 }: CustomerRegistrationProps) => {
   const { formData, updateField, resetForm } = useCustomerForm(initialData);
   const [submitLoading, setSubmitLoading] = useState(false);
-  const isEdit = !!initialData?.id;
+  const isEdit = !!initialData?.customerId;
 
   const handleSubmit = async () => {
     try {
@@ -36,9 +36,13 @@ const CustomerRegistration = ({
         });
         return;
       }
+      const cleanData = { ...formData };
 
+      if (cleanData.type) {
+        cleanData.type = cleanData.type.toUpperCase();
+      }
       const url = isEdit
-        ? `/api/customer/customer/${initialData?.id}`
+        ? `/api/customer/customer/${initialData?.customerId}`
         : `/api/customer/customer`;
 
       const method = isEdit ? "PUT" : "POST";
@@ -48,7 +52,7 @@ const CustomerRegistration = ({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(cleanData),
       });
 
       const data = await response.json();

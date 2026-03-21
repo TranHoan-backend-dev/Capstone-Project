@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Checkbox, Divider } from "@heroui/react";
 
 import CustomInput from "@/components/ui/custom/CustomInput";
@@ -9,6 +9,7 @@ import CustomDatePicker from "@/components/ui/custom/CustomDatePicker";
 import { TitleDarkColor } from "@/config/chip-and-icon";
 import { CustomerInfoProps, usageTargetMap } from "@/types";
 import { LookupModal } from "@/components/ui/modal/LookupModal";
+import { authFetch } from "@/utils/authFetch";
 
 export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
   const [showFormModal, setShowFormModal] = useState(false);
@@ -17,11 +18,56 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
   const [showWaterMeterModal, setShowWaterMeterModal] = useState(false);
   const [displayWaterMeter, setDisplayWaterMeter] = useState("");
 
+  useEffect(() => {
+    const fetchWaterPriceDetails = async () => {
+      if (formData.waterPriceId && !displayWaterPrice) {
+        try {
+          const response = await authFetch(
+            `/api/device/water-prices/${formData.waterPriceId}`,
+          );
+          const result = await response.json();
+          if (result.data) {
+            setDisplayWaterPrice(
+              `${result.data.tax}% - ${result.data.environmentPrice}`,
+            );
+          }
+        } catch (error) {
+          console.error("Failed to fetch water price:", error);
+        }
+      }
+    };
+
+    fetchWaterPriceDetails();
+  }, [formData.waterPriceId, displayWaterPrice]);
+
+  useEffect(() => {
+    const fetchWaterMeterDetails = async () => {
+      if (formData.waterMeterId && !displayWaterMeter) {
+        try {
+          const response = await authFetch(
+            `/api/device/water-meters/${formData.waterMeterId}`,
+          );
+          const result = await response.json();
+          if (result.data) {
+            setDisplayWaterMeter(
+              `Loại: ${result.data.typeName} - Size: ${result.data.size} - Lắp: ${result.data.installationDate}`,
+            );
+          }
+        } catch (error) {
+          console.error("Failed to fetch water meter:", error);
+        }
+      }
+    };
+
+    fetchWaterMeterDetails();
+  }, [formData.waterMeterId, displayWaterMeter]);
+
   const handleSelectForm = (form: { formNumber: string; formCode: string }) => {
     onUpdate("formNumber", form.formNumber);
     onUpdate("formCode", form.formCode);
     setShowFormModal(false);
   };
+
   const handleSelectWaterPrice = (item: any) => {
     onUpdate("waterPriceId", item.id);
     setDisplayWaterPrice(
@@ -29,6 +75,7 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
     );
     setShowWaterPriceModal(false);
   };
+
   const handleSelectWaterMeter = (item: any) => {
     onUpdate("waterMeterId", item.id);
     setDisplayWaterMeter(
