@@ -83,6 +83,7 @@ rabbit-mq-config:
     - receipt
     - finance
     - construction-request
+    - page
   actions:
     - update
     - delete
