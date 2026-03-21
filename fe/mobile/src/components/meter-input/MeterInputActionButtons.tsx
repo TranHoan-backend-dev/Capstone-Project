@@ -21,19 +21,23 @@ export default function MeterInputActionButtons({
 }: MeterInputActionButtonsProps) {
   return (
     <>
-      <View style={styles.actionButtonsContainer}>
+      <View style={[styles.actionButtonsContainer, { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 12, marginBottom: 24 }]}>
         <Button
           mode="contained"
-          icon="camera"
-          style={styles.actionButton}
+          buttonColor="#1E88E5"
+          style={{ width: 48, height: 48, justifyContent: 'center', borderRadius: 8 }}
+          contentStyle={{ height: 48, padding: 0 }}
           onPress={onTakePhoto}
         >
-          Chụp ảnh
+          <Icon name="camera-plus-outline" size={24} color="#fff" style={{ margin: 0 }} />
         </Button>
         <Button
-          mode="contained"
-          icon="file-document"
-          style={styles.actionButton}
+          mode="outlined"
+          icon="image-outline"
+          textColor="#1E88E5"
+          style={{ flex: 1, marginLeft: 12, height: 48, justifyContent: 'center', borderColor: '#1E88E5', borderRadius: 8 }}
+          contentStyle={{ height: 48 }}
+          labelStyle={{ fontSize: 16, fontWeight: '600' }}
           onPress={onViewInvoice}
         >
           Xem hình ảnh

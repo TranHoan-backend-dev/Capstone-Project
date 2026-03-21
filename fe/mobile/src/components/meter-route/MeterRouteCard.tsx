@@ -10,66 +10,65 @@ export default function MeterRouteCard({ data }: any) {
 
   const goToCustomerList = () => {
     navigation.navigate('CustomerList', {
-      routeId: data.id, // truyền mã tuyến
+      routeId: data.id,
     });
   };
 
   return (
-    <Card style={styles.card}>
-      <Card.Content>
-        <View style={styles.cardHeader}>
-          <View style={styles.routeIdContainer}>
-            <Text style={styles.routeId}>{data.id}</Text>
+    <TouchableOpacity activeOpacity={0.8} onPress={goToCustomerList}>
+      <Card style={styles.card}>
+        <Card.Content>
+          <View style={styles.cardHeader}>
+            <View style={[styles.routeIdContainer, { flexDirection: 'row', alignItems: 'center' }]}>
+              <MaterialCommunityIcons name="database-outline" size={20} color="#757575" style={{ marginRight: 8 }} />
+              <Text style={[styles.routeId, { color: '#1E88E5' }]}>{data.id}</Text>
+            </View>
+
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <MaterialCommunityIcons name="format-list-bulleted" size={18} color="#4CAF50" />
+              <Text style={styles.actionText}>Danh sách ghi</Text>
+            </View>
           </View>
 
-          <TouchableOpacity
-            style={styles.actionBadge}
-            onPress={goToCustomerList}
-            activeOpacity={0.7}
-          >
-            <MaterialCommunityIcons
-              name="check-circle"
-              size={18}
-              color="#4CAF50"
-            />
-            <Text style={styles.actionText}>Danh sách ghi</Text>
-          </TouchableOpacity>
-        </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+            <MaterialCommunityIcons name="book-outline" size={20} color="#757575" style={{ marginRight: 8 }} />
+            <Text style={{ color: '#1E88E5', fontWeight: '500' }}>{data.type}</Text>
+          </View>
 
-        <Text>{data.type}</Text>        
-        <View style={styles.statsGrid}>
-          <View style={styles.statItem}>
-            <Text style={styles.statLabel}>Số KH:</Text>
-            <Text style={styles.statValue}>{data.totalCustomer}</Text>
+          <View style={styles.statsGrid}>
+            <View style={styles.statItem}>
+              <Text style={styles.statLabel}>Số KH:</Text>
+              <Text style={{ ...styles.statValue, color: '#1E88E5' }}>{data.totalCustomer}</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={styles.statLabel}>Đã ghi:</Text>
+              <Text style={{ ...styles.statValue, color: '#1E88E5' }}>{data.recorded}</Text>
+            </View>
           </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statLabel}>Đã ghi:</Text>
-            <Text style={styles.statValue}>{data.recorded}</Text>
-          </View>
-        </View>
 
-        <View style={styles.statsGrid}>
-          <View style={styles.statItem}>
-            <Text style={styles.statLabel}>Chưa ghi:</Text>
-            <Text style={styles.statValue}>{data.unrecorded}</Text>
+          <View style={styles.statsGrid}>
+            <View style={styles.statItem}>
+              <Text style={styles.statLabel}>Chưa ghi:</Text>
+              <Text style={{ ...styles.statValue, color: '#1E88E5' }}>{data.unrecorded}</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={styles.statLabel}>Cắt nước:</Text>
+              <Text style={{ ...styles.statValue, color: '#1E88E5' }}>{data.cutWater || 0}</Text>
+            </View>
           </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statLabel}>Cắt nước:</Text>
-            <Text style={styles.statValue}>{data.cutWater || 0}</Text>
-          </View>
-        </View>
 
-        <View style={styles.statsGrid}>
-          <View style={styles.statItem}>
-            <Text style={styles.statLabel}>M3:</Text>
-            <Text style={styles.statValue}>{data.m3 || 0}</Text>
+          <View style={styles.statsGrid}>
+            <View style={styles.statItem}>
+              <Text style={styles.statLabel}>M3:</Text>
+              <Text style={{ ...styles.statValue, color: '#1E88E5' }}>{data.m3 || 0}</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={styles.statLabel}>Tổng tiền:</Text>
+              <Text style={[styles.statValue, { color: '#EF4444' }]}>{data.totalAmount || 0}</Text>
+            </View>
           </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statLabel}>Tổng tiền:</Text>
-            <Text style={[styles.statValue, styles.priceValue]}>{data.totalAmount || 0}</Text>
-          </View>
-        </View>
-      </Card.Content>
-    </Card>
+        </Card.Content>
+      </Card>
+    </TouchableOpacity>
   );
 }

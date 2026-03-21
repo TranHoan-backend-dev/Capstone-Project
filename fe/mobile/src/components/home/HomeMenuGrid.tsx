@@ -15,37 +15,31 @@ export default function HomeMenuGrid() {
 
       <View style={styles.grid}>
         <MenuItemCard
-          icon="file-document-outline"
+          icon="book-edit-outline"
           label="Ghi chỉ số"
-          onPress={() => navigation.navigate('Meter')}
+          onPress={() => navigation.navigate('MeterRoute')}
         />
 
         <MenuItemCard
-          icon="cash-multiple"
+          icon="cash-check"
           label="Công nợ"
           onPress={() => navigation.navigate('Debt')}
         />
 
         <MenuItemCard
-          icon="shield-check-outline"
+          icon="pipe-leak"
           label="Báo sự cố"
         />
 
         <MenuItemCard
-          icon="water-off-outline"
-          label="Nghi rò rỉ"
+          icon="access-point"
+          label="Nghe rò rỉ"
         />
 
         <MenuItemCard
-          icon="bell-outline"
-          label="Thông báo"
+          icon="message-badge-outline"
+          label="Gửi thông báo"
           onPress={() => navigation.navigate('Notification')}
-        />
-
-        <MenuItemCard
-          icon="image-check-outline"
-          label="Duyệt ảnh"
-          onPress={() => navigation.navigate('VerifyMeterReadings')}
         />
       </View>
     </>

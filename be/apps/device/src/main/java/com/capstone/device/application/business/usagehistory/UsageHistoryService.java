@@ -1,5 +1,12 @@
 package com.capstone.device.application.business.usagehistory;
 
+import com.capstone.device.application.dto.response.pricetype.UsageResponse;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
 public interface UsageHistoryService {
-  void updateWaterIndex(String imageUrl, String serial, String index);
+  UsageResponse addWaterIndexOfThisMonth(String imageUrl, String serial, BigDecimal index, LocalDate recordingDate);
+
+  void updatePaymentStatus(String serial, String method);
 }

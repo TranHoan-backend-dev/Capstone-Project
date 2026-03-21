@@ -55,4 +55,6 @@ public interface CustomerService {
   boolean areCustomersAppliedThisPrice(String priceId);
 
   boolean isExistingCustomer(String id);
+
+  String getIdByMeterId(String meterId);
 }

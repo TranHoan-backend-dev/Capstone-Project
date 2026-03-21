@@ -70,6 +70,11 @@ public class GlobalExceptionHandler {
     return Utils.returnInternalServerErrorResponse(ex.getMessage(), null);
   }
 
+  @ExceptionHandler(NotExistingException.class)
+  public ResponseEntity<WrapperApiResponse> handleNotExistingException(@NonNull NotExistingException ex) {
+    return Utils.returnBadRequestResponse(ex.getMessage(), null);
+  }
+
   @ExceptionHandler(FeignException.class)
   public ResponseEntity<WrapperApiResponse> handleFeignException(@NonNull FeignException ex) {
     return Utils.returnInternalServerErrorResponse(ex.getMessage(), null);

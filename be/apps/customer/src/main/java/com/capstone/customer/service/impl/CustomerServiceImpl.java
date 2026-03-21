@@ -1,16 +1,19 @@
 package com.capstone.customer.service.impl;
 
 import com.capstone.common.exception.NotExistingException;
+import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.SharedMessage;
 import com.capstone.customer.dto.request.customer.CreateRequest;
 import com.capstone.customer.dto.request.customer.UpdateRequest;
 import com.capstone.customer.dto.response.CustomerResponse;
+import com.capstone.customer.dto.response.WaterPriceInfoResponse;
 import com.capstone.customer.model.Customer;
 import com.capstone.customer.repository.CustomerRepository;
 import com.capstone.customer.service.boundary.ConstructionService;
 import com.capstone.customer.service.boundary.CustomerService;
 import com.capstone.customer.service.boundary.DeviceService;
 import com.capstone.customer.utils.Message;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -32,6 +35,7 @@ public class CustomerServiceImpl implements CustomerService {
   CustomerRepository customerRepository;
   DeviceService deviceService;
   ConstructionService constructionService;
+  ObjectMapper objectMapper;
 
   @Override
   @Transactional
@@ -257,7 +261,16 @@ public class CustomerServiceImpl implements CustomerService {
     return customerRepository.existsById(id);
   }
 
+  @Override
+  public String getIdByMeterId(String meterId) {
+    return customerRepository.findByWaterMeterId(meterId)
+      .orElseThrow(() -> new NotExistingException("Customer not found"))
+      .getCustomerId();
+  }
+
   private @NonNull CustomerResponse mapToResponse(@NonNull Customer customer) {
+    var waterPrice = resolveWaterPrice(customer.getWaterPriceId());
+
     return new CustomerResponse(
       customer.getCustomerId(),
       customer.getName(),
@@ -292,6 +305,24 @@ public class CustomerServiceImpl implements CustomerService {
       customer.getUpdatedAt(),
       customer.getFormNumber(),
       customer.getWaterPriceId(),
+      waterPrice,
       customer.getWaterMeterId());
+  }
+
+  private WaterPriceInfoResponse resolveWaterPrice(String waterPriceId) {
+    if (waterPriceId == null || waterPriceId.isBlank()) {
+      return null;
+    }
+
+    try {
+      WrapperApiResponse response = deviceService.getWaterPriceById(waterPriceId);
+      if (response == null || response.data() == null) {
+        return null;
+      }
+      return objectMapper.convertValue(response.data(), WaterPriceInfoResponse.class);
+    } catch (Exception ex) {
+      log.warn("Cannot resolve water price info for id={}", waterPriceId, ex);
+      return null;
+    }
   }
 }
