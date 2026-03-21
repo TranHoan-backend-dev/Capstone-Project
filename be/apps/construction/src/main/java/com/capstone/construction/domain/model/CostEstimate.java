@@ -1,6 +1,6 @@
 package com.capstone.construction.domain.model;
 
-import com.capstone.construction.domain.model.utils.CostEstimateSignificance;
+import com.capstone.construction.domain.model.utils.significance.CostEstimateSignificance;
 import jakarta.persistence.*;
 import com.capstone.common.utils.SharedMessage;
 import com.capstone.construction.infrastructure.utils.Message;

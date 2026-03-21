@@ -5,7 +5,7 @@ import com.capstone.construction.application.dto.request.receipt.UpdateRequest;
 import com.capstone.construction.domain.model.CostEstimate;
 import com.capstone.construction.domain.model.InstallationForm;
 import com.capstone.construction.domain.model.Receipt;
-import com.capstone.construction.domain.model.utils.CostEstimateSignificance;
+import com.capstone.construction.domain.model.utils.significance.CostEstimateSignificance;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
 import com.capstone.construction.infrastructure.persistence.CostEstimateRepository;
 import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
@@ -51,7 +51,9 @@ class ReceiptServiceImplTest {
     ReflectionTestUtils.setField(form, "id", formId);
 
     createRequest = new CreateRequest(
-      "LD", "2024001", "BL001", "Customer", "Address", LocalDate.now(), true
+      "LD", "2024001", "BL001",
+      "Customer", "", "", "",
+      LocalDate.now(), true, "", ""
     );
   }
 
@@ -61,8 +63,8 @@ class ReceiptServiceImplTest {
     when(ifRepo.findById(formId)).thenReturn(Optional.of(form));
     when(receiptRepo.existsById(formId)).thenReturn(false);
 
-    CostEstimate estimate = new CostEstimate();
-    CostEstimateSignificance significance = new CostEstimateSignificance();
+    var estimate = new CostEstimate();
+    var significance = new CostEstimateSignificance();
     significance.setSurveyStaff("S");
     significance.setPlanningTechnicalHead("P");
     significance.setCompanyLeaderShip("C");
@@ -114,7 +116,7 @@ class ReceiptServiceImplTest {
     when(ifRepo.findById(formId)).thenReturn(Optional.of(form));
     when(receiptRepo.existsById(formId)).thenReturn(false);
 
-    CostEstimate estimate = new CostEstimate();
+    var estimate = new CostEstimate();
     estimate.setSignificance(new CostEstimateSignificance()); // All blank
 
     when(ceRepo.findByInstallationForm(form)).thenReturn(Optional.of(estimate));
@@ -127,8 +129,8 @@ class ReceiptServiceImplTest {
   @Test
   @DisplayName("Update receipt successfully")
   void should_UpdateReceipt_Fully() {
-    UpdateRequest update = new UpdateRequest("LD", "2024001", "NEW-BL", "New Name", "New Addr", LocalDate.now(), false);
-    Receipt receipt = new Receipt();
+    var update = new UpdateRequest("LD", "2024001", "NEW-BL", "New Name", "New Addr", LocalDate.now(), false);
+    var receipt = new Receipt();
     ReflectionTestUtils.setField(receipt, "installationForm", form);
     ReflectionTestUtils.setField(receipt, "installationFormId", formId);
 
@@ -155,7 +157,7 @@ class ReceiptServiceImplTest {
   @Test
   @DisplayName("Get receipt successfully")
   void should_Get_When_Exists() {
-    Receipt receipt = new Receipt();
+    var receipt = new Receipt();
     ReflectionTestUtils.setField(receipt, "installationFormId", formId);
     receipt.setReceiptNumber("BL123");
 

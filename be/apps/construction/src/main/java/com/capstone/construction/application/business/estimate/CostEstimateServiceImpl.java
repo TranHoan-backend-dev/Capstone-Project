@@ -14,7 +14,7 @@ import com.capstone.construction.application.dto.response.estimate.MaterialsOfCo
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.domain.model.CostEstimate;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
-import com.capstone.construction.domain.model.utils.CostEstimateSignificance;
+import com.capstone.construction.domain.model.utils.significance.CostEstimateSignificance;
 import com.capstone.construction.infrastructure.persistence.CostEstimateRepository;
 import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
 import com.capstone.construction.infrastructure.service.GcsService;
