@@ -26,7 +26,7 @@ public class CreateReceiptConsumer extends GeneralEventConsumer<CreateEventMessa
   public void handle(CreateEventMessage event) {
     // Notify ORDER_RECEIVING_STAFF topic
     var topic = Topic.getTopicOfPlanningTechnicalDepartment(RoleName.ORDER_RECEIVING_STAFF, "");
-    
+
     super.handle(
       event,
       List.of(topic),
@@ -45,13 +45,11 @@ public class CreateReceiptConsumer extends GeneralEventConsumer<CreateEventMessa
         - Mã đơn/Số đơn: %s/%s
         - Tên khách hàng: %s
         - Ngày thanh toán: %s
-        - Trạng thái: %s
       """.formatted(
         data.receiptNumber(),
         data.formCode(), data.formNumber(),
         data.customerName(),
-        data.paymentDate(),
-        data.isPaid() ? "Đã thanh toán" : "Chưa thanh toán"
+        data.paymentDate()
     );
     log.info(message);
     return message;
