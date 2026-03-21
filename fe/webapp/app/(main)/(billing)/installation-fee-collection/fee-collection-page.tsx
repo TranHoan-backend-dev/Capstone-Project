@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Spinner } from "@heroui/react";
 import { useEmployeeProfile } from "@/hooks/useEmployeeProfile";
@@ -10,6 +10,7 @@ import { FeeTable } from "./components/fee-table";
 import { FeeCollectionFilter, FeeCollectionItem } from "@/types";
 import { FilterSection } from "./components/filter-section";
 import { FeeForm } from "./components/fee-form";
+import { useSearchParams } from "next/navigation";
 
 const FeeCollectionPage = () => {
   const { profile, loading: profileLoading } = useEmployeeProfile();
@@ -18,9 +19,22 @@ const FeeCollectionPage = () => {
   const [filter, setFilter] = useState<FeeCollectionFilter>({});
   const [showAddForm, setShowAddForm] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
+  const searchParams = useSearchParams();
+  const formCodeParam = searchParams.get("formCode") || "";
+  const formNumberParam = searchParams.get("formNumber") || "";
+
   const [editingItem, setEditingItem] = useState<FeeCollectionItem | null>(
     null,
   );
+  useEffect(() => {
+    if (formCodeParam && formNumberParam) {
+      setEditingItem({
+        formCode: formCodeParam,
+        formNumber: formNumberParam,
+      } as FeeCollectionItem);
+      setShowAddForm(true);
+    }
+  }, [formCodeParam, formNumberParam]);
 
   const handleReload = () => setReloadKey((prev) => prev + 1);
   const handleAddNew = () => {

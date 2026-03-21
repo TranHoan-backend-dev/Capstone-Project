@@ -71,10 +71,16 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(response.data, { status: response.status });
   } catch (error: any) {
+    if (error.isAxiosError) {
+      console.error("Axios error response:", error.response?.data);
+      console.error("Axios error status:", error.response?.status);
+      console.error("Axios error headers:", error.response?.headers);
+    } else {
+      console.error("Unexpected error:", error);
+    }
+
     return NextResponse.json(
-      {
-        message: error?.message || "Create failed",
-      },
+      { message: error?.message || "Create failed" },
       { status: 500 },
     );
   }

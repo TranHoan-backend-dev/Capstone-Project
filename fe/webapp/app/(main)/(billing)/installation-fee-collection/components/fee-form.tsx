@@ -22,8 +22,8 @@ export const FeeForm = ({
   const [paymentDate, setPaymentDate] = useState("");
   const [isPaid, setIsPaid] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
-  const isEdit = !!initialData?.formCode;
-
+  const isEdit = !!initialData?.receiptNumber;
+  const isPrefill = !!initialData?.formCode && !initialData?.formNumber;
   useEffect(() => {
     if (initialData) {
       setFormCode(initialData.formCode || "");
@@ -103,15 +103,16 @@ export const FeeForm = ({
           <CustomInput
             label="Mã đơn"
             value={formCode}
+            type="hidden"
             onChange={(e) => setFormCode(e.target.value)}
-            isDisabled={isEdit}
+            isDisabled={isEdit || isPrefill}
           />
 
           <CustomInput
             label="Số đơn"
             value={formNumber}
             onChange={(e) => setFormNumber(e.target.value)}
-            isDisabled={isEdit}
+            isDisabled={isEdit || isPrefill}
           />
 
           <CustomInput
