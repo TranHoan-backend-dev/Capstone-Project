@@ -39,24 +39,24 @@ public class ReceiptUseCase {
     log.info("UseCase: Creating receipt for form: {}/{}", request.formCode(), request.formNumber());
     var response = receiptService.createReceipt(request);
 
-    // Orchestrate event publication after successful service execution
-    var routingKey = String.join(".", QUEUE_NAME, ENTITY_NAME, CREATE_ACTION);
-    var event = new CreatedEvent(
-      response.formCode(),
-      response.formNumber(),
-      response.receiptNumber(),
-      response.customerName(),
-      response.address(),
-      response.paymentDate(),
-      response.isPaid()
-    );
-    messageProducer.send(routingKey, event);
-
+    if (response != null && response.isPaid() && response.significance().isReceiptFullySigned()) {
+      // Orchestrate event publication after successful service execution
+      var routingKey = String.join(".", QUEUE_NAME, ENTITY_NAME, CREATE_ACTION);
+      var event = new CreatedEvent(
+        response.formCode(),
+        response.formNumber(),
+        response.receiptNumber(),
+        response.customerName(),
+        response.address(),
+        response.paymentDate()
+      );
+      messageProducer.send(routingKey, event);
+    }
     return response;
   }
 
   @Transactional(rollbackFor = Exception.class)
-  public ReceiptResponse updateReceipt(UpdateRequest request) {
+  public ReceiptResponse updateReceipt(@NonNull UpdateRequest request) {
     log.info("UseCase: Updating receipt for form: {}/{}", request.formCode(), request.formNumber());
     return receiptService.updateReceipt(request);
   }

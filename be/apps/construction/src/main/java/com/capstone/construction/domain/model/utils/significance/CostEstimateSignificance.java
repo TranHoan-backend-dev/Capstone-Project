@@ -1,4 +1,4 @@
-package com.capstone.construction.domain.model.utils;
+package com.capstone.construction.domain.model.utils.significance;
 
 import lombok.AccessLevel;
 import lombok.Setter;
