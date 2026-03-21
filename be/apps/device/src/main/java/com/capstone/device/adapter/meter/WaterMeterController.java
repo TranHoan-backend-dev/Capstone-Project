@@ -90,11 +90,11 @@ public class WaterMeterController {
 
   @Operation(hidden = true)
   @GetMapping("/{id}/exists")
-  public ResponseEntity<WrapperApiResponse> checkWaterMeterExisting(
+  public Boolean checkWaterMeterExisting(
     @PathVariable @Parameter(description = "") String id) {
     log.info("REST request to check existence of water meter: {}", id);
     var response = waterMeterService.isWaterMeterExisting(id);
     log.info("Meter is existed? {}", response);
-    return Utils.returnOkResponse("Kiểm tra sự tồn tại của đồng hồ nước thành công", response);
+    return response;
   }
 }

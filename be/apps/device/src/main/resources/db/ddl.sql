@@ -1,3 +1,6 @@
+CREATE
+EXTENSION IF NOT EXISTS unaccent;
+
 create table public.materials_group
 (
   group_id   varchar(255) not null
@@ -77,14 +80,11 @@ alter table public.material
 create table public.materials_of_cost_estimate
 (
   cost_est_id           varchar(255)             not null,
-  labor_cost            varchar(255)             not null,
   mass                  real                     not null,
-  material_cost         varchar(255)             not null,
   note                  varchar(255),
   reduction_coefficient numeric(38, 2) default 0 not null,
   total_labor_cost      varchar(255),
   total_material_cost   varchar(255),
-  used_labor_cost       real,
   material_material_id  varchar(255)             not null constraint fk8hlrkyr0pdjjk5yooog6ewvin
             references public.material,
   primary key (cost_est_id, material_material_id)
@@ -142,8 +142,10 @@ alter table public.water_meter
 
 create table public.usage_history
 (
+  customer_id varchar(255) not null constraint uk7bgg9a3lubti663eagw8kamso
+            unique,
   usages jsonb,
-  meter_code varchar(255) not null
+  meter_code  varchar(255) not null
     primary key constraint fkrxiqn18008bmpbc73g3acvm3o
             references public.water_meter
 );

@@ -93,3 +93,91 @@ values
  ('HDN_013', current_timestamp, current_timestamp, 'C013', 'FORM013', '013', '[{"name": "Diệp Văn Phúc", "position": "Chủ hộ"}]'::jsonb, null),
  ('HDN_014', current_timestamp, current_timestamp, 'C014', 'FORM014', '014', '[{"name": "Đào Thị Quyên", "position": "Chủ hộ"}]'::jsonb, null),
  ('HDN_015', current_timestamp, current_timestamp, 'C015', 'FORM015', '015', '[{"name": "Tăng Văn Sơn", "position": "Chủ hộ"}]'::jsonb, null);
+
+-- ==========================================================
+-- TEST DATA for water usage progressive pricing (device sync)
+-- Customer C001 will be used by device usage endpoint test.
+-- ==========================================================
+update public.customer
+set water_price_id = '00000000-0000-0000-0000-B90000000001',
+    water_meter_id = '00000000-0000-0000-0000-A00000000001',
+    updated_at = current_timestamp
+where customer_id = 'C001';
+
+-- Fallback seed: ensure C001 exists for cross-service device usage test.
+-- If C001 was not loaded by base seed in your environment, create it.
+insert into public.customer (
+ customer_id,
+ bank_account_name,
+ bank_account_number,
+ bank_account_provider_location,
+ budget_relationship_code,
+ cancel_reason,
+ citizen_identification_number,
+ citizen_identification_provide_at,
+ connection_point,
+ created_at,
+ deduction_period,
+ email,
+ fix_rate,
+ form_code,
+ form_number,
+ household_registration_number,
+ installation_fee,
+ is_active,
+ is_big_customer,
+ is_free,
+ is_sale,
+ m3sale,
+ monthly_rent,
+ name,
+ number_of_households,
+ passport_code,
+ payment_method,
+ phone_number,
+ protect_environment_fee,
+ type,
+ updated_at,
+ usage_target,
+ water_meter_id,
+ water_meter_type,
+ water_price_id
+)
+values (
+ 'C001',
+ 'NGUYEN VAN AN',
+ '1234567890',
+ 'Vietcombank Ha Noi',
+ 'QH001',
+ null,
+ '001090123456',
+ 'Ha Noi',
+ 'P001',
+ current_timestamp,
+ 'Q1',
+ 'an.nv@gmail.com',
+ 'N',
+ 'FORM001_FALLBACK',
+ '001',
+ 4,
+ 500000,
+ true,
+ false,
+ false,
+ false,
+ '0',
+ 20000,
+ 'Nguyễn Văn An',
+ 4,
+ null,
+ 'CASH',
+ '0123456789',
+ 50000,
+ 'FAMILY',
+ current_timestamp,
+ 'DOMESTIC',
+ '00000000-0000-0000-0000-A00000000001',
+ 'MECHANICAL',
+ '00000000-0000-0000-0000-B90000000001'
+)
+on conflict (customer_id) do nothing;

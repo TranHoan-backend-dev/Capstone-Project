@@ -31,7 +31,7 @@ public class WaterPrice {
   @Column(nullable = false)
   UsageTarget usageTarget;
 
-  @OneToMany(fetch = FetchType.EAGER)
+  @ManyToMany(fetch = FetchType.EAGER)
   List<PriceType> priceTypes;
 
   @Column(nullable = false)
