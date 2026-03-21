@@ -1,25 +1,14 @@
-DELETE
-FROM installation_form;
-DELETE
-FROM laterals;
-DELETE
-FROM water_supply_network;
-DELETE
-FROM neighborhood_unit;
-DELETE
-FROM hamlet;
-DELETE
-FROM commune;
-DELETE
-FROM road;
-DELETE
-FROM settlement;
-DELETE
-FROM construction_request;
-DELETE
-FROM cost_estimate;
-DELETE
-FROM roadmap;
+DELETE FROM installation_form;
+DELETE FROM laterals;
+DELETE FROM water_supply_network;
+DELETE FROM neighborhood_unit;
+DELETE FROM hamlet;
+DELETE FROM commune;
+DELETE FROM road;
+DELETE FROM settlement;
+DELETE FROM construction_request;
+DELETE FROM cost_estimate;
+DELETE FROM roadmap;
 
 INSERT INTO installation_form (form_code, address, bank_account_number, bank_account_provider_location,
                                citizen_identification_number, citizen_identification_provide_date,
@@ -416,127 +405,127 @@ VALUES ('2b3c4d5e-1000-4bbb-9ccc-bbbbbbbb0001', now(), 'Xóm 4 (Xã Mỹ Hưng)'
        ('2b3c4d5e-1000-4bbb-9ccc-bbbbbbbb0021', now(), 'Xóm 20', now(), '0f1c0a3a-3c3c-4f33-8c24-7a7c0d6a0008');
 
 INSERT INTO road (road_id, created_at, name, updated_at)
-VALUES ('3c4d5e6f-2000-4ccc-9ddd-cccccccc0001', now(), 'KĐT Hòa Vượng', now()),
-       ('3c4d5e6f-2000-4ccc-9ddd-cccccccc0002', now(), 'KĐT Mỹ Trung', now()),
-       ('3c4d5e6f-2000-4ccc-9ddd-cccccccc0003', now(), 'KĐT Thống Nhất', now()),
-       ('3c4d5e6f-2000-4ccc-9ddd-cccccccc0004', now(), 'Đường 38A', now()),
-       ('3c4d5e6f-2000-4ccc-9ddd-cccccccc0005', now(), 'Bắc Mỹ Tân', now()),
-       ('3c4d5e6f-2000-4ccc-9ddd-cccccccc0006', now(), 'Đường 10', now()),
-       ('3c4d5e6f-2000-4ccc-9ddd-cccccccc0007', now(), 'Đệ tứ', now()),
-       ('3c4d5e6f-2000-4ccc-9ddd-cccccccc0008', now(), 'Nam Mỹ Tân', now()),
-       ('3c4d5e6f-2000-4ccc-9ddd-cccccccc0009', now(), 'Quốc lộ 10', now()),
-       ('3c4d5e6f-2000-4ccc-9ddd-cccccccc0010', now(), 'Đường Trần Thừa', now()),
-       ('3c4d5e6f-2000-4ccc-9ddd-cccccccc0011', now(), 'Trần Thái Tông', now()),
-       ('3c4d5e6f-2000-4ccc-9ddd-cccccccc0012', now(), 'Hoàng Văn Thái', now()),
-       ('3c4d5e6f-2000-4ccc-9ddd-cccccccc0013', now(), 'Nguyễn Hữu Huân', now()),
-       ('3c4d5e6f-2000-4ccc-9ddd-cccccccc0014', now(), 'Đường Nam Ninh Hải', now()),
-       ('3c4d5e6f-2000-4ccc-9ddd-cccccccc0015', now(), 'Đường 21', now()),
-       ('3c4d5e6f-2000-4ccc-9ddd-cccccccc0016', now(), 'Đường 21B', now()),
-       ('3c4d5e6f-2000-4ccc-9ddd-cccccccc0017', now(), 'Đường 488B', now()),
-       ('3c4d5e6f-2000-4ccc-9ddd-cccccccc0018', now(), 'Đường 53B', now()),
-       ('3c4d5e6f-2000-4ccc-9ddd-cccccccc0019', now(), 'Cầu Điện Biên', now()),
-       ('3c4d5e6f-2000-4ccc-9ddd-cccccccc0020', now(), 'Chợ Mới', now()),
-       ('3c4d5e6f-2000-4ccc-9ddd-cccccccc0021', now(), 'Chợ Cũ Ngõ I+II', now()),
-       ('3c4d5e6f-2000-4ccc-9ddd-cccccccc0022', now(), 'Cầu Trạm Xá', now());
+VALUES ('3c4d5e6f-2000-4ccc-9ddd-cccc4ccc0001', now(), 'KĐT Hòa Vượng', now()),
+       ('3c4d5e6f-2000-4ccc-9ddd-cccc4ccc0002', now(), 'KĐT Mỹ Trung', now()),
+       ('3c4d5e6f-2000-4ccc-9ddd-cccc4ccc0003', now(), 'KĐT Thống Nhất', now()),
+       ('3c4d5e6f-2000-4ccc-9ddd-cccc4ccc0004', now(), 'Đường 38A', now()),
+       ('3c4d5e6f-2000-4ccc-9ddd-cccc4ccc0005', now(), 'Bắc Mỹ Tân', now()),
+       ('3c4d5e6f-2000-4ccc-9ddd-cccc4ccc0006', now(), 'Đường 10', now()),
+       ('3c4d5e6f-2000-4ccc-9ddd-cccc4ccc0007', now(), 'Đệ tứ', now()),
+       ('3c4d5e6f-2000-4ccc-9ddd-cccc4ccc0008', now(), 'Nam Mỹ Tân', now()),
+       ('3c4d5e6f-2000-4ccc-9ddd-cccc4ccc0009', now(), 'Quốc lộ 10', now()),
+       ('3c4d5e6f-2000-4ccc-9ddd-cccc4ccc0010', now(), 'Đường Trần Thừa', now()),
+       ('3c4d5e6f-2000-4ccc-9ddd-cccc4ccc0011', now(), 'Trần Thái Tông', now()),
+       ('3c4d5e6f-2000-4ccc-9ddd-cccc4ccc0012', now(), 'Hoàng Văn Thái', now()),
+       ('3c4d5e6f-2000-4ccc-9ddd-cccc4ccc0013', now(), 'Nguyễn Hữu Huân', now()),
+       ('3c4d5e6f-2000-4ccc-9ddd-cccc4ccc0014', now(), 'Đường Nam Ninh Hải', now()),
+       ('3c4d5e6f-2000-4ccc-9ddd-cccc4ccc0015', now(), 'Đường 21', now()),
+       ('3c4d5e6f-2000-4ccc-9ddd-cccc4ccc0016', now(), 'Đường 21B', now()),
+       ('3c4d5e6f-2000-4ccc-9ddd-cccc4ccc0017', now(), 'Đường 488B', now()),
+       ('3c4d5e6f-2000-4ccc-9ddd-cccc4ccc0018', now(), 'Đường 53B', now()),
+       ('3c4d5e6f-2000-4ccc-9ddd-cccc4ccc0019', now(), 'Cầu Điện Biên', now()),
+       ('3c4d5e6f-2000-4ccc-9ddd-cccc4ccc0020', now(), 'Chợ Mới', now()),
+       ('3c4d5e6f-2000-4ccc-9ddd-cccc4ccc0021', now(), 'Chợ Cũ Ngõ I+II', now()),
+       ('3c4d5e6f-2000-4ccc-9ddd-cccc4ccc0022', now(), 'Cầu Trạm Xá', now());
 
 INSERT INTO laterals (lateral_id, created_at, name, updated_at, water_supply_network_id)
-VALUES ('4d5e6f70-3000-4ddd-9eee-dddddddd0001', now(), 'A300', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddddddd0002', now(), 'B600m', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddddddd0003', now(), 'A600c', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddddddd0004', now(), 'C400', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddddddd0005', now(), 'Năng Tĩnh', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddddddd0006', now(), 'Cửa Bắc', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddddddd0007', now(), 'Bà Triệu', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddddddd0008', now(), 'Lộc Vượng', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddddddd0009', now(), 'Hạ Long', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddddddd0010', now(), 'Mỹ Tân', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddddddd0011', now(), 'Cấp nước Nam Định', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddddddd0012', now(), 'Lộc Hạ', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddddddd0013', now(), 'Lộc Hòa', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddddddd0014', now(), 'Mỹ Xá', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddddddd0015', now(), 'Thống Nhất', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddddddd0016', now(), 'Trần Tế Xương', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddddddd0017', now(), 'DHT Trực Ninh', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddddddd0018', now(), 'CQ Trực Ninh 1', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddddddd0019', now(), 'Cụm CN', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddddddd0020', now(), 'Xã Ninh Giang', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddddddd0021', now(), 'Xã Cổ Lễ', now(), NULL);
+VALUES ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0001', now(), 'A300', now(), NULL),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0002', now(), 'B600m', now(), NULL),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0003', now(), 'A600c', now(), NULL),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0004', now(), 'C400', now(), NULL),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0005', now(), 'Năng Tĩnh', now(), NULL),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0006', now(), 'Cửa Bắc', now(), NULL),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0007', now(), 'Bà Triệu', now(), NULL),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0008', now(), 'Lộc Vượng', now(), NULL),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0009', now(), 'Hạ Long', now(), NULL),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0010', now(), 'Mỹ Tân', now(), NULL),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0011', now(), 'Cấp nước Nam Định', now(), NULL),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0012', now(), 'Lộc Hạ', now(), NULL),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0013', now(), 'Lộc Hòa', now(), NULL),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0014', now(), 'Mỹ Xá', now(), NULL),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0015', now(), 'Thống Nhất', now(), NULL),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0016', now(), 'Trần Tế Xương', now(), NULL),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0017', now(), 'DHT Trực Ninh', now(), NULL),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0018', now(), 'CQ Trực Ninh 1', now(), NULL),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0019', now(), 'Cụm CN', now(), NULL),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0020', now(), 'Xã Ninh Giang', now(), NULL),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0021', now(), 'Xã Cổ Lễ', now(), NULL);
 
 INSERT INTO roadmap (roadmap_id, created_at, name, updated_at, lateral_id, water_supply_network_id)
-VALUES ('5e6f7081-4000-4eee-9fff-eeeeeeee0001', now(), '108-111-112e', now(), '4d5e6f70-3000-4ddd-9eee-dddddddd0002',
+VALUES ('5e6f7081-4000-4eee-9fff-eeee4eee0001', now(), '108-111-112e', now(), '4d5e6f70-3000-4ddd-9eee-dddd4ddd0002',
         '550e8400-e29b-41d4-a716-446655440001'),
-       ('5e6f7081-4000-4eee-9fff-eeeeeeee0002', now(), '108-111-112f', now(), '4d5e6f70-3000-4ddd-9eee-dddddddd0002',
+       ('5e6f7081-4000-4eee-9fff-eeee4eee0002', now(), '108-111-112f', now(), '4d5e6f70-3000-4ddd-9eee-dddd4ddd0002',
         '550e8400-e29b-41d4-a716-446655440001'),
-       ('5e6f7081-4000-4eee-9fff-eeeeeeee0003', now(), '108-111-112g', now(), '4d5e6f70-3000-4ddd-9eee-dddddddd0002',
+       ('5e6f7081-4000-4eee-9fff-eeee4eee0003', now(), '108-111-112g', now(), '4d5e6f70-3000-4ddd-9eee-dddd4ddd0002',
         '550e8400-e29b-41d4-a716-446655440001'),
-       ('5e6f7081-4000-4eee-9fff-eeeeeeee0004', now(), '06Va', now(), '4d5e6f70-3000-4ddd-9eee-dddddddd0001',
+       ('5e6f7081-4000-4eee-9fff-eeee4eee0004', now(), '06Va', now(), '4d5e6f70-3000-4ddd-9eee-dddd4ddd0001',
         '550e8400-e29b-41d4-a716-446655440001'),
-       ('5e6f7081-4000-4eee-9fff-eeeeeeee0005', now(), '06Vb', now(), '4d5e6f70-3000-4ddd-9eee-dddddddd0001',
+       ('5e6f7081-4000-4eee-9fff-eeee4eee0005', now(), '06Vb', now(), '4d5e6f70-3000-4ddd-9eee-dddd4ddd0001',
         '550e8400-e29b-41d4-a716-446655440001'),
-       ('5e6f7081-4000-4eee-9fff-eeeeeeee0006', now(), '29Va', now(), '4d5e6f70-3000-4ddd-9eee-dddddddd0003',
+       ('5e6f7081-4000-4eee-9fff-eeee4eee0006', now(), '29Va', now(), '4d5e6f70-3000-4ddd-9eee-dddd4ddd0003',
         '550e8400-e29b-41d4-a716-446655440001'),
-       ('5e6f7081-4000-4eee-9fff-eeeeeeee0007', now(), '29Vb', now(), '4d5e6f70-3000-4ddd-9eee-dddddddd0003',
+       ('5e6f7081-4000-4eee-9fff-eeee4eee0007', now(), '29Vb', now(), '4d5e6f70-3000-4ddd-9eee-dddd4ddd0003',
         '550e8400-e29b-41d4-a716-446655440001'),
-       ('5e6f7081-4000-4eee-9fff-eeeeeeee0008', now(), '29Vc', now(), '4d5e6f70-3000-4ddd-9eee-dddddddd0003',
+       ('5e6f7081-4000-4eee-9fff-eeee4eee0008', now(), '29Vc', now(), '4d5e6f70-3000-4ddd-9eee-dddd4ddd0003',
         '550e8400-e29b-41d4-a716-446655440001'),
-       ('5e6f7081-4000-4eee-9fff-eeeeeeee0009', now(), '31Va', now(), '4d5e6f70-3000-4ddd-9eee-dddddddd0003',
+       ('5e6f7081-4000-4eee-9fff-eeee4eee0009', now(), '31Va', now(), '4d5e6f70-3000-4ddd-9eee-dddd4ddd0003',
         '550e8400-e29b-41d4-a716-446655440001'),
-       ('5e6f7081-4000-4eee-9fff-eeeeeeee0010', now(), '31Vb', now(), '4d5e6f70-3000-4ddd-9eee-dddddddd0003',
+       ('5e6f7081-4000-4eee-9fff-eeee4eee0010', now(), '31Vb', now(), '4d5e6f70-3000-4ddd-9eee-dddd4ddd0003',
         '550e8400-e29b-41d4-a716-446655440001'),
-       ('5e6f7081-4000-4eee-9fff-eeeeeeee0011', now(), '31Vc', now(), '4d5e6f70-3000-4ddd-9eee-dddddddd0003',
+       ('5e6f7081-4000-4eee-9fff-eeee4eee0011', now(), '31Vc', now(), '4d5e6f70-3000-4ddd-9eee-dddd4ddd0003',
         '550e8400-e29b-41d4-a716-446655440001'),
-       ('5e6f7081-4000-4eee-9fff-eeeeeeee0012', now(), '08Va', now(), '4d5e6f70-3000-4ddd-9eee-dddddddd0001',
+       ('5e6f7081-4000-4eee-9fff-eeee4eee0012', now(), '08Va', now(), '4d5e6f70-3000-4ddd-9eee-dddd4ddd0001',
         '550e8400-e29b-41d4-a716-446655440001'),
-       ('5e6f7081-4000-4eee-9fff-eeeeeeee0013', now(), '08Vb', now(), '4d5e6f70-3000-4ddd-9eee-dddddddd0001',
+       ('5e6f7081-4000-4eee-9fff-eeee4eee0013', now(), '08Vb', now(), '4d5e6f70-3000-4ddd-9eee-dddd4ddd0001',
         '550e8400-e29b-41d4-a716-446655440001'),
-       ('5e6f7081-4000-4eee-9fff-eeeeeeee0014', now(), '134a', now(), '4d5e6f70-3000-4ddd-9eee-dddddddd0002',
+       ('5e6f7081-4000-4eee-9fff-eeee4eee0014', now(), '134a', now(), '4d5e6f70-3000-4ddd-9eee-dddd4ddd0002',
         '550e8400-e29b-41d4-a716-446655440001'),
-       ('5e6f7081-4000-4eee-9fff-eeeeeeee0015', now(), '134b', now(), '4d5e6f70-3000-4ddd-9eee-dddddddd0002',
+       ('5e6f7081-4000-4eee-9fff-eeee4eee0015', now(), '134b', now(), '4d5e6f70-3000-4ddd-9eee-dddd4ddd0002',
         '550e8400-e29b-41d4-a716-446655440001'),
-       ('5e6f7081-4000-4eee-9fff-eeeeeeee0016', now(), '179a', now(), '4d5e6f70-3000-4ddd-9eee-dddddddd0002',
+       ('5e6f7081-4000-4eee-9fff-eeee4eee0016', now(), '179a', now(), '4d5e6f70-3000-4ddd-9eee-dddd4ddd0002',
         '550e8400-e29b-41d4-a716-446655440001'),
-       ('5e6f7081-4000-4eee-9fff-eeeeeeee0017', now(), '179b', now(), '4d5e6f70-3000-4ddd-9eee-dddddddd0002',
+       ('5e6f7081-4000-4eee-9fff-eeee4eee0017', now(), '179b', now(), '4d5e6f70-3000-4ddd-9eee-dddd4ddd0002',
         '550e8400-e29b-41d4-a716-446655440001'),
-       ('5e6f7081-4000-4eee-9fff-eeeeeeee0018', now(), '188a', now(), '4d5e6f70-3000-4ddd-9eee-dddddddd0003',
+       ('5e6f7081-4000-4eee-9fff-eeee4eee0018', now(), '188a', now(), '4d5e6f70-3000-4ddd-9eee-dddd4ddd0003',
         '550e8400-e29b-41d4-a716-446655440001'),
-       ('5e6f7081-4000-4eee-9fff-eeeeeeee0019', now(), '188b', now(), '4d5e6f70-3000-4ddd-9eee-dddddddd0003',
+       ('5e6f7081-4000-4eee-9fff-eeee4eee0019', now(), '188b', now(), '4d5e6f70-3000-4ddd-9eee-dddd4ddd0003',
         '550e8400-e29b-41d4-a716-446655440001'),
-       ('5e6f7081-4000-4eee-9fff-eeeeeeee0020', now(), '197-198', now(), '4d5e6f70-3000-4ddd-9eee-dddddddd0002',
+       ('5e6f7081-4000-4eee-9fff-eeee4eee0020', now(), '197-198', now(), '4d5e6f70-3000-4ddd-9eee-dddd4ddd0002',
         '550e8400-e29b-41d4-a716-446655440001'),
-       ('5e6f7081-4000-4eee-9fff-eeeeeeee0021', now(), '172a', now(), '4d5e6f70-3000-4ddd-9eee-dddddddd0001',
+       ('5e6f7081-4000-4eee-9fff-eeee4eee0021', now(), '172a', now(), '4d5e6f70-3000-4ddd-9eee-dddd4ddd0001',
         '550e8400-e29b-41d4-a716-446655440001');
 
 INSERT INTO settlement (settlement_id, address, connection_fee, created_at,
                         job_content, note, registration_at, status, updated_at)
-VALUES ('6f708192-5000-4aaa-9bbb-ffffffff0001', 'Address 1', 1500000, now(), 'Job 1', 'Note 1', current_date,
+VALUES ('6f708192-5000-4aaa-9bbb-ffff4fff0001', 'Address 1', 1500000, now(), 'Job 1', 'Note 1', current_date,
         'PROCESSING', now()),
-       ('6f708192-5000-4aaa-9bbb-ffffffff0002', 'Address 2', 1600000, now(), 'Job 2', 'Note 2', current_date,
+       ('6f708192-5000-4aaa-9bbb-ffff4fff0002', 'Address 2', 1600000, now(), 'Job 2', 'Note 2', current_date,
         'PENDING_FOR_APPROVAL', now()),
-       ('6f708192-5000-4aaa-9bbb-ffffffff0003', 'Address 3', 1700000, now(), 'Job 3', 'Note 3', current_date,
+       ('6f708192-5000-4aaa-9bbb-ffff4fff0003', 'Address 3', 1700000, now(), 'Job 3', 'Note 3', current_date,
         'APPROVED', now()),
-       ('6f708192-5000-4aaa-9bbb-ffffffff0004', 'Address 4', 1800000, now(), 'Job 4', 'Note 4', current_date,
+       ('6f708192-5000-4aaa-9bbb-ffff4fff0004', 'Address 4', 1800000, now(), 'Job 4', 'Note 4', current_date,
         'REJECTED', now()),
-       ('6f708192-5000-4aaa-9bbb-ffffffff0005', 'Address 5', 1900000, now(), 'Job 5', 'Note 5', current_date,
+       ('6f708192-5000-4aaa-9bbb-ffff4fff0005', 'Address 5', 1900000, now(), 'Job 5', 'Note 5', current_date,
         'PROCESSING', now()),
-       ('6f708192-5000-4aaa-9bbb-ffffffff0006', 'Address 6', 2000000, now(), 'Job 6', 'Note 6', current_date,
+       ('6f708192-5000-4aaa-9bbb-ffff4fff0006', 'Address 6', 2000000, now(), 'Job 6', 'Note 6', current_date,
         'PENDING_FOR_APPROVAL', now()),
-       ('6f708192-5000-4aaa-9bbb-ffffffff0007', 'Address 7', 2100000, now(), 'Job 7', 'Note 7', current_date,
+       ('6f708192-5000-4aaa-9bbb-ffff4fff0007', 'Address 7', 2100000, now(), 'Job 7', 'Note 7', current_date,
         'APPROVED', now()),
-       ('6f708192-5000-4aaa-9bbb-ffffffff0008', 'Address 8', 2200000, now(), 'Job 8', 'Note 8', current_date,
+       ('6f708192-5000-4aaa-9bbb-ffff4fff0008', 'Address 8', 2200000, now(), 'Job 8', 'Note 8', current_date,
         'REJECTED', now()),
-       ('6f708192-5000-4aaa-9bbb-ffffffff0009', 'Address 9', 2300000, now(), 'Job 9', 'Note 9', current_date,
+       ('6f708192-5000-4aaa-9bbb-ffff4fff0009', 'Address 9', 2300000, now(), 'Job 9', 'Note 9', current_date,
         'PROCESSING', now()),
-       ('6f708192-5000-4aaa-9bbb-ffffffff0010', 'Address 10', 2400000, now(), 'Job 10', 'Note 10', current_date,
+       ('6f708192-5000-4aaa-9bbb-ffff4fff0010', 'Address 10', 2400000, now(), 'Job 10', 'Note 10', current_date,
         'APPROVED', now()),
-       ('6f708192-5000-4aaa-9bbb-ffffffff0011', 'Address 11', 2500000, now(), 'Job 11', 'Note 11', current_date,
+       ('6f708192-5000-4aaa-9bbb-ffff4fff0011', 'Address 11', 2500000, now(), 'Job 11', 'Note 11', current_date,
         'PROCESSING', now()),
-       ('6f708192-5000-4aaa-9bbb-ffffffff0012', 'Address 12', 2600000, now(), 'Job 12', 'Note 12', current_date,
+       ('6f708192-5000-4aaa-9bbb-ffff4fff0012', 'Address 12', 2600000, now(), 'Job 12', 'Note 12', current_date,
         'PENDING_FOR_APPROVAL', now()),
-       ('6f708192-5000-4aaa-9bbb-ffffffff0013', 'Address 13', 2700000, now(), 'Job 13', 'Note 13', current_date,
+       ('6f708192-5000-4aaa-9bbb-ffff4fff0013', 'Address 13', 2700000, now(), 'Job 13', 'Note 13', current_date,
         'APPROVED', now()),
-       ('6f708192-5000-4aaa-9bbb-ffffffff0014', 'Address 14', 2800000, now(), 'Job 14', 'Note 14', current_date,
+       ('6f708192-5000-4aaa-9bbb-ffff4fff0014', 'Address 14', 2800000, now(), 'Job 14', 'Note 14', current_date,
         'REJECTED', now()),
-       ('6f708192-5000-4aaa-9bbb-ffffffff0015', 'Address 15', 2900000, now(), 'Job 15', 'Note 15', current_date,
+       ('6f708192-5000-4aaa-9bbb-ffff4fff0015', 'Address 15', 2900000, now(), 'Job 15', 'Note 15', current_date,
         'PROCESSING', now());
 
 INSERT INTO construction_request (installation_form_code, address, contract_id, created_at,
@@ -567,23 +556,23 @@ INSERT INTO cost_estimate (estimation_id, address, construction_machinery_coeffi
                            survey_effort, survey_fee, updated_at, vat_coefficient, water_meter_serial,
                            installation_form_form_code, installation_form_form_number, significance)
 VALUES
-  ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', 'Address 1', 1, 1000000, 'admin', now(), 'Customer 1', 1, 200000,
+  ('7a8192a3-6000-4bbb-9ccc-gggg4ggg0001', 'Address 1', 1, 1000000, 'admin', now(), 'Customer 1', 1, 200000,
         'img1', 1, 300000, 1, 'Note 1', 'WM1', 1, current_date, 1, 150000, now(), 1, 'SER1',
         'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'FORM-2024-0001', '{"surveyStaff": "hehe", "companyLeaderShip": "kaka", "planningTechnicalHead": "huhu"}'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0002', 'Address 2', 1, 1000000, 'admin', now(), 'Customer 2', 1, 200000,
+       ('7a8192a3-6000-4bbb-9ccc-gggg4ggg0002', 'Address 2', 1, 1000000, 'admin', now(), 'Customer 2', 1, 200000,
         'img2', 1, 300000, 1, 'Note 2', 'WM2', 1, current_date, 1, 150000, now(), 1, 'SER2',
         'b1eebc99-9c0b-4ef8-bb6d-6bb9bd380a12', 'FORM-2024-0002', '{"surveyStaff": "hehe", "companyLeaderShip": "kaka", "planningTechnicalHead": "huhu"}'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0003', 'Address 3', 1, 1000000, 'admin', now(), 'Customer 3', 1, 200000,
+       ('7a8192a3-6000-4bbb-9ccc-gggg4ggg0003', 'Address 3', 1, 1000000, 'admin', now(), 'Customer 3', 1, 200000,
         'img3', 1, 300000, 1, 'Note 3', 'WM3', 1, current_date, 1, 150000, now(), 1, 'SER3',
         'c2eebc99-9c0b-4ef8-bb6d-6bb9bd380a13', 'FORM-2024-0003', '{"surveyStaff": "hehe", "companyLeaderShip": "kaka", "planningTechnicalHead": "huhu"}'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0004', 'Address 4', 1, 1000000, 'admin', now(), 'Customer 4', 1, 200000,
+       ('7a8192a3-6000-4bbb-9ccc-gggg4ggg0004', 'Address 4', 1, 1000000, 'admin', now(), 'Customer 4', 1, 200000,
         'img4', 1, 300000, 1, 'Note 4', 'WM4', 1, current_date, 1, 150000, now(),
         1, 'SER4', 'd3eebc99-9c0b-4ef8-bb6d-6bb9bd380a14', 'FORM-2024-0004', '{
          "surveyStaff": "hehe",
          "companyLeaderShip": "kaka",
          "planningTechnicalHead": "huhu"
        }'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0005', 'Address 5', 1, 1000000, 'admin', now(), 'Customer 5', 1, 200000,
+       ('7a8192a3-6000-4bbb-9ccc-gggg4ggg0005', 'Address 5', 1, 1000000, 'admin', now(), 'Customer 5', 1, 200000,
         'img5', 1, 300000, 1, 'Note 5', 'WM5', 1, current_date, 1, 150000, now(), 1, 'SER5',
         'e4eebc99-9c0b-4ef8-bb6d-6bb9bd380a15', 'FORM-2024-0005', '{
          "surveyStaff": "hehe",
