@@ -625,3 +625,25 @@ export const deleteSettlement = (accessToken: string, settlementId: string) => {
     },
   );
 };
+
+export const signSettlement = (
+  accessToken: string,
+  settlementId: string,
+  signatures: {
+    president: string;
+    ptHead: string;
+    surveyStaff: string;
+    constructionPresident: string;
+  },
+) => {
+  return axios.post(
+    `${API_GATEWAY_URL}/construction/settlements/sign/${settlementId}`,
+    signatures,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    },
+  );
+};

@@ -43,12 +43,12 @@ const statusMap = {
     color: "danger" as const,
     bg: DarkRedChip,
   },
-  PENDING_FOR_APPROVAL: {
+  PROCESSING: {
     label: "Đang xử lý",
     color: "default" as const,
     bg: "bg-blue-100 text-blue-800",
   },
-  PROCESSING: {
+  PENDING_FOR_APPROVAL: {
     label: "Chờ duyệt",
     color: "warning" as const,
     bg: DarkYellowChip,
@@ -93,10 +93,17 @@ export const ResultsTable = ({
     SettlementDetail | undefined
   >();
   const [isDetailLoading, setIsDetailLoading] = useState(false);
-
+  const [isDocumentModalOpen, setIsDocumentModalOpen] = useState(false);
+  const [selectedSettlementId, setSelectedSettlementId] = useState<
+    string | null
+  >(null);
   const [page, setPage] = useState(1);
   const pageSize = 10;
-
+  const [documentData, setDocumentData] = useState<any[]>([]);
+  const [documentLoading, setDocumentLoading] = useState(false);
+  const [selectedFormNumber, setSelectedFormNumber] = useState<string | null>(
+    null,
+  );
   // Fetch data khi filter thay đổi
   useEffect(() => {
     setLoading(true);
@@ -206,7 +213,48 @@ export const ResultsTable = ({
       };
     });
   };
+  const fetchSettlementDocument = async (id: string) => {
+    try {
+      setDocumentLoading(true);
 
+      const res = await authFetch(`/api/construction/settlements/${id}`);
+
+      if (!res.ok) throw new Error("Fetch failed");
+
+      const json = await res.json();
+      const detail = json?.data.data;
+
+      const mapped = mapToDocumentRows(detail);
+
+      setDocumentData(mapped);
+      setSelectedSettlementId(id);
+      setSelectedFormNumber(detail.formNumber);
+      setIsDocumentModalOpen(true);
+    } catch (e: any) {
+      CallToast({
+        title: "Lỗi",
+        message: e.message,
+        color: "danger",
+      });
+    } finally {
+      setDocumentLoading(false);
+    }
+  };
+  const mapToDocumentRows = (detail: SettlementDetail) => {
+    return [
+      {
+        id: detail.id || detail.id,
+        stt: 1,
+        formNumber: detail.formNumber,
+        jobContent: detail.jobContent,
+        note: detail.note,
+        connectionFee: detail.connectionFee,
+        address: detail.address,
+        registrationAt: detail.registrationAt,
+        status: detail.status,
+      },
+    ];
+  };
   const handleConfirmDelete = async () => {
     if (!deleteId) return;
     try {
@@ -253,6 +301,14 @@ export const ResultsTable = ({
       //     fetchSettlementDetail(id);
       //   },
       // },
+      {
+        content: "Ký duyệt",
+        icon: PencilSquareIcon,
+        className: "text-green-600 hover:bg-green-50",
+        onClick: (id: string) => {
+          fetchSettlementDocument(id);
+        },
+      },
       {
         content: "Chỉnh sửa",
         icon: EditIcon,
@@ -380,6 +436,14 @@ export const ResultsTable = ({
         }}
         data={selectedSettlementDetail}
         loading={isDetailLoading}
+      />
+
+      <SettlementDocumentModal
+        isOpen={isDocumentModalOpen}
+        onCloseAction={() => setIsDocumentModalOpen(false)}
+        data={documentData}
+        settlementId={selectedSettlementId || undefined}
+        selectedFormNumber={selectedFormNumber || ""}
       />
     </>
   );
