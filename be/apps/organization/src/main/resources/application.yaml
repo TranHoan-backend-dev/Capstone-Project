@@ -49,3 +49,11 @@ springdoc:
   swagger-ui:
     enabled: true
     path: /swagger-ui/index.html
+rabbit-mq-config:
+  exchange: exchange
+  queue: construction_queue
+  entities:
+    - page
+  actions:
+    - update
+    - delete
