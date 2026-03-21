@@ -62,7 +62,6 @@ public class ReceiptServiceImpl implements ReceiptService {
       .isPaid(request.isPaid())
       .significance(ReceiptSignificance.builder()
         .receiptCreator(request.significanceOfReceiptCreator())
-        .treasurer(request.significanceOfTreasurer())
         .build())
       .build();
 
@@ -97,6 +96,10 @@ public class ReceiptServiceImpl implements ReceiptService {
     }
     if (request.isPaid() != null) {
       receipt.setIsPaid(request.isPaid());
+    }
+    if (request.significanceOfTreasurer() != null && !request.significanceOfTreasurer().isBlank()) {
+      var significance = receipt.getSignificance();
+      significance.setTreasurer(request.significanceOfTreasurer());
     }
 
     var saved = receiptRepo.save(receipt);

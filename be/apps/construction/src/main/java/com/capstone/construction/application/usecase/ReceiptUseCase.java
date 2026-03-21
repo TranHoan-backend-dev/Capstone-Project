@@ -1,6 +1,5 @@
 package com.capstone.construction.application.usecase;
 
-import com.capstone.common.annotation.AppLog;
 import com.capstone.construction.application.business.receipt.ReceiptService;
 import com.capstone.construction.application.dto.request.receipt.CreateRequest;
 import com.capstone.construction.application.dto.request.receipt.UpdateRequest;
@@ -10,14 +9,11 @@ import com.capstone.construction.application.event.producer.receipt.CreatedEvent
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
-@AppLog
 @Component
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -36,8 +32,12 @@ public class ReceiptUseCase {
 
   @Transactional(rollbackFor = Exception.class)
   public ReceiptResponse createReceipt(@NonNull CreateRequest request) {
-    log.info("UseCase: Creating receipt for form: {}/{}", request.formCode(), request.formNumber());
-    var response = receiptService.createReceipt(request);
+    return receiptService.createReceipt(request);
+  }
+
+  @Transactional(rollbackFor = Exception.class)
+  public ReceiptResponse updateReceipt(@NonNull UpdateRequest request) {
+    var response = receiptService.updateReceipt(request);
 
     if (response != null && response.isPaid() && response.significance().isReceiptFullySigned()) {
       // Orchestrate event publication after successful service execution
@@ -56,19 +56,11 @@ public class ReceiptUseCase {
   }
 
   @Transactional(rollbackFor = Exception.class)
-  public ReceiptResponse updateReceipt(@NonNull UpdateRequest request) {
-    log.info("UseCase: Updating receipt for form: {}/{}", request.formCode(), request.formNumber());
-    return receiptService.updateReceipt(request);
-  }
-
-  @Transactional(rollbackFor = Exception.class)
   public void deleteReceipt(String formCode, String formNumber) {
-    log.info("UseCase: Deleting receipt for form: {}/{}", formCode, formNumber);
     receiptService.deleteReceipt(formCode, formNumber);
   }
 
   public ReceiptResponse getReceipt(String formCode, String formNumber) {
-    log.info("UseCase: Fetching receipt for form: {}/{}", formCode, formNumber);
     return receiptService.getReceipt(formCode, formNumber);
   }
 }
