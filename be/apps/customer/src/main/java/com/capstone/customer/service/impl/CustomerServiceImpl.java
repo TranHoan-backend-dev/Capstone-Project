@@ -78,20 +78,23 @@ public class CustomerServiceImpl implements CustomerService {
   private void setProperties2(Customer customer, String s, String s2, String s3, String s4) {
     if (s != null && !s.isBlank() &&
       s2 != null && !s2.isBlank()) {
-      var status = constructionService.checkExistence(s, s2).data().toString();
-      if (!Boolean.parseBoolean(status.trim())) {
+      var status = constructionService.checkExistence(s, s2);
+      if (status) {
         throw new NotExistingException(String.format(SharedMessage.MES_24, s2, s));
       }
       customer.setFormNumber(s2);
       customer.setFormCode(s);
     }
     if (s3 != null) {
+      log.info("water price: {}", !deviceService.checkExistenceOfWaterPrice(s3));
       if (!deviceService.checkExistenceOfWaterPrice(s3)) {
         throw new IllegalArgumentException(Message.ENT_28);
       }
       customer.setWaterPriceId(s3);
     }
     if (s4 != null) {
+      log.info("hehe");
+      log.info("water meter: {}", !deviceService.checkExistenceOfWaterMeter(s4));
       if (!deviceService.checkExistenceOfWaterMeter(s4)) {
         throw new IllegalArgumentException(Message.ENT_29);
       }
@@ -100,24 +103,31 @@ public class CustomerServiceImpl implements CustomerService {
   }
 
   private void setProperties(Customer customer, Boolean free, Boolean sale, String s, String s2, Integer integer, String s3, Integer integer2) {
+    log.info("1");
     if (free != null) {
       customer.setIsFree(free);
     }
+    log.info("2");
     if (sale != null) {
       customer.setIsSale(sale);
     }
+    log.info("3");
     if (s != null) {
       customer.setM3Sale(s);
     }
+    log.info("4");
     if (s2 != null) {
       customer.setFixRate(s2);
     }
+    log.info("5");
     if (integer != null) {
       customer.setInstallationFee(integer);
     }
+    log.info("6");
     if (s3 != null) {
       customer.setDeductionPeriod(s3);
     }
+    log.info("7");
     if (integer2 != null) {
       customer.setMonthlyRent(integer2);
     }

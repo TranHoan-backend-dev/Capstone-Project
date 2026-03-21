@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, ScrollView } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import MeterInputInfoCard from './MeterInputInfoCard';
 import MeterInputStatusCard from './MeterInputStatusCard';
 import MeterInputIndexCard from './MeterInputIndexCard';
@@ -19,12 +20,12 @@ export default function MeterInputForm({
   customerName = 'Nguyễn Văn Tiến',
   address = '621, Trường Chinh, Phương Nam Định',
 }: MeterInputFormProps) {
+  const navigation = useNavigation();
   const [waterType, setWaterType] = useState('normal');
   const [meterStatus, setMeterStatus] = useState('binh-thuong');
   const [oldIndex] = useState('621');
   const [newIndex, setNewIndex] = useState('588');
   const [m3, setM3] = useState('4');
-  const [amount] = useState('39.560');
   const [image, setImage] = useState<string | null>(null);
   const [showImagePreview, setShowImagePreview] = useState(false);
 
@@ -54,9 +55,11 @@ export default function MeterInputForm({
   };
 
   const handleTakePhoto = () => {
-    // Mock: Simulate taking a photo
-    setImage('https://via.placeholder.com/400x300?text=Hình+ảnh+định+kiểm');
-    console.log('Take photo');
+    navigation.navigate('CaptureWaterMeter' as never, {
+      customerId,
+      customerName,
+      address,
+    } as never);
   };
 
   const handleViewInvoice = () => {

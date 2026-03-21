@@ -8,7 +8,9 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.util.List;
+import java.util.Objects;
 
+@Setter
 @Table
 @Getter
 @Entity
@@ -28,4 +30,12 @@ public class UsageHistory {
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(columnDefinition = "jsonb")
   List<Usage> usages;
+
+  @Column(nullable = false, unique = true)
+  String customerId;
+
+  public void addNewUsage(Usage usage) {
+    Objects.requireNonNull(usage);
+    usages.add(usage);
+  }
 }

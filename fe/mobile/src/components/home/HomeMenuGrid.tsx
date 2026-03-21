@@ -38,7 +38,14 @@ export default function HomeMenuGrid() {
 
         <MenuItemCard
           icon="bell-outline"
-          label="Gửi thông báo"
+          label="Thông báo"
+          onPress={() => navigation.navigate('Notification')}
+        />
+
+        <MenuItemCard
+          icon="image-check-outline"
+          label="Duyệt ảnh"
+          onPress={() => navigation.navigate('VerifyMeterReadings')}
         />
       </View>
     </>
