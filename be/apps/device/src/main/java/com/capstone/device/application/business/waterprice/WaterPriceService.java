@@ -2,7 +2,7 @@ package com.capstone.device.application.business.waterprice;
 
 import com.capstone.device.application.dto.request.price.CreateRequest;
 import com.capstone.device.application.dto.request.price.UpdateRequest;
-import com.capstone.device.application.dto.response.WaterPriceResponse;
+import com.capstone.device.application.dto.response.water.WaterPriceResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

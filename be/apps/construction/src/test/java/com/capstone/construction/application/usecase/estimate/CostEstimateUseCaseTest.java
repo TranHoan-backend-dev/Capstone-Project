@@ -66,12 +66,18 @@ class CostEstimateUseCaseTest {
       "Customer Name", "Address", LocalDateTime.now(), "user-123", formCode, formNumber, "OWM-123");
 
     updateRequest = new UpdateRequest(
-      "Name", "Addr", "Note", 100, 100, 1, 100, 1, 1, 1, 1, 1, 1, 100, null, "SN", "METER", true);
+      new UpdateRequest.GeneralInformation(
+        "Name", "Addr", "Note", 100, 100, 1, 100, 1, 1, 1, 1, 1, 1, 100, null, "SN", "METER"
+      ),
+      Collections.emptyList(),
+      true);
 
     mockResponse = new CostEstimateResponse(
-      "id-123", "Customer Name", "Address", "Note", 1000, 500, 1, 2000, 10, 5, 10, 5, 10, 2, 100, "url",
-      LocalDateTime.now(), LocalDateTime.now(), LocalDate.now(), "user-123", "SN123", "METER-123",
-      new InstallationFormId(formCode, formNumber));
+      new CostEstimateResponse.GeneralInformation(
+        "id-123", "Customer Name", "Address", "Note", 1000, 500, 1, 2000, 10, 5, 10, 5, 10, 2, 100, "url",
+        LocalDateTime.now(), LocalDateTime.now(), LocalDate.now(), "user-123", "SN123", "METER-123",
+        new InstallationFormId(formCode, formNumber)),
+      Collections.emptyList());
   }
 
   @Test
@@ -129,7 +135,7 @@ class CostEstimateUseCaseTest {
 
     // Assert
     assertNotNull(response);
-    assertEquals("id-123", response.estimationId());
+    assertEquals("id-123", response.generalInformation().estimationId());
   }
 
   @Test

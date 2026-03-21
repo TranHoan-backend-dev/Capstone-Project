@@ -114,7 +114,7 @@ public class CostEstimateController {
     @ApiResponse(responseCode = "404", description = "Không tìm thấy dự toán hoặc nhân viên", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD')")
-  public ResponseEntity<?> requireSignificances(@RequestBody @Valid AssignTheSignificanceRequest request) {
+  public ResponseEntity<WrapperApiResponse> requireSignificances(@RequestBody @Valid AssignTheSignificanceRequest request) {
     log.info("REST request to sign cost estimate: {}", request);
     estimateUseCase.assignStaffForSignCostEstimate(request);
     return Utils.returnOkResponse("Yêu cầu ký duyệt dự toán thành công", null);
@@ -131,7 +131,7 @@ public class CostEstimateController {
     @ApiResponse(responseCode = "404", description = "Không tìm thấy dự toán", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'SURVEY_STAFF')")
-  public ResponseEntity<?> sign(
+  public ResponseEntity<WrapperApiResponse> sign(
     @RequestBody @Valid SignRequest request,
     @AuthenticationPrincipal Jwt jwt
   ) {

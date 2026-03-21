@@ -1,7 +1,14 @@
 import {
+  ApiResponse,
   ApproveInstallationPayload,
   NewInstallationFormPayload,
+  SettlementItem,
 } from "@/types";
+import {
+  SettlementDetail,
+  SettlementFilterRequest,
+  SettlementRequest,
+} from "@/types/construction/settlement.type";
 import { UpdateEstimateRequest } from "@/types";
 import { API_GATEWAY_URL } from "@/utils/constraints";
 import axios from "axios";
@@ -499,6 +506,91 @@ export const assignInstallationForm = async (
   return res.data;
 };
 
+export const getAllSettlements = (
+  accessToken: string,
+  page: number,
+  size: number,
+  sort: string,
+) =>
+  axios.get(`${API_GATEWAY_URL}/construction/settlements`, {
+    params: {
+      page,
+      size,
+      sort,
+    },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+export const filterSettlements = async (
+  accessToken: string,
+  filterRequest: any,
+  page: number,
+  size: number,
+  sort: string,
+) =>
+  axios.get(`${API_GATEWAY_URL}/construction/settlements/filter`, {
+    params: {
+      ...filterRequest,
+      page,
+      size,
+      sort,
+      status: filterRequest.status?.[0],
+    },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+export const getSettlementById = async (
+  accessToken: string,
+  settlementId: string,
+) =>
+  axios.get(`${API_GATEWAY_URL}/construction/settlements/${settlementId}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+export const createSettlement = (
+  accessToken: string,
+  request: SettlementRequest,
+) => {
+  return axios.post(`${API_GATEWAY_URL}/construction/settlements`, request, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
+export const updateSettlement = (
+  accessToken: string,
+  settlementId: string,
+  request: SettlementRequest,
+) => {
+  return axios.put(
+    `${API_GATEWAY_URL}/construction/settlements/${settlementId}`,
+    request,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+};
+
+export const deleteSettlement = (accessToken: string, settlementId: string) => {
+  return axios.delete(
+    `${API_GATEWAY_URL}/construction/settlements/${settlementId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+};
+
 export const getAllEstimates = (
   accessToken: string,
   page: number,
@@ -522,7 +614,6 @@ export const getAllEstimates = (
     },
   });
 
-// services/construction.service.ts
 export const getEstimateById = (accessToken: string, estimateId: string) =>
   axios.get(`${API_GATEWAY_URL}/construction/estimates/${estimateId}`, {
     headers: {

@@ -5,7 +5,7 @@ import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
 import com.capstone.device.application.dto.request.metertype.CreateRequest;
 import com.capstone.device.application.dto.request.metertype.UpdateRequest;
-import com.capstone.device.application.dto.response.WaterMeterTypeResponse;
+import com.capstone.device.application.dto.response.water.WaterMeterTypeResponse;
 import com.capstone.device.application.usecase.MeterTypeUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

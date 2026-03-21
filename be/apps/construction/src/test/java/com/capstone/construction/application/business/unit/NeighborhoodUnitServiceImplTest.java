@@ -41,7 +41,8 @@ class NeighborhoodUnitServiceImplTest {
   void should_CreateUnit_When_RequestIsValid() {
     // Given
     var request = new NeighborhoodUnitRequest("Unit Test", "commune-id");
-    var commune = new Commune("commune-id", "Commune Test", CommuneType.URBAN_WARD, LocalDateTime.now(),
+    // Commune constructor has 6 fields: communeId, name, nameSearch, type, createdAt, updatedAt
+    var commune = new Commune("commune-id", "Commune Test", null, CommuneType.URBAN_WARD, LocalDateTime.now(),
         LocalDateTime.now());
 
     when(unitRepository.existsByName(request.name())).thenReturn(false);
@@ -94,9 +95,9 @@ class NeighborhoodUnitServiceImplTest {
     // Given
     var id = "unit-id";
     var request = new NeighborhoodUnitRequest("Unit Updated", "new-commune-id");
-    var commune = new Commune("new-commune-id", "Commune New", CommuneType.URBAN_WARD, LocalDateTime.now(),
+    var commune = new Commune("new-commune-id", "Commune New", null, CommuneType.URBAN_WARD, LocalDateTime.now(),
         LocalDateTime.now());
-    var existingCommune = new Commune("old-commune-id", "Commune Old", CommuneType.URBAN_WARD, LocalDateTime.now(),
+    var existingCommune = new Commune("old-commune-id", "Commune Old", null, CommuneType.URBAN_WARD, LocalDateTime.now(),
         LocalDateTime.now());
     var existingUnit = new NeighborhoodUnit(id, "Unit Old", existingCommune, LocalDateTime.now(),
         LocalDateTime.now());
@@ -135,7 +136,7 @@ class NeighborhoodUnitServiceImplTest {
     // Given
     var id = "unit-id";
     var request = new NeighborhoodUnitRequest("Unit Existing", "commune-id");
-    var commune = new Commune("commune-id", "Commune", CommuneType.URBAN_WARD, LocalDateTime.now(),
+    var commune = new Commune("commune-id", "Commune", null, CommuneType.URBAN_WARD, LocalDateTime.now(),
         LocalDateTime.now());
     var existingUnit = new NeighborhoodUnit(id, "Unit Old", commune, LocalDateTime.now(), LocalDateTime.now());
 
@@ -155,7 +156,7 @@ class NeighborhoodUnitServiceImplTest {
     // Given
     var id = "unit-id";
     var request = new NeighborhoodUnitRequest("Unit Updated", "non-existent-commune");
-    var existingCommune = new Commune("old-commune-id", "Commune Old", CommuneType.URBAN_WARD, LocalDateTime.now(),
+    var existingCommune = new Commune("old-commune-id", "Commune Old", null, CommuneType.URBAN_WARD, LocalDateTime.now(),
         LocalDateTime.now());
     var existingUnit = new NeighborhoodUnit(id, "Unit Old", existingCommune, LocalDateTime.now(),
         LocalDateTime.now());
@@ -202,7 +203,7 @@ class NeighborhoodUnitServiceImplTest {
   void should_ReturnUnit_When_GetByIdFound() {
     // Given
     var id = "unit-id";
-    var commune = new Commune("commune-id", "Commune", CommuneType.URBAN_WARD, LocalDateTime.now(),
+    var commune = new Commune("commune-id", "Commune", null, CommuneType.URBAN_WARD, LocalDateTime.now(),
         LocalDateTime.now());
     var unit = new NeighborhoodUnit(id, "Unit Test", commune, LocalDateTime.now(), LocalDateTime.now());
 
@@ -232,7 +233,7 @@ class NeighborhoodUnitServiceImplTest {
   void should_ReturnPage_When_GetAllUnits() {
     // Given
     var pageable = Pageable.unpaged();
-    var commune = new Commune("commune-id", "Commune", CommuneType.URBAN_WARD, LocalDateTime.now(),
+    var commune = new Commune("commune-id", "Commune", null, CommuneType.URBAN_WARD, LocalDateTime.now(),
         LocalDateTime.now());
     var unit = new NeighborhoodUnit("id", "Unit Test", commune, LocalDateTime.now(), LocalDateTime.now());
     var page = new PageImpl<>(List.of(unit));

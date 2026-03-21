@@ -8,6 +8,5 @@ public record CreatedEvent(
   String receiptNumber,
   String customerName,
   String address,
-  LocalDate paymentDate,
-  Boolean isPaid
+  LocalDate paymentDate
 ) {}

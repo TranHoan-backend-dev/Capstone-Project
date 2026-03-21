@@ -8,4 +8,5 @@ export * from "./neighborhood-unit.type";
 export * from "./installation-form-new-item.type";
 export * from "./design-processing.type";
 export * from "./survey-assignment.type";
+export * from "./settlement.type";
 export * from "./estimate.type";

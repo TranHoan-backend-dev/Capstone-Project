@@ -6,7 +6,7 @@ import com.capstone.common.utils.Utils;
 import com.capstone.device.application.business.waterprice.WaterPriceService;
 import com.capstone.device.application.dto.request.price.CreateRequest;
 import com.capstone.device.application.dto.request.price.UpdateRequest;
-import com.capstone.device.application.dto.response.WaterPriceResponse;
+import com.capstone.device.application.dto.response.water.WaterPriceResponse;
 import com.capstone.device.application.usecase.WaterPriceUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
