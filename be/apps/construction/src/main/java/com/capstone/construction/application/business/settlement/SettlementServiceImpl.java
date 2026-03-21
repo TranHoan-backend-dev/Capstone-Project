@@ -129,7 +129,8 @@ public class SettlementServiceImpl implements SettlementService {
       settlement.getUpdatedAt(),
       settlement.getRegistrationAt(),
       settlement.getInstallationForm().getFormCode(),
-      settlement.getInstallationForm().getFormNumber()
+      settlement.getInstallationForm().getFormNumber(),
+      settlement.getSignificance()
     );
   }
 }

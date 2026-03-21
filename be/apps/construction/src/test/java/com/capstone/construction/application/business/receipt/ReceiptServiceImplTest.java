@@ -48,12 +48,15 @@ class ReceiptServiceImplTest {
   void setUp() {
     formId = new InstallationFormId("LD", "2024001");
     form = new InstallationForm();
+    form.setCustomerName("Customer Name");
+    form.setAddress("Customer Address");
     ReflectionTestUtils.setField(form, "id", formId);
 
+    // CreateRequest(formCode, formNumber, receiptNumber, paymentReason, totalMoneyInDigit, totalMoneyInCharacters, attach, paymentDate, isPaid, significanceOfReceiptCreator)
     createRequest = new CreateRequest(
       "LD", "2024001", "BL001",
-      "Customer", "", "", "",
-      LocalDate.now(), true, "", ""
+      "Payment Reason", "1000", "One Thousand", "http://attach",
+      LocalDate.now(), true, "http://creator-sign"
     );
   }
 
@@ -71,7 +74,11 @@ class ReceiptServiceImplTest {
     estimate.setSignificance(significance);
 
     when(ceRepo.findByInstallationForm(form)).thenReturn(Optional.of(estimate));
-    when(receiptRepo.save(any())).thenAnswer(i -> i.getArguments()[0]);
+    when(receiptRepo.save(any())).thenAnswer(i -> {
+        Receipt r = i.getArgument(0);
+        ReflectionTestUtils.setField(r, "installationFormId", formId);
+        return r;
+    });
 
     var response = receiptService.createReceipt(createRequest);
 
@@ -129,7 +136,8 @@ class ReceiptServiceImplTest {
   @Test
   @DisplayName("Update receipt successfully")
   void should_UpdateReceipt_Fully() {
-    var update = new UpdateRequest("LD", "2024001", "NEW-BL", "New Name", "New Addr", LocalDate.now(), false);
+    // UpdateRequest(formCode, formNumber, receiptNumber, customerName, address, paymentDate, isPaid, significanceOfTreasurer)
+    var update = new UpdateRequest("LD", "2024001", "NEW-BL", "New Name", "New Addr", LocalDate.now(), false, "http://treasurer-sign");
     var receipt = new Receipt();
     ReflectionTestUtils.setField(receipt, "installationForm", form);
     ReflectionTestUtils.setField(receipt, "installationFormId", formId);
