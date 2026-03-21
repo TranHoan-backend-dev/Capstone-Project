@@ -135,6 +135,9 @@ create table public.construction_request
   updated_at                    timestamp(6) not null,
   installation_form_form_code   varchar(255),
   installation_form_form_number varchar(36),
+    status varchar(255) not null
+        constraint settlement_status_check
+        check ((status)::text = ANY ((ARRAY ['PROCESSING', 'PENDING_FOR_APPROVAL', 'APPROVED', 'REJECTED'])::text[])),
   constraint uk3l14rwso7ddv5c1nrfvjs4fka
     unique (installation_form_form_code, installation_form_form_number),
   constraint fkcw1o1cf9l9e3x8w0cp5leitop
@@ -251,6 +254,9 @@ create table public.settlement
   updated_at                    timestamp(6)   not null,
   installation_form_form_code   varchar(255),
   installation_form_form_number varchar(36),
+    status varchar(255) not null
+        constraint settlement_status_check
+        check ((status)::text = ANY ((ARRAY ['PROCESSING', 'PENDING_FOR_APPROVAL', 'APPROVED', 'REJECTED'])::text[])),
   constraint uka16ybuafkf2crgemm1nivc0hs
     unique (installation_form_form_code, installation_form_form_number),
   constraint fk7glq90muysfwma3d7swfrx0gh
