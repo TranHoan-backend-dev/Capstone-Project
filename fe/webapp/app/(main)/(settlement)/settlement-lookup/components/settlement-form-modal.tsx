@@ -33,6 +33,8 @@ export const SettlementFormModal = ({
   onSubmit,
 }: SettlementFormModalProps) => {
   const [form, setForm] = useState({
+    formCode: "",
+    formNumber: "",
     jobContent: "",
     address: "",
     connectionFee: "",
@@ -48,6 +50,8 @@ export const SettlementFormModal = ({
   useEffect(() => {
     if (mode === "update" && initialData) {
       setForm({
+        formCode: initialData.formCode,
+        formNumber: initialData.formNumber,
         jobContent: initialData.jobContent || "",
         address: initialData.address || "",
         connectionFee: initialData.connectionFee || "",
@@ -57,6 +61,8 @@ export const SettlementFormModal = ({
       });
     } else if (mode === "create") {
       setForm({
+        formCode: "",
+        formNumber: "",
         jobContent: "",
         address: "",
         connectionFee: "",
@@ -145,8 +151,19 @@ export const SettlementFormModal = ({
 
         <ModalBody className="gap-4">
           <CustomInput
+            label="Mã form"
+            value={form.formCode}
+            onChange={(e) => handleChange("formCode", e.target.value)}
+          />
+
+          <CustomInput
+            label="Số form"
+            value={form.formNumber}
+            onChange={(e) => handleChange("formNumber", e.target.value)}
+          />
+
+          <CustomInput
             label="Nội dung công việc"
-            placeholder="Nhập nội dung công việc"
             value={form.jobContent}
             onChange={(e) => handleChange("jobContent", e.target.value)}
             isRequired
@@ -157,7 +174,6 @@ export const SettlementFormModal = ({
 
           <CustomInput
             label="Địa chỉ lắp đặt"
-            placeholder="Nhập địa chỉ lắp đặt"
             value={form.address}
             onChange={(e) => handleChange("address", e.target.value)}
             isRequired
@@ -168,14 +184,8 @@ export const SettlementFormModal = ({
 
           <CustomInput
             label="Chi phí đấu nối"
-            placeholder="Nhập chi phí đấu nối"
             value={form.connectionFee}
             onChange={(e) => handleChange("connectionFee", e.target.value)}
-            startContent={
-              <div className="pointer-events-none flex items-center">
-                <span className="text-default-400 text-small">₫</span>
-              </div>
-            }
             isRequired
             isInvalid={!!errors.connectionFee}
             errorMessage={errors.connectionFee}

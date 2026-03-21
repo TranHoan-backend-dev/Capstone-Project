@@ -1,6 +1,8 @@
 export interface SettlementItem {
   stt: string;
   id: string;
+  formCode: string;
+  formNumber: string;
   jobContent: string;
   connectionFee: string;
   address: string;
@@ -72,18 +74,19 @@ export interface SettlementFilterRequest {
 }
 
 export interface SettlementRequest {
-  constructionId?: string;
-  customerName: string;
-  phone: string;
+  formCode: string;
+  formNumber: string;
+  jobContent: string;
   address: string;
-  registerDate: string;
+  connectionFee: number;
   note?: string;
-  materials?: Omit<SettlementMaterial, "id">[];
-  laborCosts?: Omit<SettlementLaborCost, "id">[];
-  connectionFees?: Omit<SettlementConnectionFee, "id">[];
+  registrationAt: string;
+  status: string[]; 
 }
 
 export interface SettlementResponse {
+  formCode: string;
+  formNumber: string;
   address: string;
   connectionFee: number;
   createdAt: string;

@@ -145,6 +145,8 @@ export const ResultsTable = ({
         const mapped = items.map((item: SettlementResponse, index: number) => ({
           id: item.settlementId,
           stt: (page - 1) * pageSize + index + 1,
+          formCode: item.formCode,
+          formNumber: item.formNumber,
           jobContent: item.jobContent,
           address: item.address,
           registrationAt: item.registrationAt,
@@ -261,14 +263,14 @@ export const ResultsTable = ({
           if (found) onEdit(found);
         },
       },
-      {
-        content: "Xóa",
-        icon: DeleteIcon,
-        className: "text-red-500 hover:bg-red-50",
-        onClick: (id: string) => {
-          setDeleteId(id);
-        },
-      },
+      // {
+      //   content: "Xóa",
+      //   icon: DeleteIcon,
+      //   className: "text-red-500 hover:bg-red-50",
+      //   onClick: (id: string) => {
+      //     setDeleteId(id);
+      //   },
+      // },
     ];
   }, [data, onEdit]);
 

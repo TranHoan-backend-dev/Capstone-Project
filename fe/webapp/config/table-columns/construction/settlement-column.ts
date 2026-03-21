@@ -1,5 +1,6 @@
 export const SETLEMENT_LOOKUP_COLUMN = [
   { key: "stt", label: "STT", width: "40px" },
+  { key: "formNumber", label: "Số đơn" },
   { key: "jobContent", label: "Mô tả công việc" },
   { key: "note", label: "Ghi chú" },
   { key: "connectionFee", label: "Phí lắp đặt" },

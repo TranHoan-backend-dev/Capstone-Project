@@ -77,7 +77,6 @@ export async function GET(req: NextRequest) {
     );
   }
 }
-
 export async function POST(req: NextRequest) {
   try {
     const accessToken = getAccessToken(req);
@@ -87,7 +86,13 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const response = await createSettlement(accessToken, body);
+
+    const payload = {
+      ...body,
+      status: Array.isArray(body.status) ? body.status : [body.status],
+    };
+
+    const response = await createSettlement(accessToken, payload);
 
     return NextResponse.json(
       {
