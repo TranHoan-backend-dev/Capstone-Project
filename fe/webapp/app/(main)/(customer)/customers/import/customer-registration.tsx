@@ -1,4 +1,3 @@
-// app/customer-registration/page.tsx
 "use client";
 
 import React, { useState } from "react";
@@ -15,11 +14,7 @@ import { RefreshIcon, SaveIcon } from "@/components/ui/Icons";
 import { useCustomerForm } from "@/hooks/useCustomerForm";
 import { CallToast } from "@/components/ui/CallToast";
 import { authFetch } from "@/utils/authFetch";
-
-interface CustomerRegistrationProps {
-  initialData?: any;
-  onSuccess?: () => void;
-}
+import { CustomerRegistrationProps } from "@/types";
 
 const CustomerRegistration = ({
   initialData,
@@ -33,7 +28,6 @@ const CustomerRegistration = ({
     try {
       setSubmitLoading(true);
 
-      // Validate required fields
       if (!formData.name || !formData.formNumber || !formData.formCode) {
         CallToast({
           title: "Lỗi validation",

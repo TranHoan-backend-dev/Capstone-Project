@@ -7,12 +7,7 @@ import CustomInput from "@/components/ui/custom/CustomInput";
 import CustomDatePicker from "@/components/ui/custom/CustomDatePicker";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
 import { TitleDarkColor } from "@/config/chip-and-icon";
-import { CreateCustomerPayload } from "@/types";
-
-interface TechnicalInfoProps {
-  formData: CreateCustomerPayload;
-  onUpdate: (field: keyof CreateCustomerPayload, value: any) => void;
-}
+import { TechnicalInfoProps } from "@/types";
 
 export const TechnicalInfo = ({ formData, onUpdate }: TechnicalInfoProps) => {
   const parseDateString = (dateString: string) => {
@@ -34,7 +29,6 @@ export const TechnicalInfo = ({ formData, onUpdate }: TechnicalInfoProps) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        {/* Customer Type */}
         <CustomSelect
           label="Loại khách hàng"
           options={[
@@ -51,7 +45,6 @@ export const TechnicalInfo = ({ formData, onUpdate }: TechnicalInfoProps) => {
           }}
         />
 
-        {/* Usage Target */}
         <CustomSelect
           label="Mục đích sử dụng"
           options={[
@@ -69,7 +62,6 @@ export const TechnicalInfo = ({ formData, onUpdate }: TechnicalInfoProps) => {
           }}
         />
 
-        {/* Water Meter Type */}
         <CustomSelect
           label="Loại đồng hồ"
           options={[
@@ -88,109 +80,66 @@ export const TechnicalInfo = ({ formData, onUpdate }: TechnicalInfoProps) => {
           }}
         />
 
-        {/* Payment Method */}
-        <CustomSelect
-          label="Phương thức thanh toán"
-          options={[
-            { value: "CASH", label: "Tiền mặt" },
-            { value: "BANK_TRANSFER", label: "Chuyển khoản" },
-            { value: "QR_CODE", label: "Quét mã QR" },
-          ]}
-          selectedKeys={
-            formData.paymentMethod
-              ? new Set([formData.paymentMethod])
-              : new Set()
-          }
-          onSelectionChange={(keys) => {
-            const value = Array.from(keys)[0] as string;
-            onUpdate("paymentMethod", value);
-          }}
-        />
-
-        {/* Household Info */}
         <CustomInput
           label="Số hộ"
           type="number"
-          value={formData.numberOfHouseholds?.toString() || "1"}
+          value={formData.numberOfHouseholds?.toString()}
           onChange={(e) =>
-            onUpdate("numberOfHouseholds", parseInt(e.target.value) || 0)
+            onUpdate("numberOfHouseholds", parseInt(e.target.value))
           }
         />
 
         <CustomInput
           label="Số nhân khẩu"
           type="number"
-          value={formData.householdRegistrationNumber?.toString() || "1"}
+          value={formData.householdRegistrationNumber?.toString()}
           onChange={(e) =>
             onUpdate(
               "householdRegistrationNumber",
-              parseInt(e.target.value) || 0,
+              parseInt(e.target.value),
             )
           }
         />
 
-        {/* Fees & Rates */}
         <CustomInput
           label="Phí bảo vệ môi trường"
           type="number"
-          value={formData.protectEnvironmentFee?.toString() || "0"}
+          value={formData.protectEnvironmentFee?.toString()}
           onChange={(e) =>
-            onUpdate("protectEnvironmentFee", parseInt(e.target.value) || 0)
+            onUpdate("protectEnvironmentFee", parseInt(e.target.value))
           }
         />
 
         <CustomInput
           label="Giá cố định"
-          value={formData.fixRate || "0"}
+          value={formData.fixRate}
           onChange={(e) => onUpdate("fixRate", e.target.value)}
-        />
-
-        <CustomInput
-          label="M3 khuyến mãi"
-          value={formData.m3Sale || "0"}
-          onChange={(e) => onUpdate("m3Sale", e.target.value)}
         />
 
         <CustomInput
           label="Phí lắp đặt"
           type="number"
-          value={formData.installationFee?.toString() || "0"}
+          value={formData.installationFee?.toString()}
           onChange={(e) =>
-            onUpdate("installationFee", parseInt(e.target.value) || 0)
+            onUpdate("installationFee", parseInt(e.target.value))
           }
         />
 
         <CustomInput
           label="Tiền thuê hàng tháng"
           type="number"
-          value={formData.monthlyRent?.toString() || "0"}
+          value={formData.monthlyRent?.toString()}
           onChange={(e) =>
-            onUpdate("monthlyRent", parseInt(e.target.value) || 0)
+            onUpdate("monthlyRent", parseInt(e.target.value))
           }
         />
-        <CustomDatePicker
-          label="Kỳ khấu trừ"
-          value={parseDateString(formData.deductionPeriod)}
-          onChange={(date) => {
-            if (date) {
-              // date là DateValue object từ HeroUI DatePicker
-              const dateStr = `${date.year}-${String(date.month).padStart(2, "0")}-${String(date.day).padStart(2, "0")}`;
-              onUpdate("deductionPeriod", dateStr);
-            } else {
-              onUpdate("deductionPeriod", "");
-            }
-          }}
-        />
 
-        {/* Connection Point */}
         <CustomInput
           label="Điểm đấu nối"
           value={formData.connectionPoint}
           onChange={(e) => onUpdate("connectionPoint", e.target.value)}
-          className="md:col-span-2"
         />
 
-        {/* Checkboxes */}
         <div className="flex items-center gap-6 pt-4 md:col-span-2">
           <Checkbox
             size="sm"

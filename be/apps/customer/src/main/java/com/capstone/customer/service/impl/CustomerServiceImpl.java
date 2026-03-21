@@ -83,7 +83,7 @@ public class CustomerServiceImpl implements CustomerService {
     if (s != null && !s.isBlank() &&
       s2 != null && !s2.isBlank()) {
       var status = constructionService.checkExistence(s, s2);
-      if (status) {
+      if (!status) {
         throw new NotExistingException(String.format(SharedMessage.MES_24, s2, s));
       }
       customer.setFormNumber(s2);

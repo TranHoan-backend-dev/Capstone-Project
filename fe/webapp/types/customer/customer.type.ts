@@ -1,5 +1,11 @@
 export type WaterMeterType = "MECHANICAL" | "ELECTRONIC" | "SMART";
 export type PaymentMethod = "CASH" | "BANK_TRANSFER" | "QR_CODE";
+export const usageTargetMap: Record<string, string> = {
+  DOMESTIC: "Sinh hoạt",
+  INSTITUTIONAL: "Cơ quan, hành chính sự nghiệp",
+  INDUSTRIAL: "Sản xuất",
+  COMMERCIAL: "Kinh doanh dịch vụ",
+};
 
 export interface CreateCustomerPayload {
   name: string;
@@ -42,4 +48,24 @@ export interface CustomerResponse {
   name: string;
   email: string;
   phoneNumber: string;
+}
+
+export interface CustomerRegistrationProps {
+  initialData?: any;
+  onSuccess?: () => void;
+}
+
+export interface TechnicalInfoProps {
+  formData: CreateCustomerPayload;
+  onUpdate: (field: keyof CreateCustomerPayload, value: any) => void;
+}
+
+export interface BillingInfoProps {
+  formData: CreateCustomerPayload;
+  onUpdate: (field: keyof CreateCustomerPayload, value: any) => void;
+}
+
+export interface CustomerInfoProps {
+  formData: CreateCustomerPayload;
+  onUpdate: (field: keyof CreateCustomerPayload, value: any) => void;
 }

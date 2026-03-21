@@ -1,20 +1,42 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Checkbox, Divider } from "@heroui/react";
 
 import CustomInput from "@/components/ui/custom/CustomInput";
 import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
 import CustomDatePicker from "@/components/ui/custom/CustomDatePicker";
 import { TitleDarkColor } from "@/config/chip-and-icon";
-import { CreateCustomerPayload } from "@/types";
-
-interface CustomerInfoProps {
-  formData: CreateCustomerPayload;
-  onUpdate: (field: keyof CreateCustomerPayload, value: any) => void;
-}
+import { CustomerInfoProps, usageTargetMap } from "@/types";
+import { LookupModal } from "@/components/ui/modal/LookupModal";
 
 export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
+  const [showFormModal, setShowFormModal] = useState(false);
+  const [showWaterPriceModal, setShowWaterPriceModal] = useState(false);
+  const [displayWaterPrice, setDisplayWaterPrice] = useState("");
+  const [showWaterMeterModal, setShowWaterMeterModal] = useState(false);
+  const [displayWaterMeter, setDisplayWaterMeter] = useState("");
+
+  const handleSelectForm = (form: { formNumber: string; formCode: string }) => {
+    onUpdate("formNumber", form.formNumber);
+    onUpdate("formCode", form.formCode);
+    setShowFormModal(false);
+  };
+  const handleSelectWaterPrice = (item: any) => {
+    onUpdate("waterPriceId", item.id);
+    setDisplayWaterPrice(
+      `${item.usageTarget} - ${item.tax}% - ${item.environmentPrice}`,
+    );
+    setShowWaterPriceModal(false);
+  };
+  const handleSelectWaterMeter = (item: any) => {
+    onUpdate("waterMeterId", item.id);
+    setDisplayWaterMeter(
+      `Loại: ${item.typeName} - Size: ${item.size} - Lắp: ${item.installationDate}`,
+    );
+    setShowWaterMeterModal(false);
+  };
+
   return (
     <div>
       <div className="space-y-6 pb-6 border-b border-gray-100 dark:border-divider">
@@ -27,16 +49,37 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <SearchInputWithButton
-          label="Mã đơn"
+          label="Số đơn"
           isRequired
           value={formData.formNumber}
           onValueChange={(value) => onUpdate("formNumber", value)}
+          onSearch={() => setShowFormModal(true)}
         />
         <CustomInput
-          label="Mã form"
+          label="Mã đơn"
+          type="hidden"
           isRequired
           value={formData.formCode}
           onValueChange={(value) => onUpdate("formCode", value)}
+        />
+        <LookupModal
+          enableSearch={false}
+          dataKey="content"
+          isOpen={showFormModal}
+          onClose={() => setShowFormModal(false)}
+          title="Chọn Mã đơn"
+          api="/api/construction/installation-forms"
+          columns={[
+            { key: "stt", label: "STT" },
+            { key: "formNumber", label: "Mã đơn" },
+          ]}
+          mapData={(item: any, index: number) => ({
+            stt: index + 1,
+            id: item.formCode,
+            formNumber: item.formNumber,
+            formCode: item.formCode,
+          })}
+          onSelect={handleSelectForm}
         />
         <CustomInput
           label="Tên khách hàng"
@@ -79,17 +122,65 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
           value={formData.passportCode}
           onValueChange={(value) => onUpdate("passportCode", value)}
         />
-        <CustomInput
-          label="Mã bảng giá nước"
+        <SearchInputWithButton
+          label="Bảng giá nước"
           isRequired
-          value={formData.waterPriceId}
-          onValueChange={(value) => onUpdate("waterPriceId", value)}
+          value={displayWaterPrice}
+          onValueChange={() => {}}
+          onSearch={() => setShowWaterPriceModal(true)}
         />
-        <CustomInput
-          label="Mã đồng hồ nước"
+        <LookupModal
+          enableSearch={false}
+          dataKey="content"
+          isOpen={showWaterPriceModal}
+          onClose={() => setShowWaterPriceModal(false)}
+          title="Chọn bảng giá nước"
+          api="/api/device/water-prices"
+          columns={[
+            { key: "stt", label: "STT" },
+            { key: "usageTarget", label: "Mục đích sử dụng" },
+            { key: "tax", label: "Thuế (%)" },
+            { key: "environmentPrice", label: "Phí môi trường" },
+            { key: "applicationPeriod", label: "Kỳ áp dụng" },
+          ]}
+          mapData={(item: any, index: number) => ({
+            stt: index + 1,
+            id: item.id,
+            usageTarget: usageTargetMap[item.usageTarget] || item.usageTarget,
+            tax: item.tax,
+            environmentPrice: item.environmentPrice,
+            applicationPeriod: item.applicationPeriod,
+          })}
+          onSelect={handleSelectWaterPrice}
+        />
+        <SearchInputWithButton
+          label="Đồng hồ nước"
           isRequired
-          value={formData.waterMeterId}
-          onValueChange={(value) => onUpdate("waterMeterId", value)}
+          value={displayWaterMeter}
+          onValueChange={() => {}}
+          onSearch={() => setShowWaterMeterModal(true)}
+        />
+        <LookupModal
+          enableSearch={false}
+          dataKey="content"
+          isOpen={showWaterMeterModal}
+          onClose={() => setShowWaterMeterModal(false)}
+          title="Chọn đồng hồ nước"
+          api="/api/device/water-meters"
+          columns={[
+            { key: "stt", label: "STT" },
+            { key: "typeName", label: "Loại đồng hồ" },
+            { key: "size", label: "Cỡ đồng hồ" },
+            { key: "installationDate", label: "Ngày lắp đặt" },
+          ]}
+          mapData={(item: any, index: number) => ({
+            stt: index + 1,
+            id: item.id,
+            typeName: item.typeName,
+            size: item.size,
+            installationDate: item.installationDate,
+          })}
+          onSelect={handleSelectWaterMeter}
         />
         <div className="flex items-center h-full pt-4">
           <Checkbox

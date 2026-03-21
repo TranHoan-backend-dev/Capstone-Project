@@ -6,22 +6,18 @@ import { parseDate } from "@internationalized/date";
 import CustomInput from "@/components/ui/custom/CustomInput";
 import CustomDatePicker from "@/components/ui/custom/CustomDatePicker";
 import { TitleDarkColor } from "@/config/chip-and-icon";
-import { CreateCustomerPayload } from "@/types";
-
-interface BillingInfoProps {
-  formData: CreateCustomerPayload;
-  onUpdate: (field: keyof CreateCustomerPayload, value: any) => void;
-}
+import { BillingInfoProps } from "@/types";
+import CustomSelect from "@/components/ui/custom/CustomSelect";
 
 export const BillingInfo = ({ formData, onUpdate }: BillingInfoProps) => {
-    const parseDateString = (dateString: string) => {
-      if (!dateString) return null;
-      try {
-        return parseDate(dateString);
-      } catch {
-        return null;
-      }
-    };
+  const parseDateString = (dateString: string) => {
+    if (!dateString) return null;
+    try {
+      return parseDate(dateString);
+    } catch {
+      return null;
+    }
+  };
   return (
     <>
       <div>
@@ -33,7 +29,24 @@ export const BillingInfo = ({ formData, onUpdate }: BillingInfoProps) => {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <CustomSelect
+            label="Phương thức thanh toán"
+            options={[
+              { value: "CASH", label: "Tiền mặt" },
+              { value: "BANK_TRANSFER", label: "Chuyển khoản" },
+              { value: "QR_CODE", label: "Quét mã QR" },
+            ]}
+            selectedKeys={
+              formData.paymentMethod
+                ? new Set([formData.paymentMethod])
+                : new Set()
+            }
+            onSelectionChange={(keys) => {
+              const value = Array.from(keys)[0] as string;
+              onUpdate("paymentMethod", value);
+            }}
+          />
           <CustomInput
             label="Số tài khoản ngân hàng"
             value={formData.bankAccountNumber}
@@ -67,13 +80,12 @@ export const BillingInfo = ({ formData, onUpdate }: BillingInfoProps) => {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <CustomDatePicker
             label="Kỳ khấu trừ"
             value={parseDateString(formData.deductionPeriod)}
             onChange={(date) => {
               if (date) {
-                // date là DateValue object từ HeroUI DatePicker
                 const dateStr = `${date.year}-${String(date.month).padStart(2, "0")}-${String(date.day).padStart(2, "0")}`;
                 onUpdate("deductionPeriod", dateStr);
               } else {
@@ -87,12 +99,6 @@ export const BillingInfo = ({ formData, onUpdate }: BillingInfoProps) => {
             type="number"
             value={formData.m3Sale}
             onValueChange={(value) => onUpdate("m3Sale", value)}
-          />
-
-          <CustomInput
-            label="Giá cố định"
-            value={formData.fixRate}
-            onValueChange={(value) => onUpdate("fixRate", value)}
           />
         </div>
       </div>
