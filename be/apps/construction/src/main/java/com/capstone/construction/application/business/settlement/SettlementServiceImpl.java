@@ -8,7 +8,6 @@ import com.capstone.construction.application.dto.request.settlement.Significance
 import com.capstone.construction.application.dto.response.settlement.SettlementResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.domain.model.Settlement;
-import com.capstone.construction.domain.model.SettlementStatus;
 import com.capstone.construction.domain.model.InstallationForm;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
 import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
@@ -53,16 +52,6 @@ public class SettlementServiceImpl implements SettlementService {
                 .installationForm(form)
                 .registrationAt(request.registrationAt()));
 
-        // Set status if provided, default to PROCESSING
-        if (request.status() != null && !request.status().isEmpty()) {
-            List<SettlementStatus> statuses = request.status().stream()
-                    .map(status -> SettlementStatus.valueOf(status.toUpperCase()))
-                    .collect(Collectors.toList());
-            settlement.setStatus(statuses.get(0)); // Use first status
-        } else {
-            settlement.setStatus(SettlementStatus.PROCESSING);
-        }
-
         var saved = settlementRepository.save(settlement);
         return mapToResponse(saved);
     }
@@ -79,33 +68,6 @@ public class SettlementServiceImpl implements SettlementService {
         settlement.setConnectionFee(request.connectionFee());
         settlement.setNote(request.note());
         settlement.setRegistrationAt(request.registrationAt());
-
-        // Update status if provided
-        if (request.status() != null && !request.status().isEmpty()) {
-            List<SettlementStatus> statuses = request.status().stream()
-                    .map(status -> SettlementStatus.valueOf(status.toUpperCase()))
-                    .collect(Collectors.toList());
-            settlement.setStatus(statuses.get(0)); // Use first status
-        }
-
-        var saved = settlementRepository.save(settlement);
-        return mapToResponse(saved);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public SettlementResponse updateSettlementStatus(String id, String status) {
-        log.info("Updating settlement status with id: {} to: {}", id, status);
-        var settlement = settlementRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Settlement not found with id: " + id));
-
-        try {
-            SettlementStatus newStatus = SettlementStatus.valueOf(status.toUpperCase());
-            settlement.setStatus(newStatus);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid status value: " + status + ". Valid values: " +
-                    java.util.Arrays.toString(SettlementStatus.values()));
-        }
 
         var saved = settlementRepository.save(settlement);
         return mapToResponse(saved);
@@ -183,8 +145,7 @@ public class SettlementServiceImpl implements SettlementService {
                 settlement.getRegistrationAt(),
                 form != null ? form.getFormCode() : null,
                 form != null ? form.getFormNumber() : null,
-                settlement.getSignificance(),
-                List.of(settlement.getStatus())
+                settlement.getSignificance()
         );
     }
 }

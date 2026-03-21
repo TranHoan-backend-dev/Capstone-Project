@@ -6,7 +6,6 @@ import com.capstone.construction.application.dto.request.settlement.AssignTheSig
 import com.capstone.construction.application.dto.request.settlement.SignificanceRequest;
 import com.capstone.construction.application.dto.request.settlement.SettlementFilterRequest;
 import com.capstone.construction.application.dto.request.settlement.SettlementRequest;
-import com.capstone.construction.application.dto.request.settlement.UpdateSettlementStatusRequest;
 import com.capstone.construction.application.dto.response.settlement.SettlementResponse;
 import com.capstone.construction.application.usecase.SettlementUseCase;
 import io.swagger.v3.oas.annotations.Operation;
@@ -61,20 +60,6 @@ public class SettlementController {
         return Utils.returnOkResponse("Cập nhật quyết toán công trình thành công", response);
     }
 
-    @PutMapping("/{id}/status")
-    @Operation(summary = "Cập nhật trạng thái quyết toán công trình", description = "Cập nhật trạng thái của bản quyết toán công trình (PROCESSING, PENDING_FOR_APPROVAL, APPROVED, REJECTED).", responses = {
-        @ApiResponse(responseCode = "200", description = "Cập nhật trạng thái thành công", content = @Content(schema = @Schema(implementation = SettlementResponse.class))),
-        @ApiResponse(responseCode = "404", description = "Không tìm thấy bản quyết toán", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-        @ApiResponse(responseCode = "400", description = "Trạng thái không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
-    })
-    public ResponseEntity<WrapperApiResponse> updateSettlementStatus(
-            @PathVariable @Parameter(description = "ID của bản quyết toán cần cập nhật trạng thái", required = true) String id,
-            @RequestBody @Valid UpdateSettlementStatusRequest request) {
-        log.info("REST request to update settlement status with id: {} to: {}", id, request.status());
-        var response = settlementUseCase.updateSettlementStatus(id, request);
-        return Utils.returnOkResponse("Cập nhật trạng thái quyết toán công trình thành công", response);
-    }
-
     @GetMapping("/{id}")
     @Operation(summary = "Lấy thông tin chi tiết quyết toán theo ID", description = "Truy xuất đầy đủ thông tin của một bản quyết toán công trình cụ thể.", responses = {
         @ApiResponse(responseCode = "200", description = "Tìm thấy bản quyết toán", content = @Content(schema = @Schema(implementation = SettlementResponse.class))),
@@ -99,7 +84,7 @@ public class SettlementController {
     }
 
     @GetMapping("/filter")
-    @Operation(summary = "Lọc danh sách quyết toán theo tiêu chí", description = "Tìm kiếm và lọc các bản quyết toán dựa trên các tham số như nội dung, trạng thái, ngày đăng ký, chi phí...", responses = {
+    @Operation(summary = "Lọc danh sách quyết toán theo tiêu chí", description = "Tìm kiếm và lọc các bản quyết toán dựa trên các tham số như nội dung, ngày đăng ký, chi phí…", responses = {
         @ApiResponse(responseCode = "200", description = "Lọc danh sách thành công")
     })
     public ResponseEntity<WrapperApiResponse> filterSettlements(

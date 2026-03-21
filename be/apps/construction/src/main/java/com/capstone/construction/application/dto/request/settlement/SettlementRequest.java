@@ -8,7 +8,6 @@ import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 
 @Schema(description = "Yêu cầu tạo hoặc cập nhật thông tin quyết toán công trình")
 public record SettlementRequest(
@@ -38,8 +37,5 @@ public record SettlementRequest(
 
     @Schema(description = "Ngày đăng ký quyết toán", example = "2023-10-27")
     @NotNull(message = "Ngày đăng ký là bắt buộc")
-    LocalDate registrationAt,
-
-    @Schema(description = "Trạng thái công trình", example = "PENDING_FOR_APPROVAL")
-    List<String> status
+    LocalDate registrationAt
 ) {}
