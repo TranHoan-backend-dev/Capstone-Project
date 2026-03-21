@@ -6,7 +6,7 @@ import com.capstone.construction.domain.model.Lateral;
 import com.capstone.construction.domain.model.WaterSupplyNetwork;
 import com.capstone.construction.infrastructure.persistence.LateralRepository;
 import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRepository;
-import com.capstone.construction.infrastructure.service.OverallWaterMeterService;
+import com.capstone.construction.infrastructure.service.DeviceService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -36,7 +36,7 @@ class LateralServiceImplTest {
   WaterSupplyNetworkRepository networkRepository;
 
   @Mock
-  OverallWaterMeterService metersService;
+  DeviceService metersService;
 
   @Mock
   Logger log;

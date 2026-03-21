@@ -64,6 +64,7 @@ rabbit-mq-config:
     - cost-estimate
     - receipt
     - finance
+    - construction-request
   actions:
     - update
     - delete

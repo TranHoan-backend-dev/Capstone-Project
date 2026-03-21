@@ -1,7 +1,6 @@
 package com.capstone.customer.controller;
 
 import com.capstone.common.annotation.AppLog;
-import com.capstone.common.utils.SharedConstant;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
 import com.capstone.customer.dto.request.ContractFilterRequest;

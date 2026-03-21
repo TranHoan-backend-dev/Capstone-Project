@@ -1,5 +1,6 @@
 package com.capstone.construction.infrastructure.persistence;
 
+import com.capstone.common.utils.SharedConstant;
 import com.capstone.construction.domain.model.CostEstimate;
 import com.capstone.construction.domain.model.InstallationForm;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CostEstimateRepository extends JpaRepository<CostEstimate, String>,
@@ -41,21 +43,24 @@ public interface CostEstimateRepository extends JpaRepository<CostEstimate, Stri
   }
 
   private @NonNull
-  static ArrayList<Predicate> getPredicates(@NonNull String keyword, @NonNull Root<CostEstimate> root, @NonNull CriteriaBuilder cb) {
+  static ArrayList<Predicate> getPredicates(
+    @NonNull String keyword, @NonNull Root<CostEstimate> root,
+    @NonNull CriteriaBuilder cb
+  ) {
     var orPredicates = new ArrayList<Predicate>();
     var lowerCaseKeyword = "%" + keyword.toLowerCase() + "%";
-    var unaccent = "unaccent";
 
     // tuong duong LOWER(address) LIKE %keyword%
     var list = List.of("address", "customerName", "note", "designImageUrl", "waterMeterSerial");
 
-    list.forEach(field ->
-      orPredicates.add(cb.like(
-        cb.function(unaccent, String.class, cb.lower(cb.function("concat", String.class, cb.literal(""), root.get(field)))),
-        cb.function(unaccent, String.class, cb.literal(lowerCaseKeyword))
-      )));
+    list.forEach(field -> orPredicates.add(cb.like(
+      cb.function(SharedConstant.UNACCENT, String.class,
+        cb.lower(cb.function("concat", String.class, cb.literal(""), root.get(field)))),
+      cb.function(SharedConstant.UNACCENT, String.class, cb.literal(lowerCaseKeyword)))));
     return orPredicates;
   }
 
   Boolean existsByInstallationForm(InstallationForm installationForm);
+
+  Optional<CostEstimate> findByInstallationForm(InstallationForm installationForm);
 }

@@ -1,10 +1,8 @@
 package com.capstone.customer.dto.request;
 
-import com.capstone.common.utils.BaseFilterRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Pattern;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**

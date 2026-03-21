@@ -112,4 +112,10 @@ public class CustomerController {
     log.info("Customer applied: {}", response);
     return Utils.returnOkResponse("Kiểm tra thành công", response);
   }
+
+  @Operation(hidden = true)
+  @GetMapping("/exist")
+  public Boolean checkExistenceOfCustomer(String customerId) {
+    return customerService.isExistingCustomer(customerId);
+  }
 }

@@ -6,6 +6,8 @@ import com.capstone.construction.application.dto.request.receipt.UpdateRequest;
 import com.capstone.construction.application.dto.response.receipt.ReceiptResponse;
 import com.capstone.construction.domain.model.Receipt;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
+import com.capstone.construction.domain.model.utils.significance.ReceiptSignificance;
+import com.capstone.construction.infrastructure.persistence.CostEstimateRepository;
 import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
 import com.capstone.construction.infrastructure.persistence.ReceiptRepository;
 import lombok.AccessLevel;
@@ -24,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReceiptServiceImpl implements ReceiptService {
   ReceiptRepository receiptRepo;
   InstallationFormRepository ifRepo;
+  CostEstimateRepository ceRepo;
 
   @Override
   @Transactional
@@ -37,13 +40,30 @@ public class ReceiptServiceImpl implements ReceiptService {
       throw new IllegalArgumentException("Receipt already exists for this form");
     }
 
-    var receipt = Receipt.create(builder -> builder
+    // Kiểm tra xem dự toán đã được tạo hay chưa
+    var costEstimate = ceRepo.findByInstallationForm(form)
+      .orElseThrow(() -> new IllegalArgumentException("Chưa tạo dự toán cho đơn lắp đặt này."));
+
+    // Kiểm tra xem dự toán đã được duyệt hoàn toàn bởi nhân viên khảo sát, trưởng phòng KH-KT và lãnh đạo hay chưa
+    if (costEstimate.getSignificance() == null || !costEstimate.getSignificance().isCostEstimateFullySigned()) {
+      throw new IllegalArgumentException("Dự toán chưa được ký duyệt đầy đủ bởi các bộ phận liên quan.");
+    }
+
+    var receipt = Receipt.builder()
       .installationForm(form)
       .receiptNumber(request.receiptNumber())
-      .customerName(request.customerName())
-      .address(request.address())
+      .customerName(form.getCustomerName())
+      .address(form.getAddress())
+      .attach(request.attach())
+      .paymentReason(request.paymentReason())
+      .totalMoneyInDigits(request.totalMoneyInDigit())
+      .totalMoneyInCharacters(request.totalMoneyInCharacters())
       .paymentDate(request.paymentDate())
-      .isPaid(request.isPaid()));
+      .isPaid(request.isPaid())
+      .significance(ReceiptSignificance.builder()
+        .receiptCreator(request.significanceOfReceiptCreator())
+        .build())
+      .build();
 
     var saved = receiptRepo.save(receipt);
     log.info("Receipt saved with id: {}", saved.getInstallationFormId());
@@ -77,6 +97,10 @@ public class ReceiptServiceImpl implements ReceiptService {
     if (request.isPaid() != null) {
       receipt.setIsPaid(request.isPaid());
     }
+    if (request.significanceOfTreasurer() != null && !request.significanceOfTreasurer().isBlank()) {
+      var significance = receipt.getSignificance();
+      significance.setTreasurer(request.significanceOfTreasurer());
+    }
 
     var saved = receiptRepo.save(receipt);
     return mapToResponse(saved);
@@ -101,7 +125,7 @@ public class ReceiptServiceImpl implements ReceiptService {
       .orElseThrow(() -> new IllegalArgumentException("Receipt not found for form: " + formNumber));
   }
 
-  private ReceiptResponse mapToResponse(Receipt receipt) {
+  private @NonNull ReceiptResponse mapToResponse(@NonNull Receipt receipt) {
     return new ReceiptResponse(
       receipt.getInstallationFormId().getFormCode(),
       receipt.getInstallationFormId().getFormNumber(),
@@ -110,6 +134,11 @@ public class ReceiptServiceImpl implements ReceiptService {
       receipt.getAddress(),
       receipt.getPaymentDate(),
       receipt.getIsPaid(),
+      receipt.getPaymentReason(),
+      receipt.getTotalMoneyInDigits(),
+      receipt.getTotalMoneyInCharacters(),
+      receipt.getAttach(),
+      receipt.getSignificance(),
       receipt.getCreatedAt(),
       receipt.getUpdatedAt()
     );

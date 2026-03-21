@@ -54,4 +54,5 @@ public final class Message {
   public static final String ENT_54 = "Tên công việc không được để trống";
   public static final String ENT_55 = "Ghi chú không được là số âm";
   public static final String ENT_56 = "Không tìm thấy đơn vị đo với id %s ";
+  public static final String ENT_57 = "Hệ số giảm không được để trống ";
 }
