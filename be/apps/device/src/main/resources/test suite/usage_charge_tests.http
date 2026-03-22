@@ -1,0 +1,168 @@
+@baseUrl = http://localhost:9006/api/v1
+@serial = 00000000-0000-0000-0000-A00000000001
+@invalidToken = invalid.token.format
+
+### TC01 - Update usage and calculate progressive charge successfully (authenticated)
+POST {{baseUrl}}/usage/{{serial}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "image": null,
+  "index": 135.00,
+  "recordingDate": "2026-03-01"
+}
+
+> {%
+client.test("TC01 - Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+### TC02 - Missing Authorization header (401)
+POST {{baseUrl}}/usage/{{serial}}
+Content-Type: application/json
+
+{
+  "image": null,
+  "index": 136.00,
+  "recordingDate": "2026-03-02"
+}
+
+> {%
+client.test("TC02 - Status is 401", function() {
+  client.assert(response.status === 401);
+});
+%}
+
+### TC03 - Invalid token format (401)
+POST {{baseUrl}}/usage/{{serial}}
+Authorization: Bearer {{invalidToken}}
+Content-Type: application/json
+
+{
+  "image": null,
+  "index": 137.00,
+  "recordingDate": "2026-03-03"
+}
+
+> {%
+client.test("TC03 - Status is 401", function() {
+  client.assert(response.status === 401);
+});
+%}
+
+### TC04 - Non-existing meter serial (400)
+POST {{baseUrl}}/usage/00000000-0000-0000-0000-A00000009999
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "image": null,
+  "index": 120.00,
+  "recordingDate": "2026-03-04"
+}
+
+> {%
+client.test("TC04 - Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+### TC05 - Index lower than previous index (business validation, 400)
+POST {{baseUrl}}/usage/{{serial}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "image": null,
+  "index": 50.00,
+  "recordingDate": "2026-03-05"
+}
+
+> {%
+client.test("TC05 - Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+### TC06 - Missing index field (400)
+POST {{baseUrl}}/usage/{{serial}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "image": null,
+  "recordingDate": "2026-03-06"
+}
+
+> {%
+client.test("TC06 - Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+### TC07 - Invalid recordingDate format (400)
+POST {{baseUrl}}/usage/{{serial}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "image": null,
+  "index": 138.00,
+  "recordingDate": "06-03-2026"
+}
+
+> {%
+client.test("TC07 - Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+### TC08 - Zero index (400)
+POST {{baseUrl}}/usage/{{serial}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "image": null,
+  "index": 0,
+  "recordingDate": "2026-03-07"
+}
+
+> {%
+client.test("TC08 - Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+### TC09 - Negative index (400)
+POST {{baseUrl}}/usage/{{serial}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "image": null,
+  "index": -10,
+  "recordingDate": "2026-03-08"
+}
+
+> {%
+client.test("TC09 - Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+### TC10 - Wrong content type (415/400 depending converter)
+POST {{baseUrl}}/usage/{{serial}}
+Authorization: Bearer {{access_token}}
+Content-Type: text/plain
+
+just-text
+
+> {%
+client.test("TC10 - Status is 415 or 400", function() {
+  client.assert(response.status === 415 || response.status === 400);
+});
+%}
+

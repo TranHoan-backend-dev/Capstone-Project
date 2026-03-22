@@ -3,7 +3,6 @@ package com.capstone.customer.service.impl;
 import com.capstone.common.enumerate.CustomerType;
 import com.capstone.common.enumerate.UsageTarget;
 import com.capstone.common.exception.NotExistingException;
-import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.customer.dto.request.customer.CreateRequest;
 import com.capstone.customer.dto.request.customer.UpdateRequest;
 import com.capstone.customer.dto.response.CustomerResponse;
@@ -118,7 +117,7 @@ class CustomerServiceImplTest {
   void should_CreateCustomer_When_InputIsValid() {
     // Given
     when(customerRepository.existsByFormCodeAndFormNumber(any(), any())).thenReturn(false);
-    when(constructionService.checkExistence(any(), any())).thenReturn(new WrapperApiResponse(200, "Success", true, LocalDateTime.now()));
+    when(constructionService.checkExistence(any(), any())).thenReturn(true);
     when(deviceService.checkExistenceOfWaterPrice(any())).thenReturn(true);
     when(deviceService.checkExistenceOfWaterMeter(any())).thenReturn(true);
     when(customerRepository.save(any(Customer.class))).thenReturn(customer);
@@ -145,7 +144,7 @@ class CustomerServiceImplTest {
     // Given
     var id = "CUST-123";
     when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
-    when(constructionService.checkExistence(any(), any())).thenReturn(new WrapperApiResponse(200, "Success", true, LocalDateTime.now()));
+    when(constructionService.checkExistence(any(), any())).thenReturn(true);
     when(deviceService.checkExistenceOfWaterPrice(any())).thenReturn(true);
     when(deviceService.checkExistenceOfWaterMeter(any())).thenReturn(true);
     when(customerRepository.save(any(Customer.class))).thenReturn(customer);
@@ -211,7 +210,7 @@ class CustomerServiceImplTest {
     // Given
     var id = "CUST-123";
     when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
-    when(constructionService.checkExistence(any(), any())).thenReturn(new WrapperApiResponse(200, "Success", false, LocalDateTime.now()));
+    when(constructionService.checkExistence(any(), any())).thenReturn(false);
 
     // When & Then
     assertThrows(NotExistingException.class, () -> customerService.updateCustomer(id, updateRequest));
@@ -223,7 +222,7 @@ class CustomerServiceImplTest {
     // Given
     var id = "CUST-123";
     when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
-    when(constructionService.checkExistence(any(), any())).thenReturn(new WrapperApiResponse(200, "Success", true, LocalDateTime.now()));
+    when(constructionService.checkExistence(any(), any())).thenReturn(true);
     when(deviceService.checkExistenceOfWaterPrice(any())).thenReturn(false);
 
     // When & Then
@@ -236,7 +235,7 @@ class CustomerServiceImplTest {
     // Given
     var id = "CUST-123";
     when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
-    when(constructionService.checkExistence(any(), any())).thenReturn(new WrapperApiResponse(200, "Success", true, LocalDateTime.now()));
+    when(constructionService.checkExistence(any(), any())).thenReturn(true);
     when(deviceService.checkExistenceOfWaterPrice(any())).thenReturn(true);
     when(deviceService.checkExistenceOfWaterMeter(any())).thenReturn(false);
 

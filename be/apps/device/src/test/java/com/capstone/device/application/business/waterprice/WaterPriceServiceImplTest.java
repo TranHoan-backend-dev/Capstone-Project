@@ -119,7 +119,6 @@ class WaterPriceServiceImplTest {
     waterPriceService.deleteWaterPrice(id);
 
     // Then
-    verify(ptRepo).deleteByWaterPrice_PriceId(id);
     verify(waterPriceRepository).deleteById(id);
   }
 

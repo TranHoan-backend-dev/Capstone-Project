@@ -118,4 +118,11 @@ public class CustomerController {
   public Boolean checkExistenceOfCustomer(String customerId) {
     return customerService.isExistingCustomer(customerId);
   }
+
+  @Operation(hidden = true)
+  @GetMapping("/meter/{meterId}")
+  public String getCustomerIdByMeterId(@PathVariable String meterId) {
+    log.info("REST request to get customer id: {}", meterId);
+    return customerService.getIdByMeterId(meterId);
+  }
 }
