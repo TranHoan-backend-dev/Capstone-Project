@@ -33,7 +33,7 @@ public class CostEstimateController {
   }
 
   @Operation(hidden = true)
-  @PutMapping("/materials/estimate/{id}")
+  @PutMapping("/{id}")
   public ResponseEntity<?> updateMaterialsOfCostEstimate(
     @PathVariable String id,
     @RequestBody List<BaseMaterial> request

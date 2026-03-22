@@ -1,6 +1,7 @@
 package com.capstone.construction.application.business.roadmap;
 
 import com.capstone.common.annotation.AppLog;
+import com.capstone.common.enumerate.RoleName;
 import com.capstone.construction.application.dto.request.catalog.RoadmapRequest;
 import com.capstone.construction.application.dto.response.catalog.RoadmapResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
@@ -9,6 +10,7 @@ import com.capstone.construction.infrastructure.persistence.RoadmapRepository;
 import com.capstone.construction.infrastructure.persistence.LateralRepository;
 import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRepository;
 import com.capstone.construction.application.exception.ExistingItemException;
+import com.capstone.construction.infrastructure.service.EmployeeService;
 import com.capstone.construction.infrastructure.utils.Message;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,7 @@ public class RoadmapServiceImpl implements RoadmapService {
   RoadmapRepository roadmapRepository;
   LateralRepository lateralRepository;
   WaterSupplyNetworkRepository networkRepository;
+  EmployeeService employeeService;
 
   @Override
   @Transactional(rollbackFor = Exception.class)
@@ -127,6 +130,46 @@ public class RoadmapServiceImpl implements RoadmapService {
       roadmap.getLateral().getName(),
       roadmap.getNetwork().getBranchId(),
       roadmap.getNetwork().getName(),
-      roadmap.getCreatedAt());
+      roadmap.getCreatedAt(),
+      roadmap.getAssignedStaffId());
+  }
+
+  @Override
+  @Transactional
+  public RoadmapResponse assignStaff(String roadmapId, String staffId) {
+    log.info("Assigning staff with id: {}", staffId);
+    var role = employeeService.getRoleOfEmployeeById(staffId).data().toString();
+    if (!RoleName.METER_INSPECTION_STAFF.name().equalsIgnoreCase(role)) {
+      throw new IllegalArgumentException("Phải gán cho nhân viên ghi thu");
+    }
+
+    var roadmap = roadmapRepository.findById(roadmapId)
+      .orElseThrow(() -> new IllegalArgumentException("Roadmap not found"));
+    roadmap.setAssignedStaffId(staffId);
+    var saved = roadmapRepository.save(roadmap);
+
+    return mapToResponse(saved);
+  }
+
+  @Override
+  @Transactional
+  public RoadmapResponse cancelAssignment(String roadmapId) {
+    var roadmap = roadmapRepository.findById(roadmapId)
+      .orElseThrow(() -> new IllegalArgumentException("Roadmap not found"));
+    roadmap.setAssignedStaffId(null);
+    var saved = roadmapRepository.save(roadmap);
+
+    return mapToResponse(saved);
+  }
+
+  @Override
+  @Transactional
+  public RoadmapResponse updateAssignment(String roadmapId, String staffId) {
+    var roadmap = roadmapRepository.findById(roadmapId)
+      .orElseThrow(() -> new IllegalArgumentException("Roadmap not found"));
+    roadmap.setAssignedStaffId(staffId);
+    var saved = roadmapRepository.save(roadmap);
+
+    return mapToResponse(saved);
   }
 }
