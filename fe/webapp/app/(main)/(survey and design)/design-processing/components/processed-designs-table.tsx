@@ -1,7 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import { Link, Tooltip } from "@heroui/react";
+import {
+  Link,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  Tooltip,
+} from "@heroui/react";
 import NextLink from "next/link";
 
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
@@ -15,20 +23,75 @@ import {
 } from "@/config/chip-and-icon";
 import { PROCESSED_DESIGN_COLUMN } from "@/config/table-columns";
 import { DesignProcessingItem } from "@/types";
+import { CallToast } from "@/components/ui/CallToast";
+import { authFetch } from "@/utils/authFetch";
+import CustomButton from "@/components/ui/custom/CustomButton";
 
 interface ProcessedDesignsTableProps {
   data: any[];
+  page: number;
+  totalPages: number;
+  totalElements: number;
+  onPageChange: (page: number) => void;
   onReject?: (item: any) => void;
 }
-
 export const ProcessedDesignsTable = ({
-  data,
+  data,page,totalPages,totalElements,onPageChange,
   onReject,
 }: ProcessedDesignsTableProps) => {
-  const [page, setPage] = useState(1);
-  const rowsPerPage = 10;
-  const totalPages = Math.ceil(data.length / rowsPerPage);
+  const [approveItem, setApproveItem] = useState<DesignProcessingItem | null>(
+    null,
+  );
+  const [rejectItem, setRejectItem] = useState<DesignProcessingItem | null>(
+    null,
+  );
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
 
+  const handleRejectConfirm = async () => {
+    if (!approveItem) return;
+
+    try {
+      const res = await authFetch(
+        "/api/construction/installation-forms/approve",
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            formNumber: approveItem.formNumber,
+            formCode: approveItem.id,
+            status: false,
+          }),
+        },
+      );
+
+      const json = await res.json();
+
+      if (res.ok) {
+        onReject?.(approveItem);
+        setIsRejectModalOpen(false);
+        setRejectItem(null);
+
+        CallToast({
+          title: "Thành công",
+          message: "Từ chối đơn thành công",
+          color: "success",
+        });
+      } else {
+        CallToast({
+          title: "Lỗi",
+          message: json.message || "Từ chối đơn thất bại",
+          color: "danger",
+        });
+      }
+    } catch (error: any) {
+      console.error(error);
+      CallToast({
+        title: "Lỗi",
+        message: error.message || "Có lỗi xảy ra",
+        color: "danger",
+      });
+    }
+  };
   const renderCell = (item: DesignProcessingItem, columnKey: string) => {
     switch (columnKey) {
       case "code":
@@ -53,20 +116,23 @@ export const ProcessedDesignsTable = ({
             <Tooltip color="danger" content="Từ chối">
               <RejectIcon
                 className={RedIconColor}
-                onClick={() => onReject?.(item)}
+                onClick={() => {
+                  setApproveItem(item);
+                  setIsRejectModalOpen(true);
+                }}
               />
             </Tooltip>
-            <Tooltip color="danger" content="Xóa">
+            {/* <Tooltip color="danger" content="Xóa">
               <DeleteIcon className={RedIconColor} />
-            </Tooltip>
+            </Tooltip> */}
           </div>
         );
-      case "docs":
-        return (
-          <div className="flex justify-center">
-            <ProfileIcon className={BlueYellowIconColor} />
-          </div>
-        );
+      // case "docs":
+      //   return (
+      //     <div className="flex justify-center">
+      //       <ProfileIcon className={BlueYellowIconColor} />
+      //     </div>
+      //   );
       case "no":
         return (
           <span className="font-medium text-black dark:text-white">
@@ -79,19 +145,47 @@ export const ProcessedDesignsTable = ({
   };
 
   return (
-    <GenericDataTable
-      isCollapsible
-      columns={PROCESSED_DESIGN_COLUMN}
-      data={data}
-      headerSummary={`${data.length}`}
-      paginationProps={{
-        total: totalPages,
-        page: page,
-        onChange: setPage,
-        summary: `${data.length}`,
-      }}
-      renderCellAction={renderCell}
-      title="Danh sách đơn đang xử lý thiết kế"
-    />
+    <>
+      <GenericDataTable
+        isCollapsible
+        columns={PROCESSED_DESIGN_COLUMN}
+        data={data}
+        headerSummary={`${data.length}`}
+        paginationProps={{
+          total: totalPages,
+          page: page,
+          onChange: onPageChange,
+          summary: `${totalElements}`,
+        }}
+        renderCellAction={renderCell}
+        title="Danh sách đơn đang xử lý thiết kế"
+      />
+      <Modal
+        isOpen={isRejectModalOpen}
+        onClose={() => setIsRejectModalOpen(false)}
+      >
+        <ModalContent>
+          <ModalHeader>Xác nhận từ chối</ModalHeader>
+
+          <ModalBody>
+            Bạn có chắc chắn muốn từ chối đơn <b>{approveItem?.formNumber}</b>{" "}
+            không?
+          </ModalBody>
+
+          <ModalFooter>
+            <CustomButton
+              variant="light"
+              onPress={() => setIsRejectModalOpen(false)}
+            >
+              Hủy
+            </CustomButton>
+
+            <CustomButton color="success" onPress={handleRejectConfirm}>
+              Đồng ý
+            </CustomButton>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
