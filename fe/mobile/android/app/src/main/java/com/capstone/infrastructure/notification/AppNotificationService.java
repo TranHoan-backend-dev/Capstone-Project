@@ -4,8 +4,11 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
+
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -19,8 +22,8 @@ public class AppNotificationService extends FirebaseMessagingService {
         super.onMessageReceived(remoteMessage);
 
         RemoteMessage.Notification notification = remoteMessage.getNotification();
-        String title = (notification != null && notification.getTitle() != null) ? notification.getTitle() : "New Notification";
-        String message = (notification != null && notification.getBody() != null) ? notification.getBody() : "You have a new update.";
+        var title = (notification != null && notification.getTitle() != null) ? notification.getTitle() : "New Notification";
+        var message = (notification != null && notification.getBody() != null) ? notification.getBody() : "You have a new update.";
 
         showNotification(title, message);
     }
@@ -29,30 +32,30 @@ public class AppNotificationService extends FirebaseMessagingService {
     public void onNewToken(@NonNull String token) {
         super.onNewToken(token);
         // Lưu token hoặc gửi lên Server Backend của ứng dụng để gắn thiết bị với User
-        System.out.println("New FCM Token: " + token);
+        Log.i(this.getClass().getName(), "New FCM Token: " + token);
     }
 
     /**
      * Hiển thị thông báo trên thanh trạng thái của Android.
      */
     private void showNotification(String title, String message) {
-        String channelId = "capstone_notifications";
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        var channelId = "capstone_notifications";
+        var notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(
-                channelId,
-                "Capstone Notifications",
-                NotificationManager.IMPORTANCE_DEFAULT
+            var channel = new NotificationChannel(
+                    channelId,
+                    "Capstone Notifications",
+                    NotificationManager.IMPORTANCE_DEFAULT
             );
             notificationManager.createNotificationChannel(channel);
         }
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(android.R.drawable.ic_dialog_info) // Icon mặc định tạm thời
-            .setContentTitle(title)
-            .setContentText(message)
-            .setAutoCancel(true);
+                .setSmallIcon(android.R.drawable.ic_dialog_info) // Icon mặc định tạm thời
+                .setContentTitle(title)
+                .setContentText(message)
+                .setAutoCancel(true);
 
         // Notify bằng ID duy nhất theo thời gian thực
         notificationManager.notify((int) System.currentTimeMillis(), notificationBuilder.build());

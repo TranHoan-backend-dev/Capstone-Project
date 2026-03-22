@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
+import { View, StyleSheet, Image, TouchableOpacity, Alert, PermissionsAndroid, Platform } from 'react-native';
 import { Text, IconButton, Button, ActivityIndicator } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -10,7 +10,35 @@ export default function CaptureWaterMeterScreen({ route }: any) {
   const [isChecking, setIsChecking] = useState(false);
   const [isBlurry, setIsBlurry] = useState<boolean | null>(null);
 
-  const takePhoto = () => {
+  const requestCameraPermission = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.CAMERA,
+          {
+            title: 'Quyền sử dụng Camera',
+            message: 'Ứng dụng cần truy cập camera để chụp ảnh đồng hồ nước.',
+            buttonNeutral: 'Hỏi lại sau',
+            buttonNegative: 'Hủy',
+            buttonPositive: 'Đồng ý',
+          },
+        );
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
+      } catch (err) {
+        console.warn(err);
+        return false;
+      }
+    }
+    return true; // iOS handles this differently or permissions are handled by library
+  };
+
+  const takePhoto = async () => {
+    const hasPermission = await requestCameraPermission();
+    if (!hasPermission) {
+      Alert.alert('Từ chối', 'Bạn cần cấp quyền camera để sử dụng chức năng này.');
+      return;
+    }
+
     // Giả lập chụp ảnh
     setPhotoUri('https://via.placeholder.com/600x800?text=anh_dong_ho_nuoc');
     checkImageQuality();
@@ -32,7 +60,7 @@ export default function CaptureWaterMeterScreen({ route }: any) {
   };
 
   const handleManualInput = () => {
-    navigation.navigate('MeterInput' as never, route.params as never);
+    (navigation.navigate as (name: string, params: any) => void)('MeterInput', route.params);
   };
 
   const handleAccept = () => {
@@ -48,13 +76,13 @@ export default function CaptureWaterMeterScreen({ route }: any) {
       <View style={styles.header}>
         <IconButton icon="arrow-left" onPress={() => navigation.goBack()} />
         <Text style={styles.headerTitle}>Chụp ảnh đồng hồ</Text>
-        <View style={{ width: 48 }} />
+        <View style={styles.headerSpacer} />
       </View>
 
       <View style={styles.cameraContainer}>
         {!photoUri ? (
           <View style={styles.placeholderCamera}>
-            <IconButton icon="camera-outline" size={60} color="#9CA3AF" />
+            <IconButton icon="camera-outline" size={60} iconColor="#9CA3AF" />
             <Text style={styles.placeholderText}>Nhấn nút chụp bên dưới</Text>
           </View>
         ) : (
@@ -126,6 +154,9 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  headerSpacer: {
+    width: 48,
   },
   cameraContainer: {
     flex: 1,

@@ -1,10 +1,14 @@
 package com.capstone.ui.views;
 
 import android.os.Bundle;
+
 import androidx.activity.ComponentActivity;
 import androidx.lifecycle.ViewModelProvider;
+
 import com.capstone.ui.viewmodel.MediaViewModel;
+
 import dagger.hilt.android.AndroidEntryPoint;
+
 import java.io.File;
 
 /**
@@ -19,7 +23,7 @@ public class CameraActivity extends ComponentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         // Khởi tạo MediaViewModel qua ViewModelProvider (cú pháp Java Hilt)
         viewModel = new ViewModelProvider(this).get(MediaViewModel.class);
     }

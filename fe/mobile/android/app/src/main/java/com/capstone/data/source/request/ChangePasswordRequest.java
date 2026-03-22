@@ -11,7 +11,15 @@ public class ChangePasswordRequest {
         this.confirmPassword = confirmPassword;
     }
 
-    public String getOldPassword() { return oldPassword; }
-    public String getNewPassword() { return newPassword; }
-    public String getConfirmPassword() { return confirmPassword; }
+    public String getOldPassword() {
+        return oldPassword;
+    }
+
+    public String getNewPassword() {
+        return newPassword;
+    }
+
+    public String getConfirmPassword() {
+        return confirmPassword;
+    }
 }

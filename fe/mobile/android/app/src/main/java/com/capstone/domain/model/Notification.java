@@ -17,11 +17,26 @@ public class Notification {
         this.createdAt = createdAt;
     }
 
-    public String getId() { return id; }
-    @Nullable public String getLink() { return link; }
-    public String getMessage() { return message; }
-    public boolean isRead() { return isRead; }
-    public String getCreatedAt() { return createdAt; }
+    public String getId() {
+        return id;
+    }
+
+    @Nullable
+    public String getLink() {
+        return link;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public boolean isRead() {
+        return isRead;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
 
     public Notification copyWithRead(boolean isRead) {
         return new Notification(this.id, this.link, this.message, isRead, this.createdAt);

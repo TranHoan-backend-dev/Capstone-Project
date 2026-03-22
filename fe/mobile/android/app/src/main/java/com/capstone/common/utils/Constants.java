@@ -4,7 +4,8 @@ package com.capstone.common.utils;
  * Lớp chứa các hằng số hệ thống (Environment strings, API Keys, URLs).
  */
 public final class Constants {
-    private Constants() {} // Ngăn việc khởi tạo instance
+    private Constants() {
+    } // Ngăn việc khởi tạo instance
 
     /**
      * Base URL cho các API của hệ thống.

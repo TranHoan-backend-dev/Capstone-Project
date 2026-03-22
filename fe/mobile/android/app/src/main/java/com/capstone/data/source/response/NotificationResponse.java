@@ -17,9 +17,24 @@ public class NotificationResponse {
         this.createdAt = createdAt;
     }
 
-    public String getNotificationId() { return notificationId; }
-    @Nullable public String getLink() { return link; }
-    public String getMessage() { return message; }
-    public boolean getStatus() { return status; }
-    public String getCreatedAt() { return createdAt; }
+    public String getNotificationId() {
+        return notificationId;
+    }
+
+    @Nullable
+    public String getLink() {
+        return link;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public boolean getStatus() {
+        return status;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
 }

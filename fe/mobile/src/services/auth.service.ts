@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const API_URL = 'localhost:3000/api/auth';
+import { apiFetch } from './api';
 
 export interface LoginResponse {
   accessToken: string;
@@ -14,28 +13,17 @@ export interface LoginResponse {
 
 const authService = {
   async login(email: string, password: string): Promise<LoginResponse> {
-    const response = await fetch(`${API_URL}/login`, {
+    const data: LoginResponse = await apiFetch('/auth/signin', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
       body: JSON.stringify({ email, password }),
     });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Login failed');
-    }
-
-    const data: LoginResponse = await response.json();
-
+    console.log(data)
     // ✅ lưu token
     await AsyncStorage.setItem('accessToken', data.accessToken);
-
     if (data.refreshToken) {
       await AsyncStorage.setItem('refreshToken', data.refreshToken);
     }
-
     await AsyncStorage.setItem('user', JSON.stringify(data.user));
 
     return data;

@@ -1,4 +1,6 @@
-package com.capstone.bridge;
+package com.capstone.bridge.media;
+
+import androidx.annotation.NonNull;
 
 import com.capstone.domain.repository.MediaRepository;
 import com.capstone.infrastructure.security.PermissionManager;
@@ -20,15 +22,17 @@ public class MediaBridgePackage implements ReactPackage {
         this.permissionManager = permissionManager;
     }
 
+    @NonNull
     @Override
-    public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
+    public List<NativeModule> createNativeModules(@NonNull ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
         modules.add(new MediaBridgeModule(reactContext, mediaRepository, permissionManager));
         return modules;
     }
 
+    @NonNull
     @Override
-    public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
+    public List<ViewManager> createViewManagers(@NonNull ReactApplicationContext reactContext) {
         return Collections.emptyList();
     }
 }

@@ -1,10 +1,14 @@
 package com.capstone.infrastructure.security;
 
+import androidx.annotation.NonNull;
+
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
 import java.io.IOException;
 
 /**
@@ -20,16 +24,17 @@ public class AuthInterceptor implements Interceptor {
         this.tokenManager = tokenManager;
     }
 
+    @NonNull
     @Override
-    public Response intercept(Interceptor.Chain chain) throws IOException {
+    public Response intercept(@NonNull Interceptor.Chain chain) throws IOException {
         Request originalRequest = chain.request();
         Request.Builder requestBuilder = originalRequest.newBuilder();
 
         // Kiểm tra xem request có yêu cầu bỏ qua token không (Header No-Authentication)
-        boolean shouldAddToken = originalRequest.header("No-Authentication") == null;
+        var shouldAddToken = originalRequest.header("No-Authentication") == null;
 
         if (shouldAddToken) {
-            String accessToken = tokenManager.getAccessToken();
+            var accessToken = tokenManager.getAccessToken();
             if (accessToken != null) {
                 requestBuilder.addHeader("Authorization", "Bearer " + accessToken);
             }
