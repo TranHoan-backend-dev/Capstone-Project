@@ -24,5 +24,11 @@ public interface InstallationFormService {
 
   Boolean checkAnyFormsBelongedToNetwork(String id);
 
+  /**
+   *
+   * @param id
+   * @param installationFormId
+   * @param status neu true thi la giao cho nv khao sat, false => doi truong doi thi cong
+   */
   void assignInstallationForm(String id, InstallationFormId installationFormId, Boolean status);
 }

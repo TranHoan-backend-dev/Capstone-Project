@@ -6,7 +6,10 @@ import com.capstone.construction.application.dto.response.receipt.ReceiptRespons
 
 public interface ReceiptService {
   ReceiptResponse createReceipt(CreateRequest request);
-  ReceiptResponse updateReceipt(String formCode, String formNumber, UpdateRequest request);
+
+  ReceiptResponse updateReceipt(UpdateRequest request);
+
   void deleteReceipt(String formCode, String formNumber);
+
   ReceiptResponse getReceipt(String formCode, String formNumber);
 }

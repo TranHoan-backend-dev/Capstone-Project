@@ -4,7 +4,7 @@ import com.capstone.common.annotation.AppLog;
 import com.capstone.common.exception.ExistingException;
 import com.capstone.device.application.dto.request.price.CreateRequest;
 import com.capstone.device.application.dto.request.price.UpdateRequest;
-import com.capstone.device.application.dto.response.WaterPriceResponse;
+import com.capstone.device.application.dto.response.water.WaterPriceResponse;
 import com.capstone.device.domain.model.WaterPrice;
 import com.capstone.device.infrastructure.persistence.PriceTypeRepository;
 import com.capstone.device.infrastructure.persistence.WaterPriceRepository;
@@ -88,7 +88,6 @@ public class WaterPriceServiceImpl implements WaterPriceService {
     if (!waterPriceRepository.existsById(id)) {
       throw new IllegalArgumentException("Water price not found: " + id);
     }
-    ptRepo.deleteByWaterPrice_PriceId(id);
     waterPriceRepository.deleteById(id);
   }
 

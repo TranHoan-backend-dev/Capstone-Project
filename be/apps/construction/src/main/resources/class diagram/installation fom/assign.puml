@@ -11,18 +11,19 @@ skinparam class {
 }
 
 package "Construction Service" #FFE0B2 {
-    package "Adapter" {
+    package "Adapter" as ConstAdapter {
         class InstallationFormController {
             + assignInstallationForm(request: InstallationFormId, empId: String): ResponseEntity<WrapperApiResponse>
         }
     }
 
-    package "Application" {
+    package "Application" as ConstApp {
         class InstallationFormHandlingUseCase {
             - ifSrv: InstallationFormService
             - messageProducer: MessageProducer
             - empSrv: EmployeeService
             + assignInstallationFormToSurveyStaff(id: InstallationFormId, empId: String): void
+            + assignInstallationFormToConstructionCaptain(id: InstallationFormId, empId: String): void
         }
 
         interface InstallationFormService {
@@ -44,47 +45,13 @@ package "Construction Service" #FFE0B2 {
         }
     }
 
-    package "Domain" {
-        class InstallationForm <<Entity>> {
-            - id: InstallationFormId
-            - customerName: String
-            - address: String
-            - phoneNumber: String
-            - status: FormProcessingStatus
-            - createdBy: String
-            - handoverBy: String
-            - constructedBy: String
-            + setHandoverBy(value: String): void
-        }
-
-        class InstallationFormId <<Embeddable>> {
-            - formCode: String
-            - formNumber: String
-        }
-
-        class FormProcessingStatus <<Embeddable>> {
-            - registration: ProcessingStatus
-            - estimate: ProcessingStatus
-            - contract: ProcessingStatus
-            - construction: ProcessingStatus
-        }
-
-        enum ProcessingStatus <<enumeration>> {
-            PENDING_FOR_APPROVAL
-            APPROVED
-            REJECTED
-            PROCESSING
-        }
-    }
-
-    package "Infrastructure" {
+    package "Infrastructure" as ConstInfra {
         interface InstallationFormRepository <<Repository>> {
             + findById(id: InstallationFormId): Optional<InstallationForm>
             + save(entity: InstallationForm): InstallationForm
         }
 
         class MessageProducer {
-            - template: RabbitTemplate
             + send(routingKey: String, data: Object): void
         }
 
@@ -95,38 +62,64 @@ package "Construction Service" #FFE0B2 {
     }
 }
 
-package "Auth Service" #E1F5FE {
+package "Notification Service" #C8E6C9 {
+    package "Event Consumer" as NotifyConsumer {
+        abstract class GeneralEventConsumer<T> {
+            # notificationService: NotificationService
+            # messagingTemplate: SimpMessagingTemplate
+            # producer: MessageProducer
+            # handle(event: T, topics: List<String>, title: String, link: String): void
+        }
+
+        class AssignOrderConsumer {
+            + handle(event: AssignEventMessage): void
+        }
+    }
+
+    package "Infrastructure" as NotifyInfra {
+        class SimpMessagingTemplate <<WebSocket>>
+        class NotificationMessageProducer {
+            + send(routingKey: String, event: NotificationCreatedEvent): void
+        }
+    }
+}
+
+package "Auth Service" #BBDEFB {
     package "Adapter" as AuthAdapter {
         class EmployeeController {
             + getRoleOfEmployeeById(id: String): WrapperApiResponse
             + getEmployeeNameById(id: String): WrapperApiResponse
         }
     }
+    package "Application.Event" as AuthEvent {
+        class NotificationConsumer {
+            + handle(message: NotificationCreatedEvent): void
+        }
+    }
 }
 
-' Relationships
+' Relationships - Construction
 InstallationFormController o-- InstallationFormHandlingUseCase
-InstallationFormController ..> InstallationFormId
-
 InstallationFormHandlingUseCase o-- InstallationFormService
 InstallationFormHandlingUseCase o-- MessageProducer
 InstallationFormHandlingUseCase o-- EmployeeService
-InstallationFormHandlingUseCase ..> InstallationFormId
-InstallationFormHandlingUseCase ..> AssignEvent
 
 InstallationFormService <|.. InstallationFormServiceImpl
 InstallationFormServiceImpl o-- InstallationFormRepository
 InstallationFormServiceImpl o-- EmployeeService
-InstallationFormServiceImpl ..> InstallationFormId
 
-InstallationForm *-- InstallationFormId
-InstallationForm *-- FormProcessingStatus
-FormProcessingStatus o-- ProcessingStatus
+' Relationships - Notification
+AssignOrderConsumer --|> GeneralEventConsumer
+GeneralEventConsumer o-- SimpMessagingTemplate
+GeneralEventConsumer o-- NotificationMessageProducer
 
-InstallationFormRepository ..> InstallationForm
-InstallationFormRepository ..> InstallationFormId
-
+' Relationships - Auth & Feign
 EmployeeService ..> AuthAdapter : "Feign Call"
-MessageProducer ..> AssignEvent : "JSON Payload"
+
+' Event Flow
+MessageProducer ..> AssignOrderConsumer : "RabbitMQ [AssignEvent]"
+GeneralEventConsumer ..> SimpMessagingTemplate : "Broadcast via WebSocket"
+GeneralEventConsumer ..> NotificationMessageProducer : "Notify back to Auth"
+NotificationMessageProducer ..> NotificationConsumer : "RabbitMQ [NotificationCreatedEvent]"
 
 @enduml

@@ -3,7 +3,6 @@ package com.capstone.customer.service.impl;
 import com.capstone.common.enumerate.CustomerType;
 import com.capstone.common.enumerate.UsageTarget;
 import com.capstone.common.exception.NotExistingException;
-import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.customer.dto.request.customer.CreateRequest;
 import com.capstone.customer.dto.request.customer.UpdateRequest;
 import com.capstone.customer.dto.response.CustomerResponse;
@@ -26,6 +25,9 @@ import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.jpa.domain.Specification;
+import com.capstone.customer.dto.request.customer.CustomerFilterRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -65,7 +67,7 @@ class CustomerServiceImplTest {
     lenient().when(customer.getPhoneNumber()).thenReturn("0901234567");
     lenient().when(customer.getType()).thenReturn(CustomerType.FAMILY);
     lenient().when(customer.getIsBigCustomer()).thenReturn(false);
-    lenient().when(customer.getUsageTarget()).thenReturn(UsageTarget.DOMESTIC.name());
+    lenient().when(customer.getUsageTarget()).thenReturn(UsageTarget.DOMESTIC);
     lenient().when(customer.getNumberOfHouseholds()).thenReturn(1);
     lenient().when(customer.getHouseholdRegistrationNumber()).thenReturn(123456);
     lenient().when(customer.getProtectEnvironmentFee()).thenReturn(1000);
@@ -115,7 +117,7 @@ class CustomerServiceImplTest {
   void should_CreateCustomer_When_InputIsValid() {
     // Given
     when(customerRepository.existsByFormCodeAndFormNumber(any(), any())).thenReturn(false);
-    when(constructionService.checkExistence(any(), any())).thenReturn(new WrapperApiResponse(null, true));
+    when(constructionService.checkExistence(any(), any())).thenReturn(true);
     when(deviceService.checkExistenceOfWaterPrice(any())).thenReturn(true);
     when(deviceService.checkExistenceOfWaterMeter(any())).thenReturn(true);
     when(customerRepository.save(any(Customer.class))).thenReturn(customer);
@@ -142,7 +144,7 @@ class CustomerServiceImplTest {
     // Given
     var id = "CUST-123";
     when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
-    when(constructionService.checkExistence(any(), any())).thenReturn(new WrapperApiResponse(null, true));
+    when(constructionService.checkExistence(any(), any())).thenReturn(true);
     when(deviceService.checkExistenceOfWaterPrice(any())).thenReturn(true);
     when(deviceService.checkExistenceOfWaterMeter(any())).thenReturn(true);
     when(customerRepository.save(any(Customer.class))).thenReturn(customer);
@@ -208,7 +210,7 @@ class CustomerServiceImplTest {
     // Given
     var id = "CUST-123";
     when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
-    when(constructionService.checkExistence(any(), any())).thenReturn(new WrapperApiResponse(null, false));
+    when(constructionService.checkExistence(any(), any())).thenReturn(false);
 
     // When & Then
     assertThrows(NotExistingException.class, () -> customerService.updateCustomer(id, updateRequest));
@@ -220,7 +222,7 @@ class CustomerServiceImplTest {
     // Given
     var id = "CUST-123";
     when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
-    when(constructionService.checkExistence(any(), any())).thenReturn(new WrapperApiResponse(null, true));
+    when(constructionService.checkExistence(any(), any())).thenReturn(true);
     when(deviceService.checkExistenceOfWaterPrice(any())).thenReturn(false);
 
     // When & Then
@@ -233,7 +235,7 @@ class CustomerServiceImplTest {
     // Given
     var id = "CUST-123";
     when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
-    when(constructionService.checkExistence(any(), any())).thenReturn(new WrapperApiResponse(null, true));
+    when(constructionService.checkExistence(any(), any())).thenReturn(true);
     when(deviceService.checkExistenceOfWaterPrice(any())).thenReturn(true);
     when(deviceService.checkExistenceOfWaterMeter(any())).thenReturn(false);
 
@@ -308,15 +310,34 @@ class CustomerServiceImplTest {
   void should_ReturnPaginatedCustomers_When_Called() {
     // Given
     Page<Customer> customerPage = new PageImpl<>(List.of(customer));
-    when(customerRepository.findAll(pageable)).thenReturn(customerPage);
+    when(customerRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(customerPage);
 
     // When
-    Page<CustomerResponse> response = customerService.getAllCustomers(pageable);
+    Page<CustomerResponse> response = customerService.getAllCustomers(pageable, null);
 
     // Then
     assertThat(response).isNotNull();
     assertThat(response.getContent()).hasSize(1);
-    verify(customerRepository).findAll(pageable);
+    verify(customerRepository).findAll(any(Specification.class), eq(pageable));
+  }
+
+  @Test
+  @DisplayName("Should return paginated customers with search")
+  void should_ReturnPaginatedCustomers_When_SearchIsProvided() {
+    // Given
+    CustomerFilterRequest filter = new CustomerFilterRequest(
+      "Trần", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null
+    );
+    Page<Customer> customerPage = new PageImpl<>(List.of(customer));
+    when(customerRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(customerPage);
+
+    // When
+    Page<CustomerResponse> response = customerService.getAllCustomers(pageable, filter);
+
+    // Then
+    assertThat(response).isNotNull();
+    assertThat(response.getContent()).hasSize(1);
+    verify(customerRepository).findAll(any(Specification.class), eq(pageable));
   }
 
   @Test

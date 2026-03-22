@@ -1,0 +1,38 @@
+### TC01 - View device management history successfully (IT_STAFF role)
+GET http://localhost:9006/api/v1/history/device-management
+Authorization: Bearer {{IT_STAFF_TOKEN}}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+### TC02 - Missing Authorization Header (401 Unauthorized)
+GET http://localhost:9006/api/v1/history/device-management
+
+> {%
+client.test("Status is 401", function() {
+  client.assert(response.status === 401);
+});
+%}
+
+### TC03 - Without IT_STAFF Role (403 Forbidden)
+GET http://localhost:9006/api/v1/history/device-management
+Authorization: Bearer {{REGULAR_USER_TOKEN}}
+
+> {%
+client.test("Status is 403", function() {
+  client.assert(response.status === 403);
+});
+%}
+
+### TC04 - Invalid Token Formatting (401 Unauthorized)
+GET http://localhost:9006/api/v1/history/device-management
+Authorization: Bearer invalid.token.format
+
+> {%
+client.test("Status is 401", function() {
+  client.assert(response.status === 401);
+});
+%}

@@ -1,12 +1,12 @@
-CREATE EXTENSION IF NOT EXISTS unaccent;
+CREATE
+EXTENSION IF NOT EXISTS unaccent;
 
 create table public.materials_group
 (
   group_id   varchar(255) not null
     primary key,
   created_at timestamp(6) not null,
-  name       varchar(255) not null
-    constraint ukp5q73e1ej9oy70w2tvbl2502u
+  name       varchar(255) not null constraint ukp5q73e1ej9oy70w2tvbl2502u
             unique,
   updated_at timestamp(6) not null
 );
@@ -16,11 +16,10 @@ alter table public.materials_group
 
 create table public.overall_water_meter
 (
-  meter_code varchar(255) not null
+  serial     varchar(255) not null
     primary key,
   lateral_id varchar(255) not null,
-  name       varchar(255) not null
-    constraint ukb3dd1t3sdcwe8sbqfrf9dfyif
+  name       varchar(255) not null constraint ukb3dd1t3sdcwe8sbqfrf9dfyif
             unique
 );
 
@@ -33,8 +32,7 @@ create table public.parameters
     primary key,
   created_at timestamp(6)   not null,
   creator    varchar(255)   not null,
-  name       varchar(255)   not null
-    constraint uk103wr298mpbr2vhx5tr7ila1o
+  name       varchar(255)   not null constraint uk103wr298mpbr2vhx5tr7ila1o
             unique,
   updated_at timestamp(6)   not null,
   updator    varchar(255)   not null,
@@ -44,24 +42,12 @@ create table public.parameters
 alter table public.parameters
   owner to postgres;
 
-create table public.price_type
-(
-  price_type_id varchar(255) not null
-    primary key,
-  area          varchar(255),
-  price         jsonb
-);
-
-alter table public.price_type
-  owner to postgres;
-
 create table public.unit
 (
   unit_id    varchar(255) not null
     primary key,
   created_at timestamp(6) not null,
-  name       varchar(255) not null
-    constraint ukaa58c9de9eu0v585le47w25my
+  name       varchar(255) not null constraint ukaa58c9de9eu0v585le47w25my
             unique,
   updated_at timestamp(6) not null
 );
@@ -82,11 +68,9 @@ create table public.material
   labor_price_at_rural_commune                  numeric(19, 2) not null,
   price                                         numeric(19, 2) not null,
   updated_at                                    timestamp(6)   not null,
-  supplies_group_id                             varchar(255)
-    constraint fki493ecucvdjagvmlbalqgaeb0
+  supplies_group_id                             varchar(255) constraint fki493ecucvdjagvmlbalqgaeb0
             references public.materials_group,
-  calculation_unit_id                           varchar(255)
-    constraint fkbvkkik21h23aisjcbbpgafst6
+  calculation_unit_id                           varchar(255) constraint fkbvkkik21h23aisjcbbpgafst6
             references public.unit
 );
 
@@ -95,12 +79,13 @@ alter table public.material
 
 create table public.materials_of_cost_estimate
 (
-  cost_est_id          varchar(255) not null,
-  labor_cost           varchar(255) not null,
-  material_cost        varchar(255) not null,
-  note                 varchar(255),
-  material_material_id varchar(255) not null
-    constraint fk8hlrkyr0pdjjk5yooog6ewvin
+  cost_est_id           varchar(255)             not null,
+  mass                  real                     not null,
+  note                  varchar(255),
+  reduction_coefficient numeric(38, 2) default 0 not null,
+  total_labor_cost      varchar(255),
+  total_material_cost   varchar(255),
+  material_material_id  varchar(255)             not null constraint fk8hlrkyr0pdjjk5yooog6ewvin
             references public.material,
   primary key (cost_est_id, material_material_id)
 );
@@ -114,8 +99,7 @@ create table public.materials_of_settlement
   labor_cost           varchar(255) not null,
   material_cost        varchar(255) not null,
   note                 varchar(255),
-  material_material_id varchar(255) not null
-    constraint fkaueyvhmdiruotg5pccb1bpaou
+  material_material_id varchar(255) not null constraint fkaueyvhmdiruotg5pccb1bpaou
             references public.material,
   primary key (material_material_id, settlement_id)
 );
@@ -149,8 +133,7 @@ create table public.water_meter
     primary key,
   installation_date   date         not null,
   size                integer      not null,
-  water_meter_type_id varchar(255)
-    constraint fk918g3f2rs9p2b4uujx5h01kiq
+  water_meter_type_id varchar(255) constraint fk918g3f2rs9p2b4uujx5h01kiq
             references public.water_meter_type
 );
 
@@ -159,10 +142,11 @@ alter table public.water_meter
 
 create table public.usage_history
 (
-  usages     jsonb,
-  meter_code varchar(255) not null
-    primary key
-    constraint fkrxiqn18008bmpbc73g3acvm3o
+  customer_id varchar(255) not null constraint uk7bgg9a3lubti663eagw8kamso
+            unique,
+  usages jsonb,
+  meter_code  varchar(255) not null
+    primary key constraint fkrxiqn18008bmpbc73g3acvm3o
             references public.water_meter
 );
 
@@ -175,13 +159,13 @@ create table public.water_price
     primary key,
   application_period date           not null,
   created_at         timestamp(6)   not null,
-  description        varchar(255),
+  description        varchar(255)   not null constraint uk96vl1pb7ei7mnv3c2n0d1ym20
+            unique,
   environment_price  numeric(38, 2),
   expiration_date    date           not null,
   tax                numeric(38, 2) not null,
   updated_at         timestamp(6)   not null,
-  usage_target       varchar(255)   not null
-    constraint water_price_usage_target_check
+  usage_target       varchar(255)   not null constraint water_price_usage_target_check
             check ((usage_target)::text = ANY
                    ((ARRAY ['DOMESTIC'::character varying, 'INSTITUTIONAL'::character varying, 'INDUSTRIAL'::character varying, 'COMMERCIAL'::character varying])::text[]))
 );
@@ -189,13 +173,24 @@ create table public.water_price
 alter table public.water_price
   owner to postgres;
 
+create table public.price_type
+(
+  price_type_id        varchar(255) not null
+    primary key,
+  area                 varchar(255),
+  price jsonb,
+  water_price_price_id varchar(255) constraint fkfx8ro9xwqdyyos5n8ro3r9dxy
+            references public.water_price
+);
+
+alter table public.price_type
+  owner to postgres;
+
 create table public.water_price_price_types
 (
-  water_price_price_id      varchar(255) not null
-    constraint fkhgabkm67kgm264uwq6shrfw7r
+  water_price_price_id      varchar(255) not null constraint fkhgabkm67kgm264uwq6shrfw7r
             references public.water_price,
-  price_types_price_type_id varchar(255) not null
-    constraint ukmtk56wlf8b7n6lqlv65gfxl22
+  price_types_price_type_id varchar(255) not null constraint ukmtk56wlf8b7n6lqlv65gfxl22
             unique
         constraint fkdb51bbihy0304wg8eg4omfu1i
             references public.price_type

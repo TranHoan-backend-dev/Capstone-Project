@@ -2,6 +2,7 @@ package com.capstone.device.domain.model;
 
 import com.capstone.common.utils.SharedMessage;
 import com.capstone.device.infrastructure.util.Message;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -45,6 +46,7 @@ public class WaterMeterType {
 
   Float diameter;
 
+  @JsonIgnore
   @OneToMany(mappedBy = "type")
   List<WaterMeter> waterMeter;
 

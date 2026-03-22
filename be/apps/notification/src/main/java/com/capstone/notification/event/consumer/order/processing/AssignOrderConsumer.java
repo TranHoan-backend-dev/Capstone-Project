@@ -3,7 +3,6 @@ package com.capstone.notification.event.consumer.order.processing;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.enumerate.RoleName;
 import com.capstone.notification.event.consumer.order.message.AssignEventMessage;
-import com.capstone.notification.event.consumer.order.message.CreateEventMessage;
 import com.capstone.notification.event.producer.MessageProducer;
 import com.capstone.notification.event.websocket.GeneralEventConsumer;
 import com.capstone.notification.event.websocket.Topic;
@@ -26,11 +25,13 @@ public class AssignOrderConsumer extends GeneralEventConsumer<AssignEventMessage
   }
 
   @RabbitListener(queues = "${rabbit-mq-config.queue}.${rabbit-mq-config.entities[13]}.${rabbit-mq-config.actions[4]}")
-  public void handle(AssignEventMessage event) {
+  public void handle(@NonNull AssignEventMessage event) {
+    var topic = event.data().status() ? Topic.getTopicOfPlanningTechnicalDepartment(RoleName.SURVEY_STAFF, "/" + event.data().empId()) :
+      Topic.getTopicOfConstructionDepartment(RoleName.CONSTRUCTION_DEPARTMENT_HEAD, "/" + event.data().empId());
     super.handle(
       event,
-      List.of(Topic.getTopicOfPlanningTechnicalDepartment(RoleName.SURVEY_STAFF, "/" + event.data().empId())),
-      "Đơn lắp đặt mới vừa được giao khảo sát",
+      List.of(topic),
+      "Đơn lắp đặt mới vừa được phân công cho bạn",
       null);
   }
 

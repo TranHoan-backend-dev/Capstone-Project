@@ -1,6 +1,7 @@
 package com.capstone.construction.infrastructure.persistence;
 
 import com.capstone.common.enumerate.ProcessingStatus;
+import com.capstone.common.utils.SharedConstant;
 import com.capstone.construction.domain.model.InstallationForm;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
 import jakarta.persistence.criteria.Expression;
@@ -50,7 +51,6 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
       if (keyword != null && !keyword.isBlank()) {
         List<Predicate> orPredicates = new ArrayList<>();
         var lowerCaseKeyword = "%" + keyword.toLowerCase() + "%";
-        var unaccent = "unaccent";
 
         // tuong duong LOWER(address) LIKE %keyword%
         var list = List.of("address", "customerName",
@@ -60,8 +60,8 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
 
         list.forEach(field ->
           orPredicates.add(cb.like(
-            cb.function(unaccent, String.class, cb.lower(cb.function("concat", String.class, cb.literal(""), root.get(field)))),
-            cb.function(unaccent, String.class, cb.literal(lowerCaseKeyword))
+            cb.function(SharedConstant.UNACCENT, String.class, cb.lower(cb.function("concat", String.class, cb.literal(""), root.get(field)))),
+            cb.function(SharedConstant.UNACCENT, String.class, cb.literal(lowerCaseKeyword))
           )));
 
         // gop 2 dieu kien tren bang OR
