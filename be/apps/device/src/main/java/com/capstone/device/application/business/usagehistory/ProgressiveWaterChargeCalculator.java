@@ -2,6 +2,9 @@ package com.capstone.device.application.business.usagehistory;
 
 import com.capstone.device.domain.model.PriceType;
 import com.capstone.device.domain.model.WaterPrice;
+import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -11,15 +14,21 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Component
 public class ProgressiveWaterChargeCalculator implements WaterChargeCalculator {
   private static final int SCALE = 2;
   private static final BigDecimal HUNDRED = new BigDecimal("100");
 
   @Override
-  public BigDecimal calculateProgressiveCharge(BigDecimal mass, WaterPrice waterPrice) {
+  public WaterChargeBreakdown calculateProgressiveCharge(BigDecimal mass, WaterPrice waterPrice) {
     if (mass == null || mass.compareTo(BigDecimal.ZERO) <= 0) {
-      return BigDecimal.ZERO.setScale(SCALE, RoundingMode.HALF_UP);
+      return new WaterChargeBreakdown(
+        BigDecimal.ZERO.setScale(SCALE, RoundingMode.HALF_UP),
+        BigDecimal.ZERO.setScale(SCALE, RoundingMode.HALF_UP),
+        BigDecimal.ZERO.setScale(SCALE, RoundingMode.HALF_UP),
+        BigDecimal.ZERO.setScale(SCALE, RoundingMode.HALF_UP)
+      );
     }
     if (waterPrice == null || waterPrice.getPriceTypes() == null || waterPrice.getPriceTypes().isEmpty()) {
       throw new IllegalArgumentException("Không có dữ liệu bậc giá nước để tính tiền");
@@ -39,26 +48,42 @@ public class ProgressiveWaterChargeCalculator implements WaterChargeCalculator {
 
     for (int i = 0; i < tiers.size() && remain.compareTo(BigDecimal.ZERO) > 0; i++) {
       var tier = tiers.get(i);
+      log.info("Bac gia nuoc {}: {}", i + 1, tier);
       BigDecimal tierVolume;
       if (tier.maxVolume == null) {
         tierVolume = remain;
       } else {
         tierVolume = remain.min(tier.maxVolume);
       }
+      log.info("Luong nuoc trong bac gia nay: {}", tierVolume);
 
       progressiveAmount = progressiveAmount.add(tierVolume.multiply(tier.unitPrice));
+      log.info("Tien nuoc trong bac gia nay: {}", progressiveAmount);
       remain = remain.subtract(tierVolume);
+      log.info("Luong nuoc con lai: {}", remain);
     }
 
-    var environmentFee = defaultZero(waterPrice.getEnvironmentPrice()).multiply(mass);
-    var beforeTax = progressiveAmount.add(environmentFee);
-    var taxPercent = defaultZero(waterPrice.getTax());
-    var taxAmount = beforeTax.multiply(taxPercent).divide(HUNDRED, SCALE, RoundingMode.HALF_UP);
+    var environmentFee = defaultZero(waterPrice.getEnvironmentPrice()).multiply(mass).setScale(SCALE, RoundingMode.HALF_UP);
+    log.info("Phi moi truong: {}", environmentFee);
 
-    return beforeTax.add(taxAmount).setScale(SCALE, RoundingMode.HALF_UP);
+    var beforeTax = progressiveAmount.add(environmentFee);
+    log.info("Phi truoc thue: {}", beforeTax);
+
+    log.info("Thue: {}", waterPrice.getTax());
+    var taxPercent = defaultZero(waterPrice.getTax());
+
+    var taxAmount = beforeTax.multiply(taxPercent).divide(HUNDRED, SCALE, RoundingMode.HALF_UP);
+    var totalAmount = beforeTax.add(taxAmount).setScale(SCALE, RoundingMode.HALF_UP);
+
+    return new WaterChargeBreakdown(
+      progressiveAmount.setScale(SCALE, RoundingMode.HALF_UP),
+      environmentFee,
+      taxAmount,
+      totalAmount
+    );
   }
 
-  private List<Tier> buildTiers(List<Map<String, BigDecimal>> source) {
+  private @NonNull List<Tier> buildTiers(@NonNull List<Map<String, BigDecimal>> source) {
     var rows = new ArrayList<TierRaw>();
     for (Map<String, BigDecimal> item : source) {
       var unitPrice = item.get("price");
@@ -96,7 +121,7 @@ public class ProgressiveWaterChargeCalculator implements WaterChargeCalculator {
     return tiers;
   }
 
-  private BigDecimal firstNonNull(Map<String, BigDecimal> map, String... keys) {
+  private @Nullable BigDecimal firstNonNull(@NonNull Map<String, BigDecimal> map, @NonNull String... keys) {
     for (String key : keys) {
       if (map.containsKey(key) && map.get(key) != null && map.get(key).compareTo(BigDecimal.ZERO) > 0) {
         return map.get(key);

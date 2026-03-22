@@ -34,10 +34,10 @@ public class UsageHistoryController {
     @ApiResponse(responseCode = "400", description = "Dữ liệu không hợp lệ hoặc chỉ số mới thấp hơn kỳ trước"),
     @ApiResponse(responseCode = "404", description = "Không tìm thấy thiết bị")
   })
-  @PostMapping(value = "/{serial}", consumes = "multipart/form-data")
+  @PostMapping(value = "/{serial}")
   public ResponseEntity<WrapperApiResponse> updateWaterIndexThisMonth(
     @Parameter(description = "Mã Serial của thiết bị", example = "WM-2024-001") @PathVariable String serial,
-    @ModelAttribute @Valid UsageHistoryRequest request
+    @RequestBody @Valid UsageHistoryRequest request
   ) {
     log.info("Updating usage history for serial {}", serial);
     var response = useCase.updateWaterIndex(request, serial);
@@ -52,8 +52,7 @@ public class UsageHistoryController {
   @PatchMapping("/{serial}")
   public ResponseEntity<WrapperApiResponse> updatePaymentStatus(
     @Parameter(description = "Mã Serial của thiết bị") @PathVariable String serial,
-    @Parameter(description = "Phương thức thanh toán (CASH, BANK_TRANSFER, ...)") @RequestParam String method
-  ) {
+    @Parameter(description = "Phương thức thanh toán (CASH, BANK_TRANSFER, ...)") @RequestParam String method) {
     log.info("Updating payment status for serial {}", serial);
     useCase.updatePaymentStatus(serial, method);
     return Utils.returnOkResponse("Cập nhật trạng thái thanh toán thành công", null);
