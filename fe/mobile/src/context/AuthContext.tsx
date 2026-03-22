@@ -45,7 +45,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     console.log("[AuthContext] start logging in")
     const data = await authService.login(email, password);
     setUser(data.user);
-    console.log("[AuthContext] User: " + data.user);
+    console.log("[AuthContext] User: " + JSON.stringify(data.user));
     setIsAuthenticated(true);
   };
 

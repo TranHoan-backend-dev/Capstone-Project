@@ -143,9 +143,8 @@ public class CostEstimateServiceImpl implements CostEstimateService {
       estimate.setDesignImageUrl(url);
     }
     if (generalInformation.waterMeterSerial() != null && !generalInformation.waterMeterSerial().isBlank()) {
-      var meterStatus = deviceSrv.isMeterExisting(generalInformation.waterMeterSerial())
-        .data().toString();
-      if (!Boolean.parseBoolean(meterStatus)) {
+      var meterStatus = deviceSrv.isMeterExisting(generalInformation.waterMeterSerial());
+      if (!meterStatus) {
         throw new IllegalArgumentException("Đồng hồ nước không tồn tại");
       }
       estimate.setWaterMeterSerial(generalInformation.waterMeterSerial());
