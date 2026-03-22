@@ -68,7 +68,7 @@ export const getAllMaterials = (
     params: {
       page,
       size,
-      jobContent: keyword || "Đai khởi thủy HDPE OD225x1/2",
+      jobContent: keyword || "",
       laborCode: laborCode || "",
       minPrice: fromPrice || null,
       maxPrice: toPrice || null,
