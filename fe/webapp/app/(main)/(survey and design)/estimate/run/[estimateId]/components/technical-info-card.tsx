@@ -70,30 +70,47 @@ export const TechnicalInfoCard = ({
   const [overallWaterMeterId, setOverallWaterMeterId] = useState("");
   const [displayOverallWaterMeter, setDisplayOverallWaterMeter] = useState("");
 
+  const [overallMeters, setOverallMeters] = useState<any[]>([]);
+
   const [waterMeterSerial, setWaterMeterSerial] = useState("");
   const [displayWaterMeter, setDisplayWaterMeter] = useState("");
+
   // useEffect(() => {
-  //   const fetchWaterPriceDetails = async () => {
-  //     if (formData.waterPriceId && !displayWaterPrice) {
+  //   const fetchOverallWaterMeterDetails = async () => {
+  //     if (overallWaterMeterId && !displayOverallWaterMeter) {
   //       try {
   //         const response = await authFetch(
-  //           `/api/device/water-prices/${formData.waterPriceId}`,
+  //           `/api/device/water-meters/overall/${overallWaterMeterId}`,
   //         );
   //         const result = await response.json();
   //         if (result.data) {
-  //           setDisplayWaterPrice(
-  //             `${result.data.tax}% - ${result.data.environmentPrice}`,
+  //           setDisplayOverallWaterMeter(
+  //             `${result.data.name}`,
   //           );
   //         }
   //       } catch (error) {
-  //         console.error("Failed to fetch water price:", error);
+  //         console.error("Failed to fetch water meter overall:", error);
   //       }
   //     }
   //   };
 
-  //   fetchWaterPriceDetails();
-  // }, [formData.waterPriceId, displayWaterPrice]);
+  //   fetchOverallWaterMeterDetails();
+  // }, [overallWaterMeterId, displayOverallWaterMeter]);
+  useEffect(() => {
+    const fetchOverallMeters = async () => {
+      try {
+        const res = await authFetch("/api/device/water-meters/overall");
+        const json = await res.json();
+        if (json.data?.content) {
+          setOverallMeters(json.data.content);
+        }
+      } catch (error) {
+        console.error("Failed to fetch overall meters list:", error);
+      }
+    };
 
+    fetchOverallMeters();
+  }, []);
   useEffect(() => {
     const fetchWaterMeterDetails = async () => {
       if (waterMeterSerial && !displayWaterMeter) {
@@ -115,6 +132,18 @@ export const TechnicalInfoCard = ({
 
     fetchWaterMeterDetails();
   }, [waterMeterSerial, displayWaterMeter]);
+
+  useEffect(() => {
+    if (overallWaterMeterId && overallMeters.length > 0) {
+      const found = overallMeters.find(
+        (item) => item.serial === overallWaterMeterId,
+      );
+
+      if (found) {
+        setDisplayOverallWaterMeter(found.name);
+      }
+    }
+  }, [overallWaterMeterId, overallMeters]);
 
   // Load dữ liệu từ estimateData vào state
   useEffect(() => {
@@ -164,7 +193,7 @@ export const TechnicalInfoCard = ({
       }
       const safeNumber = (v: any) => (isNaN(Number(v)) ? 0 : Number(v));
       const materialPayload = materials.map((m) => ({
-        materialCode: m.code,
+        materialCode: m.id,
         jobContent: m.description,
         note: m.note,
         unit: m.unit,

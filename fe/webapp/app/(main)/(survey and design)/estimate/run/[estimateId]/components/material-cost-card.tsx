@@ -65,7 +65,7 @@ export const MaterialCostCard = ({
   const handleSave = async (isFinished: boolean) => {
     try {
       const materialPayload = materials.map((m) => ({
-        materialCode: m.code,
+        materialCode: m.id,
         jobContent: m.description,
         note: m.note,
         unit: m.unit,
@@ -286,7 +286,7 @@ export const MaterialCostCard = ({
 
       <LookupModal
         isOpen={showMaterialModal}
-        searchKey="content"
+        dataKey="content"
         onClose={() => setShowMaterialModal(false)}
         title="Chọn vật tư"
         api="/api/device/materials-prices"
@@ -298,9 +298,9 @@ export const MaterialCostCard = ({
         ]}
         mapData={(item: any) => ({
           id: item.id,
-          code: item.code,
-          name: item.name,
-          unit: item.unit,
+          code: item.laborCode,
+          name: item.jobContent,
+          unit: item.unitName,
           price: item.price,
         })}
         onSelect={handleSelectMaterial}
