@@ -2,8 +2,8 @@ export interface WaterPriceItem {
   id: string;
   stt: string;
   usageTarget: string;
-  tax: number;
-  environmentPrice: number;
+  tax: string;
+  environmentPrice: string;
   description: string;
   applicationPeriod: string;
   expirationDate: string;
@@ -11,8 +11,8 @@ export interface WaterPriceItem {
 
 export interface WaterPriceFilter {
   usageTarget?: string;
-  tax?: number;
-  environmentPrice?: number;
+  tax?: string;
+  environmentPrice?: string;
   description?: string;
   applicationPeriod?: string;
   expirationDate?: string;

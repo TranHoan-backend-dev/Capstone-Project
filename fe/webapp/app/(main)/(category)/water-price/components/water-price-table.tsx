@@ -52,7 +52,7 @@ export const WaterPriceTable = ({
         const trimmedFilter = filter.usageTarget?.trim() || "";
 
         if (trimmedFilter) {
-          params.append("filter", trimmedFilter);
+          params.append("keyword", trimmedFilter);
         }
 
         const res = await authFetch(

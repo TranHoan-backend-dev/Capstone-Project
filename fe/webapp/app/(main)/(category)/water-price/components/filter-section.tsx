@@ -21,7 +21,9 @@ export const FilterSection = ({
   }, [filter.usageTarget]);
 
   const handleSearch = () => {
-    onSearch({ usageTarget: keyword.trim() });
+    onSearch({
+      usageTarget: keyword.trim(),
+    });
   };
 
   return (

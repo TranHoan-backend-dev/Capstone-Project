@@ -57,14 +57,14 @@ export const getAllWaterPrices = (
   page: number,
   size: number,
   sort: string,
-  filter?: string | null,
+  keyword?: string | null,
 ) =>
   axios.get(`${API_GATEWAY_URL}/d/water-prices`, {
     params: {
       page,
       size,
       sort,
-      filter,
+      keyword,
     },
     headers: {
       Authorization: `Bearer ${accessToken}`,
