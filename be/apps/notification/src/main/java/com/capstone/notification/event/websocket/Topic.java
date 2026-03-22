@@ -47,4 +47,24 @@ public enum Topic {
     }
     return str + suffix;
   }
+
+  public static @NonNull String getTopicOfConstructionDepartment(@NonNull RoleName roleName, String suffix) {
+    var str = "";
+    if (roleName == RoleName.CONSTRUCTION_DEPARTMENT_STAFF) {
+      str = "/construction/staff";
+    } else {
+      str = "/construction/head";
+    }
+    return str + suffix;
+  }
+
+  public static @NonNull String getTopicOfBusinessDepartment(@NonNull RoleName roleName, String suffix) {
+    var str = "";
+    if (roleName == RoleName.METER_INSPECTION_STAFF) {
+      str = "/business/staff";
+    } else {
+      str = "/business/head";
+    }
+    return str + suffix;
+  }
 }

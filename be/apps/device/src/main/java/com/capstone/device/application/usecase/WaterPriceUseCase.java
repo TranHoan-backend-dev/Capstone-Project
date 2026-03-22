@@ -3,7 +3,7 @@ package com.capstone.device.application.usecase;
 import com.capstone.device.application.business.waterprice.WaterPriceService;
 import com.capstone.device.application.dto.request.price.CreateRequest;
 import com.capstone.device.application.dto.request.price.UpdateRequest;
-import com.capstone.device.application.dto.response.WaterPriceResponse;
+import com.capstone.device.application.dto.response.water.WaterPriceResponse;
 import com.capstone.device.application.event.producer.MessageProducer;
 import com.capstone.device.application.event.producer.waterprices.DeleteEvent;
 import com.capstone.device.application.event.producer.waterprices.UpdateEvent;

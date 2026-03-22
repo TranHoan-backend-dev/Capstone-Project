@@ -3,6 +3,7 @@ package com.capstone.construction.application.business.installationform;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.common.utils.SharedMessage;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
@@ -14,7 +15,7 @@ import com.capstone.construction.infrastructure.persistence.InstallationFormRepo
 import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRepository;
 import com.capstone.construction.infrastructure.utils.Message;
 import com.capstone.construction.infrastructure.service.EmployeeService;
-import com.capstone.construction.infrastructure.service.OverallWaterMeterService;
+import com.capstone.construction.infrastructure.service.DeviceService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -40,7 +41,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   InstallationFormRepository ifRepo;
   WaterSupplyNetworkRepository wsnRepo;
   EmployeeService empSrv;
-  OverallWaterMeterService owmSrv;
+  DeviceService owmSrv;
   @NonFinal
   Logger log;
 
@@ -93,8 +94,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   }
 
   @Override
-  public Page<InstallationFormListResponse> getInstallationForms(Pageable pageable,
-                                                                 @NonNull BaseFilterRequest request) {
+  public Page<InstallationFormListResponse> getInstallationForms(Pageable pageable, @NonNull BaseFilterRequest request) {
     log.info("Fetching paginated installation forms with pageable: {}", pageable);
     var startDate = parseFrom(request.from());
     var endDate = parseTo(request.to());
@@ -138,16 +138,23 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   public void approveAndAssignInstallationForm(@NonNull ApproveRequest request) {
     log.info("Approving and assigning installation form with number: {}", request.formNumber());
     var order = ifRepo.findById(new InstallationFormId(request.formCode(), request.formNumber()))
-      .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_60, request.formNumber(), request.formCode())));
-    if (request.status()) {
-      // nvks duyệt đơn
+      .orElseThrow(() -> new IllegalArgumentException(String.format(SharedMessage.MES_24, request.formNumber(), request.formCode())));
+    // nvks chuyen tu don da duyet => don chua duyet
+    if (request.status() == null) {
       var requestStatus = order.getStatus();
-      requestStatus.setRegistration(ProcessingStatus.APPROVED);
-      requestStatus.setEstimate(ProcessingStatus.PENDING_FOR_APPROVAL);
+      requestStatus.setRegistration(ProcessingStatus.PENDING_FOR_APPROVAL);
+      requestStatus.setEstimate(ProcessingStatus.PROCESSING);
     } else {
-      // nvks hủy đơn
-      var status = order.getStatus();
-      status.setRegistration(ProcessingStatus.REJECTED);
+      if (request.status()) {
+        // nvks duyệt đơn
+        var requestStatus = order.getStatus();
+        requestStatus.setRegistration(ProcessingStatus.APPROVED);
+        requestStatus.setEstimate(ProcessingStatus.PENDING_FOR_APPROVAL);
+      } else {
+        // nvks hủy đơn
+        var status = order.getStatus();
+        status.setRegistration(ProcessingStatus.REJECTED);
+      }
     }
     ifRepo.save(order);
   }

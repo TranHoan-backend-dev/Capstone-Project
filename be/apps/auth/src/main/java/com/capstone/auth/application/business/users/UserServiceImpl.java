@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
   BusinessPagesOfEmployeeRepository bpRepo;
   ProfileRepository profileRepo;
   EmployeeJobRepository employeeJobRepo;
-  NetworkService netWorkService;
+  NetworkService networkService;
   OrganizationService organizationService;
   BusinessPageService bpService;
   IndividualNotificationRepository indRepo;
@@ -169,15 +169,7 @@ public class UserServiceImpl implements UserService {
       if (profile.isEmpty()) {
         throw new InternalError("Hồ sơ người dùng không tồn tại");
       }
-      return new EmployeeResponse(
-        c.getUserId(),
-        c.getUsername(),
-        profile.get().getFullname(),
-        null,
-        null,
-        null,
-        c.getEmail()
-      );
+      return mapToEmployeeResponse(c);
     }).toList();
     return new PageImpl<>(content, pageable, content.size());
   }
@@ -210,6 +202,7 @@ public class UserServiceImpl implements UserService {
     }
     if (request.isActive() != null) {
       user.setIsEnabled(request.isActive());
+      // TODO: dùng keycloak để xác định session đăng nhập của người dùng, sau đó gửi thông báo và email cho họ
     }
     if (request.departmentId() != null && !request.departmentId().isBlank()) {
       var status = organizationService.checkDepartmentExistence(request.departmentId());
@@ -219,22 +212,14 @@ public class UserServiceImpl implements UserService {
       user.setDepartmentId(request.departmentId());
     }
     if (request.networkId() != null && !request.networkId().isBlank()) {
-      var status = netWorkService.checkExistence(request.networkId());
+      var status = networkService.checkExistence(request.networkId());
       if (!status) {
         throw new IllegalArgumentException("Chi nhánh cấp nước này không tồn tại: " + request.networkId());
       }
       user.setWaterSupplyNetworkId(request.networkId());
     }
 
-    return new EmployeeResponse(
-      user.getUserId(),
-      user.getUsername(),
-      profile.getFullname(),
-      organizationService.getDepartmentName(request.departmentId()),
-      netWorkService.getNameById(request.networkId()),
-      bpService.getPagesByEmployeeId(user.getUserId()).toString(),
-      user.getEmail()
-    );
+    return mapToEmployeeResponse(user);
   }
 
   @Override
@@ -263,15 +248,7 @@ public class UserServiceImpl implements UserService {
 
     repo.save(emp);
 
-    return new EmployeeResponse(
-      emp.getUserId(),
-      emp.getUsername(),
-      profile.getFullname(),
-      organizationService.getDepartmentName(emp.getDepartmentId()),
-      netWorkService.getNameById(emp.getWaterSupplyNetworkId()),
-      bpService.getPagesByEmployeeId(emp.getUserId()).toString(),
-      emp.getEmail()
-    );
+    return mapToEmployeeResponse(emp);
   }
 
   @Override
@@ -331,10 +308,10 @@ public class UserServiceImpl implements UserService {
       user.getUserId(),
       null,
       profile.getFullname(),
-      null,
-      null,
-      null,
-      null
+      organizationService.getDepartmentName(user.getDepartmentId()),
+      networkService.getNameById(user.getWaterSupplyNetworkId()),
+      bpService.getPagesByEmployeeId(user.getUserId()).toString(),
+      user.getEmail()
     );
   }
 }

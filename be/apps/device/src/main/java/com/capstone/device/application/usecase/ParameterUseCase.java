@@ -36,10 +36,10 @@ public class ParameterUseCase {
   }
 
   @Transactional(rollbackFor = Exception.class)
-  public ParameterResponse updateParameter(String id, UpdateParameterRequest request) {
+  public ParameterResponse updateParameter(String updatorId, String id, UpdateParameterRequest request) {
     log.info("UseCase: Updating parameter with id: {}", id);
     var oldData = parameterService.getParameterById(id);
-    var newData = parameterService.updateParameter(id, request);
+    var newData = parameterService.updateParameter(updatorId, id, request);
 
     messageProducer.send(UPDATE_ROUTING_KEY, new ParameterUpdateEvent(
       oldData.name(), oldData.value(), newData.name(), newData.value()));

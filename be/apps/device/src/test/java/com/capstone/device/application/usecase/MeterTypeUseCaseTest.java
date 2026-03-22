@@ -4,7 +4,7 @@ import com.capstone.device.application.business.metertype.MeterTypeService;
 import com.capstone.device.application.dto.request.metertype.CreateRequest;
 import com.capstone.device.application.dto.request.metertype.UpdateRequest;
 import com.capstone.device.application.dto.response.PageResponse;
-import com.capstone.device.application.dto.response.WaterMeterTypeResponse;
+import com.capstone.device.application.dto.response.water.WaterMeterTypeResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

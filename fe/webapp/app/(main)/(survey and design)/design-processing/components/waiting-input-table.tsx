@@ -17,6 +17,7 @@ import {
   TitleDarkColor,
 } from "@/config/chip-and-icon";
 import { DesignProcessingItem, StatusDetailData } from "@/types";
+import { REJECT_COLUMN } from "@/config/table-columns";
 
 interface WaitingInputTableProps {
   data: DesignProcessingItem[];
@@ -55,15 +56,19 @@ export const WaitingInputTable = ({
   data,
   onRestore,
 }: WaitingInputTableProps) => {
+  const [page, setPage] = useState(1);
+  const rowsPerPage = 10;
+  const totalPages = Math.ceil(data.length / rowsPerPage);
+
   const [selectedDesign, setSelectedDesign] =
     useState<DesignProcessingItem | null>(null);
 
   const mapDesignToModalData = (
     item: DesignProcessingItem,
   ): StatusDetailData => ({
-    code: item.code,
+    code: item.formNumber,
     address: item.address,
-    registerDate: item.registrationDate,
+    registerDate: item.registrationAt,
     status: statusMap[item.status]?.label ?? "Không xác định",
     creator: "",
     createDate: "",
@@ -72,18 +77,6 @@ export const WaitingInputTable = ({
     totalPrice: "",
     note: "",
   });
-
-  const columns: any[] = [
-    { key: "stt", label: "#", align: "center", width: "60px" },
-    { key: "code", label: "Mã đơn" },
-    { key: "customerName", label: "Tên khách hàng" },
-    { key: "phone", label: "Điện thoại" },
-    { key: "address", label: "Địa chỉ lắp đặt", width: "300px" },
-    { key: "registrationDate", label: "Ngày đăng ký" },
-    { key: "surveyAppointment", label: "Ngày hẹn khảo sát" },
-    { key: "status", label: "Trạng thái", align: "center" },
-    { key: "action", label: "Hoạt động", align: "center" },
-  ];
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -101,7 +94,7 @@ export const WaitingInputTable = ({
             className={`font-bold text-blue-600 hover:underline hover:text-blue-800 ${TitleDarkColor}`}
             href="#"
           >
-            {item.code}
+            {item.formNumber}
           </Link>
         );
       case "customerName":
@@ -158,12 +151,13 @@ export const WaitingInputTable = ({
     <>
       <GenericDataTable
         isCollapsible
-        columns={columns}
+        columns={REJECT_COLUMN}
         data={data}
         headerSummary={`${data.length}`}
         paginationProps={{
-          total: 5,
-          page: 1,
+          total: totalPages,
+          page: page,
+          onChange: setPage,
           summary: `${data.length}`,
         }}
         renderCellAction={renderCell}

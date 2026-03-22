@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Pressable } from 'react-native';
-import { Appbar, Avatar, Text, Menu, Divider } from 'react-native-paper';
+import { Appbar, Avatar, Text, Menu, Divider, IconButton } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import styles from './home.styles';
 
@@ -23,6 +23,7 @@ export default function HomeHeader() {
             <Avatar.Image
               size={40}
               source={require('../../assets/logo.png')}
+              style={{ backgroundColor: 'transparent' }}
             />
           </Pressable>
         }
@@ -58,8 +59,12 @@ export default function HomeHeader() {
         />
       </Menu>
 
-      <Text style={styles.userName}>Nguyễn Dũng</Text>
-      <Appbar.Action icon="bell-outline" color="#fff" />
+      <Text style={styles.userName}>Nguyễn Thu Trang</Text>
+
+      <Pressable style={styles.notificationBtn} onPress={() => navigation.navigate('Notification')}>
+        <IconButton icon="bell-outline" size={24} iconColor="#333" style={{ margin: 0 }} />
+        <Text style={styles.notificationText}>Thông báo</Text>
+      </Pressable>
     </Appbar.Header>
   );
 }

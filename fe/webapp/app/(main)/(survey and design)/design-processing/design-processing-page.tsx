@@ -1,103 +1,101 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
-import { DateValue } from "@heroui/react";
-
+import React, { useEffect, useMemo, useState } from "react";
+import { Spinner, DateValue } from "@heroui/react";
 import { ActionsSection } from "./components/actions-section";
 import { OrdersToDesignTable } from "./components/orders-to-design-table";
 import { ProcessedDesignsTable } from "./components/processed-designs-table";
 import { WaitingInputTable } from "./components/waiting-input-table";
-
 import { FilterSection } from "@/components/ui/FilterSection";
-import { DesignProcessingItem } from "@/types";
+import {
+  DesignProcessingItem,
+  DesignProcessingStatus,
+  NewInstallationLookupResponse,
+} from "@/types";
+import { authFetch } from "@/utils/authFetch";
+import { formatDate1 } from "@/utils/format";
+import { CallToast } from "@/components/ui/CallToast";
 
 const DesignProcessingPage = () => {
   const [keyword, setKeyword] = useState("");
   const [from, setFrom] = useState<DateValue | null | undefined>(null);
   const [to, setTo] = useState<DateValue | null | undefined>(null);
+  const [ordersToDesign, setOrdersToDesign] = useState<DesignProcessingItem[]>(
+    [],
+  );
+  const [processedDesigns, setProcessedDesigns] = useState<
+    DesignProcessingItem[]
+  >([]);
+  const [waitingInput, setWaitingInput] = useState<DesignProcessingItem[]>([]);
+  const [loading, setLoading] = useState(true);
+ 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
 
-  const [ordersToDesign, setOrdersToDesign] = useState<DesignProcessingItem[]>([
-    {
-      id: "1",
-      code: "01025120007",
-      customerName: "Trần Thị Nguyệt",
-      phone: "0355909536",
-      address: "Thửa 133, Nghiệp 92/2, Khu CN Hòa Xá, Nam Định",
-      registrationDate: "01/12/2025",
-      surveyAppointment: "27/11/2025",
-      status: "paid",
-    },
-    {
-      id: "2",
-      code: "01025120124",
-      customerName: "Hoàng Thế Quý",
-      phone: "0915705720",
-      address: "29B, Trần Huy Liệu, P. Thành Nam, TP. Nam Định",
-      registrationDate: "26/11/2025",
-      surveyAppointment: "27/11/2025",
-      status: "processing",
-    },
-  ]);
+        const res = await authFetch("/api/construction/installation-forms");
+        const json = await res.json();
 
-  const [processedDesigns, setProcessedDesigns] = useState([
-    {
-      id: "3",
-      code: "0102580016",
-      customerName: "Nguyễn Văn Vũ",
-      phone: "0913090736",
-      address:
-        "Thửa 344 ngách 31/294, Đường Kênh, Phường Nam Định, TP. Nam Định",
-      registrationDate: "06/08/2025",
-      surveyAppointment: "07/08/2025",
-    },
-    {
-      id: "4",
-      code: "0102580015",
-      customerName: "Nguyễn Văn Vũ",
-      phone: "0913090736",
-      address:
-        "Thửa 343 ngách 31/294, Đường Kênh, Phường Nam Định, TP. Nam Định",
-      registrationDate: "06/08/2025",
-      surveyAppointment: "07/08/2025",
-    },
-  ]);
+        const items = json?.data?.content ?? [];
 
-  const [waitingInput, setWaitingInput] = useState<DesignProcessingItem[]>([
-    {
-      id: "5",
-      code: "0102404119",
-      customerName: "Trần Liên Hương",
-      phone: "0944808979",
-      address: "28/107, Đường 19/5, P.Trần Tế Xương, TP. Nam Định",
-      registrationDate: "24/04/2024",
-      surveyAppointment: "24/04/2024",
-      status: "pending_restore",
-    },
-    {
-      id: "6",
-      code: "0102590069",
-      customerName: "Công ty CP Đầu tư và Thương mại Mạnh Hải",
-      phone: "0906519568",
-      address: "Số 96, Đông A, P.Lộc Vượng, TP. Nam Định",
-      registrationDate: "26/09/2022",
-      surveyAppointment: "26/09/2022",
-      status: "rejected",
-    },
-    {
-      id: "7",
-      code: "0102590069",
-      customerName: "Công ty CP Đầu tư và Thương mại Mạnh Hải",
-      phone: "0906519568",
-      address: "Số 96, Đông A, P.Lộc Vượng, TP. Nam Định",
-      registrationDate: "26/09/2022",
-      surveyAppointment: "26/09/2022",
-      status: "none",
-    },
-  ]);
+        const orders: DesignProcessingItem[] = [];
+        const processed: DesignProcessingItem[] = [];
+        const waiting: DesignProcessingItem[] = [];
+
+        items.forEach((item: NewInstallationLookupResponse) => {
+          const estimateStatus = item.status?.estimate;
+
+          let uiStatus: DesignProcessingStatus = "processing";
+
+          if (estimateStatus === "APPROVED") {
+            uiStatus = "paid";
+          } else if (estimateStatus === "REJECTED") {
+            uiStatus = "rejected";
+          }
+
+          const mapped: DesignProcessingItem = {
+            id: item.formCode,
+            formNumber: item.formNumber,
+            customerName: item.customerName,
+            phoneNumber: item.phoneNumber,
+            address: item.address,
+            registrationAt: formatDate1(item.registrationAt),
+            scheduleSurveyAt: formatDate1(item.scheduleSurveyAt),
+            status: uiStatus,
+          };
+
+          if (
+            estimateStatus === "PENDING_FOR_APPROVAL" ||
+            estimateStatus === "PROCESSING"
+          ) {
+            orders.push(mapped);
+          } else if (estimateStatus === "APPROVED") {
+            processed.push(mapped);
+          } else if (estimateStatus === "REJECTED") {
+            waiting.push(mapped);
+          }
+        });
+
+        setOrdersToDesign(orders);
+        setProcessedDesigns(processed);
+        setWaitingInput(waiting);
+      } catch (err: any) {
+        CallToast({
+          title: "Lỗi",
+          message: err.message || "Có lỗi xảy ra",
+          color: "danger",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Action Handlers
   const handleApprove = (order: DesignProcessingItem) => {
     setOrdersToDesign((prev) => prev.filter((i) => i.id !== order.id));
     setProcessedDesigns((prev) => [...prev, order]);
@@ -122,7 +120,7 @@ const DesignProcessingPage = () => {
       ordersToDesign.filter(
         (item) =>
           item.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          item.code.includes(searchQuery),
+          item.formNumber.includes(searchQuery),
       ),
     [ordersToDesign, searchQuery],
   );
@@ -132,7 +130,7 @@ const DesignProcessingPage = () => {
       processedDesigns.filter(
         (item) =>
           item.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          item.code.includes(searchQuery),
+          item.formNumber.includes(searchQuery),
       ),
     [processedDesigns, searchQuery],
   );
@@ -142,14 +140,20 @@ const DesignProcessingPage = () => {
       waitingInput.filter(
         (item) =>
           item.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          item.code.includes(searchQuery),
+          item.formNumber.includes(searchQuery),
       ),
     [waitingInput, searchQuery],
   );
-
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-[400px]">
+        <Spinner size="lg" label="Đang tải dữ liệu..." />
+      </div>
+    );
+  }
   return (
     <>
-      <ActionsSection />
+      {/* <ActionsSection /> */}
       <FilterSection
         from={from}
         keyword={keyword}
@@ -162,7 +166,10 @@ const DesignProcessingPage = () => {
       />
 
       <div className="space-y-8">
-        <OrdersToDesignTable data={filteredOrders} onApprove={handleApprove} />
+        <OrdersToDesignTable
+          data={filteredOrders}
+          onApprove={handleApprove}
+        />
         <ProcessedDesignsTable
           data={filteredProcessed}
           onReject={handleReject}

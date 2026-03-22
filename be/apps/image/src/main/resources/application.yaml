@@ -1,6 +1,3 @@
-# gcs:
-#   credentials: gcs/${GCS_CREDENTIALS}
-#   bucket: ${BUCKET}
 spring:
   application:
     name: image
@@ -9,10 +6,6 @@ spring:
     locale: vi_VN
   profiles:
     active: dev
-  # cloud:
-  #   gcp:
-  #     credentials:
-  #       location: classpath:${gcs.credentials}
 management:
   health:
     rabbit:

@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 public interface ParameterService {
   Page<ParameterResponse> getParameters(Pageable pageable, String filter);
 
-  ParameterResponse updateParameter(String id, UpdateParameterRequest request);
+  ParameterResponse updateParameter(String updatorId, String id, UpdateParameterRequest request);
 
   ParameterResponse getParameterById(String id);
 }

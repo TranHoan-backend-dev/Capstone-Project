@@ -36,7 +36,7 @@ class InstallationFormServiceImplTest {
   @Mock
   private EmployeeService empSrv;
   @Mock
-  private OverallWaterMeterService owmSrv;
+  private DeviceService owmSrv;
 
   @InjectMocks
   private InstallationFormServiceImpl service;

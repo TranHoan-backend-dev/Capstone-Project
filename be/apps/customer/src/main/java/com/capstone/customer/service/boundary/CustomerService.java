@@ -1,9 +1,11 @@
 package com.capstone.customer.service.boundary;
 
 import com.capstone.customer.dto.request.customer.CreateRequest;
+import com.capstone.customer.dto.request.customer.UpdateRequest;
 import com.capstone.customer.dto.response.CustomerResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import com.capstone.customer.dto.request.customer.CustomerFilterRequest;
 
 /**
  * Service interface for managing Customer operations.
@@ -24,7 +26,7 @@ public interface CustomerService {
    * @param request the customer update request
    * @return the updated customer response
    */
-  CustomerResponse updateCustomer(String id, CreateRequest request);
+  CustomerResponse updateCustomer(String id, UpdateRequest request);
 
   /**
    * Deletes a customer by ID.
@@ -42,12 +44,17 @@ public interface CustomerService {
   CustomerResponse getCustomerById(String id);
 
   /**
-   * Retrieves all customers with pagination.
+   * Retrieves all customers with pagination and optional filters.
    *
    * @param pageable pagination information
+   * @param filter   filter criteria
    * @return a page of customer responses
    */
-  Page<CustomerResponse> getAllCustomers(Pageable pageable);
+  Page<CustomerResponse> getAllCustomers(Pageable pageable, CustomerFilterRequest filter);
 
   boolean areCustomersAppliedThisPrice(String priceId);
+
+  boolean isExistingCustomer(String id);
+
+  String getIdByMeterId(String meterId);
 }

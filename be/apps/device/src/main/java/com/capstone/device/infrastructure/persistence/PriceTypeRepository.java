@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PriceTypeRepository extends JpaRepository<PriceType, String> {
-  void deleteByWaterPrice_PriceId(String id);
 }
