@@ -1,13 +1,15 @@
 package com.capstone.customer.model;
 
+import com.capstone.common.enumerate.CustomerType;
 import com.capstone.common.enumerate.UsageTarget;
 import com.capstone.common.utils.SharedConstant;
+import com.capstone.common.utils.SharedMessage;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.jspecify.annotations.NonNull;
 
-import com.capstone.customer.config.Constant;
+import com.capstone.customer.utils.Message;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -36,7 +38,8 @@ public class Customer {
   String phoneNumber;
 
   @Column(nullable = false)
-  String type;
+  @Enumerated(EnumType.STRING)
+  CustomerType type; // loai khach hang
 
   @Setter
   @Column(nullable = false)
@@ -69,7 +72,7 @@ public class Customer {
   @Column(nullable = false)
   String waterMeterType;
 
-  @Column(nullable = false, unique = true)
+  @Column(nullable = false)
   String citizenIdentificationNumber;
 
   @Column(nullable = false)
@@ -102,7 +105,10 @@ public class Customer {
   LocalDateTime updatedAt;
 
   @Column(nullable = false)
-  String installationFormId;
+  String formNumber;
+
+  @Column(nullable = false, unique = true)
+  String formCode;
 
   @Column(nullable = false)
   String waterPriceId;
@@ -122,155 +128,160 @@ public class Customer {
   }
 
   public void setName(String name) {
-    Objects.requireNonNull(name, Constant.ENT_01);
+    Objects.requireNonNull(name, SharedMessage.MES_05);
     if (name.trim().isEmpty()) {
-      throw new IllegalArgumentException(Constant.ENT_01);
+      throw new IllegalArgumentException(SharedMessage.MES_05);
     }
     this.name = name;
   }
 
   // <editor-fold> desc="setter"
   public void setEmail(String email) {
-    Objects.requireNonNull(email, Constant.ENT_13);
+    Objects.requireNonNull(email, SharedMessage.MES_02);
     if (email.trim().isEmpty()) {
-      throw new IllegalArgumentException(Constant.ENT_13);
+      throw new IllegalArgumentException(SharedMessage.MES_02);
     }
     if (!email.matches(SharedConstant.EMAIL_PATTERN)) {
-      throw new IllegalArgumentException(Constant.ENT_14);
+      throw new IllegalArgumentException(SharedMessage.MES_01);
     }
     this.email = email;
   }
 
   public void setPhoneNumber(String phoneNumber) {
-    Objects.requireNonNull(phoneNumber, Constant.ENT_05);
+    Objects.requireNonNull(phoneNumber, SharedMessage.MES_03);
     if (phoneNumber.trim().isEmpty()) {
-      throw new IllegalArgumentException(Constant.ENT_05);
+      throw new IllegalArgumentException(SharedMessage.MES_03);
     }
     if (!phoneNumber.matches(SharedConstant.PHONE_PATTERN)) {
-      throw new IllegalArgumentException(Constant.ENT_15);
+      throw new IllegalArgumentException(SharedMessage.MES_04);
     }
     this.phoneNumber = phoneNumber;
   }
 
-  public void setType(String type) {
-    requireText(type, Constant.ENT_07);
+  public void setType(CustomerType type) {
+    Objects.requireNonNull(type, Message.ENT_03);
     this.type = type;
   }
 
   public void setUsageTarget(String usageTarget) {
-    requireText(usageTarget, Constant.ENT_16);
+    requireText(usageTarget, Message.ENT_06);
     this.usageTarget = UsageTarget.valueOf(usageTarget.trim().toUpperCase());
   }
 
   public void setWaterMeterType(String waterMeterType) {
-    requireText(waterMeterType, Constant.ENT_17);
+    requireText(waterMeterType, Message.ENT_07);
     this.waterMeterType = waterMeterType;
   }
 
   public void setCitizenIdentificationNumber(String value) {
-    requireText(value, Constant.ENT_18);
+    requireText(value, SharedMessage.MES_10);
     this.citizenIdentificationNumber = value;
   }
 
   public void setCitizenIdentificationProvideAt(String value) {
-    requireText(value, Constant.ENT_19);
+    requireText(value, SharedMessage.MES_16);
     this.citizenIdentificationProvideAt = value;
   }
 
   public void setPaymentMethod(String paymentMethod) {
-    requireText(paymentMethod, Constant.ENT_20);
+    requireText(paymentMethod, Message.ENT_08);
     this.paymentMethod = paymentMethod;
   }
 
   public void setBankAccountNumber(String value) {
-    requireText(value, Constant.ENT_21);
+    requireText(value, SharedMessage.MES_13);
     this.bankAccountNumber = value;
   }
 
   public void setBankAccountProviderLocation(String value) {
-    requireText(value, Constant.ENT_22);
+    requireText(value, SharedMessage.MES_17);
     this.bankAccountProviderLocation = value;
   }
 
   public void setBankAccountName(String value) {
-    requireText(value, Constant.ENT_23);
+    requireText(value, Message.ENT_09);
     this.bankAccountName = value;
   }
 
   public void setBudgetRelationshipCode(String budgetRelationshipCode) {
-    requireText(budgetRelationshipCode, Constant.ENT_24);
+    requireText(budgetRelationshipCode, Message.ENT_10);
     this.budgetRelationshipCode = budgetRelationshipCode;
   }
 
   public void setPassportCode(String passportCode) {
-    requireText(passportCode, Constant.ENT_25);
+    requireText(passportCode, Message.ENT_11);
     this.passportCode = passportCode;
   }
 
   public void setConnectionPoint(String connectionPoint) {
-    requireText(connectionPoint, Constant.ENT_26);
+    requireText(connectionPoint, Message.ENT_12);
     this.connectionPoint = connectionPoint;
   }
 
   public void setCancelReason(String cancelReason) {
-    requireText(cancelReason, Constant.ENT_27);
+    requireText(cancelReason, Message.ENT_13);
     this.cancelReason = cancelReason;
   }
 
   public void setNumberOfHouseholds(Integer value) {
-    Objects.requireNonNull(value, Constant.ENT_28);
+    Objects.requireNonNull(value, SharedMessage.MES_11);
     if (value <= 0)
-      throw new IllegalArgumentException(Constant.ENT_28);
+      throw new IllegalArgumentException(SharedMessage.MES_11);
     this.numberOfHouseholds = value;
   }
 
   public void setHouseholdRegistrationNumber(Integer value) {
-    requireNonNegative(value, Constant.ENT_29);
+    requireNonNegative(value, SharedMessage.MES_12);
     this.householdRegistrationNumber = value;
   }
 
   public void setProtectEnvironmentFee(Integer value) {
-    requireNonNegative(value, Constant.ENT_30);
+    requireNonNegative(value, Message.ENT_14);
     this.protectEnvironmentFee = value;
   }
 
   public void setInstallationFee(Integer value) {
-    requireNonNegative(value, Constant.ENT_31);
+    requireNonNegative(value, SharedMessage.MES_15);
     this.installationFee = value;
   }
 
   public void setMonthlyRent(Integer value) {
-    requireNonNegative(value, Constant.ENT_32);
+    requireNonNegative(value, Message.ENT_15);
     this.monthlyRent = value;
   }
 
-  public void setInstallationFormId(String value) {
-    requireId(value, Constant.ENT_33);
-    this.installationFormId = value;
+  public void setFormNumber(String value) {
+    requireId(value, SharedMessage.MES_20);
+    this.formNumber = value;
+  }
+
+  public void setFormCode(String value) {
+    requireId(value, SharedMessage.MES_21);
+    this.formCode = value;
   }
 
   public void setWaterPriceId(String value) {
-    requireId(value, Constant.ENT_34);
+    requireId(value, Message.ENT_17);
     this.waterPriceId = value;
   }
 
   public void setWaterMeterId(String value) {
-    requireId(value, Constant.ENT_37);
+    requireId(value, Message.ENT_18);
     this.waterMeterId = value;
   }
 
   public void setM3Sale(String value) {
-    requireText(value, Constant.ENT_39);
+    requireText(value, Message.ENT_19);
     this.m3Sale = value;
   }
 
   public void setFixRate(String value) {
-    requireText(value, Constant.ENT_40);
+    requireText(value, Message.ENT_20);
     this.fixRate = value;
   }
 
   public void setDeductionPeriod(String value) {
-    requireText(value, Constant.ENT_41);
+    requireText(value, Message.ENT_21);
     this.deductionPeriod = value;
   }
 
@@ -317,7 +328,7 @@ public class Customer {
       return this;
     }
 
-    public CustomerBuilder type(String type) {
+    public CustomerBuilder type(CustomerType type) {
       customer.setType(type);
       return this;
     }
@@ -452,15 +463,20 @@ public class Customer {
       return this;
     }
 
-    public CustomerBuilder installationFormId(String value) {
-      customer.setInstallationFormId(value);
+    public CustomerBuilder formNumber(String value) {
+      customer.setFormNumber(value);
+      return this;
+    }
+
+    public CustomerBuilder formCode(String value) {
+      customer.setFormCode(value);
       return this;
     }
 
     public Customer build() {
-      Objects.requireNonNull(customer.name, Constant.ENT_01);
+      Objects.requireNonNull(customer.name, SharedMessage.MES_05);
       if (customer.name.trim().isEmpty()) {
-        throw new IllegalArgumentException(Constant.ENT_01);
+        throw new IllegalArgumentException(SharedMessage.MES_05);
       }
       return customer;
     }

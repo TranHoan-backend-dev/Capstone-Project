@@ -1,12 +1,16 @@
 package com.capstone.auth.adapter;
 
-import com.capstone.auth.application.dto.request.*;
+import com.capstone.auth.application.dto.request.CheckExistenceRequest;
+import com.capstone.auth.application.dto.request.otp.SendOtpRequest;
+import com.capstone.auth.application.dto.request.otp.VerifyOtpRequest;
+import com.capstone.auth.application.dto.request.password.ChangePasswordRequest;
+import com.capstone.auth.application.dto.request.password.ResetPasswordRequest;
+import com.capstone.auth.application.dto.request.users.NewUserRequest;
 import com.capstone.auth.application.dto.response.UserProfileResponse;
-import com.capstone.common.annotation.AppLog;
-import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.auth.application.usecase.AuthUseCase;
 import com.capstone.auth.application.usecase.OtpUseCase;
-
+import com.capstone.common.annotation.AppLog;
+import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,19 +19,20 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.slf4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.web.bind.annotation.*;
-
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -60,7 +65,7 @@ public class AuthenticationController {
 
     authUC.register(request);
 
-    return Utils.returnOkResponse("Create account successfully", null);
+    return Utils.returnOkResponse("Tạo tài khoản thành công", null);
   }
 
   // <editor-fold> desc="Forgot password"
@@ -72,7 +77,7 @@ public class AuthenticationController {
   @PostMapping("/check-existence")
   public ResponseEntity<?> checkExistence(
     @RequestBody @Valid CheckExistenceRequest request) {
-    return Utils.returnOkResponse("Check existence successfully", authUC.checkExistence(request.value()));
+    return Utils.returnOkResponse("Kiểm tra thành công", authUC.checkExistence(request.value()));
   }
 
   @Operation(summary = "Gửi OTP qua email", description = "Gửi mã OTP đến email được cung cấp để xác minh hoặc đặt lại mật khẩu. Data response rỗng.")
@@ -84,7 +89,7 @@ public class AuthenticationController {
   @PostMapping("/send-otp")
   public ResponseEntity<?> sendOtp(@RequestBody @Valid SendOtpRequest request) {
     otpUC.sendOtp(request.email());
-    return Utils.returnOkResponse("Send OTP successfully", null);
+    return Utils.returnOkResponse("Gửi mã OTP thành công", null);
   }
 
   @Operation(summary = "Xác minh mã OTP", description = "Xác minh tính hợp lệ của mã OTP được gửi qua email. Data response rỗng.")
@@ -96,12 +101,7 @@ public class AuthenticationController {
   @PostMapping("/verify-otp")
   public ResponseEntity<?> verifyOtp(@RequestBody @Valid VerifyOtpRequest request) {
     var isValid = otpUC.verifyOtp(request.email(), request.otp());
-    // if not valid, the service might return false or throw exception.
-    // Implementation in service returns boolean without exception for mismatch, but
-    // exception for expiry/not found.
-    // Let's handle the boolean false case.
-
-    return Utils.returnOkResponse(!isValid ? "Invalid OTP" : "Verify OTP successfully", null);
+    return Utils.returnOkResponse(!isValid ? "Mã OTP không hợp lệ" : "Xác minh mã OTP thành công", null);
   }
   // </editor-fold>
 
@@ -114,7 +114,7 @@ public class AuthenticationController {
   @PostMapping("/reset-password")
   public ResponseEntity<?> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
     otpUC.resetPasswordWithOtp(request.email(), request.otp(), request.newPassword());
-    return Utils.returnOkResponse("Reset password successfully", null);
+    return Utils.returnOkResponse("Đặt lại mật khẩu thành công", null);
   }
 
   @Operation(summary = "Đổi mật khẩu (Đã xác thực)", description = "Thay đổi mật khẩu cho người dùng hiện đang đăng nhập. Yêu cầu mật khẩu cũ và mật khẩu mới. Data response rỗng.")
@@ -131,10 +131,9 @@ public class AuthenticationController {
     @RequestBody @Valid ChangePasswordRequest request) {
     log.info("Change password request comes to endpoint: {}", jwt);
     var email = jwt.getClaim("email");
-    authUC.changePassword(jwt.getSubject(), email.toString(), request.oldPassword(), request.newPassword(),
-      request.confirmPassword());
+    authUC.changePassword(jwt.getSubject(), email.toString(), request.oldPassword(), request.newPassword());
 
-    return Utils.returnOkResponse("Change password successfully", null);
+    return Utils.returnOkResponse("Đổi mật khẩu thành công", null);
   }
 
   @Operation(summary = "Đăng nhập bằng JWT", description = "Xác thực người dùng sử dụng token JWT từ header Authorization. "
@@ -153,7 +152,7 @@ public class AuthenticationController {
     var id = jwt.getSubject();
     Map<String, Object> claims = jwt.getClaims(); // username, prefered_username, realm_access->roles
 
-    return Utils.returnOkResponse("Login successfully", authUC.login(
+    return Utils.returnOkResponse("Đăng nhập thành công", authUC.login(
       id,
       claims.get("email").toString(),
       claims.get("preferred_username").toString()));

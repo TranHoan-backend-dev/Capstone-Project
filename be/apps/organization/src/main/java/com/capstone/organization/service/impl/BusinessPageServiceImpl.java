@@ -1,11 +1,13 @@
 package com.capstone.organization.service.impl;
 
 import com.capstone.common.annotation.AppLog;
-import com.capstone.organization.dto.request.CreateBusinessPageRequest;
-import com.capstone.organization.dto.request.FilterBusinessPagesRequest;
-import com.capstone.organization.dto.request.UpdateBusinessPageRequest;
+import com.capstone.organization.dto.request.page.CreateBusinessPageRequest;
+import com.capstone.organization.dto.request.page.FilterBusinessPagesRequest;
+import com.capstone.organization.dto.request.page.UpdateBusinessPageRequest;
 import com.capstone.organization.dto.response.BusinessPageResponse;
 import com.capstone.organization.dto.response.PagedBusinessPageResponse;
+import com.capstone.organization.event.producer.MessageProducer;
+import com.capstone.organization.event.producer.UpdatePageMessage;
 import com.capstone.organization.model.BusinessPage;
 import com.capstone.organization.repository.BusinessPageRepository;
 import com.capstone.organization.service.boundary.BusinessPageService;
@@ -16,8 +18,10 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,12 +31,23 @@ import java.util.stream.Collectors;
 @AppLog
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class BusinessPageServiceImpl implements BusinessPageService {
-  BusinessPageRepository businessPageRepository;
-  EmployeeService employeeService;
-  @NonFinal
+  final BusinessPageRepository businessPageRepository;
+  final EmployeeService employeeService;
   Logger log;
+  final MessageProducer messageProducer;
+
+  // <editor-fold> desc="constant"
+  @Value(".${rabbit-mq-config.entities[0]}.")
+  String PREFIX;
+
+  @Value("${rabbit-mq-config.actions[0]}")
+  String ACTION;
+
+  @Value("${rabbit-mq-config.queue_name}")
+  String QUEUE_NAME;
+  // </editor-fold>
 
   @Override
   @Transactional(rollbackFor = Exception.class)
@@ -58,12 +73,26 @@ public class BusinessPageServiceImpl implements BusinessPageService {
     var entity = businessPageRepository.findById(pageId)
       .orElseThrow(() -> new IllegalArgumentException("Business page not found"));
 
-    entity.setName(request.name());
-    entity.setActivate(request.activate());
+    if (request.name() != null && !request.name().isBlank()) {
+      entity.setName(request.name());
+    }
+    if (request.activate() != null) {
+      entity.setActivate(request.activate());
+    }
     entity.setUpdator(request.updator());
 
-    var saved = businessPageRepository.save(entity);
-    return convert(saved);
+    if (!entity.getActivate()) {
+      var routingKey = QUEUE_NAME + PREFIX + ACTION;
+      messageProducer.send(routingKey, new UpdatePageMessage(
+        entity.getName()
+      ));
+      messageProducer.sendWithDelay("update-page", entity.getPageId());
+
+      return convert(entity);
+    } else {
+      var saved = businessPageRepository.save(entity);
+      return convert(saved);
+    }
   }
 
   @Override

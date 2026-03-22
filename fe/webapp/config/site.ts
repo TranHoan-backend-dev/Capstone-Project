@@ -11,15 +11,63 @@ export const siteConfig = {
       href: "/home",
     },
 
-    // Hệ thống
+    // Danh mục
     {
-      key: "system",
-      label: "Hệ thống",
+      key: "category",
+      label: "Danh mục",
       items: [
         {
-          key: "business-page",
-          label: "Quản lý trang doanh nghiệp",
-          href: "/business-page",
+          key: "departments",
+          label: "Quản lý Phòng ban",
+          href: "/departments",
+        },
+        {
+          key: "employees",
+          label: "Quản lý Nhân viên",
+          href: "/employees",
+        },
+        {
+          key: "jobs",
+          label: "Quản lý Công việc",
+          href: "/jobs",
+        },
+        {
+          key: "communes",
+          label: "Quản lý Phường/xã",
+          href: "/communes",
+        },
+        {
+          key: "neighborhood-units",
+          label: "Quản lý Tổ/Khu phố",
+          href: "/neighborhood-units",
+        },
+        {
+          key: "roads",
+          label: "Quản lý Đường phố",
+          href: "/roads",
+        },
+      ],
+    },
+
+    // Thiết bị
+    {
+      key: "device",
+      label: "Thiết bị",
+      items: [
+        {
+          key: "materials-prices",
+          label: "Quản lý Đơn giá vật tư",
+          href: "/materials-prices",
+        },
+        {
+          key: "materials-group",
+          label: "Quản lý Nhóm vật tư",
+          href: "/materials-group",
+        },
+        {
+          key: "units",
+          label: "Quản lý Đơn vị tính",
+          href: "/units",
         },
       ],
     },
@@ -153,6 +201,11 @@ export const siteConfig = {
           key: "laterals",
           label: "Quản lý Nhánh tổng",
           href: "/laterals",
+        },
+        {
+          key: "roadmaps",
+          label: "Quản lý Lộ trình ghi",
+          href: "/roadmaps",
         },
         {
           key: "settlement-lookup",

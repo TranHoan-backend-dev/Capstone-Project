@@ -3,10 +3,12 @@ package com.capstone.device.application.usecase;
 import com.capstone.device.application.business.waterprice.WaterPriceService;
 import com.capstone.device.application.dto.request.price.CreateRequest;
 import com.capstone.device.application.dto.request.price.UpdateRequest;
-import com.capstone.device.application.dto.response.WaterPriceResponse;
+import com.capstone.device.application.dto.response.water.WaterPriceResponse;
 import com.capstone.device.application.event.producer.MessageProducer;
 import com.capstone.device.application.event.producer.waterprices.DeleteEvent;
 import com.capstone.device.application.event.producer.waterprices.UpdateEvent;
+import com.capstone.device.infrastructure.util.Message;
+import com.capstone.device.infrastructure.service.CustomerService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -25,6 +27,7 @@ import java.time.LocalDate;
 public class WaterPriceUseCase {
   final WaterPriceService waterPriceService;
   final MessageProducer producer;
+  final CustomerService customerService;
   static final String PREFIX = ".water-price.";
 
   @Value("${rabbit-mq-config.queue}" + PREFIX + "${rabbit-mq-config.actions[0]}")
@@ -56,6 +59,11 @@ public class WaterPriceUseCase {
 
   @Transactional(rollbackFor = Exception.class)
   public void deleteWaterPrice(@NonNull String id) {
+    var status = customerService.checkWhetherCustomersAreApplied(id).data().toString();
+    if (Boolean.parseBoolean(status)) {
+      throw new IllegalArgumentException(Message.ENT_48);
+    }
+
     var old = waterPriceService.getWaterPriceById(id);
     waterPriceService.deleteWaterPrice(id);
 

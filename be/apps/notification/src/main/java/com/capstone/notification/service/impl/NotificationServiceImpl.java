@@ -6,6 +6,7 @@ import com.capstone.notification.dto.response.NotificationBatchResponse;
 import com.capstone.notification.dto.response.NotificationResponse;
 import com.capstone.notification.model.Notification;
 import com.capstone.notification.repository.NotificationRepository;
+import com.capstone.notification.service.boundary.AuthService;
 import com.capstone.notification.service.boundary.NotificationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -13,10 +14,11 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @AppLog
 @Service
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class NotificationServiceImpl implements NotificationService {
   NotificationRepository notificationRepo;
+  AuthService service;
   @NonFinal
   Logger log;
 
@@ -42,17 +45,31 @@ public class NotificationServiceImpl implements NotificationService {
   }
 
   @Override
-  public NotificationBatchResponse getNotificationsByIds(List<String> notificationIds, int size) {
-    var result = notificationRepo.findAllById(notificationIds);
-    var items = result.stream()
-      .map(this::convert)
-      .collect(Collectors.toList());
+  public NotificationBatchResponse getNotificationsOfAnEmployee(Pageable pageable, String userId) {
+    var individualNotifications = service.getIndividualNotificationsOfAnEmployee(pageable, userId);
 
-    return new NotificationBatchResponse(
-      items,
-      size,
-      items.size()
-    );
+    if (!individualNotifications.isEmpty()) {
+      List<NotificationResponse> notificationResponses = new ArrayList<>();
+
+      individualNotifications.forEach(notification -> {
+        var n = notificationRepo.findById(notification.notificationId());
+        n.ifPresent(value -> notificationResponses.add(new NotificationResponse(
+          value.getNotificationId(),
+          value.getTitle(),
+          value.getLink(),
+          value.getMessage(),
+          notification.isRead(),
+          value.getCreatedAt()
+        )));
+      });
+      return new NotificationBatchResponse(
+        notificationResponses,
+        pageable.getPageSize(),
+        individualNotifications.size()
+      );
+    }
+
+    return null;
   }
 
   private @NonNull NotificationResponse convert(@NonNull Notification notification) {
