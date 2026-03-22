@@ -14,9 +14,9 @@ interface MeterInputStatusCardProps {
 const STATUS_OPTIONS = [
   { label: 'Bình thường', value: 'binh-thuong' },
   { label: 'Vòng', value: 'vong' },
-  { label: 'Thay đổi độ lệch chỉ số', value: 'thay-doi-do-lech' },
+  { label: 'Thay đồng hồ', value: 'thay-dong-ho' },
+  { label: 'Không lưu được chỉ số', value: 'khong-luu-chi-so' },
   { label: 'Cất nước', value: 'cat-nuoc' },
-  { label: 'Bình thường', value: 'binh-thuong-2' },
 ];
 
 export default function MeterInputStatusCard({

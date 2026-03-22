@@ -1,19 +1,25 @@
 package com.capstone.construction.application.business.settlement;
 
 import com.capstone.common.annotation.AppLog;
+import com.capstone.common.exception.NotExistingException;
+import com.capstone.construction.application.dto.request.settlement.SettlementFilterRequest;
 import com.capstone.construction.application.dto.request.settlement.SettlementRequest;
+import com.capstone.construction.application.dto.request.settlement.SignificanceRequest;
 import com.capstone.construction.application.dto.response.settlement.SettlementResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.domain.model.Settlement;
+import com.capstone.construction.domain.model.utils.InstallationFormId;
+import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
 import com.capstone.construction.infrastructure.persistence.SettlementRepository;
+import com.capstone.construction.infrastructure.utils.Message;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
-import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SettlementServiceImpl implements SettlementService {
   SettlementRepository settlementRepository;
+  InstallationFormRepository formRepository;
   @NonFinal
   Logger log;
 
@@ -30,13 +37,15 @@ public class SettlementServiceImpl implements SettlementService {
   @Transactional(rollbackFor = Exception.class)
   public SettlementResponse createSettlement(@NonNull SettlementRequest request) {
     log.info("Creating new settlement for address: {}", request.address());
+    var form = formRepository.findById(new InstallationFormId(request.formCode(), request.formNumber()))
+      .orElseThrow(() -> new NotExistingException(Message.PT_38));
 
     var settlement = Settlement.create(builder -> builder
       .jobContent(request.jobContent())
       .address(request.address())
       .connectionFee(request.connectionFee())
       .note(request.note())
-      .status(request.status())
+      .installationForm(form)
       .registrationAt(request.registrationAt()));
 
     var saved = settlementRepository.save(settlement);
@@ -54,21 +63,10 @@ public class SettlementServiceImpl implements SettlementService {
     settlement.setAddress(request.address());
     settlement.setConnectionFee(request.connectionFee());
     settlement.setNote(request.note());
-    settlement.setStatus(request.status());
     settlement.setRegistrationAt(request.registrationAt());
 
     var saved = settlementRepository.save(settlement);
     return mapToResponse(saved);
-  }
-
-  @Override
-  @Transactional(rollbackFor = Exception.class)
-  public void deleteSettlement(String id) {
-    log.info("Deleting settlement with id: {}", id);
-    if (!settlementRepository.existsById(id)) {
-      throw new IllegalArgumentException("Settlement not found with id: " + id);
-    }
-    settlementRepository.deleteById(id);
   }
 
   @Override
@@ -86,7 +84,41 @@ public class SettlementServiceImpl implements SettlementService {
     return PageResponse.fromPage(page, this::mapToResponse);
   }
 
-  private SettlementResponse mapToResponse(Settlement settlement) {
+  @Override
+  public PageResponse<SettlementResponse> filterSettlements(SettlementFilterRequest filterRequest, Pageable pageable) {
+    log.info("Filtering settlements with filterRequest: {}", filterRequest);
+    Specification<Settlement> spec = SettlementRepository.filter(filterRequest);
+    var page = settlementRepository.findAll(spec, pageable);
+    return PageResponse.fromPage(page, this::mapToResponse);
+  }
+
+  @Override
+  public boolean signSettlement(@NonNull SignificanceRequest request, String id) {
+    var settlement = settlementRepository.findById(id)
+      .orElseThrow(() -> new IllegalArgumentException("Settlement not found with id: " + id));
+    var significance = settlement.getSignificance();
+
+    if (request.constructionPresident() != null && !request.constructionPresident().isBlank()) {
+      significance.setConstructionPresident(request.constructionPresident());
+    }
+    if (request.president() != null && !request.president().isBlank()) {
+      significance.setPresident(request.president());
+    }
+    if (request.ptHead() != null && !request.ptHead().isBlank()) {
+      significance.setPtHead(request.ptHead());
+    }
+    if (request.surveyStaff() != null && !request.surveyStaff().isBlank()) {
+      significance.setSurveyStaff(request.surveyStaff());
+    }
+    return significance.isSettlementFullySigned();
+  }
+
+  @Override
+  public boolean isExistingSettlement(String id) {
+    return settlementRepository.existsById(id);
+  }
+
+  private @NonNull SettlementResponse mapToResponse(@NonNull Settlement settlement) {
     return new SettlementResponse(
       settlement.getSettlementId(),
       settlement.getJobContent(),
@@ -95,7 +127,10 @@ public class SettlementServiceImpl implements SettlementService {
       settlement.getNote(),
       settlement.getCreatedAt(),
       settlement.getUpdatedAt(),
-      settlement.getStatus(),
-      settlement.getRegistrationAt());
+      settlement.getRegistrationAt(),
+      settlement.getInstallationForm().getFormCode(),
+      settlement.getInstallationForm().getFormNumber(),
+      settlement.getSignificance()
+    );
   }
 }

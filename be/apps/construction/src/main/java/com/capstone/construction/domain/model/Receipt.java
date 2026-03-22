@@ -1,15 +1,22 @@
 package com.capstone.construction.domain.model;
 
+import com.capstone.construction.domain.model.utils.InstallationFormId;
+import com.capstone.construction.domain.model.utils.significance.ReceiptSignificance;
 import jakarta.persistence.*;
-import com.capstone.construction.infrastructure.config.Constant;
+import com.capstone.common.utils.SharedMessage;
+import com.capstone.construction.infrastructure.utils.Message;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+import org.jspecify.annotations.NonNull;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+@Builder
 @Getter
 @Entity
 @ToString
@@ -18,8 +25,8 @@ import java.util.function.Consumer;
 @Table
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Receipt {
-  @Id
-  String installationFormCode;
+  @EmbeddedId
+  InstallationFormId installationFormId;
 
   @ManyToOne(fetch = FetchType.EAGER)
   @MapsId
@@ -32,6 +39,22 @@ public class Receipt {
   String customerName;
 
   @Column(nullable = false)
+  String totalMoneyInDigits;
+
+  String totalMoneyInCharacters;
+
+  @Column(nullable = false)
+  String paymentReason;
+
+  @Setter
+  String attach;
+
+  @Setter
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(columnDefinition = "jsonb")
+  ReceiptSignificance significance;
+
+  @Column(nullable = false)
   String address;
 
   @Column(nullable = false)
@@ -41,33 +64,48 @@ public class Receipt {
   Boolean isPaid;
 
   public void setInstallationForm(InstallationForm installationForm) {
-    Objects.requireNonNull(installationForm, Constant.PT_66);
+    Objects.requireNonNull(installationForm, Message.PT_41);
     this.installationForm = installationForm;
-    this.installationFormCode = installationForm.getFormCode();
+    this.installationFormId = installationForm.getId();
   }
 
   public void setReceiptNumber(String receiptNumber) {
-    requireNonNullAndNotEmpty(receiptNumber, Constant.PT_67);
+    requireNonNullAndNotEmpty(receiptNumber, Message.PT_42);
     this.receiptNumber = receiptNumber;
   }
 
   public void setCustomerName(String customerName) {
-    requireNonNullAndNotEmpty(customerName, Constant.PT_27);
+    requireNonNullAndNotEmpty(customerName, Message.PT_14);
     this.customerName = customerName;
   }
 
+  public void setTotalMoneyInDigits(String value) {
+    requireNonNullAndNotEmpty(value, Message.PT_60);
+    this.totalMoneyInDigits = value;
+  }
+
+  public void setTotalMoneyInCharacters(String value) {
+    requireNonNullAndNotEmpty(value, Message.PT_65);
+    this.totalMoneyInCharacters = value;
+  }
+
+  public void setPaymentReason(String value) {
+    requireNonNullAndNotEmpty(value, Message.PT_66);
+    this.paymentReason = value;
+  }
+
   public void setAddress(String address) {
-    requireNonNullAndNotEmpty(address, Constant.PT_12);
+    requireNonNullAndNotEmpty(address, SharedMessage.MES_06);
     this.address = address;
   }
 
   public void setPaymentDate(LocalDate paymentDate) {
-    Objects.requireNonNull(paymentDate, Constant.PT_68);
+    Objects.requireNonNull(paymentDate, Message.PT_43);
     this.paymentDate = paymentDate;
   }
 
   public void setIsPaid(Boolean isPaid) {
-    Objects.requireNonNull(isPaid, Constant.PT_69);
+    Objects.requireNonNull(isPaid, Message.PT_44);
     this.isPaid = isPaid;
   }
 
@@ -75,64 +113,6 @@ public class Receipt {
     Objects.requireNonNull(value, message);
     if (value.trim().isEmpty()) {
       throw new IllegalArgumentException(message);
-    }
-  }
-
-  public static Receipt create(Consumer<ReceiptBuilder> builder) {
-    var instance = new ReceiptBuilder();
-    builder.accept(instance);
-    return instance.build();
-  }
-
-  public static class ReceiptBuilder {
-    private InstallationForm installationForm;
-    private String receiptNumber;
-    private String customerName;
-    private String address;
-    private LocalDate paymentDate;
-    private Boolean isPaid;
-
-    public ReceiptBuilder installationForm(InstallationForm installationForm) {
-      this.installationForm = installationForm;
-      return this;
-    }
-
-    public ReceiptBuilder receiptNumber(String receiptNumber) {
-      this.receiptNumber = receiptNumber;
-      return this;
-    }
-
-    public ReceiptBuilder customerName(String customerName) {
-      this.customerName = customerName;
-      return this;
-    }
-
-    public ReceiptBuilder address(String address) {
-      this.address = address;
-      return this;
-    }
-
-    public ReceiptBuilder paymentDate(LocalDate paymentDate) {
-      this.paymentDate = paymentDate;
-      return this;
-    }
-
-    public ReceiptBuilder isPaid(Boolean isPaid) {
-      this.isPaid = isPaid;
-      return this;
-    }
-
-    public Receipt build() {
-      var receipt = new Receipt();
-      if (installationForm != null) {
-        receipt.setInstallationForm(installationForm);
-      }
-      receipt.setReceiptNumber(receiptNumber);
-      receipt.setCustomerName(customerName);
-      receipt.setAddress(address);
-      receipt.setPaymentDate(paymentDate);
-      receipt.setIsPaid(isPaid);
-      return receipt;
     }
   }
 

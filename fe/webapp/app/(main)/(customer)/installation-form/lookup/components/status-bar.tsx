@@ -19,7 +19,6 @@ export const StatusBar = ({ stage, status }: StatusBarProps) => {
 
   return (
     <div className="w-full space-y-1">
-      {/* ===== PROCESS BAR ===== */}
       <div className="flex items-center gap-1">
         {STAGES.map((s, idx) => {
           const isCurrent = idx === currentIndex;
@@ -62,7 +61,6 @@ export const StatusBar = ({ stage, status }: StatusBarProps) => {
         })}
       </div>
 
-      {/* ===== TEXT UNDER BAR ===== */}
       <div className="grid grid-cols-4 text-[11px] text-gray-500">
         {STAGES.map((s, idx) => {
           const isCurrent = idx === currentIndex;

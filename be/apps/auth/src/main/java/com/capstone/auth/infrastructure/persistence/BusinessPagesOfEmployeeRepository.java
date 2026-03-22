@@ -1,6 +1,7 @@
 package com.capstone.auth.infrastructure.persistence;
 
 import com.capstone.auth.domain.model.BusinessPagesOfEmployees;
+import com.capstone.auth.domain.model.Users;
 import com.capstone.auth.domain.model.utils.BusinessPagesOfEmployeesId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -49,4 +50,6 @@ public interface BusinessPagesOfEmployeeRepository
         )
     """, nativeQuery = true)
   void insertNewPagesForEmployee(@Param("userId") String employeeId);
+
+    void deleteByUsers(Users users);
 }

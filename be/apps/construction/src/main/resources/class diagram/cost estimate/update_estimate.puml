@@ -1,0 +1,56 @@
+@startuml
+skinparam linetype ortho
+skinparam shadowing false
+skinparam class {
+    BackgroundColor White
+    BorderColor #263238
+    ArrowColor #263238
+}
+
+package "Construction Service" #FFE0B2 {
+    class CostEstimateController {
+        + updateEstimate(id: String, request: UpdateRequest): ResponseEntity<WrapperApiResponse>
+    }
+
+    class CostEstimateUseCase {
+        - estSrv: CostEstimateService
+        - messageProducer: MessageProducer
+        + updateEstimate(id: String, request: UpdateRequest): CostEstimateResponse
+    }
+
+    interface CostEstimateService {
+        + updateEstimate(id: String, request: UpdateRequest): CostEstimateResponse
+    }
+
+    class MessageProducer {
+        + send(routingKey: String, event: UpdatedEvent): void
+    }
+
+    class UpdatedEvent <<record>>
+}
+
+package "Notification Service" #C8E6C9 {
+    class UpdateEstimateConsumer {
+        + handle(event: UpdateEventMessage): void
+    }
+    abstract class GeneralEventConsumer<T> {
+        # messagingTemplate: SimpMessagingTemplate
+        # producer: MessageProducer
+    }
+}
+
+package "Auth Service" #BBDEFB {
+    class NotificationConsumer {
+        + handle(message: NotificationCreatedEvent): void
+    }
+}
+
+' Relationships
+CostEstimateController o-- CostEstimateUseCase
+CostEstimateUseCase o-- CostEstimateService
+CostEstimateUseCase o-- MessageProducer
+MessageProducer ..> UpdateEstimateConsumer : "RabbitMQ"
+UpdateEstimateConsumer --|> GeneralEventConsumer
+GeneralEventConsumer ..> NotificationConsumer : "RabbitMQ NotificationCreatedEvent"
+
+@enduml

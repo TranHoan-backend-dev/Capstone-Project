@@ -101,7 +101,7 @@ export const PendingTable = () => {
       renderCellAction={renderCell}
       paginationProps={{
         total: mockData.length,
-        initialPage: 1,
+        page: 1,
         summary: `${mockData.length}`,
       }}
     />

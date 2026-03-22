@@ -1,7 +1,8 @@
 package com.capstone.organization.model;
 
 import jakarta.persistence.*;
-import com.capstone.organization.config.Constant;
+import com.capstone.common.utils.SharedMessage;
+import com.capstone.organization.utils.Message;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.jspecify.annotations.NonNull;
@@ -44,7 +45,7 @@ public class Job {
   }
 
   public void setName(String name) {
-    requireNonNullAndNotEmpty(name, Constant.ORG_04);
+    requireNonNullAndNotEmpty(name, SharedMessage.MES_05);
     this.name = name;
   }
 

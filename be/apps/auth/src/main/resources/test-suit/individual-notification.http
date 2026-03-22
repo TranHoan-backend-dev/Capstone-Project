@@ -1,0 +1,113 @@
+### TC01 - Get individual notifications successfully
+GET http://localhost:9003/api/v1/in/user-123?page=0&size=10
+Content-Type: application/json
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC02 - Get individual notifications with custom pagination
+GET http://localhost:9003/api/v1/in/user-123?page=1&size=20&sort=notificationId,desc
+Content-Type: application/json
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC03 - Get individual notifications for non-existent user
+GET http://localhost:9003/api/v1/in/non-existent-user?page=0&size=10
+Content-Type: application/json
+
+> {%
+client.test("Status is 200 and returns empty list", function() {
+  client.assert(response.status === 200);
+  client.assert(JSON.parse(response.body).length === 0);
+});
+%}
+
+
+### TC04 - Missing user ID (Should return 404 or handled by router)
+GET http://localhost:9003/api/v1/in/
+Content-Type: application/json
+
+> {%
+client.test("Status is 404", function() {
+  client.assert(response.status === 404);
+});
+%}
+
+
+### TC05 - Invalid page parameter (negative)
+GET http://localhost:9003/api/v1/in/user-123?page=-1&size=10
+Content-Type: application/json
+
+> {%
+client.test("Status is 400 or 200 depending on Spring version", function() {
+  client.assert(response.status === 400 || response.status === 200);
+});
+%}
+
+
+### TC06 - Invalid size parameter (too large)
+GET http://localhost:9003/api/v1/in/user-123?page=0&size=2000
+Content-Type: application/json
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC07 - Special characters in User ID
+GET http://localhost:9003/api/v1/in/user@!#$%^&*()
+Content-Type: application/json
+
+> {%
+client.test("Status is 200 or 400", function() {
+  client.assert(response.status === 200 || response.status === 400);
+});
+%}
+
+
+### TC08 - SQL Injection attempt in User ID
+GET http://localhost:9003/api/v1/in/' OR 1=1 --
+Content-Type: application/json
+
+> {%
+client.test("Status is 200 or 400", function() {
+  client.assert(response.status === 200 || response.status === 400);
+});
+%}
+
+
+### TC09 - Long User ID
+GET http://localhost:9003/api/v1/in/very-long-user-id-that-exceeds-typical-uuid-length-for-testing-purposes-1234567890
+Content-Type: application/json
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC10 - GET request with Body (Should be ignored or 200)
+GET http://localhost:9003/api/v1/in/user-123
+Content-Type: application/json
+
+{
+  "test": "ignored"
+}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}

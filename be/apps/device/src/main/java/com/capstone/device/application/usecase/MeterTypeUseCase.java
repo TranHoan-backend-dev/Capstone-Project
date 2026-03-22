@@ -4,7 +4,7 @@ import com.capstone.device.application.business.metertype.MeterTypeService;
 import com.capstone.device.application.dto.request.metertype.CreateRequest;
 import com.capstone.device.application.dto.request.metertype.UpdateRequest;
 import com.capstone.device.application.dto.response.PageResponse;
-import com.capstone.device.application.dto.response.WaterMeterTypeResponse;
+import com.capstone.device.application.dto.response.water.WaterMeterTypeResponse;
 import com.capstone.device.application.event.producer.MessageProducer;
 import com.capstone.device.application.event.producer.metertype.DeleteEvent;
 import com.capstone.device.application.event.producer.metertype.UpdateEvent;
@@ -23,12 +23,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class MeterTypeUseCase {
   final MeterTypeService meterTypeService;
   final MessageProducer producer;
-  final String prefix = ".meter-type.";
+  static final String PREFIX = ".meter-type.";
 
-  @Value("${rabbit-mq-config.queue}" + prefix + "${rabbit-mq-config.actions[0]}")
+  @Value("${rabbit-mq-config.queue}" + PREFIX + "${rabbit-mq-config.actions[0]}")
   String UPDATE_ROUTING_KEY;
 
-  @Value("${rabbit-mq-config.queue}" + prefix + "${rabbit-mq-config.actions[1]}")
+  @Value("${rabbit-mq-config.queue}" + PREFIX + "${rabbit-mq-config.actions[1]}")
   String DELETE_ROUTING_KEY;
 
   public WaterMeterTypeResponse createMeterType(@NonNull CreateRequest request) {

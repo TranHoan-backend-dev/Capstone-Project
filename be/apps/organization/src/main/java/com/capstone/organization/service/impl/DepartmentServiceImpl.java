@@ -1,8 +1,9 @@
 package com.capstone.organization.service.impl;
 
 import com.capstone.common.annotation.AppLog;
-import com.capstone.organization.dto.request.CreateDepartmentRequest;
-import com.capstone.organization.dto.request.UpdateDepartmentRequest;
+import com.capstone.common.exception.ExistingException;
+import com.capstone.organization.dto.request.department.CreateDepartmentRequest;
+import com.capstone.organization.dto.request.department.UpdateDepartmentRequest;
 import com.capstone.organization.dto.response.DepartmentResponse;
 import com.capstone.organization.dto.response.PagedDepartmentResponse;
 import com.capstone.organization.model.Department;
@@ -34,6 +35,14 @@ public class DepartmentServiceImpl implements DepartmentService {
   public DepartmentResponse createDepartment(@NonNull CreateDepartmentRequest request) {
     log.info("Creating department with name: {}", request.name());
 
+    if (departmentRepo.existsByPhoneNumber(request.phoneNumber())) {
+      throw new ExistingException("Phone number already exists");
+    }
+
+    if (departmentRepo.existsByNameIgnoreCase(request.name())) {
+      throw new ExistingException("Name already exists");
+    }
+
     var entity = Department.create(builder -> builder
       .name(request.name())
       .phoneNumber(request.phoneNumber())
@@ -51,8 +60,20 @@ public class DepartmentServiceImpl implements DepartmentService {
     var entity = departmentRepo.findById(departmentId)
       .orElseThrow(() -> new IllegalArgumentException("Department not found"));
 
-    entity.setName(request.name());
-    entity.setPhoneNumber(request.phoneNumber());
+    if (departmentRepo.existsByPhoneNumber(request.phoneNumber()) && !entity.getPhoneNumber().equals(request.phoneNumber())) {
+      throw new ExistingException("Phone number already exists");
+    }
+
+    if (departmentRepo.existsByNameIgnoreCase(request.name()) && !entity.getName().equalsIgnoreCase(request.name())) {
+      throw new ExistingException("Name already exists");
+    }
+
+    if (request.name() != null && !request.name().isBlank()) {
+      entity.setName(request.name());
+    }
+    if (request.phoneNumber() != null && !request.phoneNumber().isBlank()) {
+      entity.setPhoneNumber(request.phoneNumber());
+    }
 
     var saved = departmentRepo.save(entity);
     return convert(saved);
@@ -82,6 +103,21 @@ public class DepartmentServiceImpl implements DepartmentService {
   @Override
   public boolean checkIfDepartmentExists(String departmentId) {
     return departmentRepo.existsById(departmentId);
+  }
+
+  @Override
+  @Transactional(rollbackFor = Exception.class)
+  public void deleteDepartment(String departmentId) {
+    log.info("Deleting department with id: {}", departmentId);
+    if (!departmentRepo.existsById(departmentId)) {
+      throw new IllegalArgumentException("Department not found");
+    }
+    departmentRepo.deleteById(departmentId);
+  }
+
+  @Override
+  public String getName(String id) {
+    return departmentRepo.findNameByDepartmentId(id);
   }
 
   private @NonNull DepartmentResponse convert(@NonNull Department department) {

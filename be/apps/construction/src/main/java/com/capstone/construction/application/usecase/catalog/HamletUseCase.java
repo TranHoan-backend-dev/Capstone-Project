@@ -8,6 +8,7 @@ import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.application.event.producer.MessageProducer;
 import com.capstone.construction.application.event.producer.hamlet.DeleteHamletEvent;
 import com.capstone.construction.application.event.producer.hamlet.UpdateHamletEvent;
+import com.capstone.construction.domain.enumerate.CommuneType;
 import com.capstone.construction.domain.enumerate.HamletType;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -42,10 +43,12 @@ public class HamletUseCase {
     var response = hamletService.updateHamlet(id, request);
 
     if (!request.name().isBlank() && !request.type().isBlank() && !request.communeId().isBlank()) {
+      var newHamletType = HamletType.valueOf(request.type()).equals(HamletType.VILLAGE) ? "Làng" : "Thôn";
+      var oldHamletType = HamletType.valueOf(old.type()).equals(HamletType.VILLAGE) ? "Làng" : "Thôn";
       producer.send(UPDATE_ROUTING_KEY,
         new UpdateHamletEvent(
-          old.name(), old.type(), old.communeName(),
-          response.name(), response.type(), response.communeName()
+          old.name(), oldHamletType, old.communeName(),
+          response.name(), newHamletType, response.communeName()
         ));
     }
     return response;

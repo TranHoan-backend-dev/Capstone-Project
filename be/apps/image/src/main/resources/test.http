@@ -1,0 +1,10 @@
+###
+POST http://localhost:9009/gcs/upload
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="avatar"; filename="test.jpg"
+Content-Type: image/jpeg
+
+< ./test.jpg
+--boundary--

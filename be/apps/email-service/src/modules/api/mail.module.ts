@@ -1,8 +1,9 @@
 require('dotenv').config();
+// import { join } from 'path';
 import { Module } from "@nestjs/common";
 import { MailerModule } from "@nestjs-modules/mailer"
 import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
-import { MailServiceImpl } from "./mail.service";
+import { MailServiceImpl } from "../../service/mail.service";
 import { MailController } from "./mail.controller";
 
 @Module({
@@ -22,6 +23,7 @@ import { MailController } from "./mail.controller";
       },
       template: {
         dir: __dirname + '/templates',
+        // dir: join(process.cwd(), 'templates'),
         adapter: new EjsAdapter(),
         options: {
           strict: false,

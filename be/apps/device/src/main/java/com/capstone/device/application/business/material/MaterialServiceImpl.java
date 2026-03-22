@@ -2,10 +2,13 @@ package com.capstone.device.application.business.material;
 
 import com.capstone.common.annotation.AppLog;
 import com.capstone.device.application.dto.request.material.CreateRequest;
+import com.capstone.device.application.dto.request.material.SearchRequest;
 import com.capstone.device.application.dto.request.material.UpdateRequest;
-import com.capstone.device.application.dto.response.MaterialResponse;
+import com.capstone.device.application.dto.response.material.MaterialResponse;
 import com.capstone.device.domain.model.Material;
+import com.capstone.device.domain.model.MaterialsGroup;
 import com.capstone.device.infrastructure.persistence.*;
+import com.capstone.device.infrastructure.util.Message;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -13,9 +16,12 @@ import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @AppLog
 @Service
@@ -81,6 +87,16 @@ public class MaterialServiceImpl implements MaterialService {
     if (request.constructionMachineryPriceAtRuralCommune() != null) {
       material.setConstructionMachineryPriceAtRuralCommune(request.constructionMachineryPriceAtRuralCommune());
     }
+    if (request.groupId() != null) {
+      var group = gRepo.findById(request.groupId())
+        .orElseThrow(() -> new IllegalArgumentException(String.format(Message.ENT_01, request.groupId())));
+      material.setGroup(group);
+    }
+    if (request.unitId() != null) {
+      var unit = uRepo.findById(request.unitId())
+        .orElseThrow(() -> new IllegalArgumentException(String.format(Message.ENT_56, request.unitId())));
+      material.setUnit(unit);
+    }
 
     var updated = mRepo.save(material);
     return mapToResponse(updated);
@@ -117,13 +133,72 @@ public class MaterialServiceImpl implements MaterialService {
   }
 
   @Override
+  public Page<MaterialResponse> searchMaterials(@NonNull SearchRequest request, Pageable pageable) {
+    log.info("Searching materials with criteria: jobContent={}, laborCode={}, groupId={}, minPrice={}, maxPrice={}",
+        request.getJobContent(), request.getLaborCode(), request.getGroupId(), request.getMinPrice(), request.getMaxPrice());
+
+    var jobContent = (request.getJobContent() != null && !request.getJobContent().isBlank()) ? request.getJobContent() : null;
+    var laborCode = (request.getLaborCode() != null && !request.getLaborCode().isBlank()) ? request.getLaborCode() : null;
+    var groupId = (request.getGroupId() != null && !request.getGroupId().isBlank()) ? request.getGroupId() : null;
+
+    return mRepo.searchMaterials(
+        jobContent,
+        laborCode,
+        groupId,
+        request.getMinPrice(),
+        request.getMaxPrice(),
+        pageable
+    ).map(this::mapToResponse);
+  }
+
+  @Override
   public boolean materialExists(String id) {
     log.info("Checking material ID: {}", id);
     return mRepo.existsById(id);
   }
 
+  @Override
+  public void createGroup(String name) {
+    log.info("Creating group: {}", name);
+    if (gRepo.existsByNameIgnoreCase(name)) {
+      throw new IllegalArgumentException("Material group already exists: " + name);
+    }
+    var entity = MaterialsGroup.create(b -> b.name(name));
+    gRepo.save(entity);
+  }
+
+  @Override
+  public void deleteGroup(String id) {
+    log.info("Deleting group: {}", id);
+    if (!gRepo.existsById(id)) {
+      throw new IllegalArgumentException("Material group not found: " + id);
+    }
+    if (mRepo.existsByGroup_GroupId(id)) {
+      throw new IllegalArgumentException("This material group still in use: " + id);
+    }
+    gRepo.deleteById(id);
+  }
+
+  @Override
+  public void updateGroup(String id, @NonNull String name) {
+    log.info("Updating group: {}", id);
+    var entity = gRepo.findById(id).orElseThrow(() -> new IllegalArgumentException("Material group not found: " + id));
+    if (gRepo.existsByNameIgnoreCase(name) && !entity.getName().equalsIgnoreCase(name)) {
+      throw new IllegalArgumentException("Material group already exists: " + name);
+    }
+    entity.setName(name);
+    gRepo.save(entity);
+  }
+
+  @Override
+  public List<MaterialResponse> getDefaultMaterial() {
+    return mRepo.findAll(PageRequest.of(0, 20))
+      .getContent().stream().map(this::mapToResponse).toList();
+  }
+
   private @NonNull MaterialResponse mapToResponse(@NonNull Material material) {
     return new MaterialResponse(
+      material.getMaterialId(),
       material.getLaborCode(),
       material.getJobContent(),
       material.getPrice(),

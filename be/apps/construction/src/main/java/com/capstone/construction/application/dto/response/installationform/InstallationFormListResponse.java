@@ -10,7 +10,13 @@ public record InstallationFormListResponse(
   String phoneNumber,
   String scheduleSurveyAt,
   String registrationAt,
-  String surveyEmployeeName,
-  FormProcessingStatus status
+  String handoverBy,
+  String handoverByFullName,
+  String creator,
+  String creatorFullName,
+  String constructedBy,
+  String constructedByFullName,
+  FormProcessingStatus status,
+  String overallWaterMeterId
 ) {
 }
