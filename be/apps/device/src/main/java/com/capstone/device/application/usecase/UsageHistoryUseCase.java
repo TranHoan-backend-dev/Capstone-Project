@@ -24,8 +24,8 @@ public class UsageHistoryUseCase {
     if (!waterMeterService.isWaterMeterExisting(serial)) {
       throw new IllegalArgumentException("Serial " + serial + " does not exist");
     }
-    var url = service.upload(request.image());
-    return usageHistoryService.addWaterIndexOfThisMonth(url, serial, request.index(), request.recordingDate());
+//    var url = service.upload(request.image());
+    return usageHistoryService.addWaterIndexOfThisMonth("url", serial, request.index(), request.recordingDate());
   }
 
   public void updatePaymentStatus(String serial, String method) {

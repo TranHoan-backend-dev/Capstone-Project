@@ -5,3 +5,4 @@ fe/mobile/node_modules/
 fe/webapp/node_modules/
 .idea/
 **/.env
+**.log

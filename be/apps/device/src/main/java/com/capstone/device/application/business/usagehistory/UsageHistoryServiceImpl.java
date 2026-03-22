@@ -89,11 +89,11 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
   ) {
     var waterPrice = resolveWaterPrice(customerInfo.waterPriceId());
     var mass = calculateMass(history, index, recordingDate);
-    var amount = waterChargeCalculator.calculateProgressiveCharge(mass, waterPrice);
+    var breakdown = waterChargeCalculator.calculateProgressiveCharge(mass, waterPrice);
 
     usage.setMass(mass);
     usage.setMeterImageUrl(imageUrl);
-    usage.setPrice(amount);
+    usage.setPrice(breakdown.totalAmount());
 
     history.addNewUsage(usage);
     return mapToResponse(repository.save(history), customerInfo.name(), waterPrice);
@@ -143,6 +143,8 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
       .customerName(customerName)
       .priceTypes(priceTypeResponses)
       .usagesList(entity.getUsages())
+      .tax(waterPrice.getTax())
+      .environmentPrice(waterPrice.getEnvironmentPrice())
       .build();
   }
 }

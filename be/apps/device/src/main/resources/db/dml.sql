@@ -382,6 +382,8 @@ VALUES ('00000000-0000-0000-0000-B00000000001', '2018-01-01', NOW(), 'Giá nư�
 
 INSERT INTO public.water_price_price_types (water_price_price_id, price_types_price_type_id)
 VALUES ('00000000-0000-0000-0000-B00000000001', '00000000-0000-0000-0000-500000000001'),
+       ('00000000-0000-0000-0000-B00000000001', '00000000-0000-0000-0000-500000000002'),
+       ('00000000-0000-0000-0000-B00000000001', '00000000-0000-0000-0000-500000000003'),
        ('00000000-0000-0000-0000-B00000000005', '00000000-0000-0000-0000-500000000002'),
        ('00000000-0000-0000-0000-B00000000009', '00000000-0000-0000-0000-500000000003'),
        ('00000000-0000-0000-0000-B00000000013', '00000000-0000-0000-0000-500000000007'),
@@ -402,14 +404,26 @@ VALUES ('00000000-0000-0000-0000-B00000000001', '00000000-0000-0000-0000-5000000
 -- ==========================================================
 INSERT INTO public.water_price (price_id, application_period, created_at, description, environment_price,
                                 expiration_date, tax, updated_at, usage_target)
-VALUES ('00000000-0000-0000-0000-B90000000001', '2026-01-01', NOW(), 'TEST - Bảng giá lũy tiến cho endpoint usage', 500.00,
+VALUES ('00000000-0000-0000-0000-B90000000001', '2026-01-01', NOW(), 'TEST - Bảng giá lũy tiến cho endpoint usage',
+        500.00,
         '2030-01-01', 5.00, NOW(), 'DOMESTIC')
 ON CONFLICT (price_id) DO NOTHING;
 
-INSERT INTO public.price_type (price_type_id, area, price, water_price_price_id)
-VALUES ('00000000-0000-0000-0000-590000000001', 'TEST', '{"price":3000,"step":1,"maxVolume":10}'::jsonb, null),
-       ('00000000-0000-0000-0000-590000000002', 'TEST', '{"price":20000,"step":2,"maxVolume":20}'::jsonb, null),
-       ('00000000-0000-0000-0000-590000000003', 'TEST', '{"price":30000,"step":3}'::jsonb, null)
+INSERT INTO public.price_type (price_type_id, area, price)
+VALUES ('00000000-0000-0000-0000-590000000001', 'TEST', '{
+  "price": 3000,
+  "step": 1,
+  "maxVolume": 10
+}'::jsonb),
+       ('00000000-0000-0000-0000-590000000002', 'TEST', '{
+         "price": 20000,
+         "step": 2,
+         "maxVolume": 20
+       }'::jsonb),
+       ('00000000-0000-0000-0000-590000000003', 'TEST', '{
+         "price": 30000,
+         "step": 3
+       }'::jsonb)
 ON CONFLICT (price_type_id) DO NOTHING;
 
 INSERT INTO public.water_price_price_types (water_price_price_id, price_types_price_type_id)
@@ -421,11 +435,19 @@ ON CONFLICT DO NOTHING;
 -- Ensure usage history row for meter A...01 has valid structure and links customer C001.
 -- Use UPSERT so this record always exists even if previous seed data is empty/inconsistent.
 INSERT INTO public.usage_history (customer_id, meter_code, usages)
-VALUES (
-  'C001',
-  '00000000-0000-0000-0000-A00000000001',
-  '[{"recordingDate":"2026-02-01","index":100.00,"mass":10.00,"price":35000.00,"meterImageUrl":"https://example.com/meter-prev.jpg","isPaid":true,"paymentMethod":"CASH"}]'::jsonb
-)
+VALUES ('C001',
+        '00000000-0000-0000-0000-A00000000001',
+        '[
+          {
+            "recordingDate": "2026-02-01",
+            "index": 100.00,
+            "mass": 10.00,
+            "price": 35000.00,
+            "meterImageUrl": "https://example.com/meter-prev.jpg",
+            "isPaid": true,
+            "paymentMethod": "CASH"
+          }
+        ]'::jsonb)
 ON CONFLICT (meter_code) DO UPDATE
-SET customer_id = EXCLUDED.customer_id,
-    usages = EXCLUDED.usages;
+  SET customer_id = EXCLUDED.customer_id,
+      usages      = EXCLUDED.usages;
