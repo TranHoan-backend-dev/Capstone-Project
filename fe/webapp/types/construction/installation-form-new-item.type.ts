@@ -1,3 +1,5 @@
+import { CustomerType } from "../customer";
+
 export interface NewInstallationFormItem {
   id: string;
   stt: number;
@@ -60,8 +62,6 @@ export type UsageTarget =
   | "COMMERCIAL"
   | "INDUSTRIAL"
   | "INSTITUTIONAL";
-
-export type CustomerType = "FAMILY" | "COMPANY";
 
 export interface NewInstallationFormProps {
   formData: NewInstallationFormPayload;

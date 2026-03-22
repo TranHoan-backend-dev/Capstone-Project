@@ -30,10 +30,7 @@ export const statusCustomerConfig: Record<string, { className: string }> = {
 };
 export type CustomerType =
   | "FAMILY"
-  | "COMPANY"
-  | "GOVERNMENT"
-  | "PRODUCTION"
-  | "BUSINESS";
+  | "COMPANY";
 export const typeLabelMap: Record<string, string> = {
   FAMILY: "Hộ gia đình",
   COMPANY: "Công ty",

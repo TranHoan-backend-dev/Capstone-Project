@@ -34,9 +34,9 @@ export const TechnicalInfo = ({ formData, onUpdate }: TechnicalInfoProps) => {
           options={[
             { value: "FAMILY", label: "Hộ gia đình" },
             { value: "COMPANY", label: "Công ty" },
-            { value: "GOVERNMENT", label: "Cơ quan hành chính" },
-            { value: "PRODUCTION", label: "Sản xuất" },
-            { value: "BUSINESS", label: "Kinh doanh dịch vụ" },
+            // { value: "GOVERNMENT", label: "Cơ quan hành chính" },
+            // { value: "PRODUCTION", label: "Sản xuất" },
+            // { value: "BUSINESS", label: "Kinh doanh dịch vụ" },
           ]}
           selectedKeys={
             formData.type ? new Set([formData.type.toUpperCase()]) : new Set()
