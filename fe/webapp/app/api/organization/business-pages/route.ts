@@ -1,4 +1,4 @@
-import { ViewBusinessPageService } from "@/services/organization.service";
+import { createBusinessPage, ViewBusinessPageService } from "@/services/organization.service";
 import { getAccessToken } from "@/utils/getAccessToken";
 import { NextRequest } from "next/dist/server/web/spec-extension/request";
 import { NextResponse } from "next/server";
@@ -35,6 +35,37 @@ export async function GET(req: NextRequest) {
       },
       { status: 200 },
     );
+  } catch (error: any) {
+    const status = error?.response?.status ?? 500;
+
+    return NextResponse.json(
+      {
+        message: error?.response?.data?.message ?? "Internal Server Error",
+        error: error?.response?.data ?? null,
+      },
+      { status },
+    );
+  }
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const accessToken = getAccessToken(req);
+
+    if (!accessToken) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    const { name, activate, creator } = await req.json();
+
+    const response = await createBusinessPage(
+      accessToken,
+      name,
+      activate,
+      creator,
+    );
+
+    return NextResponse.json(response.data, { status: 201 });
   } catch (error: any) {
     const status = error?.response?.status ?? 500;
 
