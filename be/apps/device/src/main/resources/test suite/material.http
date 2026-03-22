@@ -83,28 +83,31 @@ Content-Type: application/json
 }
 
 ### R
-@base_url = http://localhost:8080/api/v1/materials
-
 ### Get All Materials
-GET {{base_url}}
+GET {{uri}}
+Authorization: Bearer {{access_token}}
 
 ### Search Materials by Name (jobContent)
-GET {{base_url}}?jobContent=Concrete
+GET {{uri}}?jobContent=Bang
+Authorization: Bearer {{access_token}}
 
 ### Search Materials by Price Range
-GET {{base_url}}?minPrice=100&maxPrice=500
+GET {{uri}}?minPrice=100&maxPrice=500
+Authorization: Bearer {{access_token}}
 
 ### Search Materials by Name and Price Range
-GET {{base_url}}?jobContent=Steel&minPrice=200&maxPrice=800
+GET {{uri}}?jobContent=Steel&minPrice=200&maxPrice=800
+Authorization: Bearer {{access_token}}
 
 ### Search Materials with Pagination
-GET {{base_url}}?jobContent=Material&page=0&size=5&sort=jobContent,asc
+GET {{uri}}?jobContent=Material&page=0&size=5&sort=jobContent,asc
+Authorization: Bearer {{access_token}}
 
 ### Get Material by ID
-GET {{base_url}}/{materialId}
+GET {{uri}}/{materialId}
 
 ### Create Material (for testing)
-POST {{base_url}}
+POST {{uri}}
 Content-Type: application/json
 
 {

@@ -30,6 +30,11 @@ public class AuthRepositoryImpl implements AuthRepository {
     }
 
     @Override
+    public String getAccessToken() {
+        return tokenManager.getAccessToken();
+    }
+
+    @Override
     public String sendOtp(String email) throws Exception {
         return remote.sendOtp(email);
     }
@@ -65,8 +70,8 @@ public class AuthRepositoryImpl implements AuthRepository {
     }
 
     @Override
-    public String changePassword(String oldPass, String newPass, String confirmPass) throws Exception {
-        return remote.changePassword(new ChangePasswordRequest(oldPass, newPass, confirmPass));
+    public String changePassword(String oldPass, String newPass) throws Exception {
+        return remote.changePassword(new ChangePasswordRequest(oldPass, newPass));
     }
 
     @Override
@@ -88,5 +93,10 @@ public class AuthRepositoryImpl implements AuthRepository {
     public UserProfile getMe() throws Exception {
         var profileResponse = remote.getMe();
         return UserProfile.fromResponse(profileResponse);
+    }
+
+    @Override
+    public void logout() throws Exception {
+        tokenManager.clearTokens();
     }
 }

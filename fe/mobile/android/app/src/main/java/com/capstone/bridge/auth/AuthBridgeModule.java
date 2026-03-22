@@ -29,6 +29,40 @@ public class AuthBridgeModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void getAccessToken(final Promise promise) {
+        executorService.execute(() -> {
+            try {
+                promise.resolve(authRepository.getAccessToken());
+            } catch (Exception e) {
+                promise.reject("GET_TOKEN_ERROR", e.getMessage());
+            }
+        });
+    }
+
+    @ReactMethod
+    public void hasToken(final Promise promise) {
+        executorService.execute(() -> {
+            try {
+                promise.resolve(authRepository.getAccessToken() != null);
+            } catch (Exception e) {
+                promise.reject("HAS_TOKEN_ERROR", e.getMessage());
+            }
+        });
+    }
+
+    @ReactMethod
+    public void logout(final Promise promise) {
+        executorService.execute(() -> {
+            try {
+                authRepository.logout();
+                promise.resolve(true);
+            } catch (Exception e) {
+                promise.reject("LOGOUT_ERROR", e.getMessage());
+            }
+        });
+    }
+
+    @ReactMethod
     public void login(final String accessToken, final Promise promise) {
         executorService.execute(() -> {
             try {
@@ -78,6 +112,18 @@ public class AuthBridgeModule extends ReactContextBaseJavaModule {
                 promise.resolve(message);
             } catch (Exception e) {
                 promise.reject("RESET_PASSWORD_ERROR", e.getMessage(), e);
+            }
+        });
+    }
+
+    @ReactMethod
+    public void changePassword(final String oldPass, final String newPass, final Promise promise) {
+        executorService.execute(() -> {
+            try {
+                var message = authRepository.changePassword(oldPass, newPass);
+                promise.resolve(message);
+            } catch (Exception e) {
+                promise.reject("CHANGE_PASSWORD_ERROR", e.getMessage(), e);
             }
         });
     }

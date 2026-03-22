@@ -19,7 +19,7 @@ public interface DeviceService {
   WrapperApiResponse isOverallMeterExisting(@PathVariable String id);
 
   @GetMapping("/water-meters/{id}/exists")
-  WrapperApiResponse isMeterExisting(@PathVariable String id);
+  Boolean isMeterExisting(@PathVariable String id);
 
   @DeleteMapping("/water-meters/overall/lateral")
   WrapperApiResponse deleteWaterMeter(@RequestParam String id);

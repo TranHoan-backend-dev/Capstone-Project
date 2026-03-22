@@ -12,9 +12,9 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SearchRequest {
-    private String laborCode;
-    private String jobContent;
-    private BigDecimal minPrice;
-    private BigDecimal maxPrice;
-    private String groupId;
+  private String laborCode;
+  private String jobContent;
+  private BigDecimal minPrice;
+  private BigDecimal maxPrice;
+  private String groupId;
 }

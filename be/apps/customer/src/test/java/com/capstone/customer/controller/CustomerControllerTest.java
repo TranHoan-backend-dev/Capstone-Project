@@ -25,6 +25,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -41,7 +42,7 @@ class CustomerControllerTest {
   @InjectMocks
   private CustomerController customerController;
 
-  private CreateRequest createRequest;UpdateRequest
+  private CreateRequest createRequest;
   private UpdateRequest updateRequest;
   private CustomerResponse customerResponse;
 
@@ -132,7 +133,7 @@ class CustomerControllerTest {
   void should_ReturnOk_When_GetAllCustomers_IsSuccessful() {
     Pageable pageable = PageRequest.of(0, 10);
     Page<CustomerResponse> page = new PageImpl<>(List.of(customerResponse));
-    when(customerService.getAllCustomers(pageable)).thenReturn(page);
+    when(customerService.getAllCustomers(eq(pageable), any())).thenReturn(page);
 
     ResponseEntity<WrapperApiResponse> response = customerController.getAllCustomers(pageable, null);
 
@@ -168,9 +169,12 @@ class CustomerControllerTest {
     String waterPriceId = "price-123";
     when(customerService.areCustomersAppliedThisPrice(waterPriceId)).thenReturn(true);
 
-    ResponseEntity<?> response = customerController.checkWhetherCustomersAreApplied(waterPriceId);
+    ResponseEntity<WrapperApiResponse> response = (ResponseEntity<WrapperApiResponse>) customerController.checkWhetherCustomersAreApplied(waterPriceId);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(response.getBody()).isNotNull();
+    assertThat(response.getBody().message()).isEqualTo("Kiểm tra thành công");
+    assertThat(response.getBody().data()).isEqualTo(true);
     verify(customerService).areCustomersAppliedThisPrice(waterPriceId);
   }
 }
