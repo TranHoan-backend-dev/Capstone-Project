@@ -1,11 +1,12 @@
-package com.capstone.bridge;
+package com.capstone.bridge.permission;
+
+import androidx.annotation.NonNull;
 
 import com.capstone.infrastructure.security.PermissionManager;
-import com.facebook.react.bridge.*;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
 
 public class PermissionBridgeModule extends ReactContextBaseJavaModule {
     private final PermissionManager permissionManager;
@@ -21,12 +22,12 @@ public class PermissionBridgeModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void canAccessFullFeatures(Promise promise) {
+    public void canAccessFullFeatures(@NonNull Promise promise) {
         promise.resolve(permissionManager.canAccessFullFeatures());
     }
 
     @ReactMethod
-    public void canAccessModule(String moduleName, Promise promise) {
+    public void canAccessModule(String moduleName, @NonNull Promise promise) {
         promise.resolve(permissionManager.canAccessModule(moduleName));
     }
 }

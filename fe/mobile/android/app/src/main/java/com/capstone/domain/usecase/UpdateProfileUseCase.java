@@ -3,7 +3,9 @@ package com.capstone.domain.usecase;
 import com.capstone.common.utils.Result;
 import com.capstone.domain.model.UserProfile;
 import com.capstone.domain.repository.AuthRepository;
+
 import androidx.annotation.Nullable;
+
 import javax.inject.Inject;
 
 /**
@@ -22,15 +24,15 @@ public class UpdateProfileUseCase {
      * Chấp nhận các giá trị null cho những trường không thay đổi.
      */
     public Result<UserProfile> updateInfo(
-        @Nullable String fullName,
-        @Nullable String username,
-        @Nullable String phoneNumber,
-        @Nullable String birthdate,
-        @Nullable String address,
-        @Nullable Boolean gender
+            @Nullable String fullName,
+            @Nullable String username,
+            @Nullable String phoneNumber,
+            @Nullable String birthdate,
+            @Nullable String address,
+            @Nullable Boolean gender
     ) {
         try {
-            UserProfile profile = authRepository.updateProfile(fullName, username, phoneNumber, birthdate, address, gender);
+            var profile = authRepository.updateProfile(fullName, username, phoneNumber, birthdate, address, gender);
             return Result.success(profile);
         } catch (Exception e) {
             return Result.failure(e);
@@ -42,7 +44,7 @@ public class UpdateProfileUseCase {
      */
     public Result<UserProfile> updateAvatar(byte[] imageBytes) {
         try {
-            UserProfile profile = authRepository.updateAvatar(imageBytes);
+            var profile = authRepository.updateAvatar(imageBytes);
             return Result.success(profile);
         } catch (Exception e) {
             return Result.failure(e);

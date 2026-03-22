@@ -3,12 +3,16 @@ package com.capstone.ui.viewmodel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+
 import com.capstone.common.utils.Result;
 import com.capstone.domain.model.UserProfile;
 import com.capstone.domain.usecase.*;
 import com.capstone.infrastructure.security.AntiBruteForceManager;
+
 import dagger.hilt.android.lifecycle.HiltViewModel;
+
 import javax.inject.Inject;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -145,7 +149,7 @@ public class AuthViewModel extends ViewModel {
         });
     }
 
-    public void updateProfile(String fullName, String username, String phoneNumber, 
+    public void updateProfile(String fullName, String username, String phoneNumber,
                               String birthdate, String address, Boolean gender) {
         authState.setValue(new AuthState.Loading());
         executor.execute(() -> {
@@ -184,22 +188,46 @@ public class AuthViewModel extends ViewModel {
      * Định nghĩa các trạng thái của luồng Auth.
      */
     public abstract static class AuthState {
-        public static final class Idle extends AuthState {}
-        public static final class Loading extends AuthState {}
+        public static final class Idle extends AuthState {
+        }
+
+        public static final class Loading extends AuthState {
+        }
+
         public static final class AuthSuccess extends AuthState {
             private final UserProfile profile;
-            public AuthSuccess(UserProfile profile) { this.profile = profile; }
-            public UserProfile getProfile() { return profile; }
+
+            public AuthSuccess(UserProfile profile) {
+                this.profile = profile;
+            }
+
+            public UserProfile getProfile() {
+                return profile;
+            }
         }
+
         public static final class MessageSent extends AuthState {
             private final String message;
-            public MessageSent(String message) { this.message = message; }
-            public String getMessage() { return message; }
+
+            public MessageSent(String message) {
+                this.message = message;
+            }
+
+            public String getMessage() {
+                return message;
+            }
         }
+
         public static final class Error extends AuthState {
             private final String message;
-            public Error(String message) { this.message = message; }
-            public String getMessage() { return message; }
+
+            public Error(String message) {
+                this.message = message;
+            }
+
+            public String getMessage() {
+                return message;
+            }
         }
     }
 }

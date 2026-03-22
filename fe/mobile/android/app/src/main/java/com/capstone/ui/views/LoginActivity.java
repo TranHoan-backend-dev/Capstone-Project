@@ -1,9 +1,12 @@
 package com.capstone.ui.views;
 
 import android.os.Bundle;
+
 import androidx.activity.ComponentActivity;
 import androidx.lifecycle.ViewModelProvider;
+
 import com.capstone.ui.viewmodel.AuthViewModel;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 /**
@@ -18,10 +21,10 @@ public class LoginActivity extends ComponentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         // Khởi tạo ViewModel bằng ViewModelProvider (cú pháp Java cho Hilt/LifeCycle)
         viewModel = new ViewModelProvider(this).get(AuthViewModel.class);
-        
+
         observeViewModel();
     }
 

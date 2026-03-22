@@ -5,6 +5,7 @@ import com.capstone.data.repository.AuthRepositoryImpl;
 import com.capstone.domain.repository.AuthRepository;
 import com.capstone.infrastructure.security.AntiBruteForceManager;
 import com.capstone.infrastructure.security.TokenManager;
+
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
@@ -22,9 +23,9 @@ public class RepositoryModule {
     @Provides
     @Singleton
     public AuthRepository provideAuthRepository(
-        AuthRemoteDataSource remote,
-        TokenManager tokenManager,
-        AntiBruteForceManager bruteForceManager
+            AuthRemoteDataSource remote,
+            TokenManager tokenManager,
+            AntiBruteForceManager bruteForceManager
     ) {
         return new AuthRepositoryImpl(remote, tokenManager, bruteForceManager);
     }

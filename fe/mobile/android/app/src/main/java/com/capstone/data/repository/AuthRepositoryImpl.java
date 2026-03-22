@@ -4,11 +4,11 @@ import com.capstone.data.datasource.AuthRemoteDataSource;
 import com.capstone.data.source.request.ChangePasswordRequest;
 import com.capstone.data.source.request.ResetPasswordRequest;
 import com.capstone.data.source.request.UpdateProfileRequest;
-import com.capstone.data.source.response.UserProfileResponse;
 import com.capstone.domain.model.UserProfile;
 import com.capstone.domain.repository.AuthRepository;
 import com.capstone.infrastructure.security.AntiBruteForceManager;
 import com.capstone.infrastructure.security.TokenManager;
+
 import androidx.annotation.Nullable;
 
 public class AuthRepositoryImpl implements AuthRepository {
@@ -24,7 +24,7 @@ public class AuthRepositoryImpl implements AuthRepository {
 
     @Override
     public UserProfile login(String accessToken) throws Exception {
-        UserProfileResponse profileResponse = remote.login(accessToken);
+        var profileResponse = remote.login(accessToken);
         tokenManager.saveSession(accessToken, "SIMULATED_REFRESH_TOKEN", profileResponse.getRole());
         return UserProfile.fromResponse(profileResponse);
     }
@@ -40,7 +40,7 @@ public class AuthRepositoryImpl implements AuthRepository {
             throw new Exception("Tài khoản bị tạm khóa do thử sai quá nhiều lần. Vui lòng quay lại sau.");
         }
         try {
-            String result = remote.verifyOtp(email, otp);
+            var result = remote.verifyOtp(email, otp);
             bruteForceManager.resetAttempts(email);
             return result;
         } catch (Exception e) {
@@ -55,7 +55,7 @@ public class AuthRepositoryImpl implements AuthRepository {
             throw new Exception("Tài khoản đang bị khóa.");
         }
         try {
-            String result = remote.resetPassword(new ResetPasswordRequest(email, otp, newPassword));
+            var result = remote.resetPassword(new ResetPasswordRequest(email, otp, newPassword));
             bruteForceManager.resetAttempts(email);
             return result;
         } catch (Exception e) {
@@ -70,23 +70,23 @@ public class AuthRepositoryImpl implements AuthRepository {
     }
 
     @Override
-    public UserProfile updateProfile(@Nullable String fullName, @Nullable String username, @Nullable String phoneNumber, 
+    public UserProfile updateProfile(@Nullable String fullName, @Nullable String username, @Nullable String phoneNumber,
                                      @Nullable String birthdate, @Nullable String address, @Nullable Boolean gender) throws Exception {
-        UserProfileResponse profileResponse = remote.updateProfile(
-            new UpdateProfileRequest(fullName, username, phoneNumber, birthdate, address, gender)
+        var profileResponse = remote.updateProfile(
+                new UpdateProfileRequest(fullName, username, phoneNumber, birthdate, address, gender)
         );
         return UserProfile.fromResponse(profileResponse);
     }
 
     @Override
     public UserProfile updateAvatar(byte[] imageBytes) throws Exception {
-        UserProfileResponse profileResponse = remote.updateAvatar(imageBytes);
+        var profileResponse = remote.updateAvatar(imageBytes);
         return UserProfile.fromResponse(profileResponse);
     }
 
     @Override
     public UserProfile getMe() throws Exception {
-        UserProfileResponse profileResponse = remote.getMe();
+        var profileResponse = remote.getMe();
         return UserProfile.fromResponse(profileResponse);
     }
 }

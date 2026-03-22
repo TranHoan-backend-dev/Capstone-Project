@@ -1,6 +1,7 @@
-package com.capstone.bridge;
+package com.capstone.bridge.permission;
 
-import com.capstone.domain.repository.MeterRepository;
+import androidx.annotation.NonNull;
+
 import com.capstone.infrastructure.security.PermissionManager;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -11,24 +12,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class MeterBridgePackage implements ReactPackage {
-    private final MeterRepository meterRepository;
+public class PermissionBridgePackage implements ReactPackage {
     private final PermissionManager permissionManager;
 
-    public MeterBridgePackage(MeterRepository meterRepository, PermissionManager permissionManager) {
-        this.meterRepository = meterRepository;
+    public PermissionBridgePackage(PermissionManager permissionManager) {
         this.permissionManager = permissionManager;
     }
 
+    @NonNull
     @Override
-    public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
+    public List<NativeModule> createNativeModules(@NonNull ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
-        modules.add(new MeterBridgeModule(reactContext, meterRepository, permissionManager));
+        modules.add(new PermissionBridgeModule(reactContext, permissionManager));
         return modules;
     }
 
+    @NonNull
     @Override
-    public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
+    public List<ViewManager> createViewManagers(@NonNull ReactApplicationContext reactContext) {
         return Collections.emptyList();
     }
 }

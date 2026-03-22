@@ -1,13 +1,15 @@
-package com.capstone.bridge;
+package com.capstone.bridge.media;
+
+import androidx.annotation.NonNull;
 
 import com.capstone.domain.repository.MediaRepository;
 import com.capstone.infrastructure.security.PermissionManager;
-import com.facebook.react.bridge.*;
+import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -16,8 +18,8 @@ public class MediaBridgeModule extends ReactContextBaseJavaModule {
     private final PermissionManager permissionManager;
     private final ExecutorService executorService;
 
-    public MediaBridgeModule(ReactApplicationContext reactContext, 
-                             MediaRepository mediaRepository, 
+    public MediaBridgeModule(ReactApplicationContext reactContext,
+                             MediaRepository mediaRepository,
                              PermissionManager permissionManager) {
         super(reactContext);
         this.mediaRepository = mediaRepository;
@@ -25,6 +27,7 @@ public class MediaBridgeModule extends ReactContextBaseJavaModule {
         this.executorService = Executors.newFixedThreadPool(4);
     }
 
+    @NonNull
     @Override
     public String getName() {
         return "MediaModule";
@@ -39,12 +42,12 @@ public class MediaBridgeModule extends ReactContextBaseJavaModule {
 
         executorService.execute(() -> {
             try {
-                File file = new File(filePath);
+                var file = new File(filePath);
                 if (!file.exists()) {
                     promise.reject("FILE_NOT_FOUND", "File at path " + filePath + " does not exist");
                     return;
                 }
-                String resultUrl = mediaRepository.processCapturedImage(file);
+                var resultUrl = mediaRepository.processCapturedImage(file);
                 promise.resolve(resultUrl);
             } catch (Exception e) {
                 promise.reject("UPLOAD_ERROR", e.getMessage(), e);
@@ -61,7 +64,7 @@ public class MediaBridgeModule extends ReactContextBaseJavaModule {
 
         executorService.execute(() -> {
             try {
-                String ocrResult = mediaRepository.performOcr(imageUrl);
+                var ocrResult = mediaRepository.performOcr(imageUrl);
                 promise.resolve(ocrResult);
             } catch (Exception e) {
                 promise.reject("OCR_ERROR", e.getMessage(), e);

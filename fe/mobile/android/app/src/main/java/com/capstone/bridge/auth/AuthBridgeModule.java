@@ -1,8 +1,13 @@
-package com.capstone.bridge;
+package com.capstone.bridge.auth;
 
-import com.capstone.domain.model.UserProfile;
+import androidx.annotation.NonNull;
+
 import com.capstone.domain.repository.AuthRepository;
-import com.facebook.react.bridge.*;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,6 +22,7 @@ public class AuthBridgeModule extends ReactContextBaseJavaModule {
         this.executorService = Executors.newFixedThreadPool(4);
     }
 
+    @NonNull
     @Override
     public String getName() {
         return "AuthModule";
@@ -26,8 +32,8 @@ public class AuthBridgeModule extends ReactContextBaseJavaModule {
     public void login(final String accessToken, final Promise promise) {
         executorService.execute(() -> {
             try {
-                UserProfile profile = authRepository.login(accessToken);
-                WritableMap map = Arguments.createMap();
+                var profile = authRepository.login(accessToken);
+                var map = Arguments.createMap();
                 map.putString("fullName", profile.getFullName());
                 map.putString("avatarUrl", profile.getAvatarUrl());
                 map.putString("role", profile.getRole());
@@ -44,7 +50,7 @@ public class AuthBridgeModule extends ReactContextBaseJavaModule {
     public void sendOtp(final String email, final Promise promise) {
         executorService.execute(() -> {
             try {
-                String message = authRepository.sendOtp(email);
+                var message = authRepository.sendOtp(email);
                 promise.resolve(message);
             } catch (Exception e) {
                 promise.reject("SEND_OTP_ERROR", e.getMessage(), e);
@@ -56,7 +62,7 @@ public class AuthBridgeModule extends ReactContextBaseJavaModule {
     public void verifyOtp(final String email, final String otp, final Promise promise) {
         executorService.execute(() -> {
             try {
-                String message = authRepository.verifyOtp(email, otp);
+                var message = authRepository.verifyOtp(email, otp);
                 promise.resolve(message);
             } catch (Exception e) {
                 promise.reject("VERIFY_OTP_ERROR", e.getMessage(), e);
@@ -68,7 +74,7 @@ public class AuthBridgeModule extends ReactContextBaseJavaModule {
     public void resetPassword(final String email, final String otp, final String newPassword, final Promise promise) {
         executorService.execute(() -> {
             try {
-                String message = authRepository.resetPassword(email, otp, newPassword);
+                var message = authRepository.resetPassword(email, otp, newPassword);
                 promise.resolve(message);
             } catch (Exception e) {
                 promise.reject("RESET_PASSWORD_ERROR", e.getMessage(), e);
@@ -80,8 +86,8 @@ public class AuthBridgeModule extends ReactContextBaseJavaModule {
     public void getMe(final Promise promise) {
         executorService.execute(() -> {
             try {
-                UserProfile profile = authRepository.getMe();
-                WritableMap map = Arguments.createMap();
+                var profile = authRepository.getMe();
+                var map = Arguments.createMap();
                 map.putString("fullName", profile.getFullName());
                 map.putString("avatarUrl", profile.getAvatarUrl());
                 map.putString("role", profile.getRole());

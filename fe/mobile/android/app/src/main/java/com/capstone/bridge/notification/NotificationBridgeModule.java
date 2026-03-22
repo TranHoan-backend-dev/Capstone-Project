@@ -1,12 +1,15 @@
-package com.capstone.bridge;
+package com.capstone.bridge.notification;
 
 import com.capstone.domain.model.Notification;
 import com.capstone.domain.repository.NotificationRepository;
 import com.capstone.infrastructure.security.PermissionManager;
-import com.facebook.react.bridge.*;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.WritableMap;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -16,8 +19,8 @@ public class NotificationBridgeModule extends ReactContextBaseJavaModule {
     private final PermissionManager permissionManager;
     private final ExecutorService executorService;
 
-    public NotificationBridgeModule(ReactApplicationContext reactContext, 
-                                    NotificationRepository repository, 
+    public NotificationBridgeModule(ReactApplicationContext reactContext,
+                                    NotificationRepository repository,
                                     PermissionManager permissionManager) {
         super(reactContext);
         this.repository = repository;
@@ -40,9 +43,9 @@ public class NotificationBridgeModule extends ReactContextBaseJavaModule {
         executorService.execute(() -> {
             try {
                 List<Notification> notifications = repository.getNotifications(page, size);
-                WritableArray list = Arguments.createArray();
+                var list = Arguments.createArray();
                 for (Notification notification : notifications) {
-                    WritableMap map = Arguments.createMap();
+                    var map = Arguments.createMap();
                     map.putString("id", notification.getId());
                     map.putString("link", notification.getLink());
                     map.putString("message", notification.getMessage());
@@ -66,7 +69,7 @@ public class NotificationBridgeModule extends ReactContextBaseJavaModule {
 
         executorService.execute(() -> {
             try {
-                boolean success = repository.markAsRead(notificationId);
+                var success = repository.markAsRead(notificationId);
                 promise.resolve(success);
             } catch (Exception e) {
                 promise.reject("MARK_READ_ERROR", e.getMessage(), e);

@@ -1,6 +1,6 @@
-package com.capstone.bridge;
+package com.capstone.bridge.payment;
 
-import com.capstone.domain.repository.NotificationRepository;
+import com.capstone.domain.repository.PaymentRepository;
 import com.capstone.infrastructure.security.PermissionManager;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -11,19 +11,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class NotificationBridgePackage implements ReactPackage {
-    private final NotificationRepository repository;
+public class PaymentBridgePackage implements ReactPackage {
+    private final PaymentRepository paymentRepository;
     private final PermissionManager permissionManager;
 
-    public NotificationBridgePackage(NotificationRepository repository, PermissionManager permissionManager) {
-        this.repository = repository;
+    public PaymentBridgePackage(PaymentRepository paymentRepository, PermissionManager permissionManager) {
+        this.paymentRepository = paymentRepository;
         this.permissionManager = permissionManager;
     }
 
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
-        modules.add(new NotificationBridgeModule(reactContext, repository, permissionManager));
+        modules.add(new PaymentBridgeModule(reactContext, paymentRepository, permissionManager));
         return modules;
     }
 
