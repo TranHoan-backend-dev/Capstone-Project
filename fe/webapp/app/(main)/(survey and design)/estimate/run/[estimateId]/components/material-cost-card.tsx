@@ -17,6 +17,7 @@ import CustomButton from "@/components/ui/custom/CustomButton";
 import { EstimateItem, EstimateResponse, MaterialEstimateItem } from "@/types";
 import { ESTIMATE_COLUMN } from "@/config/table-columns";
 import { LookupModal } from "@/components/ui/modal/LookupModal";
+import { CallToast } from "@/components/ui/CallToast";
 
 interface MaterialCostCardProps {
   estimateId: string;
@@ -96,12 +97,27 @@ export const MaterialCostCard = ({
       }
 
       const json = await res.json();
+      if (!res.ok) {
+        CallToast({
+          title: "Thất bại",
+          message: json?.message || "Lưu vật tư thất bại",
+          color: "danger",
+        });
+        return;
+      }
       setEstimateData(json.data);
 
-      alert(isFinished ? "Hoàn thành dự toán" : "Lưu nháp thành công");
+      CallToast({
+        title: "Thành công",
+        message: isFinished ? "Hoàn thành dự toán" : "Lưu nháp thành công",
+        color: "success",
+      });
     } catch (err) {
-      console.error(err);
-      alert("Có lỗi xảy ra khi lưu vật tư");
+      CallToast({
+        title: "Thất bại",
+        message: "Có lỗi xảy ra khi lưu vật tư",
+        color: "danger",
+      });
     }
   };
 

@@ -66,8 +66,6 @@ export const MaterialPriceForm = ({
         machinePriceDistrict,
       };
 
-      console.log(payload);
-
       CallToast({
         title: "Thành công",
         message: isEdit ? "Cập nhật thành công!" : "Thêm mới thành công!",

@@ -292,7 +292,6 @@ export const ResultsTable = ({
           <button
             className="hover:opacity-80 transition-opacity focus:outline-none"
             onClick={() => {
-              console.log("CLICK STATUS:", item.status);
               onFilterStatus?.(item.status);
             }}
           >

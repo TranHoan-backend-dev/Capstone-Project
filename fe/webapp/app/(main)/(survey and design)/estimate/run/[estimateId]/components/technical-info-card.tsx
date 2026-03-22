@@ -21,6 +21,7 @@ import { EstimateResponse, MaterialEstimateItem } from "@/types";
 import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
 import { LookupModal } from "@/components/ui/modal/LookupModal";
 import { authFetch } from "@/utils/authFetch";
+import { CallToast } from "@/components/ui/CallToast";
 
 interface TechnicalInfoCardProps {
   estimateData: EstimateResponse | null;
@@ -204,11 +205,6 @@ export const TechnicalInfoCard = ({
         isFinished: isFinished,
       };
 
-      console.log(
-        "Sending payload with fake material:",
-        JSON.stringify(payload, null, 2),
-      );
-
       const res = await fetch(`/api/construction/estimates/${estimateId}`, {
         method: "PUT",
         headers: {
@@ -218,10 +214,17 @@ export const TechnicalInfoCard = ({
       });
 
       const responseText = await res.text();
-      console.log("Response:", responseText);
 
       if (!res.ok) {
         throw new Error(`HTTP ${res.status}: ${responseText}`);
+      }
+      if (!res.ok) {
+        CallToast({
+          title: "Thất bại",
+          message: responseText || "Lưu thất bại",
+          color: "danger",
+        });
+        return;
       }
 
       const json = JSON.parse(responseText);
@@ -231,12 +234,18 @@ export const TechnicalInfoCard = ({
         setDesignImageFile(null);
       }
 
-      alert(isFinished ? "Hoàn thành dự toán" : "Lưu bản nháp thành công");
+      CallToast({
+        title: "Thành công",
+        message: isFinished ? "Hoàn thành dự toán" : "Lưu bản nháp thành công",
+        color: "success",
+      });
     } catch (error) {
-      console.error("Save error:", error);
-      alert(
-        `Có lỗi xảy ra: ${error instanceof Error ? error.message : "Unknown error"}`,
-      );
+      CallToast({
+        title: "Thất bại",
+        message:
+          error instanceof Error ? error.message : "Có lỗi xảy ra khi lưu",
+        color: "danger",
+      });
     } finally {
       setIsUploading(false);
     }
