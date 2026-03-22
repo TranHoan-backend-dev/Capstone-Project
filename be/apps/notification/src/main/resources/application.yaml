@@ -84,6 +84,7 @@ rabbit-mq-config:
     - finance
     - construction-request
     - page
+    - roadmap
   actions:
     - update
     - delete
