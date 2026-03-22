@@ -177,7 +177,9 @@ export const GenericDataTable = <T extends { id: string | number }>({
               <TableBody
                 emptyContent={"Không có dữ liệu để hiển thị."}
                 items={data}
+                isLoading={isLoading}
                 loadingContent={<Spinner label="Loading..." />}
+                className="flex items-center justify-center"
               >
                 {(item) => (
                   <TableRow
