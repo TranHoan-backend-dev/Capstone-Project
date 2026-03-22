@@ -1,5 +1,7 @@
 package com.capstone.data.repository;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import com.capstone.domain.model.MeterReading;
@@ -70,7 +72,7 @@ public class MeterRepositoryImpl implements MeterRepository {
 
     @Override
     public boolean saveMeterReading(@NonNull MeterReading reading) throws Exception {
-        System.out.println("Saving meter reading to DB: " + reading.getSerialNumber() + " - " + reading.getReadingValue());
+        Log.i(this.getClass().getName(), "Saving meter reading to DB: " + reading.getSerialNumber() + " - " + reading.getReadingValue());
         return true;
     }
 
@@ -83,7 +85,7 @@ public class MeterRepositoryImpl implements MeterRepository {
                 break;
             }
         }
-        System.out.println("Manually updated reading for " + readingId + ": " + serialNumber + " - " + readingValue);
+        Log.i(this.getClass().getName(), "Manually updated reading for " + readingId + ": " + serialNumber + " - " + readingValue);
         return true;
     }
 }

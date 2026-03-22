@@ -1,6 +1,7 @@
 package com.capstone.ui.views;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.activity.ComponentActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -24,7 +25,7 @@ public class LoginActivity extends ComponentActivity {
 
         // Khởi tạo ViewModel bằng ViewModelProvider (cú pháp Java cho Hilt/LifeCycle)
         viewModel = new ViewModelProvider(this).get(AuthViewModel.class);
-
+        Log.i(this.getClass().getName(), viewModel.toString());
         observeViewModel();
     }
 
@@ -33,6 +34,7 @@ public class LoginActivity extends ComponentActivity {
         // Nếu đăng nhập thành công (UserProfile != null) -> Điều hướng tới MainActivity
         viewModel.getUserProfile().observe(this, userProfile -> {
             if (userProfile != null) {
+                Log.i(this.getClass().getName(), userProfile.toString());
                 // TODO: Chuyển hướng màn hình (Intent to MainActivity)
             }
         });

@@ -14,6 +14,7 @@ import styles from '../components/change-password/styles';
 import PasswordInput from '../components/change-password/PasswordInput';
 import PasswordRequirements from '../components/change-password/PasswordRequirements';
 import { useNavigation } from '@react-navigation/core';
+import { showToast } from '../utils/toast';
 
 export default function ChangePasswordScreen() {
   const navigation = useNavigation();
@@ -44,6 +45,8 @@ export default function ChangePasswordScreen() {
 
   const handleSave = () => {
     console.log('Change password');
+    showToast.success('Mật khẩu đã được thay đổi');
+    navigation.goBack();
   };
 
   return (

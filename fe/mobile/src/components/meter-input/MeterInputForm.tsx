@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { Card, Text, TextInput } from 'react-native-paper';
 import MeterInputInfoCard from './MeterInputInfoCard';
 import MeterInputStatusCard from './MeterInputStatusCard';
 import MeterInputIndexCard from './MeterInputIndexCard';
@@ -68,7 +69,7 @@ export default function MeterInputForm({
 
   return (
     <View style={styles.formContainer}>
-      <ScrollView>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
         <MeterInputInfoCard
           customerName={customerName}
           customerId={customerId}
@@ -89,6 +90,21 @@ export default function MeterInputForm({
           m3={m3}
           onNewIndexChange={handleNewIndexChange}
         />
+
+        <Card style={styles.card}>
+          <Card.Content>
+            <Text style={styles.cardTitle}>Ghi chú</Text>
+            <TextInput
+              mode="outlined"
+              placeholder="Nhập ghi chú (nếu có)..."
+              multiline
+              numberOfLines={3}
+              style={styles.notesInput}
+              outlineColor="#E0E0E0"
+              activeOutlineColor="#1E88E5"
+            />
+          </Card.Content>
+        </Card>
 
       </ScrollView>
 

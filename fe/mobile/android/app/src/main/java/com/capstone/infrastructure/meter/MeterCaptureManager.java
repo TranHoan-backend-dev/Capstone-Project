@@ -1,5 +1,7 @@
 package com.capstone.infrastructure.meter;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import java.io.File;
@@ -26,7 +28,7 @@ public class MeterCaptureManager {
      * Gửi yêu cầu phân tích hình ảnh AI theo cách bất đồng bộ (mô phỏng).
      */
     public void sendToAiAsync(String imagePath) {
-        System.out.println("Sending image to AI asynchronously: " + imagePath);
+        Log.i(this.getClass().getName(), "Sending image to AI asynchronously: " + imagePath);
     }
 
     /**
