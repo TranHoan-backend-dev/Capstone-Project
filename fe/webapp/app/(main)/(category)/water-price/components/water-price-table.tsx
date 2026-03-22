@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Tooltip, Button } from "@heroui/react";
 import { DeleteIcon, EditIcon } from "@/config/chip-and-icon";
 import {
-    USAGE_TARGET_LABEL,
+  USAGE_TARGET_LABEL,
   WaterPriceItem,
   WaterPriceResponse,
   WaterPriceTableProps,
@@ -100,8 +100,17 @@ export const WaterPriceTable = ({
       const direction =
         prev.field === columnKey && prev.direction === "asc" ? "desc" : "asc";
 
+      const fieldMap: Record<string, string> = {
+        stt: "createdAt",
+        usageTarget: "usageTarget",
+        tax: "tax",
+        environmentPrice: "environmentPrice",
+        applicationPeriod: "applicationPeriod",
+        expirationDate: "expirationDate",
+      };
+
       return {
-        field: columnKey === "stt" ? "createdAt" : columnKey,
+        field: fieldMap[columnKey] || "createdAt",
         direction,
       };
     });
@@ -113,7 +122,7 @@ export const WaterPriceTable = ({
     try {
       setDeleteLoading(true);
 
-      const res = await authFetch(`/api/device/units/${deleteId}`, {
+      const res = await authFetch(`/api/device/water-prices/${deleteId}`, {
         method: "DELETE",
       });
 
@@ -121,7 +130,7 @@ export const WaterPriceTable = ({
 
       CallToast({
         title: "Thành công",
-        message: "Xóa đơn vị tính thành công",
+        message: "Xóa giá nước thành công",
         color: "success",
       });
 

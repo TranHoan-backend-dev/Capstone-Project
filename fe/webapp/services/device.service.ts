@@ -70,3 +70,31 @@ export const getAllWaterPrices = (
       Authorization: `Bearer ${accessToken}`,
     },
   });
+
+export const createWaterPrice = (accessToken: string, data: any) => {
+  return axios.post(`${API_GATEWAY_URL}/d/water-prices`, data, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
+export const updateWaterPrice = (
+  accessToken: string,
+  id: string,
+  data: any,
+) => {
+  return axios.put(`${API_GATEWAY_URL}/d/water-prices/${id}`, data, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
+export const deleteWaterPrice = (accessToken: string, id: string) => {
+  return axios.delete(`${API_GATEWAY_URL}/d/water-prices/${id}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};

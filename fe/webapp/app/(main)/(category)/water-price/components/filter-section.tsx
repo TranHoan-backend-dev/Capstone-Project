@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { FilterActionButton } from "@/components/ui/FilterActionButton";
 import { SearchIcon } from "@/components/ui/Icons";
@@ -14,10 +14,14 @@ export const FilterSection = ({
   onSearch,
   onAddNew,
 }: FilterSectionWaterPriceProps) => {
-  const [name, setName] = useState(filter.usageTarget ?? "");
+  const [keyword, setKeyword] = useState(filter.usageTarget ?? "");
+
+  useEffect(() => {
+    setKeyword(filter.usageTarget ?? "");
+  }, [filter.usageTarget]);
 
   const handleSearch = () => {
-    onSearch({ usageTarget: name.trim() });
+    onSearch({ usageTarget: keyword.trim() });
   };
 
   return (
@@ -29,7 +33,7 @@ export const FilterSection = ({
       actions={
         <div className="flex justify-end gap-3">
           <FilterActionButton
-            className="bg-green-500 hover:bg-green-600 dark:shadow-md dark:shadow-success/40 mr-2"
+            className="bg-green-500 hover:bg-green-600 mr-2"
             color="success"
             icon={<AddNewIcon className="w-4 h-4" />}
             label="Thêm mới"
@@ -40,18 +44,14 @@ export const FilterSection = ({
       }
     >
       <section className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-          <CustomInput
-            label="Tên đơn vị"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                handleSearch();
-              }
-            }}
-          />
-        </div>
+        <CustomInput
+          label="Từ khóa"
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleSearch();
+          }}
+        />
       </section>
     </GenericSearchFilter>
   );

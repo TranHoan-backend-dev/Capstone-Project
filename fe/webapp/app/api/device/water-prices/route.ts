@@ -1,4 +1,8 @@
-import { createUnit, getAllWaterPrices } from "@/services/device.service";
+import {
+  createUnit,
+  createWaterPrice,
+  getAllWaterPrices,
+} from "@/services/device.service";
 import { getAccessToken } from "@/utils/getAccessToken";
 import { NextRequest } from "next/dist/server/web/spec-extension/request";
 import { NextResponse } from "next/server";
@@ -17,11 +21,17 @@ export async function GET(req: NextRequest) {
     const sort = searchParams.get("sort") || ",desc";
     const filter = searchParams.get("filter") || undefined;
 
-    const response = await getAllWaterPrices(accessToken, page, size, sort, filter);
+    const response = await getAllWaterPrices(
+      accessToken,
+      page,
+      size,
+      sort,
+      filter,
+    );
 
     return NextResponse.json(
       {
-        message: "Lấy danh sách đơn vị tính thành công",
+        message: "Lấy danh sách giá nước thành công",
         data: response.data.data,
       },
       { status: 200 },
@@ -46,16 +56,17 @@ export async function POST(req: NextRequest) {
     if (!accessToken) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
-    const { name } = await req.json();
+    const body = await req.json();
 
-    const response = await createUnit(accessToken, name);
+    const response = await createWaterPrice(accessToken, body);
 
     return NextResponse.json(response.data, { status: 201 });
+
   } catch (error: any) {
     return NextResponse.json(
       {
         message:
-          error.response?.data?.message || "Thêm mới đường phố thành công",
+          error.response?.data?.message || "Thêm mới giá nước thất bại",
       },
       { status: error.response?.status || 500 },
     );

@@ -22,8 +22,8 @@ export interface WaterPriceFormProps {
   initialData?: {
     id?: string;
     usageTarget?: string;
-    tax?: number;
-    environmentPrice?: number;
+    tax?: string;
+    environmentPrice?: string;
     description?: string;
     applicationPeriod?: string;
     expirationDate?: string;

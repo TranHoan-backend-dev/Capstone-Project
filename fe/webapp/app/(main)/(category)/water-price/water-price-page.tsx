@@ -46,7 +46,7 @@ const WaterPricePage = () => {
       <Modal
         isOpen={showAddForm}
         onClose={handleCloseForm}
-        size="2xl"
+        size="4xl"
         placement="top-center"
         scrollBehavior="inside"
       >
