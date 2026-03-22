@@ -1,6 +1,6 @@
 export const ESTIMATE_COLUMN = [
-  { key: "index", label: "STT", width: "40px" },
-  { key: "code", label: "Mã vật tư", sortable: true },
+  { key: "stt", label: "STT", width: "40px" },
+  // { key: "code", label: "Mã vật tư", sortable: true },
   { key: "description", label: "Nội dung công việc" },
   { key: "note", label: "Ghi chú" },
   { key: "unit", label: "ĐVT" },

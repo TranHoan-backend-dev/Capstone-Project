@@ -5,21 +5,27 @@ import { useParams } from "next/navigation";
 
 import { TechnicalInfoCard } from "./components/technical-info-card";
 import { MaterialCostCard } from "./components/material-cost-card";
-import { EstimateResponse } from "@/types";
+import { EstimateResponse, MaterialEstimateItem } from "@/types";
 
 const RunEstimationPage = () => {
   const params = useParams();
   const estimateId = params.estimateId as string | undefined;
-
-  const [estimateData, setEstimateData] = useState<EstimateResponse | null>(null);
+  const [materials, setMaterials] = useState<MaterialEstimateItem[]>([]);
+  const [estimateData, setEstimateData] = useState<EstimateResponse | null>(
+    null,
+  );
 
   useEffect(() => {
     const fetchEstimate = async () => {
-      if (!estimateId) return; // tránh undefined
-      const res = await fetch(`/api/construction/estimates/${estimateId}`);
-      if (!res.ok) return;
-      const json = await res.json();
-      setEstimateData(json.data);
+      if (!estimateId) return;
+      try {
+        const res = await fetch(`/api/construction/estimates/${estimateId}`);
+        if (!res.ok) return;
+        const json = await res.json();
+        setEstimateData(json.data);
+      } catch (error) {
+        console.error("Failed to fetch estimate:", error);
+      }
     };
 
     fetchEstimate();
@@ -28,14 +34,21 @@ const RunEstimationPage = () => {
   if (!estimateId) return <p>Estimate ID không tồn tại</p>;
 
   return (
-    <>
+    <div className="space-y-8">
       <TechnicalInfoCard
         estimateData={estimateData}
         setEstimateData={setEstimateData}
-        estimateId={estimateId} // nếu cần
+        estimateId={estimateId}
+        materials={materials}
       />
-      <MaterialCostCard />
-    </>
+      <MaterialCostCard
+        estimateId={estimateId}
+        estimateData={estimateData}
+        setEstimateData={setEstimateData}
+        materials={materials}
+        setMaterials={setMaterials}
+      />
+    </div>
   );
 };
 

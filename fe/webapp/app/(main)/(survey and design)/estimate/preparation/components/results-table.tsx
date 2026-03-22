@@ -98,19 +98,24 @@ export const ResultsTable = ({ keyword, from, to }: ResultsTableProps) => {
 
         const json = await res.json();
         const pageData = json?.data;
+
         const items = pageData?.content ?? [];
         setTotalItems(pageData?.totalElements ?? 0);
         setTotalPages(pageData?.totalPages ?? 1);
+        const mapped: EstimateItem[] = items.map((item: any) => {
+          const info = item.generalInformation;
 
-        const mapped: EstimateItem[] = items.map((item: EstimateResponse) => ({
-          id: item.estimationId,
-          formCode: item.installationFormId.formCode,
-          formNumber: item.installationFormId.formNumber,
+          return {
+            id: info.estimationId,
+            formCode: info.installationFormId?.formCode,
+            formNumber: info.installationFormId?.formNumber,
 
-          customerName: item.customerName,
-          address: item.address,
-          registerDate: new Date(item.createdAt).toLocaleDateString("vi-VN"),
-        }));
+            customerName: info.customerName,
+            address: info.address,
+            registerDate: new Date(info.createdAt).toLocaleDateString("vi-VN"),
+          };
+        });
+
         setData(mapped);
       } catch (e) {
         setData([]);

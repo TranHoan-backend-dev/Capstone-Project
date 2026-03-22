@@ -1,4 +1,4 @@
-import { getAllMaterials } from "@/services/device.service";
+import { getAllWaterMeters } from "@/services/device.service";
 import { getAccessToken } from "@/utils/getAccessToken";
 import { NextRequest } from "next/dist/server/web/spec-extension/request";
 import { NextResponse } from "next/server";
@@ -14,23 +14,20 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const page = Number(searchParams.get("page") ?? 0);
     const size = Number(searchParams.get("size") ?? 10);
-    const keyword = searchParams.get("keyword")?.trim() || "";
-    const laborCode = searchParams.get("laborCode")?.trim() || "";
-    const fromPrice = searchParams.get("fromPrice") || "";
-    const toPrice = searchParams.get("toPrice") || "";
-    const response = await getAllMaterials(
+    const sort = searchParams.get("sort") || ",desc";
+    const filter = searchParams.get("filter") || undefined;
+
+    const response = await getAllWaterMeters(
       accessToken,
       page,
       size,
-      keyword,
-      laborCode,
-      fromPrice,
-      toPrice,
+      sort,
+      filter,
     );
 
     return NextResponse.json(
       {
-        message: "Lấy danh sách nhóm vật tư thành công",
+        message: "Lấy danh sách đồng hồ thành công",
         data: response.data.data,
       },
       { status: 200 },

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@heroui/react";
 
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
@@ -17,7 +17,10 @@ import {
 import CustomSelect from "@/components/ui/custom/CustomSelect";
 import CustomButton from "@/components/ui/custom/CustomButton";
 import CustomTextarea from "@/components/ui/custom/CustomTextarea";
-import { EstimateResponse } from "@/types";
+import { EstimateResponse, MaterialEstimateItem } from "@/types";
+import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
+import { LookupModal } from "@/components/ui/modal/LookupModal";
+import { authFetch } from "@/utils/authFetch";
 
 interface TechnicalInfoCardProps {
   estimateData: EstimateResponse | null;
@@ -25,16 +28,18 @@ interface TechnicalInfoCardProps {
     React.SetStateAction<EstimateResponse | null>
   >;
   estimateId: string;
+  materials: MaterialEstimateItem[];
 }
 
 export const TechnicalInfoCard = ({
   estimateData,
   setEstimateData,
   estimateId,
+  materials,
 }: TechnicalInfoCardProps) => {
-  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Tạo state riêng cho từng field
+  // State cho từng field
   const [customerName, setCustomerName] = useState("");
   const [address, setAddress] = useState("");
   const [note, setNote] = useState("");
@@ -53,141 +58,206 @@ export const TechnicalInfoCard = ({
   const [vatCoefficient, setVatCoefficient] = useState("");
   const [designCoefficient, setDesignCoefficient] = useState("");
   const [designFee, setDesignFee] = useState("");
-  const [waterMeterSerial, setWaterMeterSerial] = useState("");
+
+  const [designImageFile, setDesignImageFile] = useState<File | null>(null);
+  const [designImageUrl, setDesignImageUrl] = useState("");
+  const [showWaterMeterModal, setShowWaterMeterModal] = useState(false);
+
+  const [showOverallModal, setShowOverallModal] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+
   const [overallWaterMeterId, setOverallWaterMeterId] = useState("");
-  const [designImage, setDesignImage] = useState<File | null>(null);
+  const [displayOverallWaterMeter, setDisplayOverallWaterMeter] = useState("");
 
-  const [representatives, setRepresentatives] = React.useState([
-    { id: 1, name: "", position: "giam-doc" },
-  ]);
+  const [waterMeterSerial, setWaterMeterSerial] = useState("");
+  const [displayWaterMeter, setDisplayWaterMeter] = useState("");
+  // useEffect(() => {
+  //   const fetchWaterPriceDetails = async () => {
+  //     if (formData.waterPriceId && !displayWaterPrice) {
+  //       try {
+  //         const response = await authFetch(
+  //           `/api/device/water-prices/${formData.waterPriceId}`,
+  //         );
+  //         const result = await response.json();
+  //         if (result.data) {
+  //           setDisplayWaterPrice(
+  //             `${result.data.tax}% - ${result.data.environmentPrice}`,
+  //           );
+  //         }
+  //       } catch (error) {
+  //         console.error("Failed to fetch water price:", error);
+  //       }
+  //     }
+  //   };
 
-  const positionOptions = [
-    { label: "Giám đốc", key: "head_company" },
-    { label: "Trưởng phòng", key: "head" },
-  ];
+  //   fetchWaterPriceDetails();
+  // }, [formData.waterPriceId, displayWaterPrice]);
+
+  useEffect(() => {
+    const fetchWaterMeterDetails = async () => {
+      if (waterMeterSerial && !displayWaterMeter) {
+        try {
+          const response = await authFetch(
+            `/api/device/water-meters/${waterMeterSerial}`,
+          );
+          const result = await response.json();
+          if (result.data) {
+            setDisplayWaterMeter(
+              `Loại: ${result.data.typeName} - Size: ${result.data.size} - Lắp: ${result.data.installationDate}`,
+            );
+          }
+        } catch (error) {
+          console.error("Failed to fetch water meter:", error);
+        }
+      }
+    };
+
+    fetchWaterMeterDetails();
+  }, [waterMeterSerial, displayWaterMeter]);
 
   // Load dữ liệu từ estimateData vào state
   useEffect(() => {
-    if (estimateData) {
-      setCustomerName(estimateData.customerName || "");
-      setAddress(estimateData.address || "");
-      setNote(estimateData.note || "");
-      setContractFee(estimateData.contractFee?.toString() || "");
-      setSurveyFee(estimateData.surveyFee?.toString() || "");
-      setSurveyEffort(estimateData.surveyEffort?.toString() || "");
-      setInstallationFee(estimateData.installationFee?.toString() || "");
-      setLaborCoefficient(estimateData.laborCoefficient?.toString() || "");
-      setGeneralCostCoefficient(
-        estimateData.generalCostCoefficient?.toString() || "",
-      );
+    if (estimateData?.generalInformation) {
+      const info = estimateData.generalInformation;
+      setCustomerName(info.customerName || "");
+      setAddress(info.address || "");
+      setNote(info.note || "");
+      setContractFee(info.contractFee?.toString() || "");
+      setSurveyFee(info.surveyFee?.toString() || "");
+      setSurveyEffort(info.surveyEffort?.toString() || "");
+      setInstallationFee(info.installationFee?.toString() || "");
+      setLaborCoefficient(info.laborCoefficient?.toString() || "");
+      setGeneralCostCoefficient(info.generalCostCoefficient?.toString() || "");
       setPrecalculatedTaxCoefficient(
-        estimateData.precalculatedTaxCoefficient?.toString() || "",
+        info.precalculatedTaxCoefficient?.toString() || "",
       );
       setConstructionMachineryCoefficient(
-        estimateData.constructionMachineryCoefficient?.toString() || "",
+        info.constructionMachineryCoefficient?.toString() || "",
       );
-      setVatCoefficient(estimateData.vatCoefficient?.toString() || "");
-      setDesignCoefficient(estimateData.designCoefficient?.toString() || "");
-      setDesignFee(estimateData.designFee?.toString() || "");
-      setWaterMeterSerial(estimateData.waterMeterSerial || "");
-      setOverallWaterMeterId(estimateData.overallWaterMeterId || "");
-      // designImage là string URL từ API, không phải File
+      setVatCoefficient(info.vatCoefficient?.toString() || "");
+      setDesignCoefficient(info.designCoefficient?.toString() || "");
+      setDesignFee(info.designFee?.toString() || "");
+      setWaterMeterSerial(info.waterMeterSerial || "");
+      setOverallWaterMeterId(info.overallWaterMeterId || "");
+      setDesignImageUrl(info.designImageUrl || "");
     }
   }, [estimateData]);
 
-  const addRepresentative = () => {
-    setRepresentatives([
-      ...representatives,
-      { id: Date.now(), name: "", position: "giam-doc" },
-    ]);
-  };
-
-  const removeRepresentative = (id: number) => {
-    if (representatives.length > 1) {
-      setRepresentatives(representatives.filter((rep) => rep.id !== id));
-    }
+  // Hàm chuyển đổi file sang base64
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
   };
 
   const handleSave = async (isFinished: boolean) => {
-    const formData = new FormData();
+    try {
+      setIsUploading(true);
 
-    // Append từng field cụ thể vào FormData từ state
-    formData.append("customerName", customerName);
-    formData.append("address", address);
-    formData.append("note", note);
-    formData.append("contractFee", contractFee || "0");
-    formData.append("surveyFee", surveyFee || "0");
-    formData.append("surveyEffort", surveyEffort || "0");
-    formData.append("installationFee", installationFee || "0");
-    formData.append("laborCoefficient", laborCoefficient || "0");
-    formData.append("generalCostCoefficient", generalCostCoefficient || "0");
-    formData.append(
-      "precalculatedTaxCoefficient",
-      precalculatedTaxCoefficient || "0",
-    );
-    formData.append(
-      "constructionMachineryCoefficient",
-      constructionMachineryCoefficient || "0",
-    );
-    formData.append("vatCoefficient", vatCoefficient || "0");
-    formData.append("designCoefficient", designCoefficient || "0");
-    formData.append("designFee", designFee || "0");
-    formData.append("waterMeterSerial", waterMeterSerial);
-    formData.append("overallWaterMeterId", overallWaterMeterId);
+      let designImageBase64 = undefined;
+      if (designImageFile instanceof File) {
+        designImageBase64 = await fileToBase64(designImageFile);
+      }
+      const safeNumber = (v: any) => (isNaN(Number(v)) ? 0 : Number(v));
+      const materialPayload = materials.map((m) => ({
+        materialCode: m.code,
+        jobContent: m.description,
+        note: m.note,
+        unit: m.unit,
+        reductionCoefficient: String(safeNumber(m.reductionFactor)),
+        mass: String(safeNumber(m.quantity)),
+        materialCost: String(safeNumber(m.materialPrice)),
+        laborPrice: String(safeNumber(m.laborPrice)),
+      }));
 
-    // Xử lý file riêng
-    if (designImage instanceof File) {
-      formData.append("designImage", designImage);
+      const payload = {
+        generalInformation: {
+          estimationId: estimateId,
+          customerName: customerName || "",
+          address: address || "",
+          note: note || "",
+          contractFee: contractFee ? Number(contractFee) : 0,
+          surveyFee: surveyFee ? Number(surveyFee) : 0,
+          surveyEffort: surveyEffort ? Number(surveyEffort) : 0,
+          installationFee: installationFee ? Number(installationFee) : 0,
+          laborCoefficient: laborCoefficient ? Number(laborCoefficient) : 0,
+          generalCostCoefficient: generalCostCoefficient
+            ? Number(generalCostCoefficient)
+            : 0,
+          precalculatedTaxCoefficient: precalculatedTaxCoefficient
+            ? Number(precalculatedTaxCoefficient)
+            : 0,
+          constructionMachineryCoefficient: constructionMachineryCoefficient
+            ? Number(constructionMachineryCoefficient)
+            : 0,
+          vatCoefficient: vatCoefficient ? Number(vatCoefficient) : 0,
+          designCoefficient: designCoefficient ? Number(designCoefficient) : 0,
+          designFee: designFee ? Number(designFee) : 0,
+          waterMeterSerial: waterMeterSerial || "",
+          overallWaterMeterId: overallWaterMeterId || "",
+          designImage: designImageBase64,
+        },
+        material: materialPayload,
+        isFinished: isFinished,
+      };
+
+      console.log(
+        "Sending payload with fake material:",
+        JSON.stringify(payload, null, 2),
+      );
+
+      const res = await fetch(`/api/construction/estimates/${estimateId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const responseText = await res.text();
+      console.log("Response:", responseText);
+
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${responseText}`);
+      }
+
+      const json = JSON.parse(responseText);
+      setEstimateData(json.data);
+
+      if (designImageFile) {
+        setDesignImageFile(null);
+      }
+
+      alert(isFinished ? "Hoàn thành dự toán" : "Lưu bản nháp thành công");
+    } catch (error) {
+      console.error("Save error:", error);
+      alert(
+        `Có lỗi xảy ra: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
+    } finally {
+      setIsUploading(false);
     }
+  };
 
-    formData.append("isFinished", String(isFinished));
+  const handleSelectWaterMeter = (item: any) => {
+    setWaterMeterSerial(item.id);
+    setDisplayWaterMeter(`Loại: ${item.typeName} - Size: ${item.size}`);
+    setShowWaterMeterModal(false);
+  };
 
-    const res = await fetch(`/api/construction/estimates/${estimateId}`, {
-      method: "PUT",
-      body: formData,
-    });
-
-    if (!res.ok) {
-      const err = await res.json();
-      console.error("Update failed", err);
-      return;
-    }
-
-    const json = await res.json();
-    console.log("Updated estimate", json.data);
-
-    // Cập nhật estimateData với dữ liệu mới từ API
-    setEstimateData(json.data);
-
-    alert(isFinished ? "Hoàn thành dự toán" : "Lưu bản nháp thành công");
+  const handleSelectOverallMeter = (item: any) => {
+    setOverallWaterMeterId(item.id);
+    setDisplayOverallWaterMeter(item.name);
+    setShowOverallModal(false);
   };
 
   return (
     <GenericSearchFilter
       actions={
         <div className="flex flex-wrap gap-3 pt-6 border-t border-divider">
-          <CustomButton
-            onPress={() => handleSave(false)}
-            className="font-bold px-6 shadow-md shadow-primary/20"
-            color="primary"
-            startContent={<SaveDocumentCheckIcon className="w-4 h-4" />}
-          >
-            Lưu bản nháp
-          </CustomButton>
-          <CustomButton
-            onPress={() => handleSave(true)}
-            className="text-white font-bold px-6 shadow-md shadow-success/20"
-            color="success"
-          >
-            Hoàn thành
-          </CustomButton>
-          <CustomButton
-            className="bg-background dark:bg-default-100 font-bold px-6"
-            startContent={<PictureIcon className="w-4 h-4" />}
-            variant="bordered"
-          >
-            Xem hồ sơ
-          </CustomButton>
           <>
             <input
               type="file"
@@ -197,7 +267,10 @@ export const TechnicalInfoCard = ({
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (!file) return;
-                setDesignImage(file);
+                setDesignImageFile(file);
+                // Hiển thị preview nếu cần
+                const previewUrl = URL.createObjectURL(file);
+                console.log("Selected file:", file.name, previewUrl);
               }}
             />
 
@@ -206,9 +279,22 @@ export const TechnicalInfoCard = ({
               className="text-white font-bold px-6 shadow-md shadow-success/20"
               color="success"
               startContent={<DocumentMagnifyGlassIcon className="w-4 h-4" />}
+              isDisabled={isUploading}
             >
-              Ảnh cụm đồng hồ
+              {designImageFile ? "Đã chọn ảnh mới" : "Ảnh cụm đồng hồ"}
             </CustomButton>
+
+            {designImageUrl && !designImageFile && (
+              <div className="text-sm text-green-600">
+                Đã có ảnh: {designImageUrl.split("/").pop()?.slice(0, 30)}...
+              </div>
+            )}
+
+            {designImageFile && (
+              <div className="text-sm text-blue-600">
+                Đã chọn ảnh mới: {designImageFile.name}
+              </div>
+            )}
           </>
         </div>
       }
@@ -323,7 +409,6 @@ export const TechnicalInfoCard = ({
         </div>
       </div>
 
-      {/* Đồng hồ & đơn vị liên quan */}
       <div className="lg:col-span-2 pt-8 border-t border-divider space-y-4">
         <h3
           className={`text-sm font-bold ${TitleDarkColor} uppercase tracking-wider`}
@@ -331,19 +416,82 @@ export const TechnicalInfoCard = ({
           Đồng hồ & đơn vị liên quan
         </h3>
 
-        {/* Meter Row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
-          <CustomInput
-            label="Số sê-ri đồng hồ nước"
-            value={waterMeterSerial}
-            onChange={(e) => setWaterMeterSerial(e.target.value)}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <SearchInputWithButton
+            label="Đồng hồ nước"
+            isRequired
+            value={displayWaterMeter}
+            onValueChange={() => {}}
+            onSearch={() => setShowWaterMeterModal(true)}
+          />
+          <LookupModal
+            enableSearch={false}
+            dataKey="content"
+            isOpen={showWaterMeterModal}
+            onClose={() => setShowWaterMeterModal(false)}
+            title="Chọn đồng hồ nước"
+            api="/api/device/water-meters"
+            columns={[
+              { key: "stt", label: "STT" },
+              { key: "typeName", label: "Loại đồng hồ" },
+              { key: "size", label: "Cỡ đồng hồ" },
+              { key: "installationDate", label: "Ngày lắp đặt" },
+            ]}
+            mapData={(item: any, index: number) => ({
+              stt: index + 1,
+              id: item.id,
+              typeName: item.typeName,
+              size: item.size,
+              installationDate: item.installationDate,
+            })}
+            onSelect={handleSelectWaterMeter}
           />
 
-          <CustomInput
-            label="ID đồng hồ nước tổng"
-            value={overallWaterMeterId}
-            onChange={(e) => setOverallWaterMeterId(e.target.value)}
+          <SearchInputWithButton
+            label="Đồng hồ nước tổng"
+            value={displayOverallWaterMeter}
+            onValueChange={() => {}}
+            onSearch={() => setShowOverallModal(true)}
           />
+          <LookupModal
+            dataKey="content"
+            isOpen={showOverallModal}
+            onClose={() => setShowOverallModal(false)}
+            title="Chọn đồng hồ nước tổng"
+            api="/api/device/water-meters/overall"
+            searchKey="keyword"
+            columns={[
+              { key: "stt", label: "STT" },
+              { key: "name", label: "Tên đồng hồ" },
+            ]}
+            mapData={(item: any, index: number) => ({
+              stt: index + 1,
+              id: item.serial,
+              name: item.name,
+            })}
+            onSelect={handleSelectOverallMeter}
+          />
+        </div>
+
+        {/* Buttons Save */}
+        <div className="flex flex-wrap gap-3 pt-4">
+          <CustomButton
+            onPress={() => handleSave(false)}
+            className="font-bold px-6 shadow-md shadow-primary/20"
+            color="primary"
+            startContent={<SaveDocumentCheckIcon className="w-4 h-4" />}
+            isDisabled={isUploading}
+          >
+            {isUploading ? "Đang lưu..." : "Lưu bản nháp"}
+          </CustomButton>
+          <CustomButton
+            onPress={() => handleSave(true)}
+            className="text-white font-bold px-6 shadow-md shadow-success/20"
+            color="success"
+            isDisabled={isUploading}
+          >
+            {isUploading ? "Đang lưu..." : "Hoàn thành"}
+          </CustomButton>
         </div>
       </div>
     </GenericSearchFilter>

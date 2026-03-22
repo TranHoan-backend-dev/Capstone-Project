@@ -14,101 +14,194 @@ import {
   SaveDocumentCheckIcon,
 } from "@/config/chip-and-icon";
 import CustomButton from "@/components/ui/custom/CustomButton";
-import { EstimateItem, EstimateResponse } from "@/types";
+import { EstimateItem, EstimateResponse, MaterialEstimateItem } from "@/types";
 import { ESTIMATE_COLUMN } from "@/config/table-columns";
+import { LookupModal } from "@/components/ui/modal/LookupModal";
 
-export const MaterialCostCard = () => {
-  const [data, setData] = useState<EstimateItem[]>([]);
-  const [totalItems, setTotalItems] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
+interface MaterialCostCardProps {
+  estimateId: string;
+  estimateData: EstimateResponse | null;
+  setEstimateData: React.Dispatch<
+    React.SetStateAction<EstimateResponse | null>
+  >;
+  materials: MaterialEstimateItem[];
+  setMaterials: React.Dispatch<React.SetStateAction<MaterialEstimateItem[]>>;
+}
+
+export const MaterialCostCard = ({
+  estimateId,
+  estimateData,
+  setEstimateData,
+  materials,
+  setMaterials,
+}: MaterialCostCardProps) => {
+  const [showMaterialModal, setShowMaterialModal] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [sort, setSort] = useState<{
-    field: string;
-    direction: "asc" | "desc";
-  }>({
-    field: "createdAt",
-    direction: "desc",
-  });
 
-  const [page, setPage] = useState(1);
-  const pageSize = 10;
-
-  const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
-    setLoading(true);
+    if (estimateData?.material) {
+      const mappedMaterials = estimateData.material.map(
+        (item: any, index: number) => ({
+          id: item.materialCode,
+          code: item.materialCode,
+          description: item.jobContent,
+          unit: item.unit,
+          quantity: parseFloat(item.mass) || 0,
+          reductionFactor: parseFloat(item.reductionCoefficient) || 1,
+          materialPrice: parseFloat(item.materialCost) || 0,
+          laborPrice: parseFloat(item.laborPrice) || 0,
+          materialTotal: parseFloat(item.totalMaterialPrice) || 0,
+          laborTotal: parseFloat(item.totalLaborPrice) || 0,
+          note: item.note || "",
+          stt: index + 1,
+        }),
+      );
+      setMaterials(mappedMaterials);
+    }
+    setLoading(false);
+  }, [estimateData]);
 
-    const fetchData = async () => {
-      try {
-        const params = new URLSearchParams({
-          page: String(page - 1),
-          size: String(pageSize),
-          sort: `${sort.field},${sort.direction}`,
-        });
-
-        const res = await fetch(
-          `/api/construction/estimates?${params.toString()}`,
-        );
-
-        if (!res.ok) {
-          console.error("Fetch failed", res.status);
-          return;
-        }
-
-        const json = await res.json();
-        const pageData = json?.data;
-        const items = pageData?.content ?? [];
-        setTotalItems(pageData?.totalElements ?? 0);
-        setTotalPages(pageData?.totalPages ?? 1);
-
-        const mapped = items.map((item: EstimateResponse, index: number) => ({
-          id: item.estimationId,
-          stt: (page - 1) * pageSize + index + 1,
-          name: item.formCode,
-        }));
-        setData(mapped);
-      } catch (e) {
-        setData([]);
-        setTotalItems(0);
-        setTotalPages(1);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [page, sort]);
-  const handleSave = async () => {
+  const handleSave = async (isFinished: boolean) => {
     try {
-      const res = await fetch("/api/construction/estimates/save", {
-        method: "POST",
+      const materialPayload = materials.map((m) => ({
+        materialCode: m.code,
+        jobContent: m.description,
+        note: m.note,
+        unit: m.unit,
+        reductionCoefficient: m.reductionFactor.toString(),
+        mass: m.quantity.toString(),
+        materialCost: m.materialPrice.toString(),
+        laborPrice: m.laborPrice.toString(),
+      }));
+
+      const payload = {
+        generalInformation: {
+          estimationId: estimateId,
+        },
+        material: materialPayload,
+        isFinished: isFinished,
+      };
+
+      const res = await fetch(`/api/construction/estimates/${estimateId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
       });
-      if (!res.ok) throw new Error("Save failed");
-      alert("Hoàn tất dự toán thành công");
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Save failed");
+      }
+
+      const json = await res.json();
+      setEstimateData(json.data);
+
+      alert(isFinished ? "Hoàn thành dự toán" : "Lưu nháp thành công");
     } catch (err) {
       console.error(err);
+      alert("Có lỗi xảy ra khi lưu vật tư");
     }
   };
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
-  const renderCell = (item: any, columnKey: string) => {
+  const handleChange = (
+    id: string,
+    field: keyof MaterialEstimateItem,
+    value: any,
+  ) => {
+    setMaterials((prev) =>
+      prev.map((item) => {
+        if (item.id !== id) return item;
+
+        const updated = { ...item, [field]: value };
+
+        // Recalculate totals
+        updated.materialTotal =
+          updated.quantity * updated.materialPrice * updated.reductionFactor;
+        updated.laborTotal = updated.quantity * updated.laborPrice;
+
+        return updated;
+      }),
+    );
+  };
+
+  const renderCell = (item: MaterialEstimateItem, columnKey: string) => {
     switch (columnKey) {
-      case "note":
-        return <CustomInputField className="min-w-[100px]" />;
-      // case "reductionFactor":
-      //   return (
-      //     <CustomInputField defaultValue={item.reductionFactor.toString()} />
-      //   );
-      // case "quantity":
-      //   return <CustomInputField defaultValue={item.quantity.toString()} />;
+      case "code":
+        return <span className="font-medium">{item.code}</span>;
+      case "description":
+        return <span>{item.description}</span>;
+      case "unit":
+        return <span>{item.unit}</span>;
+      case "quantity":
+        return (
+          <Input
+            value={String(item.quantity || "")}
+            onChange={(e) =>
+              handleChange(item.id, "quantity", Number(e.target.value))
+            }
+            size="sm"
+            type="number"
+            step="0.01"
+          />
+        );
+      case "reductionFactor":
+        return (
+          <Input
+            value={String(item.reductionFactor || "")}
+            onChange={(e) =>
+              handleChange(item.id, "reductionFactor", Number(e.target.value))
+            }
+            size="sm"
+            type="number"
+            step="0.01"
+          />
+        );
       case "materialPrice":
+        return (
+          <Input
+            value={String(item.materialPrice || "")}
+            onChange={(e) =>
+              handleChange(item.id, "materialPrice", Number(e.target.value))
+            }
+            size="sm"
+            type="number"
+            step="1000"
+          />
+        );
       case "laborPrice":
+        return (
+          <Input
+            value={String(item.laborPrice || "")}
+            onChange={(e) =>
+              handleChange(item.id, "laborPrice", Number(e.target.value))
+            }
+            size="sm"
+            type="number"
+            step="1000"
+          />
+        );
       case "materialTotal":
-      // case "laborTotal":
-      //   if (!isMounted) return item[columnKey];
-
-      //   return (item[columnKey] as number).toLocaleString("vi-VN");
+        return (
+          <span className="text-right block">
+            {item.materialTotal.toLocaleString("vi-VN")}
+          </span>
+        );
+      case "laborTotal":
+        return (
+          <span className="text-right block">
+            {item.laborTotal.toLocaleString("vi-VN")}
+          </span>
+        );
+      case "note":
+        return (
+          <Input
+            value={item.note || ""}
+            onChange={(e) => handleChange(item.id, "note", e.target.value)}
+            size="sm"
+          />
+        );
       case "actions":
         return (
           <Tooltip closeDelay={0} color="danger" content="Xóa">
@@ -117,21 +210,49 @@ export const MaterialCostCard = () => {
               className="text-danger hover:bg-danger-50 dark:hover:bg-danger-900/10"
               size="sm"
               variant="light"
+              onClick={() =>
+                setMaterials((prev) => prev.filter((m) => m.id !== item.id))
+              }
             >
               <DeleteIcon className="w-5 h-5" />
             </Button>
           </Tooltip>
         );
       default:
-        return item[columnKey];
+        return item[columnKey as keyof MaterialEstimateItem];
     }
+  };
+
+  const handleSelectMaterial = (item: any) => {
+    setMaterials((prev) => {
+      if (prev.find((m) => m.id === item.id)) return prev;
+
+      const newItem: MaterialEstimateItem = {
+        id: item.id,
+        code: item.code,
+        description: item.name,
+        unit: item.unit,
+        quantity: 1,
+        reductionFactor: 1,
+        materialPrice: item.price,
+        laborPrice: 0,
+        materialTotal: item.price,
+        laborTotal: 0,
+        note: "",
+        stt: prev.length + 1,
+      };
+
+      return [...prev, newItem];
+    });
+
+    setShowMaterialModal(false);
   };
 
   return (
     <div className="space-y-4">
       <GenericDataTable
         columns={ESTIMATE_COLUMN}
-        data={data}
+        data={materials}
         renderCellAction={renderCell}
         tableProps={{
           className: "pt-0",
@@ -139,54 +260,35 @@ export const MaterialCostCard = () => {
         title="Chi phí vật tư khách hàng thanh toán"
         topContent={
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
-            <SearchInputWithButton label="Mã vật tư" />
-            <CustomInput label="Khối lượng" />
+            <SearchInputWithButton
+              label="Mã vật tư"
+              onSearch={() => setShowMaterialModal(true)}
+            />
           </div>
         }
       />
 
-      <div className="flex flex-wrap gap-3 p-4">
-        <CustomButton
-          color="success"
-          startContent={<DocumentMagnifyGlassIcon className="w-4 h-4" />}
-          onClick={() => handleSave()}
-        >
-          Hoàn tất dự toán
-        </CustomButton>
-
-        <CustomButton
-          color="primary"
-          startContent={<SaveDocumentCheckIcon className="w-4 h-4" />}
-          onClick={() => handleSave()}
-        >
-          Lưu nháp
-        </CustomButton>
-        <CustomButton
-          className="font-bold shadow-md shadow-primary/20"
-          color="primary"
-          startContent={<DocumentChartIcon className="w-4 h-4" />}
-        >
-          Báo cáo
-        </CustomButton>
-      </div>
+      <LookupModal
+        isOpen={showMaterialModal}
+        searchKey="content"
+        onClose={() => setShowMaterialModal(false)}
+        title="Chọn vật tư"
+        api="/api/device/materials-prices"
+        columns={[
+          { key: "code", label: "Mã vật tư" },
+          { key: "name", label: "Tên vật tư" },
+          { key: "unit", label: "ĐVT" },
+          { key: "price", label: "Đơn giá" },
+        ]}
+        mapData={(item: any) => ({
+          id: item.id,
+          code: item.code,
+          name: item.name,
+          unit: item.unit,
+          price: item.price,
+        })}
+        onSelect={handleSelectMaterial}
+      />
     </div>
-  );
-};
-
-export const CustomInputField = ({
-  className,
-  defaultValue,
-}: {
-  className?: string;
-  defaultValue?: string;
-}) => {
-  return (
-    <Input
-      className={className ?? "w-16 mx-auto text-center"}
-      defaultValue={defaultValue}
-      radius="sm"
-      size="sm"
-      variant="bordered"
-    />
   );
 };
