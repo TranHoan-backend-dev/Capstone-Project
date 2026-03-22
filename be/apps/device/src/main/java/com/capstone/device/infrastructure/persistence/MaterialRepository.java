@@ -16,12 +16,14 @@ public interface MaterialRepository extends JpaRepository<Material, String> {
 
   boolean existsByUnit_Id(String unitId);
 
-  @Query("SELECT m FROM Material m WHERE " +
-    "(:jobContent IS NULL OR LOWER(CAST(m.jobContent AS string)) LIKE LOWER(CONCAT('%', :jobContent, '%'))) AND " +
-    "(:laborCode IS NULL OR LOWER(CAST(m.laborCode AS string)) LIKE LOWER(CONCAT('%', :laborCode, '%'))) AND " +
-    "(:groupId IS NULL OR m.group.groupId = :groupId) AND " +
-    "(:minPrice IS NULL OR m.price >= :minPrice) AND " +
-    "(:maxPrice IS NULL OR m.price <= :maxPrice)")
+  @Query("""
+      SELECT m FROM Material m WHERE
+      (:jobContent IS NULL OR LOWER(FUNCTION('unaccent', m.jobContent)) LIKE LOWER(FUNCTION('unaccent', CONCAT('%', CAST(:jobContent as string), '%')))) AND
+      (:laborCode IS NULL OR LOWER(FUNCTION('unaccent', m.laborCode)) LIKE LOWER(FUNCTION('unaccent', CONCAT('%', CAST(:laborCode as string), '%')))) AND
+      (:groupId IS NULL OR m.group.groupId = :groupId) AND
+      (:minPrice IS NULL OR m.price >= :minPrice) AND
+      (:maxPrice IS NULL OR m.price <= :maxPrice)
+    """)
   Page<Material> searchMaterials(@Param("jobContent") String jobContent,
                                  @Param("laborCode") String laborCode,
                                  @Param("groupId") String groupId,
