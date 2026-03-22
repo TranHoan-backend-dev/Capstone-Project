@@ -32,7 +32,7 @@ public class ChangePasswordUseCase {
         }
 
         try {
-            var message = authRepository.changePassword(oldPass, newPass, confirmPass);
+            var message = authRepository.changePassword(oldPass, newPass);
             return Result.success(message);
         } catch (Exception e) {
             return Result.failure(e);

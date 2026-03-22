@@ -6,6 +6,9 @@ import androidx.annotation.Nullable;
 
 public interface AuthRepository {
     UserProfile login(String accessToken) throws Exception;
+    
+    @Nullable
+    String getAccessToken();
 
     String sendOtp(String email) throws Exception;
 
@@ -13,7 +16,7 @@ public interface AuthRepository {
 
     String resetPassword(String email, String otp, String newPassword) throws Exception;
 
-    String changePassword(String oldPass, String newPass, String confirmPass) throws Exception;
+    String changePassword(String oldPass, String newPass) throws Exception;
 
     UserProfile updateProfile(
             @Nullable String fullName,
@@ -27,4 +30,6 @@ public interface AuthRepository {
     UserProfile updateAvatar(byte[] imageBytes) throws Exception;
 
     UserProfile getMe() throws Exception;
+
+    void logout() throws Exception;
 }

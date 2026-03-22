@@ -6,6 +6,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import FormInput from '../common/FormInput';
 import LoginFooter from './LoginFooter';
 import authService from '../../services/auth.service';
+import { useAuth } from '../../context/AuthContext';
 import { showToast } from '../../utils/toast';
 import { RootStackParamList } from '../../navigation/AppNavigator';
 
@@ -13,22 +14,29 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Login'>;
 
 export default function LoginForm() {
   const navigation = useNavigation<NavigationProp>();
+  const { login } = useAuth();
 
-  const [username, setUsername] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (!username || !password) {
-      showToast.error('Vui lòng nhập đầy đủ thông tin');
+    // 1. Validate data
+    const validationError = authService.validateCredentials(identifier, password);
+    if (validationError) {
+      showToast.error(validationError);
       return;
     }
 
     setIsLoading(true);
     try {
-      await authService.login(username, password);
+      // 2. Sending request to backend
+      console.log("[LoginForm] send credentials to login")
+      await login(identifier, password);
+      console.log("[LoginForm] finish logging in")
+
+      // 3. Receive response & Store token (handled inside service through context)
       showToast.success('Đăng nhập thành công');
-      navigation.replace('Home');
     } catch (error: any) {
       console.error('Login error:', error);
       // apiFetch đã hiển thị toast rồi
@@ -40,9 +48,10 @@ export default function LoginForm() {
   return (
     <View>
       <FormInput
-        label="Tên đăng nhập"
-        value={username}
-        onChangeText={setUsername}
+        label="Email hoặc Tên đăng nhập"
+        value={identifier}
+        onChangeText={setIdentifier}
+        autoCapitalize="none"
       />
 
       <FormInput
