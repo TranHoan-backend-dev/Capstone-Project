@@ -15,16 +15,17 @@ public interface MaterialRepository extends JpaRepository<Material, String> {
   boolean existsByGroup_GroupId(String id);
 
   boolean existsByUnit_Id(String unitId);
-    @Query("SELECT m FROM Material m WHERE " +
-           "(:jobContent IS NULL OR LOWER(m.jobContent) LIKE LOWER(CONCAT('%', :jobContent, '%'))) AND " +
-           "(:laborCode IS NULL OR LOWER(m.laborCode) LIKE LOWER(CONCAT('%', :laborCode, '%'))) AND " +
-           "(:groupId IS NULL OR m.group.groupId = :groupId) AND " +
-           "(:minPrice IS NULL OR m.price >= :minPrice) AND " +
-           "(:maxPrice IS NULL OR m.price <= :maxPrice)")
-    Page<Material> searchMaterials(@Param("jobContent") String jobContent,
-                                   @Param("laborCode") String laborCode,
-                                   @Param("groupId") String groupId,
-                                   @Param("minPrice") BigDecimal minPrice,
-                                   @Param("maxPrice") BigDecimal maxPrice,
-                                   Pageable pageable);
+
+  @Query("SELECT m FROM Material m WHERE " +
+    "(:jobContent IS NULL OR LOWER(CAST(m.jobContent AS string)) LIKE LOWER(CONCAT('%', :jobContent, '%'))) AND " +
+    "(:laborCode IS NULL OR LOWER(CAST(m.laborCode AS string)) LIKE LOWER(CONCAT('%', :laborCode, '%'))) AND " +
+    "(:groupId IS NULL OR m.group.groupId = :groupId) AND " +
+    "(:minPrice IS NULL OR m.price >= :minPrice) AND " +
+    "(:maxPrice IS NULL OR m.price <= :maxPrice)")
+  Page<Material> searchMaterials(@Param("jobContent") String jobContent,
+                                 @Param("laborCode") String laborCode,
+                                 @Param("groupId") String groupId,
+                                 @Param("minPrice") BigDecimal minPrice,
+                                 @Param("maxPrice") BigDecimal maxPrice,
+                                 Pageable pageable);
 }
