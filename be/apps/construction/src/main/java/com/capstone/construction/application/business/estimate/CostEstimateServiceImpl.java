@@ -37,6 +37,8 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 @AppLog
 @Service
@@ -196,7 +198,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
         startDate,
         endDate),
       pageable) : eRepo.findAll(pageable);
-    return PageResponse.fromPage(page, estimate -> mapToResponse(estimate, getMaterials(estimate.getEstimationId())));
+    
     // Create filter map with all non-null parameters
     Map<String, Object> filters = new HashMap<>();
 
@@ -270,10 +272,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
         filters.put("to", endDate.toLocalDate());
       }
     }
-
-    // Use the new filterAllFields method that supports all fields
-    var page = eRepo.findAll(CostEstimateRepository.filterAllFields(filters), pageable);
-    return PageResponse.fromPage(page, this::mapToResponse);
+    return PageResponse.fromPage(page, estimate -> mapToResponse(estimate, getMaterials(estimate.getEstimationId())));
   }
 
   @Override

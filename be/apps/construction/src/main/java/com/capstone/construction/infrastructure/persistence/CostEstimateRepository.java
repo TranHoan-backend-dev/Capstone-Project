@@ -217,8 +217,6 @@ public interface CostEstimateRepository extends JpaRepository<CostEstimate, Stri
     };
   }
 
-private @NonNull
-  static ArrayList<Predicate> getPredicates(@NonNull String keyword, @NonNull Root<CostEstimate> root, @NonNull CriteriaBuilder cb) {
   private @NonNull
   static ArrayList<Predicate> getPredicates(
     @NonNull String keyword, @NonNull Root<CostEstimate> root,
