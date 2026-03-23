@@ -31,4 +31,12 @@ public class UsageHistoryUseCase {
   public void updatePaymentStatus(String serial, String method) {
     usageHistoryService.updatePaymentStatus(serial, method);
   }
+
+  public UsageResponse updateUsage(String serial, java.time.LocalDate recordingDate, java.math.BigDecimal index, String imageUrl) {
+    return usageHistoryService.updateUsageDetails(serial, recordingDate, index, imageUrl);
+  }
+
+  public java.util.List<UsageResponse> getUsageByCustomerIds(java.util.Collection<String> customerIds) {
+    return usageHistoryService.getUsageByCustomerIds(customerIds);
+  }
 }

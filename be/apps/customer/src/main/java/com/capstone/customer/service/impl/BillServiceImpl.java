@@ -1,20 +1,26 @@
 package com.capstone.customer.service.impl;
 
 import com.capstone.customer.dto.request.BillRequest;
+import com.capstone.customer.dto.request.customer.CustomerFilterRequest;
 import com.capstone.customer.dto.response.BillResponse;
+import com.capstone.customer.dto.response.CustomerResponse;
 import com.capstone.customer.model.Bill;
 import com.capstone.customer.repository.BillRepository;
 import com.capstone.customer.repository.CustomerRepository;
-import com.capstone.customer.service.boundary.BillService;
+import com.capstone.customer.service.boundary.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -23,6 +29,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class BillServiceImpl implements BillService {
   BillRepository billRepository;
   CustomerRepository customerRepository;
+  CustomerService customerService;
+  DeviceService deviceService;
+  ConstructionService constructionService;
 
   @Override
   @Transactional
@@ -87,6 +96,29 @@ public class BillServiceImpl implements BillService {
   public Page<BillResponse> getAllBills(Pageable pageable) {
     log.debug("Fetching all bills with pagination: {}", pageable);
     return billRepository.findAll(pageable).map(this::mapToResponse);
+  }
+
+  @Override
+  public Page<Object> getBillsByRoadmap(String roadmapId, Pageable pageable) {
+    log.info("Fetching bills for roadmap: {} this month", roadmapId);
+    
+    // 1. Get customers for this roadmap
+    var filter = CustomerFilterRequest.fromRoadmapId(roadmapId, null);
+    Page<CustomerResponse> customers = customerService.getAllCustomers(pageable, filter);
+
+    if (customers.isEmpty()) {
+      return new PageImpl<>(List.of(), pageable, 0);
+    }
+
+    // 2. Get usage/billing details from device service for these customers
+    List<String> customerIds = customers.getContent().stream()
+      .map(CustomerResponse::customerId)
+      .toList();
+
+    var usageResponse = deviceService.getUsageBatch(customerIds);
+
+    // 3. Return as a page (preserving the pagination from customers)
+    return new PageImpl<>((List<Object>) usageResponse.data(), pageable, customers.getTotalElements());
   }
 
   private BillResponse mapToResponse(@NonNull Bill bill) {

@@ -1,0 +1,110 @@
+### TC01 - View bills by roadmap successfully (Manager Kinh Doanh)
+GET http://localhost:9005/api/v1/bills/roadmap/RM_001?page=0&size=10
+Authorization: Bearer {{token_manager}}
+Content-Type: application/json
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+### TC02 - View bills by roadmap successfully (Nhân viên khảo sát)
+GET http://localhost:9005/api/v1/bills/roadmap/RM_001
+Authorization: Bearer {{token_survey}}
+Content-Type: application/json
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+### TC03 - View bills by roadmap successfully (Nhân viên ghi thu)
+GET http://localhost:9005/api/v1/bills/roadmap/RM_001
+Authorization: Bearer {{token_meter_staff}}
+Content-Type: application/json
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+### TC04 - View bills for non-existing roadmap (empty result expected)
+GET http://localhost:9005/api/v1/bills/roadmap/NON_EXISTING
+Authorization: Bearer {{token_manager}}
+Content-Type: application/json
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+  client.assert(response.body.data.content.length === 0);
+});
+%}
+
+### TC05 - No authentication token
+GET http://localhost:9005/api/v1/bills/roadmap/RM_001
+Content-Type: application/json
+
+> {%
+client.test("Status is 401", function() {
+  client.assert(response.status === 401);
+});
+%}
+
+### TC06 - Forbidden role (Unauthorized staff)
+GET http://localhost:9005/api/v1/bills/roadmap/RM_001
+Authorization: Bearer {{token_unauthorized}}
+Content-Type: application/json
+
+> {%
+client.test("Status is 403", function() {
+  client.assert(response.status === 403);
+});
+%}
+
+### TC07 - Missing roadmapId (Matches base path /bills - Get all bills instead)
+GET http://localhost:9005/api/v1/bills/roadmap/
+Authorization: Bearer {{token_manager}}
+Content-Type: application/json
+
+> {%
+client.test("Status is 404 or 405", function() {
+  client.assert(response.status === 404 || response.status === 405);
+});
+%}
+
+### TC08 - Invalid pagination (negative page)
+GET http://localhost:9005/api/v1/bills/roadmap/RM_001?page=-1
+Authorization: Bearer {{token_manager}}
+Content-Type: application/json
+
+> {%
+client.test("Status is 400 or handled by framework", function() {
+  client.assert(response.status === 400 || response.status === 500);
+});
+%}
+
+### TC09 - SQL Injection attempt
+GET http://localhost:9005/api/v1/bills/roadmap/RM_001' OR '1'='1
+Authorization: Bearer {{token_manager}}
+Content-Type: application/json
+
+> {%
+client.test("Status should be handled securely", function() {
+  client.assert(response.status !== 500);
+});
+%}
+
+### TC10 - Cross-Site Scripting attempt in URL
+GET http://localhost:9005/api/v1/bills/roadmap/<script>alert(1)</script>
+Authorization: Bearer {{token_manager}}
+Content-Type: application/json
+
+> {%
+client.test("Status is 400 or 200", function() {
+  client.assert(response.status === 400 || response.status === 200);
+});
+%}
+

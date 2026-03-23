@@ -48,4 +48,13 @@ public interface BillService {
      * @return a page of bill responses
      */
     Page<BillResponse> getAllBills(Pageable pageable);
+
+    /**
+     * Retrieves all bills for a specific roadmap this month.
+     * 
+     * @param roadmapId the roadmap ID
+     * @param pageable  pagination information
+     * @return a page of bill/usage data
+     */
+    Page<Object> getBillsByRoadmap(String roadmapId, Pageable pageable);
 }

@@ -20,4 +20,7 @@ public interface DeviceService {
 
   @GetMapping("/water-prices/{id}")
   WrapperApiResponse getWaterPriceById(@PathVariable String id);
+
+  @GetMapping("/usage/batch")
+  WrapperApiResponse getUsageBatch(@org.springframework.web.bind.annotation.RequestParam java.util.Collection<String> ids);
 }

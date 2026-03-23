@@ -23,8 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -81,6 +81,65 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
       u.setPaymentMethod(method);
       repository.save(history);
     }));
+  }
+
+  @Override
+  public List<UsageResponse> getUsageByCustomerIds(Collection<String> customerIds) {
+    var histories = repository.findAllByCustomerIdIn(customerIds);
+    return histories.stream().map(h -> {
+      var customerInfo = getCustomerInfo(h.getCustomerId());
+      var waterPrice = resolveWaterPrice(customerInfo.waterPriceId());
+      return mapToResponse(h, customerInfo.name(), waterPrice);
+    }).collect(Collectors.toList());
+  }
+
+  @Override
+  @Transactional
+  public UsageResponse updateUsageDetails(String serial, LocalDate recordingDate, BigDecimal index, String imageUrl) {
+    var meter = waterMeterRepository.findWaterMeterById(serial);
+    var history = repository.findByMeter(meter)
+      .orElseThrow(() -> new NotExistingException("Không tìm thấy lịch sử sử dụng cho serial: " + serial));
+
+    var usageOpt = history.getUsages().stream()
+      .filter(u -> u.getRecordingDate() != null && u.getRecordingDate().equals(recordingDate))
+      .findFirst();
+
+    if (usageOpt.isEmpty()) {
+      throw new NotExistingException("Không tìm thấy bản ghi sử dụng vào ngày: " + recordingDate);
+    }
+
+    var usage = usageOpt.get();
+    var customerInfo = getCustomerInfo(history.getCustomerId());
+    var waterPrice = resolveWaterPrice(customerInfo.waterPriceId());
+
+    // Recalculate mass and price
+    usage.setIndex(index);
+    if (imageUrl != null) usage.setMeterImageUrl(imageUrl);
+
+    // To recalculate mass correctly, we need the mass calculation logic
+    // Actually, we can just call calculateMass again
+    // But calculateMass uses the current history, so we should temporarily remove the updated one or handle it
+    // For simplicity, let's just redo the logic for this specific record
+    
+    // Find previous index
+    var previousIndex = history.getUsages().stream()
+      .filter(u -> u.getIndex() != null)
+      .filter(u -> u.getRecordingDate() != null && u.getRecordingDate().isBefore(recordingDate))
+      .max(Comparator.comparing(Usage::getRecordingDate))
+      .map(Usage::getIndex)
+      .orElse(BigDecimal.ZERO);
+
+    var mass = index.subtract(previousIndex);
+    if (mass.compareTo(BigDecimal.ZERO) < 0) {
+      throw new IllegalArgumentException("Chỉ số nước mới phải lớn hơn hoặc bằng chỉ số kỳ trước (" + previousIndex + ")");
+    }
+    var massScaled = mass.setScale(2, RoundingMode.HALF_UP);
+    usage.setMass(massScaled);
+    
+    var breakdown = waterChargeCalculator.calculateProgressiveCharge(massScaled, waterPrice);
+    usage.setPrice(breakdown.totalAmount());
+
+    return mapToResponse(repository.save(history), customerInfo.name(), waterPrice);
   }
 
   private UsageResponse getUsageResponse(
