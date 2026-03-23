@@ -1,1 +1,1 @@
-pip install pika python-dotenv
+pip install -r requirements.txt

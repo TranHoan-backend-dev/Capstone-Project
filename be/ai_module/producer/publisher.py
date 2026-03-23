@@ -1,3 +1,9 @@
+import sys
+import os
+
+# Add parent directory to sys.path to resolve core module
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import json
 from core.connection import create_channel
 
