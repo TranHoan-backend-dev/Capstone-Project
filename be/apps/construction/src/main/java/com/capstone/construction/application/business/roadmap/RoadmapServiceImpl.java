@@ -172,4 +172,9 @@ public class RoadmapServiceImpl implements RoadmapService {
 
     return mapToResponse(saved);
   }
+
+  @Override
+  public boolean isExistingRoadmap(String id) {
+    return roadmapRepository.existsById(id);
+  }
 }
