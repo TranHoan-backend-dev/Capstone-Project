@@ -1,0 +1,54 @@
+@startuml
+skinparam linetype ortho
+skinparam shadowing false
+skinparam class {
+    BackgroundColor White
+    BorderColor #263238
+    ArrowColor #263238
+}
+
+package "Construction Service" #FFE0B2 {
+    class CostEstimateController {
+        + sign(request: SignRequest, jwt: Jwt): ResponseEntity<?>
+    }
+
+    class CostEstimateUseCase {
+        - estSrv: CostEstimateService
+        - messageProducer: MessageProducer
+        + signForInstallationRequest(currentUserId: String, request: SignRequest): void
+    }
+
+    interface CostEstimateService {
+        + signForCostEstimate(sign: String, role: RoleName, estId: String): boolean
+    }
+
+    class MessageProducer {
+        + send(routingKey: String, event: Object): void
+    }
+}
+
+package "Notification Service" #C8E6C9 {
+    class FinanceConsumer {
+        + handle(event: Object): void
+    }
+    abstract class GeneralEventConsumer<T> {
+        # messagingTemplate: SimpMessagingTemplate
+        # producer: MessageProducer
+    }
+}
+
+package "Auth Service" #BBDEFB {
+    class NotificationConsumer {
+        + handle(message: NotificationCreatedEvent): void
+    }
+}
+
+' Relationships
+CostEstimateController o-- CostEstimateUseCase
+CostEstimateUseCase o-- CostEstimateService
+CostEstimateUseCase o-- MessageProducer
+MessageProducer ..> FinanceConsumer : "RabbitMQ (VIEW_ACTION)"
+FinanceConsumer --|> GeneralEventConsumer
+GeneralEventConsumer ..> NotificationConsumer : "RabbitMQ NotificationCreatedEvent"
+
+@enduml

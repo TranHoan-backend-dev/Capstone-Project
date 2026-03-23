@@ -16,16 +16,12 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
 
 @AppLog
 @RestController
@@ -60,7 +56,7 @@ public class RoadmapController {
     log.info("REST request to create roadmap: {}", request.name());
     var response = roadmapUseCase.createRoadmap(request);
     log.info("Created roadmap: {}", response);
-    return Utils.returnCreatedResponse("Roadmap created successfully");
+    return Utils.returnCreatedResponse("Tạo lộ trình ghi thành công");
   }
 
   @PutMapping("/{id}")
@@ -85,7 +81,7 @@ public class RoadmapController {
     @RequestBody @Valid RoadmapRequest request) {
     log.info("REST request to update roadmap: {}", id);
     var response = roadmapUseCase.updateRoadmap(id, request);
-    return Utils.returnOkResponse("Roadmap updated successfully", response);
+    return Utils.returnOkResponse("Cập nhật lộ trình ghi thành công", response);
   }
 
   @DeleteMapping("/{id}")
@@ -106,7 +102,7 @@ public class RoadmapController {
     @PathVariable @Parameter(description = "ID của lộ trình ghi cần xóa", required = true) String id) {
     log.info("REST request to delete roadmap: {}", id);
     roadmapUseCase.deleteRoadmap(id);
-    return Utils.returnOkResponse("Roadmap deleted successfully", null);
+    return Utils.returnOkResponse("Xóa lộ trình ghi thành công", null);
   }
 
   @GetMapping("/{id}")
@@ -126,7 +122,7 @@ public class RoadmapController {
     @PathVariable @Parameter(description = "ID của lộ trình ghi cần lấy thông tin", required = true) String id) {
     log.info("REST request to get roadmap: {}", id);
     var response = roadmapUseCase.getRoadmapById(id);
-    return Utils.returnOkResponse("Roadmap retrieved successfully", response);
+    return Utils.returnOkResponse("Lấy thông tin lộ trình ghi thành công", response);
   }
 
   @GetMapping
@@ -143,9 +139,70 @@ public class RoadmapController {
     @ApiResponse(responseCode = "500", description = "Lỗi hệ thống", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   public ResponseEntity<WrapperApiResponse> getAllRoadmaps(
-    @PageableDefault @Parameter(hidden = true) Pageable pageable) {
-    log.info("REST request to get all roadmaps");
-    var response = roadmapUseCase.getAllRoadmaps(pageable);
-    return Utils.returnOkResponse("Roadmaps retrieved successfully", response);
+    @PageableDefault @Parameter(hidden = true) Pageable pageable,
+    @RequestParam(required = false)
+    @Parameter(description = "Từ khóa tìm kiếm theo tên lộ trình ghi") String keyword,
+    @RequestParam(required = false)
+    @Parameter(description = "Lọc theo ID tuyến ống (lateral)") String lateralId,
+    @RequestParam(required = false)
+    @Parameter(description = "Lọc theo ID mạng lưới cấp nước") String networkId
+  ) {
+    log.info("REST request to get all roadmaps with pagination: {}, keyword: {}, lateralId: {}, networkId: {}", pageable, keyword, lateralId, networkId);
+    var response = roadmapUseCase.getAllRoadmaps(pageable, keyword, lateralId, networkId);
+    return Utils.returnOkResponse("Lấy danh sách lộ trình ghi thành công", response);
+  }
+
+  @PatchMapping("/{id}/assign/{staffId}")
+  @Operation(summary = "Gán nhân viên ghi thu cho lộ trình", description = """
+    **Luồng nghiệp vụ:**
+    1. Gán nhân viên phòng kinh doanh (METER_INSPECTION_STAFF) cho lộ trình ghi.
+    2. Gửi thông báo cho nhân viên được gán.
+    """, responses = {
+    @ApiResponse(responseCode = "200", description = "Gán thành công"),
+    @ApiResponse(responseCode = "403", description = "Không có quyền")
+  })
+  @PreAuthorize("hasAnyAuthority('BUSINESS_DEPARTMENT_HEAD', 'IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> assignStaff(@PathVariable String id, @PathVariable String staffId) {
+    log.info("REST request to assign staff {} to roadmap {}", staffId, id);
+    var response = roadmapUseCase.assignStaff(id, staffId);
+    return Utils.returnOkResponse("Gán nhân viên thành công", response);
+  }
+
+  @PatchMapping("/{id}/cancel-assignment")
+  @Operation(summary = "Hủy phân công lộ trình", description = """
+    **Luồng nghiệp vụ:**
+    1. Hủy gán nhân viên cho lộ trình ghi.
+    2. Gửi thông báo cho nhân viên cũ.
+    """, responses = {
+    @ApiResponse(responseCode = "200", description = "Hủy thành công"),
+    @ApiResponse(responseCode = "403", description = "Không có quyền")
+  })
+  @PreAuthorize("hasAnyAuthority('BUSINESS_DEPARTMENT_HEAD', 'IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> cancelAssignment(@PathVariable String id) {
+    log.info("REST request to cancel assignment for roadmap {}", id);
+    var response = roadmapUseCase.cancelAssignment(id);
+    return Utils.returnOkResponse("Hủy phân công thành công", response);
+  }
+
+  @PatchMapping("/{id}/update-assignment/{staffId}")
+  @Operation(summary = "Cập nhật phân công lộ trình", description = """
+    **Luồng nghiệp vụ:**
+    1. Cập nhật nhân viên mới cho lộ trình.
+    2. Gửi thông báo cho cả nhân viên cũ và mới.
+    """, responses = {
+    @ApiResponse(responseCode = "200", description = "Cập nhật thành công"),
+    @ApiResponse(responseCode = "403", description = "Không có quyền")
+  })
+  @PreAuthorize("hasAnyAuthority('BUSINESS_DEPARTMENT_HEAD', 'IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> updateAssignment(@PathVariable String id, @PathVariable String staffId) {
+    log.info("REST request to update assignment for roadmap {} to staff {}", id, staffId);
+    var response = roadmapUseCase.updateAssignment(id, staffId);
+    return Utils.returnOkResponse("Cập nhật phân công thành công", response);
+  }
+
+  @Operation(hidden = true)
+  @GetMapping("/exist/{id}")
+  public Boolean checkExistenceOfRoadmap(@PathVariable String id) {
+    return roadmapUseCase.isExistingRoadmap(id);
   }
 }

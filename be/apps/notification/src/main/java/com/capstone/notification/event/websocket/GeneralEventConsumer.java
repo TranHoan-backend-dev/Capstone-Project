@@ -6,8 +6,8 @@ import com.capstone.notification.event.producer.MessageProducer;
 import com.capstone.notification.event.producer.NotificationCreatedEvent;
 import com.capstone.notification.service.boundary.NotificationService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -24,7 +24,7 @@ import java.util.Map;
  *
  * @param <T> the event message type this consumer handles
  */
-@AppLog
+@Slf4j
 @RequiredArgsConstructor
 public abstract class GeneralEventConsumer<T> {
   private final MessageProducer producer;
@@ -37,8 +37,6 @@ public abstract class GeneralEventConsumer<T> {
 
   @Autowired
   protected SimpMessagingTemplate messagingTemplate;
-
-  Logger log;
 
   /**
    * Entry point called by each subclass's {@code @RabbitListener} method.

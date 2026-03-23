@@ -5,6 +5,7 @@ import {
 import { keycloakRefreshToken } from "@/services/keycloak.service";
 import { getAccessToken } from "@/utils/getAccessToken";
 import { getRefreshToken } from "@/utils/getRefreshToken";
+import { validateProfile } from "@/utils/profileValidation";
 import { setAuthCookies } from "@/utils/setAuthCookies";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -52,15 +53,14 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export async function POST(req: NextRequest) {
+export async function PATCH(req: NextRequest) {
   try {
     const body = await req.json();
     const allowedPayload = {
-      avatarUrl: body.avatarUrl,
-      fullName: body.fullname,
+      fullName: body.fullName,
       phoneNumber: body.phoneNumber,
       gender: body.gender,
-      birthdate: body.birthday,
+      birthdate: body.birthdate,
       address: body.address,
     };
 
@@ -73,6 +73,11 @@ export async function POST(req: NextRequest) {
         { message: "Không có dữ liệu để cập nhật" },
         { status: 400 },
       );
+    }
+    const validationError = validateProfile(payload);
+
+    if (validationError) {
+      return NextResponse.json({ message: validationError }, { status: 400 });
     }
 
     const accessToken = getAccessToken(req);

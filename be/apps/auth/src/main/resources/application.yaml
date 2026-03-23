@@ -21,6 +21,14 @@ spring:
       connection-timeout: 2000 # Cho ket noi toi da 3s
       max-lifetime: 600000 # Ket noi song toi da 30p
       idle-timeout: 30000 # Dong idle sau 30s neu khong su dung
+rabbit-mq-config:
+  exchange_name: auth_event_exchange
+  queue_name: user_registered_queue
+  routing_key: user-created
+  delete_account_routing_key: delete-account
+  update_account_routing_key: update-account
+  verify_otp_routing_key: verify-otp
+  update_password_routing_key: update-password
 management:
   health:
     rabbit:
@@ -67,46 +75,13 @@ sending_mail:
     template: account-creation
   otp_verification:
     subject: 'Mã xác thực OTP'
-    template: 'verify-otp'
-#gcs:
-#  bucket: ${GCS_BUCKET_NAME:default}
-#spring:
-#  datasource:
-#    driver-class-name: org.postgresql.Driver
-#    url:
-#    username:
-#    password:
-#  security:
-#    oauth2:
-#      client:
-#        registration:
-#          google:
-#            client-id:
-#            client-secret:
-#            scope:
-#              - email
-#              - profile
-#              - openid
-#      resourceserver:
-#        jwt:
-#          issuer-uri:
-#  rabbitmq:
-#    host:
-#    port:
-#    username:
-#    password:
-#rabbitmqconfig:
-#  exchange_name:
-#  queue_name:
-#  routing_key:
-#keycloak:
-#  server-url: http://localhost:8080
-#  issuer-uri: ${keycloak.server-url}/realms/${keycloak.realms}
-#  aud:
-#  realms:
-#  username:
-#  password:
-#  token-uri: ${keycloak.server-url}/realms/${keycloak.realms}/protocol/openid-connect/token
-#  client-id:
-#  client-secret-admin: client admin rieng
-#  client-id-admin:
+    template: verify-otp
+  delete_account:
+    subject: 'Xóa tài khoản của nhân viên'
+    template: account-delete
+  update_account:
+    subject: 'Cập nhật tài khoản của nhân viên'
+    template: account-update
+  change_password:
+    subject: 'Cập nhật mật khẩu'
+    template: password-update

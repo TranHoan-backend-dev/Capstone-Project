@@ -1,0 +1,125 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam shadowing false
+
+skinparam class {
+    BackgroundColor White
+    BorderColor #263238
+    ArrowColor #263238
+}
+
+package "Construction Service" #FFE0B2 {
+    package "Adapter" as ConstAdapter {
+        class InstallationFormController {
+            + assignInstallationForm(request: InstallationFormId, empId: String): ResponseEntity<WrapperApiResponse>
+        }
+    }
+
+    package "Application" as ConstApp {
+        class InstallationFormHandlingUseCase {
+            - ifSrv: InstallationFormService
+            - messageProducer: MessageProducer
+            - empSrv: EmployeeService
+            + assignInstallationFormToSurveyStaff(id: InstallationFormId, empId: String): void
+            + assignInstallationFormToConstructionCaptain(id: InstallationFormId, empId: String): void
+        }
+
+        interface InstallationFormService {
+            + assignInstallationForm(id: String, installationFormId: InstallationFormId, status: Boolean): void
+            + getByFormCodeAndFormNumber(formCode: String, formNumber: String): InstallationFormListResponse
+        }
+
+        class InstallationFormServiceImpl {
+            - ifRepo: InstallationFormRepository
+            - empSrv: EmployeeService
+            + assignInstallationForm(id: String, installationFormId: InstallationFormId, status: Boolean): void
+            + getByFormCodeAndFormNumber(formCode: String, formNumber: String): InstallationFormListResponse
+        }
+
+        class AssignEvent <<record>> {
+            + formCode: String
+            + formNumber: String
+            + empId: String
+        }
+    }
+
+    package "Infrastructure" as ConstInfra {
+        interface InstallationFormRepository <<Repository>> {
+            + findById(id: InstallationFormId): Optional<InstallationForm>
+            + save(entity: InstallationForm): InstallationForm
+        }
+
+        class MessageProducer {
+            + send(routingKey: String, data: Object): void
+        }
+
+        interface EmployeeService <<FeignClient>> {
+            + getRoleOfEmployeeById(id: String): WrapperApiResponse
+            + getEmployeeNameById(id: String): WrapperApiResponse
+        }
+    }
+}
+
+package "Notification Service" #C8E6C9 {
+    package "Event Consumer" as NotifyConsumer {
+        abstract class GeneralEventConsumer<T> {
+            # notificationService: NotificationService
+            # messagingTemplate: SimpMessagingTemplate
+            # producer: MessageProducer
+            # handle(event: T, topics: List<String>, title: String, link: String): void
+        }
+
+        class AssignOrderConsumer {
+            + handle(event: AssignEventMessage): void
+        }
+    }
+
+    package "Infrastructure" as NotifyInfra {
+        class SimpMessagingTemplate <<WebSocket>>
+        class NotificationMessageProducer {
+            + send(routingKey: String, event: NotificationCreatedEvent): void
+        }
+    }
+}
+
+package "Auth Service" #BBDEFB {
+    package "Adapter" as AuthAdapter {
+        class EmployeeController {
+            + getRoleOfEmployeeById(id: String): WrapperApiResponse
+            + getEmployeeNameById(id: String): WrapperApiResponse
+        }
+    }
+    package "Application.Event" as AuthEvent {
+        class NotificationConsumer {
+            + handle(message: NotificationCreatedEvent): void
+        }
+    }
+}
+
+' Relationships - Construction
+InstallationFormController o-- InstallationFormHandlingUseCase
+InstallationFormHandlingUseCase o-- InstallationFormService
+InstallationFormHandlingUseCase o-- MessageProducer
+InstallationFormHandlingUseCase o-- EmployeeService
+
+InstallationFormService <|.. InstallationFormServiceImpl
+InstallationFormServiceImpl o-- InstallationFormRepository
+InstallationFormServiceImpl o-- EmployeeService
+
+' Relationships - Notification
+AssignOrderConsumer --|> GeneralEventConsumer
+GeneralEventConsumer o-- SimpMessagingTemplate
+GeneralEventConsumer o-- NotificationMessageProducer
+
+' Relationships - Auth & Feign
+EmployeeService ..> AuthAdapter : "Feign Call"
+
+' Event Flow
+MessageProducer ..> AssignOrderConsumer : "RabbitMQ [AssignEvent]"
+GeneralEventConsumer ..> SimpMessagingTemplate : "Broadcast via WebSocket"
+GeneralEventConsumer ..> NotificationMessageProducer : "Notify back to Auth"
+NotificationMessageProducer ..> NotificationConsumer : "RabbitMQ [NotificationCreatedEvent]"
+
+@enduml

@@ -85,6 +85,7 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     let message = "Đăng nhập thất bại";
     let status = 401;
+    console.log(error);
 
     if (axios.isAxiosError(error)) {
       const kcError = error.response?.data?.error;

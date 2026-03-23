@@ -1,6 +1,7 @@
 package com.capstone.device.domain.model;
 
-import com.capstone.device.infrastructure.config.Constant;
+import com.capstone.common.utils.SharedMessage;
+import com.capstone.device.infrastructure.util.Message;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -19,7 +20,7 @@ import java.util.function.Consumer;
 public class OverallWaterMeter {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  String meterCode;
+  String serial;
 
   @Column(nullable = false, unique = true)
   String name;
@@ -28,12 +29,12 @@ public class OverallWaterMeter {
   String lateralId;
 
   public void setName(String name) {
-    requireNonNullAndNotEmpty(name, Constant.ENT_01);
+    requireNonNullAndNotEmpty(name, SharedMessage.MES_05);
     this.name = name;
   }
 
   public void setLateralId(String lateralId) {
-    requireNonNullAndNotEmpty(lateralId, Constant.ENT_02);
+    requireNonNullAndNotEmpty(lateralId, Message.ENT_02);
     this.lateralId = lateralId;
   }
 

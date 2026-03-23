@@ -1,6 +1,6 @@
 package com.capstone.organization.service.boundary;
 
-import com.capstone.common.config.FeignAuthInterceptor;
+import com.capstone.common.config.feign.FeignAuthInterceptor;
 import com.capstone.common.response.WrapperApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,4 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface EmployeeService {
   @GetMapping("/{id}/name")
   WrapperApiResponse getEmployeeNameById(@PathVariable String id);
+
+  @GetMapping("/jobs/{jobId}/assigned")
+  WrapperApiResponse isJobAssigned(@PathVariable String jobId);
 }

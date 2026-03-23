@@ -1,8 +1,9 @@
 package com.capstone.construction.domain.model;
 
+import com.capstone.common.utils.TextNormalizer;
 import com.capstone.construction.domain.enumerate.CommuneType;
 import jakarta.persistence.*;
-import com.capstone.construction.infrastructure.config.Constant;
+import com.capstone.construction.infrastructure.utils.Message;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.jspecify.annotations.NonNull;
@@ -26,6 +27,13 @@ public class Commune {
   @Column(nullable = false, unique = true)
   String name;
 
+  /**
+   * Normalized name for accent-insensitive search.
+   * Nullable for backward compatibility with existing DB rows (ddl-auto=update).
+   */
+  @Column
+  String nameSearch;
+
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   CommuneType type;
@@ -48,15 +56,16 @@ public class Commune {
   }
 
   public void setName(String name) {
-    Objects.requireNonNull(name, Constant.PT_21);
+    Objects.requireNonNull(name, Message.PT_09);
     if (name.trim().isEmpty()) {
-      throw new IllegalArgumentException(Constant.PT_21);
+      throw new IllegalArgumentException(Message.PT_09);
     }
     this.name = name;
+    this.nameSearch = TextNormalizer.normalizeForSearch(name);
   }
 
   public void setType(CommuneType type) {
-    Objects.requireNonNull(type, Constant.PT_22);
+    Objects.requireNonNull(type, Message.PT_10);
     this.type = type;
   }
 
