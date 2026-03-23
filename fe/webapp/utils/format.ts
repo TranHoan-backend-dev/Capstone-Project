@@ -1,4 +1,4 @@
-import { DateValue } from "@heroui/react";
+import {DateValue} from "@heroui/react";
 
 export const formatVND = (value: number | string) => {
   const number =
@@ -41,6 +41,7 @@ export const formatDate2 = (date: DateValue | null | undefined) => {
 export const formatDateValueToString = (date: DateValue | null | undefined) => {
   if (!date) return "";
 
+
   if (typeof date === "string") return date;
 
   if ("year" in date && "month" in date && "day" in date) {
@@ -50,4 +51,9 @@ export const formatDateValueToString = (date: DateValue | null | undefined) => {
   }
 
   return "";
+};
+
+export const formatDateProfile = (date: string) => {
+    if (!date) return null;
+    return new Date(date).toISOString().split("T")[0];
 };

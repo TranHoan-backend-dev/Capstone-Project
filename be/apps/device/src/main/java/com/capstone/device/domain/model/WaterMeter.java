@@ -58,6 +58,11 @@ public class WaterMeter {
   public static class WaterMeterBuilder {
     private final WaterMeter meter = new WaterMeter();
 
+    public WaterMeterBuilder id(String id) {
+      meter.id = id;
+      return this;
+    }
+
     public WaterMeterBuilder installationDate(LocalDate installationDate) {
       meter.setInstallationDate(installationDate);
       return this;

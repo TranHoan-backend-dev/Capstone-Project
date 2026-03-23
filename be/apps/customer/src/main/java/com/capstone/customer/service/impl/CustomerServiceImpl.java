@@ -306,7 +306,8 @@ public class CustomerServiceImpl implements CustomerService {
       customer.getFormNumber(),
       customer.getWaterPriceId(),
       waterPrice,
-      customer.getWaterMeterId());
+      customer.getWaterMeterId(),
+      customer.getBill() != null ? customer.getBill().getExportAddress() : null);
   }
 
   private WaterPriceInfoResponse resolveWaterPrice(String waterPriceId) {

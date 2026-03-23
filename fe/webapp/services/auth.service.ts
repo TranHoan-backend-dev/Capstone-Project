@@ -7,21 +7,6 @@ import {
   EmployeeProfileUpdatePayload,
 } from "@/types";
 
-export interface SigninRequest {
-  username: string;
-  password: string;
-}
-
-export interface SigninResponse {
-  accessToken: string;
-  refreshToken?: string;
-  user: {
-    id: string;
-    username: string;
-    role: string;
-  };
-}
-
 export const signinService = (accessToken: string) =>
   axios.post(
     `${API_GATEWAY_URL}/auth/auth/login`,
@@ -32,10 +17,6 @@ export const signinService = (accessToken: string) =>
       },
     },
   );
-
-export const forgotPasswordService = async (email: string): Promise<void> => {
-  await axiosBase.post(`/auth/forgot-password`, { email });
-};
 
 export const verifyOtpService = async (email: string, otp: string) => {
   const res = await axios.post(`${API_GATEWAY_URL}/auth/auth/verify-otp`, {
@@ -83,7 +64,7 @@ export const updateProfileEmployee = async (
   payload: Partial<EmployeeProfileUpdatePayload>,
   accessToken: string,
 ): Promise<EmployeeProfileUpdatePayload> => {
-  const response = await axios.post<ApiResponse<EmployeeProfileUpdatePayload>>(
+  const response = await axios.patch<ApiResponse<EmployeeProfileUpdatePayload>>(
     `${API_GATEWAY_URL}/auth/me`,
     payload,
     {
@@ -95,11 +76,8 @@ export const updateProfileEmployee = async (
   return response.data.data;
 };
 
-export const updateAvatar = async (file: File, accessToken: string) => {
-  const formData = new FormData();
-  formData.append("avatar", file);
-
-  const response = await axios.put(`${API_GATEWAY_URL}/auth/me`, formData, {
+export const updateAvatar = async (file: FormData, accessToken: string) => {
+  const response = await axios.patch(`${API_GATEWAY_URL}/auth/me`, file, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },

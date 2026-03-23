@@ -16,16 +16,12 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
 
 @AppLog
 @RestController
@@ -202,5 +198,11 @@ public class RoadmapController {
     log.info("REST request to update assignment for roadmap {} to staff {}", id, staffId);
     var response = roadmapUseCase.updateAssignment(id, staffId);
     return Utils.returnOkResponse("Cập nhật phân công thành công", response);
+  }
+
+  @Operation(hidden = true)
+  @GetMapping("/exist/{id}")
+  public Boolean checkExistenceOfRoadmap(@PathVariable String id) {
+    return roadmapUseCase.isExistingRoadmap(id);
   }
 }
