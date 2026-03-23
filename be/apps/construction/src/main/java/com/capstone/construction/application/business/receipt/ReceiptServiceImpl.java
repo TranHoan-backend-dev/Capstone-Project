@@ -8,6 +8,7 @@ import com.capstone.construction.application.dto.response.receipt.ReceiptListRes
 import com.capstone.construction.application.dto.response.receipt.ReceiptResponse;
 import com.capstone.construction.domain.model.Receipt;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
+import com.capstone.construction.domain.model.utils.significance.ReceiptSignificance;
 import com.capstone.construction.infrastructure.persistence.CostEstimateRepository;
 import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
 import com.capstone.construction.infrastructure.persistence.ReceiptRepository;
@@ -55,13 +56,21 @@ public class ReceiptServiceImpl implements ReceiptService {
       throw new IllegalArgumentException("Dự toán chưa được ký duyệt đầy đủ bởi các bộ phận liên quan.");
     }
 
-    var receipt = Receipt.create(builder -> builder
+    var receipt = Receipt.builder()
       .installationForm(form)
       .receiptNumber(request.receiptNumber())
-      .customerName(request.customerName())
-      .address(request.address())
+      .customerName(form.getCustomerName())
+      .address(form.getAddress())
+      .attach(request.attach())
+      .paymentReason(request.paymentReason())
+      .totalMoneyInDigits(request.totalMoneyInDigit())
+      .totalMoneyInCharacters(request.totalMoneyInCharacters())
       .paymentDate(request.paymentDate())
-      .isPaid(request.isPaid()));
+      .isPaid(request.isPaid())
+      .significance(ReceiptSignificance.builder()
+        .receiptCreator(request.significanceOfReceiptCreator())
+        .build())
+      .build();
 
     var saved = receiptRepo.save(receipt);
     log.info("Receipt saved with id: {}", saved.getInstallationFormId());
@@ -94,6 +103,10 @@ public class ReceiptServiceImpl implements ReceiptService {
     }
     if (request.isPaid() != null) {
       receipt.setIsPaid(request.isPaid());
+    }
+    if (request.significanceOfTreasurer() != null && !request.significanceOfTreasurer().isBlank()) {
+      var significance = receipt.getSignificance();
+      significance.setTreasurer(request.significanceOfTreasurer());
     }
 
     var saved = receiptRepo.save(receipt);
@@ -152,7 +165,7 @@ public class ReceiptServiceImpl implements ReceiptService {
       .orElseThrow(() -> new IllegalArgumentException("Receipt not found for form: " + formNumber));
   }
 
-  private ReceiptResponse mapToResponse(Receipt receipt) {
+  private @NonNull ReceiptResponse mapToResponse(@NonNull Receipt receipt) {
     return new ReceiptResponse(
       receipt.getInstallationFormId().getFormCode(),
       receipt.getInstallationFormId().getFormNumber(),
@@ -161,6 +174,11 @@ public class ReceiptServiceImpl implements ReceiptService {
       receipt.getAddress(),
       receipt.getPaymentDate(),
       receipt.getIsPaid(),
+      receipt.getPaymentReason(),
+      receipt.getTotalMoneyInDigits(),
+      receipt.getTotalMoneyInCharacters(),
+      receipt.getAttach(),
+      receipt.getSignificance(),
       receipt.getCreatedAt(),
       receipt.getUpdatedAt()
     );

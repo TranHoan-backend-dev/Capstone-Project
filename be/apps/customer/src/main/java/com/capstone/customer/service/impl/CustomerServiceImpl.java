@@ -1,16 +1,19 @@
 package com.capstone.customer.service.impl;
 
 import com.capstone.common.exception.NotExistingException;
+import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.SharedMessage;
 import com.capstone.customer.dto.request.customer.CreateRequest;
 import com.capstone.customer.dto.request.customer.UpdateRequest;
 import com.capstone.customer.dto.response.CustomerResponse;
+import com.capstone.customer.dto.response.WaterPriceInfoResponse;
 import com.capstone.customer.model.Customer;
 import com.capstone.customer.repository.CustomerRepository;
 import com.capstone.customer.service.boundary.ConstructionService;
 import com.capstone.customer.service.boundary.CustomerService;
 import com.capstone.customer.service.boundary.DeviceService;
 import com.capstone.customer.utils.Message;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -32,6 +35,7 @@ public class CustomerServiceImpl implements CustomerService {
   CustomerRepository customerRepository;
   DeviceService deviceService;
   ConstructionService constructionService;
+  ObjectMapper objectMapper;
 
   @Override
   @Transactional
@@ -78,20 +82,23 @@ public class CustomerServiceImpl implements CustomerService {
   private void setProperties2(Customer customer, String s, String s2, String s3, String s4) {
     if (s != null && !s.isBlank() &&
       s2 != null && !s2.isBlank()) {
-      var status = constructionService.checkExistence(s, s2).data().toString();
-      if (!Boolean.parseBoolean(status.trim())) {
+      var status = constructionService.checkExistence(s, s2);
+      if (status) {
         throw new NotExistingException(String.format(SharedMessage.MES_24, s2, s));
       }
       customer.setFormNumber(s2);
       customer.setFormCode(s);
     }
     if (s3 != null) {
+      log.info("water price: {}", !deviceService.checkExistenceOfWaterPrice(s3));
       if (!deviceService.checkExistenceOfWaterPrice(s3)) {
         throw new IllegalArgumentException(Message.ENT_28);
       }
       customer.setWaterPriceId(s3);
     }
     if (s4 != null) {
+      log.info("hehe");
+      log.info("water meter: {}", !deviceService.checkExistenceOfWaterMeter(s4));
       if (!deviceService.checkExistenceOfWaterMeter(s4)) {
         throw new IllegalArgumentException(Message.ENT_29);
       }
@@ -100,24 +107,31 @@ public class CustomerServiceImpl implements CustomerService {
   }
 
   private void setProperties(Customer customer, Boolean free, Boolean sale, String s, String s2, Integer integer, String s3, Integer integer2) {
+    log.info("1");
     if (free != null) {
       customer.setIsFree(free);
     }
+    log.info("2");
     if (sale != null) {
       customer.setIsSale(sale);
     }
+    log.info("3");
     if (s != null) {
       customer.setM3Sale(s);
     }
+    log.info("4");
     if (s2 != null) {
       customer.setFixRate(s2);
     }
+    log.info("5");
     if (integer != null) {
       customer.setInstallationFee(integer);
     }
+    log.info("6");
     if (s3 != null) {
       customer.setDeductionPeriod(s3);
     }
+    log.info("7");
     if (integer2 != null) {
       customer.setMonthlyRent(integer2);
     }
@@ -247,7 +261,16 @@ public class CustomerServiceImpl implements CustomerService {
     return customerRepository.existsById(id);
   }
 
+  @Override
+  public String getIdByMeterId(String meterId) {
+    return customerRepository.findByWaterMeterId(meterId)
+      .orElseThrow(() -> new NotExistingException("Customer not found"))
+      .getCustomerId();
+  }
+
   private @NonNull CustomerResponse mapToResponse(@NonNull Customer customer) {
+    var waterPrice = resolveWaterPrice(customer.getWaterPriceId());
+
     return new CustomerResponse(
       customer.getCustomerId(),
       customer.getName(),
@@ -282,6 +305,25 @@ public class CustomerServiceImpl implements CustomerService {
       customer.getUpdatedAt(),
       customer.getFormNumber(),
       customer.getWaterPriceId(),
-      customer.getWaterMeterId());
+      waterPrice,
+      customer.getWaterMeterId(),
+      customer.getBill() != null ? customer.getBill().getExportAddress() : null);
+  }
+
+  private WaterPriceInfoResponse resolveWaterPrice(String waterPriceId) {
+    if (waterPriceId == null || waterPriceId.isBlank()) {
+      return null;
+    }
+
+    try {
+      WrapperApiResponse response = deviceService.getWaterPriceById(waterPriceId);
+      if (response == null || response.data() == null) {
+        return null;
+      }
+      return objectMapper.convertValue(response.data(), WaterPriceInfoResponse.class);
+    } catch (Exception ex) {
+      log.warn("Cannot resolve water price info for id={}", waterPriceId, ex);
+      return null;
+    }
   }
 }

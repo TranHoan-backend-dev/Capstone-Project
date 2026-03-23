@@ -2,6 +2,7 @@ package com.capstone.domain.usecase;
 
 import com.capstone.common.utils.Result;
 import com.capstone.domain.repository.AuthRepository;
+
 import javax.inject.Inject;
 
 /**
@@ -20,7 +21,7 @@ public class ForgotPasswordUseCase {
      */
     public Result<String> sendOtp(String email) {
         try {
-            String message = authRepository.sendOtp(email);
+            var message = authRepository.sendOtp(email);
             return Result.success(message);
         } catch (Exception e) {
             return Result.failure(e);
@@ -32,7 +33,7 @@ public class ForgotPasswordUseCase {
      */
     public Result<String> verifyOtp(String email, String otp) {
         try {
-            String message = authRepository.verifyOtp(email, otp);
+            var message = authRepository.verifyOtp(email, otp);
             return Result.success(message);
         } catch (Exception e) {
             return Result.failure(e);

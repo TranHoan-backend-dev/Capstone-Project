@@ -8,6 +8,7 @@ import org.jspecify.annotations.NonNull;
 import com.capstone.common.utils.SharedMessage;
 import com.capstone.customer.utils.Message;
 
+import java.time.LocalDate;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -22,13 +23,19 @@ public class Bill {
   @Id
   String billId;
 
-  @OneToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.EAGER)
   @MapsId("billId")
   Customer customer;
 
   @Column(nullable = false)
   String billName;
   String note;
+
+  String totalAmount;
+
+  String amountNeedToPay;
+
+  LocalDate payDate;
 
   @Column(nullable = false)
   String exportAddress;

@@ -21,11 +21,20 @@ public class CustomerSpecification {
       if (filter.search() != null && !filter.search().trim().isEmpty()) {
         String searchPattern = "%" + filter.search().trim().toLowerCase() + "%";
         predicates.add(cb.or(
-            cb.like(cb.lower(root.get("name")), searchPattern),
-            cb.like(cb.lower(root.get("email")), searchPattern),
-            cb.like(cb.lower(root.get("phoneNumber")), searchPattern),
-            cb.like(cb.lower(root.get("formCode")), searchPattern)
+          cb.like(cb.lower(root.get("name")), searchPattern),
+          cb.like(cb.lower(root.get("email")), searchPattern),
+          cb.like(cb.lower(root.get("phoneNumber")), searchPattern),
+          cb.like(cb.lower(root.get("formCode")), searchPattern),
+          cb.like(cb.lower(root.get("waterMeterId")), searchPattern),
+          cb.like(cb.lower(root.join("bill").get("exportAddress")), searchPattern)
         ));
+      }
+
+      if (filter.roadmapId() != null && !filter.roadmapId().isBlank()) {
+        predicates.add(cb.equal(root.get("roadmapId"), filter.roadmapId()));
+      }
+      if (filter.address() != null && !filter.address().isBlank()) {
+        predicates.add(cb.like(cb.lower(root.join("bill").get("exportAddress")), "%" + filter.address().toLowerCase() + "%"));
       }
 
       if (filter.name() != null && !filter.name().isBlank()) {

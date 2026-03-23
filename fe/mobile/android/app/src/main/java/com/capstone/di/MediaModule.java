@@ -30,7 +30,7 @@ public class MediaModule {
     @Singleton
     public GoogleCloudUploader provideGoogleCloudUploader(OkHttpClient okHttpClient) {
         // Cung cấp API Key cho Google Cloud
-        return new GoogleCloudUploader(okHttpClient, "YOUR_SIMULATED_API_KEY");
+        return new GoogleCloudUploader("YOUR_SIMULATED_API_KEY");
     }
 
     @Provides

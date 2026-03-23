@@ -1,6 +1,7 @@
 package com.capstone.data.source.request;
 
 import androidx.annotation.Nullable;
+
 import java.util.Map;
 
 public class SaveImageUrlRequest {
@@ -12,6 +13,12 @@ public class SaveImageUrlRequest {
         this.metadata = metadata;
     }
 
-    public String getImageUrl() { return imageUrl; }
-    @Nullable public Map<String, String> getMetadata() { return metadata; }
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    @Nullable
+    public Map<String, String> getMetadata() {
+        return metadata;
+    }
 }

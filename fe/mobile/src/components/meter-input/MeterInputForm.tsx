@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { View, ScrollView } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { Card, Text, TextInput } from 'react-native-paper';
 import MeterInputInfoCard from './MeterInputInfoCard';
 import MeterInputStatusCard from './MeterInputStatusCard';
 import MeterInputIndexCard from './MeterInputIndexCard';
-import MeterInputResultCard from './MeterInputResultCard';
 import MeterInputActionButtons from './MeterInputActionButtons';
 import ImagePreviewModal from './ImagePreviewModal';
 import styles from './meterInput.styles';
@@ -19,17 +20,18 @@ export default function MeterInputForm({
   customerName = 'Nguyễn Văn Tiến',
   address = '621, Trường Chinh, Phương Nam Định',
 }: MeterInputFormProps) {
-  const [waterType, setWaterType] = useState('normal');
+  const navigation = useNavigation<any>();
+  const [waterType] = useState('normal');
   const [meterStatus, setMeterStatus] = useState('binh-thuong');
   const [oldIndex] = useState('621');
   const [newIndex, setNewIndex] = useState('588');
   const [m3, setM3] = useState('4');
-  const [amount] = useState('39.560');
-  const [image, setImage] = useState<string | null>(null);
+  const [image] = useState<string | null>(null);
   const [showImagePreview, setShowImagePreview] = useState(false);
 
-  const handleCalculateM3 = () => {
-    const difference = Math.max(0, parseInt(newIndex) - parseInt(oldIndex));
+  const handleNewIndexChange = (value: string) => {
+    setNewIndex(value);
+    const difference = Math.max(0, parseInt(value || '0', 10) - parseInt(oldIndex || '0', 10));
     setM3(difference.toString());
   };
 
@@ -54,22 +56,20 @@ export default function MeterInputForm({
   };
 
   const handleTakePhoto = () => {
-    // Mock: Simulate taking a photo
-    setImage('https://via.placeholder.com/400x300?text=Hình+ảnh+định+kiểm');
-    console.log('Take photo');
+    navigation.navigate('CaptureWaterMeter', {
+      customerId,
+      customerName,
+      address,
+    });
   };
 
   const handleViewInvoice = () => {
     setShowImagePreview(true);
   };
 
-  const handleImagePress = () => {
-    console.log('Select image from gallery');
-  };
-
   return (
     <View style={styles.formContainer}>
-      <ScrollView>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
         <MeterInputInfoCard
           customerName={customerName}
           customerId={customerId}
@@ -77,11 +77,9 @@ export default function MeterInputForm({
           address={address}
           phone="0854423286"
           meterId="38929"
-          meterType="93Vc"
           waterType="Sinh hoạt dân cư"
           householdNumber="0"
           populationNumber="0"
-          oldIndex={oldIndex}
         />
 
         <MeterInputStatusCard value={meterStatus} onStatusChange={setMeterStatus} />
@@ -89,9 +87,24 @@ export default function MeterInputForm({
         <MeterInputIndexCard
           oldIndex={oldIndex}
           newIndex={newIndex}
-          onNewIndexChange={setNewIndex}
-          onCalculate={handleCalculateM3}
+          m3={m3}
+          onNewIndexChange={handleNewIndexChange}
         />
+
+        <Card style={styles.card}>
+          <Card.Content>
+            <Text style={styles.cardTitle}>Ghi chú</Text>
+            <TextInput
+              mode="outlined"
+              placeholder="Nhập ghi chú (nếu có)..."
+              multiline
+              numberOfLines={3}
+              style={styles.notesInput}
+              outlineColor="#E0E0E0"
+              activeOutlineColor="#1E88E5"
+            />
+          </Card.Content>
+        </Card>
 
       </ScrollView>
 

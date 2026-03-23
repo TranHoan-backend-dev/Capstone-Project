@@ -7,12 +7,14 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import java.util.List;
+import java.util.*;
 
+@Builder
+@Setter
 @Table
 @Getter
 @Entity
-@ToString
+@ToString(exclude = {"meter"})
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -27,5 +29,20 @@ public class UsageHistory {
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(columnDefinition = "jsonb")
-  List<Usage> usages;
+  Stack<Usage> usages;
+
+  @Column(nullable = false, unique = true)
+  String customerId;
+
+  public void addNewUsage(Usage usage) {
+    Objects.requireNonNull(usage);
+    usages.push(usage);
+  }
+
+  public Optional<Usage> getLatestUsage() {
+    if (usages == null || usages.isEmpty()) {
+      return Optional.empty();
+    }
+    return Optional.of(usages.peek());
+  }
 }

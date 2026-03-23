@@ -3,7 +3,6 @@ package com.capstone.customer.service.impl;
 import com.capstone.common.enumerate.CustomerType;
 import com.capstone.common.enumerate.UsageTarget;
 import com.capstone.common.exception.NotExistingException;
-import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.customer.dto.request.customer.CreateRequest;
 import com.capstone.customer.dto.request.customer.UpdateRequest;
 import com.capstone.customer.dto.response.CustomerResponse;
@@ -118,7 +117,7 @@ class CustomerServiceImplTest {
   void should_CreateCustomer_When_InputIsValid() {
     // Given
     when(customerRepository.existsByFormCodeAndFormNumber(any(), any())).thenReturn(false);
-    when(constructionService.checkExistence(any(), any())).thenReturn(new WrapperApiResponse(200, "Success", true, LocalDateTime.now()));
+    when(constructionService.checkExistence(any(), any())).thenReturn(true);
     when(deviceService.checkExistenceOfWaterPrice(any())).thenReturn(true);
     when(deviceService.checkExistenceOfWaterMeter(any())).thenReturn(true);
     when(customerRepository.save(any(Customer.class))).thenReturn(customer);
@@ -145,7 +144,7 @@ class CustomerServiceImplTest {
     // Given
     var id = "CUST-123";
     when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
-    when(constructionService.checkExistence(any(), any())).thenReturn(new WrapperApiResponse(200, "Success", true, LocalDateTime.now()));
+    when(constructionService.checkExistence(any(), any())).thenReturn(true);
     when(deviceService.checkExistenceOfWaterPrice(any())).thenReturn(true);
     when(deviceService.checkExistenceOfWaterMeter(any())).thenReturn(true);
     when(customerRepository.save(any(Customer.class))).thenReturn(customer);
@@ -211,7 +210,7 @@ class CustomerServiceImplTest {
     // Given
     var id = "CUST-123";
     when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
-    when(constructionService.checkExistence(any(), any())).thenReturn(new WrapperApiResponse(200, "Success", false, LocalDateTime.now()));
+    when(constructionService.checkExistence(any(), any())).thenReturn(false);
 
     // When & Then
     assertThrows(NotExistingException.class, () -> customerService.updateCustomer(id, updateRequest));
@@ -223,7 +222,7 @@ class CustomerServiceImplTest {
     // Given
     var id = "CUST-123";
     when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
-    when(constructionService.checkExistence(any(), any())).thenReturn(new WrapperApiResponse(200, "Success", true, LocalDateTime.now()));
+    when(constructionService.checkExistence(any(), any())).thenReturn(true);
     when(deviceService.checkExistenceOfWaterPrice(any())).thenReturn(false);
 
     // When & Then
@@ -236,7 +235,7 @@ class CustomerServiceImplTest {
     // Given
     var id = "CUST-123";
     when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
-    when(constructionService.checkExistence(any(), any())).thenReturn(new WrapperApiResponse(200, "Success", true, LocalDateTime.now()));
+    when(constructionService.checkExistence(any(), any())).thenReturn(true);
     when(deviceService.checkExistenceOfWaterPrice(any())).thenReturn(true);
     when(deviceService.checkExistenceOfWaterMeter(any())).thenReturn(false);
 
@@ -327,7 +326,7 @@ class CustomerServiceImplTest {
   void should_ReturnPaginatedCustomers_When_SearchIsProvided() {
     // Given
     CustomerFilterRequest filter = new CustomerFilterRequest(
-      "Trần", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null
+      "Trần", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null
     );
     Page<Customer> customerPage = new PageImpl<>(List.of(customer));
     when(customerRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(customerPage);
@@ -367,5 +366,49 @@ class CustomerServiceImplTest {
 
     // Then
     assertThat(result).isFalse();
+  }
+
+  @Test
+  @DisplayName("Should return page of customers when roadmap filter is applied")
+  void should_ReturnPageOfCustomers_When_RoadmapFilterIsApplied() {
+    // Given
+    CustomerFilterRequest filter = CustomerFilterRequest.fromRoadmapId("RM_001", "search_key");
+    Page<Customer> customerPage = new PageImpl<>(List.of(customer), pageable, 1);
+
+    when(customerRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(customerPage);
+
+    // When
+    Page<CustomerResponse> result = customerService.getAllCustomers(pageable, filter);
+
+    // Then
+    assertThat(result).isNotNull();
+    assertThat(result.getTotalElements()).isEqualTo(1);
+    verify(customerRepository).findAll(any(Specification.class), eq(pageable));
+  }
+
+  @Test
+  @DisplayName("should_ReturnCustomerId_When_MeterIdExists")
+  void should_ReturnCustomerId_When_MeterIdExists() {
+    // Given
+    String meterId = "WM001";
+    when(customerRepository.findByWaterMeterId(meterId)).thenReturn(Optional.of(customer));
+    when(customer.getCustomerId()).thenReturn("CUST-123");
+
+    // When
+    String result = customerService.getIdByMeterId(meterId);
+
+    // Then
+    assertThat(result).isEqualTo("CUST-123");
+  }
+
+  @Test
+  @DisplayName("should_ThrowNotExistingException_When_MeterIdNotFound")
+  void should_ThrowNotExistingException_When_MeterIdNotFound() {
+    // Given
+    String meterId = "M_UNKNOWN";
+    when(customerRepository.findByWaterMeterId(meterId)).thenReturn(Optional.empty());
+
+    // When & Then
+    assertThrows(NotExistingException.class, () -> customerService.getIdByMeterId(meterId));
   }
 }

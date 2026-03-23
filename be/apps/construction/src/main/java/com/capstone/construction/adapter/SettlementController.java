@@ -32,7 +32,10 @@ public class SettlementController {
   private final SettlementUseCase settlementUseCase;
 
   @PostMapping
-  @Operation(summary = "Tạo mới một bản quyết toán công trình", description = "Khởi tạo một bản quyết toán mới dựa trên thông tin công việc, địa chỉ và phí đấu nối.", responses = {
+  @Operation(summary = "Tạo mới một bản quyết toán công trình", description = """
+    Khởi tạo một bản quyết toán mới dựa trên thông tin công việc, địa chỉ và phí đấu nối,...
+    Công trình gắn với quyết toán này phải được phê duyệt bởi phòng KH-KT thì mới được làm quyết toán
+    """, responses = {
     @ApiResponse(responseCode = "201", description = "Tạo quyết toán thành công"),
     @ApiResponse(responseCode = "400", description = "Dữ liệu yêu cầu không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
@@ -47,7 +50,7 @@ public class SettlementController {
   @Operation(summary = "Cập nhật thông tin quyết toán công trình", description = "Cập nhật lại các thông tin của bản quyết toán đã tồn tại thông qua ID.", responses = {
     @ApiResponse(responseCode = "200", description = "Cập nhật thành công", content = @Content(schema = @Schema(implementation = SettlementResponse.class))),
     @ApiResponse(responseCode = "404", description = "Không tìm thấy bản quyết toán", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-    @ApiResponse(responseCode = "400", description = "Dữ liệu yêu cầu không hợp lệ")
+    @ApiResponse(responseCode = "400", description = "Dữ liệu yêu cầu không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   public ResponseEntity<WrapperApiResponse> updateSettlement(
     @PathVariable @Parameter(description = "ID của bản quyết toán cần cập nhật", required = true) String id,

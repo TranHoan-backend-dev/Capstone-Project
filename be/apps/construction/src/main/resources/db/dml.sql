@@ -504,40 +504,42 @@ VALUES ('5e6f7081-4000-4eee-9fff-eeeeeeee0001', now(), '108-111-112e', now(), '4
        ('5e6f7081-4000-4eee-9fff-eeeeeeee0020', now(), '197-198', now(), '4d5e6f70-3000-4ddd-9eee-dddddddd0002',
         '550e8400-e29b-41d4-a716-446655440001'),
        ('5e6f7081-4000-4eee-9fff-eeeeeeee0021', now(), '172a', now(), '4d5e6f70-3000-4ddd-9eee-dddddddd0001',
+        '550e8400-e29b-41d4-a716-446655440001'),
+       ('RM_001', now(), 'Lộ trình Test 001', now(), '4d5e6f70-3000-4ddd-9eee-dddddddd0001',
         '550e8400-e29b-41d4-a716-446655440001');
 
 INSERT INTO settlement (settlement_id, address, connection_fee, created_at,
-                        job_content, note, registration_at, status, updated_at)
+                        job_content, note, registration_at, updated_at)
 VALUES ('6f708192-5000-4aaa-9bbb-ffffffff0001', 'Address 1', 1500000, now(), 'Job 1', 'Note 1', current_date,
-        'PROCESSING', now()),
+        now()),
        ('6f708192-5000-4aaa-9bbb-ffffffff0002', 'Address 2', 1600000, now(), 'Job 2', 'Note 2', current_date,
-        'PENDING_FOR_APPROVAL', now()),
+        now()),
        ('6f708192-5000-4aaa-9bbb-ffffffff0003', 'Address 3', 1700000, now(), 'Job 3', 'Note 3', current_date,
-        'APPROVED', now()),
+        now()),
        ('6f708192-5000-4aaa-9bbb-ffffffff0004', 'Address 4', 1800000, now(), 'Job 4', 'Note 4', current_date,
-        'REJECTED', now()),
+        now()),
        ('6f708192-5000-4aaa-9bbb-ffffffff0005', 'Address 5', 1900000, now(), 'Job 5', 'Note 5', current_date,
-        'PROCESSING', now()),
+        now()),
        ('6f708192-5000-4aaa-9bbb-ffffffff0006', 'Address 6', 2000000, now(), 'Job 6', 'Note 6', current_date,
-        'PENDING_FOR_APPROVAL', now()),
+        now()),
        ('6f708192-5000-4aaa-9bbb-ffffffff0007', 'Address 7', 2100000, now(), 'Job 7', 'Note 7', current_date,
-        'APPROVED', now()),
+        now()),
        ('6f708192-5000-4aaa-9bbb-ffffffff0008', 'Address 8', 2200000, now(), 'Job 8', 'Note 8', current_date,
-        'REJECTED', now()),
+        now()),
        ('6f708192-5000-4aaa-9bbb-ffffffff0009', 'Address 9', 2300000, now(), 'Job 9', 'Note 9', current_date,
-        'PROCESSING', now()),
+        now()),
        ('6f708192-5000-4aaa-9bbb-ffffffff0010', 'Address 10', 2400000, now(), 'Job 10', 'Note 10', current_date,
-        'APPROVED', now()),
+        now()),
        ('6f708192-5000-4aaa-9bbb-ffffffff0011', 'Address 11', 2500000, now(), 'Job 11', 'Note 11', current_date,
-        'PROCESSING', now()),
+        now()),
        ('6f708192-5000-4aaa-9bbb-ffffffff0012', 'Address 12', 2600000, now(), 'Job 12', 'Note 12', current_date,
-        'PENDING_FOR_APPROVAL', now()),
+        now()),
        ('6f708192-5000-4aaa-9bbb-ffffffff0013', 'Address 13', 2700000, now(), 'Job 13', 'Note 13', current_date,
-        'APPROVED', now()),
+        now()),
        ('6f708192-5000-4aaa-9bbb-ffffffff0014', 'Address 14', 2800000, now(), 'Job 14', 'Note 14', current_date,
-        'REJECTED', now()),
+        now()),
        ('6f708192-5000-4aaa-9bbb-ffffffff0015', 'Address 15', 2900000, now(), 'Job 15', 'Note 15', current_date,
-        'PROCESSING', now());
+        now());
 
 INSERT INTO construction_request (installation_form_code, address, contract_id, created_at,
                                   customer_name, employee_in_charge_id, phone_number,
@@ -566,16 +568,27 @@ INSERT INTO cost_estimate (estimation_id, address, construction_machinery_coeffi
                            precalculated_tax_coefficient, registration_at,
                            survey_effort, survey_fee, updated_at, vat_coefficient, water_meter_serial,
                            installation_form_form_code, installation_form_form_number, significance)
-VALUES
-  ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', 'Address 1', 1, 1000000, 'admin', now(), 'Customer 1', 1, 200000,
+VALUES ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', 'Address 1', 1, 1000000, 'admin', now(), 'Customer 1', 1, 200000,
         'img1', 1, 300000, 1, 'Note 1', 'WM1', 1, current_date, 1, 150000, now(), 1, 'SER1',
-        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'FORM-2024-0001', '{"surveyStaff": "hehe", "companyLeaderShip": "kaka", "planningTechnicalHead": "huhu"}'),
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'FORM-2024-0001', '{
+    "surveyStaff": "hehe",
+    "companyLeaderShip": "kaka",
+    "planningTechnicalHead": "huhu"
+  }'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg0002', 'Address 2', 1, 1000000, 'admin', now(), 'Customer 2', 1, 200000,
         'img2', 1, 300000, 1, 'Note 2', 'WM2', 1, current_date, 1, 150000, now(), 1, 'SER2',
-        'b1eebc99-9c0b-4ef8-bb6d-6bb9bd380a12', 'FORM-2024-0002', '{"surveyStaff": "hehe", "companyLeaderShip": "kaka", "planningTechnicalHead": "huhu"}'),
+        'b1eebc99-9c0b-4ef8-bb6d-6bb9bd380a12', 'FORM-2024-0002', '{
+         "surveyStaff": "hehe",
+         "companyLeaderShip": "kaka",
+         "planningTechnicalHead": "huhu"
+       }'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg0003', 'Address 3', 1, 1000000, 'admin', now(), 'Customer 3', 1, 200000,
         'img3', 1, 300000, 1, 'Note 3', 'WM3', 1, current_date, 1, 150000, now(), 1, 'SER3',
-        'c2eebc99-9c0b-4ef8-bb6d-6bb9bd380a13', 'FORM-2024-0003', '{"surveyStaff": "hehe", "companyLeaderShip": "kaka", "planningTechnicalHead": "huhu"}'),
+        'c2eebc99-9c0b-4ef8-bb6d-6bb9bd380a13', 'FORM-2024-0003', '{
+         "surveyStaff": "hehe",
+         "companyLeaderShip": "kaka",
+         "planningTechnicalHead": "huhu"
+       }'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg0004', 'Address 4', 1, 1000000, 'admin', now(), 'Customer 4', 1, 200000,
         'img4', 1, 300000, 1, 'Note 4', 'WM4', 1, current_date, 1, 150000, now(),
         1, 'SER4', 'd3eebc99-9c0b-4ef8-bb6d-6bb9bd380a14', 'FORM-2024-0004', '{

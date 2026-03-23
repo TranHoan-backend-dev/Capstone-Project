@@ -123,3 +123,65 @@ export const deleteJob = (accessToken: string, id: string) => {
   });
 };
 
+export const ViewBusinessPageService = (
+  accessToken: string,
+  page: number,
+  size: number,
+  keyword?: string | null,
+  isActive?: boolean | null,
+) =>
+  axios.get(`${API_GATEWAY_URL}/org/business-pages`, {
+    params: {
+      page,
+      size,
+      keyword,
+      isActive,
+    },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+export const createBusinessPage = (
+  accessToken: string,
+  name: string,
+  activate: boolean,
+  creator: string,
+) => {
+  return axios.post(
+    `${API_GATEWAY_URL}/org/business-pages`,
+    { name, activate, creator },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+};
+
+export const updateBusinessPage = (
+  accessToken: string,
+  id: string,
+  name: string,
+  activate: boolean,
+  updator: string,
+) => {
+  return axios.put(
+    `${API_GATEWAY_URL}/org/business-pages/${id}`,
+    { name, activate, updator },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+};
+
+export const deleteBusinessPage = (accessToken: string, id: string) => {
+  return axios.delete(`${API_GATEWAY_URL}/org/business-pages/${id}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+

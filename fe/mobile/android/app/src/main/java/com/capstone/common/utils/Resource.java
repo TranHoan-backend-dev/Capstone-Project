@@ -15,8 +15,15 @@ public abstract class Resource<T> {
         this.message = message;
     }
 
-    @Nullable public T getData() { return data; }
-    @Nullable public String getMessage() { return message; }
+    @Nullable
+    public T getData() {
+        return data;
+    }
+
+    @Nullable
+    public String getMessage() {
+        return message;
+    }
 
     public static class Success<T> extends Resource<T> {
         public Success(T data) {

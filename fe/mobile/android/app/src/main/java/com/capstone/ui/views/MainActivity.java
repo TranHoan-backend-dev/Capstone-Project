@@ -4,6 +4,9 @@ import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.defaults.DefaultReactActivityDelegate;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
+
+import java.util.Objects;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
@@ -17,9 +20,9 @@ public class MainActivity extends ReactActivity {
     @Override
     protected ReactActivityDelegate createReactActivityDelegate() {
         return new DefaultReactActivityDelegate(
-            this,
-            getMainComponentName(),
-            DefaultNewArchitectureEntryPoint.getFabricEnabled()
+                this,
+                Objects.requireNonNull(getMainComponentName()),
+                DefaultNewArchitectureEntryPoint.getFabricEnabled()
         );
     }
 }

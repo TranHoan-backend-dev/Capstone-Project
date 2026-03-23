@@ -2,6 +2,7 @@ package com.capstone.infrastructure.security;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -9,7 +10,6 @@ import javax.inject.Singleton;
 public class AntiBruteForceManager {
 
     private final int maxAttempts = 5;
-    private final long lockTimeMs = 15 * 60 * 1000L; // 15 minutes lock
 
     private final ConcurrentHashMap<String, AttemptInfo> attemptCounts = new ConcurrentHashMap<>();
 
@@ -18,11 +18,13 @@ public class AntiBruteForceManager {
     }
 
     public boolean isLocked(String identifier) {
-        AttemptInfo info = attemptCounts.get(identifier);
+        var info = attemptCounts.get(identifier);
         if (info == null) return false;
 
         if (info.count.get() >= maxAttempts) {
-            long elapsed = System.currentTimeMillis() - info.lastAttemptTime;
+            var elapsed = System.currentTimeMillis() - info.lastAttemptTime;
+            // 15 minutes lock
+            var lockTimeMs = 15 * 60 * 1000L;
             if (elapsed < lockTimeMs) {
                 return true;
             } else {
@@ -34,7 +36,7 @@ public class AntiBruteForceManager {
 
     public void recordFailure(String identifier) {
         attemptCounts.compute(identifier, (key, val) -> {
-            AttemptInfo info = (val != null) ? val : new AttemptInfo();
+            var info = (val != null) ? val : new AttemptInfo();
             info.count.incrementAndGet();
             info.lastAttemptTime = System.currentTimeMillis();
             return info;
@@ -46,7 +48,7 @@ public class AntiBruteForceManager {
     }
 
     public int getRemainingAttempts(String identifier) {
-        AttemptInfo info = attemptCounts.get(identifier);
+        var info = attemptCounts.get(identifier);
         if (info == null) return maxAttempts;
         return Math.max(0, maxAttempts - info.count.get());
     }

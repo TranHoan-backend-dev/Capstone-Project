@@ -19,6 +19,9 @@ const PUBLIC_ROUTES = [
   "/forgot-password",
   "/api/auth/login",
   "/api/auth/refresh",
+  "/api/auth/check-existence",
+  "/api/auth/verify-otp",
+  "/api/auth/reset-password",
 ];
 
 const EXP_BUFFER_SECONDS = 30;
@@ -26,7 +29,7 @@ const EXP_BUFFER_SECONDS = 30;
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  if (PUBLIC_ROUTES.some(route => pathname.startsWith(route))) {
+  if (PUBLIC_ROUTES.some((route) => pathname.startsWith(route))) {
     return NextResponse.next();
   }
 

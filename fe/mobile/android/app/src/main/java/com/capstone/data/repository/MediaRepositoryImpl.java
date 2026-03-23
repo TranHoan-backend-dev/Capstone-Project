@@ -4,6 +4,7 @@ import com.capstone.data.source.remote.GoogleCloudUploader;
 import com.capstone.data.source.remote.MediaApi;
 import com.capstone.data.source.request.SaveImageUrlRequest;
 import com.capstone.domain.repository.MediaRepository;
+
 import java.io.File;
 
 public class MediaRepositoryImpl implements MediaRepository {
@@ -18,11 +19,11 @@ public class MediaRepositoryImpl implements MediaRepository {
     @Override
     public String processCapturedImage(File file) throws Exception {
         // 1. Tải ảnh lên Google Cloud Storage trước
-        String gcsUrl = gcsUploader.uploadImage(file);
-        
+        var gcsUrl = gcsUploader.uploadImage(file);
+
         // 2. Lưu URL của ảnh vào hệ thống Backend
         mediaApi.saveImageUrl(new SaveImageUrlRequest(gcsUrl, null)).execute();
-        
+
         return gcsUrl;
     }
 

@@ -30,6 +30,10 @@ public class HamletServiceImpl implements HamletService {
   @NonFinal
   Logger log;
 
+  // Vietnamese accents map for PostgreSQL TRANSLATE (must be same length)
+  private static final String ACCENTED_CHARS = "áàảãạăắằẳẵặâấầẩẫậđéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ";
+  private static final String UNACCENTED_CHARS = "aaaaaaaaaaaaaaaaadeeeeeeeeeeeiiiiiooooooooooooooouuuuuuuuuuuyyyyy";
+
   @Override
   @Transactional(rollbackFor = Exception.class)
   public HamletResponse createHamlet(String name, HamletType type, String communeId) {
@@ -100,6 +104,25 @@ public class HamletServiceImpl implements HamletService {
   public PageResponse<HamletResponse> getAllHamlets(Pageable pageable) {
     log.info("Fetching all hamlets with pageable: {}", pageable);
     var page = hamletRepository.findAll(pageable);
+    return PageResponse.fromPage(page, this::mapToResponse);
+  }
+
+  @Override
+  public PageResponse<HamletResponse> searchHamlets(String keyword, String communeId, String type, Pageable pageable) {
+    String finalKeyword = (keyword == null || keyword.isBlank()) ? null : keyword;
+    String finalCommuneId = (communeId == null || communeId.isBlank()) ? null : communeId;
+    String finalType = (type == null || type.isBlank()) ? null : type;
+
+    log.info("Searching hamlets, keyword='{}', communeId='{}', type='{}', pageable={}", 
+             finalKeyword, finalCommuneId, finalType, pageable);
+             
+    var page = hamletRepository.searchHamlets(
+      finalKeyword,
+      finalCommuneId,
+      finalType,
+      ACCENTED_CHARS,
+      UNACCENTED_CHARS,
+      pageable);
     return PageResponse.fromPage(page, this::mapToResponse);
   }
 

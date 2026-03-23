@@ -1,8 +1,7 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Card, Text, Divider } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import styles from './meterInput.styles';
 
 interface MeterInputInfoCardProps {
   customerName?: string;
@@ -15,7 +14,6 @@ interface MeterInputInfoCardProps {
   waterType: string;
   householdNumber?: string;
   populationNumber?: string;
-  oldIndex: string;
 }
 
 export default function MeterInputInfoCard({
@@ -25,80 +23,164 @@ export default function MeterInputInfoCard({
   address,
   phone,
   meterId,
-  meterType = '93Vc',
+  meterType = '',
   waterType,
   householdNumber = '0',
   populationNumber = '0',
-  oldIndex,
 }: MeterInputInfoCardProps) {
   return (
     <Card style={styles.card}>
-      <Card.Content>
-        {customerName && (
-          <>
-            <View style={styles.infoRow}>
-              <Icon name="account" size={18} color="#1E88E5" />
-              <Text style={styles.customerNameHeader}>{customerName}</Text>
-              <View style={styles.headerWithBadge}>
-                <View style={styles.sttBadgeTop}>
-                  <Text style={styles.sttText}>STT</Text>
-                  <Text style={styles.sttValue}>{stt}</Text>
-                </View>
-              </View>
-            </View>
-            <Divider style={styles.divider} />
-          </>
-        )}
-
-        <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Mã kh</Text>
-          <Text style={styles.infoValue}>{customerId}</Text>
+      {customerName && (
+        <View style={styles.header}>
+          <Icon name="account-circle-outline" size={24} color="#fff" />
+          <Text style={styles.headerText}>{customerName}</Text>
         </View>
-        <Divider style={styles.divider} />
+      )}
 
-        <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Địa chỉ</Text>
-          <Text style={styles.infoValue}>{address}</Text>
+      <Card.Content style={{ padding: 0 }}>
+        <View style={styles.row}>
+          <View style={styles.labelCol}>
+            <Icon name="card-account-details-outline" size={20} color="#1E88E5" style={{ marginRight: 8 }} />
+            <Text style={styles.label}>Mã KH</Text>
+          </View>
+          <View style={styles.valueCol}>
+            <Text style={[styles.value, { color: '#EF4444', fontWeight: 'bold' }]}>{customerId}</Text>
+            <View style={{ flex: 1 }} />
+            <Text style={{ color: '#333' }}>STT</Text>
+            <Text style={[styles.value, { color: '#1E88E5', fontWeight: 'bold', marginLeft: 8 }]}>{stt}</Text>
+          </View>
         </View>
-        <Divider style={styles.divider} />
+        <Divider />
 
-        <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Điện thoại</Text>
-          <Text style={styles.infoValue}>{phone}</Text>
-          <Icon name="phone" size={16} color="#1E88E5" />
+        <View style={styles.row}>
+          <View style={styles.labelCol}>
+            <Icon name="map-marker-outline" size={20} color="#1E88E5" style={{ marginRight: 8 }} />
+            <Text style={styles.label}>Địa chỉ</Text>
+          </View>
+          <View style={styles.valueCol}>
+            <Text style={styles.value} numberOfLines={2}>{address}</Text>
+          </View>
         </View>
-        <Divider style={styles.divider} />
+        <Divider />
 
-        <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Mã DH</Text>
-          <Text style={styles.infoValue}>{meterId}</Text>
+        <View style={styles.row}>
+          <View style={styles.labelCol}>
+            <Icon name="phone-outline" size={20} color="#1E88E5" style={{ marginRight: 8 }} />
+            <Text style={styles.label}>Điện thoại</Text>
+          </View>
+          <View style={styles.valueCol}>
+            <Text style={styles.value}>{phone}</Text>
+          </View>
         </View>
-        <Divider style={styles.divider} />
+        <Divider />
 
-        <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Chủng loại DH</Text>
-          <Text style={styles.infoValue}>{meterType}</Text>
+        <View style={styles.row}>
+          <View style={styles.labelCol}>
+            <Icon name="database-outline" size={20} color="#1E88E5" style={{ marginRight: 8 }} />
+            <Text style={styles.label}>Mã ĐH</Text>
+          </View>
+          <View style={styles.valueCol}>
+            <Text style={styles.value}>{meterId}</Text>
+          </View>
         </View>
-        <Divider style={styles.divider} />
+        <Divider />
 
-        <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Bằng giá</Text>
-          <Text style={styles.infoValue}>{waterType}</Text>
+        <View style={styles.row}>
+          <View style={styles.labelCol}>
+            <Icon name="format-list-bulleted" size={20} color="#1E88E5" style={{ marginRight: 8 }} />
+            <Text style={styles.label}>Chủng loại ĐH</Text>
+          </View>
+          <View style={styles.valueCol}>
+            <Text style={styles.value}>{meterType}</Text>
+          </View>
         </View>
-        <Divider style={styles.divider} />
+        <Divider />
 
-        <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Số hộ</Text>
-          <Text style={styles.infoValue}>{householdNumber}</Text>
+        <View style={styles.row}>
+          <View style={styles.labelCol}>
+            <Icon name="receipt" size={20} color="#1E88E5" style={{ marginRight: 8 }} />
+            <Text style={styles.label}>Bảng giá</Text>
+          </View>
+          <View style={styles.valueCol}>
+            <Text style={styles.value}>{waterType}</Text>
+          </View>
         </View>
-        <Divider style={styles.divider} />
+        <Divider />
 
-        <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Số nhân khẩu</Text>
-          <Text style={styles.infoValue}>{populationNumber}</Text>
+        <View style={styles.rowSplit}>
+          <View style={styles.splitBlock}>
+            <Icon name="card-account-details-outline" size={20} color="#1E88E5" style={{ marginRight: 8 }} />
+            <Text style={styles.label}>Số hộ</Text>
+            <Text style={[styles.value, { color: '#1E88E5', fontWeight: 'bold', marginLeft: 'auto', marginRight: 12 }]}>{householdNumber}</Text>
+          </View>
+          <View style={styles.splitDivider} />
+          <View style={[styles.splitBlock, { paddingLeft: 12 }]}>
+            <Text style={styles.label}>Số nhân khẩu</Text>
+            <Text style={[styles.value, { color: '#1E88E5', fontWeight: 'bold', marginLeft: 'auto' }]}>{populationNumber}</Text>
+          </View>
         </View>
-        <Divider style={styles.divider} />
       </Card.Content>
     </Card>
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    margin: 12,
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    overflow: 'hidden',
+  },
+  header: {
+    backgroundColor: '#1E88E5',
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+  },
+  headerText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 12,
+  },
+  row: {
+    flexDirection: 'row',
+    padding: 12,
+    alignItems: 'flex-start',
+  },
+  rowSplit: {
+    flexDirection: 'row',
+    padding: 12,
+    alignItems: 'center',
+  },
+  labelCol: {
+    flex: 1.2,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  valueCol: {
+    flex: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  label: {
+    fontSize: 14,
+    color: '#333',
+  },
+  value: {
+    fontSize: 14,
+    color: '#333',
+    textAlign: 'right',
+  },
+  splitBlock: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  splitDivider: {
+    width: 1,
+    backgroundColor: '#E0E0E0',
+    height: '100%',
+  },
+});

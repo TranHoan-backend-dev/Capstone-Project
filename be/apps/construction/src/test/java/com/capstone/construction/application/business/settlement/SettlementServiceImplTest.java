@@ -4,7 +4,7 @@ import com.capstone.construction.application.dto.request.settlement.SettlementFi
 import com.capstone.construction.application.dto.request.settlement.SettlementRequest;
 import com.capstone.construction.application.dto.request.settlement.SignificanceRequest;
 import com.capstone.construction.domain.model.Settlement;
-import com.capstone.construction.domain.model.utils.SettlementSignificance;
+import com.capstone.construction.domain.model.utils.significance.SettlementSignificance;
 import com.capstone.construction.infrastructure.persistence.SettlementRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
