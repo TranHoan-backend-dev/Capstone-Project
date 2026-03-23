@@ -119,6 +119,7 @@ public class SettlementServiceImpl implements SettlementService {
   }
 
   private @NonNull SettlementResponse mapToResponse(@NonNull Settlement settlement) {
+    var installationForm = settlement.getInstallationForm();
     return new SettlementResponse(
       settlement.getSettlementId(),
       settlement.getJobContent(),
@@ -128,9 +129,10 @@ public class SettlementServiceImpl implements SettlementService {
       settlement.getCreatedAt(),
       settlement.getUpdatedAt(),
       settlement.getRegistrationAt(),
-      settlement.getInstallationForm().getFormCode(),
-      settlement.getInstallationForm().getFormNumber(),
-      settlement.getSignificance()
+      installationForm.getFormCode(),
+      installationForm.getFormNumber(),
+      settlement.getSignificance(),
+      installationForm.getStatus()
     );
   }
 }

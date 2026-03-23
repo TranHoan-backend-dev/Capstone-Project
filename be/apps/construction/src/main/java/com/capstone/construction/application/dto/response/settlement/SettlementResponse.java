@@ -1,5 +1,6 @@
 package com.capstone.construction.application.dto.response.settlement;
 
+import com.capstone.construction.domain.model.utils.FormProcessingStatus;
 import com.capstone.construction.domain.model.utils.significance.SettlementSignificance;
 
 import java.math.BigDecimal;
@@ -17,6 +18,7 @@ public record SettlementResponse(
   LocalDate registrationAt,
   String formCode,
   String formNumber,
-  SettlementSignificance significance
+  SettlementSignificance significance,
+  FormProcessingStatus status
 ) {
 }
