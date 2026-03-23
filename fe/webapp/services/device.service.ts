@@ -76,25 +76,9 @@ export const getAllMaterials = async (
             groupId: groupId ?? "",
             minPrice: minPrice ?? "",
             maxPrice: maxPrice ?? "",
-        },
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
+        }
     })
 };
-
-export const updateParam = (
-    accessToken: string,
-    id: string,
-    name: string,
-    value: number,
-) =>
-    axios.put(`${API_GATEWAY_URL}/d/params/${id}`, { name, value }, {
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-        },
-    });
-
 
 export const createMaterial = (
     accessToken: string,
@@ -204,6 +188,7 @@ export const getAllOverallWaterMeters = (
             Authorization: `Bearer ${accessToken}`,
         },
     });
+
 export const getAllParams = (
     accessToken: string,
     page: number,
@@ -218,6 +203,18 @@ export const getAllParams = (
             sort,
             filter,
         },
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
+
+export const updateParam = (
+    accessToken: string,
+    id: string,
+    name: string,
+    value: number,
+) =>
+    axios.put(`${API_GATEWAY_URL}/d/params/${id}`, { name, value }, {
         headers: {
             Authorization: `Bearer ${accessToken}`,
         },
