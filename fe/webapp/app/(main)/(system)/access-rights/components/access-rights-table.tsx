@@ -191,7 +191,7 @@ export const AccessRightsTable = ({ username }: Props) => {
         headerSummary={`${data.length}`}
         paginationProps={{
           total: totalPages,
-          initialPage: page,
+          page: page,
           onChange: setPage,
           summary: `${totalItems}`,
         }}
