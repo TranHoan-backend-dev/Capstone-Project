@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import com.capstone.device.infrastructure.service.GcsService;
 
+import java.util.Collection;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -36,7 +38,7 @@ public class UsageHistoryUseCase {
     return usageHistoryService.updateUsageDetails(serial, recordingDate, index, imageUrl);
   }
 
-  public java.util.List<UsageResponse> getUsageByCustomerIds(java.util.Collection<String> customerIds) {
+  public java.util.List<UsageResponse> getUsageByCustomerIds(Collection<String> customerIds) {
     return usageHistoryService.getUsageByCustomerIds(customerIds);
   }
 }

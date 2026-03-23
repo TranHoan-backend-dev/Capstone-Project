@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.math.BigDecimal;
 import java.util.Collection;
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -66,7 +65,8 @@ public class UsageHistoryController {
 
   @Operation(summary = "Lấy lịch sử sử dụng theo danh sách mã khách hàng", description = "Dùng cho module xem hóa đơn hoặc báo cáo tổng hợp")
   @GetMapping("/batch")
-  public ResponseEntity<WrapperApiResponse> getByCustomerIds(@RequestParam Collection<String> ids) {
+  public ResponseEntity<WrapperApiResponse> getByCustomerIds(@RequestParam("ids") Collection<String> ids) {
+    log.info("Get by customer ids {}", ids);
     var response = useCase.getUsageByCustomerIds(ids);
     return Utils.returnOkResponse("Lấy lịch sử sử dụng thành công", response);
   }

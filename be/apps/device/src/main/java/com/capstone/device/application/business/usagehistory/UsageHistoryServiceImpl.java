@@ -64,7 +64,7 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
         .usageHistory(meter.getId())
         .meter(meter)
         .customerId(customerId)
-        .usages(new ArrayList<>())
+        .usages(new Stack<>())
         .build();
       var customerInfo = getCustomerInfo(customerId);
       return getUsageResponse(imageUrl, index, recordingDate, usage, usageHistory, customerInfo);
@@ -85,6 +85,7 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
 
   @Override
   public List<UsageResponse> getUsageByCustomerIds(Collection<String> customerIds) {
+    log.info("getUsageByCustomerIds");
     var histories = repository.findAllByCustomerIdIn(customerIds);
     return histories.stream().map(h -> {
       var customerInfo = getCustomerInfo(h.getCustomerId());
@@ -120,7 +121,7 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
     // Actually, we can just call calculateMass again
     // But calculateMass uses the current history, so we should temporarily remove the updated one or handle it
     // For simplicity, let's just redo the logic for this specific record
-    
+
     // Find previous index
     var previousIndex = history.getUsages().stream()
       .filter(u -> u.getIndex() != null)
@@ -135,7 +136,7 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
     }
     var massScaled = mass.setScale(2, RoundingMode.HALF_UP);
     usage.setMass(massScaled);
-    
+
     var breakdown = waterChargeCalculator.calculateProgressiveCharge(massScaled, waterPrice);
     usage.setPrice(breakdown.totalAmount());
 

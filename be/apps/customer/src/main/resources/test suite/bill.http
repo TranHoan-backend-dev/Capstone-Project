@@ -1,6 +1,8 @@
+@roadmap_id = 5e6f7081-4000-4eee-9fff-eeeeeeee0002
+
 ### TC01 - View bills by roadmap successfully (Manager Kinh Doanh)
-GET http://localhost:9005/api/v1/bills/roadmap/RM_001?page=0&size=10
-Authorization: Bearer {{token_manager}}
+GET http://localhost:9005/api/v1/bills/roadmap/{{roadmap_id}}?page=0&size=10
+Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 > {%
@@ -10,7 +12,7 @@ client.test("Status is 200", function() {
 %}
 
 ### TC02 - View bills by roadmap successfully (Nhân viên khảo sát)
-GET http://localhost:9005/api/v1/bills/roadmap/RM_001
+GET http://localhost:9005/api/v1/bills/roadmap/{{roadmap_id}}
 Authorization: Bearer {{token_survey}}
 Content-Type: application/json
 
@@ -21,7 +23,7 @@ client.test("Status is 200", function() {
 %}
 
 ### TC03 - View bills by roadmap successfully (Nhân viên ghi thu)
-GET http://localhost:9005/api/v1/bills/roadmap/RM_001
+GET http://localhost:9005/api/v1/bills/roadmap/{{roadmap_id}}
 Authorization: Bearer {{token_meter_staff}}
 Content-Type: application/json
 
@@ -44,7 +46,7 @@ client.test("Status is 200", function() {
 %}
 
 ### TC05 - No authentication token
-GET http://localhost:9005/api/v1/bills/roadmap/RM_001
+GET http://localhost:9005/api/v1/bills/roadmap/{{roadmap_id}}
 Content-Type: application/json
 
 > {%
@@ -54,7 +56,7 @@ client.test("Status is 401", function() {
 %}
 
 ### TC06 - Forbidden role (Unauthorized staff)
-GET http://localhost:9005/api/v1/bills/roadmap/RM_001
+GET http://localhost:9005/api/v1/bills/roadmap/{{roadmap_id}}
 Authorization: Bearer {{token_unauthorized}}
 Content-Type: application/json
 
@@ -76,7 +78,7 @@ client.test("Status is 404 or 405", function() {
 %}
 
 ### TC08 - Invalid pagination (negative page)
-GET http://localhost:9005/api/v1/bills/roadmap/RM_001?page=-1
+GET http://localhost:9005/api/v1/bills/roadmap/{{roadmap_id}}?page=-1
 Authorization: Bearer {{token_manager}}
 Content-Type: application/json
 
@@ -87,7 +89,7 @@ client.test("Status is 400 or handled by framework", function() {
 %}
 
 ### TC09 - SQL Injection attempt
-GET http://localhost:9005/api/v1/bills/roadmap/RM_001' OR '1'='1
+GET http://localhost:9005/api/v1/bills/roadmap/{{roadmap_id}}' OR '1'='1
 Authorization: Bearer {{token_manager}}
 Content-Type: application/json
 

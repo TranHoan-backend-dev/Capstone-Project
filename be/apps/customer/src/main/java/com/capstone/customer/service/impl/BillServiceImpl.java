@@ -3,10 +3,11 @@ package com.capstone.customer.service.impl;
 import com.capstone.customer.dto.request.BillRequest;
 import com.capstone.customer.dto.request.customer.CustomerFilterRequest;
 import com.capstone.customer.dto.response.BillResponse;
-import com.capstone.customer.dto.response.CustomerResponse;
 import com.capstone.customer.model.Bill;
+import com.capstone.customer.model.Customer;
 import com.capstone.customer.repository.BillRepository;
 import com.capstone.customer.repository.CustomerRepository;
+import com.capstone.customer.repository.CustomerSpecification;
 import com.capstone.customer.service.boundary.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +17,11 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -31,11 +32,10 @@ public class BillServiceImpl implements BillService {
   CustomerRepository customerRepository;
   CustomerService customerService;
   DeviceService deviceService;
-  ConstructionService constructionService;
 
   @Override
   @Transactional
-  public BillResponse createBill(BillRequest request) {
+  public BillResponse createBill(@NonNull BillRequest request) {
     log.info("Creating bill for customer ID: {}", request.customerId());
     var customer = customerRepository.findById(request.customerId())
       .orElseThrow(() -> new IllegalArgumentException("Customer not found with ID: " + request.customerId()));
@@ -99,34 +99,41 @@ public class BillServiceImpl implements BillService {
   }
 
   @Override
-  public Page<Object> getBillsByRoadmap(String roadmapId, Pageable pageable) {
-    log.info("Fetching bills for roadmap: {} this month", roadmapId);
-    
-    // 1. Get customers for this roadmap
-    var filter = CustomerFilterRequest.fromRoadmapId(roadmapId, null);
-    Page<CustomerResponse> customers = customerService.getAllCustomers(pageable, filter);
+  public Page<BillResponse> getBillsByCustomer(String customerId, Pageable pageable) {
+    log.info("Fetching bills for roadmap: {} this month", customerId);
 
-    if (customers.isEmpty()) {
+    // 1. Get customers for this roadmap
+    var filter = CustomerFilterRequest.fromRoadmapId(customerId, null);
+
+    Specification<Customer> spec = CustomerSpecification.filter(filter);
+    var result = customerRepository.findAll(spec, pageable);
+
+    if (result.isEmpty()) {
       return new PageImpl<>(List.of(), pageable, 0);
     }
 
-    // 2. Get usage/billing details from device service for these customers
-    List<String> customerIds = customers.getContent().stream()
-      .map(CustomerResponse::customerId)
+    List<BillResponse> bills = result.stream()
+      .filter(c -> c.getBill() != null && !c.getBill().isEmpty())
+      .map(c -> mapToResponse(c.getBill().peek()))
       .toList();
 
-    var usageResponse = deviceService.getUsageBatch(customerIds);
-
     // 3. Return as a page (preserving the pagination from customers)
-    return new PageImpl<>((List<Object>) usageResponse.data(), pageable, customers.getTotalElements());
+    return new PageImpl<>(bills, pageable, result.getTotalElements());
   }
 
-  private BillResponse mapToResponse(@NonNull Bill bill) {
+  private @NonNull BillResponse mapToResponse(@NonNull Bill bill) {
+    var customer = bill.getCustomer();
+    var usageResponse = deviceService.getUsageBatch(List.of(customer.getCustomerId()));
     return new BillResponse(
       bill.getBillId(),
       bill.getBillName(),
       bill.getNote(),
       bill.getExportAddress(),
-      bill.getCustomer().getName());
+      bill.getTotalAmount(),
+      bill.getAmountNeedToPay(),
+      bill.getPayDate().toString(),
+      usageResponse.data(),
+      customerService.getCustomerById(customer.getCustomerId())
+    );
   }
 }
