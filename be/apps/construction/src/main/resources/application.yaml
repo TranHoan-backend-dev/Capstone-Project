@@ -65,6 +65,7 @@ rabbit-mq-config:
     - receipt
     - finance
     - construction-request
+    - roadmap
   actions:
     - update
     - delete

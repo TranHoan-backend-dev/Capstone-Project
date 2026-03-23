@@ -2,9 +2,9 @@ import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { PaperProvider } from 'react-native-paper';
 import { nawacoTheme } from './src/theme/paperTheme';
-import LoginScreen from './src/screens/LoginScreen';
-import HomeScreen from './src/screens/HomeScreen';
 import AppNavigator from './src/navigation/AppNavigator';
+import { AuthProvider } from './src/context/AuthContext';
+import { ToastProvider } from './src/context/ToastContext';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -12,10 +12,14 @@ function App() {
   return (
     <SafeAreaProvider>
       <PaperProvider theme={nawacoTheme}>
-        <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-        <View style={styles.container}>
-          <AppNavigator />
-        </View>
+        <ToastProvider>
+          <AuthProvider>
+            <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+            <View style={styles.container}>
+              <AppNavigator />
+            </View>
+          </AuthProvider>
+        </ToastProvider>
       </PaperProvider>
     </SafeAreaProvider>
   );

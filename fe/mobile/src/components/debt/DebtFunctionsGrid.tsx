@@ -15,12 +15,12 @@ export default function DebtFunctionsGrid() {
     <View>
       <View style={styles.grid}>
         <MenuItemCard
-          icon="cash-multiple"
+          icon="currency-usd"
           label="Thu tiền"
           onPress={() => navigation.navigate('Collection')}
         />
         <MenuItemCard
-          icon="cash-multiple"
+          icon="chart-bar"
           label="Thống kê"
           onPress={() => {}}
         />

@@ -1,6 +1,7 @@
 package com.capstone.data.source.response;
 
 import androidx.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 public class UserProfileResponse {
@@ -15,7 +16,7 @@ public class UserProfileResponse {
     private final String username;
     private final String email;
 
-    public UserProfileResponse(String fullName, String avatarUrl, String address, String phoneNumber, 
+    public UserProfileResponse(String fullName, String avatarUrl, String address, String phoneNumber,
                                String gender, String birthday, String role, String username, String email) {
         this.fullName = fullName;
         this.avatarUrl = avatarUrl;
@@ -28,13 +29,44 @@ public class UserProfileResponse {
         this.email = email;
     }
 
-    public String getFullName() { return fullName; }
-    @Nullable public String getAvatarUrl() { return avatarUrl; }
-    @Nullable public String getAddress() { return address; }
-    @Nullable public String getPhoneNumber() { return phoneNumber; }
-    @Nullable public String getGender() { return gender; }
-    @Nullable public String getBirthday() { return birthday; }
-    public String getRole() { return role; }
-    public String getUsername() { return username; }
-    public String getEmail() { return email; }
+    public String getFullName() {
+        return fullName;
+    }
+
+    @Nullable
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    @Nullable
+    public String getAddress() {
+        return address;
+    }
+
+    @Nullable
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    @Nullable
+    public String getGender() {
+        return gender;
+    }
+
+    @Nullable
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
 }

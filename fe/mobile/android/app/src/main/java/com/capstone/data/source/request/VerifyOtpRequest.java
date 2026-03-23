@@ -9,6 +9,11 @@ public class VerifyOtpRequest {
         this.otp = otp;
     }
 
-    public String getEmail() { return email; }
-    public String getOtp() { return otp; }
+    public String getEmail() {
+        return email;
+    }
+
+    public String getOtp() {
+        return otp;
+    }
 }

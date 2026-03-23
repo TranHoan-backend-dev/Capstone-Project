@@ -14,15 +14,16 @@ export async function PUT(
     }
 
     const { id } = await params;
-    const { name, type } = await req.json();
+    const payload = await req.json();
 
-    const response = await updateMaterial(accessToken, id, name, type);
+    const response = await updateMaterial(accessToken, id, payload);
 
     return NextResponse.json(response.data, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(
       {
-        message: error.response?.data?.message || "Update material price failed",
+        message:
+          error.response?.data?.message || "Cập nhật đơn giá vật tư thất bại",
       },
       { status: error.response?.status || 500 },
     );
@@ -48,7 +49,8 @@ export async function DELETE(
   } catch (error: any) {
     return NextResponse.json(
       {
-        message: error.response?.data?.message || "Delete material price failed",
+        message:
+          error.response?.data?.message || "Xóa đơn giá vật tư thất bại",
       },
       { status: error.response?.status || 500 },
     );

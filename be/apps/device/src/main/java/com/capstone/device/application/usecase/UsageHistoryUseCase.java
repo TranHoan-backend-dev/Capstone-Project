@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import com.capstone.device.infrastructure.service.GcsService;
 
+import java.util.Collection;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -24,11 +26,19 @@ public class UsageHistoryUseCase {
     if (!waterMeterService.isWaterMeterExisting(serial)) {
       throw new IllegalArgumentException("Serial " + serial + " does not exist");
     }
-    var url = service.upload(request.image());
-    return usageHistoryService.addWaterIndexOfThisMonth(url, serial, request.index(), request.recordingDate());
+//    var url = service.upload(request.image());
+    return usageHistoryService.addWaterIndexOfThisMonth("url", serial, request.index(), request.recordingDate());
   }
 
   public void updatePaymentStatus(String serial, String method) {
     usageHistoryService.updatePaymentStatus(serial, method);
+  }
+
+  public UsageResponse updateUsage(String serial, java.time.LocalDate recordingDate, java.math.BigDecimal index, String imageUrl) {
+    return usageHistoryService.updateUsageDetails(serial, recordingDate, index, imageUrl);
+  }
+
+  public java.util.List<UsageResponse> getUsageByCustomerIds(Collection<String> customerIds) {
+    return usageHistoryService.getUsageByCustomerIds(customerIds);
   }
 }

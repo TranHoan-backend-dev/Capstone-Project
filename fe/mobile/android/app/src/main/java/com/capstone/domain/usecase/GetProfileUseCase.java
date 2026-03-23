@@ -3,6 +3,7 @@ package com.capstone.domain.usecase;
 import com.capstone.common.utils.Result;
 import com.capstone.domain.model.UserProfile;
 import com.capstone.domain.repository.AuthRepository;
+
 import javax.inject.Inject;
 
 /**
@@ -21,7 +22,7 @@ public class GetProfileUseCase {
      */
     public Result<UserProfile> execute() {
         try {
-            UserProfile profile = authRepository.getMe();
+            var profile = authRepository.getMe();
             return Result.success(profile);
         } catch (Exception e) {
             return Result.failure(e);

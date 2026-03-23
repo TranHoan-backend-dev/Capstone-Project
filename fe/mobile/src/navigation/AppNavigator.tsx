@@ -53,30 +53,55 @@ export type RootStackParamList = {
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
+import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { useAuth } from '../context/AuthContext';
+
 export default function AppNavigator() {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Login"
-        screenOptions={{ headerShown: false }}
-      >
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Meter" component={MeterScreen} />
-        <Stack.Screen name="MeterRoute" component={MeterRouteScreen} />
-        <Stack.Screen name="CustomerList" component={CustomerListScreen} />
-        <Stack.Screen name="MeterInput" component={MeterInputScreen} />
-        <Stack.Screen name="Debt" component={DebtScreen} />
-        <Stack.Screen name="Collection" component={CollectionScreen} />
-        <Stack.Screen name="InvoiceList" component={InvoiceListScreen} />
-        <Stack.Screen name="InvoiceDetail" component={InvoiceDetailScreen} />
-        <Stack.Screen name="Profile" component={ProfileScreen} />
-        <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
-        <Stack.Screen name="Notification" component={NotificationScreen} />
-        <Stack.Screen name="CaptureWaterMeter" component={CaptureWaterMeterScreen} />
-        <Stack.Screen name="VerifyMeterReadings" component={VerifyMeterReadingsScreen} />
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {!isAuthenticated ? (
+          <>
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+          </>
+        ) : (
+          <>
+            <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen name="Meter" component={MeterScreen} />
+            <Stack.Screen name="MeterRoute" component={MeterRouteScreen} />
+            <Stack.Screen name="CustomerList" component={CustomerListScreen} />
+            <Stack.Screen name="MeterInput" component={MeterInputScreen} />
+            <Stack.Screen name="Debt" component={DebtScreen} />
+            <Stack.Screen name="Collection" component={CollectionScreen} />
+            <Stack.Screen name="InvoiceList" component={InvoiceListScreen} />
+            <Stack.Screen name="InvoiceDetail" component={InvoiceDetailScreen} />
+            <Stack.Screen name="Profile" component={ProfileScreen} />
+            <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
+            <Stack.Screen name="Notification" component={NotificationScreen} />
+            <Stack.Screen name="CaptureWaterMeter" component={CaptureWaterMeterScreen} />
+            <Stack.Screen name="VerifyMeterReadings" component={VerifyMeterReadingsScreen} />
+          </>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});

@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable;
 public interface BillService {
     /**
      * Creates a new bill / invoice information for a customer.
-     * 
+     *
      * @param request the bill creation request
      * @return the created bill response
      */
@@ -19,7 +19,7 @@ public interface BillService {
 
     /**
      * Updates existing bill information.
-     * 
+     *
      * @param id      the bill ID (customer ID)
      * @param request the bill update request
      * @return the updated bill response
@@ -28,14 +28,14 @@ public interface BillService {
 
     /**
      * Deletes bill information.
-     * 
+     *
      * @param id the bill ID
      */
     void deleteBill(String id);
 
     /**
      * Retrieves bill information by ID.
-     * 
+     *
      * @param id the bill ID
      * @return the bill response
      */
@@ -43,9 +43,18 @@ public interface BillService {
 
     /**
      * Retrieves all bills with pagination.
-     * 
+     *
      * @param pageable pagination information
      * @return a page of bill responses
      */
     Page<BillResponse> getAllBills(Pageable pageable);
+
+    /**
+     * Retrieves all bills for a specific roadmap this month.
+     *
+     * @param customerId the customer ID
+     * @param pageable  pagination information
+     * @return a page of bill/usage data
+     */
+    Page<BillResponse> getBillsByCustomer(String customerId, Pageable pageable);
 }

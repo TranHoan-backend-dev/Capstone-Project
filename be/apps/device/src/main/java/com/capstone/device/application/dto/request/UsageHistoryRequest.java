@@ -9,14 +9,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public record UsageHistoryRequest(
-  @NonNull
-  MultipartFile image,
+  @NonNull MultipartFile image,
 
-  @NotNull
-  @Positive
-  BigDecimal index,
+  @NotNull @Positive BigDecimal index,
 
-  @NotNull
-  LocalDate recordingDate
+  @NotNull LocalDate recordingDate
 ) {
 }

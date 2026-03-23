@@ -46,9 +46,9 @@ class DeviceManagementHistoryServiceImplTest {
     // Assert
     assertNotNull(result);
     assertEquals(2, result.size());
-    assertEquals("ROADMAP", result.get(0).getEntityName());
-    assertEquals("Roadmap A", result.get(0).getItemName());
-    assertEquals(now, result.get(0).getOperationTime());
+    assertEquals("ROADMAP", result.getFirst().getEntityName());
+    assertEquals("Roadmap A", result.getFirst().getItemName());
+    assertEquals(now, result.getFirst().getOperationTime());
 
     assertEquals("LATERAL", result.get(1).getEntityName());
     assertEquals("Lateral B", result.get(1).getItemName());
@@ -87,9 +87,9 @@ class DeviceManagementHistoryServiceImplTest {
     // Assert
     assertNotNull(result);
     assertEquals(1, result.size());
-    assertNull(result.get(0).getEntityName());
-    assertNull(result.get(0).getItemName());
-    assertNull(result.get(0).getOperationTime());
+    assertNull(result.getFirst().getEntityName());
+    assertNull(result.getFirst().getItemName());
+    assertNull(result.getFirst().getOperationTime());
 
     verify(repository, times(1)).getDeviceManagementHistory();
   }

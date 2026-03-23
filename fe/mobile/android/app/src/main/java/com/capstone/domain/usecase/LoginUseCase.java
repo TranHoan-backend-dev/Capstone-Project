@@ -6,6 +6,7 @@ import com.capstone.domain.repository.AuthRepository;
 
 import java.util.Arrays;
 import java.util.List;
+
 import javax.inject.Inject;
 
 /**
@@ -25,17 +26,17 @@ public class LoginUseCase {
      */
     public Result<UserProfile> execute(String accessToken) {
         try {
-            UserProfile userProfile = authRepository.login(accessToken);
-            
+            var userProfile = authRepository.login(accessToken);
+
             // Danh sách các role được phép sử dụng ứng dụng mobile
             List<String> allowedRoles = Arrays.asList(
-                "METER_INSPECTION_STAFF", 
-                "BUSINESS_DEPARTMENT_HEAD", 
-                "IT_STAFF"
+                    "METER_INSPECTION_STAFF",
+                    "BUSINESS_DEPARTMENT_HEAD",
+                    "IT_STAFF"
             );
-            
-            String userRole = userProfile.getRole().toUpperCase();
-            
+
+            var userRole = userProfile.getRole().toUpperCase();
+
             if (allowedRoles.contains(userRole)) {
                 return Result.success(userProfile);
             } else {

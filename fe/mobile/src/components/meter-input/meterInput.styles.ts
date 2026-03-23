@@ -22,7 +22,11 @@ export default StyleSheet.create({
   },
 
   formContainer: {
-    paddingBottom: 160,
+    flex: 1,
+  },
+
+  scrollContent: {
+    paddingBottom: 220, // Enough to clear the absolute buttons (110 + 40 + height)
   },
 
   card: {
