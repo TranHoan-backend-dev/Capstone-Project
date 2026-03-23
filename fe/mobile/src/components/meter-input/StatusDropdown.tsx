@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { View, Modal, FlatList, Pressable } from 'react-native';
-import { Text } from 'react-native-paper';
+import { View, Modal, FlatList, Pressable, StyleSheet } from 'react-native';
+import { Text, Divider } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import styles from './meterInput.styles';
 
 interface StatusOption {
   label: string;
@@ -15,6 +14,26 @@ interface StatusDropdownProps {
   onChange: (value: string) => void;
 }
 
+const DropdownItem = ({ 
+  item, 
+  selectedValue, 
+  onSelect 
+}: { 
+  item: StatusOption, 
+  selectedValue: string, 
+  onSelect: (val: string) => void 
+}) => (
+  <Pressable
+    style={styles.dropdownItem}
+    onPress={() => onSelect(item.value)}
+  >
+    <Text style={styles.dropdownItemText}>{item.label}</Text>
+    {selectedValue === item.value && (
+      <Icon name="check" size={20} color="#333" />
+    )}
+  </Pressable>
+);
+
 export default function StatusDropdown({
   value,
   options,
@@ -24,17 +43,22 @@ export default function StatusDropdown({
 
   const selectedLabel = options.find(opt => opt.value === value)?.label || 'Bình thường';
 
+  const handleSelect = (val: string) => {
+    onChange(val);
+    setVisible(false);
+  };
+
   return (
-    <>
+    <View style={styles.container}>
       <Pressable
         onPress={() => setVisible(true)}
-        style={styles.statusMenuButton}
+        style={[styles.statusMenuButton, visible && styles.activeButton]}
       >
         <Text style={styles.statusMenuText}>{selectedLabel}</Text>
         <Icon
           name={visible ? 'chevron-up' : 'chevron-down'}
           size={24}
-          color="#1E88E5"
+          color="#333"
         />
       </Pressable>
 
@@ -47,26 +71,70 @@ export default function StatusDropdown({
             <FlatList
               data={options}
               renderItem={({ item }) => (
-                <Pressable
-                  style={styles.dropdownItem}
-                  onPress={() => {
-                    onChange(item.value);
-                    setVisible(false);
-                  }}
-                >
-                  <Text style={styles.dropdownItemText}>{item.label}</Text>
-                  {value === item.value && (
-                    <Icon name="check" size={20} color="#4CAF50" />
-                  )}
-                </Pressable>
+                <DropdownItem 
+                  item={item} 
+                  selectedValue={value} 
+                  onSelect={handleSelect} 
+                />
               )}
               keyExtractor={item => item.value}
-              scrollEnabled={true}
-              nestedScrollEnabled={true}
+              ItemSeparatorComponent={Divider}
             />
           </View>
         </Pressable>
       </Modal>
-    </>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+  },
+  statusMenuButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#333',
+    borderRadius: 4,
+    backgroundColor: '#fff',
+  },
+  activeButton: {
+    borderBottomWidth: 0,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+  },
+  statusMenuText: {
+    fontSize: 15,
+    color: '#333',
+  },
+  dropdownOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.1)',
+  },
+  dropdownMenu: {
+    position: 'absolute',
+    top: '35%', // Approx positioning, might need adjustment based on screen
+    left: 12,
+    right: 12,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#333',
+    borderTopWidth: 0,
+    borderBottomLeftRadius: 4,
+    borderBottomRightRadius: 4,
+    elevation: 4,
+  },
+  dropdownItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 12,
+  },
+  dropdownItemText: {
+    fontSize: 15,
+    color: '#333',
+  },
+});

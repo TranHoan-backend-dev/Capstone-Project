@@ -30,7 +30,7 @@ public class CreateOrderConsumer extends GeneralEventConsumer<CreateEventMessage
   public void handle(CreateEventMessage event) {
     super.handle(
       event,
-      List.of(Topic.getTopicOfPlanningTechnicalDepartment(RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD)),
+      List.of(Topic.getTopicOfPlanningTechnicalDepartment(RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD, "")),
       "Đơn chờ lắp đặt mới vừa được tạo",
       null);
 

@@ -1,7 +1,8 @@
 package com.capstone.auth.domain.model;
 
-import com.capstone.auth.infrastructure.config.Constant;
+import com.capstone.auth.infrastructure.utils.Message;
 import com.capstone.common.utils.SharedConstant;
+import com.capstone.common.utils.SharedMessage;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -22,7 +23,6 @@ import java.util.function.Consumer;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Users {
   @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
   String userId;
 
   @Column(unique = true, nullable = false)
@@ -68,40 +68,40 @@ public class Users {
   Collection<? extends GrantedAuthority> authorities;
 
   public void setEmail(String email) {
-    requireNonNullAndNotEmpty(email, Constant.PT_03);
+    requireNonNullAndNotEmpty(email, SharedMessage.MES_02);
     if (!email.matches(SharedConstant.EMAIL_PATTERN)) {
-      throw new IllegalArgumentException(Constant.PT_01);
+      throw new IllegalArgumentException(SharedMessage.MES_01);
     }
     this.email = email;
   }
 
   public void setUserId(String value) {
-    requireNonNullAndNotEmpty(value, Constant.PT_22);
+    requireNonNullAndNotEmpty(value, SharedMessage.MES_07);
     this.userId = value;
   }
 
   public void setUsername(String username) {
-    requireNonNullAndNotEmpty(username, Constant.PT_05);
+    requireNonNullAndNotEmpty(username, SharedMessage.MES_18);
     this.username = username;
   }
 
   public void setElectronicSigningUrl(String value) {
-    requireNonNullAndNotEmpty(value, Constant.PT_24);
+    requireNonNullAndNotEmpty(value, Message.PT_14);
     this.electronicSigningUrl = value;
   }
 
   public void setRole(Roles role) {
-    Objects.requireNonNull(role, Constant.PT_06);
+    Objects.requireNonNull(role, Message.PT_03);
     this.role = role;
   }
 
   public void setDepartmentId(String departmentId) {
-    requireNonNullAndNotEmpty(departmentId, Constant.PT_19);
+    requireNonNullAndNotEmpty(departmentId, Message.PT_11);
     this.departmentId = departmentId;
   }
 
   public void setWaterSupplyNetworkId(String value) {
-    requireNonNullAndNotEmpty(value, Constant.PT_18);
+    requireNonNullAndNotEmpty(value, Message.PT_10);
     this.waterSupplyNetworkId = value;
   }
 

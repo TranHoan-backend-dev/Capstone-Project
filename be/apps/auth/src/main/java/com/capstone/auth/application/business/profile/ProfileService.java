@@ -11,4 +11,10 @@ public interface ProfileService {
   ProfileDTO updateProfile(Profile profile);
 
   ProfileDTO updateAvatar(String id, String avatar);
+
+  String getAvatar(String id);
+
+  boolean existsByPhone(String phone);
+
+  String getFullName(String id);
 }

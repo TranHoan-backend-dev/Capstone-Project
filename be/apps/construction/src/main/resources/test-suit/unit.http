@@ -65,6 +65,25 @@ Accept: application/json
 }
 
 ### R
+### Get all (no filter)
+GET {{uri}}?page=0&size=10&sort=createdAt,desc
+Accept: application/json
+
+### Get all - keyword search by unit name
+GET {{uri}}?page=0&size=10&keyword=to
+Accept: application/json
+
+### Get all - filter by communeId
+GET {{uri}}?page=0&size=10&communeId=0f1c0a3a-3c3c-4f33-8c24-7a7c0d6a0001
+Accept: application/json
+
+### Get all - keyword + communeId
+GET {{uri}}?page=0&size=10&keyword=to&communeId=0f1c0a3a-3c3c-4f33-8c24-7a7c0d6a0001
+Accept: application/json
+
+### Get by id
+GET {{uri}}/47f63a1a-43ef-4265-9571-bd87baae0480
+Accept: application/json
 
 ### U
 ### happy case

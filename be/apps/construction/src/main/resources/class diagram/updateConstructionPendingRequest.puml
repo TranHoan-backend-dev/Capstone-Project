@@ -1,0 +1,77 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam class {
+    BackgroundColor White
+    BorderColor #263238
+    ArrowColor #263238
+}
+
+package "Construction Service" #E3F2FD {
+    package "Adapter" #F5F5F5 {
+        class ConstructionController {
+            + updateConstructionPendingRequest(id: String, empId: String): ResponseEntity
+        }
+    }
+
+    package "Application" #F5F5F5 {
+        interface ConstructionRequestService {
+            + updatePendingRequest(id: String, employeeId: String): void
+        }
+
+        class ConstructionRequestServiceImpl {
+            - repository: ConstructionRequestRepository
+            - ifRepo: InstallationFormRepository
+            - employeeService: EmployeeService
+            + updatePendingRequest(...)
+            - validateEmployee(employeeId: String): void
+        }
+    }
+
+    package "Domain" #F5F5F5 {
+        class ConstructionRequest <<Entity>> {
+            - id: String
+            - installationForm: InstallationForm
+        }
+
+        class InstallationForm <<Entity>> {
+            - constructedBy: String
+        }
+    }
+
+    package "Infrastructure" #F5F5F5 {
+        interface ConstructionRequestRepository {
+            + findById(id: String): Optional
+        }
+
+        interface InstallationFormRepository {
+            + save(form: InstallationForm): InstallationForm
+        }
+
+        interface EmployeeService <<FeignClient>> {
+            + getRoleOfEmployeeById(id: String): WrapperApiResponse
+            + isEmployeeExisting(authorId: String): WrapperApiResponse
+        }
+    }
+}
+
+package "Auth Service" #FFFDE7 {
+    class AuthorizationController <<Adapter>> {
+        + checkAuthorExisting(authorId: String): ResponseEntity
+        + getRoleOfEmployeeById(id: String): ResponseEntity
+    }
+}
+
+' Relationships
+ConstructionController o-- ConstructionRequestService
+ConstructionRequestService <|.. ConstructionRequestServiceImpl
+ConstructionRequestServiceImpl o-- ConstructionRequestRepository
+ConstructionRequestServiceImpl o-- InstallationFormRepository
+ConstructionRequestServiceImpl o-- EmployeeService
+
+ConstructionRequest *-- InstallationForm
+EmployeeService ..> AuthorizationController : calls (Feign)
+
+@endum

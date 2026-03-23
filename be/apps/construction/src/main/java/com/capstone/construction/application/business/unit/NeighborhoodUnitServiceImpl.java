@@ -8,7 +8,7 @@ import com.capstone.construction.domain.model.NeighborhoodUnit;
 import com.capstone.construction.infrastructure.persistence.NeighborhoodUnitRepository;
 import com.capstone.construction.infrastructure.persistence.CommuneRepository;
 import com.capstone.construction.application.exception.ExistingItemException;
-import com.capstone.construction.infrastructure.config.Constant;
+import com.capstone.construction.infrastructure.utils.Message;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -38,7 +38,7 @@ public class NeighborhoodUnitServiceImpl implements NeighborhoodUnitService {
     }
 
     var commune = communeRepository.findById(request.communeId())
-      .orElseThrow(() -> new IllegalArgumentException(Constant.PT_26));
+      .orElseThrow(() -> new IllegalArgumentException(Message.PT_13));
 
     var unit = NeighborhoodUnit.create(builder -> builder
       .name(request.name())
@@ -54,12 +54,12 @@ public class NeighborhoodUnitServiceImpl implements NeighborhoodUnitService {
     var unit = unitRepository.findById(id)
       .orElseThrow(() -> new IllegalArgumentException("Neighborhood unit not found with id: " + id));
 
-    if (unitRepository.existsByNameIgnoreCase(request.name())) {
+    if (!unit.getName().equalsIgnoreCase(request.name()) && unitRepository.existsByNameIgnoreCase(request.name())) {
       throw new ExistingItemException("Neighborhood unit with name " + request.name() + " already exists");
     }
 
     var commune = communeRepository.findById(request.communeId())
-      .orElseThrow(() -> new IllegalArgumentException(Constant.PT_26));
+      .orElseThrow(() -> new IllegalArgumentException(Message.PT_13));
 
     if (!unit.getName().equalsIgnoreCase(request.name())) {
       unit.setName(request.name());
@@ -91,8 +91,23 @@ public class NeighborhoodUnitServiceImpl implements NeighborhoodUnitService {
 
   @Override
   public PageResponse<NeighborhoodUnitResponse> getAllUnits(Pageable pageable) {
-    log.info("Fetching all neighborhood units with pageable: {}", pageable);
-    var page = unitRepository.findAll(pageable);
+    return getAllUnits(pageable, null, null);
+  }
+
+  @Override
+  public PageResponse<NeighborhoodUnitResponse> getAllUnits(Pageable pageable, String keyword, String communeId) {
+    log.info("Fetching all neighborhood units with pageable: {}, keyword: {}, communeId: {}", pageable, keyword, communeId);
+    var kw = (keyword == null || keyword.isBlank()) ? null : keyword.trim();
+    var cid = (communeId == null || communeId.isBlank()) ? null : communeId.trim();
+
+    var page = (kw == null && cid == null)
+      ? unitRepository.findAll(pageable)
+      : (kw != null && cid == null)
+      ? unitRepository.findAllByNameContainsIgnoreCase(kw, pageable)
+      : (kw == null)
+      ? unitRepository.findAllByCommune_CommuneId(cid, pageable)
+      : unitRepository.findAllByCommune_CommuneIdAndNameContainsIgnoreCase(cid, kw, pageable);
+
     return PageResponse.fromPage(page, this::mapToResponse);
   }
 

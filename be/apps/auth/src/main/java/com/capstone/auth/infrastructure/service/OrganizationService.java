@@ -1,6 +1,6 @@
 package com.capstone.auth.infrastructure.service;
 
-import com.capstone.common.config.FeignAuthInterceptor;
+import com.capstone.common.config.feign.FeignAuthInterceptor;
 import com.capstone.common.response.WrapperApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +18,9 @@ public interface OrganizationService {
 
   @GetMapping("/departments/exist/{id}")
   Boolean checkDepartmentExistence(@PathVariable String id);
+
+  @GetMapping("/departments/name/{id}")
+  String getDepartmentName(@PathVariable String id);
 
   @GetMapping("/jobs/exist/{id}")
   Boolean checkJobExistence(@PathVariable String id);
