@@ -634,3 +634,15 @@ export const updateEstimate = (
       "Content-Type": "application/json",
     },
   });
+
+  export const approveEstimate = (
+  accessToken: string,
+  estimateId: string,
+  status: string,
+) =>
+  axios.patch(`${API_GATEWAY_URL}/construction/estimates/${estimateId}`, status, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+  });

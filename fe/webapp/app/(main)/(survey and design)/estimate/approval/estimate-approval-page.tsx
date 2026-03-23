@@ -1,14 +1,33 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
-import { Tab, Tabs, Chip, DateValue } from "@heroui/react";
+import { useRouter } from "next/navigation";
+import { Tab, Tabs, Chip, DateValue, useDisclosure } from "@heroui/react";
 
 import { ApprovalInputSection } from "./components/approval-input-section";
 import { EstimateTable, EstimateOrder } from "./components/estimate-table";
 
 import { FilterSection } from "@/components/ui/FilterSection";
+import BaseModal from "@/components/ui/modal/BaseModal";
+import { CallToast } from "@/components/ui/CallToast";
+import CustomButton from "@/components/ui/custom/CustomButton";
+
+// Helper function to calculate total amount from materials
+const calculateTotalAmount = (materials: any[]): string => {
+  if (!materials || materials.length === 0) return "0";
+  
+  const total = materials.reduce((sum, item) => {
+    const materialTotal = parseFloat(item.totalMaterialPrice ?? 0) || 0;
+    const laborTotal = parseFloat(item.totalLaborPrice ?? 0) || 0;
+    return sum + materialTotal + laborTotal;
+  }, 0);
+  
+  return total.toLocaleString("vi-VN");
+};
 
 const EstimateApprovalPage = () => {
+  const router = useRouter();
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [keyword, setKeyword] = useState("");
   const [from, setFrom] = useState<DateValue | null | undefined>(null);
   const [to, setTo] = useState<DateValue | null | undefined>(null);
@@ -18,6 +37,13 @@ const EstimateApprovalPage = () => {
   >(null);
   const [approvalNote, setApprovalNote] = useState("");
   const [activeTab, setActiveTab] = useState<string>("pending");
+
+  // Modal state
+  const [selectedItem, setSelectedItem] = useState<EstimateOrder | null>(null);
+  const [actionType, setActionType] = useState<"approve" | "reject" | null>(
+    null,
+  );
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const mapStatus = (status: string): "pending" | "approved" | "rejected" => {
     switch (status) {
@@ -43,6 +69,7 @@ const EstimateApprovalPage = () => {
     direction: "desc",
   });
   const [page, setPage] = useState(1);
+  const [refetch, setRefetch] = useState(0);
   const pageSize = 10;
   useEffect(() => {
     const fetchData = async () => {
@@ -84,7 +111,7 @@ const EstimateApprovalPage = () => {
               designProfileName: info.customerName,
               phone: item.phoneNumber,
               installationAddress: info.address,
-              totalAmount: "0",
+              totalAmount: calculateTotalAmount(item.material),
               createdDate: new Date(info.createdAt).toLocaleDateString("vi-VN"),
               creator: creatorName,
               status: mapStatus(item.status?.estimate),
@@ -103,7 +130,7 @@ const EstimateApprovalPage = () => {
     };
 
     fetchData();
-  }, [page, sort]);
+  }, [page, sort, refetch]);
 
   const filteredOrders = useMemo(() => {
     let filtered = orders;
@@ -131,19 +158,80 @@ const EstimateApprovalPage = () => {
   };
 
   const handleApprove = (item: EstimateOrder) => {
-    console.log("Approve", item);
+    setSelectedItem(item);
+    setActionType("approve");
+    setApprovalDate(null);
+    setApprovalNote("");
+    onOpen();
   };
 
   const handleReject = (item: EstimateOrder) => {
-    console.log("Reject", item);
+    setSelectedItem(item);
+    setActionType("reject");
+    setApprovalDate(null);
+    setApprovalNote("");
+    onOpen();
   };
 
   const handleEstimate = (item: EstimateOrder) => {
-    console.log("Estimate", item);
+    router.push(
+      `/estimate/run/${item.id}`,
+    );
   };
 
   const handleView = (item: EstimateOrder) => {
-    console.log("View", item);
+    router.push(
+      `/estimate/run/${item.id}`,
+    );
+  };
+
+  const handleConfirmAction = async () => {
+    if (!selectedItem || !actionType) {
+      CallToast({
+        title: "Thất bại",
+        message: "Vui lòng điền đầy đủ ngày duyệt",
+        color: "danger",
+      });
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      const res = await fetch(
+        `/api/construction/estimates/${selectedItem.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(actionType === "approve"),
+        },
+      );
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Cập nhật thất bại");
+      }
+
+      CallToast({
+        title: "Thành công",
+        message: `${actionType === "approve" ? "Duyệt" : "Từ chối"} dự toán thành công`,
+        color: "success",
+      });
+
+      // Reload data
+      setRefetch((prev) => prev + 1);
+      onOpenChange();
+    } catch (error) {
+      CallToast({
+        title: "Thất bại",
+        message:
+          error instanceof Error ? error.message : "Có lỗi xảy ra",
+        color: "danger",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -160,12 +248,12 @@ const EstimateApprovalPage = () => {
         onSearch={handleSearch}
       />
 
-      <ApprovalInputSection
+      {/* <ApprovalInputSection
         approvalDate={approvalDate}
         approvalNote={approvalNote}
         setApprovalDateAction={setApprovalDate}
         setApprovalNoteAction={setApprovalNote}
-      />
+      /> */}
 
       <Tabs
         aria-label="Options"
@@ -232,6 +320,68 @@ const EstimateApprovalPage = () => {
           />
         </Tab>
       </Tabs>
+
+      {/* Approval/Rejection Modal */}
+      <BaseModal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        title={`${actionType === "approve" ? "Duyệt" : "Từ chối"} dự toán #${selectedItem?.code}`}
+        size="2xl"
+      >
+        <div className="space-y-6 py-4">
+          <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Khách hàng
+                </p>
+                <p className="font-semibold text-gray-900 dark:text-gray-100">
+                  {selectedItem?.designProfileName}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Tổng tiền
+                </p>
+                <p className="font-semibold text-primary">
+                  {selectedItem?.totalAmount}
+                </p>
+              </div>
+              <div className="col-span-2">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Địa chỉ
+                </p>
+                <p className="font-medium text-gray-900 dark:text-gray-100">
+                  {selectedItem?.installationAddress}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex gap-3 pt-6 border-t border-divider">
+          <CustomButton
+            onPress={() => {
+              onOpenChange();
+              setSelectedItem(null);
+              setActionType(null);
+            }}
+            className="font-medium"
+            color="default"
+            variant="bordered"
+          >
+            Hủy
+          </CustomButton>
+          <CustomButton
+            onPress={handleConfirmAction}
+            isLoading={isProcessing}
+            className="text-white font-medium"
+            color={actionType === "approve" ? "success" : "danger"}
+          >
+            {actionType === "approve" ? "Duyệt" : "Từ chối"}
+          </CustomButton>
+        </div>
+      </BaseModal>
     </>
   );
 };
