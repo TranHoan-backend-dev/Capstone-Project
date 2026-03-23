@@ -116,6 +116,14 @@ public class Customer {
   @Column(nullable = false)
   String waterMeterId;
 
+  @Setter
+  @Column(nullable = false)
+  String roadmapId;
+
+  @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
+  @ToString.Exclude
+  Bill bill;
+
   @PrePersist
   void onCreate() {
     this.createdAt = LocalDateTime.now();

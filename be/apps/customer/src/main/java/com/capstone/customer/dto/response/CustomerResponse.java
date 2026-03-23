@@ -39,6 +39,7 @@ public record CustomerResponse(
   String installationFormId,
   String waterPriceId,
   WaterPriceInfoResponse waterPrice,
-  String waterMeterId
+  String waterMeterId,
+  String address
 ) {
 }
