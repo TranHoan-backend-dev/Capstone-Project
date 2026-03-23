@@ -56,7 +56,7 @@ public class LateralController {
     log.info("REST request to create lateral: {}", request.name());
     var response = lateralUseCase.createLateral(request);
     log.info("Created lateral: {}", response);
-    return Utils.returnCreatedResponse("Lateral created successfully");
+    return Utils.returnCreatedResponse("Tạo nhánh tổng thành công");
   }
 
   @PutMapping("/{id}")
@@ -84,7 +84,7 @@ public class LateralController {
     @RequestBody @Valid LateralRequest request) {
     log.info("REST request to update lateral: {}", id);
     var response = lateralUseCase.updateLateral(id, request);
-    return Utils.returnOkResponse("Lateral updated successfully", response);
+    return Utils.returnOkResponse("Cập nhật nhánh tổng thành công", response);
   }
 
   @DeleteMapping("/{id}")
@@ -108,7 +108,7 @@ public class LateralController {
     @PathVariable @Parameter(description = "ID của nhánh tổng cần xóa") String id) {
     log.info("REST request to delete lateral: {}", id);
     lateralUseCase.deleteLateral(id);
-    return Utils.returnOkResponse("Lateral deleted successfully", null);
+    return Utils.returnOkResponse("Xóa nhánh tổng thành công", null);
   }
 
   @GetMapping("/{id}")
@@ -127,7 +127,7 @@ public class LateralController {
     @PathVariable @Parameter(description = "ID của nhánh tổng cần lấy thông tin") String id) {
     log.info("REST request to get lateral: {}", id);
     var response = lateralUseCase.getLateralById(id);
-    return Utils.returnOkResponse("Lateral retrieved successfully", response);
+    return Utils.returnOkResponse("Lấy thông tin nhánh tổng thành công", response);
   }
 
   @GetMapping
@@ -135,18 +135,28 @@ public class LateralController {
     **Luồng nghiệp vụ:**
     1. Client gửi request lấy danh sách nhánh tổng.
     2. Hỗ trợ phân trang qua tham số page, size, sort.
-    3. Trả về danh sách kết quả phân trang.""", parameters = {
+    3. Hỗ trợ tìm kiếm theo từ khóa và lọc theo mạng cấp nước, trạng thái gán mạng.
+    4. Trả về danh sách kết quả phân trang.""", parameters = {
     @Parameter(name = "page", description = "Số trang (bắt đầu từ 0)", example = "0"),
     @Parameter(name = "size", description = "Số lượng phần tử trên 1 trang", example = "10"),
-    @Parameter(name = "sort", description = "Sắp xếp (VD: name,asc)", example = "name,asc")
+    @Parameter(name = "sort", description = "Sắp xếp (VD: name,asc)", example = "name,asc"),
+    @Parameter(name = "keyword", description = "Từ khóa tìm kiếm theo tên nhánh tổng hoặc tên mạng cấp nước", example = "A300"),
+    @Parameter(name = "networkId", description = "Lọc theo ID mạng cấp nước", example = "550e8400-e29b-41d4-a716-446655440001"),
+    @Parameter(name = "networkAssigned", description = "Lọc theo trạng thái gán mạng cấp nước: true = đã gán, false = chưa gán", example = "true")
   }, responses = {
     @ApiResponse(responseCode = "200", description = "Lấy danh sách thành công", content = @Content(schema = @Schema(implementation = LateralResponse.class))),
     @ApiResponse(responseCode = "500", description = "Lỗi hệ thống", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
+  @PreAuthorize("hasAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> getAllLaterals(
-    @PageableDefault @Parameter(description = "") Pageable pageable) {
-    log.info("REST request to get all laterals");
-    var response = lateralUseCase.getAllLaterals(pageable);
-    return Utils.returnOkResponse("Laterals retrieved successfully", response);
+    @PageableDefault @Parameter(hidden = true) Pageable pageable,
+    @RequestParam(required = false) String keyword,
+    @RequestParam(required = false) String networkId,
+    @RequestParam(required = false) Boolean networkAssigned
+  ) {
+    log.info("REST request to get all laterals with pagination: {}, keyword: {}, networkId: {}, networkAssigned: {}",
+      pageable, keyword, networkId, networkAssigned);
+    var response = lateralUseCase.getAllLaterals(pageable, keyword, networkId, networkAssigned);
+    return Utils.returnOkResponse("Lấy danh sách nhánh tổng thành công", response);
   }
 }

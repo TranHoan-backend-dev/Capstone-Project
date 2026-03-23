@@ -178,7 +178,7 @@ export const SubMasterMeterModal = ({
 
               <div className="mt-4">
                 <CustomPagination
-                  initialPage={1}
+                  page={1}
                   summary="1-10 của 267"
                   total={27}
                 />

@@ -1,32 +1,42 @@
 package com.capstone.construction.application.dto.request.settlement;
 
-import com.capstone.common.enumerate.ProcessingStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Schema(description = "Request for creating/updating a settlement")
+@Schema(description = "Yêu cầu tạo hoặc cập nhật thông tin quyết toán công trình")
 public record SettlementRequest(
-  @Schema(description = "Job description/content", example = "Hoàn thành lắp đặt hệ thống cấp nước")
-  @NotBlank(message = "Job content is required")
+  @NotBlank
+  @NotEmpty
+  String formCode,
+
+  @NotBlank
+  @NotEmpty
+  String formNumber,
+
+  @Schema(description = "Nội dung công việc", example = "Lắp đặt hệ thống cấp nước D110")
+  @NotBlank(message = "Nội dung công việc là bắt buộc")
   String jobContent,
 
-  @Schema(description = "Construction address", example = "123 Đường ABC")
-  @NotBlank(message = "Address is required") String address,
+  @Schema(description = "Địa chỉ thi công công trình", example = "123 Đường ABC, Quận 1, TP.HCM")
+  @NotBlank(message = "Địa chỉ là bắt buộc")
+  String address,
 
-  @Schema(description = "Connection fee", example = "500000.00")
-  @NotNull(message = "Connection fee is required") BigDecimal connectionFee,
+  @Schema(description = "Phí đấu nối (VNĐ)", example = "500000.00")
+  @NotNull(message = "Phí đấu nối là bắt buộc")
+  @DecimalMin(value = "0.0", message = "Phí đấu nối phải lớn hơn hoặc bằng 0")
+  BigDecimal connectionFee,
 
-  @Schema(description = "Optional note", example = "Đã bàn giao nghiệm thu")
-  @NotBlank(message = "Note is required")
+  @Schema(description = "Ghi chú bổ sung", example = "Đã bàn giao nghiệm thu hiện trường")
   String note,
 
-  @Schema(description = "Processing status", example = "APPROVED")
-  @NotNull(message = "Status is required") ProcessingStatus status,
-
-  @Schema(description = "Registration date", example = "2023-10-27")
-  @NotNull(message = "Registration date is required") LocalDate registrationAt) {
+  @Schema(description = "Ngày đăng ký quyết toán", example = "2023-10-27")
+  @NotNull(message = "Ngày đăng ký là bắt buộc")
+  LocalDate registrationAt
+) {
 }

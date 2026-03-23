@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thông báo xóa tài khoản</title>
+  <%- include('components/base-styles.ejs') %>
+  <style>
+    /* Header */
+    .email-header {
+      background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+      padding: 50px 20px;
+    }
+
+    .email-header .icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+      display: block;
+    }
+
+    .highlight-box {
+      background-color: #fffaf0;
+      border-left: 4px solid #ed8936;
+      padding: 20px;
+      margin-bottom: 30px;
+      border-radius: 4px;
+    }
+
+    /* Details Table */
+    .details-container {
+      background-color: #f7fafc;
+      border-radius: 12px;
+      padding: 30px;
+      margin: 30px 0;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #edf2f7;
+    }
+
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+
+    .detail-label {
+      font-weight: 600;
+      color: #718096;
+      font-size: 14px;
+      flex: 1;
+    }
+
+    .detail-value {
+      color: #2d3748;
+      font-weight: 600;
+      font-size: 15px;
+      flex: 2;
+      text-align: right;
+    }
+
+    .support-text {
+      margin-top: 25px;
+      font-size: 14px;
+      color: #718096;
+      text-align: center;
+    }
+
+    .support-text a {
+      color: #3182ce;
+      font-weight: 600;
+    }
+
+    .divider {
+      height: 1px;
+      background-color: #e2e8f0;
+      margin: 30px 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="email-container">
+    <div class="email-header">
+      <span class="icon">👋</span>
+      <h1>Thông Báo Xóa Tài Khoản</h1>
+    </div>
+    <div class="email-body">
+      <div class="greeting">Kính gửi <%= fullName %>,</div>
+
+      <p class="message">
+        Chúng tôi viết thư này để thông báo rằng tài khoản nhân viên của bạn trên hệ thống quản lý đã được xóa theo quy
+        trình vận hành của tổ chức.
+      </p>
+
+      <div class="highlight-box">
+        Kể từ thời điểm này, bạn sẽ không còn quyền truy cập vào các ứng dụng và dữ liệu liên quan đến tài khoản này.
+      </div>
+
+      <div class="details-container">
+        <div class="detail-row">
+          <span class="detail-label">Họ và tên</span>
+          <span class="detail-value">
+            <%= fullName %>
+          </span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Phòng ban</span>
+          <span class="detail-value">
+            <%= departmentName %>
+          </span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Email liên kết</span>
+          <span class="detail-value">
+            <%= email %>
+          </span>
+        </div>
+      </div>
+
+      <p class="message">
+        Nếu bạn cho rằng đây là một sự nhầm lẫn hoặc cần bàn giao thêm dữ liệu, vui lòng liên hệ với bộ phận Quản trị hệ
+        thống hoặc phòng Nhân sự để được hỗ trợ kịp thời.
+      </p>
+
+      <div class="divider"></div>
+
+      <p class="support-text">
+        Trân trọng,<br>
+        <strong>Đội ngũ Quản trị Hệ thống</strong><br>
+        <a href="mailto:support@capstone.project">support@capstone.project</a>
+      </p>
+    </div>
+    <%- include('components/footer.html') %>
+  </div>
+</body>
+
+</html>

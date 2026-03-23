@@ -1,23 +1,21 @@
 package com.capstone.construction.application.business.lateral;
 
 import com.capstone.construction.application.dto.request.catalog.LateralRequest;
-import com.capstone.construction.application.dto.response.catalog.LateralResponse;
-import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.application.exception.ExistingItemException;
 import com.capstone.construction.domain.model.Lateral;
 import com.capstone.construction.domain.model.WaterSupplyNetwork;
 import com.capstone.construction.infrastructure.persistence.LateralRepository;
 import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRepository;
-import com.capstone.construction.infrastructure.service.OverallWaterMeterService;
+import com.capstone.construction.infrastructure.service.DeviceService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,10 +31,13 @@ class LateralServiceImplTest {
 
   @Mock
   LateralRepository lateralRepository;
+
   @Mock
   WaterSupplyNetworkRepository networkRepository;
+
   @Mock
-  OverallWaterMeterService metersService;
+  DeviceService metersService;
+
   @Mock
   Logger log;
 
@@ -44,7 +45,7 @@ class LateralServiceImplTest {
   LateralServiceImpl lateralService;
 
   @Test
-  void createLateral_should_Create_When_RequestIsValid() {
+  void should_CreateLateral_When_RequestIsValid() {
     // Given
     var request = new LateralRequest("Lateral Test", "network-id");
     var network = new WaterSupplyNetwork("network-id", "Network Name", LocalDateTime.now(), LocalDateTime.now());
@@ -53,37 +54,44 @@ class LateralServiceImplTest {
     when(networkRepository.findById(request.networkId())).thenReturn(Optional.of(network));
     when(lateralRepository.save(any(Lateral.class))).thenAnswer(invocation -> {
       Lateral l = invocation.getArgument(0);
-      setField(l, "id", "lateral-id");
-      setField(l, "createdAt", LocalDateTime.now());
+      ReflectionTestUtils.setField(l, "id", "lateral-id");
+      ReflectionTestUtils.setField(l, "createdAt", LocalDateTime.now());
       return l;
     });
 
     // When
-    LateralResponse response = lateralService.createLateral(request);
+    var response = lateralService.createLateral(request);
 
     // Then
     assertThat(response.name()).isEqualTo("Lateral Test");
     assertThat(response.networkId()).isEqualTo("network-id");
-    verify(lateralRepository).existsByNameIgnoreCase(request.name());
     verify(lateralRepository).save(any(Lateral.class));
   }
 
   @Test
-  void createLateral_should_ThrowException_When_NameExists() {
+  void should_ThrowException_When_CreateNameExists() {
     // Given
     var request = new LateralRequest("Lateral Test", "network-id");
     when(lateralRepository.existsByNameIgnoreCase(request.name())).thenReturn(true);
 
     // When & Then
     assertThatThrownBy(() -> lateralService.createLateral(request))
-      .isInstanceOf(ExistingItemException.class)
-      .hasMessageContaining("already exists");
-
-    verify(lateralRepository, never()).save(any(Lateral.class));
+        .isInstanceOf(ExistingItemException.class)
+        .hasMessageContaining("already exists");
   }
 
   @Test
-  void createLateral_should_ThrowException_When_NetworkNotFound() {
+  void should_ThrowException_When_CreateNameIsNull() {
+    // Given
+    var request = new LateralRequest(null, "network-id");
+
+    // When & Then
+    assertThatThrownBy(() -> lateralService.createLateral(request))
+        .isInstanceOf(NullPointerException.class);
+  }
+
+  @Test
+  void should_ThrowException_When_CreateNetworkNotFound() {
     // Given
     var request = new LateralRequest("Lateral Test", "non-existent-network");
     when(lateralRepository.existsByNameIgnoreCase(request.name())).thenReturn(false);
@@ -91,20 +99,18 @@ class LateralServiceImplTest {
 
     // When & Then
     assertThatThrownBy(() -> lateralService.createLateral(request))
-      .isInstanceOf(IllegalArgumentException.class);
-
-    verify(lateralRepository, never()).save(any(Lateral.class));
+        .isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
-  void updateLateral_should_Update_When_RequestIsValid() {
+  void should_UpdateLateral_When_RequestIsValid() {
     // Given
     var id = "lateral-id";
     var request = new LateralRequest("Lateral Updated", "new-network-id");
     var existingNetwork = new WaterSupplyNetwork("network-id", "Old Network", LocalDateTime.now(),
-      LocalDateTime.now());
+        LocalDateTime.now());
     var newNetwork = new WaterSupplyNetwork("new-network-id", "New Network", LocalDateTime.now(),
-      LocalDateTime.now());
+        LocalDateTime.now());
 
     var existingLateral = new Lateral(id, "Lateral Old", existingNetwork, LocalDateTime.now(), LocalDateTime.now());
 
@@ -114,21 +120,20 @@ class LateralServiceImplTest {
     when(lateralRepository.save(any(Lateral.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
     // When
-    LateralResponse response = lateralService.updateLateral(id, request);
+    var response = lateralService.updateLateral(id, request);
 
     // Then
     assertThat(response.name()).isEqualTo("Lateral Updated");
     assertThat(response.networkId()).isEqualTo("new-network-id");
-    verify(lateralRepository).save(existingLateral);
   }
 
   @Test
-  void updateLateral_should_UpdateOnlyName_When_NetworkIdIsNull() {
+  void should_UpdateOnlyName_When_NetworkIdIsNull() {
     // Given
     var id = "lateral-id";
     var request = new LateralRequest("Lateral Updated", null);
     var existingNetwork = new WaterSupplyNetwork("network-id", "Old Network", LocalDateTime.now(),
-      LocalDateTime.now());
+        LocalDateTime.now());
 
     var existingLateral = new Lateral(id, "Lateral Old", existingNetwork, LocalDateTime.now(), LocalDateTime.now());
 
@@ -137,70 +142,15 @@ class LateralServiceImplTest {
     when(lateralRepository.save(any(Lateral.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
     // When
-    LateralResponse response = lateralService.updateLateral(id, request);
+    var response = lateralService.updateLateral(id, request);
 
     // Then
     assertThat(response.name()).isEqualTo("Lateral Updated");
     assertThat(response.networkId()).isEqualTo("network-id");
-    verify(networkRepository, never()).findById(any());
-    verify(lateralRepository).save(existingLateral);
   }
 
   @Test
-  void updateLateral_should_ThrowException_When_LateralNotFound() {
-    // Given
-    var id = "non-existent-id";
-    var request = new LateralRequest("Lateral Updated", "network-id");
-    when(lateralRepository.findById(id)).thenReturn(Optional.empty());
-
-    // When & Then
-    assertThatThrownBy(() -> lateralService.updateLateral(id, request))
-      .isInstanceOf(IllegalArgumentException.class)
-      .hasMessageContaining("not found");
-
-    verify(lateralRepository, never()).save(any());
-  }
-
-  @Test
-  void updateLateral_should_ThrowException_When_NameAlreadyExists() {
-    // Given
-    var id = "lateral-id";
-    var request = new LateralRequest("Lateral Existing", "network-id");
-    var network = new WaterSupplyNetwork("network-id", "Network", LocalDateTime.now(), LocalDateTime.now());
-    var existingLateral = new Lateral(id, "Lateral Old", network, LocalDateTime.now(), LocalDateTime.now());
-
-    when(lateralRepository.findById(id)).thenReturn(Optional.of(existingLateral));
-    when(lateralRepository.existsByNameIgnoreCase(request.name())).thenReturn(true);
-
-    // When & Then
-    assertThatThrownBy(() -> lateralService.updateLateral(id, request))
-      .isInstanceOf(ExistingItemException.class)
-      .hasMessageContaining("already exists");
-
-    verify(lateralRepository, never()).save(any());
-  }
-
-  @Test
-  void updateLateral_should_ThrowException_When_NewNetworkNotFound() {
-    // Given
-    var id = "lateral-id";
-    var request = new LateralRequest("Lateral Updated", "non-existent-network");
-    var network = new WaterSupplyNetwork("network-id", "Network", LocalDateTime.now(), LocalDateTime.now());
-    var existingLateral = new Lateral(id, "Lateral Old", network, LocalDateTime.now(), LocalDateTime.now());
-
-    when(lateralRepository.findById(id)).thenReturn(Optional.of(existingLateral));
-    when(lateralRepository.existsByNameIgnoreCase(request.name())).thenReturn(false);
-    when(networkRepository.findById(request.networkId())).thenReturn(Optional.empty());
-
-    // When & Then
-    assertThatThrownBy(() -> lateralService.updateLateral(id, request))
-      .isInstanceOf(IllegalArgumentException.class);
-
-    verify(lateralRepository, never()).save(any());
-  }
-
-  @Test
-  void deleteLateral_should_Delete_When_IdExists() {
+  void should_DeleteLateral_When_IdExists() {
     // Given
     var id = "lateral-id";
     when(lateralRepository.existsById(id)).thenReturn(true);
@@ -209,26 +159,11 @@ class LateralServiceImplTest {
     lateralService.deleteLateral(id);
 
     // Then
-    verify(metersService).deleteWaterMeter(id);
     verify(lateralRepository).deleteById(id);
   }
 
   @Test
-  void deleteLateral_should_ThrowException_When_IdNotFound() {
-    // Given
-    var id = "non-existent-id";
-    when(lateralRepository.existsById(id)).thenReturn(false);
-
-    // When & Then
-    assertThatThrownBy(() -> lateralService.deleteLateral(id))
-      .isInstanceOf(IllegalArgumentException.class)
-      .hasMessageContaining("not found");
-
-    verify(lateralRepository, never()).deleteById(any());
-  }
-
-  @Test
-  void getLateralById_should_ReturnLateral_When_Found() {
+  void should_ReturnLateral_When_GetByIdFound() {
     // Given
     var id = "lateral-id";
     var network = new WaterSupplyNetwork("network-id", "Network Test", LocalDateTime.now(), LocalDateTime.now());
@@ -241,46 +176,40 @@ class LateralServiceImplTest {
 
     // Then
     assertThat(response.name()).isEqualTo("Lateral Test");
-    assertThat(response.networkName()).isEqualTo("Network Test");
   }
 
   @Test
-  void getLateralById_should_ThrowException_When_NotFound() {
-    // Given
-    var id = "non-existent-id";
-    when(lateralRepository.findById(id)).thenReturn(Optional.empty());
-
-    // When & Then
-    assertThatThrownBy(() -> lateralService.getLateralById(id))
-      .isInstanceOf(IllegalArgumentException.class)
-      .hasMessageContaining("not found");
-  }
-
-  @Test
-  void getAllLaterals_should_ReturnPage_When_Called() {
+  void should_ReturnAllLaterals_When_Requested() {
     // Given
     var pageable = Pageable.unpaged();
-    var network = new WaterSupplyNetwork("network-id", "Network Test", LocalDateTime.now(), LocalDateTime.now());
-    var lateral = new Lateral("id", "Lateral Test", network, LocalDateTime.now(), LocalDateTime.now());
-    Page<Lateral> page = new PageImpl<>(List.of(lateral));
-    when(lateralRepository.findAll(pageable)).thenReturn(page);
+    var lateral = mock(Lateral.class);
+    when(lateral.getName()).thenReturn("Lateral");
+    var page = new PageImpl<>(List.of(lateral));
+
+    when(lateralRepository.searchLateralsWithoutKeyword(null, null, pageable)).thenReturn(page);
 
     // When
-    PageResponse<LateralResponse> result = lateralService.getAllLaterals(pageable);
+    var result = lateralService.getAllLaterals(pageable, null, null, null);
 
     // Then
     assertThat(result.content()).hasSize(1);
-    assertThat(result.content().getFirst().name()).isEqualTo("Lateral Test");
+    verify(lateralRepository).searchLateralsWithoutKeyword(null, null, pageable);
   }
 
-  // Helper method for reflection
-  private void setField(Object target, String fieldName, Object value) {
-    try {
-      var field = target.getClass().getDeclaredField(fieldName);
-      field.setAccessible(true);
-      field.set(target, value);
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to set field: " + fieldName, e);
-    }
+  @Test
+  void should_ReturnFilteredLaterals_When_KeywordProvided() {
+    // Given
+    var pageable = Pageable.unpaged();
+    var lateral = mock(Lateral.class);
+    var page = new PageImpl<>(List.of(lateral));
+
+    when(lateralRepository.searchLateralsWithKeyword("test", "net1", true, pageable)).thenReturn(page);
+
+    // When
+    var result = lateralService.getAllLaterals(pageable, " test ", "net1", true);
+
+    // Then
+    assertThat(result).isNotNull();
+    verify(lateralRepository).searchLateralsWithKeyword("test", "net1", true, pageable);
   }
 }

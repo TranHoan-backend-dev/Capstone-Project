@@ -1,5 +1,6 @@
 package com.capstone.construction.application.dto.response.catalog;
 
+import com.capstone.construction.domain.enumerate.CommuneType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
@@ -12,7 +13,7 @@ public record CommuneResponse(
   String name,
 
   @Schema(description = "Commune type", example = "Commune")
-  String type,
+  CommuneType type,
 
   @Schema(description = "Creation timestamp")
   LocalDate createdAt

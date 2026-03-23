@@ -1,6 +1,7 @@
 package com.capstone.device.domain.model;
 
-import com.capstone.device.infrastructure.config.Constant;
+import com.capstone.common.utils.SharedMessage;
+import com.capstone.device.infrastructure.util.Message;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -44,9 +45,9 @@ public class Unit {
   }
 
   public void setName(String name) {
-    Objects.requireNonNull(name, Constant.ENT_01);
+    Objects.requireNonNull(name, SharedMessage.MES_05);
     if (name.trim().isEmpty()) {
-      throw new IllegalArgumentException(Constant.ENT_01);
+      throw new IllegalArgumentException(SharedMessage.MES_05);
     }
     this.name = name;
   }

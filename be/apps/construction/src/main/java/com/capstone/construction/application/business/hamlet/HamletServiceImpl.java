@@ -9,7 +9,7 @@ import com.capstone.construction.domain.model.Hamlet;
 import com.capstone.construction.infrastructure.persistence.HamletRepository;
 import com.capstone.construction.infrastructure.persistence.CommuneRepository;
 import com.capstone.construction.application.exception.ExistingItemException;
-import com.capstone.construction.infrastructure.config.Constant;
+import com.capstone.construction.infrastructure.utils.Message;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -30,16 +30,20 @@ public class HamletServiceImpl implements HamletService {
   @NonFinal
   Logger log;
 
+  // Vietnamese accents map for PostgreSQL TRANSLATE (must be same length)
+  private static final String ACCENTED_CHARS = "áàảãạăắằẳẵặâấầẩẫậđéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ";
+  private static final String UNACCENTED_CHARS = "aaaaaaaaaaaaaaaaadeeeeeeeeeeeiiiiiooooooooooooooouuuuuuuuuuuyyyyy";
+
   @Override
   @Transactional(rollbackFor = Exception.class)
   public HamletResponse createHamlet(String name, HamletType type, String communeId) {
     log.info("Creating new hamlet with name: {}", name);
     if (hamletRepository.existsByNameIgnoreCase(name)) {
-      throw new ExistingItemException("Hamlet with name " + name + " already exists");
+      throw new ExistingItemException(String.format(Message.PT_01, name));
     }
 
     var commune = communeRepository.findById(communeId)
-      .orElseThrow(() -> new IllegalArgumentException(Constant.SE_04));
+      .orElseThrow(() -> new IllegalArgumentException(Message.PT_56));
 
     var hamlet = Hamlet.create(builder -> builder
       .name(name)
@@ -55,15 +59,15 @@ public class HamletServiceImpl implements HamletService {
   public HamletResponse updateHamlet(String id, @NonNull UpdateHamletRequest request) {
     log.info("Updating hamlet with id: {}", id);
     var hamlet = hamletRepository.findById(id)
-      .orElseThrow(() -> new IllegalArgumentException("Hamlet not found with id: " + id));
+      .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_62, id)));
 
     if (!hamlet.getName().equalsIgnoreCase(request.name()) && hamletRepository.existsByNameIgnoreCase(request.name())) {
-      throw new ExistingItemException("Hamlet with name " + request.name() + " already exists");
+      throw new ExistingItemException(String.format(Message.PT_63, request.name()));
     }
 
     if (!request.communeId().isBlank()) {
       var commune = communeRepository.findById(request.communeId())
-        .orElseThrow(() -> new IllegalArgumentException(Constant.SE_04));
+        .orElseThrow(() -> new IllegalArgumentException(Message.PT_56));
       hamlet.setCommune(commune);
     }
 
@@ -83,7 +87,7 @@ public class HamletServiceImpl implements HamletService {
   public void deleteHamlet(String id) {
     log.info("Deleting hamlet with id: {}", id);
     if (!hamletRepository.existsById(id)) {
-      throw new IllegalArgumentException("Hamlet not found with id: " + id);
+      throw new IllegalArgumentException(String.format(Message.PT_62, id));
     }
     hamletRepository.deleteById(id);
   }
@@ -93,13 +97,32 @@ public class HamletServiceImpl implements HamletService {
     log.info("Fetching hamlet with id: {}", id);
     return hamletRepository.findById(id)
       .map(this::mapToResponse)
-      .orElseThrow(() -> new IllegalArgumentException("Hamlet not found with id: " + id));
+      .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_62, id)));
   }
 
   @Override
   public PageResponse<HamletResponse> getAllHamlets(Pageable pageable) {
     log.info("Fetching all hamlets with pageable: {}", pageable);
     var page = hamletRepository.findAll(pageable);
+    return PageResponse.fromPage(page, this::mapToResponse);
+  }
+
+  @Override
+  public PageResponse<HamletResponse> searchHamlets(String keyword, String communeId, String type, Pageable pageable) {
+    String finalKeyword = (keyword == null || keyword.isBlank()) ? null : keyword;
+    String finalCommuneId = (communeId == null || communeId.isBlank()) ? null : communeId;
+    String finalType = (type == null || type.isBlank()) ? null : type;
+
+    log.info("Searching hamlets, keyword='{}', communeId='{}', type='{}', pageable={}", 
+             finalKeyword, finalCommuneId, finalType, pageable);
+             
+    var page = hamletRepository.searchHamlets(
+      finalKeyword,
+      finalCommuneId,
+      finalType,
+      ACCENTED_CHARS,
+      UNACCENTED_CHARS,
+      pageable);
     return PageResponse.fromPage(page, this::mapToResponse);
   }
 

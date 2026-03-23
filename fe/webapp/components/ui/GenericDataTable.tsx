@@ -14,12 +14,14 @@ import {
   Spinner,
 } from "@heroui/react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
-
+import { Skeleton } from "@heroui/react";
 import { CustomPagination } from "./custom/CustomPagination";
+import { SortAscIcon, SortDescIcon } from "@/config/chip-and-icon";
 
 interface Column {
   key: string;
   label: string | React.ReactNode;
+  sortable?: boolean;
   align?: "start" | "center" | "end";
   width?: string;
 }
@@ -30,9 +32,15 @@ interface GenericDataTableProps<T> {
   columns: Column[];
   data: T[];
   renderCellAction: (item: T, columnKey: string) => React.ReactNode;
+
+  search?: {
+    value: string;
+    placeholder?: string;
+    onChange: (value: string) => void;
+  };
   paginationProps?: {
     total: number;
-    initialPage: number;
+    page: number;
     onChange?: (page: number) => void;
     summary?: string;
   };
@@ -44,6 +52,11 @@ interface GenericDataTableProps<T> {
   topContent?: React.ReactNode;
   hideHeader?: boolean;
   isLoading?: boolean;
+  sort?: {
+    field: string;
+    direction: "asc" | "desc";
+  };
+  onSortChange?: (field: string) => void;
 }
 
 export const GenericDataTable = <T extends { id: string | number }>({
@@ -52,6 +65,7 @@ export const GenericDataTable = <T extends { id: string | number }>({
   columns,
   data,
   renderCellAction,
+  search,
   paginationProps,
   tableProps,
   isCollapsible = false,
@@ -60,9 +74,21 @@ export const GenericDataTable = <T extends { id: string | number }>({
   actions,
   topContent,
   isLoading,
+  sort,
+  onSortChange,
 }: GenericDataTableProps<T>) => {
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
-
+  const renderSkeletonRows = () => {
+    return Array.from({ length: 5 }).map((_, rowIndex) => (
+      <TableRow key={`skeleton-${rowIndex}`}>
+        {columns.map((column, colIndex) => (
+          <TableCell key={colIndex}>
+            <Skeleton className="h-4 w-full rounded-lg" />
+          </TableCell>
+        ))}
+      </TableRow>
+    ));
+  };
   return (
     <Card
       className="overflow-hidden bg-content1 transition-all duration-300"
@@ -109,6 +135,21 @@ export const GenericDataTable = <T extends { id: string | number }>({
           {topContent && (
             <div className="p-6 pt-2 border-b border-divider">{topContent}</div>
           )}
+          {(search || topContent) && (
+            <div className="p-6 pt-2 border-b border-divider flex gap-4 items-center">
+              {search && (
+                <input
+                  type="text"
+                  placeholder={search.placeholder ?? "Tìm kiếm..."}
+                  className="w-72 border rounded-lg px-3 py-2 text-sm"
+                  value={search.value}
+                  onChange={(e) => search.onChange(e.target.value)}
+                />
+              )}
+
+              {topContent}
+            </div>
+          )}
           <div className="overflow-x-auto">
             <Table
               removeWrapper
@@ -127,45 +168,55 @@ export const GenericDataTable = <T extends { id: string | number }>({
                   <TableColumn
                     key={column.key}
                     align={column.align || "start"}
-                    className={`${index === 0 ? "!pl-8" : ""} bg-default-100 text-foreground`}
+                    onClick={() =>
+                      column.sortable && onSortChange?.(column.key)
+                    }
+                    className={`${index === 0 ? "!pl-8" : ""} bg-default-100 text-foreground ${onSortChange ? "cursor-pointer select-none" : ""} column.sortable ? "cursor-pointer select-none ..." : ""`}
                     style={column.width ? { width: column.width } : {}}
                   >
                     {column.label}
+                    {sort?.field === column.key &&
+                      (sort.direction === "asc" ? (
+                        <SortAscIcon className="w-3 h-3" />
+                      ) : (
+                        <SortDescIcon className="w-3 h-3" />
+                      ))}
                   </TableColumn>
                 ))}
               </TableHeader>
               <TableBody
-                emptyContent={"Không có dữ liệu để hiển thị."}
-                items={data}
+                emptyContent={
+                  !isLoading ? "Không có dữ liệu để hiển thị." : null
+                }
+                items={isLoading ? [] : data}
                 isLoading={isLoading}
                 loadingContent={<Spinner label="Loading..." />}
                 className="flex items-center justify-center"
               >
-                {(item) => (
-                  <TableRow
-                    key={item.id}
-                    className="hover:bg-default-50  transition-colors
-    hover:bg-default-100
-    even:bg-default-50
-    border-divider"
-                  >
-                    {columns.map((column, index) => (
-                      <TableCell
-                        key={column.key}
-                        className={index === 0 ? "!pl-8" : ""}
+                {isLoading
+                  ? renderSkeletonRows()
+                  : (item) => (
+                      <TableRow
+                        key={item.id}
+                        className="hover:bg-default-50 transition-colors hover:bg-default-10 even:bg-default-50 border-divider"
                       >
-                        {renderCellAction(item, column.key)}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                )}
+                        {columns.map((column, index) => (
+                          <TableCell
+                            key={column.key}
+                            className={index === 0 ? "!pl-8" : ""}
+                          >
+                            {renderCellAction(item, column.key)}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    )}
               </TableBody>
             </Table>
           </div>
 
           {paginationProps && (
             <CustomPagination
-              initialPage={paginationProps.initialPage}
+              page={paginationProps.page}
               summary={paginationProps.summary}
               total={paginationProps.total}
               onChange={paginationProps.onChange}

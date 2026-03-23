@@ -1,7 +1,7 @@
 package com.capstone.organization.service.boundary;
 
-import com.capstone.organization.dto.request.CreateDepartmentRequest;
-import com.capstone.organization.dto.request.UpdateDepartmentRequest;
+import com.capstone.organization.dto.request.department.CreateDepartmentRequest;
+import com.capstone.organization.dto.request.department.UpdateDepartmentRequest;
 import com.capstone.organization.dto.response.DepartmentResponse;
 import com.capstone.organization.dto.response.PagedDepartmentResponse;
 import org.springframework.data.domain.Pageable;
@@ -14,4 +14,8 @@ public interface DepartmentService {
   PagedDepartmentResponse getDepartments(Pageable pageable, String keyword);
 
   boolean checkIfDepartmentExists(String departmentId);
+
+  void deleteDepartment(String departmentId);
+
+  String getName(String id);
 }

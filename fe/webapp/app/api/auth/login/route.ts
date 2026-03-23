@@ -27,7 +27,6 @@ export async function POST(req: NextRequest) {
       const backendRes = await signinService(tokenRes.access_token);
       backendData = backendRes.data?.data;
     } catch (backendError: any) {
-
       if (axios.isAxiosError(backendError)) {
         const status = backendError.response?.status;
         const message = backendError.response?.data?.message;
@@ -70,7 +69,7 @@ export async function POST(req: NextRequest) {
       tokenRes.access_token,
       {
         ...cookieOptions,
-        maxAge: tokenRes.expires_in
+        maxAge: tokenRes.expires_in,
       },
     );
 
@@ -86,6 +85,7 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     let message = "Đăng nhập thất bại";
     let status = 401;
+    console.log(error);
 
     if (axios.isAxiosError(error)) {
       const kcError = error.response?.data?.error;

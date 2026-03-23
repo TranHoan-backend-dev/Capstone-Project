@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { FilterSection } from "./components/filter-section";
+import { ButtonSection } from "./components/button-section";
 import { BusinessPageTable } from "./components/business-page-table";
 import { BusinessPageItem } from "@/types";
+import { Modal, ModalContent } from "@heroui/react";
+import { BusinessPageForm } from "./components/business-page-form";
 
 const BusinessPage = () => {
   const [filter, setFilter] = useState("");
@@ -31,19 +33,30 @@ const BusinessPage = () => {
   };
   return (
     <>
-      <FilterSection
-        filter={filter}
-        onSearch={setFilter}
-        onAddNew={handleAddNew}
-      />
+      <ButtonSection onAddNew={handleAddNew} />
+      <Modal
+        isOpen={showAddForm}
+        onClose={handleCloseForm}
+        size="3xl"
+        placement="top-center"
+        scrollBehavior="inside"
+      >
+        <ModalContent>
+          <BusinessPageForm
+            key={editingItem?.id || "create"}
+            initialData={editingItem || undefined}
+            onSuccess={handleSuccess}
+            onClose={handleCloseForm}
+          />
+        </ModalContent>
+      </Modal>
+
       <BusinessPageTable
-        filter={filter}
-        reloadKey={reloadKey}
         onEdit={(item) => {
           setEditingItem(item);
           setShowAddForm(true);
         }}
-        onDelete={() => setReloadKey((prev) => prev + 1)}
+        onDeleted={handleReload}
       />
     </>
   );

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thông báo cập nhật tài khoản</title>
+  <%- include('components/base-styles.ejs') %>
+  <style>
+    /* Header */
+    .email-header {
+      background: linear-gradient(135deg, #3182ce 0%, #2c5282 100%);
+    }
+
+    .email-header .icon {
+      font-size: 40px;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    /* Info Box */
+    .info-box {
+      background-color: #ebf8ff;
+      border: 1px solid #bee3f8;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 30px 0;
+    }
+
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .info-item:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .label {
+      font-weight: 600;
+      color: #718096;
+      font-size: 14px;
+    }
+
+    .value {
+      font-weight: 700;
+      color: #2c5282;
+    }
+
+    .cta-text {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 15px;
+      color: #718096;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="email-container">
+    <div class="email-header">
+      <span class="icon">📝</span>
+      <h1>Cập Nhật Thông Tin Tài Khoản</h1>
+    </div>
+    <div class="email-body">
+      <div class="greeting">Xin chào <%= fullName %>,</div>
+
+      <p class="message">
+        Chúng tôi xin thông báo rằng thông tin tài khoản nhân viên của bạn đã được quản trị viên cập nhật thành công
+        trên hệ thống.
+      </p>
+
+      <div class="info-box">
+        <div class="info-item">
+          <span class="label">Họ và tên</span>
+          <span class="value">
+            <%= fullName %>
+          </span>
+        </div>
+        <div class="info-item">
+          <span class="label">Phòng ban</span>
+          <span class="value">
+            <%= departmentName %>
+          </span>
+        </div>
+        <div class="info-item">
+          <span class="label">Trạng thái</span>
+          <span class="value" style="color: #38a169;">Đã cập nhật</span>
+        </div>
+      </div>
+
+      <p class="message">
+        Nếu bạn không thực hiện yêu cầu này hoặc nhận thấy thông tin không chính xác, vui lòng liên hệ ngay với bộ phận
+        IT để được hỗ trợ kiểm tra.
+      </p>
+
+      <p class="cta-text">
+        Trân trọng,<br>
+        <strong>Đội ngũ Quản trị Hệ thống</strong>
+      </p>
+    </div>
+    <%- include('components/footer.html') %>
+  </div>
+</body>
+
+</html>

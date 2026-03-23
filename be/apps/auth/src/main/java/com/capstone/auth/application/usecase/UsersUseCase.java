@@ -1,67 +1,95 @@
 package com.capstone.auth.application.usecase;
 
 import com.capstone.auth.application.business.pages.BusinessPageService;
-import com.capstone.auth.application.business.roles.RoleService;
 import com.capstone.auth.application.business.users.UserService;
-import com.capstone.auth.application.dto.request.FilterUsersRequest;
-import com.capstone.auth.application.dto.request.NewUserRequest;
+import com.capstone.auth.application.dto.request.users.FilterUsersRequest;
 import com.capstone.auth.application.dto.request.UpdateBusinessPageNamesRequest;
+import com.capstone.auth.application.dto.request.users.UpdateRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
-import com.capstone.auth.domain.enumerate.RoleName;
-import com.capstone.auth.infrastructure.service.KeycloakService;
-import com.capstone.common.annotation.AppLog;
+import com.capstone.auth.application.event.producer.MessageProducer;
+import com.capstone.auth.application.event.producer.message.AccountDeleteEvent;
+import com.capstone.auth.application.event.producer.message.AccountUpdateEvent;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
-import org.keycloak.admin.client.Keycloak;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
-@AppLog
 @Component
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UsersUseCase {
   UserService userService;
   BusinessPageService bpService;
-  RoleService roleService;
-  Keycloak keycloak;
-  KeycloakService keycloakService;
-  @NonFinal
-  Logger log;
+  MessageProducer template;
 
-  @Value("${keycloak.realms}")
   @NonFinal
-  String realm;
+  @Value("${sending_mail.delete_account.subject}")
+  String DELETE_SUBJECT;
+
+  @NonFinal
+  @Value("${sending_mail.delete_account.template}")
+  String DELETE_TEMPLATE;
+
+  @NonFinal
+  @Value("${sending_mail.update_account.subject}")
+  String UPDATE_SUBJECT;
+
+  @NonFinal
+  @Value("${sending_mail.update_account.template}")
+  String UPDATE_TEMPLATE;
+
+  @Value("${rabbit-mq-config.update_account_routing_key}")
+  @NonFinal
+  String UPDATE_ROUTING_KEY;
+
+  @Value("${rabbit-mq-config.delete_account_routing_key}")
+  @NonFinal
+  String DELETE_ROUTING_KEY;
 
   public Page<EmployeeResponse> getPaginatedListOfEmployees(Pageable pageable, FilterUsersRequest request) {
-    log.info("getPaginatedListOfEmployees is handling the request");
-
-    var content = userService.getAllEmployeesWithStatus(pageable, request);
-    log.info("Found {} employees", content.getNumberOfElements());
-    return content;
+    return userService.getAllEmployeesWithStatus(pageable, request);
   }
 
   public Object getListOfPagesByEmployeeId(String id) {
-    log.info("getListOfPagesByEmployeeId is handling the request");
     return bpService.getPagesByEmployeeId(id);
   }
 
-  public void updateBusinessPagesListOfEmployees(@NonNull List<UpdateBusinessPageNamesRequest> request) {
-    log.info("updateBusinessPagesListOfEmployees is handling the request");
+  public void updateBusinessPagesListOfEmployee(@NonNull List<UpdateBusinessPageNamesRequest> request) {
     request.forEach(r -> bpService.updatePagesOfEmployee(r.empId(), r.pages()));
   }
 
   public boolean checkIfEmployeeExists(String id) {
-    log.info("checkIfEmployeeExists is handling the request");
     return userService.isUserExists(id);
+  }
+
+  public boolean isJobAssigned(String jobId) {
+    return userService.isJobAssigned(jobId);
+  }
+
+  public EmployeeResponse updateEmployee(String id, UpdateRequest request) {
+    var response = userService.updateEmployee(id, request);
+    template.sendMessage(UPDATE_ROUTING_KEY, new AccountUpdateEvent(
+      response.email(),
+      response.fullName(),
+      response.departmentName(),
+      UPDATE_SUBJECT, UPDATE_TEMPLATE));
+    return response;
+  }
+
+  public void deleteEmployee(String id) {
+    var response = userService.deleteEmployee(id);
+    template.sendMessage(DELETE_ROUTING_KEY, new AccountDeleteEvent(
+      response.email(),
+      response.fullName(),
+      response.departmentName(),
+      response.email(),
+      DELETE_SUBJECT, DELETE_TEMPLATE));
   }
 }

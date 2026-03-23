@@ -1,59 +1,80 @@
 package com.capstone.device.application.usecase;
 
 import com.capstone.device.application.business.parameter.ParameterService;
+import com.capstone.device.application.dto.request.UpdateParameterRequest;
 import com.capstone.device.application.dto.response.ParameterResponse;
-import org.junit.jupiter.api.DisplayName;
+import com.capstone.device.application.event.producer.MessageProducer;
+import com.capstone.device.application.event.producer.parameter.ParameterUpdateEvent;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ParameterUseCaseTest {
 
-    @Mock
-    private ParameterService parameterService;
+  @Mock
+  ParameterService parameterService;
 
-    // We mock the service that IS ACTUALLY USED.
-    // The class has two fields: 'service' and 'parameterService'. The code uses
-    // 'service'.
-    // Mockito will inject the mock into the first matching field.
-    // Since both are same type, it's safer to ensure we are testing the behavior
-    // correctly regardless or use manual injection if needed.
-    // However, for now we rely on standard injection. If it fails, we will know.
-    // Actually, let's just mock the one that is used. If both are mocked, it's
-    // fine.
+  @Mock
+  MessageProducer messageProducer;
 
-    @InjectMocks
-    private ParameterUseCase parameterUseCase;
+  @Mock
+  Logger log;
 
-    @Test
-    @DisplayName("should_GetParametersList_When_ValidRequest")
-    void should_GetParametersList_When_ValidRequest() {
-        // Given
-        var pageable = Pageable.unpaged();
-        var filter = "filter";
-        Page<ParameterResponse> expectedPage = new PageImpl<>(Collections.<ParameterResponse>emptyList());
+  @InjectMocks
+  ParameterUseCase parameterUseCase;
 
-        // We assume 'parameterService' field is valid.
-        when(parameterService.getParameters(pageable, filter)).thenReturn(expectedPage);
+  private static final String UPDATE_ROUTING_KEY = "construction_queue.params.update";
 
-        // When
-        Page<ParameterResponse> result = parameterUseCase.getParametersList(pageable, filter);
+  @BeforeEach
+  void setUp() {
+    ReflectionTestUtils.setField(parameterUseCase, "log", log);
+    ReflectionTestUtils.setField(parameterUseCase, "UPDATE_ROUTING_KEY", UPDATE_ROUTING_KEY);
+  }
 
-        // Then
-        assertNotNull(result);
-        assertEquals(expectedPage, result);
-        verify(parameterService).getParameters(pageable, filter);
-    }
+  @Test
+  void should_ReturnParameters_When_GetParametersListIsCalled() {
+    var pageable = mock(Pageable.class);
+    var filter = "test";
+    Page<ParameterResponse> expectedPage = new PageImpl<>(Collections.emptyList());
+    when(parameterService.getParameters(pageable, filter)).thenReturn(expectedPage);
+
+    Page<ParameterResponse> result = parameterUseCase.getParametersList(pageable, filter);
+
+    assertEquals(expectedPage, result);
+  }
+
+  @Test
+  void should_UpdateParameterAndSendEvent_When_ValidRequest() {
+    var id = "1";
+    var updatorId = "admin-uuid";
+    var request = new UpdateParameterRequest("VAT", new BigDecimal("0.08"));
+    var oldData = new ParameterResponse(id, "VAT", "0.1", "Admin", "Admin", "2023-01-01", "2023-01-01");
+    var newData = new ParameterResponse(id, "VAT", "0.08", "Admin", "Admin", "2023-01-01", "2023-01-02");
+
+    when(parameterService.getParameterById(id)).thenReturn(oldData);
+    when(parameterService.updateParameter(updatorId, id, request)).thenReturn(newData);
+
+    var result = parameterUseCase.updateParameter(updatorId, id, request);
+
+    assertEquals(newData, result);
+    verify(log).info("UseCase: Updating parameter with id: {}", id);
+    verify(messageProducer).send(eq(UPDATE_ROUTING_KEY), any(ParameterUpdateEvent.class));
+  }
 }

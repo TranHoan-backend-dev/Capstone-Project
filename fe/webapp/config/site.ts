@@ -11,15 +11,83 @@ export const siteConfig = {
       href: "/home",
     },
 
-    // Hệ thống
+    // Danh mục
     {
-      key: "system",
-      label: "Hệ thống",
+      key: "category",
+      label: "Danh mục",
       items: [
         {
-          key: "business-page",
-          label: "Quản lý trang doanh nghiệp",
-          href: "/business-page",
+          key: "departments",
+          label: "Quản lý Phòng ban",
+          href: "/departments",
+        },
+        {
+          key: "employees",
+          label: "Quản lý Nhân viên",
+          href: "/employees",
+        },
+        {
+          key: "jobs",
+          label: "Quản lý Công việc",
+          href: "/jobs",
+        },
+        {
+          key: "communes",
+          label: "Quản lý Phường/xã",
+          href: "/communes",
+        },
+        {
+          key: "neighborhood-units",
+          label: "Quản lý Tổ/Khu phố",
+          href: "/neighborhood-units",
+        },
+        {
+          key: "hamlets",
+          label: "Quản lý Thôn/làng",
+          href: "/hamlets",
+        },
+        {
+          key: "roads",
+          label: "Quản lý Đường phố",
+          href: "/roads",
+        },
+      ],
+    },
+
+    // Thiết bị
+    {
+      key: "device",
+      label: "Thiết bị",
+      items: [
+        {
+          key: "water-meter-type",
+          label: "Quản lý Loại đồng hồ nước",
+          href: "/water-meter-type",
+        },
+        {
+          key: "materials-prices",
+          label: "Quản lý Đơn giá vật tư",
+          href: "/materials-prices",
+        },
+        {
+          key: "materials-group",
+          label: "Quản lý Nhóm vật tư",
+          href: "/materials-group",
+        },
+        {
+          key: "units",
+          label: "Quản lý Đơn vị tính",
+          href: "/units",
+        },
+        {
+          key: "parameters",
+          label: "Quản lý Tham số kĩ thuật",
+          href: "/parameters",
+        },
+        {
+          key: "water-price",
+          label: "Quản lý Giá nước",
+          href: "/water-price",
         },
         {
           key: "access-rights",
@@ -149,6 +217,21 @@ export const siteConfig = {
       key: "construction",
       label: "Thi công",
       items: [
+        {
+          key: "networks",
+          label: "Quản lý Chi nhánh cấp nước",
+          href: "/networks",
+        },
+        {
+          key: "laterals",
+          label: "Quản lý Nhánh tổng",
+          href: "/laterals",
+        },
+        {
+          key: "roadmaps",
+          label: "Quản lý Lộ trình ghi",
+          href: "/roadmaps",
+        },
         {
           key: "settlement-lookup",
           label: "Tra cứu quyết toán",

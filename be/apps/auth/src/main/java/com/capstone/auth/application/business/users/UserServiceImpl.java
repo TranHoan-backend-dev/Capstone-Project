@@ -1,23 +1,23 @@
 package com.capstone.auth.application.business.users;
 
 import com.capstone.auth.application.business.dto.UserDTO;
-import com.capstone.auth.application.dto.request.FilterUsersRequest;
+import com.capstone.auth.application.business.pages.BusinessPageService;
+import com.capstone.auth.application.dto.request.users.FilterUsersRequest;
+import com.capstone.auth.application.dto.request.users.UpdateRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
-import com.capstone.common.exception.ExistingException;
-import com.capstone.auth.application.exception.NotExistingException;
+import com.capstone.auth.infrastructure.persistence.*;
+import com.capstone.common.enumerate.RoleName;
+import com.capstone.common.exception.NotExistingException;
 import com.capstone.auth.domain.model.EmployeeJob;
 import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.domain.model.Roles;
 import com.capstone.auth.domain.model.Users;
 import com.capstone.auth.domain.model.utils.EmployeeJobId;
-import com.capstone.auth.infrastructure.persistence.BusinessPagesOfEmployeeRepository;
-import com.capstone.auth.infrastructure.persistence.EmployeeJobRepository;
-import com.capstone.auth.infrastructure.persistence.ProfileRepository;
-import com.capstone.auth.infrastructure.persistence.UserRepository;
-import com.capstone.auth.infrastructure.config.Constant;
+import com.capstone.auth.infrastructure.utils.Message;
 import com.capstone.auth.infrastructure.service.NetworkService;
 import com.capstone.auth.infrastructure.service.OrganizationService;
 import com.capstone.common.annotation.AppLog;
+import com.capstone.common.utils.SharedConstant;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -27,14 +27,13 @@ import org.slf4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @AppLog
 @Service
@@ -42,12 +41,14 @@ import java.util.concurrent.CompletableFuture;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserServiceImpl implements UserService {
   UserRepository repo;
-  PasswordEncoder encoder;
   BusinessPagesOfEmployeeRepository bpRepo;
   ProfileRepository profileRepo;
   EmployeeJobRepository employeeJobRepo;
-  NetworkService netWorkService;
+  NetworkService networkService;
   OrganizationService organizationService;
+  BusinessPageService bpService;
+  IndividualNotificationRepository indRepo;
+  RoleRepository roleRepo;
 
   @NonFinal
   Logger log;
@@ -55,13 +56,13 @@ public class UserServiceImpl implements UserService {
   @Override
   @Transactional(rollbackFor = Exception.class) // rollback neu co loi
   public void createEmployee(
-    String username, String email, Roles role, @NonNull List<String> jobIds,
+    String userId, String username, String email, Roles role, @NonNull List<String> jobIds,
     String departmentId, String waterSupplyNetworkId, String fullName, String phone
   ) {
     log.info("UsersService is handling the request");
-    validateNewEmployeeInformation(email, phone, waterSupplyNetworkId, departmentId, jobIds);
 
     var user = Users.create(builder -> builder
+      .userId(userId)
       .email(email)
       .username(username)
       .role(role)
@@ -89,36 +90,13 @@ public class UserServiceImpl implements UserService {
     });
   }
 
-  @Async("passwordEncoderExecutor")
-  public CompletableFuture<String> hashPassword(String password) {
-    return CompletableFuture.completedFuture(encoder.encode(password));
-  }
-
-  @Override
-  @Transactional(rollbackFor = Exception.class)
-  public void updatePassword(String email, @NonNull String password, String newPassword) {
-    var obj = getUsersByEmail(email);
-    // Note: Local password verification is currently skipped because Users entity
-    // does not store passwords (it's managed by Keycloak).
-    // If local verification/storage is needed, re-add the password field to the Users entity.
-    log.info("Local password update for {} - Skipping verification (managed by Keycloak)", email);
-    updateUser(obj, newPassword);
-  }
-
-  @Override
-  @Transactional(rollbackFor = Exception.class)
-  public void resetPassword(String email, String newPassword) {
-    var obj = getUsersByEmail(email);
-    updateUser(obj, newPassword);
-  }
-
   @Override
   public boolean checkExistence(String value) {
     Objects.requireNonNull(value, "Value cannot be null");
     var isCredentialsExists = false;
 
     if (!value.isBlank()) {
-      if (value.matches(Constant.EMAIL_PATTERN)) {
+      if (value.matches(SharedConstant.EMAIL_PATTERN)) {
         isCredentialsExists = repo.existsByEmail(value);
       } else {
         isCredentialsExists = repo.existsByUsername(value);
@@ -140,9 +118,7 @@ public class UserServiceImpl implements UserService {
   @Override
   public UserDTO getUserById(String id) {
     log.info("Getting user by id: {}", id);
-    var user = repo
-      .findById(id)
-      .orElseThrow(() -> new NotExistingException("User with id does not exist"));
+    var user = getById(id);
     log.info("User found: {}", user);
     return returnUserDTO(user);
   }
@@ -151,8 +127,7 @@ public class UserServiceImpl implements UserService {
   @Transactional(rollbackFor = Exception.class)
   public UserDTO updateUsername(String id, String username) {
     log.info("Saving user: {}", username);
-    var currentUser = repo.findById(id)
-      .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
+    var currentUser = getById(id);
 
     currentUser.setUsername(username);
     repo.save(currentUser);
@@ -189,29 +164,14 @@ public class UserServiceImpl implements UserService {
       usersList = repo.findAll(pageable);
     }
 
-    var content = usersList.getContent().stream().map(c -> new EmployeeResponse(
-      c.getUserId(),
-      c.getUsername(),
-      c.getEmail())).toList();
-    return new PageImpl<>(
-      content,
-      pageable,
-      content.size());
-  }
-
-  private @NonNull Users getUsersByEmail(String email) {
-    var obj = repo.findByEmail(email);
-    if (obj.isEmpty()) {
-      throw new NotExistingException(Constant.SE_02);
-    }
-    log.info("Find user by email: {}", obj);
-    return obj.get();
-  }
-
-  private void updateUser(@NonNull Users obj, String password) {
-    // obj.setPassword(encoder.encode(password));
-    // repo.save(obj);
-    // log.info("Password reset successfully");
+    var content = usersList.getContent().stream().map(c -> {
+      var profile = profileRepo.findById(c.getUserId());
+      if (profile.isEmpty()) {
+        throw new InternalError("Hồ sơ người dùng không tồn tại");
+      }
+      return mapToEmployeeResponse(c);
+    }).toList();
+    return new PageImpl<>(content, pageable, content.size());
   }
 
   @Override
@@ -219,6 +179,98 @@ public class UserServiceImpl implements UserService {
     log.info("Getting user by email: {}", email);
     var user = getUsersByEmail(email);
     return returnUserDTO(user);
+  }
+
+  @Override
+  public boolean isJobAssigned(String jobId) {
+    log.info("Checking if job is assigned to any employee: {}", jobId);
+    return employeeJobRepo.existsByIdJobId(jobId);
+  }
+
+  @Override
+  public EmployeeResponse updateEmployee(String id, @NonNull UpdateRequest request) {
+    var user = getById(id);
+    var profile = profileRepo
+      .findByUsersUsername(user.getUsername())
+      .orElseThrow(() -> new NotExistingException("Không tìm thấy hồ sơ người dùng với id " + id));
+
+    if (request.name() != null && !request.name().isBlank()) {
+      profile.setFullname(request.name());
+    }
+    if (request.phone() != null && !request.phone().isBlank()) {
+      profile.setPhoneNumber(request.phone());
+    }
+    if (request.isActive() != null) {
+      user.setIsEnabled(request.isActive());
+      // TODO: dùng keycloak để xác định session đăng nhập của người dùng, sau đó gửi thông báo và email cho họ
+    }
+    if (request.departmentId() != null && !request.departmentId().isBlank()) {
+      var status = organizationService.checkDepartmentExistence(request.departmentId());
+      if (!status) {
+        throw new IllegalArgumentException("Phòng ban này không tồn tại: " + request.departmentId());
+      }
+      user.setDepartmentId(request.departmentId());
+    }
+    if (request.networkId() != null && !request.networkId().isBlank()) {
+      var status = networkService.checkExistence(request.networkId());
+      if (!status) {
+        throw new IllegalArgumentException("Chi nhánh cấp nước này không tồn tại: " + request.networkId());
+      }
+      user.setWaterSupplyNetworkId(request.networkId());
+    }
+
+    return mapToEmployeeResponse(user);
+  }
+
+  @Override
+  public EmployeeResponse deleteEmployee(String id) {
+    log.info("Delete employee: {}", id);
+    var emp = getById(id);
+    if (!emp.getIsEnabled()) {
+      throw new IllegalArgumentException(Message.SE_16);
+    }
+    var profile = profileRepo.findById(id)
+      .orElseThrow(() -> new NotExistingException(String.format(Message.SE_15, id)));
+
+    emp.setIsEnabled(false);
+    indRepo.deleteByUserId(id);
+    bpRepo.deleteByUsers(emp);
+
+    var rolesList = roleRepo.findByUsers(Set.of(emp));
+    if (rolesList != null && !rolesList.isEmpty()) {
+      var role = rolesList.getFirst();
+      role.getUsers().removeIf(u -> u
+        .getUserId()
+        .equals(emp.getUserId())
+      );
+      roleRepo.save(role);
+    }
+
+    repo.save(emp);
+
+    return mapToEmployeeResponse(emp);
+  }
+
+  @Override
+  public String getRoleOfEmployee(String id) {
+    var user = getById(id);
+    return roleRepo.findByUsers(Set.of(user))
+      .getFirst().getName().toString();
+  }
+
+  @Override
+  public List<EmployeeResponse> getAllSurveyStaffs() {
+    log.info("Getting all survey staff");
+    var employees = repo.findByRoleNameIn(List.of(RoleName.SURVEY_STAFF));
+    return employees.stream()
+      .map(this::mapToEmployeeResponse)
+      .collect(Collectors.toList());
+  }
+
+  private Users getById(String id) {
+    return repo
+      .findById(id)
+      .orElseThrow(() -> new NotExistingException(Message.SE_03 + ": " + id));
   }
 
   private @NonNull UserDTO returnUserDTO(@NonNull Users currentUser) {
@@ -240,24 +292,26 @@ public class UserServiceImpl implements UserService {
       currentUser.getIsEnabled());
   }
 
-  private void validateNewEmployeeInformation(String email, String phone, String networkId, String departmentId, List<String> jobIds) {
+  private @NonNull Users getUsersByEmail(String email) {
     var obj = repo.findByEmail(email);
-    if (obj.isPresent()) {
-      throw new ExistingException(Constant.SE_01);
+    if (obj.isEmpty()) {
+      throw new NotExistingException(Message.SE_02);
     }
-    if (profileRepo.existsByPhoneNumber(phone)) {
-      throw new ExistingException(Constant.SE_09);
-    }
-    if (!netWorkService.checkExistence(networkId)) {
-      throw new NotExistingException(Constant.SE_10);
-    }
-    if (!organizationService.checkDepartmentExistence(departmentId)) {
-      throw new NotExistingException(Constant.SE_11);
-    }
-    var invalidJobs = jobIds.stream()
-      .filter(jid -> !organizationService.checkJobExistence(jid))
-      .toList();
-    if (!invalidJobs.isEmpty())
-      throw new NotExistingException("Jobs not exist: " + invalidJobs);
+    log.info("Find user by email: {}", obj);
+    return obj.get();
+  }
+
+  private @NonNull EmployeeResponse mapToEmployeeResponse(@NonNull Users user) {
+    var profile = profileRepo.findById(user.getUserId())
+      .orElseThrow(() -> new NotExistingException(String.format(Message.SE_15, user.getUserId())));
+    return new EmployeeResponse(
+      user.getUserId(),
+      null,
+      profile.getFullname(),
+      organizationService.getDepartmentName(user.getDepartmentId()),
+      networkService.getNameById(user.getWaterSupplyNetworkId()),
+      bpService.getPagesByEmployeeId(user.getUserId()).toString(),
+      user.getEmail()
+    );
   }
 }
