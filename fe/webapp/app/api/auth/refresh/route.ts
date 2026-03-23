@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { keycloakRefreshToken } from "@/services/keycloak.service";
-import { IS_PRODUCTION, MAX_AGE_REFRESH_TOKEN } from "@/constants/auth.constants";
+import {
+  IS_PRODUCTION,
+  MAX_AGE_REFRESH_TOKEN,
+} from "@/constants/auth.constants";
 
 export async function POST(req: NextRequest) {
   try {
