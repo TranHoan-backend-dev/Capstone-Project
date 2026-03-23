@@ -5,8 +5,10 @@ import com.capstone.data.source.response.NotificationResponse;
 import com.capstone.data.source.response.WrapperApiResponse;
 import com.capstone.domain.model.Notification;
 import com.capstone.domain.repository.NotificationRepository;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import retrofit2.Response;
 
 public class NotificationRepositoryImpl implements NotificationRepository {
@@ -19,22 +21,22 @@ public class NotificationRepositoryImpl implements NotificationRepository {
     @Override
     public List<Notification> getNotifications(int page, int size) throws Exception {
         Response<WrapperApiResponse<List<NotificationResponse>>> response = api.getNotifications(page, size).execute();
-        
+
         if (response.isSuccessful() && response.body() != null) {
             List<NotificationResponse> list = response.body().getData();
             List<Notification> domainList = new ArrayList<>();
-            for (NotificationResponse item : list) {
+            for (var item : list) {
                 domainList.add(new Notification(
-                    item.getNotificationId(),
-                    item.getLink(),
-                    item.getMessage(),
-                    item.getStatus(),
-                    item.getCreatedAt()
+                        item.getNotificationId(),
+                        item.getLink(),
+                        item.getMessage(),
+                        item.getStatus(),
+                        item.getCreatedAt()
                 ));
             }
             return domainList;
         }
-        
+
         return new ArrayList<>();
     }
 

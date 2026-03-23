@@ -155,4 +155,58 @@ public class RoadmapController {
     var response = roadmapUseCase.getAllRoadmaps(pageable, keyword, lateralId, networkId);
     return Utils.returnOkResponse("Lấy danh sách lộ trình ghi thành công", response);
   }
+
+  @PatchMapping("/{id}/assign/{staffId}")
+  @Operation(summary = "Gán nhân viên ghi thu cho lộ trình", description = """
+    **Luồng nghiệp vụ:**
+    1. Gán nhân viên phòng kinh doanh (METER_INSPECTION_STAFF) cho lộ trình ghi.
+    2. Gửi thông báo cho nhân viên được gán.
+    """, responses = {
+    @ApiResponse(responseCode = "200", description = "Gán thành công"),
+    @ApiResponse(responseCode = "403", description = "Không có quyền")
+  })
+  @PreAuthorize("hasAnyAuthority('BUSINESS_DEPARTMENT_HEAD', 'IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> assignStaff(@PathVariable String id, @PathVariable String staffId) {
+    log.info("REST request to assign staff {} to roadmap {}", staffId, id);
+    var response = roadmapUseCase.assignStaff(id, staffId);
+    return Utils.returnOkResponse("Gán nhân viên thành công", response);
+  }
+
+  @PatchMapping("/{id}/cancel-assignment")
+  @Operation(summary = "Hủy phân công lộ trình", description = """
+    **Luồng nghiệp vụ:**
+    1. Hủy gán nhân viên cho lộ trình ghi.
+    2. Gửi thông báo cho nhân viên cũ.
+    """, responses = {
+    @ApiResponse(responseCode = "200", description = "Hủy thành công"),
+    @ApiResponse(responseCode = "403", description = "Không có quyền")
+  })
+  @PreAuthorize("hasAnyAuthority('BUSINESS_DEPARTMENT_HEAD', 'IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> cancelAssignment(@PathVariable String id) {
+    log.info("REST request to cancel assignment for roadmap {}", id);
+    var response = roadmapUseCase.cancelAssignment(id);
+    return Utils.returnOkResponse("Hủy phân công thành công", response);
+  }
+
+  @PatchMapping("/{id}/update-assignment/{staffId}")
+  @Operation(summary = "Cập nhật phân công lộ trình", description = """
+    **Luồng nghiệp vụ:**
+    1. Cập nhật nhân viên mới cho lộ trình.
+    2. Gửi thông báo cho cả nhân viên cũ và mới.
+    """, responses = {
+    @ApiResponse(responseCode = "200", description = "Cập nhật thành công"),
+    @ApiResponse(responseCode = "403", description = "Không có quyền")
+  })
+  @PreAuthorize("hasAnyAuthority('BUSINESS_DEPARTMENT_HEAD', 'IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> updateAssignment(@PathVariable String id, @PathVariable String staffId) {
+    log.info("REST request to update assignment for roadmap {} to staff {}", id, staffId);
+    var response = roadmapUseCase.updateAssignment(id, staffId);
+    return Utils.returnOkResponse("Cập nhật phân công thành công", response);
+  }
+
+  @Operation(hidden = true)
+  @GetMapping("/exist/{id}")
+  public Boolean checkExistenceOfRoadmap(@PathVariable String id) {
+    return roadmapUseCase.isExistingRoadmap(id);
+  }
 }

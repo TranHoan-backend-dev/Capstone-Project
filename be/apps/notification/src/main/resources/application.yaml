@@ -82,6 +82,9 @@ rabbit-mq-config:
     - cost-estimate
     - receipt
     - finance
+    - construction-request
+    - page
+    - roadmap
   actions:
     - update
     - delete

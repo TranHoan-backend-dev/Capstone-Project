@@ -26,7 +26,4 @@ public class PriceType {
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(columnDefinition = "jsonb")
   Map<String, BigDecimal> price;
-
-  @ManyToOne(fetch = FetchType.EAGER)
-  WaterPrice waterPrice;
 }

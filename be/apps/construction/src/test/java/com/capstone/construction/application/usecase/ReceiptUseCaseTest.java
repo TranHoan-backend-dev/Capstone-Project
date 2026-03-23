@@ -6,6 +6,7 @@ import com.capstone.construction.application.dto.request.receipt.UpdateRequest;
 import com.capstone.construction.application.dto.response.receipt.ReceiptResponse;
 import com.capstone.construction.application.event.producer.MessageProducer;
 import com.capstone.construction.application.event.producer.receipt.CreatedEvent;
+import com.capstone.construction.domain.model.utils.significance.ReceiptSignificance;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,16 +43,23 @@ class ReceiptUseCaseTest {
     ReflectionTestUtils.setField(receiptUseCase, "CREATE_ACTION", "create");
     ReflectionTestUtils.setField(receiptUseCase, "QUEUE_NAME", "construction_queue");
 
+    var sig = ReceiptSignificance.builder().receiptCreator("S1").treasurer("S2").build();
+
     mockResponse = new ReceiptResponse(
-        "LD", "2024001", "BL001", "Customer", "Address", LocalDate.now(), true,
-        LocalDateTime.now(), LocalDateTime.now()
+      "LD", "2024001", "BL001", "Customer", "Address", LocalDate.now(), true,
+      "Payment Reason", "1000", "One Thousand", "Attach", sig,
+      LocalDateTime.now(), LocalDateTime.now()
     );
   }
 
   @Test
-  @DisplayName("Create receipt should save and publish event")
-  void createReceipt_ShouldReturnResponseAndPublishEvent() {
-    var request = new CreateRequest("LD", "2024001", "BL001", "C", "A", LocalDate.now(), true);
+  @DisplayName("Create receipt should save and NOT publish event")
+  void createReceipt_ShouldReturnResponse() {
+    var request = new CreateRequest(
+      "LD", "2024001", "BL001",
+      "Reason", "1000", "One Thousand", "Attach",
+      LocalDate.now(), true, "S"
+    );
     when(receiptService.createReceipt(request)).thenReturn(mockResponse);
 
     var result = receiptUseCase.createReceipt(request);
@@ -59,19 +67,20 @@ class ReceiptUseCaseTest {
     assertThat(result).isNotNull();
     assertThat(result.receiptNumber()).isEqualTo("BL001");
     verify(receiptService).createReceipt(request);
-    verify(messageProducer).send(eq("construction_queue.receipt.create"), any(CreatedEvent.class));
+    verifyNoInteractions(messageProducer);
   }
 
   @Test
-  @DisplayName("Update receipt successfully")
-  void updateReceipt_ShouldReturnResponse() {
-    var request = new UpdateRequest("LD", "2024001", "BL001", "C", "A", LocalDate.now(), true);
+  @DisplayName("Update receipt should return response and publish event when fully signed")
+  void updateReceipt_ShouldReturnResponseAndPublishEvent() {
+    var request = new UpdateRequest("LD", "2024001", "BL001", "C", "A", LocalDate.now(), true, "S2");
     when(receiptService.updateReceipt(request)).thenReturn(mockResponse);
 
     var result = receiptUseCase.updateReceipt(request);
 
     assertThat(result).isNotNull();
     verify(receiptService).updateReceipt(request);
+    verify(messageProducer).send(eq("construction_queue.receipt.create"), any(CreatedEvent.class));
   }
 
   @Test

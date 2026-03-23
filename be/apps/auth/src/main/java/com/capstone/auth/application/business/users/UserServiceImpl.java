@@ -202,6 +202,7 @@ public class UserServiceImpl implements UserService {
     }
     if (request.isActive() != null) {
       user.setIsEnabled(request.isActive());
+      // TODO: dùng keycloak để xác định session đăng nhập của người dùng, sau đó gửi thông báo và email cho họ
     }
     if (request.departmentId() != null && !request.departmentId().isBlank()) {
       var status = organizationService.checkDepartmentExistence(request.departmentId());

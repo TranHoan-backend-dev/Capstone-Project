@@ -133,13 +133,13 @@ public class MaterialServiceImpl implements MaterialService {
   }
 
   @Override
-  public Page<MaterialResponse> searchMaterials(SearchRequest request, Pageable pageable) {
+  public Page<MaterialResponse> searchMaterials(@NonNull SearchRequest request, Pageable pageable) {
     log.info("Searching materials with criteria: jobContent={}, laborCode={}, groupId={}, minPrice={}, maxPrice={}",
         request.getJobContent(), request.getLaborCode(), request.getGroupId(), request.getMinPrice(), request.getMaxPrice());
 
-    String jobContent = (request.getJobContent() != null && !request.getJobContent().isBlank()) ? request.getJobContent() : null;
-    String laborCode = (request.getLaborCode() != null && !request.getLaborCode().isBlank()) ? request.getLaborCode() : null;
-    String groupId = (request.getGroupId() != null && !request.getGroupId().isBlank()) ? request.getGroupId() : null;
+    var jobContent = (request.getJobContent() != null && !request.getJobContent().isBlank()) ? request.getJobContent() : null;
+    var laborCode = (request.getLaborCode() != null && !request.getLaborCode().isBlank()) ? request.getLaborCode() : null;
+    var groupId = (request.getGroupId() != null && !request.getGroupId().isBlank()) ? request.getGroupId() : null;
 
     return mRepo.searchMaterials(
         jobContent,

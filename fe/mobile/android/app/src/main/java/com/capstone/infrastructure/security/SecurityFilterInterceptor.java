@@ -1,9 +1,13 @@
 package com.capstone.infrastructure.security;
 
+import androidx.annotation.NonNull;
+
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
+
 import java.io.IOException;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -23,10 +27,11 @@ public class SecurityFilterInterceptor implements Interceptor {
         this.rateLimiter = rateLimiter;
     }
 
+    @NonNull
     @Override
-    public Response intercept(Interceptor.Chain chain) throws IOException {
-        Request request = chain.request();
-        String url = request.url().toString();
+    public Response intercept(@NonNull Interceptor.Chain chain) throws IOException {
+        var request = chain.request();
+        var url = request.url().toString();
 
         // 1. Kiểm tra Rate Limit phía Client trước khi gọi Network
         if (!rateLimiter.shouldAllowRequest(url)) {
@@ -35,12 +40,12 @@ public class SecurityFilterInterceptor implements Interceptor {
 
         // 2. Lọc và bổ sung các header an toàn và bảo mật
         Request.Builder builder = request.newBuilder()
-            .removeHeader("Server") // Ẩn thông tin Server định danh nếu có
-            .addHeader("X-Content-Type-Options", "nosniff")
-            .addHeader("X-Frame-Options", "DENY")
-            .addHeader("X-XSS-Protection", "1; mode=block")
-            .addHeader("User-Agent", "Capstone-Android-App/1.0") // Định danh app CAPSTONE-ANDROID
-            .addHeader("X-Requested-With", "XMLHttpRequest");
+                .removeHeader("Server") // Ẩn thông tin Server định danh nếu có
+                .addHeader("X-Content-Type-Options", "nosniff")
+                .addHeader("X-Frame-Options", "DENY")
+                .addHeader("X-XSS-Protection", "1; mode=block")
+                .addHeader("User-Agent", "Capstone-Android-App/1.0") // Định danh app CAPSTONE-ANDROID
+                .addHeader("X-Requested-With", "XMLHttpRequest");
 
         // 3. Xử lý dọn dẹp các header tạm thời dùng cho Bridge-Interop
         builder.removeHeader("No-Authentication");

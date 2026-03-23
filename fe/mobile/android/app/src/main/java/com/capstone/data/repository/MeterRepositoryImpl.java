@@ -1,12 +1,18 @@
 package com.capstone.data.repository;
 
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+
 import com.capstone.domain.model.MeterReading;
 import com.capstone.domain.repository.MeterRepository;
 import com.capstone.infrastructure.meter.MeterCaptureManager;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -28,12 +34,12 @@ public class MeterRepositoryImpl implements MeterRepository {
 
     @Override
     public boolean validateImageQuality(File file) throws Exception {
-        boolean isBlurred = captureManager.isImageBlurred(file);
+        var isBlurred = captureManager.isImageBlurred(file);
         return !isBlurred;
     }
 
     @Override
-    public void submitToAiProcessing(MeterReading meterReading) throws Exception {
+    public void submitToAiProcessing(@NonNull MeterReading meterReading) throws Exception {
         captureManager.sendToAiAsync(meterReading.getImagePath());
         localDb.add(meterReading);
     }
@@ -41,21 +47,21 @@ public class MeterRepositoryImpl implements MeterRepository {
     @Override
     public List<MeterReading> getDailyReadings(long timestamp) throws Exception {
         List<MeterReading> results = new ArrayList<>();
-        for (MeterReading reading : localDb) {
+        for (var reading : localDb) {
             if (reading.getAiResult() == null) {
                 Map<String, Object> mockResult = captureManager.getMockAiResults(reading.getImagePath());
                 results.add(new MeterReading(
-                    reading.getId(),
-                    (String) mockResult.get("serialNumber"),
-                    (Double) mockResult.get("readingValue"),
-                    reading.getImagePath(),
-                    reading.getStatus(),
-                    new MeterReading.AiResult(
+                        reading.getId(),
                         (String) mockResult.get("serialNumber"),
-                        (Double) mockResult.get("readingValue")
-                        // Confidence field was used in Kotlin but omitted in my simplified Java model,
-                        // I'll stick to what I defined in MeterReading.java
-                    )
+                        (Double) mockResult.get("readingValue"),
+                        reading.getImagePath(),
+                        reading.getStatus(),
+                        new MeterReading.AiResult(
+                                (String) mockResult.get("serialNumber"),
+                                (Double) mockResult.get("readingValue")
+                                // Confidence field was used in Kotlin but omitted in my simplified Java model,
+                                // I'll stick to what I defined in MeterReading.java
+                        )
                 ));
             } else {
                 results.add(reading);
@@ -65,21 +71,21 @@ public class MeterRepositoryImpl implements MeterRepository {
     }
 
     @Override
-    public boolean saveMeterReading(MeterReading reading) throws Exception {
-        System.out.println("Saving meter reading to DB: " + reading.getSerialNumber() + " - " + reading.getReadingValue());
+    public boolean saveMeterReading(@NonNull MeterReading reading) throws Exception {
+        Log.i(this.getClass().getName(), "Saving meter reading to DB: " + reading.getSerialNumber() + " - " + reading.getReadingValue());
         return true;
     }
 
     @Override
     public boolean updateManualMeterReading(String readingId, String serialNumber, double readingValue) throws Exception {
-        for (int i = 0; i < localDb.size(); i++) {
-            MeterReading old = localDb.get(i);
+        for (var i = 0; i < localDb.size(); i++) {
+            var old = localDb.get(i);
             if (old.getId().equals(readingId)) {
                 localDb.set(i, old.copy(serialNumber, readingValue, old.getStatus()));
                 break;
             }
         }
-        System.out.println("Manually updated reading for " + readingId + ": " + serialNumber + " - " + readingValue);
+        Log.i(this.getClass().getName(), "Manually updated reading for " + readingId + ": " + serialNumber + " - " + readingValue);
         return true;
     }
 }

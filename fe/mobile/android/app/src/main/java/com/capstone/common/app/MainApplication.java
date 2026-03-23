@@ -1,7 +1,15 @@
 package com.capstone.common.app;
 
 import android.app.Application;
-import com.capstone.bridge.*;
+
+import androidx.annotation.NonNull;
+
+import com.capstone.bridge.auth.AuthBridgePackage;
+import com.capstone.bridge.media.MediaBridgePackage;
+import com.capstone.bridge.meter.MeterBridgePackage;
+import com.capstone.bridge.notification.NotificationBridgePackage;
+import com.capstone.bridge.payment.PaymentBridgePackage;
+import com.capstone.bridge.permission.PermissionBridgePackage;
 import com.capstone.domain.repository.*;
 import com.capstone.infrastructure.security.PermissionManager;
 import com.capstone.BuildConfig;
@@ -13,6 +21,7 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.defaults.DefaultReactHost;
 import com.facebook.react.defaults.DefaultReactNativeHost;
 import com.facebook.react.ReactNativeApplicationEntryPoint;
+
 import dagger.hilt.EntryPoint;
 import dagger.hilt.InstallIn;
 import dagger.hilt.android.EntryPointAccessors;
@@ -25,30 +34,33 @@ import java.util.List;
 public class MainApplication extends Application implements ReactApplication {
 
     private final ReactNativeHost mReactNativeHost =
-      new DefaultReactNativeHost(this) {
-        @Override
-        public List<ReactPackage> getPackages() {
-          return MainApplication.this.getPackages();
-        }
+            new DefaultReactNativeHost(this) {
+                @NonNull
+                @Override
+                public List<ReactPackage> getPackages() {
+                    return MainApplication.this.getPackages();
+                }
 
-        @Override
-        protected String getJSMainModuleName() {
-          return "index";
-        }
+                @NonNull
+                @Override
+                protected String getJSMainModuleName() {
+                    return "index";
+                }
 
-        @Override
-        public boolean getUseDeveloperSupport() {
-          return BuildConfig.DEBUG;
-        }
+                @Override
+                public boolean getUseDeveloperSupport() {
+                    return BuildConfig.DEBUG;
+                }
 
-        @Override
-        protected boolean isHermesEnabled() {
-          return BuildConfig.IS_HERMES_ENABLED;
-        }
-      };
+                @Override
+                protected boolean isHermesEnabled() {
+                    return BuildConfig.IS_HERMES_ENABLED;
+                }
+            };
 
     private ReactHost reactHost;
 
+    @NonNull
     @Override
     public ReactNativeHost getReactNativeHost() {
         return mReactNativeHost;
@@ -58,34 +70,35 @@ public class MainApplication extends Application implements ReactApplication {
     public ReactHost getReactHost() {
         if (reactHost == null) {
             reactHost = DefaultReactHost.getDefaultReactHost(
-                this.getApplicationContext(),
-                mReactNativeHost,
-                null
+                    this.getApplicationContext(),
+                    mReactNativeHost,
+                    null
             );
         }
         return reactHost;
     }
 
+    @NonNull
     private List<ReactPackage> getPackages() {
         List<ReactPackage> packages = new PackageList(this).getPackages();
 
         // Register custom bridge packages and inject their dependencies using Hilt EntryPoints
-        AuthRepository authRepository = EntryPointAccessors.fromApplication(this, AuthEntryPoint.class).authRepository();
+        var authRepository = EntryPointAccessors.fromApplication(this, AuthEntryPoint.class).authRepository();
         packages.add(new AuthBridgePackage(authRepository));
 
-        MediaRepository mediaRepository = EntryPointAccessors.fromApplication(this, MediaEntryPoint.class).mediaRepository();
-        PermissionManager permissionManager = EntryPointAccessors.fromApplication(this, PermissionEntryPoint.class).permissionManager();
+        var mediaRepository = EntryPointAccessors.fromApplication(this, MediaEntryPoint.class).mediaRepository();
+        var permissionManager = EntryPointAccessors.fromApplication(this, PermissionEntryPoint.class).permissionManager();
         packages.add(new MediaBridgePackage(mediaRepository, permissionManager));
 
-        NotificationRepository notificationRepository = EntryPointAccessors.fromApplication(this, NotificationEntryPoint.class).notificationRepository();
+        var notificationRepository = EntryPointAccessors.fromApplication(this, NotificationEntryPoint.class).notificationRepository();
         packages.add(new NotificationBridgePackage(notificationRepository, permissionManager));
 
         packages.add(new PermissionBridgePackage(permissionManager));
 
-        PaymentRepository paymentRepository = EntryPointAccessors.fromApplication(this, PaymentEntryPoint.class).paymentRepository();
+        var paymentRepository = EntryPointAccessors.fromApplication(this, PaymentEntryPoint.class).paymentRepository();
         packages.add(new PaymentBridgePackage(paymentRepository, permissionManager));
 
-        MeterRepository meterRepository = EntryPointAccessors.fromApplication(this, MeterEntryPoint.class).meterRepository();
+        var meterRepository = EntryPointAccessors.fromApplication(this, MeterEntryPoint.class).meterRepository();
         packages.add(new MeterBridgePackage(meterRepository, permissionManager));
 
         return packages;

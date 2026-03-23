@@ -1,7 +1,9 @@
 package com.capstone.ui.views;
 
 import android.os.Bundle;
+
 import androidx.activity.ComponentActivity;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 /**
@@ -14,10 +16,10 @@ public class MapActivity extends ComponentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         // Thiết lập tiêu đề hiển thị cho Activity
         setTitle("Google Maps View");
-        
+
         setupMap();
     }
 

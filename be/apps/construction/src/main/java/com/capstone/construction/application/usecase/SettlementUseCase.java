@@ -1,6 +1,8 @@
 package com.capstone.construction.application.usecase;
 
 import com.capstone.common.exception.NotExistingException;
+import com.capstone.common.utils.SharedMessage;
+import com.capstone.construction.application.business.constructionrequest.ConstructionRequestService;
 import com.capstone.construction.application.business.settlement.SettlementService;
 import com.capstone.construction.application.dto.request.settlement.AssignTheSignificanceRequest;
 import com.capstone.construction.application.dto.request.settlement.SignificanceRequest;
@@ -10,6 +12,8 @@ import com.capstone.construction.application.dto.response.settlement.SettlementR
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.application.event.producer.MessageProducer;
 import com.capstone.construction.application.event.producer.settlement.RequireSignificanceEvent;
+import com.capstone.construction.domain.model.utils.InstallationFormId;
+import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
 import com.capstone.construction.infrastructure.service.EmployeeService;
 import com.capstone.construction.infrastructure.utils.Message;
 import lombok.AccessLevel;
@@ -27,6 +31,8 @@ public class SettlementUseCase {
   final SettlementService settlementService;
   final MessageProducer messageProducer;
   final EmployeeService employeeService;
+  final ConstructionRequestService constructionRequestService;
+  final InstallationFormRepository installationFormRepository;
 
   @Value(".${rabbit-mq-config.entities[8]}.")
   String PREFIX;
@@ -40,7 +46,14 @@ public class SettlementUseCase {
   @Value("${rabbit-mq-config.queue_name}")
   String QUEUE_NAME;
 
-  public SettlementResponse createSettlement(SettlementRequest request) {
+  public SettlementResponse createSettlement(@NonNull SettlementRequest request) {
+    var installationForm = installationFormRepository.findById(new InstallationFormId(request.formCode(), request.formNumber()))
+      .orElseThrow(() -> new NotExistingException(String.format(SharedMessage.MES_24, request.formNumber(), request.formCode())));
+    var constructionRequest = constructionRequestService.getByInstallationForm(installationForm);
+    if (!Boolean.parseBoolean(constructionRequest.isApproved())) {
+      throw new IllegalStateException("Công trình chưa được phê duyệt, chưa thể lập quyết toán");
+    }
+
     return settlementService.createSettlement(request);
   }
 

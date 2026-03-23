@@ -153,6 +153,6 @@ public class InstallationFormController {
 
         var response = installationFormHandlingUseCase.getPaginatedInstallationForms(pageable, request);
 
-        return Utils.returnOkResponse("Lấy danh sách đơn lắp đặt thành công", response);
-    }
+    return Utils.returnOkResponse("Lấy danh sách đơn lắp đặt thành công", response);
+  }
 }
