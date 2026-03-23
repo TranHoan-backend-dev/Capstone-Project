@@ -55,7 +55,8 @@ class SettlementControllerTest {
 
     mockResponse = new SettlementResponse(
         "id-123", "Job Content", "Address", BigDecimal.TEN, "Note",
-        LocalDateTime.now(), LocalDateTime.now(), LocalDate.now()
+        LocalDateTime.now(), LocalDateTime.now(), LocalDate.now(),
+        "CODE-001", "FORM-001", new com.capstone.construction.domain.model.utils.significance.SettlementSignificance()
     );
   }
 

@@ -1,6 +1,7 @@
-import { createNetwork, getAllNetworks } from "@/services/construction.service";
+import { createHamlet, getAllHamlets } from "@/services/construction.service";
 import { getAccessToken } from "@/utils/getAccessToken";
-import { NextResponse, NextRequest } from "next/server";
+import { NextRequest } from "next/dist/server/web/spec-extension/request";
+import { NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
@@ -11,22 +12,25 @@ export async function GET(req: NextRequest) {
     }
 
     const { searchParams } = new URL(req.url);
-    const page = searchParams.get("page");
-    const size = searchParams.get("size");
+    const page = Number(searchParams.get("page") ?? 0);
+    const size = Number(searchParams.get("size") ?? 10);
     const sort = searchParams.get("sort") || "createdAt,desc";
-    const keyword = searchParams.get("keyword") || undefined;
+    const keyword = searchParams.get("keyword") || "";
+    const communeId = searchParams.get("communeId") || "";
+    const type = searchParams.get("type") || "";
 
-    const response = await getAllNetworks(
+    const response = await getAllHamlets(
       accessToken,
-      page ? Number(page) : 0,
-      size ? Number(size) : 1000, 
-      sort,
+      page,
+      size,
       keyword,
+      communeId,
+      type,
     );
 
     return NextResponse.json(
       {
-        message: "Lấy danh sách chi nhánh cấp nước thành công",
+        message: "Lấy danh sách thôn làng thành công",
         data: response.data.data,
       },
       { status: 200 },
@@ -51,15 +55,15 @@ export async function POST(req: NextRequest) {
     if (!accessToken) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
-    const { name } = await req.json();
+    const { name, type, communeId } = await req.json();
 
-    const response = await createNetwork(accessToken, name);
+    const response = await createHamlet(accessToken, name, type, communeId);
 
     return NextResponse.json(response.data, { status: 201 });
   } catch (error: any) {
     return NextResponse.json(
       {
-        message: error.response?.data?.message || "Tạo chi nhánh cấp nước thất bại",
+        message: error.response?.data?.message || "Thêm thôn làng thất bại",
       },
       { status: error.response?.status || 500 },
     );

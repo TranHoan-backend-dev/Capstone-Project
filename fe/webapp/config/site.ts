@@ -42,6 +42,11 @@ export const siteConfig = {
           href: "/neighborhood-units",
         },
         {
+          key: "hamlets",
+          label: "Quản lý Thôn/làng",
+          href: "/hamlets",
+        },
+        {
           key: "roads",
           label: "Quản lý Đường phố",
           href: "/roads",
