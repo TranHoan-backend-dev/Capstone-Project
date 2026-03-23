@@ -21,4 +21,6 @@ public interface RoadmapService {
   RoadmapResponse cancelAssignment(String roadmapId);
 
   RoadmapResponse updateAssignment(String roadmapId, String staffId);
+
+  boolean isExistingRoadmap(String id);
 }

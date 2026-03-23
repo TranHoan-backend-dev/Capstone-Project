@@ -203,4 +203,10 @@ public class RoadmapController {
     var response = roadmapUseCase.updateAssignment(id, staffId);
     return Utils.returnOkResponse("Cập nhật phân công thành công", response);
   }
+
+  @Operation(hidden = true)
+  @GetMapping("/exist/{id}")
+  public Boolean checkExistenceOfRoadmap(@PathVariable String id) {
+    return roadmapUseCase.isExistingRoadmap(id);
+  }
 }
