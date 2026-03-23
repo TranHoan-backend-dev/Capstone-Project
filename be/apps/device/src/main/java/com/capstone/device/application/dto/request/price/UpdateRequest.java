@@ -1,5 +1,6 @@
 package com.capstone.device.application.dto.request.price;
 
+import com.capstone.common.enumerate.UsageTarget;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMin;
 
@@ -9,7 +10,7 @@ import java.time.LocalDate;
 @Schema(description = "")
 public record UpdateRequest(
   @Schema(description = "Usage target", example = "DOMESTIC")
-  String usageTarget,
+  UsageTarget usageTarget,
 
   @Schema(description = "Tax percentage", example = "5.0")
   @DecimalMin(value = "0.0", message = "Tax cannot be negative")

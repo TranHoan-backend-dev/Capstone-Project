@@ -5,9 +5,16 @@ import { Tabs, Tab, Chip } from "@heroui/react";
 interface Props {
   activeTab: "pending" | "assigned";
   onChange: (tab: "pending" | "assigned") => void;
+  pendingCount: number;
+  assignedCount: number;
 }
 
-const SurveyTabs = ({ activeTab, onChange }: Props) => {
+const SurveyTabs = ({
+  activeTab,
+  onChange,
+  pendingCount,
+  assignedCount,
+}: Props) => {
   return (
     <Tabs
       aria-label="Survey Status"
@@ -28,7 +35,7 @@ const SurveyTabs = ({ activeTab, onChange }: Props) => {
           <div className="flex items-center space-x-2">
             <span>Đơn chưa phân công</span>
             <Chip color="warning" size="sm" variant="flat">
-              94
+              {pendingCount}
             </Chip>
           </div>
         }
@@ -39,7 +46,7 @@ const SurveyTabs = ({ activeTab, onChange }: Props) => {
           <div className="flex items-center space-x-2">
             <span>Đơn đã phân công</span>
             <Chip color="success" size="sm" variant="flat">
-              186
+              {assignedCount}
             </Chip>
           </div>
         }

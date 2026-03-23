@@ -1,9 +1,11 @@
 package com.capstone.construction.application.business.commune;
 
 import com.capstone.common.annotation.AppLog;
-import com.capstone.construction.application.dto.request.catalog.CommuneRequest;
+import com.capstone.construction.application.dto.request.commune.CreateRequest;
+import com.capstone.construction.application.dto.request.commune.UpdateRequest;
 import com.capstone.construction.application.dto.response.catalog.CommuneResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
+import com.capstone.common.utils.TextNormalizer;
 import com.capstone.construction.domain.enumerate.CommuneType;
 import com.capstone.construction.domain.model.Commune;
 import com.capstone.construction.infrastructure.persistence.CommuneRepository;
@@ -33,7 +35,7 @@ public class CommuneServiceImpl implements CommuneService {
 
   @Override
   @Transactional
-  public void createCommune(@NonNull CommuneRequest request) {
+  public void createCommune(@NonNull CreateRequest request) {
     log.info("Creating new commune with name: {}", request.name());
     if (communeRepository.existsByNameIgnoreCase(request.name())) {
       throw new ExistingItemException("Commune with name " + request.name() + " already exists");
@@ -41,7 +43,7 @@ public class CommuneServiceImpl implements CommuneService {
 
     var commune = Commune.create(builder -> builder
       .name(request.name())
-      .type(CommuneType.valueOf(request.type()))
+      .type(request.type())
     );
 
     communeRepository.save(commune);
@@ -49,20 +51,20 @@ public class CommuneServiceImpl implements CommuneService {
 
   @Override
   @Transactional(rollbackFor = Exception.class)
-  public CommuneResponse updateCommune(String id, @NonNull CommuneRequest request) {
+  public CommuneResponse updateCommune(String id, @NonNull UpdateRequest request) {
     log.info("Updating commune with id: {}", id);
     var commune = communeRepository.findById(id)
       .orElseThrow(() -> new IllegalArgumentException("Commune not found with id: " + id));
 
-    if (!commune.getName().equalsIgnoreCase(request.name()) && communeRepository.existsByNameIgnoreCase(request.name())) {
-      throw new ExistingItemException("Commune with name " + request.name() + " already exists");
+    if (request.name() != null) {
+      if (!commune.getName().equalsIgnoreCase(request.name()) && communeRepository.existsByNameIgnoreCase(request.name())) {
+        throw new ExistingItemException("Commune with name " + request.name() + " already exists");
+      }
+      commune.setName(request.name());
     }
 
-    if (commune.getType() != CommuneType.valueOf(request.type())) {
-      commune.setType(CommuneType.valueOf(request.type()));
-    }
-    if (!commune.getName().equalsIgnoreCase(request.name())) {
-      commune.setName(request.name());
+    if (request.type() != null && commune.getType() != request.type()) {
+      commune.setType(request.type());
     }
 
     var saved = communeRepository.save(commune);
@@ -94,9 +96,23 @@ public class CommuneServiceImpl implements CommuneService {
   }
 
   @Override
-  public PageResponse<CommuneResponse> getAllCommunes(Pageable pageable) {
-    log.info("Fetching all communes with pageable: {}", pageable);
-    var page = communeRepository.findAll(pageable);
+  public PageResponse<CommuneResponse> getAllCommunes(Pageable pageable, String search, String type) {
+    log.info("Fetching all communes with pageable: {}, search: {}, type: {}", pageable, search, type);
+
+    CommuneType communeType = null;
+    if (type != null && !type.isBlank()) {
+      communeType = CommuneType.valueOf(type.trim());
+    }
+
+    var normalizedSearch = TextNormalizer.normalizeForSearch(search);
+    var page = normalizedSearch == null || normalizedSearch.isBlank()
+      ? (communeType == null
+        ? communeRepository.findAll(pageable)
+        : communeRepository.findAllByType(communeType, pageable))
+      : (communeType == null
+        ? communeRepository.findAllByNameSearchContains(normalizedSearch, pageable)
+        : communeRepository.findAllByNameSearchContainsAndType(normalizedSearch, communeType, pageable));
+
     return PageResponse.fromPage(page, this::mapToResponse);
   }
 
@@ -104,7 +120,7 @@ public class CommuneServiceImpl implements CommuneService {
     return new CommuneResponse(
       commune.getCommuneId(),
       commune.getName(),
-      commune.getType().toString().toLowerCase(),
+      commune.getType(),
       commune.getCreatedAt().toLocalDate());
   }
 }

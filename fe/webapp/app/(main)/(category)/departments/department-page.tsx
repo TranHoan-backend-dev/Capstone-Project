@@ -1,0 +1,93 @@
+"use client";
+
+import React, { useState } from "react";
+
+import { Spinner } from "@heroui/react";
+import { FilterSection } from "./components/filter-section";
+import { DepartmentForm } from "./components/department-form";
+import { DepartmentTable } from "./components/department-table";
+import { DepartmentFilter, DepartmentItem } from "@/types";
+import { Modal, ModalContent } from "@heroui/react";
+import { useEmployeeProfile } from "@/hooks/useEmployeeProfile";
+
+const DepartmentPage = () => {
+  const [filter, setFilter] = useState<DepartmentFilter>({
+    keyword: "",
+  });
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
+  const [editingItem, setEditingItem] = useState<DepartmentItem | null>(null);
+  const { profile, loading } = useEmployeeProfile();
+
+  const handleReload = () => setReloadKey((prev) => prev + 1);
+  const handleAddNew = () => {
+    setEditingItem(null);
+    setShowAddForm(true);
+  };
+
+  const handleEdit = (item: DepartmentItem) => {
+    setEditingItem(item);
+    setShowAddForm(true);
+  };
+
+  const handleCloseForm = () => {
+    setShowAddForm(false);
+    setEditingItem(null);
+  };
+
+  const handleSuccess = () => {
+    handleReload();
+    handleCloseForm();
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
+  if (!profile) {
+    return (
+      <div className="text-center text-red-500 py-10">
+        Không thể tải thông tin người dùng
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <FilterSection
+        filter={filter}
+        onSearch={setFilter}
+        onAddNew={handleAddNew}
+      />
+
+      <Modal
+        isOpen={showAddForm}
+        onClose={handleCloseForm}
+        size="3xl"
+        placement="top-center"
+        scrollBehavior="inside"
+      >
+        <ModalContent>
+          <DepartmentForm
+            key={editingItem?.id || "create"}
+            initialData={editingItem || undefined}
+            onSuccess={handleSuccess}
+            onClose={handleCloseForm}
+          />
+        </ModalContent>
+      </Modal>
+
+      <DepartmentTable
+        keyword={filter}
+        reloadKey={reloadKey}
+        onEdit={handleEdit}
+        onDeleted={handleReload}
+      />
+    </>
+  );
+};
+
+export default DepartmentPage;

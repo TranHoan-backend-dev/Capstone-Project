@@ -1,0 +1,91 @@
+"use client";
+
+import React, { useState } from "react";
+
+import { Spinner } from "@heroui/react";
+import { LateralTable } from "./components/lateral-table";
+import { FilterSection } from "./components/filter-section";
+import { LateralForm } from "./components/lateral-form";
+import { LateralFilter, LateralItem } from "@/types";
+import { Modal, ModalContent } from "@heroui/react";
+import { useEmployeeProfile } from "@/hooks/useEmployeeProfile";
+
+const LateralPage = () => {
+  const [filter, setFilter] = useState<LateralFilter>({});
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
+  const [editingItem, setEditingItem] = useState<LateralItem | null>(null);
+  const { profile, loading } = useEmployeeProfile();
+
+  const handleReload = () => setReloadKey((prev) => prev + 1);
+  const handleAddNew = () => {
+    setEditingItem(null);
+    setShowAddForm(true);
+  };
+
+  const handleEdit = (item: LateralItem) => {
+    setEditingItem(item);
+    setShowAddForm(true);
+  };
+
+  const handleCloseForm = () => {
+    setShowAddForm(false);
+    setEditingItem(null);
+  };
+
+  const handleSuccess = () => {
+    handleReload();
+    handleCloseForm();
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
+  if (!profile) {
+    return (
+      <div className="text-center text-red-500 py-10">
+        Không thể tải thông tin người dùng
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <FilterSection
+        filter={filter}
+        onSearch={setFilter}
+        onAddNew={handleAddNew}
+      />
+
+      <Modal
+        isOpen={showAddForm}
+        onClose={handleCloseForm}
+        size="3xl"
+        placement="top-center"
+        scrollBehavior="inside"
+      >
+        <ModalContent>
+          <LateralForm
+            key={editingItem?.id || "create"}
+            initialData={editingItem || undefined}
+            onSuccess={handleSuccess}
+            onClose={handleCloseForm}
+          />
+        </ModalContent>
+      </Modal>
+
+      <LateralTable
+        filter={filter}
+        reloadKey={reloadKey}
+        onEdit={handleEdit}
+        onDeleted={handleReload}
+      />
+    </>
+  );
+};
+
+export default LateralPage;

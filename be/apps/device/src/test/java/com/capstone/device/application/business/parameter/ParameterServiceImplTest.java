@@ -1,177 +1,147 @@
 package com.capstone.device.application.business.parameter;
 
 import com.capstone.common.response.WrapperApiResponse;
-import com.capstone.common.utils.Utils;
+import com.capstone.device.application.dto.request.UpdateParameterRequest;
 import com.capstone.device.application.dto.response.ParameterResponse;
 import com.capstone.device.domain.model.Parameters;
 import com.capstone.device.infrastructure.persistence.ParameterRepository;
 import com.capstone.device.infrastructure.service.EmployeeService;
 import org.jspecify.annotations.NonNull;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ParameterServiceImplTest {
 
   @Mock
-  private ParameterRepository repository;
+  ParameterRepository repository;
 
   @Mock
-  private EmployeeService employeeService;
+  EmployeeService employeeService;
+
+  @Mock
+  Logger log;
 
   @InjectMocks
-  private ParameterServiceImpl parameterService;
+  ParameterServiceImpl parameterService;
 
-  @Test
-  void should_GetParameters_When_FilterIsUUID() {
-    try (MockedStatic<Utils> utilsMock = mockStatic(Utils.class)) {
-      // Given
-      var pageable = Pageable.unpaged();
-      var filter = UUID.randomUUID().toString();
-      utilsMock.when(() -> Utils.isUUID(filter)).thenReturn(true);
-
-      var parameter = createParameters();
-      var page = new PageImpl<>(List.of(parameter));
-
-      when(repository.findAllByCreatorOrUpdator(eq(filter), eq(filter), eq(pageable))).thenReturn(page);
-      when(employeeService.getEmployeeName(anyString()))
-          .thenReturn(new WrapperApiResponse(200, "Success", "Employee Name", LocalDateTime.now()));
-
-      // When
-      var result = parameterService.getParameters(pageable, filter);
-
-      // Then
-      assertThat(result).isNotNull();
-      assertThat(result.getTotalElements()).isEqualTo(1);
-
-      var response = result.getContent().getFirst();
-      assertThat(response.id()).isEqualTo(parameter.getParamId());
-      assertThat(response.creatorName()).isEqualTo("Employee Name");
-
-      verify(repository).findAllByCreatorOrUpdator(filter, filter, pageable);
-      verify(employeeService, times(2)).getEmployeeName(anyString());
-    }
+  @BeforeEach
+  void setUp() {
+    ReflectionTestUtils.setField(parameterService, "log", log);
   }
 
   @Test
-  void should_GetParameters_When_FilterIsName() {
-    try (MockedStatic<Utils> utilsMock = mockStatic(Utils.class)) {
-      // Given
-      var pageable = Pageable.unpaged();
-      var filter = "SomeName";
-      utilsMock.when(() -> Utils.isUUID(filter)).thenReturn(false);
+  void should_ReturnPaginatedParameters_When_NoFilter() {
+    var pageable = mock(Pageable.class);
+    var param = createMockParam("1", "VAT", new BigDecimal("0.1"));
+    Page<Parameters> page = new PageImpl<>(Collections.singletonList(param));
 
-      var parameter = createParameters();
-      var page = new PageImpl<>(List.of(parameter));
+    when(repository.findAll(pageable)).thenReturn(page);
+    when(employeeService.getEmployeeName(any())).thenReturn(new WrapperApiResponse(200, "Admin", true, LocalDateTime.now()));
 
-      when(repository.findAllByNameContainingIgnoreCase(eq(filter), eq(pageable))).thenReturn(page);
-      when(employeeService.getEmployeeName(anyString()))
-          .thenReturn(new WrapperApiResponse(200, "Success", "Employee Name", LocalDateTime.now()));
+    Page<ParameterResponse> result = parameterService.getParameters(pageable, null);
 
-      // When
-      var result = parameterService.getParameters(pageable, filter);
-
-      // Then
-      assertThat(result).isNotNull();
-      assertThat(result.getTotalElements()).isEqualTo(1);
-
-      verify(repository).findAllByNameContainingIgnoreCase(filter, pageable);
-    }
-  }
-
-  @Test
-  void should_GetParameters_When_FilterIsEmpty() {
-    // Given
-    var pageable = Pageable.unpaged();
-    var filter = "";
-
-    var parameter = createParameters();
-    var page = new PageImpl<>(List.of(parameter));
-
-    when(repository.findAll(eq(pageable))).thenReturn(page);
-    when(employeeService.getEmployeeName(anyString()))
-        .thenReturn(new WrapperApiResponse(200, "Success", "Employee Name", LocalDateTime.now()));
-
-    // When
-    var result = parameterService.getParameters(pageable, filter);
-
-    // Then
-    assertThat(result).isNotNull();
-    assertThat(result.getTotalElements()).isEqualTo(1);
-
-    verify(repository).findAll(pageable);
-    verify(repository, never()).findAllByCreatorOrUpdator(any(), any(), any());
-    verify(repository, never()).findAllByNameContainingIgnoreCase(any(), any());
-  }
-
-  @Test
-  void should_GetParameters_When_FilterIsNull() {
-    // Given
-    var pageable = Pageable.unpaged();
-    String filter = null;
-
-    var parameter = createParameters();
-    var page = new PageImpl<>(List.of(parameter));
-
-    when(repository.findAll(eq(pageable))).thenReturn(page);
-    when(employeeService.getEmployeeName(anyString()))
-        .thenReturn(new WrapperApiResponse(200, "Success", "Employee Name", LocalDateTime.now()));
-
-    // When
-    var result = parameterService.getParameters(pageable, filter);
-
-    // Then
-    assertThat(result).isNotNull();
-    assertThat(result.getTotalElements()).isEqualTo(1);
-
+    assertEquals(1, result.getTotalElements());
     verify(repository).findAll(pageable);
   }
 
   @Test
-  void should_GetParameters_When_NoDataFound() {
-    // Given
-    var pageable = Pageable.unpaged();
-    String filter = null;
-    var page = new PageImpl<Parameters>(Collections.emptyList());
+  void should_ReturnPaginatedParameters_When_NameFilter() {
+    var pageable = mock(Pageable.class);
+    var filter = "VAT";
+    var param = createMockParam("1", "VAT", new BigDecimal("0.1"));
+    Page<Parameters> page = new PageImpl<>(Collections.singletonList(param));
 
-    when(repository.findAll(eq(pageable))).thenReturn(page);
+    when(repository.findAllByNameContainingIgnoreCase(filter, pageable)).thenReturn(page);
+    when(employeeService.getEmployeeName(any())).thenReturn(new WrapperApiResponse(200, "Admin", true, LocalDateTime.now()));
 
-    // When
-    var result = parameterService.getParameters(pageable, filter);
+    Page<ParameterResponse> result = parameterService.getParameters(pageable, filter);
 
-    // Then
-    assertThat(result).isNotNull();
-    assertThat(result.isEmpty()).isTrue();
-
-    verify(repository).findAll(pageable);
-    verify(employeeService, never()).getEmployeeName(anyString());
+    assertEquals(1, result.getTotalElements());
+    verify(repository).findAllByNameContainingIgnoreCase(filter, pageable);
   }
 
-  private @NonNull Parameters createParameters() {
-    return new Parameters(
-        UUID.randomUUID().toString(),
-        "Test Param",
-        BigDecimal.valueOf(100.0),
-        UUID.randomUUID().toString(),
-        UUID.randomUUID().toString(),
-        LocalDateTime.now(),
-        LocalDateTime.now());
+  @Test
+  void should_UpdateParameter_When_ValidRequest() {
+    var id = "1";
+    var updatorId = "Admin-ID";
+    var request = new UpdateParameterRequest("New Name", new BigDecimal("0.08"));
+    var existingParam = createMockParam(id, "Old Name", new BigDecimal("0.1"));
+
+    when(repository.findById(id)).thenReturn(Optional.of(existingParam));
+    when(employeeService.checkAuthorExisting(updatorId)).thenReturn(new WrapperApiResponse(200, "Success", true, LocalDateTime.now()));
+    when(repository.save(any(Parameters.class))).thenAnswer(invocation -> invocation.getArgument(0));
+    when(employeeService.getEmployeeName(any())).thenReturn(new WrapperApiResponse(200, "Admin", true, LocalDateTime.now()));
+
+    var result = parameterService.updateParameter(updatorId, id, request);
+
+    assertEquals("New Name", result.name());
+    assertEquals("0.08", result.value());
+    verify(repository).save(any(Parameters.class));
+  }
+
+  @Test
+  void should_ThrowException_When_UpdateParameterNotFound() {
+    var id = "not-found";
+    var updatorId = "Admin-ID";
+    var request = new UpdateParameterRequest("VAT", new BigDecimal("0.08"));
+    when(repository.findById(id)).thenReturn(Optional.empty());
+
+    assertThrows(IllegalArgumentException.class, () -> parameterService.updateParameter(updatorId, id, request));
+  }
+
+  @Test
+  void should_ThrowException_When_AuthorNotFound() {
+    var id = "1";
+    var updatorId = "Invalid-ID";
+    var request = new UpdateParameterRequest("New Name", new BigDecimal("0.08"));
+    var existingParam = createMockParam(id, "Old Name", new BigDecimal("0.1"));
+
+    when(repository.findById(id)).thenReturn(Optional.of(existingParam));
+    when(employeeService.checkAuthorExisting(updatorId)).thenReturn(new WrapperApiResponse(200, "Not Found", false, LocalDateTime.now()));
+
+    assertThrows(IllegalArgumentException.class, () -> parameterService.updateParameter(updatorId, id, request));
+  }
+
+  @Test
+  void should_GetParameterById_When_Found() {
+    var id = "1";
+    var param = createMockParam(id, "VAT", new BigDecimal("0.1"));
+    when(repository.findById(id)).thenReturn(Optional.of(param));
+    when(employeeService.getEmployeeName(any())).thenReturn(new WrapperApiResponse(200, "Admin", true, LocalDateTime.now()));
+
+    ParameterResponse result = parameterService.getParameterById(id);
+
+    assertEquals("VAT", result.name());
+  }
+
+  private @NonNull Parameters createMockParam(String id, String name, BigDecimal value) {
+    var param = new Parameters();
+    ReflectionTestUtils.setField(param, "paramId", id);
+    ReflectionTestUtils.setField(param, "name", name);
+    ReflectionTestUtils.setField(param, "value", value);
+    ReflectionTestUtils.setField(param, "creator", "admin-uuid");
+    ReflectionTestUtils.setField(param, "updator", "admin-uuid");
+    ReflectionTestUtils.setField(param, "createdAt", LocalDateTime.now());
+    ReflectionTestUtils.setField(param, "updatedAt", LocalDateTime.now());
+    return param;
   }
 }

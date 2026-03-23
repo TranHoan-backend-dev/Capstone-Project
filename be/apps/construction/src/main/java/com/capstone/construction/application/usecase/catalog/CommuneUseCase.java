@@ -2,12 +2,14 @@ package com.capstone.construction.application.usecase.catalog;
 
 import com.capstone.common.annotation.AppLog;
 import com.capstone.construction.application.business.commune.CommuneService;
-import com.capstone.construction.application.dto.request.catalog.CommuneRequest;
+import com.capstone.construction.application.dto.request.commune.CreateRequest;
+import com.capstone.construction.application.dto.request.commune.UpdateRequest;
 import com.capstone.construction.application.dto.response.catalog.CommuneResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.application.event.producer.MessageProducer;
 import com.capstone.construction.application.event.producer.commune.DeleteEvent;
 import com.capstone.construction.application.event.producer.commune.UpdateEvent;
+import com.capstone.construction.domain.enumerate.CommuneType;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -32,18 +34,20 @@ public class CommuneUseCase {
   @Value("${rabbit-mq-config.queue_name}" + prefix + "${rabbit-mq-config.actions[1]}")
   String DELETE_ROUTING_KEY;
 
-  public void createCommune(@NonNull CommuneRequest request) {
+  public void createCommune(@NonNull CreateRequest request) {
     communeService.createCommune(request);
   }
 
   @Transactional(rollbackFor = Exception.class)
-  public CommuneResponse updateCommune(String id, CommuneRequest request) {
+  public CommuneResponse updateCommune(String id, UpdateRequest request) {
     var old = communeService.getCommuneById(id);
     var response = communeService.updateCommune(id, request);
 
-    if (!request.name().isBlank() && !request.type().isBlank()) {
+    if (!request.name().isBlank() && request.type() != null) {
+      var newCommuneType = request.type().equals(CommuneType.URBAN_WARD) ? "Phường" : "Xã";
+      var oldCommuneType = old.type().equals(CommuneType.URBAN_WARD) ? "Phường" : "Xã";
       producer.send(UPDATE_ROUTING_KEY,
-          new UpdateEvent(old.name(), response.name(), old.type(), response.type()));
+          new UpdateEvent(old.name(), response.name(), oldCommuneType, newCommuneType));
     }
     return response;
   }
@@ -53,14 +57,14 @@ public class CommuneUseCase {
     var old = communeService.getCommuneById(id);
     communeService.deleteCommune(id);
 
-    producer.send(DELETE_ROUTING_KEY, new DeleteEvent(old.name(), old.type()));
+    producer.send(DELETE_ROUTING_KEY, new DeleteEvent(old.name(), old.type().toString()));
   }
 
   public CommuneResponse getCommuneById(String id) {
     return communeService.getCommuneById(id);
   }
 
-  public PageResponse<CommuneResponse> getAllCommunes(Pageable pageable) {
-    return communeService.getAllCommunes(pageable);
+  public PageResponse<CommuneResponse> getAllCommunes(Pageable pageable, String search, String type) {
+    return communeService.getAllCommunes(pageable, search, type);
   }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Link, Tooltip } from "@heroui/react";
 import NextLink from "next/link";
 
@@ -13,6 +13,8 @@ import {
   BlueYellowIconColor,
   TitleDarkColor,
 } from "@/config/chip-and-icon";
+import { PROCESSED_DESIGN_COLUMN } from "@/config/table-columns";
+import { DesignProcessingItem } from "@/types";
 
 interface ProcessedDesignsTableProps {
   data: any[];
@@ -23,21 +25,11 @@ export const ProcessedDesignsTable = ({
   data,
   onReject,
 }: ProcessedDesignsTableProps) => {
-  const columns: any[] = [
-    { key: "no", label: "#", align: "center", width: "60px" },
-    { key: "code", label: "Mã đơn" },
-    { key: "customerName", label: "Tên khách hàng" },
-    { key: "phone", label: "Điện thoại" },
-    { key: "address", label: "Địa chỉ lắp đặt", width: "300px" },
-    { key: "registrationDate", label: "Ngày đăng ký" },
-    { key: "surveyAppointment", label: "Ngày hẹn khảo sát" },
-    { key: "activities", label: "Hoạt động", align: "center" },
-    { key: "docs", label: "Hồ sơ", align: "center" },
-  ];
+  const [page, setPage] = useState(1);
+  const rowsPerPage = 10;
+  const totalPages = Math.ceil(data.length / rowsPerPage);
 
-  const renderCell = (item: any, columnKey: string) => {
-    const cellValue = item[columnKey];
-
+  const renderCell = (item: DesignProcessingItem, columnKey: string) => {
     switch (columnKey) {
       case "code":
         return (
@@ -46,13 +38,13 @@ export const ProcessedDesignsTable = ({
             className={`font-bold text-blue-600 hover:underline hover:text-blue-800 ${TitleDarkColor}`}
             href="#"
           >
-            {cellValue}
+            {item.formNumber}
           </Link>
         );
       case "customerName":
         return (
           <span className="font-bold text-gray-900 dark:text-foreground">
-            {cellValue}
+            {item.customerName}
           </span>
         );
       case "activities":
@@ -82,23 +74,24 @@ export const ProcessedDesignsTable = ({
           </span>
         );
       default:
-        return cellValue;
+        return item[columnKey as keyof DesignProcessingItem];
     }
   };
 
   return (
     <GenericDataTable
       isCollapsible
-      columns={columns}
+      columns={PROCESSED_DESIGN_COLUMN}
       data={data}
       headerSummary={`${data.length}`}
       paginationProps={{
-        total: 5,
-        initialPage: 1,
+        total: totalPages,
+        page: page,
+        onChange: setPage,
         summary: `${data.length}`,
       }}
       renderCellAction={renderCell}
-      title="Danh sách đã xử lý đơn đã thiết kế"
+      title="Danh sách đơn đang xử lý thiết kế"
     />
   );
 };

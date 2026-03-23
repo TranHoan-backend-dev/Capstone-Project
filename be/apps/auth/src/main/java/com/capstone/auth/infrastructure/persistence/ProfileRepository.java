@@ -24,4 +24,10 @@ public interface ProfileRepository extends JpaRepository<Profile, String> {
     where profileId = :id
     """)
   void updateAvatarByProfileId(@Param("id") String id, @Param("avatarUrl") String avatarUrl);
+
+  @Query("SELECT avatarUrl FROM Profile WHERE profileId=:id")
+  String findAvatarUrlByProfileId(@Param("id") String profileId);
+
+  @Query("SELECT fullname FROM Profile WHERE profileId=:id")
+  String findFullNameByProfileId(@Param("id") String profileId);
 }

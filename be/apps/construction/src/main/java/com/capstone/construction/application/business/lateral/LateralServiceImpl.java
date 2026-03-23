@@ -8,8 +8,8 @@ import com.capstone.construction.domain.model.Lateral;
 import com.capstone.construction.infrastructure.persistence.LateralRepository;
 import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRepository;
 import com.capstone.construction.application.exception.ExistingItemException;
-import com.capstone.construction.infrastructure.config.Constant;
-import com.capstone.construction.infrastructure.service.OverallWaterMeterService;
+import com.capstone.construction.infrastructure.utils.Message;
+import com.capstone.construction.infrastructure.service.DeviceService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -31,20 +31,20 @@ public class LateralServiceImpl implements LateralService {
   Logger log;
   LateralRepository lateralRepository;
   WaterSupplyNetworkRepository networkRepository;
-  OverallWaterMeterService metersService;
+  DeviceService metersService;
 
   @Override
   @Transactional(rollbackFor = Exception.class)
   public LateralResponse createLateral(@NonNull LateralRequest request) {
     log.info("Creating new lateral with name: {}", request.name());
-    Objects.requireNonNull(request.name(), Constant.PT_70);
+    Objects.requireNonNull(request.name(), Message.PT_45);
     if (lateralRepository.existsByNameIgnoreCase(request.name())) {
       throw new ExistingItemException("Lateral with name " + request.name() + " already exists");
     }
-    Objects.requireNonNull(request.networkId(), Constant.PT_59);
+    Objects.requireNonNull(request.networkId(), Message.PT_34);
 
     var network = networkRepository.findById(request.networkId())
-      .orElseThrow(() -> new IllegalArgumentException(Constant.SE_03));
+      .orElseThrow(() -> new IllegalArgumentException(Message.PT_55));
 
     var lateral = Lateral.create(builder -> builder
       .name(request.name())
@@ -67,7 +67,7 @@ public class LateralServiceImpl implements LateralService {
 
     if (request.networkId() != null && !request.networkId().isBlank()) {
       var network = networkRepository.findById(request.networkId())
-        .orElseThrow(() -> new IllegalArgumentException(Constant.PT_59));
+        .orElseThrow(() -> new IllegalArgumentException(Message.PT_34));
       lateral.setNetwork(network);
     }
     if (request.name() != null && !request.name().isBlank()) {
@@ -98,18 +98,33 @@ public class LateralServiceImpl implements LateralService {
   }
 
   @Override
-  public PageResponse<LateralResponse> getAllLaterals(Pageable pageable) {
-    log.info("Fetching all laterals with pageable: {}", pageable);
-    var page = lateralRepository.findAll(pageable);
+  public PageResponse<LateralResponse> getAllLaterals(Pageable pageable,
+                                                      String keyword,
+                                                      String networkId,
+                                                      Boolean networkAssigned) {
+    log.info("Fetching all laterals with pageable: {}, keyword: {}, networkId: {}, networkAssigned: {}",
+      pageable, keyword, networkId, networkAssigned);
+
+    var normalizedKeyword = (keyword == null || keyword.isBlank()) ? null : keyword.trim();
+    var page = (normalizedKeyword == null || normalizedKeyword.isEmpty())
+      ? lateralRepository.searchLateralsWithoutKeyword(networkId, networkAssigned, pageable)
+      : lateralRepository.searchLateralsWithKeyword(normalizedKeyword, networkId, networkAssigned, pageable);
     return PageResponse.fromPage(page, this::mapToResponse);
   }
 
+  @Override
+  public Boolean checkAnyLateralsBelongedToNetwork(String id) {
+    log.info("Checking lateral belonged to network with id: {}", id);
+    return lateralRepository.existsByNetwork_BranchId(id);
+  }
+
   private @NonNull LateralResponse mapToResponse(@NonNull Lateral lateral) {
+    var network = lateral.getNetwork();
     return new LateralResponse(
       lateral.getId(),
       lateral.getName(),
-      lateral.getNetwork().getBranchId(),
-      lateral.getNetwork().getName(),
+      network == null ? null : network.getBranchId(),
+      network == null ? null : network.getName(),
       lateral.getCreatedAt());
   }
 }

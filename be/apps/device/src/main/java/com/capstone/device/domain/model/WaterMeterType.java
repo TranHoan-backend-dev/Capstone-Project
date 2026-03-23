@@ -1,6 +1,8 @@
 package com.capstone.device.domain.model;
 
-import com.capstone.device.infrastructure.config.Constant;
+import com.capstone.common.utils.SharedMessage;
+import com.capstone.device.infrastructure.util.Message;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -44,6 +46,7 @@ public class WaterMeterType {
 
   Float diameter;
 
+  @JsonIgnore
   @OneToMany(mappedBy = "type")
   List<WaterMeter> waterMeter;
 
@@ -65,56 +68,56 @@ public class WaterMeterType {
   }
 
   public void setName(String name) {
-    requireNonNullAndNotEmpty(name, Constant.ENT_01);
+    requireNonNullAndNotEmpty(name, SharedMessage.MES_07);
     this.name = name;
   }
 
   public void setOrigin(String origin) {
-    requireNonNullAndNotEmpty(origin, Constant.ENT_14);
+    requireNonNullAndNotEmpty(origin, Message.ENT_14);
     this.origin = origin;
   }
 
   public void setMeterModel(String meterModel) {
-    requireNonNullAndNotEmpty(meterModel, Constant.ENT_15);
+    requireNonNullAndNotEmpty(meterModel, Message.ENT_15);
     this.meterModel = meterModel;
   }
 
   public void setSize(Integer size) {
     if (size != null && size <= 0) {
-      throw new IllegalArgumentException(Constant.ENT_11);
+      throw new IllegalArgumentException(Message.ENT_11);
     }
     this.size = size;
   }
 
   public void setMaxIndex(String maxIndex) {
-    requireNonNullAndNotEmpty(maxIndex, Constant.ENT_28);
+    requireNonNullAndNotEmpty(maxIndex, Message.ENT_28);
     this.maxIndex = maxIndex;
   }
 
   public void setQn(String qn) {
-    requireNonNullAndNotEmpty(qn, Constant.ENT_26);
+    requireNonNullAndNotEmpty(qn, Message.ENT_26);
     this.qn = qn;
   }
 
   public void setQt(String qt) {
-    requireNonNullAndNotEmpty(qt, Constant.ENT_27);
+    requireNonNullAndNotEmpty(qt, Message.ENT_27);
     this.qt = qt;
   }
 
   public void setQmin(String qmin) {
-    requireNonNullAndNotEmpty(qmin, Constant.ENT_25);
+    requireNonNullAndNotEmpty(qmin, Message.ENT_25);
     this.qmin = qmin;
   }
 
   public void setDiameter(Float diameter) {
     if (diameter != null && diameter <= 0) {
-      throw new IllegalArgumentException(Constant.ENT_16);
+      throw new IllegalArgumentException(Message.ENT_16);
     }
     this.diameter = diameter;
   }
 
   public void setWaterMeter(List<WaterMeter> waterMeter) {
-    Objects.requireNonNull(waterMeter, Constant.ENT_24);
+    Objects.requireNonNull(waterMeter, Message.ENT_24);
     this.waterMeter = waterMeter;
   }
 

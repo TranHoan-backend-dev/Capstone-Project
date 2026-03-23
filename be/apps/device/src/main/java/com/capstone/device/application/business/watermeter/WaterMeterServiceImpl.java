@@ -1,7 +1,9 @@
 package com.capstone.device.application.business.watermeter;
 
 import com.capstone.device.application.dto.request.WaterMeterRequest;
-import com.capstone.device.application.dto.response.WaterMeterResponse;
+import com.capstone.device.application.dto.response.water.OverallWaterMeterResponse;
+import com.capstone.device.application.dto.response.water.WaterMeterResponse;
+import com.capstone.device.domain.model.OverallWaterMeter;
 import com.capstone.device.domain.model.WaterMeter;
 import com.capstone.device.infrastructure.persistence.OverallWaterMeterRepository;
 import com.capstone.device.infrastructure.persistence.WaterMeterRepository;
@@ -91,11 +93,27 @@ public class WaterMeterServiceImpl implements WaterMeterService {
   }
 
   @Override
+  public boolean isOverallWaterMeterExisting(String id) {
+    log.info("Checking existence of overall water meter ID: {}", id);
+    return overallWaterMeterRepository.existsById(id);
+  }
+
+  @Override
   public void deleteOverallWaterMeterByLateralId(String id) {
     log.info("Deleting overall water meter with lateral ID: {}", id);
     if (overallWaterMeterRepository.existsByLateralId(id)) {
       overallWaterMeterRepository.deleteByLateralId(id);
     }
+  }
+
+  @Override
+  public Page<OverallWaterMeterResponse> getAllOverallWaterMeters(Pageable pageable, String keyword) {
+    log.info("Fetching all overall water meters with keyword: {} and pagination: {}", keyword, pageable);
+    var response = (keyword != null && !keyword.isBlank()) ?
+      overallWaterMeterRepository.findByNameContainingIgnoreCase(keyword, pageable)
+    : overallWaterMeterRepository.findAll(pageable);
+
+    return response.map(this::mapToOverallWaterMeterResponse);
   }
 
   private @NonNull WaterMeterResponse mapToResponse(@NonNull WaterMeter meter) {
@@ -104,5 +122,13 @@ public class WaterMeterServiceImpl implements WaterMeterService {
       meter.getInstallationDate(),
       meter.getSize(),
       meter.getType() != null ? meter.getType().getName() : null);
+  }
+
+  private @NonNull OverallWaterMeterResponse mapToOverallWaterMeterResponse(@NonNull OverallWaterMeter meter) {
+    return new OverallWaterMeterResponse(
+      meter.getSerial(),
+      meter.getName(),
+      meter.getLateralId()
+    );
   }
 }

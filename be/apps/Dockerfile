@@ -3,6 +3,7 @@ FROM gradle:8-jdk21-alpine AS base-builder
 WORKDIR /workspace
 
 COPY settings.gradle build.gradle gradlew gradle/ ./
+COPY common ./common
 
 # AUTH SERVICE
 FROM base-builder AS build-auth
@@ -18,7 +19,7 @@ ENTRYPOINT ["java","-jar","app.jar"]
 # CONSTRUCTION SERVICE
 FROM base-builder AS build-construction
 COPY construction ./construction
-RUN gradle :construction:bootJar -x test --no-deamon
+RUN gradle :construction:bootJar -x test --no-daemon
 
 FROM eclipse-temurin:21-jre-alpine AS runtime-construction
 WORKDIR /app
@@ -40,7 +41,7 @@ ENTRYPOINT ["java","-jar","app2.jar"]
 # DEVICE SERVICE
 FROM base-builder AS build-device
 COPY device ./device
-RUN gradle :device:bootJar -x test --no-deamon
+RUN gradle :device:bootJar -x test --no-daemon
 
 FROM eclipse-temurin:21-jre-alpine AS runtime-device
 WORKDIR /app
@@ -62,7 +63,6 @@ FROM node:22-alpine AS runner
 WORKDIR /app
 COPY --from=build-email /workspace/apps/email-service/dist ./
 RUN npm install --omit=dev
-EXPOSE 9005
 ENTRYPOINT ["node", "main.js"]
 
 # NOTIFICATION SERVICE
@@ -100,11 +100,22 @@ ENTRYPOINT ["java","-jar","app.jar"]
 
 # API GATEWAY SERVICE
 FROM base-builder AS build-api-gateway
-COPY gateway ./api-gateway
-RUN gradle :api-gateway:bootJar -x test --no-daemon
+COPY gateway ./gateway
+RUN gradle :gateway:bootJar -x test --no-daemon
 
 FROM eclipse-temurin:21-jre-alpine AS runtime-api-gateway
 WORKDIR /app
-COPY --from=build-api-gateway /workspace/api-gateway/build/libs/*.jar app.jar
+COPY --from=build-api-gateway /workspace/gateway/build/libs/*.jar app.jar
 EXPOSE 8000
+ENTRYPOINT ["java","-jar","app.jar"]
+
+# IMAGE SERVICE
+FROM base-builder AS build-image
+COPY image ./image
+RUN gradle :image:bootJar -x test --no-daemon
+
+FROM eclipse-temurin:21-jre-alpine AS runtime-image
+WORKDIR /app
+COPY --from=build-image /workspace/image/build/libs/*.jar app.jar
+EXPOSE 9009
 ENTRYPOINT ["java","-jar","app.jar"]

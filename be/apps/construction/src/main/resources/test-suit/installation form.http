@@ -19,30 +19,290 @@ scope=openid
   client.global.set("refresh_token", response.body.refresh_token);
 %}
 
-### No param
+### R - Get Installation Forms (Read)
+
+### 1. No param (Default: page 0, size 20)
 GET {{uri}}/installation-forms
 Authorization: Bearer {{access_token}}
 
-### pageable
+### 2. Pagination (page 1, size 10)
 GET {{uri}}/installation-forms?page=1&size=10
 Authorization: Bearer {{access_token}}
 
-### keyword, from, to
+### 3. Sorting (Sort by createdAt descending)
+GET {{uri}}/installation-forms?sort=createdAt,desc
+Authorization: Bearer {{access_token}}
+
+### 4. Filter by keyword only
+GET {{uri}}/installation-forms?keyword=Nguyễn
+Authorization: Bearer {{access_token}}
+
+### 5. Filter by 'from' date only
+GET {{uri}}/installation-forms?from=2024-01-01
+Authorization: Bearer {{access_token}}
+
+### 6. Filter by 'to' date only
+GET {{uri}}/installation-forms?to=2024-12-31
+Authorization: Bearer {{access_token}}
+
+### 7. Filter by both 'from' and 'to' (Date range)
+GET {{uri}}/installation-forms?from=2024-01-01&to=2024-12-31
+Authorization: Bearer {{access_token}}
+
+### 8. Filter by keyword and date range
 GET {{uri}}/installation-forms?keyword=HCMC&from=2023-01-01&to=2025-01-01
 Authorization: Bearer {{access_token}}
 
-### keyword, from, to
-GET {{uri}}/installation-forms?keyword=hcmc&from=2024-12-01&to=2025-12-01
+### 9. Filter with unfamiliar parameter (Should be ignored)
+GET {{uri}}/installation-forms?unknown_param=value
 Authorization: Bearer {{access_token}}
 
-### keyword
-GET {{uri}}/installation-forms?keyword=ap
+### 10. Keyword matching other fields (e.g., Phone Number)
+GET {{uri}}/installation-forms?keyword=0987
 Authorization: Bearer {{access_token}}
 
-### keyword
-GET {{uri}}/installation-forms?keyword=nam
+### 11. Edge Case: 'from' date after 'to' date (Should return 400)
+GET {{uri}}/installation-forms?from=2025-01-01&to=2024-01-01
 Authorization: Bearer {{access_token}}
 
-### unfnfamiliar param
-GET {{uri}}/installation-forms?hehe=nam
+### 12. Edge Case: Invalid date format (Should return 400)
+GET {{uri}}/installation-forms?from=01-01-2024
 Authorization: Bearer {{access_token}}
+
+### 13. Case/Accent Insensitive Search
+GET {{uri}}/installation-forms?keyword=hcmc
+Authorization: Bearer {{access_token}}
+
+### 14. Keyword with no results
+GET {{uri}}/installation-forms?keyword=nonexistentkeyword123
+Authorization: Bearer {{access_token}}
+
+### C
+### 1. Happy Path - Create Installation Form
+POST {{uri}}/installation-forms
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "formCode": "FORM-{{$random.uuid}}",
+  "formNumber": "NUM-{{$random.alphabetic(8)}}",
+  "customerName": "Nguyễn Văn A",
+  "address": "Số 1 Lý Thường Kiệt, TP. HCM",
+  "citizenIdentificationNumber": "012345678901",
+  "citizenIdentificationProvideDate": "2020-05-15",
+  "citizenIdentificationProvideLocation": "Cục Cảnh sát QLHC",
+  "phoneNumber": "0987654321",
+  "taxCode": "8001234567",
+  "bankAccountNumber": "1012345678",
+  "bankAccountProviderLocation": "Vietcombank CN HCM",
+  "usageTarget": "INSTITUTIONAL",
+  "customerType": "FAMILY",
+  "receivedFormAt": "2024-03-05",
+  "scheduleSurveyAt": "2024-03-10",
+  "numberOfHousehold": 1,
+  "householdRegistrationNumber": 12345,
+  "networkId": "550e8400-e29b-41d4-a716-446655440001",
+  "createdBy": "c8357517-3149-41b4-9b2c-881d5a40840a",
+  "overallWaterMeterId": "00000000-0000-0000-0000-400000000001"
+}
+
+### 2. Error case: Missing required fields (Validation)
+POST {{uri}}/installation-forms
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "formCode": "",
+  "formNumber": ""
+}
+
+### 3. Error case: Invalid Date Format
+POST {{uri}}/installation-forms
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "formCode": "F001",
+  "formNumber": "N001",
+  "customerName": "Test Date",
+  "address": "Address",
+  "citizenIdentificationNumber": "012345678901",
+  "citizenIdentificationProvideDate": "15/05/2020",
+  "citizenIdentificationProvideLocation": "Loc",
+  "phoneNumber": "0987654321",
+  "taxCode": "TAX",
+  "bankAccountNumber": "BANK",
+  "bankAccountProviderLocation": "LOC",
+  "usageTarget": "INSTITUTIONAL",
+  "customerType": "FAMILY",
+  "receivedFormAt": "05-03-2024",
+  "scheduleSurveyAt": "2024/03/10",
+  "networkId": "550e8400-e29b-41d4-a716-446655440001",
+  "createdBy": "c8357517-3149-41b4-9b2c-881d5a40840a",
+  "overallWaterMeterId": "00000000-0000-0000-0000-400000000001"
+}
+
+### 4. Error case: Invalid Phone Number Pattern
+POST {{uri}}/installation-forms
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "formCode": "F002",
+  "formNumber": "N002",
+  "customerName": "Test Phone",
+  "address": "Address",
+  "citizenIdentificationNumber": "012345678901",
+  "citizenIdentificationProvideDate": "2020-05-15",
+  "citizenIdentificationProvideLocation": "Loc",
+  "phoneNumber": "123",
+  "taxCode": "TAX",
+  "bankAccountNumber": "BANK",
+  "bankAccountProviderLocation": "LOC",
+  "usageTarget": "INSTITUTIONAL",
+  "customerType": "FAMILY",
+  "receivedFormAt": "2024-03-05",
+  "scheduleSurveyAt": "2024-03-10",
+  "networkId": "550e8400-e29b-41d4-a716-446655440001",
+  "createdBy": "c8357517-3149-41b4-9b2c-881d5a40840a",
+  "overallWaterMeterId": "00000000-0000-0000-0000-400000000001"
+}
+
+### 5. Error case: Duplicate Form Number (Logic)
+POST {{uri}}/installation-forms
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "formCode": "hehe1",
+  "formNumber": "NUM-tVlgiCno",
+  "customerName": "Existing Form",
+  "address": "Address",
+  "citizenIdentificationNumber": "012345678901",
+  "citizenIdentificationProvideDate": "2020-05-15",
+  "citizenIdentificationProvideLocation": "Loc",
+  "phoneNumber": "0987654321",
+  "taxCode": "TAX",
+  "bankAccountNumber": "BANK",
+  "numberOfHousehold": 1,
+  "householdRegistrationNumber": 12345,
+  "bankAccountProviderLocation": "LOC",
+  "usageTarget": "INSTITUTIONAL",
+  "customerType": "FAMILY",
+  "receivedFormAt": "2024-03-05",
+  "scheduleSurveyAt": "2024-03-10",
+  "networkId": "550e8400-e29b-41d4-a716-446655440001",
+  "createdBy": "c8357517-3149-41b4-9b2c-881d5a40840a",
+  "overallWaterMeterId": "00000000-0000-0000-0000-400000000001"
+}
+
+### 6. Error case: Non-existent dependency (Staff)
+POST {{uri}}/installation-forms
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "formCode": "F-{{$random.uuid}}",
+  "formNumber": "N-{{$random.uuid}}",
+  "customerName": "Test Dependency",
+  "address": "Address",
+  "citizenIdentificationNumber": "012345678901",
+  "citizenIdentificationProvideDate": "2020-05-15",
+  "citizenIdentificationProvideLocation": "Loc",
+  "phoneNumber": "0987654321",
+  "taxCode": "TAX",
+  "bankAccountNumber": "BANK",
+  "bankAccountProviderLocation": "LOC",
+  "usageTarget": "INSTITUTIONAL",
+  "customerType": "FAMILY",
+  "receivedFormAt": "2024-03-05",
+  "scheduleSurveyAt": "2024-03-10",
+  "networkId": "550e8400-e29b-41d4-a716-446655440001",
+  "createdBy": "non-existent-staff-id",
+  "overallWaterMeterId": "00000000-0000-0000-0000-400000000001"
+}
+
+### U - Approve/Reject Installation Form
+### 1. Happy Path - Approve Installation Form (Status: true)
+PATCH {{uri}}/installation-forms/approve
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "empId": "6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20",
+  "formNumber": "FORM-2024-0030",
+  "formCode": "7dfebc99-9c0b-4ef8-bb6d-6bb9bd380a2e",
+  "status": true
+}
+
+### 2. Happy Path - Reject Installation Form (Status: false)
+PATCH {{uri}}/installation-forms/approve
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "empId": "6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20",
+  "formNumber": "NUM-AHbUrpRI",
+  "formCode": "FORM-b1a01c53-41d6-4881-a83e-61d9bb8564d2",
+  "status": false
+}
+
+### 3. Error Case - Missing Required Fields (Validation)
+PATCH {{uri}}/installation-forms/approve
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "empId": "6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20",
+  "formNumber": "NUM-AHbUrpRI",
+  "formCode": "FORM-b1a01c53-41d6-4881-a83e-61d9bb8564d2",
+  "status": null
+}
+
+### 4. Error Case - Form Not Found (404)
+PATCH {{uri}}/installation-forms/approve
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "empId": "EMP-001",
+  "formNumber": "NON-EXISTENT-NUM",
+  "formCode": "NON-EXISTENT-CODE",
+  "status": true
+}
+
+### 5. Error Case - Missing Authorization Header (401)
+PATCH {{uri}}/installation-forms/approve
+Content-Type: application/json
+
+{
+  "empId": "EMP-001",
+  "formNumber": "NUM-tVlgiCno",
+  "formCode": "hehe1",
+  "status": true
+}
+
+### L - Get Construction Orders List (đơn chờ thi công)
+### 1. Happy Path - Get all construction orders (No param)
+GET {{uri}}/construction/construction
+Authorization: Bearer {{access_token}}
+
+### 2. Happy Path - Pagination and Sort
+GET {{uri}}/construction/construction?page=0&size=10&sort=createdAt,desc
+Authorization: Bearer {{access_token}}
+
+### 3. Happy Path - Filtering by keyword, from, and to
+GET {{uri}}/construction/construction?keyword=Nguyễn&from=2024-01-01&to=2024-12-31
+Authorization: Bearer {{access_token}}
+
+### 4. Error Case - Invalid Date Format (from)
+GET {{uri}}/construction/construction?from=01-01-2024
+Authorization: Bearer {{access_token}}
+
+### 5. Error Case - Invalid Date Format (to)
+GET {{uri}}/construction/construction?to=01/01/2024
+Authorization: Bearer {{access_token}}
+
+### 6. Error Case - Unauthorized (Missing Token)
+GET {{uri}}/construction/construction

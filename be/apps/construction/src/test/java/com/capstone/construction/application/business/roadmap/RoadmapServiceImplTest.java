@@ -140,7 +140,7 @@ class RoadmapServiceImplTest {
     var existingNetwork = new WaterSupplyNetwork("old-network-id", "Old Network", LocalDateTime.now(),
         LocalDateTime.now());
     var existingRoadmap = new Roadmap(id, "Roadmap Old", existingLateral, existingNetwork, LocalDateTime.now(),
-        LocalDateTime.now());
+        LocalDateTime.now(), "");
 
     when(roadmapRepository.findById(id)).thenReturn(Optional.of(existingRoadmap));
     when(roadmapRepository.existsByNameEqualsIgnoreCase(request.name())).thenReturn(false);
@@ -169,7 +169,7 @@ class RoadmapServiceImplTest {
     var existingNetwork = new WaterSupplyNetwork("old-network-id", "Old Network", LocalDateTime.now(),
         LocalDateTime.now());
     var existingRoadmap = new Roadmap(id, "Roadmap Old", existingLateral, existingNetwork, LocalDateTime.now(),
-        LocalDateTime.now());
+        LocalDateTime.now(), "");
 
     when(roadmapRepository.findById(id)).thenReturn(Optional.of(existingRoadmap));
     when(roadmapRepository.existsByNameEqualsIgnoreCase(request.name())).thenReturn(false);
@@ -184,6 +184,38 @@ class RoadmapServiceImplTest {
     assertThat(response.networkId()).isEqualTo("old-network-id");
     verify(lateralRepository, never()).findById(any());
     verify(networkRepository, never()).findById(any());
+  }
+
+  @Test
+  void should_ThrowException_When_UpdateLateralNotFound() {
+    // Given
+    var id = "roadmap-id";
+    var request = new RoadmapRequest("Name", "non-existent", null);
+    var lateral = new Lateral("old-lat", "Old", null, null, null);
+    var network = new WaterSupplyNetwork("old-net", "Old", null, null);
+    var existingRoadmap = new Roadmap(id, "Old", lateral, network, null, null, "");
+    when(roadmapRepository.findById(id)).thenReturn(Optional.of(existingRoadmap));
+    when(lateralRepository.findById("non-existent")).thenReturn(Optional.empty());
+
+    // When & Then
+    assertThatThrownBy(() -> roadmapService.updateRoadmap(id, request))
+        .isExactlyInstanceOf(IllegalArgumentException.class);
+  }
+
+  @Test
+  void should_ThrowException_When_UpdateNetworkNotFound() {
+    // Given
+    var id = "roadmap-id";
+    var request = new RoadmapRequest("Name", null, "non-existent");
+    var lateral = new Lateral("old-lat", "Old", null, null, null);
+    var network = new WaterSupplyNetwork("old-net", "Old", null, null);
+    var existingRoadmap = new Roadmap(id, "Old", lateral, network, null, null, "");
+    when(roadmapRepository.findById(id)).thenReturn(Optional.of(existingRoadmap));
+    when(networkRepository.findById("non-existent")).thenReturn(Optional.empty());
+
+    // When & Then
+    assertThatThrownBy(() -> roadmapService.updateRoadmap(id, request))
+        .isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
@@ -209,7 +241,7 @@ class RoadmapServiceImplTest {
     var lateral = new Lateral("lat-id", "Lateral", null, LocalDateTime.now(), LocalDateTime.now());
     var network = new WaterSupplyNetwork("net-id", "Network", LocalDateTime.now(), LocalDateTime.now());
     var existingRoadmap = new Roadmap(id, "Roadmap Old", lateral, network, LocalDateTime.now(),
-        LocalDateTime.now());
+        LocalDateTime.now(), "");
 
     when(roadmapRepository.findById(id)).thenReturn(Optional.of(existingRoadmap));
     when(roadmapRepository.existsByNameEqualsIgnoreCase(request.name())).thenReturn(true);
@@ -255,7 +287,7 @@ class RoadmapServiceImplTest {
     var id = "roadmap-id";
     var lateral = new Lateral("lat-id", "Lateral", null, LocalDateTime.now(), LocalDateTime.now());
     var network = new WaterSupplyNetwork("net-id", "Network", LocalDateTime.now(), LocalDateTime.now());
-    var roadmap = new Roadmap(id, "Roadmap Test", lateral, network, LocalDateTime.now(), LocalDateTime.now());
+    var roadmap = new Roadmap(id, "Roadmap Test", lateral, network, LocalDateTime.now(), LocalDateTime.now(), "");
 
     when(roadmapRepository.findById(id)).thenReturn(Optional.of(roadmap));
 
@@ -286,7 +318,7 @@ class RoadmapServiceImplTest {
     var pageable = Pageable.unpaged();
     var lateral = new Lateral("lat-id", "Lateral", null, LocalDateTime.now(), LocalDateTime.now());
     var network = new WaterSupplyNetwork("net-id", "Network", LocalDateTime.now(), LocalDateTime.now());
-    var roadmap = new Roadmap("id", "Roadmap Test", lateral, network, LocalDateTime.now(), LocalDateTime.now());
+    var roadmap = new Roadmap("id", "Roadmap Test", lateral, network, LocalDateTime.now(), LocalDateTime.now(), "");
     var page = new PageImpl<>(List.of(roadmap));
 
     when(roadmapRepository.findAll(pageable)).thenReturn(page);
