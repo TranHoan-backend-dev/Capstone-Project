@@ -61,7 +61,7 @@ const EstimateApprovalPage = () => {
         const items = json?.data?.content ?? [];
 
         const mapped: EstimateOrder[] = await Promise.all(
-          items.map(async (item: any) => {
+          items.map(async (item: any, index: number) => {
             const info = item.generalInformation;
             const form = info.installationFormId;
 
@@ -78,6 +78,7 @@ const EstimateApprovalPage = () => {
             }
 
             return {
+              stt: (page - 1) * pageSize + index + 1,
               id: info.estimationId,
               code: form?.formNumber,
               designProfileName: info.customerName,
@@ -106,18 +107,11 @@ const EstimateApprovalPage = () => {
 
   const filteredOrders = useMemo(() => {
     let filtered = orders;
-
-    // Filter by tab
     if (activeTab === "pending") {
       filtered = filtered.filter((o) => o.status === "pending");
     } else {
-      // For demo, assuming all others are approved in this tab,
-      // but really we need mock data for approved.
-      // Since mock data is all pending, let's just show empty or approved items if we had any.
       filtered = filtered.filter((o) => o.status === "approved");
     }
-
-    // Filter by keyword
     if (keyword) {
       const lowerK = keyword.toLowerCase();
 
@@ -138,12 +132,10 @@ const EstimateApprovalPage = () => {
 
   const handleApprove = (item: EstimateOrder) => {
     console.log("Approve", item);
-    // Implement logic
   };
 
   const handleReject = (item: EstimateOrder) => {
     console.log("Reject", item);
-    // Implement logic
   };
 
   const handleEstimate = (item: EstimateOrder) => {

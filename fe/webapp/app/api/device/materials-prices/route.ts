@@ -15,22 +15,10 @@ export async function GET(req: NextRequest) {
     const page = Number(searchParams.get("page") ?? 0);
     const size = Number(searchParams.get("size") ?? 10);
     const keyword = searchParams.get("keyword")?.trim() || "";
-    const laborCode = searchParams.get("laborCode")?.trim() || "";
+    const laborCode = searchParams.get("laborCode") ?? "";
+    const jobContent = searchParams.get("jobContent") ?? "";
     const fromPrice = searchParams.get("fromPrice") || "";
     const toPrice = searchParams.get("toPrice") || "";
-    const response = await getAllMaterials(
-      accessToken,
-      page,
-      size,
-      keyword,
-      laborCode,
-      fromPrice,
-      toPrice,
-    );
-
-    const sort = searchParams.get("sort") || "crreatedAt,desc";
-    const jobContent = searchParams.get("jobContent") ?? "";
-    const laborCode = searchParams.get("laborCode") ?? "";
     const groupId = searchParams.get("groupId") ?? "";
     const minPrice = searchParams.get("minPrice") ?? "";
     const maxPrice = searchParams.get("maxPrice") ?? "";
@@ -38,21 +26,14 @@ export async function GET(req: NextRequest) {
       accessToken,
       page,
       size,
-      sort,
+      keyword,
       jobContent,
       laborCode,
       groupId,
-      minPrice,
-      maxPrice,
+      fromPrice,
+      toPrice,
     );
-    console.log("params", {
-      page,
-      size,
-      jobContent,
-      laborCode,
-      groupId,
-      minPrice,
-    });
+
     return NextResponse.json(
       {
         message: "Lấy danh sách đơn giá vật tư thành công",

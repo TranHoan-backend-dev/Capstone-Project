@@ -16,6 +16,7 @@ import {
 } from "@/config/chip-and-icon";
 
 export interface EstimateOrder {
+  stt: string;
   id: number;
   code: string;
   designProfileName: string;
@@ -71,7 +72,7 @@ export const EstimateTable = ({
   const renderCell = (item: EstimateOrder, columnKey: string) => {
     switch (columnKey) {
       case "stt":
-        return <span>{item.id}</span>; // Using ID as STT for simplicity
+        return <span>{item.stt}</span>; // Using ID as STT for simplicity
       case "code":
         return (
           <span

@@ -186,8 +186,6 @@ export const GenericDataTable = <T extends { id: string | number }>({
                   !isLoading ? "Không có dữ liệu để hiển thị." : null
                 }
                 items={isLoading ? [] : data}
-                isLoading={isLoading}
-                loadingContent={<Spinner label="Loading..." />}
                 className="flex items-center justify-center"
               >
                 {isLoading
