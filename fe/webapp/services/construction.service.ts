@@ -646,3 +646,18 @@ export const updateEstimate = (
       "Content-Type": "application/json",
     },
   });
+
+export const requestEstimateSignature = (
+  accessToken: string,
+  estimateId: string,
+) =>
+  axios.post(
+    `${API_GATEWAY_URL}/construction/estimates/${estimateId}/sign`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    },
+  );
