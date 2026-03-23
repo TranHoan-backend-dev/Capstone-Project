@@ -87,9 +87,14 @@ public class InstallationFormController {
   })
   @PatchMapping("/approve")
   @PreAuthorize("hasAnyAuthority('SURVEY_STAFF', 'IT_STAFF')")
-  public ResponseEntity<WrapperApiResponse> approveInstallationForm(@RequestBody @Valid ApproveRequest request) {
+  public ResponseEntity<WrapperApiResponse> approveInstallationForm(
+    @AuthenticationPrincipal Jwt jwt,
+    @RequestBody @Valid ApproveRequest request
+  ) {
     log.info("Received request to approve installation form: {}", request.formCode());
-    installationFormHandlingUseCase.approveInstallationForm(request);
+
+    var id = jwt.getSubject();
+    installationFormHandlingUseCase.approveInstallationForm(id, request);
     return Utils.returnOkResponse("Thay đổi trạng thái thành công", null);
   }
 
