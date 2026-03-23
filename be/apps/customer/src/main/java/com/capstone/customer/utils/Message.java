@@ -3,7 +3,7 @@ package com.capstone.customer.utils;
 public final class Message {
   public static final String ENT_01 = "Địa chỉ xuất hóa đơn không được để trống";
   public static final String ENT_02 = "Id của khách hàng không được để trống";
-  public static final String ENT_03 = "Loại không được để trống";
+  public static final String ENT_03 = "Loại khách hàng không được để trống";
   public static final String ENT_04 = "Khách hàng không được để trống";
   public static final String ENT_05 = "Id của hợp đồng không được để trống";
   public static final String ENT_06 = "Mục đích sử dụng không được để trống";
@@ -23,6 +23,11 @@ public final class Message {
   public static final String ENT_20 = "Fix rate không được để trống";
   public static final String ENT_21 = "Kỳ khấu trừ không được để trống"; // Deduction Period
   public static final String ENT_22 = "Không tìm thấy hợp đồng với id %s";
-  public static final String ENT_23 = "Không tìm thấy khách hàng với id %s";
+  public static final String ENT_23 = "Đơn lắp đặt đã có khách hàng khác sở hữu";
   public static final String ENT_24 = "Phụ lục không được để trống";
+  public static final String ENT_25 = "Trường khách hàng lớn không được để trống";
+  public static final String ENT_26 = "Mã đồng hồ không được để trống";
+  public static final String ENT_27 = "Không tìm thấy loại đồng hồ nước";
+  public static final String ENT_28 = "Không tìm thấy giá nước";
+  public static final String ENT_29 = "Không tìm thấy đồng hồ nước";
 }

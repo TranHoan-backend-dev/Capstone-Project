@@ -5,7 +5,7 @@ import com.capstone.device.application.dto.request.metertype.CreateRequest;
 import com.capstone.device.application.dto.request.metertype.SearchWaterMeterTypeRequest;
 import com.capstone.device.application.dto.request.metertype.UpdateRequest;
 import com.capstone.device.application.dto.response.PageResponse;
-import com.capstone.device.application.dto.response.WaterMeterTypeResponse;
+import com.capstone.device.application.dto.response.water.WaterMeterTypeResponse;
 import com.capstone.device.application.event.producer.MessageProducer;
 import com.capstone.device.application.event.producer.metertype.DeleteEvent;
 import com.capstone.device.application.event.producer.metertype.UpdateEvent;
@@ -42,10 +42,10 @@ public class MeterTypeUseCase {
     var n = meterTypeService.updateMeterType(id, request);
 
     producer.send(UPDATE_ROUTING_KEY, new UpdateEvent(
-        old.name(), old.origin(), old.meterModel(), old.size(), old.maxIndex(),
-        old.qn(), old.qt(), old.qmin(), old.diameter(),
-        n.name(), n.origin(), n.meterModel(), n.size(), n.maxIndex(),
-        n.qn(), n.qt(), n.qmin(), n.diameter()));
+      old.name(), old.origin(), old.meterModel(), old.size(), old.maxIndex(),
+      old.qn(), old.qt(), old.qmin(), old.diameter(),
+      n.name(), n.origin(), n.meterModel(), n.size(), n.maxIndex(),
+      n.qn(), n.qt(), n.qmin(), n.diameter()));
     return n;
   }
 
@@ -55,8 +55,8 @@ public class MeterTypeUseCase {
     meterTypeService.deleteMeterType(id);
 
     producer.send(DELETE_ROUTING_KEY, new DeleteEvent(
-        old.name(), old.origin(), old.meterModel(), old.size(), old.maxIndex(),
-        old.qn(), old.qt(), old.qmin(), old.diameter()));
+      old.name(), old.origin(), old.meterModel(), old.size(), old.maxIndex(),
+      old.qn(), old.qt(), old.qmin(), old.diameter()));
   }
 
   public WaterMeterTypeResponse getMeterTypeById(String id) {

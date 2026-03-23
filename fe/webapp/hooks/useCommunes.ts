@@ -12,7 +12,7 @@ export const useCommune = () => {
       .get("/api/construction/communes", { withCredentials: true })
       .then((res) =>
         setCommuneOptions(
-          res.data.data.content.map((item: any) => ({
+          res.data.content.map((item: any) => ({
             label: item.name,
             value: item.communeId,
           })),

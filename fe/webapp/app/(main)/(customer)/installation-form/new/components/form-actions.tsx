@@ -8,19 +8,23 @@ import {
   DocumentCheckedIcon,
   SumIcon,
 } from "@/config/chip-and-icon";
-
-export const FormActions = () => {
+interface Props {
+  onCreate: () => void;
+  onClear: () => void;
+}
+export const FormActions = ({ onCreate, onClear }: Props) => {
   return (
-    <div className="flex justify-between items-center pt-8 border-t border-gray-100 dark:border-divider">
+    <div className="flex justify-end items-center pt-8 gap-2 border-t border-gray-100 dark:border-divider">
       <div className="flex gap-3">
-        <CustomButton
+        {/* <CustomButton
           className="bg-blue-600 h-10 px-6 font-bold text-[13px]"
           color="primary"
           startContent={<DocumentCheckedIcon className="w-5 h-5" />}
         >
           Tìm đơn
-        </CustomButton>
+        </CustomButton> */}
         <CustomButton
+          onPress={onCreate}
           className="bg-[#10a345] text-white h-10 px-6 font-bold text-[13px]"
           color="success"
           startContent={<SumIcon className="w-5 h-5" />}
@@ -30,6 +34,7 @@ export const FormActions = () => {
       </div>
       <div className="flex gap-3">
         <CustomButton
+          onPress={onClear}
           className="bg-gray-100 dark:bg-default-100 text-gray-700 dark:text-foreground font-bold px-6 shadow-none border border-gray-200 dark:border-divider h-9 shrink-0"
           radius="md"
           size="md"

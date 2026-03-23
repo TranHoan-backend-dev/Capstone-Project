@@ -1,13 +1,14 @@
 package com.capstone.construction.adapter;
 
 import com.capstone.common.annotation.AppLog;
-import com.capstone.common.utils.Utils;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.common.utils.Utils;
+import com.capstone.construction.application.business.installationform.InstallationFormService;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
-import com.capstone.construction.application.usecase.InstallationFormHandlingUseCase;
+import com.capstone.construction.application.usecase.InstallationFormUseCase;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
 import com.capstone.construction.infrastructure.utils.Message;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,6 +26,8 @@ import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -37,7 +40,8 @@ import java.time.format.DateTimeFormatter;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Tag(name = "Installation Form", description = "Quản lý đơn lắp đặt (Tiếp nhận và xử lý hồ sơ lắp đặt nước)")
 public class InstallationFormController {
-  InstallationFormHandlingUseCase installationFormHandlingUseCase;
+  InstallationFormUseCase installationFormHandlingUseCase;
+  InstallationFormService service;
   @NonFinal
   Logger log;
 
@@ -53,15 +57,20 @@ public class InstallationFormController {
   })
   @PostMapping
   @PreAuthorize("hasAnyAuthority('ORDER_RECEIVING_STAFF', 'IT_STAFF')")
-  public ResponseEntity<WrapperApiResponse> createInstallationForm(@RequestBody @Valid NewOrderRequest request) {
+  public ResponseEntity<WrapperApiResponse> createInstallationForm(
+    @RequestBody @Valid NewOrderRequest request,
+    @AuthenticationPrincipal Jwt jwt
+  ) {
     log.info("Received request to create installation form: {}", request.formNumber());
+    var id = jwt.getSubject();
+
     if (!Utils.isLocalDate(request.receivedFormAt(), DateTimeFormatter.ISO_LOCAL_DATE) ||
       !Utils.isLocalDate(request.citizenIdentificationProvideDate(), DateTimeFormatter.ISO_LOCAL_DATE) ||
       !Utils.isLocalDate(request.scheduleSurveyAt(), DateTimeFormatter.ISO_LOCAL_DATE)) {
       throw new IllegalArgumentException(Message.PT_05);
     }
 
-    var response = installationFormHandlingUseCase.createNewInstallationRequest(request);
+    var response = installationFormHandlingUseCase.createNewInstallationRequest(id, request);
 
     log.info("Successfully created installation form: {}", response.formNumber());
 
@@ -129,5 +138,14 @@ public class InstallationFormController {
     var response = installationFormHandlingUseCase.getPaginatedInstallationForms(pageable, request);
 
     return Utils.returnOkResponse("Lấy danh sách đơn lắp đặt thành công", response);
+  }
+
+  @Operation(hidden = true)
+  @GetMapping("/exist")
+  public boolean isExisting(
+    @RequestParam String formCode,
+    @RequestParam String formNumber
+  ) {
+    return service.isInstallationFormExisting(formNumber, formCode);
   }
 }

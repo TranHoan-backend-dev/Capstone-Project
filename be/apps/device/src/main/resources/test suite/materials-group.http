@@ -1,0 +1,45 @@
+@uri = http://localhost:9006/api/v1/materials-groups
+@keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
+@client_secret=
+
+### get token
+POST {{keycloak}}/token
+Content-Type: application/x-www-form-urlencoded
+Accept: application/json
+
+grant_type=password&
+client_id=&
+client_secret={{client_secret}}&
+username=&
+password=&
+scope=openid
+
+> {%
+  client.global.set("access_token", response.body.access_token);
+  client.global.set("refresh_token", response.body.refresh_token);
+%}
+
+### Get All Materials Groups (No filter)
+GET {{uri}}
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Get All Materials Groups (No filter)
+GET {{uri}}
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Search Materials Groups by Name (Filter)
+GET {{uri}}?filter=Xây
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Get Materials Groups with Pagination
+GET {{uri}}?page=0&size=5&sort=name,asc
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Search and Paginate Materials Groups
+GET {{uri}}?filter=Vật&page=0&size=2&sort=name,desc
+Authorization: Bearer {{access_token}}
+Accept: application/json

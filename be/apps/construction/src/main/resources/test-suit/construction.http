@@ -1,0 +1,169 @@
+### Variables
+@baseUrl = http://localhost:8080
+@token = {{your_auth_token}}
+
+### TC01 - Giao đơn thi công thành công (Happy Path)
+PATCH {{baseUrl}}/construction/EMP-STF-001
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "formCode": "LĐN",
+  "formNumber": "2024/001",
+  "customerId": "CUST-001",
+  "contractId": "CONT-001"
+}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC02 - Giao thi công cho nhân viên sai vai trò (400)
+PATCH {{baseUrl}}/construction/EMP-IT-001
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "formCode": "LĐN",
+  "formNumber": "2024/001",
+  "customerId": "CUST-001",
+  "contractId": "CONT-001"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC03 - Thiếu trường bắt buộc formCode (400)
+PATCH {{baseUrl}}/construction/EMP-STF-001
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "formNumber": "2024/001",
+  "customerId": "CUST-001",
+  "contractId": "CONT-001"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC04 - Mã hợp đồng không tồn tại (400)
+PATCH {{baseUrl}}/construction/EMP-STF-001
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "formCode": "LĐN",
+  "formNumber": "2024/001",
+  "customerId": "CUST-001",
+  "contractId": "NON-EXISTENT"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC05 - Cập nhật nhân viên cho đơn chờ thi công thành công (200)
+PATCH {{baseUrl}}/construction/pending-requests/REQ-001/EMP-STF-002
+Authorization: Bearer {{token}}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC06 - Cập nhật đơn chờ với ID không tồn tại (404/400)
+PATCH {{baseUrl}}/construction/pending-requests/INVALID-ID/EMP-STF-002
+Authorization: Bearer {{token}}
+
+> {%
+client.test("Status is 400 or 404", function() {
+  client.assert(response.status === 400 || response.status === 404);
+});
+%}
+
+
+### TC07 - Tấn công SQL Injection vào ID nhân viên (400)
+PATCH {{baseUrl}}/construction/' OR 1=1 --
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "formCode": "LĐN",
+  "formNumber": "001",
+  "customerId": "C1",
+  "contractId": "C1"
+}
+
+> {%
+client.test("Status should be error", function() {
+  client.assert(response.status >= 400);
+});
+%}
+
+
+### TC08 - Truy cập không có Token (401)
+PATCH {{baseUrl}}/construction/EMP-STF-001
+Content-Type: application/json
+
+{
+  "formCode": "LĐN",
+  "formNumber": "2024/001",
+  "customerId": "CUST-001",
+  "contractId": "CONT-001"
+}
+
+> {%
+client.test("Status is 401", function() {
+  client.assert(response.status === 401);
+});
+%}
+
+
+### TC09 - Truy cập với quyền hạn không đủ (403)
+PATCH {{baseUrl}}/construction/EMP-STF-001
+Authorization: Bearer {{low_privilege_token}}
+Content-Type: application/json
+
+{
+  "formCode": "LĐN",
+  "formNumber": "2024/001",
+  "customerId": "CUST-001",
+  "contractId": "CONT-001"
+}
+
+> {%
+client.test("Status is 403", function() {
+  client.assert(response.status === 403);
+});
+%}
+
+
+### TC10 - Request Body rỗng (400)
+PATCH {{baseUrl}}/construction/EMP-STF-001
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}

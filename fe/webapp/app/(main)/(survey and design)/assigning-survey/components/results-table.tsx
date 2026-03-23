@@ -1,79 +1,143 @@
 "use client";
 
 import React, { useState } from "react";
-import { Link, Select, SelectItem } from "@heroui/react";
+import { Link } from "@heroui/react";
 import NextLink from "next/link";
 
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import { SurveyAssignmentItem } from "@/types";
+import { NewInstallationFormResponse, SurveyAssignmentItem } from "@/types";
 import { TitleDarkColor } from "@/config/chip-and-icon";
+import { formatDate1 } from "@/utils/format";
+import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
+import { LookupModal } from "@/components/ui/modal/LookupModal";
+import { SURVEY_ASSIGNMENT_COLUMN } from "@/config/table-columns";
+import { CallToast } from "@/components/ui/CallToast";
 
 interface Props {
   data: SurveyAssignmentItem[];
+  page: number;
+  total: number;
+  onPageChange: (page: number) => void;
+  keyword: string;
+  reloadKey: number;
+  setReloadKey: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const surveyors = [
-  { id: "1", name: "Nguyễn Văn A" },
-  { id: "2", name: "Trần Thị B" },
-  { id: "3", name: "Lê Văn C" },
-  { id: "4", name: "Phạm Thị D" },
-  { id: "5", name: "Hoàng Văn E" },
-];
-
-export const SurveyAssignmentTable = ({ data }: Props) => {
+export const SurveyAssignmentTable = ({
+  data,
+  keyword,
+  page,
+  total,
+  onPageChange,
+  reloadKey,
+  setReloadKey,
+}: Props) => {
   const [selectedSurveyors, setSelectedSurveyors] = useState<
-    Record<number, string>
+    Record<string, { id: string; name: string }>
   >({});
+  const [showEmployeeModal, setShowEmployeeModal] = useState(false);
+  const [currentRow, setCurrentRow] = useState<string | null>(null);
+  const pageSize = 10;
+  const totalPages = Math.ceil(total / pageSize);
 
-  const handleSurveyorChange = (orderId: number, surveyorId: string) => {
-    setSelectedSurveyors((prev) => ({
-      ...prev,
-      [orderId]: surveyorId,
-    }));
+  const handleOpenModal = (rowId: string) => {
+    setCurrentRow(rowId);
+    setShowEmployeeModal(true);
   };
 
-  const columns = [
-    { key: "stt", label: "STT", width: "60px" },
-    { key: "code", label: "Mã đơn" },
-    { key: "customerName", label: "Tên khách hàng" },
-    { key: "phone", label: "Điện thoại" },
-    { key: "address", label: "Địa chỉ lắp đặt", width: "250px" },
-    { key: "registrationDate", label: "Ngày đăng ký" },
-    { key: "surveyDate", label: "Ngày hẹn khảo sát" },
-    { key: "surveyor", label: "Nhân viên khảo sát" },
-  ];
+  const handleAssign = async (
+    item: SurveyAssignmentItem,
+    employeeId: string,
+    employeeName: string,
+  ) => {
+    try {
+      const res = await fetch(
+        `/api/construction/installation-forms/assign/${employeeId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            formCode: item.id,
+            formNumber: item.formNumber,
+          }),
+        },
+      );
+
+      if (!res.ok) {
+        let message = "Lỗi khi phân công";
+        try {
+          const json = await res.json();
+          message = json?.message || message;
+        } catch {
+          const text = await res.text();
+          if (text) message = text;
+        }
+
+        CallToast({
+          title: "Lỗi",
+          message,
+          color: "danger",
+        });
+        return;
+      }
+
+      setSelectedSurveyors((prev) => ({
+        ...prev,
+        [item.id]: {
+          id: employeeId,
+          name: employeeName,
+        },
+      }));
+
+      setReloadKey((prev) => prev + 1);
+    } catch (err: any) {
+      console.error(err);
+      CallToast({
+        title: "Lỗi",
+        message: err.message || "Lỗi khi phân công",
+        color: "danger",
+      });
+    }
+  };
 
   const renderCell = (item: SurveyAssignmentItem, columnKey: string) => {
     switch (columnKey) {
       case "stt":
-        return data.indexOf(item) + 1;
+        return item.stt;
 
-      case "code":
+      case "formNumber":
         return (
           <Link
             as={NextLink}
             className={`font-bold text-blue-600 hover:underline hover:text-blue-800 ${TitleDarkColor}`}
             href={`/survey/${item.id}`}
           >
-            {item.code}
+            {item.formNumber}
           </Link>
         );
 
       case "surveyor":
+        const selected = selectedSurveyors[item.id];
+        let displayName = selected?.name ?? item.handoverByFullName ?? "";
+        if (!displayName || displayName === "false") {
+          displayName = "Chưa phân công";
+        }
+
         return (
-          <Select
-            className="max-w-[180px]"
-            placeholder="Chọn nhân viên"
-            selectedKeys={
-              selectedSurveyors[item.id] ? [selectedSurveyors[item.id]] : []
-            }
-            size="sm"
-            onChange={(e) => handleSurveyorChange(item.id, e.target.value)}
-          >
-            {surveyors.map((surveyor) => (
-              <SelectItem key={surveyor.id}>{surveyor.name}</SelectItem>
-            ))}
-          </Select>
+          <SearchInputWithButton
+            label=""
+            value={displayName}
+            onSearch={() => handleOpenModal(item.id)}
+            onChange={() => {
+              setSelectedSurveyors((prev) => {
+                const clone = { ...prev };
+                delete clone[item.id];
+                return clone;
+              });
+            }}
+          />
         );
 
       default:
@@ -82,18 +146,44 @@ export const SurveyAssignmentTable = ({ data }: Props) => {
   };
 
   return (
-    <GenericDataTable
-      columns={columns}
-      data={data}
-      hideHeader={true}
-      isCollapsible={false}
-      paginationProps={{
-        total: data.length,
-        page: 1,
-        summary: `1-${data.length} của ${data.length}`,
-      }}
-      renderCellAction={renderCell}
-      title=""
-    />
+    <>
+      <GenericDataTable
+        title="Danh sách đơn"
+        columns={SURVEY_ASSIGNMENT_COLUMN}
+        data={data}
+        hideHeader={true}
+        isCollapsible={false}
+        paginationProps={{
+          total: totalPages,
+          page: page,
+          onChange: onPageChange,
+          summary: `${(page - 1) * 10 + 1}-${Math.min(page * 10, total)} của ${total}`,
+        }}
+        renderCellAction={renderCell}
+      />
+      <LookupModal
+        enableSearch={false}
+        isOpen={showEmployeeModal}
+        onClose={() => setShowEmployeeModal(false)}
+        title="Chọn nhân viên khảo sát"
+        api="/api/auth/employees/survey-staff"
+        columns={[
+          { key: "stt", label: "STT" },
+          { key: "fullName", label: "Tên nhân viên" },
+        ]}
+        mapData={(item, index) => ({
+          stt: index + 1,
+          id: item.id,
+          fullName: item.fullName,
+        })}
+        onSelect={(employee) => {
+          if (!currentRow) return;
+          const currentItem = data.find((d) => d.id === currentRow);
+          if (!currentItem) return;
+          handleAssign(currentItem, employee.id, employee.fullName);
+          setShowEmployeeModal(false);
+        }}
+      />
+    </>
   );
 };

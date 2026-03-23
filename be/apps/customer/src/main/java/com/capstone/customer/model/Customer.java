@@ -72,7 +72,7 @@ public class Customer {
   @Column(nullable = false)
   String waterMeterType;
 
-  @Column(nullable = false, unique = true)
+  @Column(nullable = false)
   String citizenIdentificationNumber;
 
   @Column(nullable = false)
@@ -115,6 +115,14 @@ public class Customer {
 
   @Column(nullable = false)
   String waterMeterId;
+
+  @Setter
+  @Column(nullable = false)
+  String roadmapId;
+
+  @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
+  @ToString.Exclude
+  Bill bill;
 
   @PrePersist
   void onCreate() {

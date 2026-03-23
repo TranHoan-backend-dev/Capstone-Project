@@ -8,12 +8,15 @@ import { FilterSection } from "./components/filter-section";
 import { LateralForm } from "./components/lateral-form";
 import { LateralFilter, LateralItem } from "@/types";
 import { Modal, ModalContent } from "@heroui/react";
+import { useEmployeeProfile } from "@/hooks/useEmployeeProfile";
 
 const LateralPage = () => {
   const [filter, setFilter] = useState<LateralFilter>({});
   const [showAddForm, setShowAddForm] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
   const [editingItem, setEditingItem] = useState<LateralItem | null>(null);
+  const { profile, loading } = useEmployeeProfile();
+
   const handleReload = () => setReloadKey((prev) => prev + 1);
   const handleAddNew = () => {
     setEditingItem(null);
@@ -34,6 +37,21 @@ const LateralPage = () => {
     handleReload();
     handleCloseForm();
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
+  if (!profile) {
+    return (
+      <div className="text-center text-red-500 py-10">
+        Không thể tải thông tin người dùng
+      </div>
+    );
+  }
 
   return (
     <>

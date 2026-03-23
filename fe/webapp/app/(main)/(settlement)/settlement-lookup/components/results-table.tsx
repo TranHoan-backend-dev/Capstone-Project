@@ -1,9 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
-import { Chip, Link, Tooltip, Button } from "@heroui/react";
-import NextLink from "next/link";
-import { CalculatorIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
+import React, { useState, useEffect, useMemo } from "react";
+import { Chip, Link, Tooltip, Button, Spinner } from "@heroui/react";
+import {
+  CalculatorIcon,
+  PencilSquareIcon,
+  TrashIcon,
+} from "@heroicons/react/24/outline";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { SettlementDetailModal } from "./settlement-detail-modal";
 import { SettlementDocumentModal } from "./settlement-document-modal";
@@ -12,96 +16,285 @@ import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import {
   DarkGreenChip,
   DarkRedChip,
+  DarkYellowChip,
+  DeleteIcon,
+  EditIcon,
   TitleDarkColor,
 } from "@/config/chip-and-icon";
-import { SettlementItem, StatusDetailData } from "@/types";
-
-interface SettlementTableProps {
-  data: SettlementItem[];
-}
+import {
+  SettlementItem,
+  SettlementDetail,
+  SettlementResponse,
+  SettlementTableProps,
+} from "@/types";
+import { authFetch } from "@/utils/authFetch";
+import { SETLEMENT_LOOKUP_COLUMN } from "@/config/table-columns";
+import { CallToast } from "@/components/ui/CallToast";
+import { ConfirmDialog } from "@/components/ui/modal/ConfirmDialog";
 
 const statusMap = {
-  approved_budget: {
-    label: "Đã duyệt dự toán",
+  APPROVED: {
+    label: "Đã duyệt quyết toán",
     color: "success" as const,
     bg: DarkGreenChip,
   },
-  rejected_budget: {
-    label: "Lập lại dự toán",
+  REJECTED: {
+    label: "Lập lại quyết toán",
     color: "danger" as const,
     bg: DarkRedChip,
   },
+  PENDING_FOR_APPROVAL: {
+    label: "Đang xử lý",
+    color: "default" as const,
+    bg: "bg-blue-100 text-blue-800",
+  },
+  PROCESSING: {
+    label: "Chờ duyệt",
+    color: "warning" as const,
+    bg: DarkYellowChip,
+  },
 };
-
-export const ResultsTable = ({ data }: SettlementTableProps) => {
-  const [selectedSettlement, setSelectedSettlement] =
-    useState<SettlementItem | null>(null);
-
-  const mapSettlementToModalData = (
-    item: SettlementItem,
-  ): StatusDetailData => ({
-    code: item.code,
-    address: item.address,
-    registerDate: item.registerDate,
-    status: statusMap[item.status]?.label ?? "Không xác định",
-    creator: "Trần Thị A",
-    createDate: "1/1/2026",
-    approver: "Ngô Thị D",
-    approveDate: "2/2/2026",
-    totalPrice: "1000000000 VNĐ",
-    note: "Công trình yêu cầu sử dụng thiết bị chất lượng cao. Đã tính toán bao gồm chi phí vận chuyển và lắp đặt.",
+interface ResultsTableProps {
+  keyword?: string;
+  reloadKey?: number;
+  from?: string | null;
+  to?: string | null;
+  status?: string;
+  onEdit: (item: SettlementItem) => void;
+  onDeleted: () => void;
+  onFilterStatus?: (status: string) => void;
+}
+export const ResultsTable = ({
+  keyword,
+  reloadKey,
+  from,
+  to,
+  onEdit,
+  onDeleted,
+  onFilterStatus,
+}: ResultsTableProps) => {
+  const [data, setData] = useState<SettlementItem[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [sort, setSort] = useState<{
+    field: string;
+    direction: "asc" | "desc";
+  }>({
+    field: "createdAt",
+    direction: "desc",
   });
 
-  const columns = [
-    { key: "stt", label: "STT", width: "40px" },
-    { key: "code", label: "Mã đơn" },
-    { key: "customerName", label: "Tên khách hàng" },
-    { key: "phone", label: "Điện thoại" },
-    { key: "address", label: "Địa chỉ lắp đặt" },
-    { key: "registerDate", label: "Ngày đăng ký" },
-    { key: "status", label: "Trạng thái đơn" },
-    { key: "actions", label: "Hoạt động", align: "center" as const },
-  ];
+  // State cho SettlementDetailModal
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedSettlementDetail, setSelectedSettlementDetail] = useState<
+    SettlementDetail | undefined
+  >();
+  const [isDetailLoading, setIsDetailLoading] = useState(false);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isEstimateOpen, setIsEstimateOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
-  const handleStatusClick = (item: SettlementItem) => {
-    setSelectedSettlement(item);
-    setIsModalOpen(true);
+  // Fetch data khi filter thay đổi
+  useEffect(() => {
+    setLoading(true);
+    const fetchData = async () => {
+      try {
+        const params = new URLSearchParams({
+          page: String(page - 1),
+          size: String(pageSize),
+          sort: `${sort.field},${sort.direction}`,
+        });
+        if (keyword?.trim()) {
+          params.append("keyword", keyword.trim());
+        }
+
+        if (from) {
+          params.append("fromDate", from);
+        }
+
+        if (to) {
+          params.append("toDate", to);
+        }
+
+        if (status) {
+          params.append("status", status);
+        }
+        const res = await authFetch(
+          `/api/construction/settlements?${params.toString()}`,
+        );
+        if (!res.ok) {
+          console.error("Fetch failed", res.status);
+          return;
+        }
+        const json = await res.json();
+        const pageData = json?.data;
+        const items = pageData?.content ?? [];
+        const totalElements = pageData?.totalElements ?? 0;
+        const totalPagesValue = pageData?.totalPages ?? 1;
+        setTotalItems(totalElements);
+        setTotalPages(totalPagesValue || 1);
+
+        if (page > totalPagesValue && totalPagesValue > 0) {
+          setPage(totalPagesValue);
+          return;
+        }
+
+        const mapped = items.map((item: SettlementResponse, index: number) => ({
+          id: item.settlementId,
+          stt: (page - 1) * pageSize + index + 1,
+          jobContent: item.jobContent,
+          address: item.address,
+          registrationAt: item.registrationAt,
+          connectionFee: item.connectionFee,
+          note: item.note,
+          status: item.status,
+        }));
+        setData(mapped);
+      } catch (error: any) {
+        setData([]);
+        setTotalItems(0);
+        setTotalPages(1);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [page, keyword, reloadKey, sort, from, to, status]);
+
+  // Hàm fetch chi tiết quyết toán
+  const fetchSettlementDetail = async (settlementId: string) => {
+    try {
+      setIsDetailLoading(true);
+      const res = await authFetch(
+        `/api/construction/settlements/${settlementId}`,
+      );
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch settlement detail");
+      }
+
+      const json = await res.json();
+      setSelectedSettlementDetail(json?.data);
+      setIsDetailModalOpen(true);
+    } catch (error: any) {
+      CallToast({
+        title: "Lỗi",
+        message: error.message || "Không thể tải thông tin chi tiết",
+        color: "danger",
+      });
+    } finally {
+      setIsDetailLoading(false);
+    }
   };
+
+  const handleSortChange = (columnKey: string) => {
+    setPage(1);
+
+    setSort((prev) => {
+      const direction =
+        prev.field === columnKey && prev.direction === "asc" ? "desc" : "asc";
+
+      return {
+        field: columnKey === "stt" ? "createdAt" : columnKey,
+        direction,
+      };
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return;
+    try {
+      setDeleteLoading(true);
+
+      const res = await authFetch(`/api/construction/settlements/${deleteId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Delete failed");
+
+      CallToast({
+        title: "Thành công",
+        message: "Xóa quyết toán thành công",
+        color: "success",
+      });
+
+      setDeleteId(null);
+      onDeleted();
+    } catch (e: any) {
+      CallToast({
+        title: "Lỗi",
+        message: e.message || "Có lỗi xảy ra",
+        color: "danger",
+      });
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    setPage(1);
+  }, [keyword]);
+
+  const actionItems = useMemo(() => {
+    return [
+      // {
+      //   content: "Quyết toán",
+      //   icon: CalculatorIcon,
+      //   className:
+      //     "text-blue-600 dark:text-primary hover:bg-blue-50 dark:hover:bg-blue-900/30",
+      //   onClick: (id: string) => {
+      //     // Gọi hàm fetch chi tiết thay vì onEdit
+      //     fetchSettlementDetail(id);
+      //   },
+      // },
+      {
+        content: "Chỉnh sửa",
+        icon: EditIcon,
+        className:
+          "text-amber-500 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/30",
+        onClick: (id: string) => {
+          const found = data.find((i) => i.id === id);
+          if (found) onEdit(found);
+        },
+      },
+      {
+        content: "Xóa",
+        icon: DeleteIcon,
+        className: "text-red-500 hover:bg-red-50",
+        onClick: (id: string) => {
+          setDeleteId(id);
+        },
+      },
+    ];
+  }, [data, onEdit]);
 
   const renderCell = (item: SettlementItem, columnKey: string) => {
     switch (columnKey) {
       case "stt":
+        const index = data.findIndex((d) => d.id === item.id);
         return (
           <span className="font-medium text-black dark:text-white">
-            {data.indexOf(item) + 1}
-          </span>
-        );
-      case "code":
-        return (
-          <Link
-            as={NextLink}
-            className={`font-bold text-blue-600 hover:underline hover:text-blue-800 ${TitleDarkColor}`}
-            href="#"
-          >
-            {item.code}
-          </Link>
-        );
-      case "customerName":
-        return (
-          <span className="font-bold text-gray-900 dark:text-foreground">
-            {item.customerName}
+            {item.stt}
           </span>
         );
       case "status":
-        const config = statusMap[item.status];
+        const config = statusMap[item.status as keyof typeof statusMap] || {
+          label: item.status,
+          color: "default" as const,
+          bg: "bg-gray-100",
+        };
 
         return (
           <button
             className="hover:opacity-80 transition-opacity focus:outline-none"
-            onClick={() => handleStatusClick(item)}
+            onClick={() => {
+              console.log("CLICK STATUS:", item.status);
+              onFilterStatus?.(item.status);
+            }}
           >
             <Chip
               className={`${config.bg}`}
@@ -114,40 +307,16 @@ export const ResultsTable = ({ data }: SettlementTableProps) => {
           </button>
         );
       case "actions":
-        const actions = [
-          {
-            content: "Quyết toán",
-            icon: CalculatorIcon,
-            className:
-              "text-blue-600 dark:text-primary hover:bg-blue-50 dark:hover:bg-blue-900/30",
-          },
-          {
-            content: "Chỉnh sửa",
-            icon: PencilSquareIcon,
-            className:
-              "text-amber-500 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/30",
-          },
-        ];
-
         return (
-          <div className="flex justify-center items-center gap-1">
-            {actions.map((action, idx) => (
-              <Tooltip
-                key={idx}
-                closeDelay={0}
-                color={idx % 2 == 0 ? "primary" : "warning"}
-                content={action.content}
-              >
+          <div className="flex items-center justify-center gap-2">
+            {actionItems.map((action, idx) => (
+              <Tooltip key={idx} content={action.content} closeDelay={0}>
                 <Button
                   isIconOnly
-                  className={action.className}
-                  size="sm"
                   variant="light"
-                  onPress={() => {
-                    if (action.content === "Quyết toán") {
-                      setIsEstimateOpen(true);
-                    }
-                  }}
+                  size="sm"
+                  className={`${action.className} rounded-lg`}
+                  onPress={() => action.onClick(item.id)}
                 >
                   <action.icon className="w-5 h-5" />
                 </Button>
@@ -164,34 +333,51 @@ export const ResultsTable = ({ data }: SettlementTableProps) => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center py-20">
+        <Spinner label="Đang tải dữ liệu..." />
+      </div>
+    );
+  }
+
   return (
     <>
       <GenericDataTable
         isCollapsible
-        columns={columns}
+        columns={SETLEMENT_LOOKUP_COLUMN}
         data={data}
-        headerSummary={`${data.length}`}
+        headerSummary={`${totalItems}`}
         paginationProps={{
-          total: 5,
-          page: 1,
-          summary: `1-5 của 25`,
+          total: totalPages,
+          page: page,
+          onChange: setPage,
+          summary: `${data.length}`,
         }}
         renderCellAction={renderCell}
         title="Danh sách quyết toán"
       />
-      <SettlementDetailModal
-        data={
-          selectedSettlement
-            ? mapSettlementToModalData(selectedSettlement)
-            : undefined
-        }
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+
+      <ConfirmDialog
+        isOpen={!!deleteId}
+        title="Xác nhận xoá"
+        message="Bạn có chắc muốn xoá quyết toán này không?"
+        confirmText="Xoá"
+        confirmColor="danger"
+        isLoading={deleteLoading}
+        onClose={() => setDeleteId(null)}
+        onConfirm={handleConfirmDelete}
       />
-      <SettlementDocumentModal
-        data={data}
-        isOpen={isEstimateOpen}
-        onCloseAction={() => setIsEstimateOpen(false)}
+
+      {/* Settlement Detail Modal */}
+      <SettlementDetailModal
+        isOpen={isDetailModalOpen}
+        onClose={() => {
+          setIsDetailModalOpen(false);
+          setSelectedSettlementDetail(undefined);
+        }}
+        data={selectedSettlementDetail}
+        loading={isDetailLoading}
       />
     </>
   );

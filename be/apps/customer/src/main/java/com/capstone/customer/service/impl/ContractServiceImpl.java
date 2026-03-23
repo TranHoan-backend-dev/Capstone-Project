@@ -1,8 +1,8 @@
 package com.capstone.customer.service.impl;
 
 import com.capstone.common.annotation.AppLog;
-import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.common.utils.SharedConstant;
+import com.capstone.customer.dto.request.ContractFilterRequest;
 import com.capstone.customer.dto.request.contract.CreateRequest;
 import com.capstone.customer.dto.response.ContractResponse;
 import com.capstone.customer.model.WaterUsageContract;
@@ -15,7 +15,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
-import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,10 +39,10 @@ public class ContractServiceImpl implements ContractService {
 
   @Override
   @Transactional(rollbackFor = Exception.class)
-  public ContractResponse createContract(@NonNull CreateRequest request) {
+  public ContractResponse createContract(CreateRequest request) {
     log.info("Creating contract with ID: {}", request.contractId());
-    var status = cSrv.checkExistence(request.formCode(), request.formNumber()).data().toString();
-    if (!Boolean.parseBoolean(status)) {
+    var status = cSrv.checkExistence(request.formCode(), request.formNumber());
+    if (!status) {
       throw new IllegalArgumentException(Message.ENT_16);
     }
 
@@ -86,18 +85,13 @@ public class ContractServiceImpl implements ContractService {
   }
 
   @Override
-  public Page<ContractResponse> getAllContracts(Pageable pageable, BaseFilterRequest request) {
+  public Page<ContractResponse> getAllContracts(Pageable pageable, ContractFilterRequest request) {
     log.info("Fetching all contracts with pagination: {}", pageable);
-    var startDate = parseFrom(request != null ? request.from() : null);
-    var endDate = parseTo(request != null ? request.to() : null);
-    var keyword = request == null ? null : request.keyword();
 
-    var result = (startDate != null || endDate != null || (keyword != null && !keyword.isBlank())) ? contractRepository.findAll(
-      ContractRepository.search(
-        keyword,
-        startDate,
-        endDate
-      ), pageable) : contractRepository.findAll(pageable);
+    var result = contractRepository.findAll(
+      ContractRepository.filter(request),
+      pageable
+    );
     log.info(result.toString());
 
     return result.map(this::mapToResponse);
@@ -117,7 +111,7 @@ public class ContractServiceImpl implements ContractService {
     return LocalDate.parse(to, DateTimeFormatter.ofPattern(SharedConstant.DATE_PATTERN)).atTime(LocalTime.MAX);
   }
 
-  private @NonNull ContractResponse mapToResponse(@NonNull WaterUsageContract contract) {
+  private ContractResponse mapToResponse(WaterUsageContract contract) {
     return new ContractResponse(
       contract.getContractId(),
       contract.getCreatedAt(),
