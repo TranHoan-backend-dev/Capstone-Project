@@ -291,3 +291,51 @@ export const deleteType = (accessToken: string, id: string) => {
         },
     });
 };
+
+
+export const getAllWaterPrices = (
+    accessToken: string,
+    page: number,
+    size: number,
+    sort: string,
+    keyword?: string | null,
+) =>
+    axios.get(`${API_GATEWAY_URL}/d/water-prices`, {
+        params: {
+            page,
+            size,
+            sort,
+            keyword,
+        },
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
+
+export const createWaterPrice = (accessToken: string, data: any) => {
+    return axios.post(`${API_GATEWAY_URL}/d/water-prices`, data, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
+};
+
+export const updateWaterPrice = (
+    accessToken: string,
+    id: string,
+    data: any,
+) => {
+    return axios.put(`${API_GATEWAY_URL}/d/water-prices/${id}`, data, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
+};
+
+export const deleteWaterPrice = (accessToken: string, id: string) => {
+    return axios.delete(`${API_GATEWAY_URL}/d/water-prices/${id}`, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
+};

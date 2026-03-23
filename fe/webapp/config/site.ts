@@ -84,6 +84,11 @@ export const siteConfig = {
           label: "Quản lý Tham số kĩ thuật",
           href: "/parameters",
         },
+        {
+          key: "water-price",
+          label: "Quản lý Giá nước",
+          href: "/water-price",
+        },
       ],
     },
 
