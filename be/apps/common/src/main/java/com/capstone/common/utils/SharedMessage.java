@@ -24,4 +24,5 @@ public class SharedMessage {
   public static final String MES_21 = "Mã đơn không được để trống";
   public static final String MES_22 = "Người đại diện không được để trống";
   public static final String MES_23 = "Bạn không có quyền thực hiện tác vụ này";
+  public static final String MES_24 = "Đơn lắp đặt với số đơn %s và mã đơn %s không tồn tại";
 }

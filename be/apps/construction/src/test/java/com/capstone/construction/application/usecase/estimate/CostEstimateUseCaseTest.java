@@ -7,6 +7,7 @@ import com.capstone.construction.application.dto.request.estimate.UpdateRequest;
 import com.capstone.construction.application.dto.response.estimate.CostEstimateResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.application.event.producer.MessageProducer;
+import com.capstone.construction.application.usecase.CostEstimateUseCase;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
 import com.capstone.construction.infrastructure.service.EmployeeService;
 import com.capstone.common.enumerate.RoleName;
@@ -51,32 +52,38 @@ class CostEstimateUseCaseTest {
 
   @BeforeEach
   void setUp() {
-    ReflectionTestUtils.setField(costEstimateUseCase, "PREFIX", ".PREFIX.");
-    ReflectionTestUtils.setField(costEstimateUseCase, "CREATE_ACTION", "CREATE");
+    ReflectionTestUtils.setField(costEstimateUseCase, "COST_ESTIMATE_PREFIX", ".ESTIMATE.");
+    ReflectionTestUtils.setField(costEstimateUseCase, "FINANCE_PREFIX", ".FINANCE.");
     ReflectionTestUtils.setField(costEstimateUseCase, "UPDATE_ACTION", "UPDATE");
     ReflectionTestUtils.setField(costEstimateUseCase, "APPROVE_ACTION", "APPROVE");
+    ReflectionTestUtils.setField(costEstimateUseCase, "REQUIRE_SIGNIFICANCE_ACTION", "SIGN");
+    ReflectionTestUtils.setField(costEstimateUseCase, "VIEW_ACTION", "VIEW");
     ReflectionTestUtils.setField(costEstimateUseCase, "QUEUE_NAME", "QUEUE");
 
     var formCode = "FOR-001";
     var formNumber = "NUM-001";
     createRequest = new CreateRequest(
-      "Customer Name", "Address", LocalDate.now(), "user-123", formCode, formNumber);
+      "Customer Name", "Address", LocalDateTime.now(), "user-123", formCode, formNumber, "OWM-123");
 
     updateRequest = new UpdateRequest(
-      "Name", "Addr", "Note", 100, 100, 1, 100, 1, 1, 1, 1, 1, 1, 100, null, "SN", "METER", true);
+      new UpdateRequest.GeneralInformation(
+        "Name", "Addr", "Note", 100, 100, 1, 100, 1, 1, 1, 1, 1, 1, 100, null, "SN", "METER"
+      ),
+      Collections.emptyList(),
+      true);
 
     mockResponse = new CostEstimateResponse(
-      "id-123", "Customer Name", "Address", "Note", 1000, 500, 1, 2000, 10, 5, 10, 5, 10, 2, 100, "url",
-      LocalDateTime.now(), LocalDateTime.now(), LocalDate.now(), "user-123", "SN123", "METER-123",
-      new InstallationFormId(formCode, formNumber));
+      new CostEstimateResponse.GeneralInformation(
+        "id-123", "Customer Name", "Address", "Note", 1000, 500, 1, 2000, 10, 5, 10, 5, 10, 2, 100, "url",
+        LocalDateTime.now(), LocalDateTime.now(), LocalDate.now(), "user-123", "SN123", "METER-123",
+        new InstallationFormId(formCode, formNumber)),
+      Collections.emptyList());
   }
 
   @Test
   void should_CreateEstimate_When_InstallationFormExists() {
     // Arrange
     when(estSrv.createEstimate(createRequest)).thenReturn(mockResponse);
-    when(empSrv.getEmployeeNameById(anyString()))
-      .thenReturn(new WrapperApiResponse(200, "Success", "data", LocalDateTime.now()));
 
     // Act
     var response = costEstimateUseCase.createEstimate(createRequest);
@@ -84,7 +91,6 @@ class CostEstimateUseCaseTest {
     // Assert
     assertNotNull(response);
     verify(estSrv).createEstimate(createRequest);
-    verify(messageProducer).send(anyString(), any());
   }
 
   @Test
@@ -129,7 +135,7 @@ class CostEstimateUseCaseTest {
 
     // Assert
     assertNotNull(response);
-    assertEquals("id-123", response.estimationId());
+    assertEquals("id-123", response.generalInformation().estimationId());
   }
 
   @Test
@@ -198,6 +204,7 @@ class CostEstimateUseCaseTest {
 
     // Assert
     verify(estSrv).signForCostEstimate("sign-data", RoleName.SURVEY_STAFF, "EST001");
+    verify(messageProducer).send(anyString(), isNull());
   }
 
   @Test
@@ -213,6 +220,7 @@ class CostEstimateUseCaseTest {
 
     // Assert
     verify(estSrv).signForCostEstimate("sign-data", RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD, "EST001");
+    verify(messageProducer).send(anyString(), isNull());
   }
 
   @Test
@@ -228,6 +236,7 @@ class CostEstimateUseCaseTest {
 
     // Assert
     verify(estSrv).signForCostEstimate("sign-data", RoleName.COMPANY_LEADERSHIP, "EST001");
+    verify(messageProducer).send(anyString(), isNull());
   }
 
   @Test

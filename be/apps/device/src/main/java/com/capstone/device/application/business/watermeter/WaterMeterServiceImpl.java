@@ -1,8 +1,8 @@
 package com.capstone.device.application.business.watermeter;
 
 import com.capstone.device.application.dto.request.WaterMeterRequest;
-import com.capstone.device.application.dto.response.OverallWaterMeterResponse;
-import com.capstone.device.application.dto.response.WaterMeterResponse;
+import com.capstone.device.application.dto.response.water.OverallWaterMeterResponse;
+import com.capstone.device.application.dto.response.water.WaterMeterResponse;
 import com.capstone.device.domain.model.OverallWaterMeter;
 import com.capstone.device.domain.model.WaterMeter;
 import com.capstone.device.infrastructure.persistence.OverallWaterMeterRepository;

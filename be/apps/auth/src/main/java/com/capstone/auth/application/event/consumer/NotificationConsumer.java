@@ -81,6 +81,8 @@ public class NotificationConsumer {
         RoleName.ORDER_RECEIVING_STAFF);
       case "/construction" -> List.of(RoleName.CONSTRUCTION_DEPARTMENT_HEAD, RoleName.CONSTRUCTION_DEPARTMENT_STAFF);
       case "/business" -> List.of(RoleName.BUSINESS_DEPARTMENT_HEAD, RoleName.METER_INSPECTION_STAFF);
+      case "/business/staff" -> List.of(RoleName.METER_INSPECTION_STAFF);
+      case "/business/head" -> List.of(RoleName.BUSINESS_DEPARTMENT_HEAD);
       case "/it" -> List.of(RoleName.IT_STAFF);
       case "/finance" -> List.of(RoleName.FINANCE_DEPARTMENT);
       case "/leadership" -> List.of(RoleName.COMPANY_LEADERSHIP);

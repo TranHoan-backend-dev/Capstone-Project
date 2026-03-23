@@ -1,7 +1,7 @@
 import type { OrderStatus, OrderStage } from "@/types";
 
 export const STAGES: { key: OrderStage; label: string }[] = [
-  { key: "register", label: "Đăng ký" },
+  { key: "registration", label: "Đăng ký" },
   { key: "estimate", label: "Dự toán" },
   { key: "construction", label: "Thi công" },
   { key: "contract", label: "Hợp đồng" },

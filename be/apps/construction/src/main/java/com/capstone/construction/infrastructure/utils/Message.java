@@ -3,7 +3,7 @@ package com.capstone.construction.infrastructure.utils;
 public final class Message {
   public static final String PT_01 = "Thôn/Làng %s đã tồn tại";
   public static final String PT_02 = "Nhân viên chi nhánh Xây lắp không được để trống";
-  public static final String PT_03 = "Trạng thái xử lý không được để trống";
+  public static final String PT_03 = "Không tìm thấy quyết toán";
   public static final String PT_04 = "Ngày đăng ký không được để trống";
   public static final String PT_05 = "Định dạng ngày không hợp lệ";
   public static final String PT_06 = "Loại khách hàng không được để trống";
@@ -38,9 +38,9 @@ public final class Message {
   public static final String PT_35 = "Nhân viên này không tồn tại";
   public static final String PT_36 = "Nhân viên phòng Kế hoạch - Kỹ thuật lập phiếu lắp đặt không được để trống";
   public static final String PT_37 = "Id của đồng hồ tổng không được để trống";
-  public static final String PT_38 = "Id của hợp đồng không được để trống";
+  public static final String PT_38 = "Không tìm thấy đơn lắp đặt";
   public static final String PT_39 = "Ngày đăng ký không được để trống";
-  public static final String PT_40 = "Id của nhân viên phụ trách không được để trống";
+  public static final String PT_40 = "Đơn lắp đặt không được để trống";
   public static final String PT_41 = "Phiếu lắp đặt không được để trống";
   public static final String PT_42 = "Số biên lai không được để trống";
   public static final String PT_43 = "Ngày thanh toán không được để trống";
@@ -60,9 +60,11 @@ public final class Message {
   public static final String PT_57 = "Tên chi nhánh cấp nước đã tồn tại";
   public static final String PT_58 = "Không tìm thấy đồng hồ tổng";
   public static final String PT_59 = "Không tìm thấy nhân viên";
-  public static final String PT_60 = "Đơn lắp đặt với số đơn %s và mã đơn %s không tồn tại";
+  public static final String PT_60 = "Tổng số tiền không được để trống";
   public static final String PT_61 = "Dự toán với id %s không tồn tại";
   public static final String PT_62 = "Thôn/Làng với id %s không tìm thấy";
   public static final String PT_63 = "Thôn/Làng với tên %s đã tồn tại";
   public static final String PT_64 = "Chữ ký không được bỏ trống";
+  public static final String PT_65 = "Tổng số tiền ghi bằng chữ không được bỏ trống";
+  public static final String PT_66 = "Lý do nôp không được bỏ trống";
 }

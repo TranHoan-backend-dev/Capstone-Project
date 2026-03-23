@@ -22,6 +22,11 @@ export const siteConfig = {
           href: "/departments",
         },
         {
+          key: "employees",
+          label: "Quản lý Nhân viên",
+          href: "/employees",
+        },
+        {
           key: "jobs",
           label: "Quản lý Công việc",
           href: "/jobs",
@@ -37,6 +42,11 @@ export const siteConfig = {
           href: "/neighborhood-units",
         },
         {
+          key: "hamlets",
+          label: "Quản lý Thôn/làng",
+          href: "/hamlets",
+        },
+        {
           key: "roads",
           label: "Quản lý Đường phố",
           href: "/roads",
@@ -49,6 +59,16 @@ export const siteConfig = {
       key: "device",
       label: "Thiết bị",
       items: [
+        {
+          key: "materials-prices",
+          label: "Quản lý Đơn giá vật tư",
+          href: "/materials-prices",
+        },
+        {
+          key: "materials-group",
+          label: "Quản lý Nhóm vật tư",
+          href: "/materials-group",
+        },
         {
           key: "units",
           label: "Quản lý Đơn vị tính",

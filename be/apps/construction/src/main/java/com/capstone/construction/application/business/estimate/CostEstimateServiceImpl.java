@@ -5,16 +5,20 @@ import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.common.enumerate.RoleName;
 import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.common.utils.SharedConstant;
+import com.capstone.common.utils.SharedMessage;
+import com.capstone.common.request.BaseMaterial;
 import com.capstone.construction.application.dto.request.estimate.CreateRequest;
 import com.capstone.construction.application.dto.request.estimate.UpdateRequest;
 import com.capstone.construction.application.dto.response.estimate.CostEstimateResponse;
+import com.capstone.construction.application.dto.response.estimate.MaterialsOfCostEstimateResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.domain.model.CostEstimate;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
+import com.capstone.construction.domain.model.utils.significance.CostEstimateSignificance;
 import com.capstone.construction.infrastructure.persistence.CostEstimateRepository;
 import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
 import com.capstone.construction.infrastructure.service.GcsService;
-import com.capstone.construction.infrastructure.service.OverallWaterMeterService;
+import com.capstone.construction.infrastructure.service.DeviceService;
 import com.capstone.construction.infrastructure.utils.Message;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +34,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @AppLog
 @Service
@@ -39,7 +45,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   CostEstimateRepository eRepo;
   InstallationFormRepository ifRepo;
   GcsService gcsService;
-  OverallWaterMeterService owmSrv;
+  DeviceService deviceSrv;
   @NonFinal
   Logger log;
 
@@ -48,7 +54,8 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   public CostEstimateResponse createEstimate(@NonNull CreateRequest request) {
     log.info("Creating new cost estimate for customer: {}", request.customerName());
     var installationForm = ifRepo.findById(new InstallationFormId(request.formCode(), request.formNumber()))
-      .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_60, request.formCode(), request.formNumber())));
+      .orElseThrow(() -> new IllegalArgumentException(
+        String.format(SharedMessage.MES_24, request.formCode(), request.formNumber())));
 
     var est = eRepo.existsByInstallationForm(installationForm);
     if (est) {
@@ -61,8 +68,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
       .registrationAt(LocalDate.from(request.registrationAt()))
       .createBy(request.createBy())
       .installationForm(installationForm)
-      .overallWaterMeterId(request.overallWaterMeterId())
-    );
+      .overallWaterMeterId(request.overallWaterMeterId()));
 
     var saved = eRepo.save(estimate);
 
@@ -71,7 +77,13 @@ public class CostEstimateServiceImpl implements CostEstimateService {
     status.setEstimate(ProcessingStatus.PROCESSING);
     ifRepo.save(installationForm);
 
-    return mapToResponse(saved);
+    var materials = getMaterials(null);
+    var response = deviceSrv.updateMaterialsOfCostEstimate(estimate.getEstimationId(), materials);
+    if (response.status() != 200) {
+      throw new IllegalArgumentException(response.message());
+    }
+
+    return mapToResponse(saved, materials);
   }
 
   @Override
@@ -81,79 +93,89 @@ public class CostEstimateServiceImpl implements CostEstimateService {
     var estimate = eRepo.findById(id)
       .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_61, id)));
 
-    if (request.customerName() != null && !request.customerName().isBlank()) {
-      estimate.setCustomerName(request.customerName());
+    var generalInformation = request.generalInformation();
+
+    // <editor-fold> desc="setter for general information"
+    if (generalInformation.customerName() != null && !generalInformation.customerName().isBlank()) {
+      estimate.setCustomerName(generalInformation.customerName());
     }
-    if (request.address() != null && !request.address().isBlank()) {
-      estimate.setAddress(request.address());
+    if (generalInformation.address() != null && !generalInformation.address().isBlank()) {
+      estimate.setAddress(generalInformation.address());
     }
-    if (request.note() != null && !request.note().isBlank()) {
-      estimate.setNote(request.note());
+    if (generalInformation.note() != null && !generalInformation.note().isBlank()) {
+      estimate.setNote(generalInformation.note());
     }
-    if (request.contractFee() != null) {
-      estimate.setContractFee(request.contractFee());
+    if (generalInformation.contractFee() != null) {
+      estimate.setContractFee(generalInformation.contractFee());
     }
-    if (request.surveyFee() != null) {
-      estimate.setSurveyFee(request.surveyFee());
+    if (generalInformation.surveyFee() != null) {
+      estimate.setSurveyFee(generalInformation.surveyFee());
     }
-    if (request.surveyEffort() != null) {
-      estimate.setSurveyEffort(request.surveyEffort());
+    if (generalInformation.surveyEffort() != null) {
+      estimate.setSurveyEffort(generalInformation.surveyEffort());
     }
-    if (request.installationFee() != null) {
-      estimate.setInstallationFee(request.installationFee());
+    if (generalInformation.installationFee() != null) {
+      estimate.setInstallationFee(generalInformation.installationFee());
     }
-    if (request.laborCoefficient() != null) {
-      estimate.setLaborCoefficient(request.laborCoefficient());
+    if (generalInformation.laborCoefficient() != null) {
+      estimate.setLaborCoefficient(generalInformation.laborCoefficient());
     }
-    if (request.generalCostCoefficient() != null) {
-      estimate.setGeneralCostCoefficient(request.generalCostCoefficient());
+    if (generalInformation.generalCostCoefficient() != null) {
+      estimate.setGeneralCostCoefficient(generalInformation.generalCostCoefficient());
     }
-    if (request.precalculatedTaxCoefficient() != null) {
-      estimate.setPrecalculatedTaxCoefficient(request.precalculatedTaxCoefficient());
+    if (generalInformation.precalculatedTaxCoefficient() != null) {
+      estimate.setPrecalculatedTaxCoefficient(generalInformation.precalculatedTaxCoefficient());
     }
-    if (request.constructionMachineryCoefficient() != null) {
-      estimate.setConstructionMachineryCoefficient(request.constructionMachineryCoefficient());
+    if (generalInformation.constructionMachineryCoefficient() != null) {
+      estimate.setConstructionMachineryCoefficient(generalInformation.constructionMachineryCoefficient());
     }
-    if (request.vatCoefficient() != null) {
-      estimate.setVatCoefficient(request.vatCoefficient());
+    if (generalInformation.vatCoefficient() != null) {
+      estimate.setVatCoefficient(generalInformation.vatCoefficient());
     }
-    if (request.designCoefficient() != null) {
-      estimate.setDesignCoefficient(request.designCoefficient());
+    if (generalInformation.designCoefficient() != null) {
+      estimate.setDesignCoefficient(generalInformation.designCoefficient());
     }
-    if (request.designFee() != null) {
-      estimate.setDesignFee(request.designFee());
+    if (generalInformation.designFee() != null) {
+      estimate.setDesignFee(generalInformation.designFee());
     }
-    if (request.designImage() != null) {
-      var url = gcsService.upload(request.designImage());
+    if (generalInformation.designImage() != null) {
+      var url = gcsService.upload(generalInformation.designImage());
       estimate.setDesignImageUrl(url);
     }
-    if (request.waterMeterSerial() != null && !request.waterMeterSerial().isBlank()) {
-      var meterStatus = owmSrv.isMeterExisting(request.waterMeterSerial())
-        .data().toString();
-      if (Boolean.parseBoolean(meterStatus)) {
+    if (generalInformation.waterMeterSerial() != null && !generalInformation.waterMeterSerial().isBlank()) {
+      var meterStatus = deviceSrv.isMeterExisting(generalInformation.waterMeterSerial());
+      if (!meterStatus) {
         throw new IllegalArgumentException("Đồng hồ nước không tồn tại");
       }
-      estimate.setWaterMeterSerial(request.waterMeterSerial());
+      estimate.setWaterMeterSerial(generalInformation.waterMeterSerial());
     }
-    if (request.overallWaterMeterId() != null && !request.overallWaterMeterId().isBlank()) {
-      var overallMeterStatus = owmSrv.isOverallMeterExisting(request.overallWaterMeterId())
+    if (generalInformation.overallWaterMeterId() != null && !generalInformation.overallWaterMeterId().isBlank()) {
+      var overallMeterStatus = deviceSrv.isOverallMeterExisting(generalInformation.overallWaterMeterId())
         .data().toString();
-      if (Boolean.parseBoolean(overallMeterStatus)) {
-        throw new IllegalArgumentException("Đồng hồ nước không tồn tại");
+      if (!Boolean.parseBoolean(overallMeterStatus)) {
+        throw new IllegalArgumentException("Đồng hồ tổng không tồn tại");
       }
-      estimate.setOverallWaterMeterId(request.overallWaterMeterId());
+      estimate.setOverallWaterMeterId(generalInformation.overallWaterMeterId());
     }
+    // </editor-fold>
 
     var saved = eRepo.save(estimate);
-    return mapToResponse(saved);
+    var response = deviceSrv.updateMaterialsOfCostEstimate(estimate.getEstimationId(), request.material());
+    if (response.status() != 200) {
+      throw new IllegalArgumentException(response.message());
+    }
+    var materials = deviceSrv.getMaterialsOfCostEstimate(estimate.getEstimationId());
+
+    return mapToResponse(saved, mapMaterials(materials));
   }
 
   @Override
   public CostEstimateResponse getEstimateById(String id) {
     log.info("Fetching cost estimate with id: {}", id);
-    return eRepo.findById(id)
-      .map(this::mapToResponse)
+    var costEst = eRepo.findById(id)
       .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_61, id)));
+    var materials = deviceSrv.getMaterialsOfCostEstimate(id);
+    return mapToResponse(costEst, mapMaterials(materials));
   }
 
   @Override
@@ -168,9 +190,9 @@ public class CostEstimateServiceImpl implements CostEstimateService {
       CostEstimateRepository.search(
         keyword,
         startDate,
-        endDate
-      ), pageable) : eRepo.findAll(pageable);
-    return PageResponse.fromPage(page, this::mapToResponse);
+        endDate),
+      pageable) : eRepo.findAll(pageable);
+    return PageResponse.fromPage(page, estimate -> mapToResponse(estimate, getMaterials(estimate.getEstimationId())));
   }
 
   @Override
@@ -188,6 +210,12 @@ public class CostEstimateServiceImpl implements CostEstimateService {
     var costEstimate = eRepo.findById(estimateId)
       .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_61, estimateId)));
     var costEstSignificance = costEstimate.getSignificance();
+
+    if (costEstSignificance == null) {
+      costEstSignificance = new CostEstimateSignificance();
+      costEstimate.setSignificance(costEstSignificance);
+    }
+
     switch (role) {
       case COMPANY_LEADERSHIP -> costEstSignificance.setCompanyLeaderShip(significance);
       case SURVEY_STAFF -> costEstSignificance.setSurveyStaff(significance);
@@ -217,30 +245,73 @@ public class CostEstimateServiceImpl implements CostEstimateService {
     return LocalDate.parse(to, DateTimeFormatter.ofPattern(SharedConstant.DATE_PATTERN)).atTime(LocalTime.MAX);
   }
 
-  private @NonNull CostEstimateResponse mapToResponse(@NonNull CostEstimate estimate) {
+  private List<BaseMaterial> mapMaterials(List<MaterialsOfCostEstimateResponse> materials) {
+    if (materials == null) {
+      return new ArrayList<>();
+    }
+    return materials.stream().map(m -> new BaseMaterial(
+      m.id(),
+      m.jobContent(),
+      m.note(),
+      m.unitName(),
+      m.reductionCoefficient() != null ? m.reductionCoefficient().toString() : null,
+      m.mass() != null ? m.mass().toString() : null,
+      m.materialCost(),
+      m.laborPrice(),
+      m.laborPriceAtRuralCommune(),
+      m.totalMaterialCost(),
+      m.totalLaborCost())).toList();
+  }
+
+  private @NonNull CostEstimateResponse mapToResponse(
+    @NonNull CostEstimate estimate, List<BaseMaterial> material
+  ) {
     return new CostEstimateResponse(
-      estimate.getEstimationId(),
-      estimate.getCustomerName(),
-      estimate.getAddress(),
-      estimate.getNote(),
-      estimate.getContractFee(),
-      estimate.getSurveyFee(),
-      estimate.getSurveyEffort(),
-      estimate.getInstallationFee(),
-      estimate.getLaborCoefficient(),
-      estimate.getGeneralCostCoefficient(),
-      estimate.getPrecalculatedTaxCoefficient(),
-      estimate.getConstructionMachineryCoefficient(),
-      estimate.getVatCoefficient(),
-      estimate.getDesignCoefficient(),
-      estimate.getDesignFee(),
-      estimate.getDesignImageUrl(),
-      estimate.getCreatedAt(),
-      estimate.getUpdatedAt(),
-      estimate.getRegistrationAt(),
-      estimate.getCreateBy(),
-      estimate.getWaterMeterSerial(),
-      estimate.getOverallWaterMeterId(),
-      estimate.getInstallationForm().getId());
+      new CostEstimateResponse.GeneralInformation(
+        estimate.getEstimationId(),
+        estimate.getCustomerName(),
+        estimate.getAddress(),
+        estimate.getNote(),
+        estimate.getContractFee(),
+        estimate.getSurveyFee(),
+        estimate.getSurveyEffort(),
+        estimate.getInstallationFee(),
+        estimate.getLaborCoefficient(),
+        estimate.getGeneralCostCoefficient(),
+        estimate.getPrecalculatedTaxCoefficient(),
+        estimate.getConstructionMachineryCoefficient(),
+        estimate.getVatCoefficient(),
+        estimate.getDesignCoefficient(),
+        estimate.getDesignFee(),
+        estimate.getDesignImageUrl(),
+        estimate.getCreatedAt(),
+        estimate.getUpdatedAt(),
+        estimate.getRegistrationAt(),
+        estimate.getCreateBy(),
+        estimate.getWaterMeterSerial(),
+        estimate.getOverallWaterMeterId(),
+        estimate.getInstallationForm().getId()),
+      material);
+  }
+
+  private @NonNull ArrayList<BaseMaterial> getMaterials(String id) {
+    var defaultMaterials = id == null ? deviceSrv.getDefaultMaterials() : deviceSrv.getMaterialsOfCostEstimate(id);
+    var materials = new ArrayList<BaseMaterial>();
+    defaultMaterials.forEach(defaultMaterial -> {
+      var m = new BaseMaterial(
+        defaultMaterial.id(),
+        defaultMaterial.jobContent(),
+        defaultMaterial.note(),
+        defaultMaterial.unitName(),
+        defaultMaterial.reductionCoefficient().toString(),
+        defaultMaterial.mass().toString(),
+        defaultMaterial.materialCost(),
+        defaultMaterial.laborPrice(),
+        defaultMaterial.laborPriceAtRuralCommune(),
+        defaultMaterial.totalMaterialCost(),
+        defaultMaterial.totalLaborCost());
+      materials.add(m);
+    });
+    return materials;
   }
 }
