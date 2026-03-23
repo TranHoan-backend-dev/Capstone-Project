@@ -3,7 +3,6 @@ package com.capstone.organization.dto.request.page;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 
 @Schema(description = "Request to update an existing business page")
 public record UpdateBusinessPageRequest(

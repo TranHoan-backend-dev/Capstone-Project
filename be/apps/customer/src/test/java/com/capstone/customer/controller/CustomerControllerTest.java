@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -107,7 +108,7 @@ class CustomerControllerTest {
     ResponseEntity<WrapperApiResponse> response = customerController.deleteCustomer(id);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(response.getBody().message()).isEqualTo("Xóa khách hàng thành công");
+    assertThat(Objects.requireNonNull(response.getBody()).message()).isEqualTo("Xóa khách hàng thành công");
 
     verify(customerService).deleteCustomer(id);
   }
@@ -121,7 +122,7 @@ class CustomerControllerTest {
     ResponseEntity<WrapperApiResponse> response = customerController.getCustomerById(id);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(response.getBody().data()).isEqualTo(customerResponse);
+    assertThat(Objects.requireNonNull(response.getBody()).data()).isEqualTo(customerResponse);
     assertThat(response.getBody().message()).isEqualTo("Lấy thông tin khách hàng thành công");
 
     verify(customerService).getCustomerById(id);
@@ -137,7 +138,7 @@ class CustomerControllerTest {
     ResponseEntity<WrapperApiResponse> response = customerController.getAllCustomers(pageable, null);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(response.getBody().data()).isEqualTo(page);
+    assertThat(Objects.requireNonNull(response.getBody()).data()).isEqualTo(page);
     assertThat(response.getBody().message()).isEqualTo("Lấy danh sách khách hàng thành công");
 
     verify(customerService).getAllCustomers(eq(pageable), any());

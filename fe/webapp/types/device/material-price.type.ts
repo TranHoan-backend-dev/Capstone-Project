@@ -2,8 +2,10 @@ export interface MaterialPriceItem {
   stt: string;
   id: string;
   laborCode: string;
+  unitId?: string;
   unitName: string;
-  groupName: number;
+  groupId?: string;
+  groupName: string;
   jobContent: string;
   price: string;
   laborPrice: string;
@@ -13,25 +15,17 @@ export interface MaterialPriceItem {
 }
 
 export interface MaterialPriceFormProps {
-  initialData?: {
-    id?: string;
-    name?: string;
-  };
+  initialData?: MaterialPriceItem;
   onSuccess: () => void;
   onClose: () => void;
 }
 
 export interface MaterialPriceFilter {
-  materialCode?: string;
-  symbol?: string;
-  name?: string;
-  unit?: string;
-  group?: string;
-  price?: string;
-  laborPrice?: string;
-  laborPriceDistrict?: string;
-  machinePrice?: string;
-  machinePriceDistrict?: string;
+  laborCode?: string;
+  jobContent?: string;
+  groupId?: string;
+  minPrice?: string;
+  maxPrice?: string;
 }
 
 export interface FilterSectionMaterialPriceProps {
@@ -50,8 +44,10 @@ export interface MaterialPriceTableProps {
 export interface MaterialPriceResponse {
   id: string;
   laborCode: string;
+  unitId?: string;
   unitName: string;
-  groupName: number;
+  groupId?: string;
+  groupName: string;
   jobContent: string;
   price: string;
   laborPrice: string;

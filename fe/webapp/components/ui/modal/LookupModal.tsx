@@ -9,10 +9,12 @@ interface LookupModalProps<T> {
   isOpen: boolean;
   onClose: () => void;
   onSelect: (item: T) => void;
+
   dataKey?: string;
   title: string;
   api: string;
   columns: { key: string; label: string }[];
+
   mapData: (item: any, index: number, page: number) => T;
   searchKey?: string;
   enableSearch?: boolean;
@@ -46,6 +48,7 @@ export function LookupModal<T extends { id: string }>({
         page: String(page - 1),
         size: String(pageSize),
       });
+
       if (enableSearch && search) {
         params.append(searchKey, search);
       }
@@ -76,10 +79,10 @@ export function LookupModal<T extends { id: string }>({
     <Modal isOpen={isOpen} onClose={onClose} size="4xl">
       <ModalContent>
         <GenericDataTable
+          isLoading={loading}
           title={title}
           columns={columns}
           data={data}
-          isLoading={loading}
           search={
             enableSearch
               ? {
@@ -97,17 +100,19 @@ export function LookupModal<T extends { id: string }>({
             onChange: setPage,
             summary: `${data.length}`,
           }}
-          renderCellAction={(item, columnKey) => (
-            <span
-              className="cursor-pointer text-blue-600"
-              onClick={() => {
-                onSelect(item);
-                onClose();
-              }}
-            >
-              {item[columnKey as keyof T] as React.ReactNode}
-            </span>
-          )}
+          renderCellAction={(item, columnKey) => {
+            return (
+              <span
+                className="cursor-pointer text-blue-600"
+                onClick={() => {
+                  onSelect(item);
+                  onClose();
+                }}
+              >
+                {item[columnKey as keyof T] as React.ReactNode}
+              </span>
+            );
+          }}
         />
       </ModalContent>
     </Modal>

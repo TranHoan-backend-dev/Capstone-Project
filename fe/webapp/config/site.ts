@@ -42,6 +42,11 @@ export const siteConfig = {
           href: "/neighborhood-units",
         },
         {
+          key: "hamlets",
+          label: "Quản lý Thôn/làng",
+          href: "/hamlets",
+        },
+        {
           key: "roads",
           label: "Quản lý Đường phố",
           href: "/roads",
@@ -54,6 +59,11 @@ export const siteConfig = {
       key: "device",
       label: "Thiết bị",
       items: [
+        {
+          key: "water-meter-type",
+          label: "Quản lý Loại đồng hồ nước",
+          href: "/water-meter-type",
+        },
         {
           key: "materials-prices",
           label: "Quản lý Đơn giá vật tư",
@@ -68,6 +78,16 @@ export const siteConfig = {
           key: "units",
           label: "Quản lý Đơn vị tính",
           href: "/units",
+        },
+        {
+          key: "parameters",
+          label: "Quản lý Tham số kĩ thuật",
+          href: "/parameters",
+        },
+        {
+          key: "water-price",
+          label: "Quản lý Giá nước",
+          href: "/water-price",
         },
       ],
     },

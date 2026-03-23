@@ -5,52 +5,40 @@ import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { FilterActionButton } from "@/components/ui/FilterActionButton";
 import { SearchIcon } from "@/components/ui/Icons";
 import CustomInput from "@/components/ui/custom/CustomInput";
-import CustomSelect from "@/components/ui/custom/CustomSelect";
 import FilterButton from "@/components/ui/FilterButton";
 import { AddNewIcon } from "@/config/chip-and-icon";
 import { FilterSectionMaterialPriceProps } from "@/types";
-
-const unitOptions = [
-  { label: "Kg", value: "kg" },
-  { label: "m", value: "m" },
-  { label: "Cái", value: "piece" },
-];
-
-const groupOptions = [
-  { label: "Ống", value: "pipe" },
-  { label: "Phụ kiện", value: "accessory" },
-];
+import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
+import { LookupModal } from "@/components/ui/modal/LookupModal";
 
 export const FilterSection = ({
   onSearch,
   onAddNew,
 }: FilterSectionMaterialPriceProps) => {
-  const [materialCode, setMaterialCode] = useState("");
-  const [symbol, setSymbol] = useState("");
-  const [name, setName] = useState("");
+  const [laborCode, setLaborCode] = useState("");
+  const [jobContent, setJobContent] = useState("");
 
-  const [unit, setUnit] = useState(new Set<string>());
-  const [group, setGroup] = useState(new Set<string>());
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
 
-  const [price, setPrice] = useState("");
-  const [laborPrice, setLaborPrice] = useState("");
-  const [laborPriceDistrict, setLaborPriceDistrict] = useState("");
-  const [machinePrice, setMachinePrice] = useState("");
-  const [machinePriceDistrict, setMachinePriceDistrict] = useState("");
+  const [showGroupModal, setShowGroupModal] = useState(false);
+  const [selectedGroupName, setSelectedGroupName] = useState("");
+  const [selectedGroupId, setSelectedGroupId] = useState("");
 
   const handleSearch = () => {
     onSearch({
-      materialCode,
-      symbol,
-      name,
-      unit: Array.from(unit)[0] || "",
-      group: Array.from(group)[0] || "",
-      price,
-      laborPrice,
-      laborPriceDistrict,
-      machinePrice,
-      machinePriceDistrict,
+      laborCode,
+      jobContent,
+      groupId: selectedGroupId,
+      minPrice,
+      maxPrice,
     });
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
   };
 
   return (
@@ -72,60 +60,63 @@ export const FilterSection = ({
         </div>
       }
     >
-      <div className="space-y-6">
+      <div className="space-y-6" onKeyDown={handleKeyDown}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <CustomInput
             label="Mã hiệu nhân công"
-            value={symbol}
-            onChange={(e) => setSymbol(e.target.value)}
+            value={laborCode}
+            onChange={(e) => setLaborCode(e.target.value)}
           />
+
           <CustomInput
             label="Nội dung"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={jobContent}
+            onChange={(e) => setJobContent(e.target.value)}
           />
-          <CustomInput
-            label="Giá vật tư"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <CustomInput
-            label="Giá nhân công"
-            value={laborPrice}
-            onChange={(e) => setLaborPrice(e.target.value)}
-          />
-          <CustomSelect
+          <SearchInputWithButton
             label="Nhóm vật tư"
-            selectedKeys={group}
-            onSelectionChange={setGroup}
-            options={groupOptions}
+            value={selectedGroupName}
+            onSearch={() => setShowGroupModal(true)}
+            onChange={(e) => {
+              setSelectedGroupName(e.target.value);
+
+              if (!e.target.value) {
+                setSelectedGroupId("");
+              }
+            }}
           />
-          <CustomInput
-            label="Giá máy thi công"
-            value={machinePrice}
-            onChange={(e) => setMachinePrice(e.target.value)}
+          <LookupModal
+            isOpen={showGroupModal}
+            onClose={() => setShowGroupModal(false)}
+            title="Chọn nhóm vật tư"
+            api="/api/device/materials-group"
+            columns={[
+              { key: "stt", label: "STT" },
+              { key: "name", label: "Tên nhóm" },
+            ]}
+            mapData={(item, index, page) => ({
+              stt: index + 1,
+              id: item.groupId,
+              name: item.name,
+            })}
+            onSelect={(item) => {
+              setSelectedGroupId(item.id);
+              setSelectedGroupName(item.name);
+            }}
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <CustomInput
-            label="Giá nhân công huyện"
-            value={laborPriceDistrict}
-            onChange={(e) => setLaborPriceDistrict(e.target.value)}
+            label="Giá từ"
+            value={minPrice}
+            onChange={(e) => setMinPrice(e.target.value)}
           />
-          <CustomSelect
-            label="Đơn vị tính"
-            selectedKeys={unit}
-            onSelectionChange={setUnit}
-            options={unitOptions}
-          />
+
           <CustomInput
-            label="Giá máy thi công huyện"
-            value={machinePriceDistrict}
-            onChange={(e) => setMachinePriceDistrict(e.target.value)}
+            label="Giá đến"
+            value={maxPrice}
+            onChange={(e) => setMaxPrice(e.target.value)}
           />
         </div>
       </div>

@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAccessToken } from "@/utils/getAccessToken";
 import { updateAvatar } from "@/services/auth.service";
-
-export async function PUT(req: NextRequest) {
+export async function PATCH(req: NextRequest) {
   try {
     const accessToken = getAccessToken(req);
     if (!accessToken) {
@@ -12,20 +11,24 @@ export async function PUT(req: NextRequest) {
     const formData = await req.formData();
     const avatar = formData.get("avatar");
 
-    if (!(avatar instanceof File)) {
+    if (!avatar) {
       return NextResponse.json(
         { message: "Avatar file is required" },
         { status: 400 },
       );
     }
 
-    const data = await updateAvatar(avatar, accessToken);
+    const file = avatar as Blob;
 
-    return NextResponse.json(data, { status: 200 });
+    const backendForm = new FormData();
+    backendForm.append("avatar", file);
+
+    const data = await updateAvatar(backendForm, accessToken);
+
+    return NextResponse.json(data);
   } catch (error: any) {
-    console.error("Upload avatar error:", error?.response?.data || error);
     return NextResponse.json(
-      { message: "Internal server error" },
+      { error: error?.response?.data || "Internal server error" },
       { status: 500 },
     );
   }
