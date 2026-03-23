@@ -1,4 +1,4 @@
-import { getAllMaterials } from "@/services/device.service";
+import { getAllParams } from "@/services/device.service";
 import { getAccessToken } from "@/utils/getAccessToken";
 import { NextRequest } from "next/dist/server/web/spec-extension/request";
 import { NextResponse } from "next/server";
@@ -14,11 +14,14 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const page = Number(searchParams.get("page") ?? 0);
     const size = Number(searchParams.get("size") ?? 10);
-    const response = await getAllMaterials(accessToken, page, size);
+    const sort = searchParams.get("sort") || "createdAt,desc";
+    const filter = searchParams.get("filter") || undefined;
+
+    const response = await getAllParams(accessToken, page, size, sort, filter);
 
     return NextResponse.json(
       {
-        message: "Lấy danh sách đơn giá vật tư thành công",
+        message: "Lấy danh sách tham số thành công",
         data: response.data.data,
       },
       { status: 200 },

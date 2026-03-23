@@ -3,36 +3,29 @@
 import React, { useState } from "react";
 
 import { Spinner } from "@heroui/react";
-import { CommuneTable } from "./components/commune-table";
+import { ParameterTable } from "./components/parameter-table";
 import { FilterSection } from "./components/filter-section";
-import { CommuneForm } from "./components/commune-form";
-import { CommuneFilter, CommuneItem } from "@/types";
+import { ParameterForm } from "./components/parameter-form";
+import { ParameterItem } from "@/types";
 import { Modal, ModalContent } from "@heroui/react";
 import { useEmployeeProfile } from "@/hooks/useEmployeeProfile";
 
-const CommunePage = () => {
-  const [keyword, setKeyword] = useState<CommuneFilter>({
-    name: "",
-    type: "",
-  });
-  const [showAddForm, setShowAddForm] = useState(false);
+const ParameterPage = () => {
+  const [filter, setFilter] = useState("");
+  const [showForm, setShowForm] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
-  const [editingItem, setEditingItem] = useState<CommuneItem | null>(null);
-  const handleReload = () => setReloadKey((prev) => prev + 1);
+  const [editingItem, setEditingItem] = useState<ParameterItem | null>(null);
   const { profile, loading } = useEmployeeProfile();
 
-  const handleAddNew = () => {
-    setEditingItem(null);
-    setShowAddForm(true);
-  };
+  const handleReload = () => setReloadKey((prev) => prev + 1);
 
-  const handleEdit = (item: CommuneItem) => {
+  const handleEdit = (item: ParameterItem) => {
     setEditingItem(item);
-    setShowAddForm(true);
+    setShowForm(true);
   };
 
   const handleCloseForm = () => {
-    setShowAddForm(false);
+    setShowForm(false);
     setEditingItem(null);
   };
 
@@ -40,7 +33,6 @@ const CommunePage = () => {
     handleReload();
     handleCloseForm();
   };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -55,24 +47,19 @@ const CommunePage = () => {
       </div>
     );
   }
-
   return (
     <>
-      <FilterSection
-        keyword={keyword}
-        onSearch={setKeyword}
-        onAddNew={handleAddNew}
-      />
+      <FilterSection filter={filter} onSearch={setFilter} />
 
       <Modal
-        isOpen={showAddForm}
+        isOpen={showForm}
         onClose={handleCloseForm}
         size="3xl"
         placement="top-center"
         scrollBehavior="inside"
       >
         <ModalContent>
-          <CommuneForm
+          <ParameterForm
             key={editingItem?.id || "create"}
             initialData={editingItem || undefined}
             onSuccess={handleSuccess}
@@ -81,14 +68,13 @@ const CommunePage = () => {
         </ModalContent>
       </Modal>
 
-      <CommuneTable
-        filter={keyword}
+      <ParameterTable
+        filter={filter}
         reloadKey={reloadKey}
         onEdit={handleEdit}
-        onDeleted={handleReload}
       />
     </>
   );
 };
 
-export default CommunePage;
+export default ParameterPage;

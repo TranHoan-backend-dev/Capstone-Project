@@ -74,6 +74,11 @@ export const siteConfig = {
           label: "Quản lý Đơn vị tính",
           href: "/units",
         },
+        {
+          key: "parameters",
+          label: "Quản lý Tham số kĩ thuật",
+          href: "/parameters",
+        },
       ],
     },
 

@@ -52,20 +52,37 @@ export const deleteUnit = (accessToken: string, id: string) => {
   });
 };
 
-export const getAllMaterials = (
+export const getAllParams = (
   accessToken: string,
   page: number,
   size: number,
+  sort: string,
+  filter?: string | null,
 ) =>
-  axios.get(`${API_GATEWAY_URL}/d/materials`, {
+  axios.get(`${API_GATEWAY_URL}/d/params`, {
     params: {
       page,
       size,
+      sort,
+      filter,
     },
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
   });
+
+export const updateParam = (
+  accessToken: string,
+  id: string,
+  name: string,
+  value: number,
+) =>
+  axios.put(`${API_GATEWAY_URL}/d/params/${id}`, { name, value }, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
 
 export const createMaterial = (
   accessToken: string,
@@ -107,6 +124,21 @@ export const deleteMaterial = (accessToken: string, id: string) => {
     },
   });
 };
+
+export const getAllMaterials = (
+  accessToken: string,
+  page: number,
+  size: number,
+) =>
+  axios.get(`${API_GATEWAY_URL}/d/materials`, {
+    params: {
+      page,
+      size,
+    },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
 
 export const getAllMaterialsGroup = (
   accessToken: string,
