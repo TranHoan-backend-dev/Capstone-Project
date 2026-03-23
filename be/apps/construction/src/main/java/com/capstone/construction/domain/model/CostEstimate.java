@@ -1,6 +1,6 @@
 package com.capstone.construction.domain.model;
 
-import com.capstone.construction.domain.model.utils.Significance;
+import com.capstone.construction.domain.model.utils.significance.CostEstimateSignificance;
 import jakarta.persistence.*;
 import com.capstone.common.utils.SharedMessage;
 import com.capstone.construction.infrastructure.utils.Message;
@@ -36,40 +36,28 @@ public class CostEstimate implements Serializable {
 
   String note;
 
-  @Column(nullable = false)
   Integer contractFee;
 
-  @Column(nullable = false)
   Integer surveyFee;
 
-  @Column(nullable = false)
   Integer surveyEffort;
 
-  @Column(nullable = false)
   Integer installationFee;
 
-  @Column(nullable = false)
   Integer laborCoefficient;
 
-  @Column(nullable = false)
   Integer generalCostCoefficient;
 
-  @Column(nullable = false)
   Integer precalculatedTaxCoefficient;
 
-  @Column(nullable = false)
   Integer constructionMachineryCoefficient;
 
-  @Column(nullable = false)
   Integer vatCoefficient;
 
-  @Column(nullable = false)
   Integer designCoefficient;
 
-  @Column(nullable = false)
   Integer designFee;
 
-  @Column(nullable = false)
   String designImageUrl;
 
   @Column(nullable = false)
@@ -84,7 +72,6 @@ public class CostEstimate implements Serializable {
   @Column(nullable = false)
   String createBy; // reference to Users, describe which employee has been processing
 
-  @Column(nullable = false)
   String waterMeterSerial;
 
   @Column(nullable = false)
@@ -95,7 +82,7 @@ public class CostEstimate implements Serializable {
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(columnDefinition = "jsonb")
-  Significance significance;
+  CostEstimateSignificance significance;
 
   @PrePersist
   void onCreate() {
@@ -114,12 +101,12 @@ public class CostEstimate implements Serializable {
     this.registrationAt = value;
   }
 
-  public void setInstallationFormId(InstallationForm value) {
+  public void setInstallationForm(InstallationForm value) {
     Objects.requireNonNull(value, Message.PT_41);
     this.installationForm = value;
   }
 
-  public void setSignificance(Significance value) {
+  public void setSignificance(CostEstimateSignificance value) {
     Objects.requireNonNull(value, Message.PT_64);
     this.significance = value;
   }
@@ -302,8 +289,8 @@ public class CostEstimate implements Serializable {
       return this;
     }
 
-    public EstimationBuilder installationFormId(InstallationForm value) {
-      instance.setInstallationFormId(value);
+    public EstimationBuilder installationForm(InstallationForm value) {
+      instance.setInstallationForm(value);
       return this;
     }
 

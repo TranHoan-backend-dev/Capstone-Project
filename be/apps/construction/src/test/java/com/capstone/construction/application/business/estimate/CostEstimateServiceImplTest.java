@@ -11,7 +11,7 @@ import com.capstone.construction.domain.model.utils.InstallationFormId;
 import com.capstone.construction.infrastructure.persistence.CostEstimateRepository;
 import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
 import com.capstone.construction.infrastructure.service.GcsService;
-import com.capstone.construction.infrastructure.service.OverallWaterMeterService;
+import com.capstone.construction.infrastructure.service.DeviceService;
 import com.capstone.common.response.WrapperApiResponse;
 
 import java.time.LocalDateTime;
@@ -28,7 +28,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.mock.web.MockMultipartFile;
 
-import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,7 +49,7 @@ class CostEstimateServiceImplTest {
   private GcsService gcsService;
 
   @Mock
-  private OverallWaterMeterService owmSrv;
+  private DeviceService owmSrv;
 
   @InjectMocks
   private CostEstimateServiceImpl costEstimateService;
@@ -67,45 +67,35 @@ class CostEstimateServiceImplTest {
     createRequest = new CreateRequest(
       "Customer Name",
       "Address",
-      "Note",
-      1000,
-      500,
-      1,
-      2000,
-      10,
-      5,
-      10,
-      5,
-      10,
-      2,
-      100,
-      "http://image.url",
-      LocalDate.now(),
+      LocalDateTime.now(),
       "user-123",
-      "SN123",
-      "METER-123",
       formCode,
-      formNumber
+      formNumber,
+      "METER-123"
     );
 
     updateRequest = new UpdateRequest(
-      "Updated Name",
-      "Updated Address",
-      "Updated Note",
-      1200,
-      600,
-      2,
-      2200,
-      15,
-      6,
-      10,
-      6,
-      10,
-      3,
-      120,
-      null,
-      "SN123-UPDATED",
-      "METER-123-UPDATED"
+      new UpdateRequest.GeneralInformation(
+        "Updated Name",
+        "Updated Address",
+        "Updated Note",
+        1200,
+        600,
+        2,
+        2200,
+        15,
+        6,
+        10,
+        6,
+        10,
+        3,
+        120,
+        null,
+        "SN123-UPDATED",
+        "METER-123-UPDATED"
+      ),
+      Collections.emptyList(),
+      true
     );
 
     installationForm = new InstallationForm();
@@ -115,25 +105,11 @@ class CostEstimateServiceImplTest {
     costEstimate = CostEstimate.create(b -> b
       .customerName(createRequest.customerName())
       .address(createRequest.address())
-      .contractFee(createRequest.contractFee())
-      .surveyFee(createRequest.surveyFee())
-      .surveyEffort(createRequest.surveyEffort())
-      .installationFee(createRequest.installationFee())
-      .laborCoefficient(createRequest.laborCoefficient())
-      .generalCostCoefficient(createRequest.generalCostCoefficient())
-      .precalculatedTaxCoefficient(createRequest.precalculatedTaxCoefficient())
-      .constructionMachineryCoefficient(createRequest.constructionMachineryCoefficient())
-      .vatCoefficient(createRequest.vatCoefficient())
-      .designCoefficient(createRequest.designCoefficient())
-      .designFee(createRequest.designFee())
-      .designImageUrl(createRequest.designImageUrl())
-      .registrationAt(createRequest.registrationAt())
+      .registrationAt(createRequest.registrationAt().toLocalDate())
       .createBy(createRequest.createBy())
-      .waterMeterSerial(createRequest.waterMeterSerial())
       .overallWaterMeterId(createRequest.overallWaterMeterId())
-      .installationFormId(installationForm)
+      .installationForm(installationForm)
     );
-    // Reflection or setter to set ID if needed, but here we mock saved object
   }
 
   @Test
@@ -141,19 +117,18 @@ class CostEstimateServiceImplTest {
     // Arrange
     installationForm.setStatus(new FormProcessingStatus(ProcessingStatus.PROCESSING, ProcessingStatus.PENDING_FOR_APPROVAL, ProcessingStatus.PENDING_FOR_APPROVAL, ProcessingStatus.PENDING_FOR_APPROVAL));
 
-    when(ifRepo.findById(new InstallationFormId(formNumber, formCode))).thenReturn(Optional.of(installationForm));
-    when(owmSrv.isOverallMeterExisting(createRequest.overallWaterMeterId()))
-      .thenReturn(new WrapperApiResponse(200, "Success", "false", LocalDateTime.now()));
-    when(owmSrv.isMeterExisting(createRequest.waterMeterSerial()))
-      .thenReturn(new WrapperApiResponse(200, "Success", "false", LocalDateTime.now()));
+    when(ifRepo.findById(new InstallationFormId(formCode, formNumber))).thenReturn(Optional.of(installationForm));
+    when(eRepo.existsByInstallationForm(installationForm)).thenReturn(false);
     when(eRepo.save(any(CostEstimate.class))).thenReturn(costEstimate);
+    when(owmSrv.updateMaterialsOfCostEstimate(any(), any())).thenReturn(new WrapperApiResponse(200, "Success", null, LocalDateTime.now()));
+    when(owmSrv.getDefaultMaterials()).thenReturn(Collections.emptyList());
 
     // Act
     var response = costEstimateService.createEstimate(createRequest);
 
     // Assert
     assertNotNull(response);
-    assertEquals(createRequest.customerName(), response.customerName());
+    assertEquals(createRequest.customerName(), response.generalInformation().customerName());
     verify(eRepo).save(any(CostEstimate.class));
     verify(ifRepo).save(any(InstallationForm.class));
     assertEquals(ProcessingStatus.PROCESSING, installationForm.getStatus().getEstimate());
@@ -162,7 +137,7 @@ class CostEstimateServiceImplTest {
   @Test
   void should_ThrowException_When_InstallationFormNotFoundDuringCreation() {
     // Arrange
-    when(ifRepo.findById(new InstallationFormId(formNumber, formCode))).thenReturn(Optional.empty());
+    when(ifRepo.findById(new InstallationFormId(formCode, formNumber))).thenReturn(Optional.empty());
 
     // Act & Assert
     assertThrows(IllegalArgumentException.class, () -> costEstimateService.createEstimate(createRequest));
@@ -173,10 +148,12 @@ class CostEstimateServiceImplTest {
     // Arrange
     when(eRepo.findById(estimateId)).thenReturn(Optional.of(costEstimate));
     when(owmSrv.isOverallMeterExisting("METER-123-UPDATED"))
-      .thenReturn(new WrapperApiResponse(200, "Success", "false", LocalDateTime.now()));
+      .thenReturn(new WrapperApiResponse(200, "Success", "true", LocalDateTime.now()));
     when(owmSrv.isMeterExisting("SN123-UPDATED"))
-      .thenReturn(new WrapperApiResponse(200, "Success", "false", LocalDateTime.now()));
+      .thenReturn(true);
     when(eRepo.save(any(CostEstimate.class))).thenReturn(costEstimate);
+    when(owmSrv.updateMaterialsOfCostEstimate(any(), any())).thenReturn(new WrapperApiResponse(200, "Success", null, LocalDateTime.now()));
+    when(owmSrv.getMaterialsOfCostEstimate(any())).thenReturn(Collections.emptyList());
 
     // Act
     var response = costEstimateService.updateEstimate(estimateId, updateRequest);
@@ -191,16 +168,22 @@ class CostEstimateServiceImplTest {
     // Arrange
     var image = new MockMultipartFile("designImage", "test.jpg", "image/jpeg", "test content".getBytes());
     var requestWithImage = new UpdateRequest(
-      "Name", "Addr", "Note", 100, 100, 1, 100, 1, 1, 1, 1, 1, 1, 100, image, "SN", "METER"
+      new UpdateRequest.GeneralInformation(
+        "Name", "Addr", "Note", 100, 100, 1, 100, 1, 1, 1, 1, 1, 1, 100, image, "SN", "METER"
+      ),
+      Collections.emptyList(),
+      true
     );
 
     when(eRepo.findById(estimateId)).thenReturn(Optional.of(costEstimate));
     when(owmSrv.isOverallMeterExisting("METER"))
-      .thenReturn(new WrapperApiResponse(200, "Success", "false", LocalDateTime.now()));
+      .thenReturn(new WrapperApiResponse(200, "Success", "true", LocalDateTime.now()));
     when(owmSrv.isMeterExisting("SN"))
-      .thenReturn(new WrapperApiResponse(200, "Success", "false", LocalDateTime.now()));
+      .thenReturn(true);
     when(gcsService.upload(image)).thenReturn("http://new-image.url");
     when(eRepo.save(any(CostEstimate.class))).thenReturn(costEstimate);
+    when(owmSrv.updateMaterialsOfCostEstimate(any(), any())).thenReturn(new WrapperApiResponse(200, "Success", null, LocalDateTime.now()));
+    when(owmSrv.getMaterialsOfCostEstimate(any())).thenReturn(Collections.emptyList());
 
     // Act
     costEstimateService.updateEstimate(estimateId, requestWithImage);
@@ -223,13 +206,14 @@ class CostEstimateServiceImplTest {
   void should_GetEstimateById_When_Found() {
     // Arrange
     when(eRepo.findById(estimateId)).thenReturn(Optional.of(costEstimate));
+    when(owmSrv.getMaterialsOfCostEstimate(estimateId)).thenReturn(Collections.emptyList());
 
     // Act
     var response = costEstimateService.getEstimateById(estimateId);
 
     // Assert
     assertNotNull(response);
-    assertEquals(costEstimate.getCustomerName(), response.customerName());
+    assertEquals(costEstimate.getCustomerName(), response.generalInformation().customerName());
   }
 
   @Test
@@ -249,6 +233,7 @@ class CostEstimateServiceImplTest {
     Page<CostEstimate> page = new PageImpl<>(List.of(costEstimate));
 
     when(eRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(page);
+    when(owmSrv.getMaterialsOfCostEstimate(any())).thenReturn(Collections.emptyList());
 
     // Act
     var response = costEstimateService.getAllEstimates(pageable, filter);
@@ -265,6 +250,7 @@ class CostEstimateServiceImplTest {
     Page<CostEstimate> page = new PageImpl<>(List.of(costEstimate));
 
     when(eRepo.findAll(pageable)).thenReturn(page);
+    when(owmSrv.getMaterialsOfCostEstimate(any())).thenReturn(Collections.emptyList());
 
     // Act
     var response = costEstimateService.getAllEstimates(pageable, null);
@@ -274,3 +260,4 @@ class CostEstimateServiceImplTest {
     verify(eRepo).findAll(pageable);
   }
 }
+

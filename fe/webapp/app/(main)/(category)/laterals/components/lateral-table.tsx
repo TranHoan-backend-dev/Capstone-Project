@@ -196,7 +196,6 @@ export const LateralTable = ({
           onChange: setPage,
           summary: `${data.length}`,
         }}
-        sort={sort}
         onSortChange={handleSortChange}
       />
     </>

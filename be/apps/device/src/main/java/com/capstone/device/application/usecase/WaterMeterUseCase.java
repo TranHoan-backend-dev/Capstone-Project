@@ -1,7 +1,7 @@
 package com.capstone.device.application.usecase;
 
 import com.capstone.device.application.business.watermeter.WaterMeterService;
-import com.capstone.device.application.dto.response.OverallWaterMeterResponse;
+import com.capstone.device.application.dto.response.water.OverallWaterMeterResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

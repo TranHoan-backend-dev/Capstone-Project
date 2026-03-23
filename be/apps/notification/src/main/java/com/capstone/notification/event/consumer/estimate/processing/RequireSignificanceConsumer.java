@@ -1,7 +1,6 @@
 package com.capstone.notification.event.consumer.estimate.processing;
 
 import com.capstone.common.enumerate.RoleName;
-import com.capstone.notification.event.consumer.estimate.message.ApproveEventMessage;
 import com.capstone.notification.event.consumer.estimate.message.RequireSignificanceEvent;
 import com.capstone.notification.event.producer.MessageProducer;
 import com.capstone.notification.event.websocket.GeneralEventConsumer;
@@ -30,7 +29,7 @@ public class RequireSignificanceConsumer extends GeneralEventConsumer<RequireSig
         Topic.getTopicOfPlanningTechnicalDepartment(RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD, "/" + event.data.plHead()),
         Topic.getTopic(Topic.LEADERSHIP) + "/" + event.data.companyLeadership()
       ),
-      "Dự toán mới được trưởng phòng kiểm tra",
+      "Ký dự toán mới",
       null
     );
   }

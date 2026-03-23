@@ -5,7 +5,7 @@ import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
 import com.capstone.device.application.dto.request.metertype.CreateRequest;
 import com.capstone.device.application.dto.request.metertype.UpdateRequest;
-import com.capstone.device.application.dto.response.WaterMeterTypeResponse;
+import com.capstone.device.application.dto.response.water.WaterMeterTypeResponse;
 import com.capstone.device.application.usecase.MeterTypeUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -38,17 +38,17 @@ public class WaterMeterTypeController {
 
   @PostMapping
   @Operation(summary = "Tạo mới loại đồng hồ", description = """
-      **Luồng nghiệp vụ:**
-      1. Client gửi request chứa thông tin tạo mới loại đồng hồ.
-      2. Hệ thống validate DTO đầu vào.
-      3. Hệ thống kiểm tra quyền truy cập (Yêu cầu quyền 'IT_STAFF').
-      4. Gọi UseCase để xử lý logic lưu trữ dữ liệu.
-      5. Trả về response thành công hoặc lỗi tương ứng.
-      """, responses = {
-      @ApiResponse(responseCode = "201", description = "Tạo mới loại đồng hồ thành công"),
-      @ApiResponse(responseCode = "400", description = "Dữ liệu đầu vào không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-      @ApiResponse(responseCode = "403", description = "Truy cập bị từ chối", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-      @ApiResponse(responseCode = "500", description = "Lỗi hệ thống", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+    **Luồng nghiệp vụ:**
+    1. Client gửi request chứa thông tin tạo mới loại đồng hồ.
+    2. Hệ thống validate DTO đầu vào.
+    3. Hệ thống kiểm tra quyền truy cập (Yêu cầu quyền 'IT_STAFF').
+    4. Gọi UseCase để xử lý logic lưu trữ dữ liệu.
+    5. Trả về response thành công hoặc lỗi tương ứng.
+    """, responses = {
+    @ApiResponse(responseCode = "201", description = "Tạo mới loại đồng hồ thành công"),
+    @ApiResponse(responseCode = "400", description = "Dữ liệu đầu vào không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "403", description = "Truy cập bị từ chối", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "500", description = "Lỗi hệ thống", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PreAuthorize("hasAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> createType(@RequestBody @Valid CreateRequest request) {
@@ -60,16 +60,17 @@ public class WaterMeterTypeController {
 
   @PutMapping("/{id}")
   @Operation(summary = "Cập nhật loại đồng hồ", description = "Cập nhật thông tin chi tiết của loại đồng hồ hiện có", parameters = {
-      @Parameter(name = "id", description = "ID của loại đồng hồ cần cập nhật", required = true)
+    @Parameter(name = "id", description = "ID của loại đồng hồ cần cập nhật", required = true)
   }, responses = {
-      @ApiResponse(responseCode = "200", description = "Cập nhật thành công", content = @Content(schema = @Schema(implementation = WaterMeterTypeResponse.class))),
-      @ApiResponse(responseCode = "404", description = "Không tìm thấy loại đồng hồ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-      @ApiResponse(responseCode = "500", description = "Lỗi hệ thống", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+    @ApiResponse(responseCode = "200", description = "Cập nhật thành công", content = @Content(schema = @Schema(implementation = WaterMeterTypeResponse.class))),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy loại đồng hồ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "500", description = "Lỗi hệ thống", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PreAuthorize("hasAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> updateType(
-      @PathVariable @Parameter(description = "ID của loại đồng hồ cần cập nhật") String id,
-      @RequestBody @Valid UpdateRequest request) {
+    @PathVariable @Parameter(description = "ID của loại đồng hồ cần cập nhật") String id,
+    @RequestBody @Valid UpdateRequest request
+  ) {
     log.info("REST request to update water meter type: {}", id);
     var response = mtUseCase.updateMeterType(id, request);
     return Utils.returnOkResponse("Cập nhật chủng loại đồng hồ thành công", response);
@@ -77,15 +78,17 @@ public class WaterMeterTypeController {
 
   @DeleteMapping("/{id}")
   @Operation(summary = "Xóa loại đồng hồ", description = "Xóa bản ghi loại đồng hồ khỏi hệ thống", parameters = {
-      @Parameter(name = "id", description = "ID của loại đồng hồ cần xóa", required = true)
+    @Parameter(name = "id", description = "ID của loại đồng hồ cần xóa", required = true)
   }, responses = {
-      @ApiResponse(responseCode = "200", description = "Xóa thành công"),
-      @ApiResponse(responseCode = "404", description = "Không tìm thấy loại đồng hồ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-      @ApiResponse(responseCode = "500", description = "Lỗi hệ thống", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+    @ApiResponse(responseCode = "200", description = "Xóa thành công"),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy loại đồng hồ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "500", description = "Lỗi hệ thống", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PreAuthorize("hasAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> deleteType(
-      @PathVariable @Parameter(description = "ID của loại đồng hồ cần xóa") String id) {
+    @Parameter(description = "ID của loại đồng hồ cần xóa")
+    @PathVariable String id
+  ) {
     log.info("REST request to delete water meter type: {}", id);
     mtUseCase.deleteMeterType(id);
     return Utils.returnOkResponse("Xóa chủng loại đồng hồ thành công", null);
@@ -93,11 +96,13 @@ public class WaterMeterTypeController {
 
   @GetMapping("/{id}")
   @Operation(summary = "Lấy thông tin chi tiết loại đồng hồ", description = "Truy xuất thông tin chi tiết của một loại đồng hồ theo ID", responses = {
-      @ApiResponse(responseCode = "200", description = "Lấy thông tin thành công", content = @Content(schema = @Schema(implementation = WaterMeterTypeResponse.class))),
-      @ApiResponse(responseCode = "404", description = "Không tìm thấy loại đồng hồ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+    @ApiResponse(responseCode = "200", description = "Lấy thông tin thành công", content = @Content(schema = @Schema(implementation = WaterMeterTypeResponse.class))),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy loại đồng hồ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   public ResponseEntity<WrapperApiResponse> getTypeById(
-      @PathVariable @Parameter(description = "ID của loại đồng hồ cần lấy thông tin") String id) {
+    @Parameter(description = "ID của loại đồng hồ cần lấy thông tin")
+    @PathVariable String id
+  ) {
     log.info("REST request to get water meter type: {}", id);
     var response = mtUseCase.getMeterTypeById(id);
     return Utils.returnOkResponse("Lấy thông tin chủng loại đồng hồ thành công", response);

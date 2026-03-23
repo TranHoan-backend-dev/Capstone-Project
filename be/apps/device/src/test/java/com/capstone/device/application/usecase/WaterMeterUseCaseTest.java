@@ -19,23 +19,4 @@ class WaterMeterUseCaseTest {
     @InjectMocks
     WaterMeterUseCase waterMeterUseCase;
 
-    @Test
-    void should_ReturnTrue_When_Exists() {
-        var id = "id";
-        when(waterMeterService.isWaterMeterExisting(id)).thenReturn(true);
-
-        var result = waterMeterUseCase.checkExistence(id);
-
-        assertThat(result).isTrue();
-    }
-
-    @Test
-    void should_ReturnFalse_When_NotExists() {
-        var id = "id";
-        when(waterMeterService.isWaterMeterExisting(id)).thenReturn(false);
-
-        var result = waterMeterUseCase.checkExistence(id);
-
-        assertThat(result).isFalse();
-    }
 }

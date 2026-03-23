@@ -9,7 +9,7 @@ import com.capstone.construction.infrastructure.persistence.LateralRepository;
 import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRepository;
 import com.capstone.construction.application.exception.ExistingItemException;
 import com.capstone.construction.infrastructure.utils.Message;
-import com.capstone.construction.infrastructure.service.OverallWaterMeterService;
+import com.capstone.construction.infrastructure.service.DeviceService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -31,7 +31,7 @@ public class LateralServiceImpl implements LateralService {
   Logger log;
   LateralRepository lateralRepository;
   WaterSupplyNetworkRepository networkRepository;
-  OverallWaterMeterService metersService;
+  DeviceService metersService;
 
   @Override
   @Transactional(rollbackFor = Exception.class)
