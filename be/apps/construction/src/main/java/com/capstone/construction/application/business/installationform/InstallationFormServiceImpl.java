@@ -4,6 +4,8 @@ import com.capstone.common.annotation.AppLog;
 import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.common.utils.SharedMessage;
+import com.capstone.construction.application.business.estimate.CostEstimateService;
+import com.capstone.construction.application.dto.request.estimate.CreateRequest;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
@@ -40,6 +42,7 @@ import java.time.format.DateTimeFormatter;
 public class InstallationFormServiceImpl implements InstallationFormService {
   InstallationFormRepository ifRepo;
   WaterSupplyNetworkRepository wsnRepo;
+  CostEstimateService costEstimateService;
   EmployeeService empSrv;
   DeviceService owmSrv;
   @NonFinal
@@ -135,10 +138,11 @@ public class InstallationFormServiceImpl implements InstallationFormService {
 
   @Override
   @Transactional(rollbackFor = Exception.class)
-  public void approveAndAssignInstallationForm(@NonNull ApproveRequest request) {
+  public void approveInstallationForm(String userId, @NonNull ApproveRequest request) {
     log.info("Approving and assigning installation form with number: {}", request.formNumber());
     var order = ifRepo.findById(new InstallationFormId(request.formCode(), request.formNumber()))
       .orElseThrow(() -> new IllegalArgumentException(String.format(SharedMessage.MES_24, request.formNumber(), request.formCode())));
+
     // nvks chuyen tu don da duyet => don chua duyet
     if (request.status() == null) {
       var requestStatus = order.getStatus();
@@ -150,6 +154,17 @@ public class InstallationFormServiceImpl implements InstallationFormService {
         var requestStatus = order.getStatus();
         requestStatus.setRegistration(ProcessingStatus.APPROVED);
         requestStatus.setEstimate(ProcessingStatus.PENDING_FOR_APPROVAL);
+
+        // tao san du toan rong
+        costEstimateService.createEstimate(new CreateRequest(
+          order.getCustomerName(),
+          order.getAddress(),
+          LocalDateTime.now(),
+          userId,
+          order.getFormCode(),
+          order.getFormNumber(),
+          order.getOverallWaterMeterId()
+        ));
       } else {
         // nvks hủy đơn
         var status = order.getStatus();
