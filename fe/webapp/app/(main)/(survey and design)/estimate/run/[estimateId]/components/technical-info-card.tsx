@@ -306,9 +306,7 @@ export const TechnicalInfoCard = ({
                 const file = e.target.files?.[0];
                 if (!file) return;
                 setDesignImageFile(file);
-                // Hiển thị preview nếu cần
                 const previewUrl = URL.createObjectURL(file);
-                console.log("Selected file:", file.name, previewUrl);
               }}
             />
 
@@ -340,7 +338,6 @@ export const TechnicalInfoCard = ({
       icon={<SaveDocumentCheckIcon className="w-6 h-6" />}
       title="Lập hồ sơ kỹ thuật & chi phí vật tư"
     >
-      {/* Thông tin khách hàng & công trình */}
       <div className="lg:col-span-1 space-y-4">
         <h3
           className={`text-sm font-bold ${TitleDarkColor} uppercase tracking-wider`}
@@ -369,7 +366,6 @@ export const TechnicalInfoCard = ({
         />
       </div>
 
-      {/* Thông số kỹ thuật lắp đặt */}
       <div className="lg:col-span-2 space-y-4">
         <h3
           className={`text-sm font-bold ${TitleDarkColor} uppercase tracking-wider`}

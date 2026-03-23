@@ -54,19 +54,12 @@ export async function PUT(
     const { estimateId } = await params;
     const updateRequest = await req.json();
 
-    console.log(
-      "Received update request:",
-      JSON.stringify(updateRequest, null, 2),
-    );
-
     try {
       const response = await updateEstimate(
         accessToken,
         estimateId,
         updateRequest,
       );
-
-      console.log("Update estimate response:", response.data);
 
       return NextResponse.json(
         {
@@ -76,12 +69,6 @@ export async function PUT(
         { status: 200 },
       );
     } catch (axiosError: any) {
-      console.error("Axios error details:", {
-        status: axiosError.response?.status,
-        data: axiosError.response?.data,
-        message: axiosError.message,
-      });
-
       return NextResponse.json(
         {
           message:
@@ -92,7 +79,6 @@ export async function PUT(
       );
     }
   } catch (error: any) {
-    console.error("Error in PUT handler:", error);
     return NextResponse.json(
       {
         message: error?.message ?? "Internal Server Error",
