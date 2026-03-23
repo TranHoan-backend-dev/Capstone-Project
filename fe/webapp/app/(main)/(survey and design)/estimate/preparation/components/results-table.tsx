@@ -54,6 +54,9 @@ export const ResultsTable = ({ keyword, from, to }: ResultsTableProps) => {
     field: "createdAt",
     direction: "desc",
   });
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+
   const mapEstimateToModalData = (item: EstimateItem) => {
     return {
       code: item.formNumber,
@@ -70,10 +73,7 @@ export const ResultsTable = ({ keyword, from, to }: ResultsTableProps) => {
       note: "",
     };
   };
-  const [page, setPage] = useState(1);
-  const pageSize = 10;
 
-  const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
     setLoading(true);
 
@@ -109,7 +109,7 @@ export const ResultsTable = ({ keyword, from, to }: ResultsTableProps) => {
             id: info.estimationId,
             formCode: info.installationFormId?.formCode,
             formNumber: info.installationFormId?.formNumber,
-
+            note: info.note,
             customerName: info.customerName,
             address: info.address,
             registerDate: new Date(info.createdAt).toLocaleDateString("vi-VN"),

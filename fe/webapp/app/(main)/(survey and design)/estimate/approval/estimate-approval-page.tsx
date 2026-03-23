@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Tab, Tabs, Chip, DateValue } from "@heroui/react";
 
 import { ApprovalInputSection } from "./components/approval-input-section";
@@ -19,88 +19,90 @@ const EstimateApprovalPage = () => {
   const [approvalNote, setApprovalNote] = useState("");
   const [activeTab, setActiveTab] = useState<string>("pending");
 
-  // Mock Data
-  const mockData: EstimateOrder[] = [
-    {
-      id: 1,
-      code: "DT-2024-001",
-      designProfileName: "Hệ thống điện mặt trời 5kW\nNguyễn Văn Minh",
-      phone: "0912345678",
-      installationAddress: "123 Nguyễn Trãi, Q.1, TP.HCM",
-      totalAmount: "125,000,000 ₫",
-      createdDate: "15/01/2024",
-      creator: "Trần Thị B",
-      status: "pending",
-    },
-    {
-      id: 2,
-      code: "DT-2024-002",
-      designProfileName: "Lắp đặt điện năng lượng 10kW\nLê Thị Hoa",
-      phone: "0987654321",
-      installationAddress: "456 Lê Lợi, Quận 3, TP.HCM",
-      totalAmount: "125,000,000 ₫",
-      createdDate: "14/01/2024",
-      creator: "Lê Văn C",
-      status: "pending",
-    },
-    {
-      id: 3,
-      code: "DT-2024-003",
-      designProfileName: "Hệ thống điện mặt trời 7.5kW\nPhạm Văn Đức",
-      phone: "0901234567",
-      installationAddress: "789 Cách Mạng Tháng 8, Q.10",
-      totalAmount: "125,000,000 ₫",
-      createdDate: "13/01/2024",
-      creator: "Trần Thị B",
-      status: "pending",
-    },
-    {
-      id: 4,
-      code: "DT-2024-004",
-      designProfileName: "Điện năng lượng mặt trời 3kW\nHoàng Thị Mai",
-      phone: "0933445566",
-      installationAddress: "234 Võ Văn Tần, Q.3, TP.HCM",
-      totalAmount: "78,500,000 ₫",
-      createdDate: "12/01/2024",
-      creator: "Lê Văn C",
-      status: "pending",
-    },
-    {
-      id: 5,
-      code: "DT-2024-005",
-      designProfileName: "Hệ thống năng lượng 12kW\nVũ Minh Tuấn",
-      phone: "0977889900",
-      installationAddress: "567 Điện Biên Phủ, Bình Thạnh",
-      totalAmount: "125,000,000 ₫",
-      createdDate: "11/01/2024",
-      creator: "Trần Thị B",
-      status: "pending",
-    },
-    {
-      id: 6,
-      code: "DT-2024-006",
-      designProfileName: "Hệ thống điện mặt trời 20kW\nNguyễn Văn An",
-      phone: "0912999888",
-      installationAddress: "123 Đường Láng, Hà Nội",
-      totalAmount: "250,000,000 ₫",
-      createdDate: "10/01/2024",
-      creator: "Trần Thị B",
-      status: "approved",
-    },
-    {
-      id: 7,
-      code: "DT-2024-007",
-      designProfileName: "Điện năng lượng 15kW\nPhạm Thị Cúc",
-      phone: "0987111222",
-      installationAddress: "456 Cầu Giấy, Hà Nội",
-      totalAmount: "180,000,000 ₫",
-      createdDate: "09/01/2024",
-      creator: "Lê Văn C",
-      status: "approved",
-    },
-  ];
+  const mapStatus = (status: string): "pending" | "approved" | "rejected" => {
+    switch (status) {
+      case "APPROVED":
+        return "approved";
+      case "REJECTED":
+        return "rejected";
+      default:
+        return "pending";
+    }
+  };
 
-  const [orders, setOrders] = useState<EstimateOrder[]>(mockData);
+  const [orders, setOrders] = useState<EstimateOrder[]>([]);
+  const [data, setData] = useState<EstimateOrder[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [sort, setSort] = useState<{
+    field: string;
+    direction: "asc" | "desc";
+  }>({
+    field: "createdAt",
+    direction: "desc",
+  });
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const params = new URLSearchParams({
+          page: String(page - 1),
+          size: String(pageSize),
+          sort: `${sort.field},${sort.direction}`,
+        });
+        const res = await fetch(
+          `/api/construction/estimates?${params.toString()}`,
+        );
+        const json = await res.json();
+
+        const items = json?.data?.content ?? [];
+
+        const mapped: EstimateOrder[] = await Promise.all(
+          items.map(async (item: any) => {
+            const info = item.generalInformation;
+            const form = info.installationFormId;
+
+            let creatorName = info.createBy;
+
+            try {
+              const res = await fetch(
+                `/api/auth/employees/${info.createBy}/name`,
+              );
+              const nameJson = await res.json();
+              creatorName = nameJson?.data || info.createBy;
+            } catch (e) {
+              console.error("Fetch employee name failed");
+            }
+
+            return {
+              id: info.estimationId,
+              code: form?.formNumber,
+              designProfileName: info.customerName,
+              phone: item.phoneNumber,
+              installationAddress: info.address,
+              totalAmount: "0",
+              createdDate: new Date(info.createdAt).toLocaleDateString("vi-VN"),
+              creator: creatorName,
+              status: mapStatus(item.status?.estimate),
+            };
+          }),
+        );
+
+        setOrders(mapped);
+        setTotalPages(json?.data?.totalPages ?? 1);
+        setTotalItems(json?.data?.totalElements ?? 0);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [page, sort]);
 
   const filteredOrders = useMemo(() => {
     let filtered = orders;
@@ -201,6 +203,11 @@ const EstimateApprovalPage = () => {
           <EstimateTable
             activeTab="pending"
             data={filteredOrders}
+            loading={loading}
+            page={page}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            onPageChange={setPage}
             onApproveAction={handleApprove}
             onEstimateAction={handleEstimate}
             onRejectAction={handleReject}
@@ -221,6 +228,11 @@ const EstimateApprovalPage = () => {
           <EstimateTable
             activeTab="approved"
             data={filteredOrders}
+            loading={loading}
+            page={page}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            onPageChange={setPage}
             onApproveAction={handleApprove}
             onEstimateAction={handleEstimate}
             onRejectAction={handleReject}

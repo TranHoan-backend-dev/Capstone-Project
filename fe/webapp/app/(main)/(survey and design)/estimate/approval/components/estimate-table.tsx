@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Tooltip } from "@heroui/react";
 
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
@@ -21,7 +21,7 @@ export interface EstimateOrder {
   designProfileName: string;
   phone: string;
   installationAddress: string;
-  totalAmount: string; // Formatted string or number
+  totalAmount: string;
   createdDate: string;
   creator: string;
   status: "pending" | "approved" | "rejected";
@@ -29,22 +29,33 @@ export interface EstimateOrder {
 
 interface EstimateTableProps {
   data: EstimateOrder[];
-  activeTab: string; // "pending" or "approved"
+  loading?: boolean;
+
+  page: number;
+  totalPages: number;
+  totalItems: number;
+
+  onPageChange: (page: number) => void;
   onApproveAction: (item: EstimateOrder) => void;
   onRejectAction: (item: EstimateOrder) => void;
   onViewAction: (item: EstimateOrder) => void;
   onEstimateAction: (item: EstimateOrder) => void;
+
+  activeTab?: "pending" | "approved";
 }
 
 export const EstimateTable = ({
   data,
+  loading = false,
+  page,
+  totalPages,
+  totalItems,
+  onPageChange,
   onApproveAction,
   onRejectAction,
   onViewAction,
   onEstimateAction,
 }: EstimateTableProps) => {
-
-  
   const columns = [
     { key: "stt", label: "STT", align: "center", width: "50px" },
     { key: "code", label: "Mã đơn", align: "start" },
@@ -120,18 +131,21 @@ export const EstimateTable = ({
     <GenericDataTable
       columns={columns as any}
       data={data}
-      headerSummary={data.length.toString()}
-      isCollapsible={false}
+      // isCollapsible={false}
+      isCollapsible
       paginationProps={{
-        total: Math.ceil(data.length / 5),
-        page: 1,
-        summary: `1-5 trong tổng số ${data.length}`,
+        total: totalPages,
+        page: page,
+        onChange: onPageChange,
+        summary: `${totalItems}`,
       }}
       renderCellAction={renderCell}
       tableProps={{
         selectionMode: "none",
       }}
       title=""
+      isLoading={loading}
+      headerSummary={`${totalItems}`}
     />
   );
 };

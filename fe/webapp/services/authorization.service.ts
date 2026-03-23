@@ -34,3 +34,10 @@ export const getSurveyStaff = (
       Authorization: `Bearer ${accessToken}`,
     },
   });
+
+export const getEmployeeById = (accessToken: string, id: string) =>
+  axios.get(`${API_GATEWAY_URL}/auth/authorization/employees/${id}/name`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });

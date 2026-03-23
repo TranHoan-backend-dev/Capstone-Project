@@ -2,10 +2,9 @@ export interface EstimateItem {
   id: string;
   formCode: string;
   formNumber: string;
-
+  note: string;
   customerName: string;
   address: string;
-
   registerDate: string;
 }
 
@@ -187,7 +186,7 @@ export interface UpdateEstimateRequest {
     designImage?: string; // URL sau khi upload
     waterMeterSerial?: string;
     overallWaterMeterId?: string;
-    designImageUrl?:string;
+    designImageUrl?: string;
   };
   material?: Array<{
     materialCode: string;

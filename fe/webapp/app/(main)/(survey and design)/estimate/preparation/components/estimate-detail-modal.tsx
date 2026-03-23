@@ -38,7 +38,7 @@ export const EstimateDetailModal = ({ isOpen, onClose, data }: any) => {
               value={data.registerDate}
             />
 
-            <InfoRow
+            {/* <InfoRow
               label="Trạng thái"
               value={
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 text-green-700 rounded-md">
@@ -46,7 +46,7 @@ export const EstimateDetailModal = ({ isOpen, onClose, data }: any) => {
                   {data.status}
                 </span>
               }
-            />
+            /> */}
 
             <div className="border-t border-gray-200 my-4" />
 
