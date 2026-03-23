@@ -62,9 +62,15 @@ rabbit-mq-config:
     - road
     - installation-form
     - cost-estimate
+    - receipt
+    - finance
+    - construction-request
+    - roadmap
   actions:
     - update
     - delete
     - create
     - approve
     - assign
+    - require-significance
+    - view

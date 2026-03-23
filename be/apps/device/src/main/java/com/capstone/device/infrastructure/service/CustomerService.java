@@ -20,4 +20,10 @@ public interface CustomerService {
    */
   @GetMapping("/water-price/{price}")
   WrapperApiResponse checkWhetherCustomersAreApplied(@PathVariable("price") @NonNull String waterPriceId);
+
+  @GetMapping("/{id}")
+  WrapperApiResponse getCustomerById(@PathVariable("id") @NonNull String customerId);
+
+  @GetMapping("/meter/{meterId}")
+  String getCustomerIdByMeterId(@PathVariable String meterId);
 }

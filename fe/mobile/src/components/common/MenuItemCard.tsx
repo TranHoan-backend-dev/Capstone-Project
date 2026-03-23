@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Card, Text } from 'react-native-paper';
+import { View, StyleSheet, Pressable } from 'react-native';
+import { Text } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface Props {
@@ -13,18 +13,16 @@ interface Props {
 const MenuItemCard = ({
   icon,
   label,
-  color = '#1E88E5',
+  color = '#2563EB',
   onPress,
 }: Props) => {
   return (
-    <Card style={styles.card} onPress={onPress}>
-      <View style={styles.content}>
-        <View style={[styles.iconWrapper, { backgroundColor: `${color}20` }]}>
-          <Icon name={icon} size={28} color={color} />
-        </View>
-        <Text style={styles.label}>{label}</Text>
+    <Pressable style={styles.card} onPress={onPress}>
+      <View style={styles.iconWrapper}>
+        <Icon name={icon} size={32} color={color} />
       </View>
-    </Card>
+      <Text style={styles.label}>{label}</Text>
+    </Pressable>
   );
 };
 
@@ -32,25 +30,24 @@ export default MenuItemCard;
 
 const styles = StyleSheet.create({
   card: {
-    width: '30%',
-    margin: '1.66%',
-    borderRadius: 10,
-    elevation: 2,
-  },
-  content: {
-    paddingVertical: 16,
+    width: '33.33%',
     alignItems: 'center',
+    marginBottom: 24,
   },
   iconWrapper: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 64,
+    height: 64,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 8,
   },
   label: {
-    fontSize: 12,
+    fontSize: 13,
+    color: '#333333',
     textAlign: 'center',
   },
 });

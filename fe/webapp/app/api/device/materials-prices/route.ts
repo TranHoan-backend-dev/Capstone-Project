@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
     });
     return NextResponse.json(
       {
-        message: "Lấy danh sách nhóm vật tư thành công",
+        message: "Lấy danh sách đơn giá vật tư thành công",
         data: response.data.data,
       },
       { status: 200 },

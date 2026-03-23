@@ -22,6 +22,11 @@ export const siteConfig = {
           href: "/departments",
         },
         {
+          key: "employees",
+          label: "Quản lý Nhân viên",
+          href: "/employees",
+        },
+        {
           key: "jobs",
           label: "Quản lý Công việc",
           href: "/jobs",
@@ -30,6 +35,16 @@ export const siteConfig = {
           key: "communes",
           label: "Quản lý Phường/xã",
           href: "/communes",
+        },
+        {
+          key: "neighborhood-units",
+          label: "Quản lý Tổ/Khu phố",
+          href: "/neighborhood-units",
+        },
+        {
+          key: "hamlets",
+          label: "Quản lý Thôn/làng",
+          href: "/hamlets",
         },
         {
           key: "roads",
@@ -58,6 +73,11 @@ export const siteConfig = {
           key: "units",
           label: "Quản lý Đơn vị tính",
           href: "/units",
+        },
+        {
+          key: "parameters",
+          label: "Quản lý Tham số kĩ thuật",
+          href: "/parameters",
         },
       ],
     },

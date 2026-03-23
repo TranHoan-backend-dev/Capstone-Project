@@ -216,7 +216,6 @@ export const UnitTable = ({
           onChange: setPage,
           summary: `${data.length}`,
         }}
-        sort={sort}
         onSortChange={handleSortChange}
       />
       <ConfirmDialog

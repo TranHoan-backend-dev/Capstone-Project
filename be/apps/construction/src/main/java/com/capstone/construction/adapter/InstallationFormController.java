@@ -4,10 +4,11 @@ import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.common.utils.Utils;
+import com.capstone.construction.application.business.installationform.InstallationFormService;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
-import com.capstone.construction.application.usecase.InstallationFormHandlingUseCase;
+import com.capstone.construction.application.usecase.InstallationFormUseCase;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
 import com.capstone.construction.infrastructure.utils.Message;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,7 +40,8 @@ import java.time.format.DateTimeFormatter;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Tag(name = "Installation Form", description = "Quản lý đơn lắp đặt (Tiếp nhận và xử lý hồ sơ lắp đặt nước)")
 public class InstallationFormController {
-  InstallationFormHandlingUseCase installationFormHandlingUseCase;
+  InstallationFormUseCase installationFormHandlingUseCase;
+  InstallationFormService service;
   @NonFinal
   Logger log;
 
@@ -136,5 +138,14 @@ public class InstallationFormController {
     var response = installationFormHandlingUseCase.getPaginatedInstallationForms(pageable, request);
 
     return Utils.returnOkResponse("Lấy danh sách đơn lắp đặt thành công", response);
+  }
+
+  @Operation(hidden = true)
+  @GetMapping("/exist")
+  public boolean isExisting(
+    @RequestParam String formCode,
+    @RequestParam String formNumber
+  ) {
+    return service.isInstallationFormExisting(formNumber, formCode);
   }
 }

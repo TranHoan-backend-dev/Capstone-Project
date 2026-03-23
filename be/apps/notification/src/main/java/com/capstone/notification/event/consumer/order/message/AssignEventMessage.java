@@ -4,7 +4,8 @@ public record AssignEventMessage(String pattern, ApproveEventData data) {
   public record ApproveEventData(
     String formCode,
     String formNumber,
-    String empId
+    String empId,
+    Boolean status
   ) {
 
   }
