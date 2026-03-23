@@ -43,7 +43,7 @@ public class BusinessPageServiceImpl implements BusinessPageService {
   @Value("${rabbit-mq-config.actions[0]}")
   String ACTION;
 
-  @Value("${rabbit-mq-config.queue_name}")
+  @Value("${rabbit-mq-config.queue}")
   String QUEUE_NAME;
   // </editor-fold>
 

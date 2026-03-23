@@ -93,8 +93,11 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   @Transactional(rollbackFor = Exception.class)
   public CostEstimateResponse updateEstimate(String id, @NonNull UpdateRequest request) {
     log.info("Updating cost estimate with id: {}", id);
-    var estimate = eRepo.findById(id)
-      .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_61, id)));
+    var estimate = getById(id);
+    var installationForm = estimate.getInstallationForm();
+    if (installationForm.getStatus().getEstimate().name().equals(ProcessingStatus.APPROVED.name())) {
+      throw new IllegalArgumentException("Dự toán đã được duyệt, không được phép chỉnh sửa");
+    }
 
     var generalInformation = request.generalInformation();
 
@@ -175,8 +178,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   @Override
   public CostEstimateResponse getEstimateById(String id) {
     log.info("Fetching cost estimate with id: {}", id);
-    var costEst = eRepo.findById(id)
-      .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_61, id)));
+    var costEst = getById(id);
     var materials = deviceSrv.getMaterialsOfCostEstimate(id);
     return mapToResponse(costEst, mapMaterials(materials));
   }
@@ -276,8 +278,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
 
   @Override
   public void approveEstimate(String id, Boolean request) {
-    var est = eRepo.findById(id)
-      .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_61, id)));
+    var est = getById(id);
     var form = est.getInstallationForm();
     var status = form.getStatus();
     status.setEstimate(request ? ProcessingStatus.APPROVED : ProcessingStatus.REJECTED);
@@ -286,8 +287,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
 
   @Override
   public boolean signForCostEstimate(String significance, @NonNull RoleName role, String estimateId) {
-    var costEstimate = eRepo.findById(estimateId)
-      .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_61, estimateId)));
+    var costEstimate = getById(estimateId);
     var costEstSignificance = costEstimate.getSignificance();
 
     if (costEstSignificance == null) {
@@ -369,8 +369,15 @@ public class CostEstimateServiceImpl implements CostEstimateService {
         estimate.getCreateBy(),
         estimate.getWaterMeterSerial(),
         estimate.getOverallWaterMeterId(),
-        estimate.getInstallationForm().getId()),
+        estimate.getInstallationForm().getId(),
+        estimate.getInstallationForm().getStatus()
+      ),
       material);
+  }
+
+  private CostEstimate getById(String id) {
+    return eRepo.findById(id)
+      .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_61, id)));
   }
 
   private @NonNull ArrayList<BaseMaterial> getMaterials(String id) {
