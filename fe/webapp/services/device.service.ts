@@ -71,13 +71,13 @@ export const getAllParams = (
     },
   });
 
-  export const updateParam = (
+export const updateParam = (
   accessToken: string,
   id: string,
   name: string,
   value: number,
 ) =>
-  axios.put(`${API_GATEWAY_URL}/d/params/${id}`,{name, value}, {
+  axios.put(`${API_GATEWAY_URL}/d/params/${id}`, { name, value }, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
@@ -85,116 +85,131 @@ export const getAllParams = (
 
 
 export const createMaterial = (
-    accessToken: string,
-    name: string,
-    type: string,
+  accessToken: string,
+  name: string,
+  type: string,
 ) => {
-    return axios.post(
-        `${API_GATEWAY_URL}/d/materials`,
-        { name, type },
-        {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        },
-    );
+  return axios.post(
+    `${API_GATEWAY_URL}/d/materials`,
+    { name, type },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
 };
 
 export const updateMaterial = (
-    accessToken: string,
-    id: string,
-    name: string,
-    type: string,
+  accessToken: string,
+  id: string,
+  name: string,
+  type: string,
 ) => {
-    return axios.put(
-        `${API_GATEWAY_URL}/d/materials/${id}`,
-        { name, type },
-        {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        },
-    );
+  return axios.put(
+    `${API_GATEWAY_URL}/d/materials/${id}`,
+    { name, type },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
 };
 
 export const deleteMaterial = (accessToken: string, id: string) => {
-    return axios.delete(`${API_GATEWAY_URL}/d/materials/${id}`, {
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-        },
-    });
+  return axios.delete(`${API_GATEWAY_URL}/d/materials/${id}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
 };
 
-export const getAllMaterialsGroup = (
-    accessToken: string,
-    page: number,
-    size: number,
-    sort: string,
-    filter?: string,
+export const getAllMaterials = (
+  accessToken: string,
+  page: number,
+  size: number,
 ) =>
-    axios.get(`${API_GATEWAY_URL}/d/materials-groups`, {
-        params: {
-            page,
-            size,
-            sort,
-            filter,
-        },
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-        },
-    });
+  axios.get(`${API_GATEWAY_URL}/d/materials`, {
+    params: {
+      page,
+      size,
+    },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+export const getAllMaterialsGroup = (
+  accessToken: string,
+  page: number,
+  size: number,
+  sort: string,
+  filter?: string,
+) =>
+  axios.get(`${API_GATEWAY_URL}/d/materials-groups`, {
+    params: {
+      page,
+      size,
+      sort,
+      filter,
+    },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
 
 export const createMaterialGroup = (accessToken: string, name: string) => {
-    return axios.post(
-        `${API_GATEWAY_URL}/d/materials/group`,
-        { name },
-        {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        },
-    );
+  return axios.post(
+    `${API_GATEWAY_URL}/d/materials/group`,
+    { name },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
 };
 
 export const updateMaterialGroup = (
-    accessToken: string,
-    id: string,
-    name: string,
+  accessToken: string,
+  id: string,
+  name: string,
 ) => {
-    return axios.put(
-        `${API_GATEWAY_URL}/d/materials/group/${id}`,
-        { name },
-        {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        },
-    );
+  return axios.put(
+    `${API_GATEWAY_URL}/d/materials/group/${id}`,
+    { name },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
 };
 
 export const deleteMaterialGroup = (accessToken: string, id: string) => {
-    return axios.delete(`${API_GATEWAY_URL}/d/materials/group/${id}`, {
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-        },
-    });
+  return axios.delete(`${API_GATEWAY_URL}/d/materials/group/${id}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
 };
 
 export const getAllOverallWaterMeters = (
-    accessToken: string,
-    page: number,
-    size: number,
-    sort: string,
-    keyword?: string | null,
+  accessToken: string,
+  page: number,
+  size: number,
+  sort: string,
+  keyword?: string | null,
 ) =>
-    axios.get(`${API_GATEWAY_URL}/d/water-meters/overall`, {
-        params: {
-            page,
-            size,
-            sort,
-            keyword,
-        },
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-        },
-    });
+  axios.get(`${API_GATEWAY_URL}/d/water-meters/overall`, {
+    params: {
+      page,
+      size,
+      sort,
+      keyword,
+    },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
