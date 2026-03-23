@@ -34,7 +34,8 @@ android {
         }
 
         manifestPlaceholders = [
-            appAuthRedirectScheme: "com.capstone"
+            appAuthRedirectScheme: "com.capstone",
+            usesCleartextTraffic: "true"
         ]
     }
     signingConfigs {

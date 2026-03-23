@@ -115,6 +115,63 @@ Authorization: Bearer {{access_token}}
 DELETE {{uri}}/invalid-id
 Authorization: Bearer {{access_token}}
 
-### Case 3: Xóa thất bại - Loại đồng hồ đang được sử dụng (400 - ExistingException)
-DELETE {{uri}}/{{typeInUseId}}
+### R
+### Case 1: Lấy danh sách tất cả loại đồng hồ (phân trang)
+GET {{uri}}?page=0&size=10
 Authorization: Bearer {{access_token}}
+
+### Case 2: Tìm kiếm loại đồng hồ với từ khóa
+POST {{uri}}/search
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "search": "lạnh"
+}
+
+### Case 3: Lọc loại đồng hồ theo tên
+POST {{uri}}/search
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "name": "Đồng hồ nước lạnh"
+}
+
+### Case 4: Lọc loại đồng hồ theo xuất xứ
+POST {{uri}}/search
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "origin": "Việt Nam"
+}
+
+### Case 5: Lọc loại đồng hồ theo kích cỡ
+POST {{uri}}/search
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "size": 15
+}
+
+### Case 6: Lọc kết hợp nhiều trường
+POST {{uri}}/search
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "name": "Đồng hồ",
+  "origin": "Việt Nam",
+  "size": 15
+}
+
+### Case 7: Tìm kiếm với phân trang
+POST {{uri}}/search?page=0&size=5
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "search": "nước"
+}

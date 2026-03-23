@@ -1,6 +1,9 @@
 package com.capstone.common.utils;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import org.jetbrains.annotations.Contract;
 
 /**
  * A simple wrapper class for representing success or failure results in Java,
@@ -15,10 +18,14 @@ public class Result<T> {
         this.error = error;
     }
 
+    @NonNull
+    @Contract(value = "_ -> new", pure = true)
     public static <T> Result<T> success(T data) {
         return new Result<>(data, null);
     }
 
+    @NonNull
+    @Contract(value = "_ -> new", pure = true)
     public static <T> Result<T> failure(Throwable error) {
         return new Result<>(null, error);
     }

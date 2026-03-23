@@ -8,14 +8,19 @@ import com.capstone.customer.service.boundary.BillService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -23,8 +28,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/bills")
 @RequiredArgsConstructor
 @Tag(name = "Bill Management", description = "Endpoints for managing bills and invoice information")
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BillController {
-  private final BillService billService;
+  BillService billService;
 
   @Operation(summary = "Create a new bill", description = "Adds a new bill record linked to a customer", responses = {
     @ApiResponse(responseCode = "201", description = "Bill created successfully"),
@@ -79,5 +85,27 @@ public class BillController {
     log.info("REST request to get all bills with pagination: {}", pageable);
     Page<BillResponse> response = billService.getAllBills(pageable);
     return Utils.returnOkResponse("Lấy danh sách hóa đơn thành công", response);
+  }
+
+  @Operation(
+    summary = "Xem danh sách hóa đơn tháng này theo khách hàng",
+    description = "Cho phép nhân viên kinh doanh, IT, khảo sát xem danh sách hóa đơn theo khách hàng. " +
+      "Dữ liệu bao gồm các thông tin tiêu thụ và tiền nước mới nhất tháng này."
+  )
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Lấy dữ liệu thành công"),
+    @ApiResponse(responseCode = "401", description = "Lỗi xác thực người dùng"),
+    @ApiResponse(responseCode = "403", description = "Người dùng không có quyền truy cập"),
+    @ApiResponse(responseCode = "500", description = "Lỗi hệ thống phát sinh")
+  })
+  @GetMapping("/roadmap/{customerId}")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'BUSINESS_DEPARTMENT_HEAD', 'METER_INSPECTION_STAFF')")
+  public ResponseEntity<WrapperApiResponse> getBillsByCtomer(
+    @PathVariable @Parameter(description = "ID của lộ trình khách hàng", example = "RM_001") String customerId,
+    @ParameterObject Pageable pageable
+  ) {
+    log.info("getBillsByRoadmap");
+    Page<BillResponse> response = billService.getBillsByCustomer(customerId, pageable);
+    return Utils.returnOkResponse("Lấy danh sách hóa đơn theo khách hàng thành công", response);
   }
 }

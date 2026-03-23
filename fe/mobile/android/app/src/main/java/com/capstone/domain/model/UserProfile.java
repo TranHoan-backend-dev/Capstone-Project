@@ -1,6 +1,7 @@
 package com.capstone.domain.model;
 
 import androidx.annotation.Nullable;
+
 import com.capstone.data.source.response.UserProfileResponse;
 
 public class UserProfile {
@@ -14,7 +15,7 @@ public class UserProfile {
     private final String username;
     private final String email;
 
-    public UserProfile(String fullName, String avatarUrl, String address, String phoneNumber, 
+    public UserProfile(String fullName, String avatarUrl, String address, String phoneNumber,
                        String gender, String birthday, String role, String username, String email) {
         this.fullName = fullName;
         this.avatarUrl = avatarUrl;
@@ -27,27 +28,58 @@ public class UserProfile {
         this.email = email;
     }
 
-    public String getFullName() { return fullName; }
-    @Nullable public String getAvatarUrl() { return avatarUrl; }
-    @Nullable public String getAddress() { return address; }
-    @Nullable public String getPhoneNumber() { return phoneNumber; }
-    @Nullable public String getGender() { return gender; }
-    @Nullable public String getBirthday() { return birthday; }
-    public String getRole() { return role; }
-    public String getUsername() { return username; }
-    public String getEmail() { return email; }
+    public String getFullName() {
+        return fullName;
+    }
+
+    @Nullable
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    @Nullable
+    public String getAddress() {
+        return address;
+    }
+
+    @Nullable
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    @Nullable
+    public String getGender() {
+        return gender;
+    }
+
+    @Nullable
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
 
     public static UserProfile fromResponse(UserProfileResponse response) {
         return new UserProfile(
-            response.getFullName(),
-            response.getAvatarUrl(),
-            response.getAddress(),
-            response.getPhoneNumber(),
-            response.getGender(),
-            response.getBirthday(),
-            response.getRole(),
-            response.getUsername(),
-            response.getEmail()
+                response.getFullName(),
+                response.getAvatarUrl(),
+                response.getAddress(),
+                response.getPhoneNumber(),
+                response.getGender(),
+                response.getBirthday(),
+                response.getRole(),
+                response.getUsername(),
+                response.getEmail()
         );
     }
 }

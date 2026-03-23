@@ -107,91 +107,90 @@ const ChangePasswordForm = () => {
   };
 
   return (
-    <div className="min-h-full mt-10">
-      <div className="max-w-4xl mx-auto p-0 px-4 md:px-0">
-        <div className="mb-6">
-          <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-white">
+    <div className="min-h-[calc(100vh-120px)] flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-2xl">
+        {/* HEADER */}
+        <div className="mb-8 text-center md:text-left">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
             Đổi mật khẩu
           </h2>
-          <p className="text-gray-600 dark:text-zinc-400 mt-1">
-            Cập nhật mật khẩu của bạn để đảm bảo tính bảo mật cho tài khoản
+          <p className="text-gray-600 dark:text-zinc-400 mt-1 text-sm">
+            Cập nhật mật khẩu để bảo vệ tài khoản của bạn
           </p>
         </div>
 
-        <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-gray-200 dark:border-zinc-800 overflow-hidden">
-          <div className="px-6 py-8 md:px-10 md:py-10">
-            <form className="space-y-6" onSubmit={handleSubmit}>
-              <PasswordInput
-                required
-                label="Nhập mật khẩu hiện tại"
-                value={formData.oldPassword}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    oldPassword: e.target.value,
-                  })
-                }
-                errorMessage={errors.oldPassword}
-                isInvalid={!!errors.oldPassword}
-              />
+        {/* CARD */}
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-gray-200 dark:border-zinc-800">
+          <form
+            onSubmit={handleSubmit}
+            className="px-6 py-8 md:px-10 md:py-10 space-y-6"
+          >
+            {/* OLD PASSWORD */}
+            <PasswordInput
+              required
+              label="Mật khẩu hiện tại"
+              value={formData.oldPassword}
+              onChange={(e) =>
+                setFormData({ ...formData, oldPassword: e.target.value })
+              }
+              errorMessage={errors.oldPassword}
+              isInvalid={!!errors.oldPassword}
+            />
 
-              <PasswordInput
-                required
-                label="Nhập mật khẩu mới"
-                value={formData.newPassword}
-                onChange={(e) => {
-                  setFormData({
-                    ...formData,
-                    newPassword: e.target.value,
-                  });
-                  setErrors((prev) => ({ ...prev, newPassword: undefined }));
-                }}
-                errorMessage={errors.newPassword}
-                isInvalid={!!errors.newPassword}
-              />
+            {/* NEW PASSWORD */}
+            <PasswordInput
+              required
+              label="Mật khẩu mới"
+              value={formData.newPassword}
+              onChange={(e) => {
+                setFormData({ ...formData, newPassword: e.target.value });
+                setErrors((prev) => ({ ...prev, newPassword: undefined }));
+              }}
+              errorMessage={errors.newPassword}
+              isInvalid={!!errors.newPassword}
+            />
 
-              <PasswordInput
-                required
-                label="Nhập lại mật khẩu mới"
-                value={formData.confirmPassword}
-                onChange={(e) => {
-                  setFormData({
-                    ...formData,
-                    confirmPassword: e.target.value,
-                  });
-                  setErrors((prev) => ({
-                    ...prev,
-                    confirmPassword: undefined,
-                  }));
-                }}
-                errorMessage={errors.confirmPassword}
-                isInvalid={!!errors.confirmPassword}
-              />
+            {/* CONFIRM PASSWORD */}
+            <PasswordInput
+              required
+              label="Xác nhận mật khẩu mới"
+              value={formData.confirmPassword}
+              onChange={(e) => {
+                setFormData({ ...formData, confirmPassword: e.target.value });
+                setErrors((prev) => ({
+                  ...prev,
+                  confirmPassword: undefined,
+                }));
+              }}
+              errorMessage={errors.confirmPassword}
+              isInvalid={!!errors.confirmPassword}
+            />
 
-              <div className="flex justify-end space-x-4 pt-4 border-t border-gray-100 dark:border-zinc-800 mt-8">
-                <CustomButton
-                  className="px-6 h-11 border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 hover:bg-gray-50 dark:hover:bg-zinc-800 font-bold"
-                  disabled={isLoading}
-                  startContent={<RejectIcon className="w-5 h-5" />}
-                  type="button"
-                  variant="bordered"
-                  onClick={handleCancel}
-                >
-                  Hủy
-                </CustomButton>
-                <CustomButton
-                  className="px-6 h-11 bg-blue-600 dark:bg-primary hover:bg-blue-700 dark:hover:bg-primary-600 text-white font-bold"
-                  color="primary"
-                  disabled={isLoading}
-                  isLoading={isLoading}
-                  startContent={<DocumentIcon className="w-5 h-5" />}
-                  type="submit"
-                >
-                  {isLoading ? "Đang xử lý..." : "Lưu thay đổi"}
-                </CustomButton>
-              </div>
-            </form>
-          </div>
+            {/* ACTION */}
+            <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-6 border-t border-gray-100 dark:border-zinc-800">
+              <CustomButton
+                type="button"
+                variant="bordered"
+                onClick={handleCancel}
+                disabled={isLoading}
+                startContent={<RejectIcon className="w-5 h-5" />}
+                className="h-11 px-6 font-bold border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300"
+              >
+                Hủy
+              </CustomButton>
+
+              <CustomButton
+                type="submit"
+                color="primary"
+                disabled={isLoading}
+                isLoading={isLoading}
+                startContent={<DocumentIcon className="w-5 h-5" />}
+                className="h-11 px-6 font-bold bg-blue-600 hover:bg-blue-700 dark:bg-primary dark:hover:bg-primary-600 text-white"
+              >
+                {isLoading ? "Đang xử lý..." : "Lưu thay đổi"}
+              </CustomButton>
+            </div>
+          </form>
         </div>
       </div>
     </div>

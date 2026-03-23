@@ -3,11 +3,15 @@ package com.capstone.ui.viewmodel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+
 import com.capstone.domain.repository.MediaRepository;
+
 import dagger.hilt.android.lifecycle.HiltViewModel;
+
 import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
 import javax.inject.Inject;
 
 @HiltViewModel
@@ -25,10 +29,21 @@ public class MediaViewModel extends ViewModel {
         this.mediaRepository = mediaRepository;
     }
 
-    public LiveData<String> getUploadedUrl() { return uploadedUrl; }
-    public LiveData<String> getOcrResult() { return ocrResult; }
-    public LiveData<Boolean> getIsLoading() { return isLoading; }
-    public LiveData<String> getError() { return error; }
+    public LiveData<String> getUploadedUrl() {
+        return uploadedUrl;
+    }
+
+    public LiveData<String> getOcrResult() {
+        return ocrResult;
+    }
+
+    public LiveData<Boolean> getIsLoading() {
+        return isLoading;
+    }
+
+    public LiveData<String> getError() {
+        return error;
+    }
 
     public void processImage(File file) {
         isLoading.setValue(true);
