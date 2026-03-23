@@ -189,25 +189,6 @@ export const getAllOverallWaterMeters = (
     },
   });
 
-export const getAllWaterPrices = (
-  accessToken: string,
-  page: number,
-  size: number,
-  sort: string,
-  filter?: string | null,
-) =>
-  axios.get(`${API_GATEWAY_URL}/d/water-prices`, {
-    params: {
-      page,
-      size,
-      sort,
-      filter,
-    },
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-
 export const getWaterPriceById = async (
   accessToken: string,
   id: string,
