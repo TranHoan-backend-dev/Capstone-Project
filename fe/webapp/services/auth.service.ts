@@ -83,7 +83,7 @@ export const updateProfileEmployee = async (
   payload: Partial<EmployeeProfileUpdatePayload>,
   accessToken: string,
 ): Promise<EmployeeProfileUpdatePayload> => {
-  const response = await axios.post<ApiResponse<EmployeeProfileUpdatePayload>>(
+  const response = await axios.patch<ApiResponse<EmployeeProfileUpdatePayload>>(
     `${API_GATEWAY_URL}/auth/me`,
     payload,
     {
@@ -95,11 +95,8 @@ export const updateProfileEmployee = async (
   return response.data.data;
 };
 
-export const updateAvatar = async (file: File, accessToken: string) => {
-  const formData = new FormData();
-  formData.append("avatar", file);
-
-  const response = await axios.put(`${API_GATEWAY_URL}/auth/me`, formData, {
+export const updateAvatar = async (file: FormData, accessToken: string) => {
+  const response = await axios.patch(`${API_GATEWAY_URL}/auth/me`, file, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
