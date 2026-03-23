@@ -50,17 +50,17 @@ public class ParameterServiceImpl implements ParameterService {
 
   @Override
   @Transactional
-  public ParameterResponse updateParameter(String id, @NonNull UpdateParameterRequest request) {
+  public ParameterResponse updateParameter(String updatorId, String id, @NonNull UpdateParameterRequest request) {
     log.info("Updating parameter id: {} with value: {}", id, request.value());
     var param = repository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tham số với ID: " + id));
 
-    var employeeResponse = employeeService.checkAuthorExisting(request.updatorId());
+    var employeeResponse = employeeService.checkAuthorExisting(updatorId);
     if (employeeResponse == null || employeeResponse.data() == null
         || !Boolean.parseBoolean(employeeResponse.data().toString())) {
       throw new IllegalArgumentException("Nhân viên này không tồn tại");
     }
-    param.setUpdator(request.updatorId());
+    param.setUpdator(updatorId);
 
     param.setName(request.name());
     param.setValue(request.value());

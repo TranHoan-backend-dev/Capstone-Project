@@ -6,6 +6,7 @@ import com.capstone.auth.application.dto.request.users.FilterUsersRequest;
 import com.capstone.auth.application.dto.request.users.UpdateRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
 import com.capstone.auth.infrastructure.persistence.*;
+import com.capstone.common.enumerate.RoleName;
 import com.capstone.common.exception.NotExistingException;
 import com.capstone.auth.domain.model.EmployeeJob;
 import com.capstone.auth.domain.model.Profile;
@@ -32,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @AppLog
 @Service
@@ -42,7 +44,7 @@ public class UserServiceImpl implements UserService {
   BusinessPagesOfEmployeeRepository bpRepo;
   ProfileRepository profileRepo;
   EmployeeJobRepository employeeJobRepo;
-  NetworkService netWorkService;
+  NetworkService networkService;
   OrganizationService organizationService;
   BusinessPageService bpService;
   IndividualNotificationRepository indRepo;
@@ -167,15 +169,7 @@ public class UserServiceImpl implements UserService {
       if (profile.isEmpty()) {
         throw new InternalError("Hồ sơ người dùng không tồn tại");
       }
-      return new EmployeeResponse(
-        c.getUserId(),
-        c.getUsername(),
-        profile.get().getFullname(),
-        null,
-        null,
-        null,
-        c.getEmail()
-      );
+      return mapToEmployeeResponse(c);
     }).toList();
     return new PageImpl<>(content, pageable, content.size());
   }
@@ -208,6 +202,7 @@ public class UserServiceImpl implements UserService {
     }
     if (request.isActive() != null) {
       user.setIsEnabled(request.isActive());
+      // TODO: dùng keycloak để xác định session đăng nhập của người dùng, sau đó gửi thông báo và email cho họ
     }
     if (request.departmentId() != null && !request.departmentId().isBlank()) {
       var status = organizationService.checkDepartmentExistence(request.departmentId());
@@ -217,22 +212,14 @@ public class UserServiceImpl implements UserService {
       user.setDepartmentId(request.departmentId());
     }
     if (request.networkId() != null && !request.networkId().isBlank()) {
-      var status = netWorkService.checkExistence(request.networkId());
+      var status = networkService.checkExistence(request.networkId());
       if (!status) {
         throw new IllegalArgumentException("Chi nhánh cấp nước này không tồn tại: " + request.networkId());
       }
       user.setWaterSupplyNetworkId(request.networkId());
     }
 
-    return new EmployeeResponse(
-      user.getUserId(),
-      user.getUsername(),
-      profile.getFullname(),
-      organizationService.getDepartmentName(request.departmentId()),
-      netWorkService.getNameById(request.networkId()),
-      bpService.getPagesByEmployeeId(user.getUserId()).toString(),
-      user.getEmail()
-    );
+    return mapToEmployeeResponse(user);
   }
 
   @Override
@@ -261,15 +248,7 @@ public class UserServiceImpl implements UserService {
 
     repo.save(emp);
 
-    return new EmployeeResponse(
-      emp.getUserId(),
-      emp.getUsername(),
-      profile.getFullname(),
-      organizationService.getDepartmentName(emp.getDepartmentId()),
-      netWorkService.getNameById(emp.getWaterSupplyNetworkId()),
-      bpService.getPagesByEmployeeId(emp.getUserId()).toString(),
-      emp.getEmail()
-    );
+    return mapToEmployeeResponse(emp);
   }
 
   @Override
@@ -277,6 +256,15 @@ public class UserServiceImpl implements UserService {
     var user = getById(id);
     return roleRepo.findByUsers(Set.of(user))
       .getFirst().getName().toString();
+  }
+
+  @Override
+  public List<EmployeeResponse> getAllSurveyStaffs() {
+    log.info("Getting all survey staff");
+    var employees = repo.findByRoleNameIn(List.of(RoleName.SURVEY_STAFF));
+    return employees.stream()
+      .map(this::mapToEmployeeResponse)
+      .collect(Collectors.toList());
   }
 
   private Users getById(String id) {
@@ -311,5 +299,19 @@ public class UserServiceImpl implements UserService {
     }
     log.info("Find user by email: {}", obj);
     return obj.get();
+  }
+
+  private @NonNull EmployeeResponse mapToEmployeeResponse(@NonNull Users user) {
+    var profile = profileRepo.findById(user.getUserId())
+      .orElseThrow(() -> new NotExistingException(String.format(Message.SE_15, user.getUserId())));
+    return new EmployeeResponse(
+      user.getUserId(),
+      null,
+      profile.getFullname(),
+      organizationService.getDepartmentName(user.getDepartmentId()),
+      networkService.getNameById(user.getWaterSupplyNetworkId()),
+      bpService.getPagesByEmployeeId(user.getUserId()).toString(),
+      user.getEmail()
+    );
   }
 }

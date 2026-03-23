@@ -64,7 +64,7 @@ public class AuthorizationController {
   @GetMapping("/employees")
   public ResponseEntity<WrapperApiResponse> getAllEmployees(
     @ParameterObject Pageable pageable,
-    @Parameter(description = "Filter criteria for users (isEnabled, username)") FilterUsersRequest request
+    @Parameter(description = "") FilterUsersRequest request
   ) {
     log.info("Getting all employees with page index {} and page size {}", pageable.getPageNumber(),
       pageable.getPageSize());
@@ -150,6 +150,15 @@ public class AuthorizationController {
   @GetMapping("/employees/role/{id}")
   public ResponseEntity<?> getRoleOfEmployeeById(@PathVariable String id) {
     return Utils.returnOkResponse("", userService.getRoleOfEmployee(id));
+  }
+
+  @Operation(description = "Lay ra toan bo nhan vien khao sat")
+  @GetMapping("/employee/survey-staff")
+  public ResponseEntity<?> getAllSurveyStaffs() {
+    log.info("Get all survey staffs");
+    var response = userService.getAllSurveyStaffs();
+    log.info("Get all survey staffs: {}", response);
+    return Utils.returnOkResponse("Lay toan bo nhan vien khao sat thanh cong", response);
   }
   // </editor-fold>
 

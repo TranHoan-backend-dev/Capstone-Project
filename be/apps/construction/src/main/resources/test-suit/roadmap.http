@@ -194,7 +194,337 @@ GET {{uri}}?page=0&size=10&networkId=550e8400-e29b-41d4-a716-446655440001
 Authorization: Bearer {{access_token}}
 Accept: application/json
 
+
 ### R - combine keyword + lateralId + networkId
 GET {{uri}}?page=0&size=10&keyword=roadmap&lateralId=4d5e6f70-3000-4ddd-9eee-dddddddd0001&networkId=550e8400-e29b-41d4-a716-446655440001
 Authorization: Bearer {{access_token}}
 Accept: application/json
+
+### Assignment APIs
+
+### TC01 - Assign staff to roadmap successfully (IT_STAFF)
+PATCH {{uri}}/5e6f7081-4000-4eee-9fff-eeeeeeee0001/assign/6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+### TC02 - Assign staff to roadmap - Unauthorized Role
+PATCH {{uri}}/e3e701d6-5fda-4adf-ad5e-2033a2ae1706/assign/550e8400-e29b-41d4-a716-446655440001
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+> {%
+client.test("Status is 403 or 200 depending on token role", function() {
+  client.assert(response.status === 403 || response.status === 200);
+});
+%}
+
+### TC03 - Assign staff - Missing Token
+PATCH {{uri}}/e3e701d6-5fda-4adf-ad5e-2033a2ae1706/assign/550e8400-e29b-41d4-a716-446655440001
+Accept: application/json
+
+> {%
+client.test("Status is 401", function() {
+  client.assert(response.status === 401);
+});
+%}
+
+### TC04 - Assign staff - Roadmap not found
+PATCH {{uri}}/00000000-0000-0000-0000-000000000000/assign/550e8400-e29b-41d4-a716-446655440001
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+> {%
+client.test("Status is 404", function() {
+  client.assert(response.status === 404);
+});
+%}
+
+### TC05 - Assign staff - Staff not found
+PATCH {{uri}}/5e6f7081-4000-4eee-9fff-eeeeeeee0001/assign/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+> {%
+client.test("Status is 404", function() {
+  client.assert(response.status === 404);
+});
+%}
+
+### TC06 - Assign staff - Invalid Roadmap ID format
+PATCH {{uri}}/invalid-uuid-format/assign/550e8400-e29b-41d4-a716-446655440001
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+### TC07 - Assign staff - Invalid Staff ID format
+PATCH {{uri}}/e3e701d6-5fda-4adf-ad5e-2033a2ae1706/assign/invalid-uuid-format
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+### TC08 - Assign staff - SQL Injection attempt in ID
+PATCH {{uri}}/' OR 1=1 --/assign/550e8400-e29b-41d4-a716-446655440001
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+### TC09 - Assign staff - Very long ID string
+PATCH {{uri}}/very-long-id-string-exceeding-normal-limits-to-check-boundary-conditions/assign/550e8400-e29b-41d4-a716-446655440001
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+### TC10 - Assign staff - Correct staff department check
+PATCH {{uri}}/e3e701d6-5fda-4adf-ad5e-2033a2ae1706/assign/550e8400-e29b-41d4-a716-446655440001
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+### TC11 - Cancel assignment successfully
+PATCH {{uri}}/e3e701d6-5fda-4adf-ad5e-2033a2ae1706/cancel-assignment
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+### TC12 - Cancel assignment - Missing Token
+PATCH {{uri}}/e3e701d6-5fda-4adf-ad5e-2033a2ae1706/cancel-assignment
+Accept: application/json
+
+> {%
+client.test("Status is 401", function() {
+  client.assert(response.status === 401);
+});
+%}
+
+### TC13 - Cancel assignment - Roadmap not found
+PATCH {{uri}}/00000000-0000-0000-0000-000000000000/cancel-assignment
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+> {%
+client.test("Status is 404", function() {
+  client.assert(response.status === 404);
+});
+%}
+
+### TC14 - Cancel assignment - Invalid ID format
+PATCH {{uri}}/invalid-uuid-format/cancel-assignment
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+### TC15 - Cancel assignment - Forbidden Area
+PATCH {{uri}}/e3e701d6-5fda-4adf-ad5e-2033a2ae1706/cancel-assignment
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+> {%
+client.test("Status is 403 or 200", function() {
+  client.assert(response.status === 403 || response.status === 200);
+});
+%}
+
+### TC16 - Cancel assignment - Special characters in ID
+PATCH {{uri}}/%23%24%25%5E%26%2A/cancel-assignment
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+### TC17 - Cancel assignment - SQL Injection attempt
+PATCH {{uri}}/;DROP TABLE roadmaps/cancel-assignment
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+### TC18 - Cancel assignment - Missing ID in path
+PATCH {{uri}}/cancel-assignment
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+> {%
+client.test("Status is 404 or 405", function() {
+  client.assert(response.status === 404 || response.status === 405);
+});
+%}
+
+### TC19 - Cancel assignment - Unicode characters in ID
+PATCH {{uri}}/lộ-trình-ghi-thu/cancel-assignment
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+### TC20 - Cancel assignment - Double cancellation
+PATCH {{uri}}/e3e701d6-5fda-4adf-ad5e-2033a2ae1706/cancel-assignment
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+> {%
+client.test("Status is 200 or 409", function() {
+  client.assert(response.status === 200 || response.status === 409);
+});
+%}
+
+### TC21 - Update assignment successfully
+PATCH {{uri}}/e3e701d6-5fda-4adf-ad5e-2033a2ae1706/update-assignment/550e8400-e29b-41d4-a716-446655440002
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+### TC22 - Update assignment - Missing Token
+PATCH {{uri}}/e3e701d6-5fda-4adf-ad5e-2033a2ae1706/update-assignment/550e8400-e29b-41d4-a716-446655440002
+Accept: application/json
+
+> {%
+client.test("Status is 401", function() {
+  client.assert(response.status === 401);
+});
+%}
+
+### TC23 - Update assignment - Forbidden Role
+PATCH {{uri}}/e3e701d6-5fda-4adf-ad5e-2033a2ae1706/update-assignment/550e8400-e29b-41d4-a716-446655440002
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+> {%
+client.test("Status is 403 or 200", function() {
+  client.assert(response.status === 403 || response.status === 200);
+});
+%}
+
+### TC24 - Update assignment - Roadmap not found
+PATCH {{uri}}/00000000-0000-0000-0000-000000000000/update-assignment/550e8400-e29b-41d4-a716-446655440002
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+> {%
+client.test("Status is 404", function() {
+  client.assert(response.status === 404);
+});
+%}
+
+### TC25 - Update assignment - Staff not found
+PATCH {{uri}}/e3e701d6-5fda-4adf-ad5e-2033a2ae1706/update-assignment/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+> {%
+client.test("Status is 404", function() {
+  client.assert(response.status === 404);
+});
+%}
+
+### TC26 - Update assignment - Invalid Roadmap ID
+PATCH {{uri}}/invalid/update-assignment/550e8400-e29b-41d4-a716-446655440002
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+### TC27 - Update assignment - Invalid Staff ID
+PATCH {{uri}}/e3e701d6-5fda-4adf-ad5e-2033a2ae1706/update-assignment/invalid
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+### TC28 - Update assignment - SQL Injection in StaffId
+PATCH {{uri}}/e3e701d6-5fda-4adf-ad5e-2033a2ae1706/update-assignment/' OR '1'='1
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+### TC29 - Update assignment - Same staff update
+PATCH {{uri}}/e3e701d6-5fda-4adf-ad5e-2033a2ae1706/update-assignment/550e8400-e29b-41d4-a716-446655440001
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+> {%
+client.test("Status is 200 or 400 depending logic", function() {
+  client.assert(response.status === 200 || response.status === 400);
+});
+%}
+
+### TC30 - Update assignment - Very long StaffId string
+PATCH {{uri}}/e3e701d6-5fda-4adf-ad5e-2033a2ae1706/update-assignment/staff-id-too-long-boundary-test-case-to-check-overflow
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}

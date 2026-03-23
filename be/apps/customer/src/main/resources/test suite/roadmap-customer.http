@@ -1,0 +1,233 @@
+@roadmap_id = 5e6f7081-4000-4eee-9fff-eeeeeeee0002
+
+### TC01 - Lấy danh sách khách hàng của lộ trình hợp lệ (Happy Path)
+GET http://localhost:9005/api/v1/roadmap-customers/{{roadmap_id}}
+Authorization: Bearer {{access_token}}
+
+> {%
+client.test("Trạng thái phản hồi là 200", function() {
+  client.assert(response.status === 200);
+});
+client.test("Dữ liệu trả về đúng định dạng WrapperApiResponse", function() {
+  client.assert(response.body.hasOwnProperty("status"));
+  client.assert(response.body.hasOwnProperty("data"));
+});
+%}
+
+
+### TC02 - Tìm kiếm khách hàng theo tên trong lộ trình
+GET http://localhost:9005/api/v1/roadmap-customers/{{roadmap_id}}?search=an
+Authorization: Bearer {{access_token}}
+
+> {%
+client.test("Trạng thái phản hồi là 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC03 - Tìm kiếm khách hàng theo SĐT trong lộ trình
+GET http://localhost:9005/api/v1/roadmap-customers/{{roadmap_id}}?search=0123456789
+Authorization: Bearer {{access_token}}
+
+> {%
+client.test("Trạng thái phản hồi là 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC04 - Tìm kiếm khách hàng theo địa chỉ trong lộ trình
+GET http://localhost:9005/api/v1/roadmap-customers/{{roadmap_id}}?search=Phố Huế
+Authorization: Bearer {{token}}
+
+> {%
+client.test("Trạng thái phản hồi là 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC05 - Tìm kiếm khách hàng theo mã đồng hồ trong lộ trình
+GET http://localhost:9005/api/v1/roadmap-customers/{{roadmap_id}}?search=M001
+Authorization: Bearer {{token}}
+
+> {%
+client.test("Trạng thái phản hồi là 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC06 - Phân trang danh sách khách hàng (Trang 0, Kích thước 10)
+GET http://localhost:9005/api/v1/roadmap-customers/{{roadmap_id}}?page=0&size=10
+Authorization: Bearer {{token}}
+
+> {%
+client.test("Trạng thái phản hồi là 200", function() {
+  client.assert(response.status === 200);
+});
+client.test("Số lượng phần tử trong trang không vượt quá kích thước yêu cầu", function() {
+  client.assert(response.body.data.content.length <= 10);
+});
+%}
+
+
+### TC07 - Sắp xếp danh sách khách hàng theo tên tăng dần
+GET http://localhost:9005/api/v1/roadmap-customers/{{roadmap_id}}?sort=name,asc
+Authorization: Bearer {{token}}
+
+> {%
+client.test("Trạng thái phản hồi là 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC08 - Lộ trình không có khách hàng nào
+GET http://localhost:9005/api/v1/roadmap-customers/RM_EMPTY
+Authorization: Bearer {{token}}
+
+> {%
+client.test("Trạng thái phản hồi là 200", function() {
+  client.assert(response.status === 200);
+});
+client.test("Danh sách khách hàng trả về rỗng", function() {
+  client.assert(response.body.data.content.length === 0);
+});
+%}
+
+
+### TC09 - Tìm kiếm với ký tự đặc biệt
+GET http://localhost:9005/api/v1/roadmap-customers/RM_001?search=@#$%^&*()
+Authorization: Bearer {{token}}
+
+> {%
+client.test("Hệ thống xử lý an toàn với ký tự đặc biệt", function() {
+  client.assert(response.status === 200 || response.status === 400);
+});
+%}
+
+
+### TC10 - Tìm kiếm với từ khóa cực dài
+GET http://localhost:9005/api/v1/roadmap-customers/RM_001?search=VeryLongKeywordExceedingDatabaseFieldLengthAndStandardQueryBufferSizeToTestStability
+Authorization: Bearer {{token}}
+
+> {%
+client.test("Hệ thống không crash khi từ khóa quá dài", function() {
+  client.assert(response.status === 200 || response.status === 400);
+});
+%}
+
+
+### TC11 - Truy cập không có Token (Security)
+GET http://localhost:9005/api/v1/roadmap-customers/RM_001
+
+> {%
+client.test("Trạng thái phản hồi là 401", function() {
+  client.assert(response.status === 401);
+});
+%}
+
+
+### TC12 - Truy cập với vai trò không được phép (Security)
+GET http://localhost:9005/api/v1/roadmap-customers/RM_001
+Authorization: Bearer {{unauthorized_token}}
+
+> {%
+client.test("Trạng thái phản hồi là 403", function() {
+  client.assert(response.status === 403);
+});
+%}
+
+
+### TC13 - Truy vấn với định dạng phân trang sai (Page không phải số)
+GET http://localhost:9005/api/v1/roadmap-customers/RM_001?page=abc
+Authorization: Bearer {{token}}
+
+> {%
+client.test("Trạng thái phản hồi là 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC14 - Truy vấn với trang âm
+GET http://localhost:9005/api/v1/roadmap-customers/RM_001?page=-1
+Authorization: Bearer {{token}}
+
+> {%
+client.test("Hệ thống tự động điều chỉnh hoặc báo lỗi 400", function() {
+  client.assert(response.status === 200 || response.status === 400);
+});
+%}
+
+
+### TC15 - Truy vấn với kích thước trang cực lớn
+GET http://localhost:9005/api/v1/roadmap-customers/RM_001?size=999999
+Authorization: Bearer {{token}}
+
+> {%
+client.test("Hệ thống giới hạn hoặc trả lời hợp lệ", function() {
+  client.assert(response.status === 200 || response.status === 400);
+});
+%}
+
+
+### TC16 - Sắp xếp theo trường không tồn tại
+GET http://localhost:9005/api/v1/roadmap-customers/RM_001?sort=nonExistentField,desc
+Authorization: Bearer {{token}}
+
+> {%
+client.test("Trạng thái phản hồi là 500 hoặc 400", function() {
+  client.assert(response.status === 500 || response.status === 400);
+});
+%}
+
+
+### TC17 - Tìm kiếm tiếng Việt có dấu
+GET http://localhost:9005/api/v1/roadmap-customers/RM_001?search=Trần Thị Bình
+Authorization: Bearer {{token}}
+
+> {%
+client.test("Trạng thái phản hồi là 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC18 - SQL Injection attempt trong tham số search
+GET http://localhost:9005/api/v1/roadmap-customers/RM_001?search=' OR 1=1 --
+Authorization: Bearer {{token}}
+
+> {%
+client.test("An toàn trước SQL Injection", function() {
+  client.assert(response.status === 200);
+  // Không được trả về tất cả khách hàng không thuộc lộ trình
+});
+%}
+
+
+### TC19 - SQL Injection attempt trong roadmapId
+GET http://localhost:9005/api/v1/roadmap-customers/RM_001'; DROP TABLE customer; --
+Authorization: Bearer {{token}}
+
+> {%
+client.test("An toàn trước SQL Injection trên Path Variable", function() {
+  client.assert(response.status === 400 || response.status === 404 || response.status === 200);
+});
+%}
+
+
+### TC20 - Kiểm tra tính Idempotent (Gửi liên tiếp)
+GET http://localhost:9005/api/v1/roadmap-customers/RM_001
+Authorization: Bearer {{token}}
+### Gửi lại...
+GET http://localhost:9005/api/v1/roadmap-customers/RM_001
+Authorization: Bearer {{token}}
+
+> {%
+client.test("Lần thứ hai vẫn thành công rực rỡ với status 200", function() {
+  client.assert(response.status === 200);
+});
+%}

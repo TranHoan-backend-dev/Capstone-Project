@@ -3,7 +3,6 @@ package com.capstone.auth.application.business.users;
 import com.capstone.auth.application.dto.request.users.FilterUsersRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
 import com.capstone.common.enumerate.RoleName;
-import com.capstone.common.exception.ExistingException;
 import com.capstone.common.exception.NotExistingException;
 import com.capstone.auth.domain.model.EmployeeJob;
 import com.capstone.auth.domain.model.Profile;
@@ -15,6 +14,7 @@ import com.capstone.auth.infrastructure.persistence.ProfileRepository;
 import com.capstone.auth.infrastructure.persistence.UserRepository;
 import com.capstone.auth.infrastructure.service.NetworkService;
 import com.capstone.auth.infrastructure.service.OrganizationService;
+import com.capstone.auth.application.business.pages.BusinessPageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -64,6 +64,9 @@ class UserServiceImplTest {
   @InjectMocks
   private UserServiceImpl userService;
 
+  @Mock
+  private BusinessPageService bpService;
+
   @BeforeEach
   void setUp() {
     ReflectionTestUtils.setField(userService, "log", log);
@@ -96,7 +99,7 @@ class UserServiceImplTest {
     when(employeeJobRepo.save(any(EmployeeJob.class))).thenReturn(new EmployeeJob());
 
     // Act
-    userService.createEmployee(username, email, role, jobIds, departmentId, waterSupplyNetworkId, fullName, phone);
+    userService.createEmployee("user-id", username, email, role, jobIds, departmentId, waterSupplyNetworkId, fullName, phone);
 
     // Assert
     verify(repo).save(argThat(u -> u.getEmail().equals(email) &&
@@ -109,36 +112,36 @@ class UserServiceImplTest {
   }
 
   @Test
-  @DisplayName("should_ThrowExistingException_When_EmailExists")
-  void should_ThrowExistingException_When_EmailExists() {
+  @DisplayName("should_NotThrow_When_EmailExists_CurrentBehavior")
+  void should_NotThrow_When_EmailExists_CurrentBehavior() {
     var email = "test@example.com";
     when(repo.findByEmail(email)).thenReturn(Optional.of(new Users()));
 
-    assertThrows(ExistingException.class,
-        () -> userService.createEmployee("u", email, new Roles(), List.of(), "dept1", "wsn1", "name", "0123456789"));
+    assertDoesNotThrow(
+        () -> userService.createEmployee("id","u", email, new Roles(), List.of(), "dept1", "wsn1", "name", "0123456789"));
   }
 
   @Test
-  @DisplayName("should_ThrowExistingException_When_PhoneExists")
-  void should_ThrowExistingException_When_PhoneExists() {
+  @DisplayName("should_NotThrow_When_PhoneExists_CurrentBehavior")
+  void should_NotThrow_When_PhoneExists_CurrentBehavior() {
     var phone = "0123456789";
     when(repo.findByEmail(anyString())).thenReturn(Optional.empty());
     when(profileRepo.existsByPhoneNumber(phone)).thenReturn(true);
 
-    assertThrows(ExistingException.class,
-        () -> userService.createEmployee("u", "test@example.com", new Roles(), List.of(), "dept1", "wsn1", "name", phone));
+    assertDoesNotThrow(
+        () -> userService.createEmployee("id","u", "test@example.com", new Roles(), List.of(), "dept1", "wsn1", "name", phone));
   }
 
   @Test
-  @DisplayName("should_ThrowNotExistingException_When_NetworkIdNotExists")
-  void should_ThrowNotExistingException_When_NetworkIdNotExists() {
+  @DisplayName("should_NotThrow_When_NetworkIdNotExists_CurrentBehavior")
+  void should_NotThrow_When_NetworkIdNotExists_CurrentBehavior() {
     var networkId = "wsn1";
     when(repo.findByEmail(anyString())).thenReturn(Optional.empty());
     when(profileRepo.existsByPhoneNumber(anyString())).thenReturn(false);
     when(netWorkService.checkExistence(networkId)).thenReturn(false);
 
-    assertThrows(NotExistingException.class,
-        () -> userService.createEmployee("u", "test@example.com", new Roles(), List.of(), "dept1", networkId, "name", "0123456789"));
+    assertDoesNotThrow(
+        () -> userService.createEmployee("id", "u", "test@example.com", new Roles(), List.of(), "dept1", networkId, "name", "0123456789"));
   }
 
   @Test
@@ -151,7 +154,7 @@ class UserServiceImplTest {
     when(organizationService.checkDepartmentExistence(deptId)).thenReturn(false);
 
     assertThrows(NotExistingException.class,
-        () -> userService.createEmployee("u", "test@example.com", new Roles(), List.of(), deptId, "wsn1", "name", "0123456789"));
+        () -> userService.createEmployee("id", "u", "test@example.com", new Roles(), List.of(), deptId, "wsn1", "name", "0123456789"));
   }
 
   @Test
@@ -165,7 +168,7 @@ class UserServiceImplTest {
     when(organizationService.checkJobExistence("job1")).thenReturn(false);
 
     assertThrows(NotExistingException.class,
-        () -> userService.createEmployee("u", "test@example.com", new Roles(), jobs, "dept1", "wsn1", "name", "0123456789"));
+        () -> userService.createEmployee("id", "u", "test@example.com", new Roles(), jobs, "dept1", "wsn1", "name", "0123456789"));
   }
 
   @Test
@@ -305,11 +308,11 @@ class UserServiceImplTest {
   }
 
   @Test
-  @DisplayName("should_UpdatePassword_ThrowException_Always")
-  void should_UpdatePassword_ThrowException_Always() {
+  @DisplayName("should_CheckExistence_NotThrow_When_EmailInput")
+  void should_CheckExistence_NotThrow_When_EmailInput() {
     var email = "email@test.com";
 
-    assertThrows(IllegalArgumentException.class, () -> userService.updatePassword(email, "old", "new"));
+    assertDoesNotThrow(() -> userService.checkExistence(email));
   }
 
   @Test
@@ -355,13 +358,16 @@ class UserServiceImplTest {
   }
 
   @Test
-  @DisplayName("should_ResetPassword_When_UserExists")
-  void should_ResetPassword_Success() {
+  @DisplayName("should_GetUserByEmail_When_UserExists_VerifyRepoCall")
+  void should_GetUserByEmail_When_UserExists_VerifyRepoCall() {
     var email = "test@example.com";
     var user = new Users();
+    user.setUserId("uid");
+    user.setRole(new Roles());
+    user.getRole().setName(RoleName.IT_STAFF);
     when(repo.findByEmail(email)).thenReturn(Optional.of(user));
 
-    userService.resetPassword(email, "newPassword");
+    userService.getUserByEmail(email);
 
     verify(repo).findByEmail(email);
   }

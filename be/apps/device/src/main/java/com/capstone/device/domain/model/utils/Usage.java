@@ -1,19 +1,18 @@
 package com.capstone.device.domain.model.utils;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
+@Builder
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Usage {
-  LocalDateTime recordingDate;
+  LocalDate recordingDate;
   BigDecimal index;
   BigDecimal mass;
   BigDecimal price;

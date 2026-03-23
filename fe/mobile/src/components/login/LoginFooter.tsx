@@ -4,11 +4,13 @@ import { Button } from 'react-native-paper';
 interface LoginFooterProps {
   onLogin: () => void;
   onForgotPassword: () => void;
+  loading?: boolean;
 }
 
 export default function LoginFooter({
   onLogin,
   onForgotPassword,
+  loading,
 }: LoginFooterProps) {
   return (
     <>
@@ -23,6 +25,8 @@ export default function LoginFooter({
         mode="contained"
         onPress={onLogin}
         style={{ marginTop: 8 }}
+        loading={loading}
+        disabled={loading}
       >
         Đăng nhập
       </Button>

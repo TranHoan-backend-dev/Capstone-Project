@@ -3,3 +3,6 @@ export * from "./networks-column";
 export * from "./commune-column";
 export * from "./neighborhood-unit-column";
 export * from "./hamlet-column";
+export * from "./design-processing-column";
+export * from "./survey-assignment-column";
+export * from "./settlement-column";

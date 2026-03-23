@@ -114,6 +114,9 @@ export const UnitTable = ({
       });
 
       setDeleteId(null);
+      if (data.length === 1 && page > 1) {
+        setPage(page - 1);
+      }
       onDeleted();
     } catch (e: any) {
       CallToast({
@@ -213,7 +216,6 @@ export const UnitTable = ({
           onChange: setPage,
           summary: `${data.length}`,
         }}
-        sort={sort}
         onSortChange={handleSortChange}
       />
       <ConfirmDialog

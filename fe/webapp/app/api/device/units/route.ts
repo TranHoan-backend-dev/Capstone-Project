@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     return NextResponse.json(
       {
-        message: error.response?.data?.message || "Thêm mới đường phố thành công",
+        message: error.response?.data?.message || "Thêm mới đường phố thất bại",
       },
       { status: error.response?.status || 500 },
     );
