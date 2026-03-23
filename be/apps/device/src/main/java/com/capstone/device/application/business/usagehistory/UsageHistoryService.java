@@ -4,9 +4,15 @@ import com.capstone.device.application.dto.response.pricetype.UsageResponse;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.List;
 
 public interface UsageHistoryService {
   UsageResponse addWaterIndexOfThisMonth(String imageUrl, String serial, BigDecimal index, LocalDate recordingDate);
 
   void updatePaymentStatus(String serial, String method);
+
+  List<UsageResponse> getUsageByCustomerIds(Collection<String> customerIds);
+
+  UsageResponse updateUsageDetails(String serial, LocalDate recordingDate, BigDecimal index, String imageUrl);
 }
