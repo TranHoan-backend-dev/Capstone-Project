@@ -1,6 +1,7 @@
 export * from "./road_column";
 export * from "./networks-column";
 export * from "./commune-column";
+export * from "./lateral-column";
 export * from "./neighborhood-unit-column";
 export * from "./hamlet-column";
 export * from "./design-processing-column";

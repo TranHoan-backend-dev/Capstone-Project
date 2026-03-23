@@ -60,6 +60,11 @@ export const siteConfig = {
       label: "Thiết bị",
       items: [
         {
+          key: "water-meter-type",
+          label: "Quản lý Loại đồng hồ nước",
+          href: "/water-meter-type",
+        },
+        {
           key: "materials-prices",
           label: "Quản lý Đơn giá vật tư",
           href: "/materials-prices",
