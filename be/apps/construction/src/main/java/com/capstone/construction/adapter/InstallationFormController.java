@@ -42,10 +42,10 @@ import java.time.format.DateTimeFormatter;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Tag(name = "Installation Form", description = "Quản lý đơn lắp đặt (Tiếp nhận và xử lý hồ sơ lắp đặt nước)")
 public class InstallationFormController {
-    InstallationFormUseCase installationFormHandlingUseCase;
-    InstallationFormService installationFormService;
-    @NonFinal
-    Logger log;
+  InstallationFormUseCase installationFormHandlingUseCase;
+  InstallationFormService installationFormService;
+  @NonFinal
+  Logger log;
 
   @Operation(summary = "Tạo mới đơn lắp đặt", description = """
     API này cho phép nhân viên tiếp nhận hồ sơ tạo mới một đơn yêu cầu lắp đặt nước. <br/>
@@ -148,6 +148,6 @@ public class InstallationFormController {
     @RequestParam String formCode,
     @RequestParam String formNumber
   ) {
-    return service.isInstallationFormExisting(formNumber, formCode);
+    return installationFormService.isInstallationFormExisting(formNumber, formCode);
   }
 }
