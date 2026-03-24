@@ -52,8 +52,8 @@ const authService = {
         refreshToken: kcData.refresh_token,
         user: userData,
       };
-    } catch (error) {
-      console.error('Login backend sync error:', error);
+    } catch (error: any) {
+      console.error('Login backend sync error:', error.message);
       // Nếu lỗi ở bước sync backend, chúng ta nên xóa token đã lưu để đảm bảo tính toàn vẹn
       await TokenManager.logout();
       throw error;
