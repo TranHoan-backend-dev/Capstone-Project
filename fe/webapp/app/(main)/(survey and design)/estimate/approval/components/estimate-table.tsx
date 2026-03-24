@@ -124,7 +124,7 @@ export const EstimateTable = ({
               </Tooltip>
             )}
             {onSignAction && item.status === "approved" && (
-              <Tooltip color="primary" content="Xem">
+              <Tooltip color="primary" content="Kí duyệt">
                 <PencilIcon
                   className={BlueYellowIconColor}
                   onClick={() => onSignAction(item)}

@@ -9,6 +9,7 @@ import { FilterSection } from "@/components/ui/FilterSection";
 import BaseModal from "@/components/ui/modal/BaseModal";
 import { CallToast } from "@/components/ui/CallToast";
 import CustomButton from "@/components/ui/custom/CustomButton";
+import { authFetch } from "@/utils/authFetch";
 const PENDING_STATUSES = ["pending", "processing", "pending_for_approval"];
 const APPROVED_STATUS = "approved";
 
@@ -70,12 +71,41 @@ const EstimateApprovalPage = () => {
   const [page, setPage] = useState(1);
   const [refetch, setRefetch] = useState(0);
   const pageSize = 10;
+  // Thêm state cho user hiện tại
+  const [currentUser, setCurrentUser] = useState<{
+    id: string;
+    fullname: string;
+    role: string;
+    significanceUrl: string;
+  } | null>(null);
+
+  // Fetch current user info
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const res = await authFetch("/api/auth/me");
+        const json = await res.json();
+        if (json) {
+          setCurrentUser({
+            id: json.id,
+            fullname: json.fullname,
+            role: json.role,
+            significanceUrl: json.significanceUrl || "",
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching current user:", error);
+      }
+    };
+
+    fetchCurrentUser();
+  }, []);
 
   // Fetch all employees for dropdowns
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const res = await fetch("/api/auth/employees?size=1000");
+        const res = await authFetch("/api/auth/employees?size=1000");
         const json = await res.json();
 
         // Extract data from response structure: data.content
@@ -107,7 +137,7 @@ const EstimateApprovalPage = () => {
           size: String(pageSize),
           sort: `${sort.field},${sort.direction}`,
         });
-        const res = await fetch(
+        const res = await authFetch(
           `/api/construction/estimates?${params.toString()}`,
         );
         const json = await res.json();
@@ -122,7 +152,7 @@ const EstimateApprovalPage = () => {
             let creatorName = info.createBy;
 
             try {
-              const res = await fetch(
+              const res = await authFetch(
                 `/api/auth/employees/${info.createBy}/name`,
               );
               const nameJson = await res.json();
@@ -229,7 +259,7 @@ const EstimateApprovalPage = () => {
         companyLeadership: companyLeadershipId || null,
       };
 
-      const res = await fetch(`/api/construction/estimates/sign`, {
+      const res = await authFetch(`/api/construction/estimates/sign`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -261,7 +291,6 @@ const EstimateApprovalPage = () => {
     }
   };
 
-  // Handle sign action (when user clicks on sign button for an estimate they need to sign)
   const handleSignAction = (item: EstimateOrder) => {
     setSelectedItemForSigning(item);
     setElectronicSignUrl("");
@@ -271,10 +300,11 @@ const EstimateApprovalPage = () => {
   const handleConfirmSign = async () => {
     if (!selectedItemForSigning) return;
 
-    if (!electronicSignUrl.trim()) {
+    if (!currentUser?.significanceUrl) {
       CallToast({
         title: "Thất bại",
-        message: "Vui lòng nhập chữ ký điện tử",
+        message:
+          "Bạn chưa có chữ ký điện tử. Vui lòng cập nhật thông tin cá nhân.",
         color: "danger",
       });
       return;
@@ -285,10 +315,10 @@ const EstimateApprovalPage = () => {
       // Create request body for sign
       const requestBody = {
         estimateId: selectedItemForSigning.id,
-        electronicSignUrl: electronicSignUrl,
+        electronicSignUrl: currentUser.significanceUrl,
       };
 
-      const res = await fetch(`/api/construction/estimates/sign`, {
+      const res = await authFetch(`/api/construction/estimates/sign`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -363,7 +393,6 @@ const EstimateApprovalPage = () => {
         to={to}
         onSearch={handleSearch}
       />
-
       <Tabs
         aria-label="Survey Status"
         classNames={{
@@ -432,7 +461,6 @@ const EstimateApprovalPage = () => {
           />
         </Tab>
       </Tabs>
-
       {/* Modal for creating signature request */}
       <BaseModal
         isOpen={isCreateSignModalOpen}
@@ -558,7 +586,6 @@ const EstimateApprovalPage = () => {
           </CustomButton>
         </div>
       </BaseModal>
-
       {/* Modal for signing */}
       <BaseModal
         isOpen={isSignModalOpen}
@@ -588,19 +615,43 @@ const EstimateApprovalPage = () => {
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Chữ ký điện tử
-            </label>
-            <input
-              type="text"
-              placeholder="Nhập chữ ký điện tử hoặc URL chữ ký"
-              className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              value={electronicSignUrl}
-              onChange={(e) => setElectronicSignUrl(e.target.value)}
-            />
-            <p className="text-sm text-gray-500 mt-1">
-              Vui lòng nhập chữ ký điện tử của bạn để xác nhận duyệt dự toán
+          {/* Hiển thị thông tin người ký */}
+          <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                <span className="text-primary text-xl font-semibold">
+                  {currentUser?.fullname?.charAt(0) || "?"}
+                </span>
+              </div>
+              <div className="flex-1">
+                <p className="font-semibold text-gray-900 dark:text-gray-100">
+                  {currentUser?.fullname || "Đang tải..."}
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Vai trò: {currentUser?.role?.toUpperCase() || "..."}
+                </p>
+              </div>
+            </div>
+
+            {currentUser?.significanceUrl ? (
+              <div className="mt-3 p-2 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800">
+                <p className="text-sm text-green-700 dark:text-green-300">
+                  Đã có chữ ký điện tử sẵn sàng
+                </p>
+              </div>
+            ) : (
+              <div className="mt-3 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded border border-yellow-200 dark:border-yellow-800">
+                <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                  Chưa có chữ ký điện tử. Vui lòng cập nhật thông tin cá nhân.
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+            <p>
+              Bằng cách nhấn "Xác nhận ký", bạn đồng ý ký duyệt dự toán này bằng
+              chữ ký điện tử của mình.
             </p>
           </div>
         </div>
@@ -617,6 +668,7 @@ const EstimateApprovalPage = () => {
             onPress={handleConfirmSign}
             isLoading={isProcessing}
             color="success"
+            isDisabled={!currentUser?.significanceUrl}
           >
             Xác nhận ký
           </CustomButton>

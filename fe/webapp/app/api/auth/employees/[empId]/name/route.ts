@@ -4,9 +4,9 @@ import { NextResponse, NextRequest } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  context: { params: Promise<{ id: string }> },
+  context: { params: Promise<{ empId: string }> },
 ) {
-  const { id } = await context.params;
+  const { empId } = await context.params;
   try {
     const accessToken = getAccessToken(req);
 
@@ -14,7 +14,7 @@ export async function GET(
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const response = await getEmployeeById(accessToken, id);
+    const response = await getEmployeeById(accessToken, empId);
 
     return NextResponse.json(
       {
