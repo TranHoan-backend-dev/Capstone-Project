@@ -18,7 +18,9 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.math.BigDecimal;
@@ -39,10 +41,10 @@ public class UsageHistoryController {
       @ApiResponse(responseCode = "400", description = "Dữ liệu không hợp lệ hoặc chỉ số mới thấp hơn kỳ trước"),
       @ApiResponse(responseCode = "404", description = "Không tìm thấy thiết bị")
   })
-  @PostMapping(value = "/{serial}")
+  @PostMapping(value = "/{serial}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<WrapperApiResponse> updateWaterIndexThisMonth(
       @Parameter(description = "Mã Serial của thiết bị", example = "WM-2024-001") @PathVariable String serial,
-      @RequestBody @Valid UsageHistoryRequest request) {
+      @ModelAttribute @Valid UsageHistoryRequest request) {
     log.info("Updating usage history for serial {}", serial);
     var response = useCase.updateWaterIndex(request, serial);
     return Utils.returnOkResponse("Cập nhật chỉ số nước thành công", response);
@@ -91,5 +93,24 @@ public class UsageHistoryController {
       @RequestParam(required = false) String imageUrl) {
     var response = useCase.updateUsage(serial, date, index, imageUrl);
     return Utils.returnOkResponse("Cập nhật bản ghi tiêu thụ thành công", response);
+  }
+
+  @Operation(summary = "Lấy danh sách các bản ghi cần phê duyệt", description = "Danh sách các chỉ số nước do AI nhận diện đang chờ xác nhận")
+  @GetMapping("/pending-reviews")
+  public ResponseEntity<WrapperApiResponse> getPendingReviews() {
+    log.info("Fetching pending reviews");
+    var response = useCase.getPendingReviews();
+    return Utils.returnOkResponse("Lấy danh sách chờ duyệt thành công", response);
+  }
+
+  @Operation(summary = "Xác nhận chỉ số sau khi đã kiểm tra", description = "Phê duyệt hoặc sửa đổi chỉ số AI gợi ý")
+  @PostMapping("/confirm/{reviewId}")
+  public ResponseEntity<WrapperApiResponse> confirmMeterReading(
+      @PathVariable String reviewId,
+      @RequestParam BigDecimal finalIndex,
+      @RequestParam String status) {
+    log.info("Confirming meter reading for id {}", reviewId);
+    useCase.confirmMeterReading(reviewId, finalIndex, status);
+    return Utils.returnOkResponse("Xác nhận chỉ số thành công", null);
   }
 }

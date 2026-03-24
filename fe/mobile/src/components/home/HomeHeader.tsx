@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { Pressable } from 'react-native';
 import { Appbar, Avatar, Text, Menu, Divider, IconButton } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '../../context/AuthContext';
 import styles from './home.styles';
 
 export default function HomeHeader() {
   const [visible, setVisible] = useState(false);
   const navigation = useNavigation<any>();
+  const { logout } = useAuth();
 
   const toggleMenu = () => setVisible(v => !v);
 
@@ -52,9 +54,9 @@ export default function HomeHeader() {
           leadingIcon="logout"
           title="Đăng xuất"
           titleStyle={{ color: '#EF4444' }}
-          onPress={() => {
+          onPress={async () => {
             setVisible(false);
-            console.log('Logout');
+            await logout();
           }}
         />
       </Menu>
