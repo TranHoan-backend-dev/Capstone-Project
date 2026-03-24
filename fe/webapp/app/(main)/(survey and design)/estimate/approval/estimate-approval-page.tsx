@@ -15,13 +15,13 @@ import CustomButton from "@/components/ui/custom/CustomButton";
 // Helper function to calculate total amount from materials
 const calculateTotalAmount = (materials: any[]): string => {
   if (!materials || materials.length === 0) return "0";
-  
+
   const total = materials.reduce((sum, item) => {
     const materialTotal = parseFloat(item.totalMaterialPrice ?? 0) || 0;
     const laborTotal = parseFloat(item.totalLaborPrice ?? 0) || 0;
     return sum + materialTotal + laborTotal;
   }, 0);
-  
+
   return total.toLocaleString("vi-VN");
 };
 
@@ -45,15 +45,8 @@ const EstimateApprovalPage = () => {
   );
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const mapStatus = (status: string): "pending" | "approved" | "rejected" => {
-    switch (status) {
-      case "APPROVED":
-        return "approved";
-      case "REJECTED":
-        return "rejected";
-      default:
-        return "pending";
-    }
+  const mapStatus = (status: string): "pending" | "approved" => {
+    return status === "APPROVED" ? "approved" : "pending";
   };
 
   const [orders, setOrders] = useState<EstimateOrder[]>([]);
@@ -114,7 +107,7 @@ const EstimateApprovalPage = () => {
               totalAmount: calculateTotalAmount(item.material),
               createdDate: new Date(info.createdAt).toLocaleDateString("vi-VN"),
               creator: creatorName,
-              status: mapStatus(item.status?.estimate),
+              status: mapStatus(info.status?.estimate),
             };
           }),
         );
@@ -174,15 +167,11 @@ const EstimateApprovalPage = () => {
   };
 
   const handleEstimate = (item: EstimateOrder) => {
-    router.push(
-      `/estimate/run/${item.id}`,
-    );
+    router.push(`/estimate/run/${item.id}`);
   };
 
   const handleView = (item: EstimateOrder) => {
-    router.push(
-      `/estimate/run/${item.id}`,
-    );
+    router.push(`/estimate/run/${item.id}`);
   };
 
   const handleConfirmAction = async () => {
@@ -225,15 +214,15 @@ const EstimateApprovalPage = () => {
     } catch (error) {
       CallToast({
         title: "Thất bại",
-        message:
-          error instanceof Error ? error.message : "Có lỗi xảy ra",
+        message: error instanceof Error ? error.message : "Có lỗi xảy ra",
         color: "danger",
       });
     } finally {
       setIsProcessing(false);
     }
   };
-
+  const pendingCount = orders.filter((o) => o.status === "pending").length;
+  const approvedCount = orders.filter((o) => o.status === "approved").length;
   return (
     <>
       <FilterSection
@@ -275,7 +264,7 @@ const EstimateApprovalPage = () => {
             <div className="flex items-center space-x-2">
               <span>Chờ duyệt</span>
               <Chip color="warning" size="sm" variant="flat">
-                12
+                {pendingCount}
               </Chip>
             </div>
           }
@@ -300,7 +289,7 @@ const EstimateApprovalPage = () => {
             <div className="flex items-center space-x-2">
               <span>Đã duyệt</span>
               <Chip color="success" size="sm" variant="flat">
-                45
+                {approvedCount}
               </Chip>
             </div>
           }
