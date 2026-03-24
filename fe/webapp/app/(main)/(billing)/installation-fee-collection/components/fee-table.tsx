@@ -79,9 +79,10 @@ export const FeeTable = ({
         const json = await res.json();
         const pageData = json?.data;
         const items = pageData?.content ?? [];
-        setTotalItems(pageData?.totalItems ?? 0);
-        setTotalPages(pageData?.totalPages ?? 1);
+        setTotalItems(pageData?.page.totalElements ?? 0);
+        setTotalPages(pageData?.page.totalPages ?? 1);
 
+        // Trong fee-table.tsx, sửa phần map data
         const mapped = items.map(
           (item: FeeCollectionResponse, index: number) => ({
             id: `${item.formCode}_${item.formNumber}`,
@@ -94,6 +95,10 @@ export const FeeTable = ({
             paymentDate: item.paymentDate,
             isPaid: item.isPaid,
             createdAt: formatDate1(item.createdAt),
+            attach: item.attach,
+            paymentReason: item.paymentReason,
+            totalMoneyInDigits: item.totalMoneyInDigits,
+            totalMoneyInCharacters: item.totalMoneyInCharacters,
           }),
         );
         setData(mapped);

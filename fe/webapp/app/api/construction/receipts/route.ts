@@ -66,6 +66,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
+    console.log("Creating receipt with payload:", body);
 
     const response = await createReceipt(accessToken, body);
 
@@ -74,14 +75,16 @@ export async function POST(req: NextRequest) {
     if (error.isAxiosError) {
       console.error("Axios error response:", error.response?.data);
       console.error("Axios error status:", error.response?.status);
-      console.error("Axios error headers:", error.response?.headers);
     } else {
       console.error("Unexpected error:", error);
     }
 
     return NextResponse.json(
-      { message: error?.message || "Create failed" },
-      { status: 500 },
+      {
+        message:
+          error?.response?.data?.message || error?.message || "Create failed",
+      },
+      { status: error?.response?.status || 500 },
     );
   }
 }
@@ -95,16 +98,19 @@ export async function PUT(req: NextRequest) {
     }
 
     const body = await req.json();
+    console.log("Updating receipt with payload:", body);
 
     const response = await updateReceipt(accessToken, body);
 
     return NextResponse.json(response.data, { status: response.status });
   } catch (error: any) {
+    console.error("Update error:", error);
     return NextResponse.json(
       {
-        message: error?.message || "Update failed",
+        message:
+          error?.response?.data?.message || error?.message || "Update failed",
       },
-      { status: 500 },
+      { status: error?.response?.status || 500 },
     );
   }
 }
