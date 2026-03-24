@@ -13,6 +13,8 @@ export interface EstimateItem {
   address: string;
   registerDate: string;
   status: string;
+  createBy: string;
+  totalPrice: string;
 }
 
 export interface MaterialEstimateItem {

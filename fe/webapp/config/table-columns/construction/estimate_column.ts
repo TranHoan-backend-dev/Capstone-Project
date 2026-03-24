@@ -24,8 +24,8 @@ export const ESTIMATE_PREPARATION_COLUMN = [
     sortable: true,
     align: "center" as const,
   },
-  { key: "status", label: "Trạng thái" },
   { key: "note", label: "Ghi chú" },
+  { key: "status", label: "Trạng thái" },
   { key: "actions", label: "Hoạt động", align: "center" as const },
 ];
 

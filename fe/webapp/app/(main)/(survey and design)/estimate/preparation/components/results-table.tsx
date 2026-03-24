@@ -76,12 +76,12 @@ export const ResultsTable = ({ keyword, from, to }: ResultsTableProps) => {
       address: item.address,
       registerDate: item.registerDate,
       status: item.status,
-      creator: "Chưa có",
+      creator: item.createBy,
       createDate: item.registerDate,
       approver: "Chưa có",
       approveDate: "",
-      totalPrice: 0,
-      note: "",
+      totalPrice: item.totalPrice,
+      note: item.note,
     };
   };
 
@@ -113,20 +113,46 @@ export const ResultsTable = ({ keyword, from, to }: ResultsTableProps) => {
         const items = pageData?.content ?? [];
         setTotalItems(pageData?.totalElements ?? 0);
         setTotalPages(pageData?.totalPages ?? 1);
+
         const mapped: EstimateItem[] = items.map((item: any) => {
           const info = item.generalInformation;
+
+          const totalPrice = (item.material || []).reduce(
+            (sum: number, m: any) =>
+              sum +
+              Number(m.totalMaterialPrice || 0) +
+              Number(m.totalLaborPrice || 0),
+            0,
+          );
 
           return {
             id: info.estimationId,
             formCode: info.installationFormId?.formCode,
             formNumber: info.installationFormId?.formNumber,
             note: info.note,
+            createBy: info.createBy,
             customerName: info.customerName,
             address: info.address,
             registerDate: new Date(info.createdAt).toLocaleDateString("vi-VN"),
             status: info.status.estimate,
+            totalPrice,
           };
         });
+        // const mapped: EstimateItem[] = items.map((item: any) => {
+        //   const info = item.generalInformation;
+
+        //   return {
+        //     id: info.estimationId,
+        //     formCode: info.installationFormId?.formCode,
+        //     formNumber: info.installationFormId?.formNumber,
+        //     note: info.note,
+        //     createBy: info.createBy,
+        //     customerName: info.customerName,
+        //     address: info.address,
+        //     registerDate: new Date(info.createdAt).toLocaleDateString("vi-VN"),
+        //     status: info.status.estimate,
+        //   };
+        // });
 
         setData(mapped);
       } catch (e) {
