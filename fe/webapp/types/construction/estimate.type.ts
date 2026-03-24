@@ -1,3 +1,9 @@
+export type EstimateStatus =
+  | "PENDING_FOR_APPROVAL"
+  | "APPROVED"
+  | "PROCESSING"
+  | "REJECTED";
+
 export interface EstimateItem {
   id: string;
   formCode: string;
@@ -6,6 +12,7 @@ export interface EstimateItem {
   customerName: string;
   address: string;
   registerDate: string;
+  status: string;
 }
 
 export interface MaterialEstimateItem {

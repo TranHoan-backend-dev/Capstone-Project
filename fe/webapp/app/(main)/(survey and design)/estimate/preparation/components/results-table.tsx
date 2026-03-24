@@ -14,7 +14,7 @@ import {
   GreenIconColor,
   TitleDarkColor,
 } from "@/config/chip-and-icon";
-import { EstimateItem, EstimateResponse } from "@/types";
+import { EstimateItem, EstimateResponse, EstimateStatus } from "@/types";
 import { ESTIMATE_PREPARATION_COLUMN } from "@/config/table-columns";
 import { formatDate } from "@/utils/format";
 
@@ -24,15 +24,28 @@ interface ResultsTableProps {
   to?: string | null;
 }
 
-const statusMap = {
-  pending_estimate: {
+const statusMap: Record<
+  EstimateStatus,
+  { label: string; color: any; bg: string }
+> = {
+  PENDING_FOR_APPROVAL: {
     label: "Chờ lập dự toán",
-    color: "success" as const,
+    color: "warning",
     bg: DarkGreenChip,
   },
-  rejected: {
-    label: "Chưa được phê duyệt",
-    color: "danger" as const,
+  APPROVED: {
+    label: "Đã duyệt",
+    color: "success",
+    bg: DarkGreenChip,
+  },
+  PROCESSING: {
+    label: "Đang xử lý",
+    color: "primary",
+    bg: DarkGreenChip,
+  },
+  REJECTED: {
+    label: "Bị từ chối",
+    color: "danger",
     bg: DarkRedChip,
   },
 };
@@ -62,13 +75,11 @@ export const ResultsTable = ({ keyword, from, to }: ResultsTableProps) => {
       code: item.formNumber,
       address: item.address,
       registerDate: item.registerDate,
-
+      status: item.status,
       creator: "Chưa có",
       createDate: item.registerDate,
-
       approver: "Chưa có",
       approveDate: "",
-
       totalPrice: 0,
       note: "",
     };
@@ -113,6 +124,7 @@ export const ResultsTable = ({ keyword, from, to }: ResultsTableProps) => {
             customerName: info.customerName,
             address: info.address,
             registerDate: new Date(info.createdAt).toLocaleDateString("vi-VN"),
+            status: info.status.estimate,
           };
         });
 
@@ -185,19 +197,19 @@ export const ResultsTable = ({ keyword, from, to }: ResultsTableProps) => {
         return <span className={`${baseStyle}`}>{item.address}</span>;
       case "registerDate":
         return <span className={`${baseStyle}`}>{item.registerDate}</span>;
-      // case "status":
-      //   const config = statusMap[item.status];
+      case "status":
+        const config = statusMap[item.status as EstimateStatus];
 
-      //   return (
-      //     <Chip
-      //       className={`${config.bg}`}
-      //       color={config.color}
-      //       size="sm"
-      //       variant="flat"
-      //     >
-      //       {config.label}
-      //     </Chip>
-      //   );
+        return (
+          <Chip
+            className={`${config?.bg}`}
+            color={config?.color}
+            size="sm"
+            variant="flat"
+          >
+            {config?.label}
+          </Chip>
+        );
       case "actions":
         return (
           <Tooltip closeDelay={0} color="success" content="Chạy dự toán">

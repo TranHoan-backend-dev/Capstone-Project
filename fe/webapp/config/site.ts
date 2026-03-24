@@ -290,16 +290,12 @@ export const siteConfig = {
             "planning_technical_department_head",
           ],
         },
-        {
-          key: "estimate-lookup",
-          label: "Tra cứu dự toán",
-          href: "/estimate/lookup",
-          roles: [
-            "it_staff",
-            "survey_staff",
-            "planning_technical_department_head",
-          ],
-        },
+        // {
+        //   key: "estimate-lookup",
+        //   label: "Tra cứu dự toán",
+        //   href: "/estimate/lookup",
+        //   roles: ["it_staff"],
+        // },
       ],
     },
 
