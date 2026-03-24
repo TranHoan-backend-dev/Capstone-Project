@@ -22,7 +22,17 @@ export default StyleSheet.create({
 
   formContainer: {
     flex: 1,
+    backgroundColor: '#F5F5F5',
   },
+
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    zIndex: 1000,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
 
   scrollContent: {
     paddingTop: 12,

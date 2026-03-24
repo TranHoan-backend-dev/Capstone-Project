@@ -20,7 +20,9 @@ const MeterInputScreen = ({ route }: any) => {
           customerId={customerId}
           customerName={customerName}
           address={address}
+          ocrResult={route.params?.ocrResult}
         />
+
       </View>
     </View>
   );

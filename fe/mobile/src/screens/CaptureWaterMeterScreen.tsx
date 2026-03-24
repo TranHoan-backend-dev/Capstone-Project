@@ -4,12 +4,15 @@ import { Text, IconButton, Button, ActivityIndicator } from 'react-native-paper'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { launchCamera } from 'react-native-image-picker';
+import { meterService } from '../services/meterService';
+import { showToast } from '../utils/toast';
 
 export default function CaptureWaterMeterScreen({ route }: any) {
   const navigation = useNavigation();
   const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [isChecking, setIsChecking] = useState(false);
   const [isBlurry, setIsBlurry] = useState<boolean | null>(null);
+  const [isSending, setIsSending] = useState(false);
 
   const requestCameraPermission = async () => {
     if (Platform.OS === 'android') {
@@ -81,13 +84,33 @@ export default function CaptureWaterMeterScreen({ route }: any) {
     (navigation.navigate as (name: string, params: any) => void)('MeterInput', route.params);
   };
 
-  const handleAccept = () => {
-    Alert.alert(
-      'Gửi thành công',
-      'Ảnh đã được nhận và đang gửi đi để AI phân tích bất đồng bộ.',
-      [{ text: 'OK', onPress: () => navigation.goBack() }]
-    );
+  const handleAccept = async () => {
+    if (!photoUri) return;
+
+    try {
+      setIsSending(true);
+
+      const { meterId } = route.params || {};
+
+      // Gửi ảnh về Backend để Backend thực hiện luồng:
+      // Upload GCS -> RabbitMQ -> AI Worker -> Trả kết quả bất đồng bộ
+      await meterService.updateMeterIndex(
+        meterId || 'UNKNOWN',
+        0, // Chỉ số tạm thời sẽ được AI cập nhật sau
+        new Date().toISOString().split('T')[0],
+        { uri: photoUri }
+      );
+
+      showToast.success('Đã gửi ảnh thành công. AI sẽ xử lý trong giây lát!');
+      navigation.goBack();
+    } catch (error: any) {
+      console.error(error.message)
+      showToast.error('Gửi ảnh thất bại. Vui lòng thử lại.');
+    } finally {
+      setIsSending(false);
+    }
   };
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -116,7 +139,15 @@ export default function CaptureWaterMeterScreen({ route }: any) {
           </View>
         )}
 
-        {!isChecking && photoUri && isBlurry === true && (
+        {isSending && (
+          <View style={styles.checkingContainer}>
+            <ActivityIndicator animating={true} color="#10B981" size="small" />
+            <Text style={styles.statusText}>Đang gửi ảnh về hệ thống...</Text>
+          </View>
+        )}
+
+        {!isChecking && !isSending && photoUri && isBlurry === true && (
+
           <View style={styles.resultContainer}>
             <Text style={styles.errorText}>Ảnh bị mờ đục, chưa đủ tiêu chuẩn!</Text>
             <View style={styles.buttonRow}>
@@ -130,7 +161,7 @@ export default function CaptureWaterMeterScreen({ route }: any) {
           </View>
         )}
 
-        {!isChecking && photoUri && isBlurry === false && (
+        {!isChecking && !isSending && photoUri && isBlurry === false && (
           <View style={styles.resultContainer}>
             <Text style={styles.successText}>Ảnh rõ nét, đạt tiêu chuẩn.</Text>
             <Button
