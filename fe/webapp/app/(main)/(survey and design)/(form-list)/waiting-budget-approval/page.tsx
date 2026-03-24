@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, useMemo } from "react";
 import { Metadata } from "next";
 
 import { DataTable } from "@/components/reports/DataTable";
@@ -7,14 +10,12 @@ import { ReportHeader } from "@/components/reports/ReportHeader";
 import { SearchToolbar } from "@/components/reports/SearchToolbar";
 import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
 import { siteConfig } from "@/config/site";
-
-export const metadata: Metadata = {
-  title: "Danh sách đơn chờ duyệt dự toán",
-  description: "Danh sách đơn chờ duyệt dự toán",
-  category: "Báo cáo",
-};
+import { generateMockDataWaitingBudgetApproval } from "@/lib/mockData";
 
 const ReportWaitingList = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const mockData = useMemo(() => generateMockDataWaitingBudgetApproval(20), []);
+
   const breadcrumbs = [
     { label: "Trang chủ", href: "/home" },
     { label: "Khảo sát thiết kế", href: "#" },
@@ -26,10 +27,15 @@ const ReportWaitingList = () => {
     <>
       <CustomBreadcrumb items={breadcrumbs} />
       <div className="pt-2">
-        <FilterForm title="Danh sách đơn chờ duyệt dự toán" />
+        {/* <FilterForm title="Danh sách đơn chờ duyệt dự toán" /> */}
 
         <div className="mt-4 space-y-6 border border-gray-200 rounded-lg bg-white p-6 shadow-sm dark:border-none dark:bg-zinc-900 dark:shadow-2xl">
-          <SearchToolbar />
+          <SearchToolbar
+            onSearch={setSearchQuery}
+            data={mockData}
+            columns={siteConfig.columnsWaitingBudgetApproval}
+            reportTitle="Danh sách đơn chờ duyệt dự toán"
+          />
 
           <ReportHeader
             dateRange="Từ ngày 07/12/2025 đến ngày 07/12/2025"
@@ -38,7 +44,8 @@ const ReportWaitingList = () => {
 
           <DataTable
             columns={siteConfig.columnsWaitingBudgetApproval}
-            data={[]}
+            data={mockData}
+            searchQuery={searchQuery}
           />
 
           <ReportFooter />

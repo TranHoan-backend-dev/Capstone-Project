@@ -1,4 +1,6 @@
-import { Metadata } from "next";
+"use client";
+
+import { useState, useMemo } from "react";
 
 import { DataTable } from "@/components/reports/DataTable";
 import { FilterForm } from "@/components/reports/FilterForm";
@@ -7,14 +9,12 @@ import { ReportHeader } from "@/components/reports/ReportHeader";
 import { SearchToolbar } from "@/components/reports/SearchToolbar";
 import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
 import { siteConfig } from "@/config/site";
-
-export const metadata: Metadata = {
-  title: "Danh sách đơn từ chối duyệt dự toán",
-  description: "Danh sách đơn từ chối duyệt dự toán",
-  category: "Báo cáo",
-};
+import { generateMockDataRejectedBudgetApproval } from "@/lib/mockData";
 
 const ReportRejectingList = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const mockData = useMemo(() => generateMockDataRejectedBudgetApproval(20), []);
+
   const breadcrumbs = [
     { label: "Trang chủ", href: "/home" },
     { label: "Khảo sát thiết kế", href: "#" },
@@ -26,10 +26,15 @@ const ReportRejectingList = () => {
     <>
       <CustomBreadcrumb items={breadcrumbs} />
       <div className="pt-2">
-        <FilterForm title="Danh sách đơn từ chối duyệt dự toán" />
+        {/* <FilterForm title="Danh sách đơn từ chối duyệt dự toán" /> */}
 
         <div className="mt-4 space-y-6 border border-gray-200 rounded-lg bg-white p-6 shadow-sm dark:border-none dark:bg-zinc-900 dark:shadow-2xl">
-          <SearchToolbar />
+          <SearchToolbar
+            onSearch={setSearchQuery}
+            data={mockData}
+            columns={siteConfig.columnsRejectedBudgetApproval}
+            reportTitle="Danh sách đơn từ chối duyệt dự toán"
+          />
 
           <ReportHeader
             dateRange="Từ ngày 07/12/2025 đến ngày 07/12/2025"
@@ -38,7 +43,8 @@ const ReportRejectingList = () => {
 
           <DataTable
             columns={siteConfig.columnsRejectedBudgetApproval}
-            data={[]}
+            data={mockData}
+            searchQuery={searchQuery}
           />
 
           <ReportFooter />

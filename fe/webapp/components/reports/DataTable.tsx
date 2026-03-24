@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 
 interface Column {
   key: string;
@@ -11,9 +11,24 @@ interface Column {
 interface DataTableProps {
   columns: Column[];
   data?: any[];
+  searchQuery?: string;
 }
 
-export const DataTable = ({ columns, data = [] }: DataTableProps) => {
+export const DataTable = ({ columns, data = [], searchQuery = "" }: DataTableProps) => {
+  const filteredData = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return data;
+    }
+
+    const query = searchQuery.toLowerCase();
+    return data.filter((row) =>
+      columns.some((column) => {
+        const value = row[column.key]?.toString().toLowerCase();
+        return value?.includes(query);
+      })
+    );
+  }, [data, searchQuery, columns]);
+
   return (
     <div className="overflow-x-auto border border-gray-200 rounded-xl overflow-hidden">
       <table className="w-full min-w-[640px] md:min-w-0">
@@ -31,17 +46,17 @@ export const DataTable = ({ columns, data = [] }: DataTableProps) => {
           </tr>
         </thead>
         <tbody className="divide-y bg-white dark:bg-zinc-200">
-          {data.length === 0 ? (
+          {filteredData.length === 0 ? (
             <tr>
               <td
                 className="px-3 md:px-4 py-8 md:py-12 text-center text-xs md:text-sm text-gray-500 font-medium"
                 colSpan={columns.length}
               >
-                Không có dữ liệu
+                {data.length === 0 ? "Không có dữ liệu" : "Không tìm thấy kết quả"}
               </td>
             </tr>
           ) : (
-            data.map((row, idx) => (
+            filteredData.map((row, idx) => (
               <tr key={idx} className="hover:bg-gray-50 transition-colors">
                 {columns.map((column) => (
                   <td
@@ -56,6 +71,11 @@ export const DataTable = ({ columns, data = [] }: DataTableProps) => {
           )}
         </tbody>
       </table>
+      {filteredData.length > 0 && (
+        <div className="bg-gray-50 px-3 md:px-4 py-3 text-xs md:text-sm text-gray-600">
+          Hiển thị {filteredData.length} của {data.length} bản ghi
+        </div>
+      )}
     </div>
   );
 };

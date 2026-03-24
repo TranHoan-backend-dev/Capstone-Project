@@ -167,11 +167,6 @@ export const siteConfig = {
               label: "Danh sách đơn đã phân công khảo sát",
               href: "/assigned-survey",
             },
-            {
-              key: "report-customer-call",
-              label: "Danh sách khách hàng gọi điện",
-              href: "/customer-calls",
-            },
           ],
         },
         {

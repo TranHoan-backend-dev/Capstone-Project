@@ -26,7 +26,7 @@ const ReportContractList = () => {
     <>
       <CustomBreadcrumb items={breadcrumbs} />
       <div className="pt-2">
-        <FilterForm title="Danh sách đơn từ chối thiết kế" />
+        {/* <FilterForm title="Danh sách đơn từ chối thiết kế" /> */}
 
         <div className="mt-4 space-y-6 border border-gray-200 rounded-lg bg-white p-6 shadow-sm dark:border-none dark:bg-zinc-900 dark:shadow-2xl">
           <SearchToolbar />
