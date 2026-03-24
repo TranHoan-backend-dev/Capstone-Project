@@ -3,6 +3,7 @@ import { View, StyleSheet, Image, TouchableOpacity, Alert, PermissionsAndroid, P
 import { Text, IconButton, Button, ActivityIndicator } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import { launchCamera } from 'react-native-image-picker';
 
 export default function CaptureWaterMeterScreen({ route }: any) {
   const navigation = useNavigation();
@@ -29,7 +30,7 @@ export default function CaptureWaterMeterScreen({ route }: any) {
         return false;
       }
     }
-    return true; // iOS handles this differently or permissions are handled by library
+    return true;
   };
 
   const takePhoto = async () => {
@@ -39,10 +40,27 @@ export default function CaptureWaterMeterScreen({ route }: any) {
       return;
     }
 
-    // Giả lập chụp ảnh
-    setPhotoUri('https://via.placeholder.com/600x800?text=anh_dong_ho_nuoc');
-    checkImageQuality();
+    const result = await launchCamera({
+      mediaType: 'photo',
+      quality: 0.8,
+      cameraType: 'back',
+      saveToPhotos: true,
+    });
+
+    if (result.didCancel) {
+      console.log('User cancelled camera picker');
+    } else if (result.errorCode) {
+      console.log('Camera Error: ', result.errorMessage);
+      Alert.alert('Lỗi', 'Không thể khởi động camera.');
+    } else if (result.assets && result.assets.length > 0) {
+      const uri = result.assets[0].uri;
+      if (uri) {
+        setPhotoUri(uri);
+        checkImageQuality();
+      }
+    }
   };
+
 
   const checkImageQuality = () => {
     setIsChecking(true);

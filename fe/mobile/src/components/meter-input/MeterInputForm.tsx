@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { View, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Card, Text, TextInput } from 'react-native-paper';
+import { Card, Text, TextInput, Button } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MeterInputInfoCard from './MeterInputInfoCard';
 import MeterInputStatusCard from './MeterInputStatusCard';
 import MeterInputIndexCard from './MeterInputIndexCard';
 import MeterInputActionButtons from './MeterInputActionButtons';
 import ImagePreviewModal from './ImagePreviewModal';
 import styles from './meterInput.styles';
+
 
 interface MeterInputFormProps {
   customerId?: string;
@@ -93,7 +95,10 @@ export default function MeterInputForm({
 
         <Card style={styles.card}>
           <Card.Content>
-            <Text style={styles.cardTitle}>Ghi chú</Text>
+            <View style={styles.sectionHeader}>
+              <Icon name="note-text-outline" size={20} color="#1E88E5" style={styles.sectionIcon} />
+              <Text style={styles.cardTitle}>Ghi chú</Text>
+            </View>
             <TextInput
               mode="outlined"
               placeholder="Nhập ghi chú (nếu có)..."
@@ -106,15 +111,43 @@ export default function MeterInputForm({
           </Card.Content>
         </Card>
 
+        <Card style={styles.card}>
+          <Card.Content>
+            <View style={styles.imageActionCard}>
+              <Button
+                mode="contained"
+                buttonColor="#1E88E5"
+                style={styles.cameraButton}
+                contentStyle={styles.buttonContent56}
+                onPress={handleTakePhoto}
+              >
+                <Icon name="camera-plus-outline" size={28} color="#fff" />
+              </Button>
+              <Button
+                mode="outlined"
+                icon="image-outline"
+                textColor="#1E88E5"
+                style={styles.viewImageButton}
+                contentStyle={styles.buttonContent56}
+                labelStyle={styles.viewImageButtonLabel}
+
+                onPress={handleViewInvoice}
+              >
+                Xem hình ảnh
+              </Button>
+            </View>
+          </Card.Content>
+        </Card>
+
       </ScrollView>
 
       <MeterInputActionButtons
-        onTakePhoto={handleTakePhoto}
-        onViewInvoice={handleViewInvoice}
         onPrevious={handlePrevious}
         onSave={handleSave}
         onNext={handleNext}
       />
+
+
 
       <ImagePreviewModal
         visible={showImagePreview}
