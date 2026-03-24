@@ -180,28 +180,19 @@ export const siteConfig = {
           key: "new-installation-lookup",
           label: "Tra cứu đơn lắp đặt mới",
           href: "/installation-form/lookup",
-          roles: [
-            "it_staff",
-            "order_receiving_staff",
-            "survey_staff",
-            "planning_technical_department_head",
-          ],
+          roles: ["it_staff", "order_receiving_staff"],
         },
         {
           key: "find-customer",
           label: "Tra cứu khách hàng",
           href: "/customers/lookup",
-          roles: [
-            "it_staff",
-            "order_receiving_staff",
-            "survey_staff",
-            "planning_technical_department_head",
-          ],
+          roles: ["it_staff", "order_receiving_staff"],
         },
         {
           key: "restores-customer",
           label: "Khôi phục khách hàng hủy",
           href: "/customers/recovery",
+          roles: ["it_staff"],
         },
         {
           key: "new-customers-import",
@@ -308,11 +299,6 @@ export const siteConfig = {
             "survey_staff",
             "planning_technical_department_head",
           ],
-        },
-        {
-          key: "materials-supplies",
-          label: "Quản lý mẫu bốc vật tư",
-          href: "/materials-supplies",
         },
       ],
     },

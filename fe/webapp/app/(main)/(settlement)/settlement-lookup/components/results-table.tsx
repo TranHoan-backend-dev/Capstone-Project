@@ -145,12 +145,13 @@ export const ResultsTable = ({
         const mapped = items.map((item: SettlementResponse, index: number) => ({
           id: item.settlementId,
           stt: (page - 1) * pageSize + index + 1,
+          formNumber: item.formNumber,
           jobContent: item.jobContent,
           address: item.address,
           registrationAt: item.registrationAt,
           connectionFee: item.connectionFee,
           note: item.note,
-          status: item.status,
+          // status: item.status,
         }));
         setData(mapped);
       } catch (error: any) {
@@ -241,16 +242,16 @@ export const ResultsTable = ({
 
   const actionItems = useMemo(() => {
     return [
-      // {
-      //   content: "Quyết toán",
-      //   icon: CalculatorIcon,
-      //   className:
-      //     "text-blue-600 dark:text-primary hover:bg-blue-50 dark:hover:bg-blue-900/30",
-      //   onClick: (id: string) => {
-      //     // Gọi hàm fetch chi tiết thay vì onEdit
-      //     fetchSettlementDetail(id);
-      //   },
-      // },
+      {
+        content: "Quyết toán",
+        icon: CalculatorIcon,
+        className:
+          "text-blue-600 dark:text-primary hover:bg-blue-50 dark:hover:bg-blue-900/30",
+        onClick: (id: string) => {
+          // Gọi hàm fetch chi tiết thay vì onEdit
+          fetchSettlementDetail(id);
+        },
+      },
       {
         content: "Chỉnh sửa",
         icon: EditIcon,
@@ -281,30 +282,30 @@ export const ResultsTable = ({
             {item.stt}
           </span>
         );
-      case "status":
-        const config = statusMap[item.status as keyof typeof statusMap] || {
-          label: item.status,
-          color: "default" as const,
-          bg: "bg-gray-100",
-        };
+      // case "status":
+      //   const config = statusMap[item.status as keyof typeof statusMap] || {
+      //     label: item.status,
+      //     color: "default" as const,
+      //     bg: "bg-gray-100",
+      //   };
 
-        return (
-          <button
-            className="hover:opacity-80 transition-opacity focus:outline-none"
-            onClick={() => {
-              onFilterStatus?.(item.status);
-            }}
-          >
-            <Chip
-              className={`${config.bg}`}
-              color={config.color}
-              size="sm"
-              variant="flat"
-            >
-              {config.label}
-            </Chip>
-          </button>
-        );
+      //   return (
+      //     <button
+      //       className="hover:opacity-80 transition-opacity focus:outline-none"
+      //       onClick={() => {
+      //         onFilterStatus?.(item.status);
+      //       }}
+      //     >
+      //       <Chip
+      //         className={`${config.bg}`}
+      //         color={config.color}
+      //         size="sm"
+      //         variant="flat"
+      //       >
+      //         {config.label}
+      //       </Chip>
+      //     </button>
+      //   );
       case "actions":
         return (
           <div className="flex items-center justify-center gap-2">
