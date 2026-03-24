@@ -635,25 +635,56 @@ export const updateEstimate = (
     },
   });
 
-  export const approveEstimate = (
+export const approveEstimate = (
   accessToken: string,
   estimateId: string,
   status: string,
 ) =>
-  axios.patch(`${API_GATEWAY_URL}/construction/estimates/${estimateId}`, status, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
+  axios.patch(
+    `${API_GATEWAY_URL}/construction/estimates/${estimateId}`,
+    status,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
     },
-  });
+  );
 
 export const requestEstimateSignature = (
   accessToken: string,
-  estimateId: string,
+  estId: string,
+  surveyStaff: string,
+  plHead: string,
+  companyLeadership: string,
 ) =>
   axios.post(
-    `${API_GATEWAY_URL}/construction/estimates/${estimateId}/sign`,
-    {},
+    `${API_GATEWAY_URL}/construction/estimates/sign`,
+    {
+      estId,
+      surveyStaff,
+      plHead,
+      companyLeadership,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    },
+  );
+
+export const signEstimate = (
+  accessToken: string,
+  estimateId: string,
+  electronicSignUrl: string,
+) =>
+  axios.patch(
+    `${API_GATEWAY_URL}/construction/estimates/sign`,
+    {
+      estimateId,
+      electronicSignUrl,
+    },
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,

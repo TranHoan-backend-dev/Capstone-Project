@@ -48,6 +48,16 @@ const statusMap: Record<
     color: "danger",
     bg: DarkRedChip,
   },
+  PARTIALLY_SIGNED: {
+    label: "Đang xử lý",
+    color: "danger",
+    bg: DarkRedChip,
+  },
+  WAITING_FOR_SIGNATURE: {
+    label: "Đang xử lý",
+    color: "danger",
+    bg: DarkRedChip,
+  },
 };
 
 export const ResultsTable = ({ keyword, from, to }: ResultsTableProps) => {

@@ -1,6 +1,8 @@
 export type EstimateStatus =
   | "PENDING_FOR_APPROVAL"
   | "APPROVED"
+  | "WAITING_FOR_SIGNATURE"
+  | "PARTIALLY_SIGNED"
   | "PROCESSING"
   | "REJECTED";
 

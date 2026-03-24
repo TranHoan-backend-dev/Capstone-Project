@@ -8,10 +8,11 @@ import { InfoRow } from "@/components/popup-status/info-row";
 import { PriceBox } from "@/components/popup-status/price-box";
 import { NoteField } from "@/components/popup-status/note-field";
 import { numberToVietnamese } from "@/utils/numberToVietnamese";
-const statusLabelMap: Record<string, string> = {
-  PENDING_FOR_APPROVAL: "Chờ duyệt",
-  APPROVED: "Đã duyệt",
-  PROCESSING: "Đang xử lý",
+export const statusLabelMap: Record<string, string> = {
+  PENDING: "Chờ xử lý",
+  WAITING_FOR_SIGNATURE: "Chờ ký duyệt",
+  PARTIALLY_SIGNED: "Đang ký",
+  APPROVED: "Đã ký duyệt",
   REJECTED: "Bị từ chối",
 };
 

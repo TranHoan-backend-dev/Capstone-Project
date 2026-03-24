@@ -30,10 +30,8 @@ export const ESTIMATE_PREPARATION_COLUMN = [
 ];
 
 export const ESTIMATE_APPROVAL_COLUMN = [
-  { key: "stt", label: "STT", align: "center", width: "50px" },
   { key: "code", label: "Mã đơn", align: "start" },
   { key: "designProfileName", label: "Tên hồ sơ thiết kế", align: "start" },
-  { key: "phone", label: "Điện thoại", align: "start" },
   { key: "installationAddress", label: "Địa chỉ lắp đặt", align: "start" },
   { key: "totalAmount", label: "Tổng tiền", align: "end" },
   { key: "createdDate", label: "Ngày lập", align: "center" },

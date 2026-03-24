@@ -4,13 +4,13 @@ import React, { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Tab, Tabs, Chip, DateValue, useDisclosure } from "@heroui/react";
 
-import { ApprovalInputSection } from "./components/approval-input-section";
 import { EstimateTable, EstimateOrder } from "./components/estimate-table";
-
 import { FilterSection } from "@/components/ui/FilterSection";
 import BaseModal from "@/components/ui/modal/BaseModal";
 import { CallToast } from "@/components/ui/CallToast";
 import CustomButton from "@/components/ui/custom/CustomButton";
+const PENDING_STATUSES = ["pending", "processing", "pending_for_approval"];
+const APPROVED_STATUS = "approved";
 
 // Helper function to calculate total amount from materials
 const calculateTotalAmount = (materials: any[]): string => {
@@ -32,25 +32,31 @@ const EstimateApprovalPage = () => {
   const [from, setFrom] = useState<DateValue | null | undefined>(null);
   const [to, setTo] = useState<DateValue | null | undefined>(null);
 
-  const [approvalDate, setApprovalDate] = useState<
-    DateValue | null | undefined
-  >(null);
-  const [approvalNote, setApprovalNote] = useState("");
   const [activeTab, setActiveTab] = useState<string>("pending");
 
-  // Modal state
-  const [selectedItem, setSelectedItem] = useState<EstimateOrder | null>(null);
-  const [actionType, setActionType] = useState<"approve" | "reject" | null>(
-    null,
-  );
+  // Modal state for creating signature request
+  const [isCreateSignModalOpen, setIsCreateSignModalOpen] = useState(false);
+  const [selectedItemForSign, setSelectedItemForSign] =
+    useState<EstimateOrder | null>(null);
+
+  // State for signer selection
+  const [surveyStaffId, setSurveyStaffId] = useState("");
+  const [planningHeadId, setPlanningHeadId] = useState("");
+  const [companyLeadershipId, setCompanyLeadershipId] = useState("");
+
+  // Available employees for dropdowns - store all employees
+  const [allEmployees, setAllEmployees] = useState<
+    { id: string; fullName: string; departmentName?: string }[]
+  >([]);
+
+  // Modal state for signing
+  const [isSignModalOpen, setIsSignModalOpen] = useState(false);
+  const [selectedItemForSigning, setSelectedItemForSigning] =
+    useState<EstimateOrder | null>(null);
+  const [electronicSignUrl, setElectronicSignUrl] = useState("");
+
   const [isProcessing, setIsProcessing] = useState(false);
-
-  const mapStatus = (status: string): "pending" | "approved" => {
-    return status === "APPROVED" ? "approved" : "pending";
-  };
-
   const [orders, setOrders] = useState<EstimateOrder[]>([]);
-  const [data, setData] = useState<EstimateOrder[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -64,6 +70,34 @@ const EstimateApprovalPage = () => {
   const [page, setPage] = useState(1);
   const [refetch, setRefetch] = useState(0);
   const pageSize = 10;
+
+  // Fetch all employees for dropdowns
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        const res = await fetch("/api/auth/employees?size=1000");
+        const json = await res.json();
+
+        // Extract data from response structure: data.content
+        const employees = json?.data?.content || [];
+
+        // Map to required format
+        const mappedEmployees = employees.map((emp: any) => ({
+          id: emp.id,
+          fullName: emp.fullName,
+          departmentName: emp.departmentName,
+        }));
+
+        setAllEmployees(mappedEmployees);
+      } catch (error) {
+        console.error("Error fetching employees:", error);
+        setAllEmployees([]);
+      }
+    };
+
+    fetchEmployees();
+  }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -107,7 +141,7 @@ const EstimateApprovalPage = () => {
               totalAmount: calculateTotalAmount(item.material),
               createdDate: new Date(info.createdAt).toLocaleDateString("vi-VN"),
               creator: creatorName,
-              status: mapStatus(info.status?.estimate),
+              status: info.status?.estimate?.toLowerCase() || "pending",
             };
           }),
         );
@@ -125,21 +159,33 @@ const EstimateApprovalPage = () => {
     fetchData();
   }, [page, sort, refetch]);
 
+  // Sửa logic lọc trong filteredOrders:
   const filteredOrders = useMemo(() => {
     let filtered = orders;
+
     if (activeTab === "pending") {
-      filtered = filtered.filter((o) => o.status === "pending");
-    } else {
-      filtered = filtered.filter((o) => o.status === "approved");
+      // Các status sẽ hiển thị ở tab "Chờ duyệt"
+      filtered = filtered.filter((o) => {
+        const status = o.status?.toLowerCase();
+        return PENDING_STATUSES.includes(status);
+      });
     }
+
+    if (activeTab === "approved") {
+      // Chỉ hiển thị status = "approved"
+      filtered = filtered.filter((o) => {
+        const status = o.status?.toLowerCase();
+        return status === APPROVED_STATUS;
+      });
+    }
+
     if (keyword) {
       const lowerK = keyword.toLowerCase();
-
       filtered = filtered.filter(
         (o) =>
-          o.code.toLowerCase().includes(lowerK) ||
-          o.designProfileName.toLowerCase().includes(lowerK) ||
-          o.phone.toLowerCase().includes(lowerK),
+          o.code?.toLowerCase().includes(lowerK) ||
+          o.designProfileName?.toLowerCase().includes(lowerK) ||
+          o.phone?.toLowerCase().includes(lowerK),
       );
     }
 
@@ -150,35 +196,24 @@ const EstimateApprovalPage = () => {
     setKeyword(query);
   };
 
-  const handleApprove = (item: EstimateOrder) => {
-    setSelectedItem(item);
-    setActionType("approve");
-    setApprovalDate(null);
-    setApprovalNote("");
-    onOpen();
+  // Handle create signature request
+  const handleCreateSignatureRequest = (item: EstimateOrder) => {
+    setSelectedItemForSign(item);
+    // Reset selections
+    setSurveyStaffId("");
+    setPlanningHeadId("");
+    setCompanyLeadershipId("");
+    setIsCreateSignModalOpen(true);
   };
 
-  const handleReject = (item: EstimateOrder) => {
-    setSelectedItem(item);
-    setActionType("reject");
-    setApprovalDate(null);
-    setApprovalNote("");
-    onOpen();
-  };
+  const handleConfirmCreateSignatureRequest = async () => {
+    if (!selectedItemForSign) return;
 
-  const handleEstimate = (item: EstimateOrder) => {
-    router.push(`/estimate/run/${item.id}`);
-  };
-
-  const handleView = (item: EstimateOrder) => {
-    router.push(`/estimate/run/${item.id}`);
-  };
-
-  const handleConfirmAction = async () => {
-    if (!selectedItem || !actionType) {
+    // Validate at least one signer is selected
+    if (!surveyStaffId && !planningHeadId && !companyLeadershipId) {
       CallToast({
         title: "Thất bại",
-        message: "Vui lòng điền đầy đủ ngày duyệt",
+        message: "Vui lòng chọn ít nhất một người ký",
         color: "danger",
       });
       return;
@@ -186,43 +221,135 @@ const EstimateApprovalPage = () => {
 
     setIsProcessing(true);
     try {
-      const res = await fetch(
-        `/api/construction/estimates/${selectedItem.id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(actionType === "approve"),
+      // Create request body with correct structure
+      const requestBody = {
+        estId: selectedItemForSign.id,
+        surveyStaff: surveyStaffId || null,
+        plHead: planningHeadId || null,
+        companyLeadership: companyLeadershipId || null,
+      };
+
+      const res = await fetch(`/api/construction/estimates/sign`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify(requestBody),
+      });
 
       if (!res.ok) {
         const err = await res.json();
-        throw new Error(err.message || "Cập nhật thất bại");
+        throw new Error(err.message || "Tạo yêu cầu ký thất bại");
       }
 
       CallToast({
         title: "Thành công",
-        message: `${actionType === "approve" ? "Duyệt" : "Từ chối"} dự toán thành công`,
+        message: "Tạo yêu cầu ký duyệt thành công",
         color: "success",
       });
 
-      // Reload data
       setRefetch((prev) => prev + 1);
-      onOpenChange();
-    } catch (error) {
+      setIsCreateSignModalOpen(false);
+    } catch (error: any) {
       CallToast({
         title: "Thất bại",
-        message: error instanceof Error ? error.message : "Có lỗi xảy ra",
+        message: error.message || "Có lỗi xảy ra",
         color: "danger",
       });
     } finally {
       setIsProcessing(false);
     }
   };
-  const pendingCount = orders.filter((o) => o.status === "pending").length;
-  const approvedCount = orders.filter((o) => o.status === "approved").length;
+
+  // Handle sign action (when user clicks on sign button for an estimate they need to sign)
+  const handleSignAction = (item: EstimateOrder) => {
+    setSelectedItemForSigning(item);
+    setElectronicSignUrl("");
+    setIsSignModalOpen(true);
+  };
+
+  const handleConfirmSign = async () => {
+    if (!selectedItemForSigning) return;
+
+    if (!electronicSignUrl.trim()) {
+      CallToast({
+        title: "Thất bại",
+        message: "Vui lòng nhập chữ ký điện tử",
+        color: "danger",
+      });
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      // Create request body for sign
+      const requestBody = {
+        estimateId: selectedItemForSigning.id,
+        electronicSignUrl: electronicSignUrl,
+      };
+
+      const res = await fetch(`/api/construction/estimates/sign`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Ký thất bại");
+      }
+
+      CallToast({
+        title: "Thành công",
+        message: "Ký duyệt dự toán thành công",
+        color: "success",
+      });
+
+      setRefetch((prev) => prev + 1);
+      setIsSignModalOpen(false);
+    } catch (error: any) {
+      CallToast({
+        title: "Thất bại",
+        message: error.message || "Có lỗi xảy ra",
+        color: "danger",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleView = (item: EstimateOrder) => {
+    router.push(`/estimate/run/${item.id}`);
+  };
+
+  // Placeholder functions for approval/rejection/estimation
+  const handleApprove = (item: EstimateOrder) => {
+    // Implement if needed
+    console.log("Approve", item);
+  };
+
+  const handleReject = (item: EstimateOrder) => {
+    // Implement if needed
+    console.log("Reject", item);
+  };
+
+  const handleEstimate = (item: EstimateOrder) => {
+    router.push(`/estimate/run/${item.id}`);
+  };
+
+  // Sửa lại phần đếm số lượng
+  const pendingCount = orders.filter((o) => {
+    const status = o.status?.toLowerCase();
+    return PENDING_STATUSES.includes(status);
+  }).length;
+
+  const approvedCount = orders.filter((o) => {
+    const status = o.status?.toLowerCase();
+    return status === APPROVED_STATUS;
+  }).length;
+
   return (
     <>
       <FilterSection
@@ -237,15 +364,8 @@ const EstimateApprovalPage = () => {
         onSearch={handleSearch}
       />
 
-      {/* <ApprovalInputSection
-        approvalDate={approvalDate}
-        approvalNote={approvalNote}
-        setApprovalDateAction={setApprovalDate}
-        setApprovalNoteAction={setApprovalNote}
-      /> */}
-
       <Tabs
-        aria-label="Options"
+        aria-label="Survey Status"
         classNames={{
           cursor: activeTab === "pending" ? "bg-yellow-500" : "bg-green-500",
           tab: "max-w-fit px-6 h-12",
@@ -253,7 +373,6 @@ const EstimateApprovalPage = () => {
           tabList:
             "gap-6 w-full relative rounded-none p-0 border-b border-divider",
         }}
-        color="primary"
         selectedKey={activeTab}
         variant="underlined"
         onSelectionChange={(key) => setActiveTab(key as string)}
@@ -277,10 +396,12 @@ const EstimateApprovalPage = () => {
             totalPages={totalPages}
             totalItems={totalItems}
             onPageChange={setPage}
-            onApproveAction={handleApprove}
-            onEstimateAction={handleEstimate}
-            onRejectAction={handleReject}
             onViewAction={handleView}
+            onApproveAction={handleApprove}
+            onRejectAction={handleReject}
+            onEstimateAction={handleEstimate}
+            onCreateSignatureRequest={handleCreateSignatureRequest}
+            onSignAction={handleSignAction}
           />
         </Tab>
         <Tab
@@ -302,19 +423,21 @@ const EstimateApprovalPage = () => {
             totalPages={totalPages}
             totalItems={totalItems}
             onPageChange={setPage}
-            onApproveAction={handleApprove}
-            onEstimateAction={handleEstimate}
-            onRejectAction={handleReject}
             onViewAction={handleView}
+            onApproveAction={handleApprove}
+            onRejectAction={handleReject}
+            onEstimateAction={handleEstimate}
+            onCreateSignatureRequest={handleCreateSignatureRequest}
+            onSignAction={handleSignAction}
           />
         </Tab>
       </Tabs>
 
-      {/* Approval/Rejection Modal */}
+      {/* Modal for creating signature request */}
       <BaseModal
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-        title={`${actionType === "approve" ? "Duyệt" : "Từ chối"} dự toán #${selectedItem?.code}`}
+        isOpen={isCreateSignModalOpen}
+        onOpenChange={() => setIsCreateSignModalOpen(false)}
+        title={`Tạo yêu cầu ký duyệt - ${selectedItemForSign?.code}`}
         size="2xl"
       >
         <div className="space-y-6 py-4">
@@ -325,7 +448,7 @@ const EstimateApprovalPage = () => {
                   Khách hàng
                 </p>
                 <p className="font-semibold text-gray-900 dark:text-gray-100">
-                  {selectedItem?.designProfileName}
+                  {selectedItemForSign?.designProfileName}
                 </p>
               </div>
               <div>
@@ -333,7 +456,7 @@ const EstimateApprovalPage = () => {
                   Tổng tiền
                 </p>
                 <p className="font-semibold text-primary">
-                  {selectedItem?.totalAmount}
+                  {selectedItemForSign?.totalAmount}
                 </p>
               </div>
               <div className="col-span-2">
@@ -341,9 +464,74 @@ const EstimateApprovalPage = () => {
                   Địa chỉ
                 </p>
                 <p className="font-medium text-gray-900 dark:text-gray-100">
-                  {selectedItem?.installationAddress}
+                  {selectedItemForSign?.installationAddress}
                 </p>
               </div>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Nhân viên khảo sát ký
+              </label>
+              <select
+                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={surveyStaffId}
+                onChange={(e) => setSurveyStaffId(e.target.value)}
+              >
+                <option value="">-- Chọn nhân viên khảo sát --</option>
+                {allEmployees.map((employee) => (
+                  <option key={employee.id} value={employee.id}>
+                    {employee.fullName}{" "}
+                    {employee.departmentName
+                      ? `(${employee.departmentName})`
+                      : ""}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Trưởng phòng Kế hoạch Kỹ thuật
+              </label>
+              <select
+                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={planningHeadId}
+                onChange={(e) => setPlanningHeadId(e.target.value)}
+              >
+                <option value="">-- Chọn trưởng phòng --</option>
+                {allEmployees.map((employee) => (
+                  <option key={employee.id} value={employee.id}>
+                    {employee.fullName}{" "}
+                    {employee.departmentName
+                      ? `(${employee.departmentName})`
+                      : ""}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Lãnh đạo công ty
+              </label>
+              <select
+                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={companyLeadershipId}
+                onChange={(e) => setCompanyLeadershipId(e.target.value)}
+              >
+                <option value="">-- Chọn lãnh đạo --</option>
+                {allEmployees.map((employee) => (
+                  <option key={employee.id} value={employee.id}>
+                    {employee.fullName}{" "}
+                    {employee.departmentName
+                      ? `(${employee.departmentName})`
+                      : ""}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         </div>
@@ -351,9 +539,8 @@ const EstimateApprovalPage = () => {
         <div className="flex gap-3 pt-6 border-t border-divider">
           <CustomButton
             onPress={() => {
-              onOpenChange();
-              setSelectedItem(null);
-              setActionType(null);
+              setIsCreateSignModalOpen(false);
+              setSelectedItemForSign(null);
             }}
             className="font-medium"
             color="default"
@@ -362,12 +549,76 @@ const EstimateApprovalPage = () => {
             Hủy
           </CustomButton>
           <CustomButton
-            onPress={handleConfirmAction}
+            onPress={handleConfirmCreateSignatureRequest}
             isLoading={isProcessing}
             className="text-white font-medium"
-            color={actionType === "approve" ? "success" : "danger"}
+            color="primary"
           >
-            {actionType === "approve" ? "Duyệt" : "Từ chối"}
+            Tạo yêu cầu
+          </CustomButton>
+        </div>
+      </BaseModal>
+
+      {/* Modal for signing */}
+      <BaseModal
+        isOpen={isSignModalOpen}
+        onOpenChange={() => setIsSignModalOpen(false)}
+        title={`Ký duyệt dự toán - ${selectedItemForSigning?.code}`}
+        size="2xl"
+      >
+        <div className="space-y-4 py-4">
+          <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Khách hàng
+                </p>
+                <p className="font-semibold text-gray-900 dark:text-gray-100">
+                  {selectedItemForSigning?.designProfileName}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Tổng tiền
+                </p>
+                <p className="font-semibold text-primary">
+                  {selectedItemForSigning?.totalAmount}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              Chữ ký điện tử
+            </label>
+            <input
+              type="text"
+              placeholder="Nhập chữ ký điện tử hoặc URL chữ ký"
+              className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              value={electronicSignUrl}
+              onChange={(e) => setElectronicSignUrl(e.target.value)}
+            />
+            <p className="text-sm text-gray-500 mt-1">
+              Vui lòng nhập chữ ký điện tử của bạn để xác nhận duyệt dự toán
+            </p>
+          </div>
+        </div>
+
+        <div className="flex gap-3 pt-6 border-t border-divider">
+          <CustomButton
+            onPress={() => setIsSignModalOpen(false)}
+            color="default"
+            variant="bordered"
+          >
+            Hủy
+          </CustomButton>
+          <CustomButton
+            onPress={handleConfirmSign}
+            isLoading={isProcessing}
+            color="success"
+          >
+            Xác nhận ký
           </CustomButton>
         </div>
       </BaseModal>
