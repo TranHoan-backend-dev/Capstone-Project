@@ -64,6 +64,7 @@ export interface CustomerLookupItem {
   name: string;
   email: string;
   phoneNumber: string;
+  address: string;
   customerId?: string;
   bankAccountName?: string;
   bankAccountNumber?: string;
@@ -152,6 +153,7 @@ export interface CreateCustomerPayload {
   name: string;
   email: string;
   phoneNumber: string;
+  address: string;
   type: string;
   isBigCustomer: boolean;
   usageTarget: string;
