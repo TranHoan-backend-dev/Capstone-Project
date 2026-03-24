@@ -242,21 +242,22 @@ export const TechnicalInfoCard = ({
         body: JSON.stringify(payload),
       });
 
-      const responseText = await res.text();
+      const json = await res.json();
 
       if (!res.ok) {
-        throw new Error(`HTTP ${res.status}: ${responseText}`);
+        throw new Error(
+          json?.error?.message || json?.message || "Có lỗi xảy ra",
+        );
       }
       if (!res.ok) {
         CallToast({
           title: "Thất bại",
-          message: responseText || "Lưu thất bại",
+          message: json?.error?.message || "Lưu thất bại",
           color: "danger",
         });
         return;
       }
 
-      const json = JSON.parse(responseText);
       setEstimateData(json.data);
 
       if (designImageFile) {
