@@ -9,13 +9,19 @@ export const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
     console.log('hehe')
     const accessToken = await TokenManager.getAccessToken();
 
+    const isFormData = options.body instanceof FormData;
+
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       ...((options.headers as Record<string, string>) || {}),
     };
 
+
     if (accessToken) {
       headers.Authorization = `Bearer ${accessToken}`;
+      console.log(`[API Debug] Auth Header: Bearer ${accessToken.substring(0, 10)}...`);
+    } else {
+      console.log('[API Debug] NO Access Token found!');
     }
 
     console.log(`[API Request] ${options.method || 'GET'} ${BASE_URL}${endpoint}`);

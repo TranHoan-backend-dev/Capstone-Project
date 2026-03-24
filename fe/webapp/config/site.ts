@@ -148,6 +148,11 @@ export const siteConfig = {
           href: "/water-price",
           roles: ["it_staff"],
         },
+        {
+          key: "access-rights",
+          label: "Quản lý quyền truy cập",
+          href: "/access-rights",
+        },
       ],
     },
 

@@ -1,6 +1,7 @@
 package com.capstone.device.application.business.usagehistory;
 
 import com.capstone.common.exception.NotExistingException;
+import com.capstone.device.application.dto.response.pricetype.PendingReviewResponse;
 import com.capstone.device.application.dto.response.pricetype.PriceTypeResponse;
 import com.capstone.device.application.dto.response.pricetype.UsageResponse;
 import com.capstone.device.application.dto.response.customer.CustomerWaterPriceRefResponse;
@@ -40,19 +41,22 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
 
   @Override
   @Transactional
-  public UsageResponse addWaterIndexOfThisMonth(String imageUrl, String serial, BigDecimal index, LocalDate recordingDate) {
+  public UsageResponse addWaterIndexOfThisMonth(String imageUrl, String serial, BigDecimal index,
+      LocalDate recordingDate) {
     var meter = waterMeterRepository.findWaterMeterById(serial);
     var h = repository.findByMeter(meter);
 
     var usage = Usage.builder()
-      .index(index)
-      .mass(null)
-      .isPaid(false)
-      .meterImageUrl(imageUrl)
-      .paymentMethod(null)
-      .price(null)
-      .recordingDate(recordingDate)
-      .build();
+        .id(UUID.randomUUID().toString())
+        .index(index)
+        .mass(null)
+        .isPaid(false)
+        .meterImageUrl(imageUrl)
+        .paymentMethod(null)
+        .status("PENDING")
+        .price(null)
+        .recordingDate(recordingDate)
+        .build();
 
     if (h.isPresent()) {
       var history = h.get();
@@ -61,11 +65,11 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
     } else {
       var customerId = customerService.getCustomerIdByMeterId(meter.getId());
       var usageHistory = UsageHistory.builder()
-        .usageHistory(meter.getId())
-        .meter(meter)
-        .customerId(customerId)
-        .usages(new Stack<>())
-        .build();
+          .usageHistory(meter.getId())
+          .meter(meter)
+          .customerId(customerId)
+          .usages(new Stack<>())
+          .build();
       var customerInfo = getCustomerInfo(customerId);
       return getUsageResponse(imageUrl, index, recordingDate, usage, usageHistory, customerInfo);
     }
@@ -99,11 +103,11 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
   public UsageResponse updateUsageDetails(String serial, LocalDate recordingDate, BigDecimal index, String imageUrl) {
     var meter = waterMeterRepository.findWaterMeterById(serial);
     var history = repository.findByMeter(meter)
-      .orElseThrow(() -> new NotExistingException("Không tìm thấy lịch sử sử dụng cho serial: " + serial));
+        .orElseThrow(() -> new NotExistingException("Không tìm thấy lịch sử sử dụng cho serial: " + serial));
 
     var usageOpt = history.getUsages().stream()
-      .filter(u -> u.getRecordingDate() != null && u.getRecordingDate().equals(recordingDate))
-      .findFirst();
+        .filter(u -> u.getRecordingDate() != null && u.getRecordingDate().equals(recordingDate))
+        .findFirst();
 
     if (usageOpt.isEmpty()) {
       throw new NotExistingException("Không tìm thấy bản ghi sử dụng vào ngày: " + recordingDate);
@@ -115,24 +119,27 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
 
     // Recalculate mass and price
     usage.setIndex(index);
-    if (imageUrl != null) usage.setMeterImageUrl(imageUrl);
+    if (imageUrl != null)
+      usage.setMeterImageUrl(imageUrl);
 
     // To recalculate mass correctly, we need the mass calculation logic
     // Actually, we can just call calculateMass again
-    // But calculateMass uses the current history, so we should temporarily remove the updated one or handle it
+    // But calculateMass uses the current history, so we should temporarily remove
+    // the updated one or handle it
     // For simplicity, let's just redo the logic for this specific record
 
     // Find previous index
     var previousIndex = history.getUsages().stream()
-      .filter(u -> u.getIndex() != null)
-      .filter(u -> u.getRecordingDate() != null && u.getRecordingDate().isBefore(recordingDate))
-      .max(Comparator.comparing(Usage::getRecordingDate))
-      .map(Usage::getIndex)
-      .orElse(BigDecimal.ZERO);
+        .filter(u -> u.getIndex() != null)
+        .filter(u -> u.getRecordingDate() != null && u.getRecordingDate().isBefore(recordingDate))
+        .max(Comparator.comparing(Usage::getRecordingDate))
+        .map(Usage::getIndex)
+        .orElse(BigDecimal.ZERO);
 
     var mass = index.subtract(previousIndex);
     if (mass.compareTo(BigDecimal.ZERO) < 0) {
-      throw new IllegalArgumentException("Chỉ số nước mới phải lớn hơn hoặc bằng chỉ số kỳ trước (" + previousIndex + ")");
+      throw new IllegalArgumentException(
+          "Chỉ số nước mới phải lớn hơn hoặc bằng chỉ số kỳ trước (" + previousIndex + ")");
     }
     var massScaled = mass.setScale(2, RoundingMode.HALF_UP);
     usage.setMass(massScaled);
@@ -143,10 +150,84 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
     return mapToResponse(repository.save(history), customerInfo.name(), waterPrice);
   }
 
+  @Override
+  public List<PendingReviewResponse> getPendingReviews() {
+    List<UsageHistory> allHistories = repository.findAll();
+    return allHistories.stream()
+        .flatMap(h -> h.getUsages().stream()
+            .filter(u -> "PENDING".equals(u.getStatus()))
+            .map(u -> {
+              var customerInfo = getCustomerInfo(h.getCustomerId());
+              // Tìm chỉ số cũ (chỉ số trước bản ghi pending này)
+              var oldIndex = h.getUsages().stream()
+                  .filter(prev -> prev.getIndex() != null && "APPROVED".equals(prev.getStatus()))
+                  .filter(
+                      prev -> prev.getRecordingDate() != null && prev.getRecordingDate().isBefore(u.getRecordingDate()))
+                  .max(Comparator.comparing(Usage::getRecordingDate))
+                  .map(Usage::getIndex)
+                  .orElse(BigDecimal.ZERO);
+
+              return com.capstone.device.application.dto.response.pricetype.PendingReviewResponse.builder()
+                  .id(u.getId())
+                  .serial(h.getUsageHistory())
+                  .customerId(h.getCustomerId())
+                  .customerName(customerInfo.name())
+                  .address("Địa chỉ khách hàng") // Mocked or fetch from customerInfo if available
+                  .oldIndex(oldIndex)
+                  .newIndexAI(u.getIndex())
+                  .imageUrl(u.getMeterImageUrl())
+                  .status(u.getStatus())
+                  .build();
+            }))
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  @Transactional
+  public void confirmMeterReading(String reviewId, BigDecimal finalIndex, String status) {
+    // Tìm bản ghi chứa usageId này
+    var historyOpt = repository.findAll().stream()
+        .filter(h -> h.getUsages().stream().anyMatch(u -> reviewId.equals(u.getId())))
+        .findFirst();
+
+    if (historyOpt.isEmpty()) {
+      throw new NotExistingException("Không tìm thấy bản ghi chờ duyệt: " + reviewId);
+    }
+
+    var history = historyOpt.get();
+    var usage = history.getUsages().stream()
+        .filter(u -> reviewId.equals(u.getId()))
+        .findFirst().get();
+
+    usage.setIndex(finalIndex);
+    usage.setStatus(status);
+
+    if ("APPROVED".equals(status)) {
+      // Tính toán lại mass và price
+      var customerInfo = getCustomerInfo(history.getCustomerId());
+      var waterPrice = resolveWaterPrice(customerInfo.waterPriceId());
+
+      var previousIndex = history.getUsages().stream()
+          .filter(u -> u.getIndex() != null && "APPROVED".equals(u.getStatus()))
+          .filter(u -> u.getRecordingDate() != null && u.getRecordingDate().isBefore(usage.getRecordingDate()))
+          .max(Comparator.comparing(Usage::getRecordingDate))
+          .map(Usage::getIndex)
+          .orElse(BigDecimal.ZERO);
+
+      var mass = finalIndex.subtract(previousIndex);
+      var massScaled = mass.setScale(2, RoundingMode.HALF_UP);
+      usage.setMass(massScaled);
+
+      var breakdown = waterChargeCalculator.calculateProgressiveCharge(massScaled, waterPrice);
+      usage.setPrice(breakdown.totalAmount());
+    }
+
+    repository.save(history);
+  }
+
   private UsageResponse getUsageResponse(
-    String imageUrl, BigDecimal index, LocalDate recordingDate, @NonNull Usage usage,
-    UsageHistory history, @NonNull CustomerWaterPriceRefResponse customerInfo
-  ) {
+      String imageUrl, BigDecimal index, LocalDate recordingDate, @NonNull Usage usage,
+      UsageHistory history, @NonNull CustomerWaterPriceRefResponse customerInfo) {
     var waterPrice = resolveWaterPrice(customerInfo.waterPriceId());
     var mass = calculateMass(history, index, recordingDate);
     var breakdown = waterChargeCalculator.calculateProgressiveCharge(mass, waterPrice);
@@ -159,13 +240,14 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
     return mapToResponse(repository.save(history), customerInfo.name(), waterPrice);
   }
 
-  private @NonNull BigDecimal calculateMass(@NonNull UsageHistory history, @NonNull BigDecimal currentIndex, LocalDate recordingDate) {
+  private @NonNull BigDecimal calculateMass(@NonNull UsageHistory history, @NonNull BigDecimal currentIndex,
+      LocalDate recordingDate) {
     var previousIndex = history.getUsages().stream()
-      .filter(u -> u.getIndex() != null)
-      .filter(u -> u.getRecordingDate() == null || !u.getRecordingDate().isAfter(recordingDate))
-      .max(Comparator.comparing(u -> u.getRecordingDate() == null ? LocalDate.MIN : u.getRecordingDate()))
-      .map(Usage::getIndex)
-      .orElse(BigDecimal.ZERO);
+        .filter(u -> u.getIndex() != null)
+        .filter(u -> u.getRecordingDate() == null || !u.getRecordingDate().isAfter(recordingDate))
+        .max(Comparator.comparing(u -> u.getRecordingDate() == null ? LocalDate.MIN : u.getRecordingDate()))
+        .map(Usage::getIndex)
+        .orElse(BigDecimal.ZERO);
 
     var mass = currentIndex.subtract(previousIndex);
     if (mass.compareTo(BigDecimal.ZERO) < 0) {
@@ -188,23 +270,24 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
     }
 
     return waterPriceRepository.findById(waterPriceId)
-      .orElseThrow(() -> new NotExistingException("Không tìm thấy bảng giá nước"));
+        .orElseThrow(() -> new NotExistingException("Không tìm thấy bảng giá nước"));
   }
 
-  private UsageResponse mapToResponse(@NonNull UsageHistory entity, String customerName, @NonNull WaterPrice waterPrice) {
+  private UsageResponse mapToResponse(@NonNull UsageHistory entity, String customerName,
+      @NonNull WaterPrice waterPrice) {
     log.info(waterPrice.getPriceId());
     var priceTypeResponses = waterPrice.getPriceTypes().stream()
-      .map(pt -> new PriceTypeResponse(pt.getPriceTypeId(), pt.getArea(), pt.getPrice()))
-      .toList();
+        .map(pt -> new PriceTypeResponse(pt.getPriceTypeId(), pt.getArea(), pt.getPrice()))
+        .toList();
 
     return UsageResponse.builder()
-      .serial(entity.getUsageHistory())
-      .customerId(entity.getCustomerId())
-      .customerName(customerName)
-      .priceTypes(priceTypeResponses)
-      .usagesList(entity.getUsages())
-      .tax(waterPrice.getTax())
-      .environmentPrice(waterPrice.getEnvironmentPrice())
-      .build();
+        .serial(entity.getUsageHistory())
+        .customerId(entity.getCustomerId())
+        .customerName(customerName)
+        .priceTypes(priceTypeResponses)
+        .usagesList(entity.getUsages())
+        .tax(waterPrice.getTax())
+        .environmentPrice(waterPrice.getEnvironmentPrice())
+        .build();
   }
 }

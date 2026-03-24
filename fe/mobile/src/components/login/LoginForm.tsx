@@ -38,7 +38,7 @@ export default function LoginForm() {
       // 3. Receive response & Store token (handled inside service through context)
       showToast.success('Đăng nhập thành công');
     } catch (error: any) {
-      console.error('Login error:', error);
+      console.error('Login error:', error.message);
       // apiFetch đã hiển thị toast rồi
     } finally {
       setIsLoading(false);

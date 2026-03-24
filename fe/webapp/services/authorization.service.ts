@@ -20,6 +20,16 @@ export const getAllEmployees = (
     },
   });
 
+export const getBusinessPageNamesOfEmployees = (
+  accessToken: string,
+  empId: string,
+) =>
+  axios.get(`${API_GATEWAY_URL}/auth/authorization/${empId}/pages`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
 export const getSurveyStaff = (
   accessToken: string,
   page: number,

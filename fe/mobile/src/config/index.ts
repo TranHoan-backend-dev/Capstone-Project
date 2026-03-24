@@ -7,9 +7,9 @@ import {
 } from '@env';
 
 export const CONFIG = {
-  API_BASE_URL: API_BASE_URL || 'http://192.168.0.100:9003/api/v1',
+  API_BASE_URL: API_BASE_URL || 'http://10.0.2.2:8000',
   KEYCLOAK: {
-    URL: KEYCLOAK_URL || 'http://192.168.0.100:8080',
+    URL: KEYCLOAK_URL || 'http://10.0.2.2:8080',
     REALM: KEYCLOAK_REALM || 'cmsn',
     CLIENT_ID: KEYCLOAK_CLIENT_ID || 'cmsn',
     CLIENT_SECRET: KEYCLOAK_CLIENT_SECRET || '',

@@ -10,6 +10,7 @@ public record UserProfileResponse(
   String role,
   String username,
   String email,
-  String id
+  String id,
+  String significanceUrl
 ) {
 }

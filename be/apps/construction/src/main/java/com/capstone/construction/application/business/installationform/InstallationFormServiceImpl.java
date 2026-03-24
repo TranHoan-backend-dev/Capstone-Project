@@ -13,6 +13,7 @@ import com.capstone.construction.application.dto.response.installationform.NewIn
 import com.capstone.construction.domain.model.InstallationForm;
 import com.capstone.construction.domain.model.WaterSupplyNetwork;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
+import com.capstone.construction.infrastructure.persistence.CostEstimateRepository;
 import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
 import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRepository;
 import com.capstone.construction.infrastructure.utils.Message;
@@ -43,6 +44,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   InstallationFormRepository ifRepo;
   WaterSupplyNetworkRepository wsnRepo;
   CostEstimateService costEstimateService;
+  CostEstimateRepository costEstimateRepo;
   EmployeeService empSrv;
   DeviceService owmSrv;
   @NonFinal
@@ -154,6 +156,10 @@ public class InstallationFormServiceImpl implements InstallationFormService {
         var requestStatus = order.getStatus();
         requestStatus.setRegistration(ProcessingStatus.APPROVED);
         requestStatus.setEstimate(ProcessingStatus.PENDING_FOR_APPROVAL);
+
+        if (costEstimateRepo.existsByInstallationForm(order)) {
+          throw new IllegalArgumentException(SharedMessage.MES_25);
+        }
 
         // tao san du toan rong
         costEstimateService.createEstimate(new CreateRequest(
