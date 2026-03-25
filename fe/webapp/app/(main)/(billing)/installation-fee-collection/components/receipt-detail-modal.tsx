@@ -42,7 +42,7 @@ export const ReceiptDetailModal = ({
               Chi tiết phiếu thu
               {formCode && formNumber && (
                 <p className="text-sm font-normal text-default-500">
-                  Mã phiếu: {formCode} - {formNumber}
+                  Mã phiếu: {formNumber}
                 </p>
               )}
             </ModalHeader>
