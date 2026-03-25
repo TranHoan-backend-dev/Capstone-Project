@@ -31,5 +31,5 @@ public interface EmployeeService {
   WrapperApiResponse getRoleOfEmployeeById(@PathVariable String id);
 
   @GetMapping("/significance/{id}")
-  WrapperApiResponse getElectronicSignificance(@PathVariable String id);
+  String getElectronicSignificance(@PathVariable String id);
 }

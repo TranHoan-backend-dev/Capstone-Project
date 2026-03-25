@@ -148,8 +148,18 @@ public class AuthorizationController {
 
   @Operation(hidden = true)
   @GetMapping("/employees/role/{id}")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'SURVEY_STAFF')")
   public ResponseEntity<?> getRoleOfEmployeeById(@PathVariable String id) {
+    log.info("Getting role of employee by id: {}", id);
     return Utils.returnOkResponse("", userService.getRoleOfEmployee(id));
+  }
+
+  @Operation(hidden = true)
+  @GetMapping("/employees/significance/{id}")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'SURVEY_STAFF')")
+  public String getElectronicSignificance(@PathVariable String id) {
+    log.info("Get significance of employee: {}", id);
+    return userService.getSignificanceOfEmployee(id);
   }
 
   @Operation(description = "Lay ra toan bo nhan vien khao sat")
@@ -160,7 +170,7 @@ public class AuthorizationController {
     log.info("Get all survey staffs: {}", response);
     return Utils.returnOkResponse("Lay toan bo nhan vien khao sat thanh cong", response);
   }
-  // </editor-fold>
+// </editor-fold>
 
   // <editor-fold> desc="business pages"
   @Operation(summary = "Lấy các trang web nghiệp vụ được ủy quyền cho nhân viên", description = """
@@ -213,7 +223,7 @@ public class AuthorizationController {
 
     return Utils.returnOkResponse("Cập nhật trang nghiệp vụ thành công", null);
   }
-  // </editor-fold>
+// </editor-fold>
 
   // <editor-fold> desc="job"
   @Operation(hidden = true)
@@ -223,5 +233,5 @@ public class AuthorizationController {
     log.info("Checking if job {} is assigned to any employee", jobId);
     return Utils.returnOkResponse("Kiểm tra gán việc thành công", usersUseCase.isJobAssigned(jobId));
   }
-  // </editor-fold>
+// </editor-fold>
 }

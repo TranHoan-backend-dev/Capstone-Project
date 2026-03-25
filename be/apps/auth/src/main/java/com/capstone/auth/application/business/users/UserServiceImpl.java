@@ -229,8 +229,6 @@ public class UserServiceImpl implements UserService {
     if (!emp.getIsEnabled()) {
       throw new IllegalArgumentException(Message.SE_16);
     }
-    var profile = profileRepo.findById(id)
-      .orElseThrow(() -> new NotExistingException(String.format(Message.SE_15, id)));
 
     emp.setIsEnabled(false);
     indRepo.deleteByUserId(id);
@@ -265,6 +263,12 @@ public class UserServiceImpl implements UserService {
     return employees.stream()
       .map(this::mapToEmployeeResponse)
       .collect(Collectors.toList());
+  }
+
+  @Override
+  public String getSignificanceOfEmployee(String id) {
+    var user = getById(id);
+    return user.getElectronicSigningUrl();
   }
 
   private Users getById(String id) {
