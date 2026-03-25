@@ -1,6 +1,11 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "defaultBase": "master",
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx/tasks-runners/default"
+    }
+  },
   "namedInputs": {
     "default": [
       "{projectRoot}/**/*",
@@ -15,7 +20,7 @@
       "{workspaceRoot}/.github/workflows/ci.yml"
     ]
   },
-  "nxCloudId": "692127ac7b3e9577e4f1c5b3",
+  //  "nxCloudId": "692127ac7b3e9577e4f1c5b3",
   "plugins": [
     {
       "plugin": "@nx/js/typescript",

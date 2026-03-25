@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -47,14 +48,14 @@ class ConstructionRequestServiceImplTest {
 
     when(customerService.checkExistenceOfCustomer(empId)).thenReturn(true);
     when(customerService.checkExistenceOfContract(contractId)).thenReturn(true);
-    when(employeeService.isEmployeeExisting(empId)).thenReturn(new WrapperApiResponse(200, "OK", true, LocalDateTime.now()));
-    when(employeeService.getRoleOfEmployeeById(empId)).thenReturn(new WrapperApiResponse(200, "OK", RoleName.CONSTRUCTION_DEPARTMENT_STAFF.name(), LocalDateTime.now()));
-    
+    when(employeeService.isEmployeeExisting(empId)).thenReturn(new WrapperApiResponse(200, "OK", true, OffsetDateTime.now()));
+    when(employeeService.getRoleOfEmployeeById(empId)).thenReturn(new WrapperApiResponse(200, "OK", RoleName.CONSTRUCTION_DEPARTMENT_STAFF.name(), OffsetDateTime.now()));
+
     InstallationForm form = new InstallationForm();
     form.setFormCode(formCode);
     form.setFormNumber(formNumber);
     when(ifRepo.findById(new InstallationFormId(formCode, formNumber))).thenReturn(Optional.of(form));
-    
+
     ConstructionRequest request = ConstructionRequest.builder()
       .id("REQ1")
       .contractId(contractId)
@@ -90,8 +91,8 @@ class ConstructionRequestServiceImplTest {
 
     when(repository.findById(id)).thenReturn(Optional.of(request));
     when(request.getInstallationForm()).thenReturn(form);
-    when(employeeService.isEmployeeExisting(empId)).thenReturn(new WrapperApiResponse(200, "OK", true, LocalDateTime.now()));
-    when(employeeService.getRoleOfEmployeeById(empId)).thenReturn(new WrapperApiResponse(200, "OK", RoleName.CONSTRUCTION_DEPARTMENT_STAFF.name(), LocalDateTime.now()));
+    when(employeeService.isEmployeeExisting(empId)).thenReturn(new WrapperApiResponse(200, "OK", true, OffsetDateTime.now()));
+    when(employeeService.getRoleOfEmployeeById(empId)).thenReturn(new WrapperApiResponse(200, "OK", RoleName.CONSTRUCTION_DEPARTMENT_STAFF.name(), OffsetDateTime.now()));
 
     // Act
     service.updatePendingRequest(id, empId);
@@ -106,7 +107,7 @@ class ConstructionRequestServiceImplTest {
     var id = "REQ1";
     var empId = "EMP1";
     when(repository.findById(id)).thenReturn(Optional.of(mock(ConstructionRequest.class)));
-    when(employeeService.isEmployeeExisting(empId)).thenReturn(new WrapperApiResponse(200, "OK", false, LocalDateTime.now()));
+    when(employeeService.isEmployeeExisting(empId)).thenReturn(new WrapperApiResponse(200, "OK", false, OffsetDateTime.now()));
 
     assertThrows(IllegalArgumentException.class, () -> service.updatePendingRequest(id, empId));
   }
@@ -116,8 +117,8 @@ class ConstructionRequestServiceImplTest {
     var id = "REQ1";
     var empId = "EMP1";
     when(repository.findById(id)).thenReturn(Optional.of(mock(ConstructionRequest.class)));
-    when(employeeService.isEmployeeExisting(empId)).thenReturn(new WrapperApiResponse(200, "OK", true, LocalDateTime.now()));
-    when(employeeService.getRoleOfEmployeeById(empId)).thenReturn(new WrapperApiResponse(200, "OK", RoleName.ORDER_RECEIVING_STAFF.name(), LocalDateTime.now()));
+    when(employeeService.isEmployeeExisting(empId)).thenReturn(new WrapperApiResponse(200, "OK", true, OffsetDateTime.now()));
+    when(employeeService.getRoleOfEmployeeById(empId)).thenReturn(new WrapperApiResponse(200, "OK", RoleName.ORDER_RECEIVING_STAFF.name(), OffsetDateTime.now()));
 
     assertThrows(IllegalArgumentException.class, () -> service.updatePendingRequest(id, empId));
   }

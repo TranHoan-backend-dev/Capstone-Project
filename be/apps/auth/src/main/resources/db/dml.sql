@@ -1,3 +1,5 @@
+create extension if not exists unaccent;
+
 DO
 $$
   DECLARE

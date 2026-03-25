@@ -82,12 +82,9 @@ public class ReceiptServiceImpl implements ReceiptService {
   @Transactional
   public ReceiptResponse updateReceipt(@NonNull UpdateRequest request) {
     log.info("Updating receipt for form: {}/{}", request.formCode(), request.formNumber());
-    if (request.formCode() == null || request.formNumber() == null) {
-      throw new IllegalArgumentException("Form code and number must not be null for update");
-    }
     var formId = new InstallationFormId(request.formCode(), request.formNumber());
     var receipt = receiptRepo.findById(formId)
-      .orElseThrow(() -> new IllegalArgumentException("Receipt not found for form: " + request.formNumber()));
+      .orElseThrow(() -> new IllegalArgumentException("Khong tim thay phieu thu voi so don: " + request.formNumber()));
 
     if (request.receiptNumber() != null) {
       receipt.setReceiptNumber(request.receiptNumber());

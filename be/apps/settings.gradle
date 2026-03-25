@@ -12,3 +12,4 @@ include 'eureka'
 include 'image'
 include 'gateway'
 include 'common'
+// "nxCloudId": "692127ac7b3e9577e4f1c5b3",
