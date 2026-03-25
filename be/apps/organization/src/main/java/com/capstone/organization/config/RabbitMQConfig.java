@@ -74,7 +74,10 @@ public class RabbitMQConfig {
       }
     }
 
-    declarables.add(buildQueueForUpdateBusinessPage(exchange));
+    var queue = new Queue("update-page", true);
+    declarables.add(queue);
+    declarables.add(buildQueueForUpdateBusinessPage(queue, exchange));
+    System.out.println(declarables);
 
     return new Declarables(declarables);
   }
@@ -86,8 +89,7 @@ public class RabbitMQConfig {
     return admin;
   }
 
-  private @NonNull Binding buildQueueForUpdateBusinessPage(@NonNull TopicExchange exchange) {
-    var queue = new Queue("update-page", true);
+  private @NonNull Binding buildQueueForUpdateBusinessPage(Queue queue, @NonNull TopicExchange exchange) {
     return BindingBuilder.bind(queue)
       .to(exchange)
       .with("update-page");

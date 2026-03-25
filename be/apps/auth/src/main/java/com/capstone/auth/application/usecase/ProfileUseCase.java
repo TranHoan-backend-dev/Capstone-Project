@@ -204,7 +204,8 @@ public class ProfileUseCase {
       user.role().toLowerCase(),
       user.username(),
       user.email(),
-      user.userId()
+      user.userId(),
+      user.electronicSigningUrl()
     );
   }
 }

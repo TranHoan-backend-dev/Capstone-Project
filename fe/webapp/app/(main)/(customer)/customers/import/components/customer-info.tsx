@@ -146,6 +146,12 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
           onValueChange={(value) => onUpdate("phoneNumber", value)}
         />
         <CustomInput
+          label="Địa chỉ"
+          isRequired
+          value={formData.address}
+          onValueChange={(value) => onUpdate("address", value)}
+        />
+        <CustomInput
           label="Số CCCD"
           value={formData.citizenIdentificationNumber}
           onValueChange={(value) =>

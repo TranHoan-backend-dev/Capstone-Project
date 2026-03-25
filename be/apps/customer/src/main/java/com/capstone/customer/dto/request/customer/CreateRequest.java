@@ -65,6 +65,11 @@ public record CreateRequest(
   @Schema(description = "", example = "2023-12")
   String deductionPeriod,
 
+  @Schema(description = "", example = "2023-12")
+  @NotEmpty
+  @NotBlank
+  String address,
+
   @Schema(description = "", example = "20000")
   Integer monthlyRent,
 

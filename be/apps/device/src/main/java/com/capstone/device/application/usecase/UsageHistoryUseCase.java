@@ -3,6 +3,7 @@ package com.capstone.device.application.usecase;
 import com.capstone.device.application.business.usagehistory.UsageHistoryService;
 import com.capstone.device.application.business.watermeter.WaterMeterService;
 import com.capstone.device.application.dto.request.UsageHistoryRequest;
+import com.capstone.device.application.dto.response.pricetype.PendingReviewResponse;
 import com.capstone.device.application.dto.response.pricetype.UsageResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 import com.capstone.device.infrastructure.service.GcsService;
 
 import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -26,7 +28,7 @@ public class UsageHistoryUseCase {
     if (!waterMeterService.isWaterMeterExisting(serial)) {
       throw new IllegalArgumentException("Serial " + serial + " does not exist");
     }
-//    var url = service.upload(request.image());
+    // var url = service.upload(request.image());
     return usageHistoryService.addWaterIndexOfThisMonth("url", serial, request.index(), request.recordingDate());
   }
 
@@ -34,15 +36,20 @@ public class UsageHistoryUseCase {
     usageHistoryService.updatePaymentStatus(serial, method);
   }
 
-  public UsageResponse updateUsage(String serial, java.time.LocalDate recordingDate, java.math.BigDecimal index, String imageUrl) {
+  public UsageResponse updateUsage(String serial, java.time.LocalDate recordingDate, java.math.BigDecimal index,
+      String imageUrl) {
     return usageHistoryService.updateUsageDetails(serial, recordingDate, index, imageUrl);
   }
 
-  public java.util.List<UsageResponse> getUsageByCustomerIds(Collection<String> customerIds) {
+  public List<UsageResponse> getUsageByCustomerIds(Collection<String> customerIds) {
     return usageHistoryService.getUsageByCustomerIds(customerIds);
   }
 
-  public UsageResponse getUsageHistoryByCustomerId(String customerId) {
-    return usageHistoryService.getUsageHistoryByCustomerId(customerId);
+  public List<PendingReviewResponse> getPendingReviews() {
+    return usageHistoryService.getPendingReviews();
+  }
+
+  public void confirmMeterReading(String reviewId, java.math.BigDecimal finalIndex, String status) {
+    usageHistoryService.confirmMeterReading(reviewId, finalIndex, status);
   }
 }

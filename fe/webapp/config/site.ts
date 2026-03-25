@@ -89,6 +89,11 @@ export const siteConfig = {
           label: "Quản lý Giá nước",
           href: "/water-price",
         },
+        {
+          key: "access-rights",
+          label: "Quản lý quyền truy cập",
+          href: "/access-rights",
+        },
       ],
     },
 

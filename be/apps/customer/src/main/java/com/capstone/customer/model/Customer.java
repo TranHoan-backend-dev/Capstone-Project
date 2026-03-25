@@ -36,6 +36,10 @@ public class Customer {
   String email;
 
   @Column(nullable = false)
+  @Setter
+  String address;
+
+  @Column(nullable = false)
   String phoneNumber;
 
   @Column(nullable = false)
@@ -488,6 +492,11 @@ public class Customer {
 
     public CustomerBuilder formCode(String value) {
       customer.setFormCode(value);
+      return this;
+    }
+
+    public CustomerBuilder address(String value) {
+      customer.setAddress(value);
       return this;
     }
 

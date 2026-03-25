@@ -1,6 +1,7 @@
 package com.capstone.construction.application.dto.response.estimate;
 
 import com.capstone.common.request.BaseMaterial;
+import com.capstone.construction.domain.model.utils.FormProcessingStatus;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
 
 import java.time.LocalDate;
@@ -34,7 +35,8 @@ public record CostEstimateResponse(
     String createBy,
     String waterMeterSerial,
     String overallWaterMeterId,
-    InstallationFormId installationFormId
+    InstallationFormId installationFormId,
+    FormProcessingStatus status
   ) {
 
   }

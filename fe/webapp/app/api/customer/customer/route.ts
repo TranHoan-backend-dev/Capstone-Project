@@ -45,14 +45,31 @@ export async function POST(req: NextRequest) {
     if (!accessToken) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
+
     const body = await req.json();
+    console.log("Request body:", body); // Log để debug
+
     const response = await createCustomer(accessToken, body);
 
     return NextResponse.json(response.data, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
+    // Log chi tiết lỗi
+    console.error("API Error:", {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+    });
+
+    // Trả về lỗi chi tiết hơn
     return NextResponse.json(
-      { message: "Internal server error" },
-      { status: 500 },
+      {
+        message:
+          error.response?.data?.message ||
+          error.message ||
+          "Internal server error",
+        details: error.response?.data,
+      },
+      { status: error.response?.status || 500 },
     );
   }
 }

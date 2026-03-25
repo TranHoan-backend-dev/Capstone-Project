@@ -7,6 +7,7 @@ const initialFormData: CreateCustomerPayload = {
   name: "",
   email: "",
   phoneNumber: "",
+  address: "", // ← This field was missing
   type: "FAMILY",
   isBigCustomer: false,
   usageTarget: "DOMESTIC",
@@ -41,7 +42,9 @@ const initialFormData: CreateCustomerPayload = {
   connectionPoint: "",
 };
 
-export const useCustomerForm = (initialData?: any) => {
+export const useCustomerForm = (
+  initialData?: Partial<CreateCustomerPayload>,
+) => {
   const [formData, setFormData] =
     useState<CreateCustomerPayload>(initialFormData);
 

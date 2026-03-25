@@ -96,8 +96,8 @@ public class InstallationFormUseCase {
     messageProducer.send(routingKey, event);
   }
 
-  public void approveInstallationForm(ApproveRequest request) {
-    ifSrv.approveAndAssignInstallationForm(request);
+  public void approveInstallationForm(String userId, ApproveRequest request) {
+    ifSrv.approveInstallationForm(userId, request);
 
     var installationForm = ifSrv.getByFormCodeAndFormNumber(request.formCode(), request.formNumber());
 
