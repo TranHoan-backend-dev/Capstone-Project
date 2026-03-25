@@ -5,10 +5,12 @@ on:
     branches: ["main", "dev", "feat/**", "refactor/**", "style/**", "fix/**"]
     paths:
       - be/apps/**
+      - .github/workflows/be.yml
   pull_request:
     branches: ["dev"]
     paths:
       - be/apps/**
+      - .github/workflows/be.yml
 
 permissions:
   contents: read
@@ -64,6 +66,9 @@ jobs:
       - name: Grant execute permission
         run: chmod +x gradlew
         working-directory: ./be/apps
+
+      - run: npm install
+        working-directory: ./be
 
       - run: npm ci
         working-directory: ./be
