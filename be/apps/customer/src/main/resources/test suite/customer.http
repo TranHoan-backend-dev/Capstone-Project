@@ -27,6 +27,7 @@ Content-Type: application/json
 
 {
   "name": "Trần Văn A",
+  "address": "Landmark 72 ",
   "email": "tranvana@example.com",
   "phoneNumber": "0901234567",
   "type": "FAMILY",
