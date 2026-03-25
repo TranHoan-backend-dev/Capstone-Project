@@ -8,6 +8,7 @@ create table public.customer
   bank_account_name                 varchar(255) not null,
   bank_account_number               varchar(255) not null,
   bank_account_provider_location    varchar(255) not null,
+  address                           varchar(255) not null,
   budget_relationship_code          varchar(255),
   cancel_reason                     varchar(255),
   citizen_identification_number     varchar(255) not null,

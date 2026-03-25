@@ -10,10 +10,10 @@ Content-Type: application/x-www-form-urlencoded
 Accept: application/json
 
 grant_type=password&
-client_id=&
+client_id= &
 client_secret={{client_secret}}&
-username=&
-password=&
+username= &
+password= &
 scope=openid
 
 > {%
@@ -78,55 +78,94 @@ Accept: application/json
 ### Case 1: Cập nhật chỉ số nước thành công
 POST {{uri}}/{{serial}}
 Authorization: Bearer {{access_token}}
-Content-Type: application/json
+Content-Type: multipart/form-data; boundary=WebAppBoundary
 
-{
-  "imageUrl": "https://example.com/meter-image.jpg",
-  "index": 150.5,
-  "recordingDate": "2024-03-01"
-}
+--WebAppBoundary
+Content-Disposition: form-data; name="index"
+
+150.5
+--WebAppBoundary
+Content-Disposition: form-data; name="recordingDate"
+
+2024-03-01
+--WebAppBoundary
+Content-Disposition: form-data; name="image"; filename="meter-image.jpg"
+Content-Type: image/jpeg
+
+mock data
+--WebAppBoundary--
 
 ### Case 2: Cập nhật thất bại - Thiếu chỉ số (index)
 POST {{uri}}/{{serial}}
 Authorization: Bearer {{access_token}}
-Content-Type: application/json
+Content-Type: multipart/form-data; boundary=WebAppBoundary
 
-{
-  "imageUrl": "https://example.com/meter-image.jpg",
-  "recordingDate": "2024-03-01"
-}
+--WebAppBoundary
+Content-Disposition: form-data; name="recordingDate"
+
+2024-03-01
+--WebAppBoundary
+Content-Disposition: form-data; name="image"; filename="meter-image.jpg"
+Content-Type: image/jpeg
+
+mock data
+--WebAppBoundary--
 
 ### Case 3: Cập nhật thất bại - Chỉ số âm không hợp lệ
 POST {{uri}}/{{serial}}
 Authorization: Bearer {{access_token}}
-Content-Type: application/json
+Content-Type: multipart/form-data; boundary=WebAppBoundary
 
-{
-  "imageUrl": "https://example.com/meter-image.jpg",
-  "index": -10.0,
-  "recordingDate": "2024-03-01"
-}
+--WebAppBoundary
+Content-Disposition: form-data; name="index"
+
+-10.0
+--WebAppBoundary
+Content-Disposition: form-data; name="recordingDate"
+
+2024-03-01
+--WebAppBoundary
+Content-Disposition: form-data; name="image"; filename="meter-image.jpg"
+Content-Type: image/jpeg
+
+mock data
+--WebAppBoundary--
 
 ### Case 4: Cập nhật thất bại - Serial không tồn tại (404)
 POST {{uri}}/INVALID-SERIAL
 Authorization: Bearer {{access_token}}
-Content-Type: application/json
+Content-Type: multipart/form-data; boundary=WebAppBoundary
 
-{
-  "imageUrl": "https://example.com/meter-image.jpg",
-  "index": 150.5,
-  "recordingDate": "2024-03-01"
-}
+--WebAppBoundary
+Content-Disposition: form-data; name="index"
+
+150.5
+--WebAppBoundary
+Content-Disposition: form-data; name="recordingDate"
+
+2024-03-01
+--WebAppBoundary
+Content-Disposition: form-data; name="image"; filename="meter-image.jpg"
+Content-Type: image/jpeg
+
+mock data
+--WebAppBoundary--
 
 ### Case 5: Cập nhật thất bại - Thiếu ngày ghi nhận (recordingDate)
 POST {{uri}}/{{serial}}
 Authorization: Bearer {{access_token}}
-Content-Type: application/json
+Content-Type: multipart/form-data; boundary=WebAppBoundary
 
-{
-  "imageUrl": "https://example.com/meter-image.jpg",
-  "index": 150.5
-}
+--WebAppBoundary
+Content-Disposition: form-data; name="index"
+
+150.5
+--WebAppBoundary
+Content-Disposition: form-data; name="image"; filename="meter-image.jpg"
+Content-Type: image/jpeg
+
+mock data
+--WebAppBoundary--
 
 # ============================================================================
 # P - PATCH: Cập nhật trạng thái thanh toán
