@@ -56,11 +56,12 @@ public class Settlement implements Serializable {
  @OneToOne(fetch = FetchType.EAGER)
  InstallationForm installationForm;
 
- @PrePersist
- void onCreate() {
-  this.createdAt = LocalDateTime.now();
-  this.updatedAt = this.createdAt;
- }
+  @PrePersist
+  void onCreate() {
+    this.createdAt = LocalDateTime.now();
+    this.updatedAt = this.createdAt;
+    this.significance = new SettlementSignificance();
+  }
 
  @PreUpdate
  void onUpdate() {

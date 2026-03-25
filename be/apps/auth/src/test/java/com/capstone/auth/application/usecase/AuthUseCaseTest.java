@@ -15,7 +15,6 @@ import com.capstone.common.enumerate.RoleName;
 import com.capstone.auth.infrastructure.service.NetworkService;
 import com.capstone.auth.infrastructure.service.OrganizationService;
 import com.capstone.auth.application.business.profile.ProfileService;
-import com.capstone.auth.infrastructure.service.keycloak.KeycloakService;
 import com.capstone.common.utils.SharedMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -70,9 +69,6 @@ class AuthUseCaseTest {
 
   @Mock
   private ProfileService pSrv;
-
-  @Mock
-  private KeycloakService keycloakService;
 
   @Mock
   private NetworkService netWorkService;

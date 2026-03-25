@@ -1,7 +1,10 @@
 package com.capstone.construction.application.business.settlement;
 
 import com.capstone.common.annotation.AppLog;
+import com.capstone.common.enumerate.RoleName;
+import com.capstone.common.exception.ForbiddenException;
 import com.capstone.common.exception.NotExistingException;
+import com.capstone.common.utils.SharedMessage;
 import com.capstone.construction.application.dto.request.settlement.SettlementFilterRequest;
 import com.capstone.construction.application.dto.request.settlement.SettlementRequest;
 import com.capstone.construction.application.dto.request.settlement.SignificanceRequest;
@@ -12,6 +15,7 @@ import com.capstone.construction.domain.model.InstallationForm;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
 import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
 import com.capstone.construction.infrastructure.persistence.SettlementRepository;
+import com.capstone.construction.infrastructure.service.EmployeeService;
 import com.capstone.construction.infrastructure.utils.Message;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -32,10 +36,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SettlementServiceImpl implements SettlementService {
-    SettlementRepository settlementRepository;
-    InstallationFormRepository formRepository;
-    @NonFinal
-    Logger log;
+  SettlementRepository settlementRepository;
+  InstallationFormRepository formRepository;
+  EmployeeService empSrv;
+  @NonFinal
+  Logger log;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -105,26 +110,36 @@ public class SettlementServiceImpl implements SettlementService {
         return PageResponse.fromPage(page, this::mapToResponse);
     }
 
-    @Override
-    public boolean signSettlement(@NonNull SignificanceRequest request, String id) {
-        var settlement = settlementRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Settlement not found with id: " + id));
-        var significance = settlement.getSignificance();
+  @Override
+  public boolean signSettlement(String userId, String id, SignificanceRequest request) {
+    var settlement = settlementRepository.findById(id)
+      .orElseThrow(() -> new IllegalArgumentException("Settlement not found with id: " + id));
+    var significance = settlement.getSignificance();
 
-        if (request.constructionPresident() != null && !request.constructionPresident().isBlank()) {
-            significance.setConstructionPresident(request.constructionPresident());
-        }
-        if (request.president() != null && !request.president().isBlank()) {
-            significance.setPresident(request.president());
-        }
-        if (request.ptHead() != null && !request.ptHead().isBlank()) {
-            significance.setPtHead(request.ptHead());
-        }
-        if (request.surveyStaff() != null && !request.surveyStaff().isBlank()) {
-            significance.setSurveyStaff(request.surveyStaff());
-        }
-        return significance.isSettlementFullySigned();
+    var response = empSrv.getRoleOfEmployeeById(userId);
+    var role = response.data().toString();
+    if (!role.equalsIgnoreCase(RoleName.SURVEY_STAFF.name()) &&
+      !role.equalsIgnoreCase(RoleName.COMPANY_LEADERSHIP.name()) &&
+      !role.equalsIgnoreCase(RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD.name())) {
+      throw new ForbiddenException(SharedMessage.MES_23);
     }
+    if (request.url() != null && !request.url().isBlank()) {
+      if (role.equalsIgnoreCase(RoleName.COMPANY_LEADERSHIP.name())) {
+        significance.setConstructionPresident(request.url());
+      }
+      if (role.equalsIgnoreCase(RoleName.COMPANY_LEADERSHIP.name())) {
+        significance.setPresident(request.url());
+      }
+      if (role.equalsIgnoreCase(RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD.name())) {
+        significance.setPtHead(request.url());
+      }
+      if (role.equalsIgnoreCase(RoleName.SURVEY_STAFF.name())) {
+        significance.setSurveyStaff(request.url());
+      }
+    }
+
+    return significance.isSettlementFullySigned();
+  }
 
     @Override
     public boolean isExistingSettlement(String id) {

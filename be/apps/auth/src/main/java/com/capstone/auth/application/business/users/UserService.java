@@ -37,4 +37,6 @@ public interface UserService {
   String getRoleOfEmployee(String id);
 
   List<EmployeeResponse> getAllSurveyStaffs();
+
+  String getSignificanceOfEmployee(String id);
 }

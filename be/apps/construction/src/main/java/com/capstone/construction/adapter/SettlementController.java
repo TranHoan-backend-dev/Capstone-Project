@@ -21,6 +21,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -95,24 +97,28 @@ public class SettlementController {
         return Utils.returnOkResponse("Lấy danh sách quyết toán công trình thành công", response);
     }
 
-    @PostMapping("/sign/{id}")
-    @Operation(summary = "Ký duyệt bản quyết toán", description = """
-        Thực hiện ký duyệt điện tử lên bản quyết toán bởi các bên có thẩm quyền liên quan.
-        Luồng này sẽ kích hoạt thông báo đến các nhân viên được chỉ định.
-        Người thực hiện phải có quyền tương ứng (CONSTRUCTION_DEPARTMENT_HEAD, COMPANY_LEADERSHIP, SURVEY_STAFF, PLANNING_TECHNICAL_DEPARTMENT_HEAD hoặc IT_STAFF).
-        """, responses = {
-        @ApiResponse(responseCode = "200", description = "Ký thành công"),
-        @ApiResponse(responseCode = "404", description = "Không tìm thấy bản quyết toán"),
-        @ApiResponse(responseCode = "403", description = "Không có quyền thực hiện hành động này")
-    })
-    @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'SURVEY_STAFF')")
-    public ResponseEntity<WrapperApiResponse> sign(
-            @RequestBody SignificanceRequest request,
-            @PathVariable @Parameter(description = "ID của bản quyết toán cần ký", required = true) String id) {
-        log.info("Received request to sign construction request: {}", request);
-        settlementUseCase.significance(request, id);
-        return Utils.returnOkResponse("Ký quyết toán thành công", null);
-    }
+  @PostMapping("/sign/{id}")
+  @Operation(summary = "Ký duyệt bản quyết toán", description = """
+    Thực hiện ký duyệt điện tử lên bản quyết toán bởi các bên có thẩm quyền liên quan.
+    Luồng này sẽ kích hoạt thông báo đến các nhân viên được chỉ định.
+    Người thực hiện phải có quyền tương ứng (CONSTRUCTION_DEPARTMENT_HEAD, COMPANY_LEADERSHIP, SURVEY_STAFF, PLANNING_TECHNICAL_DEPARTMENT_HEAD hoặc IT_STAFF).
+    """, responses = {
+    @ApiResponse(responseCode = "200", description = "Ký thành công"),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy bản quyết toán"),
+    @ApiResponse(responseCode = "403", description = "Không có quyền thực hiện hành động này")
+  })
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'SURVEY_STAFF')")
+  public ResponseEntity<WrapperApiResponse> sign(
+    @AuthenticationPrincipal Jwt jwt,
+    @RequestBody SignificanceRequest request,
+    @PathVariable @Parameter(description = "ID của bản quyết toán cần ký", required = true) String id
+  ) {
+    log.info("Received request to sign settlement: {}", request);
+
+    var userId = jwt.getSubject();
+    settlementUseCase.significance(userId, id, request);
+    return Utils.returnOkResponse("Ký quyết toán thành công", null);
+  }
 
     @PostMapping("/sign")
     @Operation(summary = "Yêu cầu các bên liên quan ký duyệt quyết toán", description = """

@@ -18,7 +18,7 @@ public interface SettlementService {
 
     PageResponse<SettlementResponse> filterSettlements(SettlementFilterRequest filterRequest, Pageable pageable);
 
-    boolean signSettlement(SignificanceRequest request, String id);
+  boolean signSettlement(String userId, String id, SignificanceRequest significance);
 
     boolean isExistingSettlement(String id);
 }
