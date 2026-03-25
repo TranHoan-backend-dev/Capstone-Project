@@ -8,7 +8,6 @@ import com.capstone.construction.application.dto.request.settlement.AssignTheSig
 import com.capstone.construction.application.dto.request.settlement.SignificanceRequest;
 import com.capstone.construction.application.dto.request.settlement.SettlementFilterRequest;
 import com.capstone.construction.application.dto.request.settlement.SettlementRequest;
-import com.capstone.construction.application.dto.request.settlement.UpdateSettlementStatusRequest;
 import com.capstone.construction.application.dto.response.settlement.SettlementResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.application.event.producer.MessageProducer;
@@ -103,9 +102,5 @@ public class SettlementUseCase {
                 request.companyLeadership(),
                 request.constructionPresident()
         ));
-    }
-
-    public SettlementResponse updateSettlementStatus(String id, UpdateSettlementStatusRequest request) {
-        return settlementService.updateSettlementStatus(id, request.status());
     }
 }

@@ -6,7 +6,6 @@ import com.capstone.construction.domain.model.utils.significance.SettlementSigni
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 public record SettlementResponse(
   String settlementId,

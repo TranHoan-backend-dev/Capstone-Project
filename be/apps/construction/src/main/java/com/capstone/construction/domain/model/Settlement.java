@@ -56,11 +56,6 @@ public class Settlement implements Serializable {
  @OneToOne(fetch = FetchType.EAGER)
  InstallationForm installationForm;
 
- @Column(nullable = false, length = 255)
- @Enumerated(EnumType.STRING)
- @NonNull
- SettlementStatus status;
-
  @PrePersist
  void onCreate() {
   this.createdAt = LocalDateTime.now();
@@ -101,11 +96,6 @@ public class Settlement implements Serializable {
  public void setNote(String note) {
   requireNonNullAndNotEmpty(note, SharedMessage.MES_08);
   this.note = note;
- }
-
- public void setStatus(@NonNull SettlementStatus status) {
-  Objects.requireNonNull(status, "Status cannot be null");
-  this.status = status;
  }
 
  private void requireNonNullAndNotEmpty(String value, String message) {
@@ -153,11 +143,6 @@ public class Settlement implements Serializable {
 
   public SettlementBuilder note(String note) {
    instance.setNote(note);
-   return this;
-  }
-
-  public SettlementBuilder status(SettlementStatus status) {
-   instance.setStatus(status);
    return this;
   }
 

@@ -21,6 +21,4 @@ public interface SettlementService {
     boolean signSettlement(SignificanceRequest request, String id);
 
     boolean isExistingSettlement(String id);
-
-    SettlementResponse updateSettlementStatus(String id, String status);
 }
