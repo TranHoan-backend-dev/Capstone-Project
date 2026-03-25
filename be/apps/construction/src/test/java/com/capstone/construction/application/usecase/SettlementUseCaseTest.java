@@ -22,6 +22,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,13 +58,10 @@ class SettlementUseCaseTest {
   @DisplayName("Create settlement successfully")
   void createSettlement_ShouldReturnResponse() {
     var request = new SettlementRequest("CODE-001", "FORM-001", "Job", "Addr", BigDecimal.ZERO, "Note", LocalDate.now());
-    var response = new SettlementResponse("id", "Job", "Addr", BigDecimal.ZERO, "Note", null, null, LocalDate.now(), "CODE-001", "FORM-001", null);
-
-    when(settlementService.createSettlement(request)).thenReturn(response);
-
-    var result = settlementUseCase.createSettlement(request);
-
-    assertThat(result).isEqualTo(response);
+    var response1 = new SettlementResponse("id", "Job", "Addr", BigDecimal.ZERO, "Note", null, null, LocalDate.now(), "CODE-001", "FORM-001", null, null);
+    when(settlementService.createSettlement(request)).thenReturn(response1);
+    var result1 = settlementUseCase.createSettlement(request);
+    assertThat(result1).isEqualTo(response1);
     verify(settlementService).createSettlement(request);
   }
 
@@ -72,13 +70,10 @@ class SettlementUseCaseTest {
   void updateSettlement_ShouldReturnResponse() {
     var id = "id123";
     var request = new SettlementRequest("CODE-001", "FORM-001", "Job", "Addr", BigDecimal.ZERO, "Note", LocalDate.now());
-    var response = new SettlementResponse(id, "Job", "Addr", BigDecimal.ZERO, "Note", null, null, LocalDate.now(), "CODE-001", "FORM-001", null);
-
-    when(settlementService.updateSettlement(id, request)).thenReturn(response);
-
-    var result = settlementUseCase.updateSettlement(id, request);
-
-    assertThat(result).isEqualTo(response);
+    var response2 = new SettlementResponse(id, "Job", "Addr", BigDecimal.ZERO, "Note", null, null, LocalDate.now(), "CODE-001", "FORM-001", null, null);
+    when(settlementService.updateSettlement(id, request)).thenReturn(response2);
+    var result2 = settlementUseCase.updateSettlement(id, request);
+    assertThat(result2).isEqualTo(response2);
     verify(settlementService).updateSettlement(id, request);
   }
 
@@ -86,13 +81,10 @@ class SettlementUseCaseTest {
   @DisplayName("Get settlement by id successfully")
   void getSettlementById_ShouldReturnResponse() {
     var id = "id123";
-    var response = new SettlementResponse(id, "Job", "Addr", BigDecimal.ZERO, "Note", null, null, LocalDate.now(), "CODE-001", "FORM-001", null);
-
-    when(settlementService.getSettlementById(id)).thenReturn(response);
-
-    var result = settlementUseCase.getSettlementById(id);
-
-    assertThat(result).isEqualTo(response);
+    var response3 = new SettlementResponse(id, "Job", "Addr", BigDecimal.ZERO, "Note", null, null, LocalDate.now(), "CODE-001", "FORM-001", null, null);
+    when(settlementService.getSettlementById(id)).thenReturn(response3);
+    var result3 = settlementUseCase.getSettlementById(id);
+    assertThat(result3).isEqualTo(response3);
     verify(settlementService).getSettlementById(id);
   }
 
@@ -154,10 +146,10 @@ class SettlementUseCaseTest {
   void assignStaffForSignCostEstimate_ShouldThrow_WhenEmployeeNotFound() {
     var request = new AssignTheSignificanceRequest("sid", "ss", "ph", "cl", "cp");
 
-    when(employeeService.isEmployeeExisting(anyString())).thenReturn(new WrapperApiResponse(200, "err", false, null));
+    when(employeeService.isEmployeeExisting(anyString())).thenReturn(new WrapperApiResponse(200, "err", false, OffsetDateTime.now()));
 
     assertThatThrownBy(() -> settlementUseCase.assignStaffForSignCostEstimate(request))
-        .isInstanceOf(NotExistingException.class);
+      .isInstanceOf(NotExistingException.class);
 
     verify(messageProducer, never()).send(anyString(), any());
   }
@@ -171,7 +163,7 @@ class SettlementUseCaseTest {
     when(settlementService.isExistingSettlement("sid")).thenReturn(false);
 
     assertThatThrownBy(() -> settlementUseCase.assignStaffForSignCostEstimate(request))
-        .isInstanceOf(NotExistingException.class);
+      .isInstanceOf(NotExistingException.class);
 
     verify(messageProducer, never()).send(anyString(), any());
   }

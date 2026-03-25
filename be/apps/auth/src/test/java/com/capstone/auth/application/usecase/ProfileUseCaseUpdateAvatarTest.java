@@ -11,7 +11,6 @@ import com.capstone.auth.infrastructure.service.GcsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.keycloak.admin.client.Keycloak;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -39,9 +38,6 @@ class ProfileUseCaseUpdateAvatarTest {
 
   @Mock
   GcsService gcsSrv;
-
-  @Mock
-  Keycloak keycloak;
 
   @InjectMocks
   ProfileUseCase profileUseCase;
@@ -113,8 +109,6 @@ class ProfileUseCaseUpdateAvatarTest {
     var id = "user-1";
     var file = createMockFile();
     var userDTO = createNonLockedUser();
-    // Return a different avatar URL to trigger IncompatibleAvatarException
-    var profileDTO = createProfileDTO("different-avatar-url");
 
     when(userService.getUserById(id)).thenReturn(userDTO);
     when(gcsSrv.upload(any())).thenReturn("hehe");

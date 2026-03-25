@@ -1,5 +1,6 @@
 package com.capstone.construction.adapter;
 
+import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.construction.application.dto.request.settlement.AssignTheSignificanceRequest;
 import com.capstone.construction.application.dto.request.settlement.SettlementFilterRequest;
 import com.capstone.construction.application.dto.request.settlement.SettlementRequest;
@@ -7,6 +8,7 @@ import com.capstone.construction.application.dto.request.settlement.Significance
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.application.dto.response.settlement.SettlementResponse;
 import com.capstone.construction.application.usecase.SettlementUseCase;
+import com.capstone.construction.domain.model.utils.FormProcessingStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -50,13 +52,16 @@ class SettlementControllerTest {
     ReflectionTestUtils.setField(settlementController, "log", log);
 
     settlementRequest = new SettlementRequest(
-        "CODE-001", "FORM-001", "Job Content", "Address", BigDecimal.TEN, "Note", LocalDate.now()
+      "CODE-001", "FORM-001", "Job Content", "Address", BigDecimal.TEN, "Note", LocalDate.now()
     );
 
     mockResponse = new SettlementResponse(
-        "id-123", "Job Content", "Address", BigDecimal.TEN, "Note",
-        LocalDateTime.now(), LocalDateTime.now(), LocalDate.now(),
-        "CODE-001", "FORM-001", new com.capstone.construction.domain.model.utils.significance.SettlementSignificance()
+      "id-123", "Job Content", "Address", BigDecimal.TEN, "Note",
+      LocalDateTime.now(), LocalDateTime.now(), LocalDate.now(),
+      "CODE-001", "FORM-001", new com.capstone.construction.domain.model.utils.significance.SettlementSignificance(),
+      new FormProcessingStatus(
+        ProcessingStatus.APPROVED, ProcessingStatus.APPROVED, ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING
+      )
     );
   }
 
@@ -94,6 +99,7 @@ class SettlementControllerTest {
     var responseEntity = settlementController.getSettlementById(id);
 
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).message()).isEqualTo("Lấy thông tin quyết toán công trình thành công");
     assertThat(Objects.requireNonNull(responseEntity.getBody()).data()).isEqualTo(mockResponse);
     verify(settlementUseCase).getSettlementById(id);
   }
@@ -108,6 +114,7 @@ class SettlementControllerTest {
     var responseEntity = settlementController.getAllSettlements(pageable);
 
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).message()).isEqualTo("Lấy danh sách quyết toán công trình thành công");
     assertThat(Objects.requireNonNull(responseEntity.getBody()).data()).isEqualTo(pageResponse);
     verify(settlementUseCase).getAllSettlements(pageable);
   }
@@ -123,6 +130,7 @@ class SettlementControllerTest {
     var responseEntity = settlementController.filterSettlements(filterRequest, pageable);
 
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).message()).isEqualTo("Lấy danh sách quyết toán công trình thành công");
     assertThat(Objects.requireNonNull(responseEntity.getBody()).data()).isEqualTo(pageResponse);
     verify(settlementUseCase).filterSettlements(filterRequest, pageable);
   }

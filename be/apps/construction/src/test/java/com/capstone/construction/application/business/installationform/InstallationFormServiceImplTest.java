@@ -55,7 +55,7 @@ class InstallationFormServiceImplTest {
     var savedEntity = createSavedInstallationForm(request);
 
     when(owmSrv.isOverallMeterExisting(request.overallWaterMeterId()))
-      .thenReturn(new WrapperApiResponse(200, "OK", true, LocalDateTime.now()));
+      .thenReturn(new WrapperApiResponse(200, "OK", true, OffsetDateTime.now()));
     when(wsnRepo.findById(request.networkId())).thenReturn(Optional.of(network));
     when(ifRepo.save(any(InstallationForm.class))).thenReturn(savedEntity);
 
@@ -79,7 +79,7 @@ class InstallationFormServiceImplTest {
     var savedEntity = createSavedInstallationForm(request);
 
     when(owmSrv.isOverallMeterExisting(request.overallWaterMeterId()))
-      .thenReturn(new WrapperApiResponse(200, "OK", true, LocalDateTime.now()));
+      .thenReturn(new WrapperApiResponse(200, "OK", true, OffsetDateTime.now()));
     when(wsnRepo.findById(request.networkId())).thenReturn(Optional.of(network));
     when(ifRepo.save(any(InstallationForm.class))).thenReturn(savedEntity);
 
@@ -96,7 +96,7 @@ class InstallationFormServiceImplTest {
     // Given
     var request = createValidNewOrderRequest();
     when(owmSrv.isOverallMeterExisting(request.overallWaterMeterId()))
-      .thenReturn(new WrapperApiResponse(200, "OK", false, LocalDateTime.now()));
+      .thenReturn(new WrapperApiResponse(200, "OK", false, OffsetDateTime.now()));
 
     // When & Then
     assertThatThrownBy(() -> service.createNewInstallationForm(USER_ID, request))
@@ -109,7 +109,7 @@ class InstallationFormServiceImplTest {
     // Given
     var request = createValidNewOrderRequest();
     when(owmSrv.isOverallMeterExisting(request.overallWaterMeterId()))
-      .thenReturn(new WrapperApiResponse(200, "OK", true, LocalDateTime.now()));
+      .thenReturn(new WrapperApiResponse(200, "OK", true, OffsetDateTime.now()));
     when(wsnRepo.findById(request.networkId())).thenReturn(Optional.empty());
 
     // When & Then
@@ -133,7 +133,7 @@ class InstallationFormServiceImplTest {
 
     when(ifRepo.findAllNotRejectedInstallationForms(pageable)).thenReturn(new PageImpl<>(List.of(entity)));
     when(empSrv.getEmployeeNameById(any()))
-      .thenReturn(new WrapperApiResponse(200, "OK", "Staff Name", LocalDateTime.now()));
+      .thenReturn(new WrapperApiResponse(200, "OK", "Staff Name", OffsetDateTime.now()));
 
     // When
     var result = service.getInstallationForms(pageable, request);
@@ -152,7 +152,7 @@ class InstallationFormServiceImplTest {
 
     when(ifRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(new PageImpl<>(List.of(entity)));
     when(empSrv.getEmployeeNameById(any()))
-      .thenReturn(new WrapperApiResponse(200, "OK", "Staff Name", LocalDateTime.now()));
+      .thenReturn(new WrapperApiResponse(200, "OK", "Staff Name", OffsetDateTime.now()));
 
     // When
     var result = service.getInstallationForms(pageable, request);
@@ -171,7 +171,7 @@ class InstallationFormServiceImplTest {
 
     when(ifRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(new PageImpl<>(List.of(entity)));
     when(empSrv.getEmployeeNameById(any()))
-      .thenReturn(new WrapperApiResponse(200, "OK", "Staff Name", LocalDateTime.now()));
+      .thenReturn(new WrapperApiResponse(200, "OK", "Staff Name", OffsetDateTime.now()));
 
     // When
     var result = service.getInstallationForms(pageable, request);
@@ -190,7 +190,7 @@ class InstallationFormServiceImplTest {
 
     when(ifRepo.findAllNotRejectedInstallationForms(pageable)).thenReturn(new PageImpl<>(List.of(entity)));
     when(empSrv.getEmployeeNameById(any()))
-      .thenReturn(new WrapperApiResponse(200, "OK", "Staff Name", LocalDateTime.now()));
+      .thenReturn(new WrapperApiResponse(200, "OK", "Staff Name", OffsetDateTime.now()));
 
     // When
     var result = service.getInstallationForms(pageable, request);
@@ -208,7 +208,7 @@ class InstallationFormServiceImplTest {
     var entity = createMockEntity();
 
     when(ifRepo.findAllNotRejectedInstallationForms(pageable)).thenReturn(new PageImpl<>(List.of(entity)));
-    when(empSrv.getEmployeeNameById(any())).thenReturn(new WrapperApiResponse(200, "OK", null, LocalDateTime.now()));
+    when(empSrv.getEmployeeNameById(any())).thenReturn(new WrapperApiResponse(200, "OK", null, OffsetDateTime.now()));
 
     // When
     var result = service.getInstallationForms(pageable, request);
@@ -243,13 +243,13 @@ class InstallationFormServiceImplTest {
     when(entity.getScheduleSurveyAt()).thenReturn(null);
 
     when(ifRepo.findAllNotRejectedInstallationForms(pageable)).thenReturn(new PageImpl<>(List.of(entity)));
-    when(empSrv.getEmployeeNameById(any())).thenReturn(new WrapperApiResponse(200, "OK", "Staff", LocalDateTime.now()));
+    when(empSrv.getEmployeeNameById(any())).thenReturn(new WrapperApiResponse(200, "OK", "Staff", OffsetDateTime.now()));
 
     // When
     var result = service.getInstallationForms(pageable, request);
 
     // Then
-    assertThat(result.getContent().get(0).scheduleSurveyAt()).isNull();
+    assertThat(result.getContent().getFirst().scheduleSurveyAt()).isNull();
   }
 
   @Test
@@ -287,7 +287,7 @@ class InstallationFormServiceImplTest {
 
     when(ifRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(new PageImpl<>(List.of(entity)));
     when(empSrv.getEmployeeNameById(any()))
-      .thenReturn(new WrapperApiResponse(200, "OK", "Staff Name", LocalDateTime.now()));
+      .thenReturn(new WrapperApiResponse(200, "OK", "Staff Name", OffsetDateTime.now()));
 
     // When
     var result = service.getInstallationForms(pageable, request);
@@ -306,7 +306,7 @@ class InstallationFormServiceImplTest {
 
     when(ifRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(new PageImpl<>(List.of(entity)));
     when(empSrv.getEmployeeNameById(any()))
-      .thenReturn(new WrapperApiResponse(200, "OK", "Staff Name", LocalDateTime.now()));
+      .thenReturn(new WrapperApiResponse(200, "OK", "Staff Name", OffsetDateTime.now()));
 
     // When
     var result = service.getInstallationForms(pageable, request);
@@ -324,7 +324,7 @@ class InstallationFormServiceImplTest {
     var entity = createMockEntity();
 
     when(ifRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(new PageImpl<>(List.of(entity)));
-    when(empSrv.getEmployeeNameById(any())).thenReturn(new WrapperApiResponse(200, "OK", "Staff", LocalDateTime.now()));
+    when(empSrv.getEmployeeNameById(any())).thenReturn(new WrapperApiResponse(200, "OK", "Staff", OffsetDateTime.now()));
 
     // When
     var result = service.getConstructionRequestsList(pageable, request);
@@ -344,7 +344,7 @@ class InstallationFormServiceImplTest {
     when(ifRepo.findByStatus_ContractAndStatus_Construction(ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING,
       pageable))
       .thenReturn(new PageImpl<>(List.of(entity)));
-    when(empSrv.getEmployeeNameById(any())).thenReturn(new WrapperApiResponse(200, "OK", "Staff", LocalDateTime.now()));
+    when(empSrv.getEmployeeNameById(any())).thenReturn(new WrapperApiResponse(200, "OK", "Staff", OffsetDateTime.now()));
 
     // When
     var result = service.getConstructionRequestsList(pageable, request);
@@ -413,7 +413,7 @@ class InstallationFormServiceImplTest {
     // Given
     var entity = createMockEntity();
     when(ifRepo.findById(new InstallationFormId("FC01", "FN01"))).thenReturn(Optional.of(entity));
-    when(empSrv.getEmployeeNameById(any())).thenReturn(new WrapperApiResponse(200, "OK", "Staff", LocalDateTime.now()));
+    when(empSrv.getEmployeeNameById(any())).thenReturn(new WrapperApiResponse(200, "OK", "Staff", OffsetDateTime.now()));
 
     // When
     var result = service.getByFormCodeAndFormNumber("FC01", "FN01");

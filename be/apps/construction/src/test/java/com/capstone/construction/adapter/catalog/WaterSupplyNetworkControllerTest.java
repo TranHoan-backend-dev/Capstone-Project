@@ -57,7 +57,7 @@ class WaterSupplyNetworkControllerTest {
     var body = responseEntity.getBody();
     assertThat(body).isNotNull();
     assertThat(body.status()).isEqualTo(201);
-    assertThat(body.message()).isEqualTo("Network created successfully");
+    assertThat(body.message()).isEqualTo("Tạo chi nhánh cấp nước thành công");
     assertThat(body.data()).isNull();
 
     verify(networkUseCase).createNetwork(request);
@@ -96,6 +96,7 @@ class WaterSupplyNetworkControllerTest {
 
     var body = responseEntity.getBody();
     assertThat(body).isNotNull();
+    assertThat(body.message()).isEqualTo("Cập nhật chi nhánh cấp nước thành công");
     assertThat(body.data()).isEqualTo(expectedResponse);
     verify(networkUseCase).updateNetwork(id, request);
   }
@@ -113,7 +114,7 @@ class WaterSupplyNetworkControllerTest {
 
     var body = responseEntity.getBody();
     assertThat(body).isNotNull();
-    assertThat(body.message()).isEqualTo("Network deleted successfully");
+    assertThat(body.message()).isEqualTo("Xóa chi nhánh cấp nước thành công");
     verify(networkUseCase).deleteNetwork(id);
   }
 
@@ -133,6 +134,7 @@ class WaterSupplyNetworkControllerTest {
 
     var body = responseEntity.getBody();
     assertThat(body).isNotNull();
+    assertThat(body.message()).isEqualTo("Lấy thông tin chi nhánh thành công");
     assertThat(body.data()).isEqualTo(expectedResponse);
     verify(networkUseCase).getNetworkById(id);
   }
@@ -185,6 +187,7 @@ class WaterSupplyNetworkControllerTest {
 
     var body = responseEntity.getBody();
     assertThat(body).isNotNull();
+    assertThat(body.message()).isEqualTo("Lấy danh sách mạng lưới thành công");
     assertThat(body.data()).isEqualTo(expectedResponse);
 
     verify(networkUseCase).getAllNetworks(pageable, keyword);
