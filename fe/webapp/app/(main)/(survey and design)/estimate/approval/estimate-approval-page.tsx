@@ -101,17 +101,14 @@ const EstimateApprovalPage = () => {
     fetchCurrentUser();
   }, []);
 
-  // Fetch all employees for dropdowns
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
         const res = await authFetch("/api/auth/employees?size=1000");
         const json = await res.json();
 
-        // Extract data from response structure: data.content
         const employees = json?.data?.content || [];
 
-        // Map to required format
         const mappedEmployees = employees.map((emp: any) => ({
           id: emp.id,
           fullName: emp.fullName,
@@ -189,12 +186,10 @@ const EstimateApprovalPage = () => {
     fetchData();
   }, [page, sort, refetch]);
 
-  // Sửa logic lọc trong filteredOrders:
   const filteredOrders = useMemo(() => {
     let filtered = orders;
 
     if (activeTab === "pending") {
-      // Các status sẽ hiển thị ở tab "Chờ duyệt"
       filtered = filtered.filter((o) => {
         const status = o.status?.toLowerCase();
         return PENDING_STATUSES.includes(status);
@@ -202,7 +197,6 @@ const EstimateApprovalPage = () => {
     }
 
     if (activeTab === "approved") {
-      // Chỉ hiển thị status = "approved"
       filtered = filtered.filter((o) => {
         const status = o.status?.toLowerCase();
         return status === APPROVED_STATUS;
@@ -226,10 +220,8 @@ const EstimateApprovalPage = () => {
     setKeyword(query);
   };
 
-  // Handle create signature request
   const handleCreateSignatureRequest = (item: EstimateOrder) => {
     setSelectedItemForSign(item);
-    // Reset selections
     setSurveyStaffId("");
     setPlanningHeadId("");
     setCompanyLeadershipId("");
@@ -239,7 +231,6 @@ const EstimateApprovalPage = () => {
   const handleConfirmCreateSignatureRequest = async () => {
     if (!selectedItemForSign) return;
 
-    // Validate at least one signer is selected
     if (!surveyStaffId && !planningHeadId && !companyLeadershipId) {
       CallToast({
         title: "Thất bại",
@@ -251,7 +242,6 @@ const EstimateApprovalPage = () => {
 
     setIsProcessing(true);
     try {
-      // Create request body with correct structure
       const requestBody = {
         estId: selectedItemForSign.id,
         surveyStaff: surveyStaffId || null,
@@ -312,7 +302,6 @@ const EstimateApprovalPage = () => {
 
     setIsProcessing(true);
     try {
-      // Create request body for sign
       const requestBody = {
         estimateId: selectedItemForSigning.id,
         electronicSignUrl: currentUser.significanceUrl,
@@ -354,14 +343,11 @@ const EstimateApprovalPage = () => {
     router.push(`/estimate/run/${item.id}`);
   };
 
-  // Placeholder functions for approval/rejection/estimation
   const handleApprove = (item: EstimateOrder) => {
-    // Implement if needed
     console.log("Approve", item);
   };
 
   const handleReject = (item: EstimateOrder) => {
-    // Implement if needed
     console.log("Reject", item);
   };
 
@@ -369,7 +355,6 @@ const EstimateApprovalPage = () => {
     router.push(`/estimate/run/${item.id}`);
   };
 
-  // Sửa lại phần đếm số lượng
   const pendingCount = orders.filter((o) => {
     const status = o.status?.toLowerCase();
     return PENDING_STATUSES.includes(status);
@@ -461,7 +446,7 @@ const EstimateApprovalPage = () => {
           />
         </Tab>
       </Tabs>
-      {/* Modal for creating signature request */}
+
       <BaseModal
         isOpen={isCreateSignModalOpen}
         onOpenChange={() => setIsCreateSignModalOpen(false)}
@@ -586,7 +571,7 @@ const EstimateApprovalPage = () => {
           </CustomButton>
         </div>
       </BaseModal>
-      {/* Modal for signing */}
+
       <BaseModal
         isOpen={isSignModalOpen}
         onOpenChange={() => setIsSignModalOpen(false)}
@@ -615,7 +600,6 @@ const EstimateApprovalPage = () => {
             </div>
           </div>
 
-          {/* Hiển thị thông tin người ký */}
           <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
