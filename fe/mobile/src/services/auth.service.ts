@@ -25,9 +25,9 @@ const authService = {
 
   async login(identifier: string, password: string): Promise<LoginResponse> {
     console.log("[auth.service.ts] Đang đăng nhập cho:", identifier);
-    
+
     // Gọi backend trực tiếp thay vì qua Keycloak
-    const response = await apiFetch('/auth/login', {
+    const response = await apiFetch('/auth/auth/login', {
       method: 'POST',
       body: JSON.stringify({
         username: identifier,

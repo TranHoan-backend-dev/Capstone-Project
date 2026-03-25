@@ -2,7 +2,7 @@ require('dotenv').config();
 // import { join } from 'path';
 import { Module } from "@nestjs/common";
 import { MailerModule } from "@nestjs-modules/mailer"
-import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
+import { EjsAdapter } from '@nestjs-modules/mailer/adapters/ejs.adapter';
 import { MailServiceImpl } from "../../service/mail.service";
 import { MailController } from "./mail.controller";
 
