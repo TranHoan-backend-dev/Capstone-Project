@@ -282,6 +282,7 @@ export const siteConfig = {
           roles: [
             "it_staff",
             "survey_staff",
+            "company_leadership",
             "planning_technical_department_head",
           ],
         },
