@@ -97,5 +97,4 @@ export interface SettlementResponse {
   status: string[];
   updatedAt: string;
   formCode: string;
-  formNumber: string;
 }

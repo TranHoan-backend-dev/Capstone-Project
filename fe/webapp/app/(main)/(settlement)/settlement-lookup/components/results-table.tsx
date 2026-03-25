@@ -156,8 +156,7 @@ export const ResultsTable = ({
           connectionFee: item.connectionFee,
           note: item.note,
           status: item.status,
-            formCode: item.formCode,
-  formNumber: item.formNumber,
+          formCode: item.formCode,
         }));
         setData(mapped);
       } catch (error: any) {
