@@ -93,7 +93,7 @@ public class CostEstimateController {
   @Operation(summary = "", description = "", responses = {
     @ApiResponse(responseCode = "200", description = "", content = @Content(schema = @Schema(implementation = CostEstimateResponse.class)))
   })
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'SURVEY_STAFF')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'SURVEY_STAFF', 'COMPANY_LEADERSHIP')")
   public ResponseEntity<WrapperApiResponse> getAllEstimates(
     @PageableDefault @Parameter(description = "Pagination parameters") Pageable pageable,
     @Parameter(description = "Thông tin lọc (từ khóa, khoảng thời gian)") EstimateFilterRequest request
