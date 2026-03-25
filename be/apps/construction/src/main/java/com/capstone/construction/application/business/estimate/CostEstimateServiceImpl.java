@@ -294,11 +294,29 @@ public class CostEstimateServiceImpl implements CostEstimateService {
       costEstSignificance = new CostEstimateSignificance();
       costEstimate.setSignificance(costEstSignificance);
     }
+    if (costEstSignificance.isCostEstimateFullySigned()) {
+      throw new IllegalArgumentException("Du toan da co du chu ky");
+    }
 
     switch (role) {
-      case COMPANY_LEADERSHIP -> costEstSignificance.setCompanyLeaderShip(significance);
-      case SURVEY_STAFF -> costEstSignificance.setSurveyStaff(significance);
-      case PLANNING_TECHNICAL_DEPARTMENT_HEAD -> costEstSignificance.setPlanningTechnicalHead(significance);
+      case COMPANY_LEADERSHIP -> {
+        if (!costEstSignificance.getCompanyLeaderShip().isBlank()) {
+          throw new IllegalArgumentException("Lanh dao da ky tai lieu nay");
+        }
+        costEstSignificance.setCompanyLeaderShip(significance);
+      }
+      case SURVEY_STAFF -> {
+        if (!costEstSignificance.getSurveyStaff().isBlank()) {
+          throw new IllegalArgumentException("Nhan vien khao sat da ky tai lieu nay");
+        }
+        costEstSignificance.setSurveyStaff(significance);
+      }
+      case PLANNING_TECHNICAL_DEPARTMENT_HEAD -> {
+        if (!costEstSignificance.getPlanningTechnicalHead().isBlank()) {
+          throw new IllegalArgumentException("Truong phong da ky tai lieu nay");
+        }
+        costEstSignificance.setPlanningTechnicalHead(significance);
+      }
     }
     eRepo.save(costEstimate);
 

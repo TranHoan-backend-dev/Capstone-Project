@@ -5,10 +5,12 @@ on:
     branches: ["main", "dev", "feat/**", "refactor/**", "style/**", "fix/**"]
     paths:
       - be/apps/**
+      - .github/workflows/be.yml
   pull_request:
     branches: ["dev"]
     paths:
       - be/apps/**
+      - .github/workflows/be.yml
 
 permissions:
   contents: read
@@ -65,6 +67,9 @@ jobs:
         run: chmod +x gradlew
         working-directory: ./be/apps
 
+      - run: npm install
+        working-directory: ./be
+
       - run: npm ci
         working-directory: ./be
 
@@ -77,9 +82,9 @@ jobs:
       #      - run: npx nx run-many -t lint build typecheck --exclude=services
       #        working-directory: ./be
       # Nx Cloud recommends fixes for failures to help you get CI green faster. Learn more: https://nx.dev/ci/features/self-healing-ci
-      - run: npx nx fix-ci
-        working-directory: ./be
-        if: always()
+      # - run: npx nx fix-ci
+      #   working-directory: ./be
+      #   if: always()
 
       - name: Cache Gradle packages
         uses: actions/cache@v4
