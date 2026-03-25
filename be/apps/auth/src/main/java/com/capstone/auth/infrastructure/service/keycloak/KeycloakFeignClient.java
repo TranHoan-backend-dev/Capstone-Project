@@ -1,5 +1,6 @@
 package com.capstone.auth.infrastructure.service.keycloak;
 
+import com.capstone.auth.application.dto.request.keycloakparam.LoginParam;
 import com.capstone.auth.application.dto.request.keycloakparam.TokenExchangeParam;
 import com.capstone.auth.application.dto.request.keycloakparam.UserCreationParam;
 import com.capstone.auth.application.dto.request.keycloakparam.UserTokenExchangeParam;
@@ -23,14 +24,10 @@ public interface KeycloakFeignClient {
   String TOKEN_URL = "/realms/cmsn/protocol/openid-connect/token";
   String ADMIN_URL = "/admin/realms/cmsn";
 
-  @PostMapping(
-    value = TOKEN_URL, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+  @PostMapping(value = TOKEN_URL, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
   TokenExchangeResponse exchangeToken(@RequestBody TokenExchangeParam param);
 
-  @PostMapping(
-    value = ADMIN_URL + "/users",
-    consumes = MediaType.APPLICATION_JSON_VALUE
-  )
+  @PostMapping(value = ADMIN_URL + "/users", consumes = MediaType.APPLICATION_JSON_VALUE)
   ResponseEntity<?> createUser(
     @RequestHeader("authorization") String token,
     @RequestBody UserCreationParam param
@@ -51,4 +48,7 @@ public interface KeycloakFeignClient {
     @PathVariable String userId,
     @RequestBody List<Map<String, Object>> roles
   );
+
+  @PostMapping(value = TOKEN_URL, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+  TokenExchangeResponse login(@RequestBody LoginParam param);
 }

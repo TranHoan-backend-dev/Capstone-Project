@@ -3,48 +3,72 @@ package com.capstone.auth.application.usecase;
 import com.capstone.auth.application.business.dto.ProfileDTO;
 import com.capstone.auth.application.business.dto.UserDTO;
 import com.capstone.auth.application.business.profile.ProfileService;
+import com.capstone.auth.application.business.roles.RoleService;
 import com.capstone.auth.application.business.users.UserService;
+import com.capstone.auth.application.dto.request.keycloakparam.LoginParam;
+import com.capstone.auth.application.dto.response.TokenExchangeResponse;
+import com.capstone.auth.application.event.producer.MessageProducer;
 import com.capstone.auth.application.exception.AccountBlockedException;
-import com.capstone.common.exception.NotExistingException;
+import com.capstone.auth.infrastructure.service.NetworkService;
+import com.capstone.auth.infrastructure.service.OrganizationService;
+import com.capstone.auth.infrastructure.service.keycloak.KeycloakFeignClient;
+import com.capstone.auth.infrastructure.service.keycloak.KeycloakService;
 import com.capstone.auth.infrastructure.utils.Message;
-
-import java.time.LocalDate;
-
-import com.capstone.common.utils.SharedMessage;
+import com.capstone.common.exception.NotExistingException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.keycloak.admin.client.Keycloak;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.slf4j.Logger;
+
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AuthUseCaseLoginTest {
   @Mock
-  UserService userService;
+  UserService uSrv;
 
   @Mock
-  ProfileService profileService;
+  ProfileService pSrv;
+
+  @Mock
+  RoleService rSrv;
+
+  @Mock
+  MessageProducer template;
+
+  @Mock
+  Keycloak keycloak;
+
+  @Mock
+  KeycloakFeignClient keycloakFeignClient;
+
+  @Mock
+  KeycloakService keycloakService;
+
+  @Mock
+  NetworkService netWorkService;
+
+  @Mock
+  OrganizationService organizationService;
 
   @InjectMocks
   AuthUseCase authUseCase;
 
-  @Mock
-  private Logger log;
-
   @Test
-  void login_returns_profile_response_for_valid_credentials() {
+  void login_returns_token_response_for_valid_credentials() {
     var userId = "user-1";
-    var email = "user@example.com";
     var username = "user1";
-    var user = new UserDTO(userId, "IT_DEPARTMENT_STAFF", username, email, false, null, null, null, null, null, null,
-      null,
-      null, true);
+    var password = "password123";
+    var user = new UserDTO(userId, "IT_DEPARTMENT_STAFF", username, "user@example.com", false, null, null, null, null, null, null,
+      null, null, true);
     var profile = new ProfileDTO(
       userId,
       "User One",
@@ -53,149 +77,78 @@ class AuthUseCaseLoginTest {
       "0900000000",
       true,
       LocalDate.parse("2000-01-01"));
+    var tokenExchangeResponse = new TokenExchangeResponse("access-token", 3600L, 3600L, "refresh-token", "Bearer", 0, "session", "scope");
 
-    when(userService.getUserById(userId)).thenReturn(user);
-    when(userService.checkExistence(email)).thenReturn(true);
-    when(userService.checkExistence(username)).thenReturn(true);
-    when(profileService.getProfileById(userId)).thenReturn(profile);
+    when(uSrv.checkExistence(username)).thenReturn(true);
+    when(uSrv.getByUserNameOrEmail(username)).thenReturn(user);
+    when(pSrv.getProfileById(userId)).thenReturn(profile);
+    when(keycloakFeignClient.login(any(LoginParam.class))).thenReturn(tokenExchangeResponse);
 
-    var response = authUseCase.login(userId, email, username);
+    var response = authUseCase.login(username, password);
 
     assertNotNull(response);
-    assertEquals(profile.fullname(), response.fullname());
-    assertEquals(profile.avatarUrl(), response.avatarUrl());
-    assertEquals(profile.address(), response.address());
-    assertEquals(profile.phoneNumber(), response.phoneNumber());
-    assertEquals(profile.gender().toString(), response.gender());
-    assertEquals(profile.birthday().toString(), response.birthday());
-    assertEquals(user.role().toLowerCase(), response.role());
-    assertEquals(user.username(), response.username());
-    assertEquals(user.email(), response.email());
-  }
-
-  @Test
-  void login_throws_when_email_invalid() {
-    var userId = "user-1";
-    var email = "invalid-email";
-    var username = "user1";
-    var user = new UserDTO(userId, "IT_DEPARTMENT_STAFF", username, "user@example.com", false, null, null, null, null,
-      null,
-      null, null, null, true);
-
-    when(userService.getUserById(userId)).thenReturn(user);
-
-    IllegalArgumentException ex = assertThrows(
-      IllegalArgumentException.class,
-      () -> authUseCase.login(userId, email, username));
-
-    assertEquals(SharedMessage.MES_01, ex.getMessage());
-  }
-
-  @Test
-  void login_throws_when_user_locked() {
-    var userId = "user-1";
-    var email = "user@example.com";
-    var username = "user1";
-    var user = new UserDTO(userId, "IT_DEPARTMENT_STAFF", username, email, true, null, null, null, null, null, null,
-      null, null, true);
-
-    when(userService.getUserById(userId)).thenReturn(user);
-    when(userService.checkExistence(email)).thenReturn(true);
-    when(userService.checkExistence(username)).thenReturn(true);
-
-    AccountBlockedException ex = assertThrows(
-      AccountBlockedException.class,
-      () -> authUseCase.login(userId, email, username));
-
-    assertEquals(Message.SE_06, ex.getMessage());
+    assertNotNull(response.userDetails());
+    assertEquals(profile.fullname(), response.userDetails().fullname());
+    assertEquals(profile.avatarUrl(), response.userDetails().avatarUrl());
+    assertEquals(profile.address(), response.userDetails().address());
+    assertEquals(profile.phoneNumber(), response.userDetails().phoneNumber());
+    assertEquals(profile.gender().toString(), response.userDetails().gender());
+    assertEquals(profile.birthday().toString(), response.userDetails().birthday());
+    assertEquals(user.role().toLowerCase(), response.userDetails().role());
+    assertEquals(user.username(), response.userDetails().username());
+    assertEquals(user.email(), response.userDetails().email());
+    assertEquals(tokenExchangeResponse.accessToken(), response.token().accessToken());
   }
 
   @Test
   void login_throws_when_credentials_do_not_exist() {
-    var userId = "user-1";
-    var email = "user@example.com";
     var username = "user1";
-    var user = new UserDTO(userId, "IT_DEPARTMENT_STAFF", username, email, false, null, null, null, null, null, null,
-      null,
-      null, true);
+    var password = "password123";
 
-    when(userService.getUserById(userId)).thenReturn(user);
-    when(userService.checkExistence(email)).thenReturn(false);
+    when(uSrv.checkExistence(username)).thenReturn(false);
 
     NotExistingException ex = assertThrows(
       NotExistingException.class,
-      () -> authUseCase.login(userId, email, username));
+      () -> authUseCase.login(username, password));
 
     assertEquals(Message.SE_04, ex.getMessage());
   }
 
   @Test
-  void login_throws_when_user_not_found() {
-    var userId = "non-existent";
-    var email = "user@example.com";
-    var username = "user1";
-
-    when(userService.getUserById(userId)).thenReturn(null);
-
-    NullPointerException ex = assertThrows(
-      NullPointerException.class,
-      () -> authUseCase.login(userId, email, username));
-
-    assertEquals(Message.SE_03, ex.getMessage());
-  }
-
-  @Test
-  void login_throws_when_email_mismatch() {
+  void login_throws_when_user_locked() {
     var userId = "user-1";
-    var email = "other@example.com";
     var username = "user1";
-    var user = new UserDTO(userId, "IT_DEPARTMENT_STAFF", "user1", "user@example.com", false, null, null, null, null,
-      null,
-      null, null, null, true);
-
-    when(userService.getUserById(userId)).thenReturn(user);
-
-    IllegalArgumentException ex = assertThrows(
-      IllegalArgumentException.class,
-      () -> authUseCase.login(userId, email, username));
-
-    assertEquals("Email does not match", ex.getMessage());
-  }
-
-  @Test
-  void login_throws_when_username_mismatch() {
-    var userId = "user-1";
-    var email = "user@example.com";
-    var username = "wronguser";
-    var user = new UserDTO(userId, "IT_DEPARTMENT_STAFF", "user1", email, false, null, null, null, null, null, null,
+    var password = "password123";
+    var user = new UserDTO(userId, "IT_DEPARTMENT_STAFF", username, "user@example.com", true, null, null, null, null, null, null,
       null, null, true);
 
-    when(userService.getUserById(userId)).thenReturn(user);
+    when(uSrv.checkExistence(username)).thenReturn(true);
+    when(uSrv.getByUserNameOrEmail(username)).thenReturn(user);
 
-    IllegalArgumentException ex = assertThrows(
-      IllegalArgumentException.class,
-      () -> authUseCase.login(userId, email, username));
+    AccountBlockedException ex = assertThrows(
+      AccountBlockedException.class,
+      () -> authUseCase.login(username, password));
 
-    assertEquals("Username does not match", ex.getMessage());
+    assertEquals(Message.SE_06, ex.getMessage());
   }
 
   @Test
   void login_throws_when_profile_not_found() {
     var userId = "user-1";
-    var email = "user@example.com";
     var username = "user1";
-    var user = new UserDTO(userId, "IT_DEPARTMENT_STAFF", username, email, false, null, null, null, null, null, null,
+    var password = "password123";
+    var user = new UserDTO(userId, "IT_DEPARTMENT_STAFF", username, "user@example.com", false, null, null, null, null, null, null,
       null, null, true);
 
-    when(userService.getUserById(userId)).thenReturn(user);
-    when(userService.checkExistence(email)).thenReturn(true);
-    when(userService.checkExistence(username)).thenReturn(true);
-    when(profileService.getProfileById(userId)).thenReturn(null);
+    when(uSrv.checkExistence(username)).thenReturn(true);
+    when(uSrv.getByUserNameOrEmail(username)).thenReturn(user);
+    when(pSrv.getProfileById(userId)).thenReturn(null);
 
     NullPointerException ex = assertThrows(
       NullPointerException.class,
-      () -> authUseCase.login(userId, email, username));
+      () -> authUseCase.login(username, password));
 
     assertEquals(Message.SE_05, ex.getMessage());
   }
 }
+
