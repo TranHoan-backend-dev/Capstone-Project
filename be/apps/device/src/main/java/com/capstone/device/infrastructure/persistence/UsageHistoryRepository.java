@@ -12,5 +12,6 @@ import java.util.Optional;
 @Repository
 public interface UsageHistoryRepository extends JpaRepository<UsageHistory, String> {
   Optional<UsageHistory> findByMeter(WaterMeter meter);
+  Optional<UsageHistory> findByCustomerId(String customerId);
   List<UsageHistory> findAllByCustomerIdIn(Collection<String> customerIds);
 }

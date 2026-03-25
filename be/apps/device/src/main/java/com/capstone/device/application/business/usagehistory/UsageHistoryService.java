@@ -8,11 +8,14 @@ import java.util.Collection;
 import java.util.List;
 
 public interface UsageHistoryService {
-  UsageResponse addWaterIndexOfThisMonth(String imageUrl, String serial, BigDecimal index, LocalDate recordingDate);
+    UsageResponse addWaterIndexOfThisMonth(String imageUrl, String serial, BigDecimal index, LocalDate recordingDate);
 
-  void updatePaymentStatus(String serial, String method);
+    void updatePaymentStatus(String serial, String method);
 
-  List<UsageResponse> getUsageByCustomerIds(Collection<String> customerIds);
+    List<UsageResponse> getUsageByCustomerIds(Collection<String> customerIds);
 
-  UsageResponse updateUsageDetails(String serial, LocalDate recordingDate, BigDecimal index, String imageUrl);
+    UsageResponse updateUsageDetails(String serial, LocalDate recordingDate, BigDecimal index, String imageUrl);
+
+    // New method to get usage history by customer ID
+    UsageResponse getUsageHistoryByCustomerId(String customerId);
 }

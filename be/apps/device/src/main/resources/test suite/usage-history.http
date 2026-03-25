@@ -1,0 +1,191 @@
+@uri = http://localhost:9006/api/v1/usage
+@keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
+@client_secret=
+@customerId = CUST-2024-001
+@serial = WM-2024-001
+
+### get token
+POST {{keycloak}}/token
+Content-Type: application/x-www-form-urlencoded
+Accept: application/json
+
+grant_type=password&
+client_id=&
+client_secret={{client_secret}}&
+username=&
+password=&
+scope=openid
+
+> {%
+  client.global.set("access_token", response.body.access_token);
+  client.global.set("refresh_token", response.body.refresh_token);
+%}
+
+
+
+
+### Case 1: Lấy lịch sử sử dụng nước thành công theo customer ID
+GET {{uri}}/customer/{{customerId}}
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Case 2: Lấy thất bại - Customer ID không tồn tại (404)
+GET {{uri}}/customer/INVALID-CUSTOMER-ID
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Case 3: Lấy thất bại - Thiếu token xác thực (401)
+GET {{uri}}/customer/{{customerId}}
+Accept: application/json
+
+# ============================================================================
+# G - GET: Lấy lịch sử theo danh sách customer IDs (batch)
+# ============================================================================
+
+### Case 1: Lấy lịch sử theo danh sách customer IDs thành công
+GET {{uri}}/batch?ids={{customerId}}
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Case 2: Lấy lịch sử theo nhiều customer IDs
+GET {{uri}}/batch?ids=CUST-2024-001&ids=CUST-2024-002&ids=CUST-2024-003
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Case 3: Lấy thất bại - Không có tham số ids
+GET {{uri}}/batch
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+# ============================================================================
+# G - GET: Xem lượng tiêu thụ nước (consumption report)
+# ============================================================================
+
+### Case 1: Lấy báo cáo tiêu thụ nước thành công
+GET {{uri}}/consumption-report?ids={{customerId}}
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Case 2: Lấy báo cáo tiêu thụ với nhiều customer IDs
+GET {{uri}}/consumption-report?ids=CUST-2024-001&ids=CUST-2024-002
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+# ============================================================================
+# P - POST: Cập nhật chỉ số nước tháng này
+# ============================================================================
+
+### Case 1: Cập nhật chỉ số nước thành công
+POST {{uri}}/{{serial}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "imageUrl": "https://example.com/meter-image.jpg",
+  "index": 150.5,
+  "recordingDate": "2024-03-01"
+}
+
+### Case 2: Cập nhật thất bại - Thiếu chỉ số (index)
+POST {{uri}}/{{serial}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "imageUrl": "https://example.com/meter-image.jpg",
+  "recordingDate": "2024-03-01"
+}
+
+### Case 3: Cập nhật thất bại - Chỉ số âm không hợp lệ
+POST {{uri}}/{{serial}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "imageUrl": "https://example.com/meter-image.jpg",
+  "index": -10.0,
+  "recordingDate": "2024-03-01"
+}
+
+### Case 4: Cập nhật thất bại - Serial không tồn tại (404)
+POST {{uri}}/INVALID-SERIAL
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "imageUrl": "https://example.com/meter-image.jpg",
+  "index": 150.5,
+  "recordingDate": "2024-03-01"
+}
+
+### Case 5: Cập nhật thất bại - Thiếu ngày ghi nhận (recordingDate)
+POST {{uri}}/{{serial}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "imageUrl": "https://example.com/meter-image.jpg",
+  "index": 150.5
+}
+
+# ============================================================================
+# P - PATCH: Cập nhật trạng thái thanh toán
+# ============================================================================
+
+### Case 1: Cập nhật trạng thái thanh toán thành công
+PATCH {{uri}}/{{serial}}?method=BANK_TRANSFER
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Case 2: Cập nhật thất bại - Thiếu phương thức thanh toán (method)
+PATCH {{uri}}/{{serial}}
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Case 3: Cập nhật thất bại - Serial không tồn tại (404)
+PATCH {{uri}}/INVALID-SERIAL?method=CASH
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+# ============================================================================
+# P - PUT: Cập nhật ghi tiêu thụ nước
+# ============================================================================
+
+### Case 1: Cập nhật bản ghi tiêu thụ thành công
+PUT {{uri}}/{{serial}}?date=2024-03-01&index=150.5
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Case 2: Cập nhật với hình ảnh
+PUT {{uri}}/{{serial}}?date=2024-03-01&index=150.5&imageUrl=https://example.com/meter-new.jpg
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Case 3: Cập nhật thất bại - Thiếu ngày ghi nhận (date)
+PUT {{uri}}/{{serial}}?index=150.5
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Case 4: Cập nhật thất bại - Thiếu chỉ số (index)
+PUT {{uri}}/{{serial}}?date=2024-03-01
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Case 5: Cập nhật thất bại - Serial không tồn tại (404)
+PUT {{uri}}/INVALID-SERIAL?date=2024-03-01&index=150.5
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+# ============================================================================
+# Các test cases bổ sung với dữ liệu mẫu
+# ============================================================================
+
+### Test với customer ID thực tế (thay đổi theo dữ liệu trong DB)
+GET {{uri}}/customer/CUST-2024-001
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+### Test batch với nhiều IDs
+GET {{uri}}/batch?ids=CUST-2024-001&ids=CUST-2024-002
+Authorization: Bearer {{access_token}}
+Accept: application/json

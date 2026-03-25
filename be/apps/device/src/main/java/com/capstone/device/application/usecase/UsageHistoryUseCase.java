@@ -41,4 +41,8 @@ public class UsageHistoryUseCase {
   public java.util.List<UsageResponse> getUsageByCustomerIds(Collection<String> customerIds) {
     return usageHistoryService.getUsageByCustomerIds(customerIds);
   }
+
+  public UsageResponse getUsageHistoryByCustomerId(String customerId) {
+    return usageHistoryService.getUsageHistoryByCustomerId(customerId);
+  }
 }

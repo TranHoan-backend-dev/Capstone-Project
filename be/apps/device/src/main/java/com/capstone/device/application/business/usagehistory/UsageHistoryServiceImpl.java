@@ -84,6 +84,24 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
   }
 
   @Override
+  public UsageResponse getUsageHistoryByCustomerId(String customerId) {
+    log.info("Get usage history for customer {}", customerId);
+
+    // Find usage history by customer ID
+    var historyOpt = repository.findByCustomerId(customerId);
+
+    if (historyOpt.isEmpty()) {
+      throw new NotExistingException("Không tìm thấy lịch sử sử dụng nước cho khách hàng: " + customerId);
+    }
+
+    var history = historyOpt.get();
+    var customerInfo = getCustomerInfo(customerId);
+    var waterPrice = resolveWaterPrice(customerInfo.waterPriceId());
+
+    return mapToResponse(history, customerInfo.name(), waterPrice);
+  }
+
+  @Override
   public List<UsageResponse> getUsageByCustomerIds(Collection<String> customerIds) {
     log.info("getUsageByCustomerIds");
     var histories = repository.findAllByCustomerIdIn(customerIds);

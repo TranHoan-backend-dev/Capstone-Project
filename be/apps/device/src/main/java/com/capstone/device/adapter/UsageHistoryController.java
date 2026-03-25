@@ -71,6 +71,19 @@ public class UsageHistoryController {
     return Utils.returnOkResponse("Lấy lịch sử sử dụng thành công", response);
   }
 
+  @Operation(summary = "Xem lịch sử sử dụng nước của khách hàng", description = "Lấy toàn bộ lịch sử ghi nước và thanh toán tiền nước của một khách hàng theo ID")
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "Lấy thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy lịch sử sử dụng nước cho khách hàng")
+  })
+  @GetMapping("/customer/{customerId}")
+  public ResponseEntity<WrapperApiResponse> getUsageHistoryByCustomerId(
+    @Parameter(description = "Mã ID của khách hàng", example = "CUST-2024-001") @PathVariable String customerId) {
+    log.info("Get usage history for customer {}", customerId);
+    var response = useCase.getUsageHistoryByCustomerId(customerId);
+    return Utils.returnOkResponse("Lấy lịch sử sử dụng nước thành công", response);
+  }
+
   @Operation(summary = "Xem lượng tiêu thụ nước", description = "Cho phép nhân viên kinh doanh, IT, khảo sát xem lượng tiêu thụ nước để kiểm tra bất thường")
   @GetMapping("/consumption-report")
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'BUSINESS_DEPARTMENT_HEAD', 'METER_INSPECTION_STAFF')")
