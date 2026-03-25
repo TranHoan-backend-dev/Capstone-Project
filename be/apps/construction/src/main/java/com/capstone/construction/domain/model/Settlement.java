@@ -60,6 +60,7 @@ public class Settlement implements Serializable {
   void onCreate() {
     this.createdAt = LocalDateTime.now();
     this.updatedAt = this.createdAt;
+    this.significance = new SettlementSignificance();
   }
 
   @PreUpdate

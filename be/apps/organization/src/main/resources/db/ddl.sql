@@ -43,4 +43,3 @@ create table public.job
 
 alter table public.job
   owner to postgres;
-
