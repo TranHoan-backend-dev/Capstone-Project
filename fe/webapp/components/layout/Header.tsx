@@ -23,6 +23,7 @@ import Sidebar from "./sidebar";
 import NotificationDropdown from "./NotificationDropdown";
 import { CallToast } from "../ui/CallToast";
 import axios from "axios";
+import { useProfile } from "@/hooks/useLogin";
 import { useEmployeeProfile } from "@/hooks/useEmployeeProfile";
 import { filterNavItems, siteConfig } from "@/config/site";
 
@@ -57,10 +58,10 @@ const Header = () => {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
-  const { profile, loading } = useEmployeeProfile();
-  const role = profile?.role;
-
-  const filteredMenu = role ? filterNavItems(siteConfig.navItems, role) : [];
+  const { profile } = useProfile();
+  const filteredMenu = profile?.role
+    ? filterNavItems(siteConfig.navItems, profile?.role)
+    : [];
 
   const isMenuItemActive = (item: MenuItem) => {
     if (item.href && pathname === item.href) {

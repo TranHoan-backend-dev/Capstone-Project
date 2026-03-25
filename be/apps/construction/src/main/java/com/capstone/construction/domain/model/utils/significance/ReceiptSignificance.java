@@ -14,7 +14,9 @@ import java.io.Serializable;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ReceiptSignificance implements Serializable {
+  @Builder.Default
   String receiptCreator = "";
+  @Builder.Default
   String treasurer = "";
 
   @JsonIgnore

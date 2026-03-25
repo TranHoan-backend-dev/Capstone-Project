@@ -2,6 +2,7 @@ import {
   ApiResponse,
   ApproveInstallationPayload,
   NewInstallationFormPayload,
+  ReceiptRequest,
   SettlementItem,
 } from "@/types";
 import {
@@ -585,6 +586,77 @@ export const updateSettlement = (
 export const deleteSettlement = (accessToken: string, settlementId: string) => {
   return axios.delete(
     `${API_GATEWAY_URL}/construction/settlements/${settlementId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+};
+
+export const getAllReceipts = (
+  accessToken: string,
+  page: number,
+  size: number,
+  sort: string,
+  keyword?: string,
+  from?: string,
+  to?: string,
+  isPaid?: string,
+) =>
+  axios.get(`${API_GATEWAY_URL}/construction/receipts`, {
+    params: {
+      page,
+      size,
+      sort,
+      keyword,
+      from,
+      to,
+      isPaid,
+    },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+export const createReceipt = (accessToken: string, request: ReceiptRequest) => {
+  return axios.post(`${API_GATEWAY_URL}/construction/receipts`, request, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
+export const updateReceipt = (accessToken: string, request: ReceiptRequest) => {
+  return axios.put(`${API_GATEWAY_URL}/construction/receipts`, request, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
+export const deleteReceipt = (
+  accessToken: string,
+  formCode: string,
+  formNumber: string,
+) => {
+  return axios.delete(
+    `${API_GATEWAY_URL}/construction/receipts/${formCode}/${formNumber}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+};
+
+export const getDetailReceipt = (
+  accessToken: string,
+  formCode: string,
+  formNumber: string,
+) => {
+  return axios.get(
+    `${API_GATEWAY_URL}/construction/receipts/${formCode}/${formNumber}`,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,

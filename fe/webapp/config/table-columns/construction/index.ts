@@ -7,4 +7,5 @@ export * from "./hamlet-column";
 export * from "./design-processing-column";
 export * from "./survey-assignment-column";
 export * from "./settlement-column";
+export * from "./fee-collection-column";
 export * from "./estimate_column";

@@ -24,15 +24,17 @@ export interface ApiResponse<T> {
 }
 
 export interface EmployeeProfileData {
+  id: string;
+  username: string;
   fullname: string;
-  avatarUrl: string;
-  address: string;
+  email: string;
   phoneNumber: string;
   gender: string;
   birthday: string;
+  address: string;
+  avatarUrl: string;
   role: string;
-  username: string;
-  email: string;
+  significanceUrl: string;
 }
 
 export interface EmployeeProfileUpdatePayload {
@@ -151,6 +153,10 @@ export type FormField =
   | CheckboxField
   | TextareaField;
 
-export type OrderStage = "registration" | "estimate" | "contract" | "construction";
+export type OrderStage =
+  | "registration"
+  | "estimate"
+  | "contract"
+  | "construction";
 
 export type OrderStatus = "processing" | "pending" | "approved" | "rejected";
