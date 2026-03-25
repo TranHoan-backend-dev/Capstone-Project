@@ -229,7 +229,8 @@ public class AuthUseCase {
       user.role().toLowerCase(),
       user.username(),
       user.email(),
-      user.userId());
+      user.userId(),
+      user.electronicSigningUrl());
   }
 
   private void validateNewUserInformation(@NonNull NewUserRequest request) {

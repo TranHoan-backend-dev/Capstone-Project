@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import MaterialCommunityIcon from 'react-native-paper/lib/typescript/components/MaterialCommunityIcon';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import styles from './debtRoute.styles';
 import { useNavigation } from '@react-navigation/native';
 
@@ -13,13 +13,10 @@ interface CollectionItem {
   tongTien: number;
   tienThu: number;
   tienConLai: number;
-  // Detailed data
   soHDTon?: string;
-  daZhuTon?: string;
-  tienThuTon?: string;
-  tongTienTon?: number;
   daZhuThuTon?: string;
   tienThuThuTon?: number;
+  tongTienTon?: number;
   tienTonConLai?: number;
 }
 
@@ -28,6 +25,7 @@ interface CollectionListItemProps {
 }
 
 const formatNumber = (num: number | string) => {
+  if (num === undefined || num === null) return '0';
   if (typeof num === 'string') return num;
   return num.toLocaleString('vi-VN');
 };
@@ -37,115 +35,100 @@ export default function CollectionListItem({ item }: CollectionListItemProps) {
   const goToCustomerList = () => {
     navigation.navigate('InvoiceList');
   };
+
   return (
-    <View style={styles.collectionCard}>
-      {/* Header Row */}
-      <View style={styles.cardHeader}>
-        {/* Left side - ID and Meter info */}
-        <View style={styles.cardLeft}>
-          <View style={styles.cardLeftRow}>
-            <View style={styles.cardIdGroup}>
-              <Text style={styles.cardIdLabel}>📋</Text>
-              <Text style={styles.cardIdValue}>{item.id}</Text>
-            </View>
-
-            <View style={styles.cardIdGroup}>
-              <Text style={styles.cardIdLabel}>📍</Text>
-              <Text style={styles.cardMeterId}>{item.meterId}</Text>
-            </View>
+    <TouchableOpacity 
+      style={styles.collectionCard} 
+      onPress={goToCustomerList}
+      activeOpacity={0.7}
+    >
+      {/* Header Rows */}
+      <View style={{ marginBottom: 12 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Icon name="format-list-bulleted" size={20} color="#1E88E5" style={{ marginRight: 8 }} />
+            <Text style={{ color: '#1E88E5', fontWeight: '500', fontSize: 16 }}>{item.id}</Text>
           </View>
-
-          {/* Key metrics */}
-          <View style={styles.cardDataRow}>
-            <View style={styles.cardDataPair}>
-              <Text style={styles.cardLabel}>Số HĐ:</Text>
-              <Text style={styles.cardValue}>{item.soHD}</Text>
-            </View>
-            <View style={styles.cardDataPair}>
-              <Text style={styles.cardLabel}>Đã thu:</Text>
-              <Text style={styles.cardValue}>{item.daZhu}</Text>
-            </View>
-            <View style={styles.cardDataPair}>
-              <Text style={styles.cardLabel}>Còn lại:</Text>
-              <Text style={[styles.cardValue, styles.cardValueRed]}>
-                {item.conLai}
-              </Text>
-            </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Icon name="format-list-checks" size={18} color="#4CAF50" style={{ marginRight: 4 }} />
+            <Text style={{ color: '#1E88E5', fontSize: 13 }}>Danh sách hoá đơn</Text>
           </View>
         </View>
 
-        {/* Right side - detailed amounts */}
-        <View style={styles.cardRight}>
-          <View style={styles.cardBadge}>
-            <TouchableOpacity onPress={goToCustomerList} activeOpacity={0.7}>
-              <Text style={styles.cardBadgeText}>📋 Danh sách hoá đơn</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.cardDataRow}>
-            <Text style={styles.cardLabel}>Tổng tiền:</Text>
-            <Text style={styles.cardValue}>{formatNumber(item.tongTien)}</Text>
-          </View>
-
-          <View style={styles.cardDataRow}>
-            <Text style={styles.cardLabel}>Tiền thu:</Text>
-            <Text style={[styles.cardValue, styles.cardValueGreen]}>
-              {formatNumber(item.tienThu)}
-            </Text>
-          </View>
-
-          <View style={styles.cardDataRow}>
-            <Text style={styles.cardLabel}>Tiền còn lại:</Text>
-            <Text style={[styles.cardValue, styles.cardValueRed]}>
-              {formatNumber(item.tienConLai)}
-            </Text>
-          </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Icon name="book-outline" size={20} color="#8D6E63" style={{ marginRight: 8 }} />
+          <Text style={{ color: '#1E88E5', fontWeight: '500', fontSize: 16 }}>{item.meterId}</Text>
         </View>
       </View>
 
-      {/* Detailed data section */}
-      {item.soHDTon && (
-        <View style={styles.detailSection}>
-          <View style={styles.detailRow}>
-            <View style={styles.detailCol}>
-              <Text style={styles.detailLabel}>Số HĐ tờn:</Text>
-              <Text style={styles.detailValue}>{item.soHDTon}</Text>
-            </View>
-            <View style={styles.detailCol}>
-              <Text style={styles.detailLabel}>Tổng tiền tờn:</Text>
-              <Text style={styles.detailValue}>
-                {formatNumber(item.tongTienTon || 0)}
-              </Text>
-            </View>
+      {/* Data Table */}
+      <View style={{ gap: 8 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <View style={{ flex: 1.2, flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={{ color: '#333', fontSize: 14 }}>Số HĐ:</Text>
+            <Text style={{ color: '#1E88E5', fontWeight: 'bold', fontSize: 14, marginRight: 20 }}>{item.soHD}</Text>
           </View>
-
-          <View style={styles.detailRow}>
-            <View style={styles.detailCol}>
-              <Text style={styles.detailLabel}>Đã thu tờn:</Text>
-              <Text style={styles.detailValue}>{item.daZhuThuTon}</Text>
-            </View>
-            <View style={styles.detailCol}>
-              <Text style={styles.detailLabel}>Tiền thu tờn:</Text>
-              <Text style={[styles.detailValue, styles.detailValueRed]}>
-                {formatNumber(item.tienThuThuTon || 0)}
-              </Text>
-            </View>
-          </View>
-
-          <View style={styles.detailRow}>
-            <View style={styles.detailCol}>
-              <Text style={styles.detailLabel}>Tổng tiền ơn:</Text>
-              <Text style={styles.detailValue}>0</Text>
-            </View>
-            <View style={styles.detailCol}>
-              <Text style={styles.detailLabel}>Tiền ơn còn lại:</Text>
-              <Text style={[styles.detailValue, styles.detailValueRed]}>
-                {formatNumber(item.tienTonConLai || 0)}
-              </Text>
-            </View>
+          <View style={{ flex: 2, flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={{ color: '#333', fontSize: 14 }}>Tổng tiền:</Text>
+            <Text style={{ color: '#1E88E5', fontWeight: 'bold', fontSize: 14 }}>{formatNumber(item.tongTien)}</Text>
           </View>
         </View>
-      )}
-    </View>
+
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <View style={{ flex: 1.2, flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={{ color: '#333', fontSize: 14 }}>Đã thu:</Text>
+            <Text style={{ color: '#1E88E5', fontWeight: 'bold', fontSize: 14, marginRight: 20 }}>{item.daZhu}</Text>
+          </View>
+          <View style={{ flex: 2, flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={{ color: '#333', fontSize: 14 }}>Tiền thu:</Text>
+            <Text style={{ color: '#1E88E5', fontWeight: 'bold', fontSize: 14 }}>{formatNumber(item.tienThu)}</Text>
+          </View>
+        </View>
+
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <View style={{ flex: 1.2, flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={{ color: '#333', fontSize: 14 }}>Còn lại:</Text>
+            <Text style={{ color: '#1E88E5', fontWeight: 'bold', fontSize: 14, marginRight: 20 }}>{item.conLai}</Text>
+          </View>
+          <View style={{ flex: 2, flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={{ color: '#333', fontSize: 14 }}>Tiền còn lại:</Text>
+            <Text style={{ color: '#D32F2F', fontWeight: 'bold', fontSize: 14 }}>{formatNumber(item.tienConLai)}</Text>
+          </View>
+        </View>
+
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <View style={{ flex: 1.2, flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={{ color: '#333', fontSize: 14 }}>Số HĐ tồn:</Text>
+            <Text style={{ color: '#1E88E5', fontWeight: 'bold', fontSize: 14, marginRight: 20 }}>{item.soHDTon}</Text>
+          </View>
+          <View style={{ flex: 2, flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={{ color: '#333', fontSize: 14 }}>Tổng tiền tồn:</Text>
+            <Text style={{ color: '#D32F2F', fontWeight: 'bold', fontSize: 14 }}>{formatNumber(item.tongTienTon || 0)}</Text>
+          </View>
+        </View>
+
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <View style={{ flex: 1.2, flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={{ color: '#333', fontSize: 14 }}>Đã thu tồn:</Text>
+            <Text style={{ color: '#1E88E5', fontWeight: 'bold', fontSize: 14, marginRight: 20 }}>{item.daZhuThuTon}</Text>
+          </View>
+          <View style={{ flex: 2, flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={{ color: '#333', fontSize: 14 }}>Tiền thu tồn:</Text>
+            <Text style={{ color: '#1E88E5', fontWeight: 'bold', fontSize: 14 }}>{formatNumber(item.tienThuThuTon || 0)}</Text>
+          </View>
+        </View>
+
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <View style={{ flex: 1.2, flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={{ color: '#333', fontSize: 14 }}>Tồn còn lại:</Text>
+            <Text style={{ color: '#1E88E5', fontWeight: 'bold', fontSize: 14, marginRight: 20 }}>{item.soHDTon}</Text>
+          </View>
+          <View style={{ flex: 2, flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={{ color: '#333', fontSize: 14 }}>Tiền tồn còn lại:</Text>
+            <Text style={{ color: '#D32F2F', fontWeight: 'bold', fontSize: 14 }}>{formatNumber(item.tienTonConLai || 0)}</Text>
+          </View>
+        </View>
+      </View>
+    </TouchableOpacity>
   );
 }

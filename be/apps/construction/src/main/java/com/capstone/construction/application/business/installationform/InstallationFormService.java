@@ -18,7 +18,7 @@ public interface InstallationFormService {
 
   Page<InstallationFormListResponse> getConstructionRequestsList(Pageable pageable, BaseFilterRequest request);
 
-  void approveAndAssignInstallationForm(ApproveRequest request);
+  void approveInstallationForm(String userId, ApproveRequest request);
 
   InstallationFormListResponse getByFormCodeAndFormNumber(String formCode, String formNumber);
 

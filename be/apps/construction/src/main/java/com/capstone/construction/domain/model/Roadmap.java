@@ -39,6 +39,10 @@ public class Roadmap {
   @Column(nullable = false)
   LocalDateTime updatedAt;
 
+  @Column
+  @Setter
+  String assignedStaffId;
+
   @PrePersist
   void onCreate() {
     this.createdAt = LocalDateTime.now();

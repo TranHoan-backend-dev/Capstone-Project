@@ -1,6 +1,7 @@
 import { SVGProps } from "react";
-export * from "./construction/index";
+export * from "./auth/index";
 export * from "./organization/index";
+export * from "./construction/index";
 export * from "./device/index";
 
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
@@ -159,5 +160,7 @@ export type FormField =
   | SearchInputField
   | CheckboxField
   | TextareaField;
+
+export type OrderStage = "registration" | "estimate" | "contract" | "construction";
 
 export type OrderStatus = "processing" | "pending" | "approved" | "rejected";

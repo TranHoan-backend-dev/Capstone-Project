@@ -1,27 +1,25 @@
 package com.capstone.infrastructure.meter;
 
-import android.content.Context;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
 public class MeterCaptureManager {
-    private final Context context;
     private final Random random = new Random();
-
-    @Inject
-    public MeterCaptureManager(Context context) {
-        this.context = context;
-    }
 
     /**
      * Logic kiểm tra độ mờ của ảnh đồng hồ (mô phỏng).
      */
-    public boolean isImageBlurred(File file) {
+    public boolean isImageBlurred(@NonNull File file) {
         // Mô phỏng logic kiểm tra nếu file quá nhỏ hoặc không hợp lệ
         return file.length() < 1024;
     }
@@ -30,7 +28,7 @@ public class MeterCaptureManager {
      * Gửi yêu cầu phân tích hình ảnh AI theo cách bất đồng bộ (mô phỏng).
      */
     public void sendToAiAsync(String imagePath) {
-        System.out.println("Sending image to AI asynchronously: " + imagePath);
+        Log.i(this.getClass().getName(), "Sending image to AI asynchronously: " + imagePath);
     }
 
     /**

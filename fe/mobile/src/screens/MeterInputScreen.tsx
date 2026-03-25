@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ScrollView, StatusBar } from 'react-native';
+import { View, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import MeterInputForm from '../components/meter-input/MeterInputForm';
 import MeterInputHeader from '../components/meter-input/MeterInputHeader';
@@ -15,13 +15,15 @@ const MeterInputScreen = ({ route }: any) => {
 
       <MeterInputHeader onBack={() => navigation.goBack()} />
 
-      <ScrollView style={styles.content}>
+      <View style={styles.content}>
         <MeterInputForm
           customerId={customerId}
           customerName={customerName}
           address={address}
+          ocrResult={route.params?.ocrResult}
         />
-      </ScrollView>
+
+      </View>
     </View>
   );
 };

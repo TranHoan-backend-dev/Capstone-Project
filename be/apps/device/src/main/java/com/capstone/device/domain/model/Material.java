@@ -25,10 +25,10 @@ public class Material {
   @GeneratedValue(strategy = GenerationType.UUID)
   String materialId;
 
-  @Column(nullable = false)
+  @Column(nullable = false, columnDefinition = "TEXT")
   String laborCode; // ma hieu nhan cong
 
-  @Column(nullable = false)
+  @Column(nullable = false, columnDefinition = "TEXT")
   String jobContent;
 
   @Column(nullable = false, precision = 19, scale = 2)

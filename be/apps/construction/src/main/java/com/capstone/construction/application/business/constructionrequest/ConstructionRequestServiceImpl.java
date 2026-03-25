@@ -19,8 +19,6 @@ import lombok.experimental.FieldDefaults;
 import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
-
 @AppLog
 @Service
 @RequiredArgsConstructor

@@ -31,7 +31,7 @@ public class WaterPrice {
   @Column(nullable = false)
   UsageTarget usageTarget;
 
-  @OneToMany(fetch = FetchType.EAGER)
+  @ManyToMany(fetch = FetchType.EAGER)
   List<PriceType> priceTypes;
 
   @Column(nullable = false)
@@ -108,6 +108,16 @@ public class WaterPrice {
 
   public static class WaterPriceBuilder {
     private final WaterPrice wp = new WaterPrice();
+
+    public WaterPriceBuilder priceId(String priceId) {
+      wp.priceId = priceId;
+      return this;
+    }
+
+    public WaterPriceBuilder priceTypes(java.util.List<PriceType> priceTypes) {
+      wp.priceTypes = priceTypes;
+      return this;
+    }
 
     public WaterPriceBuilder usageTarget(UsageTarget usageTarget) {
       wp.setUsageTarget(usageTarget);

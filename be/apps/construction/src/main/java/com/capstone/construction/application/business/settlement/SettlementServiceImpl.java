@@ -74,6 +74,7 @@ public class SettlementServiceImpl implements SettlementService {
         var settlement = settlementRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Settlement not found with id: " + id));
 
+<<<<<<< HEAD
         settlement.setJobContent(request.jobContent());
         settlement.setAddress(request.address());
         settlement.setConnectionFee(request.connectionFee());
@@ -170,21 +171,21 @@ public class SettlementServiceImpl implements SettlementService {
         return settlementRepository.existsById(id);
     }
 
-    private @NonNull SettlementResponse mapToResponse(@NonNull Settlement settlement) {
-        InstallationForm form = settlement.getInstallationForm();
-        return new SettlementResponse(
-                settlement.getSettlementId(),
-                settlement.getJobContent(),
-                settlement.getAddress(),
-                settlement.getConnectionFee(),
-                settlement.getNote(),
-                settlement.getCreatedAt(),
-                settlement.getUpdatedAt(),
-                settlement.getRegistrationAt(),
-                form != null ? form.getFormCode() : null,
-                form != null ? form.getFormNumber() : null,
-                settlement.getSignificance(),
-                List.of(settlement.getStatus())
-        );
-    }
+  private @NonNull SettlementResponse mapToResponse(@NonNull Settlement settlement) {
+    var installationForm = settlement.getInstallationForm();
+    return new SettlementResponse(
+      settlement.getSettlementId(),
+      settlement.getJobContent(),
+      settlement.getAddress(),
+      settlement.getConnectionFee(),
+      settlement.getNote(),
+      settlement.getCreatedAt(),
+      settlement.getUpdatedAt(),
+      settlement.getRegistrationAt(),
+      installationForm.getFormCode(),
+      installationForm.getFormNumber(),
+      settlement.getSignificance(),
+      installationForm.getStatus()
+    );
+  }
 }

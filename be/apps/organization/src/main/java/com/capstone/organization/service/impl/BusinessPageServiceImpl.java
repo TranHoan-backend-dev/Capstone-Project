@@ -15,13 +15,11 @@ import com.capstone.organization.service.boundary.EmployeeService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,7 +43,7 @@ public class BusinessPageServiceImpl implements BusinessPageService {
   @Value("${rabbit-mq-config.actions[0]}")
   String ACTION;
 
-  @Value("${rabbit-mq-config.queue_name}")
+  @Value("${rabbit-mq-config.queue}")
   String QUEUE_NAME;
   // </editor-fold>
 
