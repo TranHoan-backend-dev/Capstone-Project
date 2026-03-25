@@ -1,43 +1,44 @@
 import React from 'react';
-import { ScrollView } from 'react-native';
+import { ScrollView, View, ActivityIndicator } from 'react-native';
+import { Text } from 'react-native-paper';
 import CustomerCard from './CustomerCard';
 
 interface CustomerListProps {
+  customers: any[];
+  loading: boolean;
   searchQuery: string;
   statusFilter: string;
 }
 
-const customers = [
-  {
-    id: '015281',
-    stt: 1,
-    name: 'Nguyễn Văn Tiến',
-    address: '621, Trường Chinh, Nam Định',
-    date: '24/12/2025 11:44',
-    newIndex: 588,
-    m3: 4,
-    status: 'Đã ghi',
-    amount: '39.560',
-  },
-  {
-    id: '015282',
-    stt: 2,
-    name: 'Trần Thị Cói',
-    address: '619, Trường Chinh, Nam Định',
-    date: '24/12/2025 11:45',
-    newIndex: 1229,
-    m3: 57,
-    status: 'Đã ghi',
-    amount: '782.575',
-  },
-];
-
 export default function CustomerList({
+  customers,
+  loading,
   searchQuery,
   statusFilter,
 }: CustomerListProps) {
 
-  const filteredCustomers = customers.filter(c => {
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+        <ActivityIndicator size="large" color="#1E88E5" />
+        <Text style={{ marginTop: 10, color: '#666' }}>Đang tải danh sách khách hàng...</Text>
+      </View>
+    );
+  }
+
+  const mappedCustomers = customers.map((c, index) => ({
+    id: c.customerId,
+    stt: index + 1,
+    name: c.name,
+    address: c.address,
+    date: c.latestUsage ? new Date(c.latestUsage.recordingDate).toLocaleDateString('vi-VN') : '--/--/----',
+    newIndex: c.latestUsage ? c.latestUsage.index : '----',
+    m3: c.latestUsage ? c.latestUsage.mass : '--',
+    status: c.displayStatus,
+    amount: c.latestUsage ? c.latestUsage.price : '---.---',
+  }));
+
+  const filteredCustomers = mappedCustomers.filter(c => {
     const matchSearch =
       c.id.includes(searchQuery) ||
       c.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -48,8 +49,16 @@ export default function CustomerList({
     return matchSearch && matchStatus;
   });
 
+  if (filteredCustomers.length === 0) {
+    return (
+      <View style={{ alignItems: 'center', padding: 40 }}>
+        <Text style={{ color: '#999' }}>Không tìm thấy khách hàng nào</Text>
+      </View>
+    );
+  }
+
   return (
-    <ScrollView>
+    <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
       {filteredCustomers.map(customer => (
         <CustomerCard key={customer.id} data={customer} />
       ))}

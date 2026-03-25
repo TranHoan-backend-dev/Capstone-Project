@@ -9,10 +9,10 @@ POST {{keycloak}}/token
 Content-Type: application/x-www-form-urlencoded
 
 grant_type=password&
-client_id=&
+client_id= &
 client_secret={{client_secret}}&
-username=&
-password=&
+username= &
+password= &
 scope=openid
 
 > {%
@@ -25,10 +25,10 @@ Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 {
-  "contractId": "HD_TEST_001",
+  "contractId": "HDN_001",
   "customerId": "C001",
-  "formCode": "DK_001",
-  "formNumber": "001",
+  "formCode": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+  "formNumber": "FORM-2024-0001",
   "representatives": [
     {
       "name": "Nguyễn Văn A",
@@ -51,7 +51,7 @@ Content-Type: application/json
 }
 
 ### 3. Lấy thông tin hợp đồng theo ID (Thành công - 200)
-GET {{contractsUrl}}/HD_TEST_001
+GET {{contractsUrl}}/HDN_002
 Authorization: Bearer {{access_token}}
 
 ### 3.1 Lấy thông tin hợp đồng theo ID (Lỗi - 404)

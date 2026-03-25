@@ -4,6 +4,8 @@ import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.common.utils.Utils;
+import com.capstone.construction.application.dto.request.estimate.SignRequest;
+import com.capstone.construction.application.business.installationform.InstallationFormService;
 import com.capstone.construction.application.business.installationform.InstallationFormService;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
@@ -41,7 +43,7 @@ import java.time.format.DateTimeFormatter;
 @Tag(name = "Installation Form", description = "Quản lý đơn lắp đặt (Tiếp nhận và xử lý hồ sơ lắp đặt nước)")
 public class InstallationFormController {
   InstallationFormUseCase installationFormHandlingUseCase;
-  InstallationFormService service;
+  InstallationFormService installationFormService;
   @NonFinal
   Logger log;
 
@@ -87,9 +89,14 @@ public class InstallationFormController {
   })
   @PatchMapping("/approve")
   @PreAuthorize("hasAnyAuthority('SURVEY_STAFF', 'IT_STAFF')")
-  public ResponseEntity<WrapperApiResponse> approveInstallationForm(@RequestBody @Valid ApproveRequest request) {
+  public ResponseEntity<WrapperApiResponse> approveInstallationForm(
+    @AuthenticationPrincipal Jwt jwt,
+    @RequestBody @Valid ApproveRequest request
+  ) {
     log.info("Received request to approve installation form: {}", request.formCode());
-    installationFormHandlingUseCase.approveInstallationForm(request);
+
+    var id = jwt.getSubject();
+    installationFormHandlingUseCase.approveInstallationForm(id, request);
     return Utils.returnOkResponse("Thay đổi trạng thái thành công", null);
   }
 
@@ -146,6 +153,6 @@ public class InstallationFormController {
     @RequestParam String formCode,
     @RequestParam String formNumber
   ) {
-    return service.isInstallationFormExisting(formNumber, formCode);
+    return installationFormService.isInstallationFormExisting(formNumber, formCode);
   }
 }

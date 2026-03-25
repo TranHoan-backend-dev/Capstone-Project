@@ -1,5 +1,6 @@
 package com.capstone.device.application.business.usagehistory;
 
+import com.capstone.device.application.dto.response.pricetype.PendingReviewResponse;
 import com.capstone.device.application.dto.response.pricetype.UsageResponse;
 
 import java.math.BigDecimal;
@@ -15,4 +16,8 @@ public interface UsageHistoryService {
   List<UsageResponse> getUsageByCustomerIds(Collection<String> customerIds);
 
   UsageResponse updateUsageDetails(String serial, LocalDate recordingDate, BigDecimal index, String imageUrl);
+
+  List<PendingReviewResponse> getPendingReviews();
+
+  void confirmMeterReading(String reviewId, BigDecimal finalIndex, String status);
 }

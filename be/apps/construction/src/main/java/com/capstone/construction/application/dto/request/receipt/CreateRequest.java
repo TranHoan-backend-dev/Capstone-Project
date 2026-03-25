@@ -38,7 +38,6 @@ public record CreateRequest(
   String attach,
 
   @NotNull(message = "Ngày thanh toán không được để trống")
-  @Pattern(regexp = SharedConstant.DATE_PATTERN)
   LocalDate paymentDate,
 
   @NotNull(message = "Trạng thái thanh toán không được để trống")

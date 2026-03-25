@@ -50,6 +50,7 @@ public class CustomerServiceImpl implements CustomerService {
       .email(request.email())
       .phoneNumber(request.phoneNumber())
       .type(request.type())
+      .address(request.address())
       .isBigCustomer(request.isBigCustomer())
       .usageTarget(request.usageTarget().name())
       .numberOfHouseholds(request.numberOfHouseholds())
@@ -306,7 +307,9 @@ public class CustomerServiceImpl implements CustomerService {
       customer.getFormNumber(),
       customer.getWaterPriceId(),
       waterPrice,
-      customer.getWaterMeterId());
+      customer.getWaterMeterId(),
+      customer.getAddress()
+    );
   }
 
   private WaterPriceInfoResponse resolveWaterPrice(String waterPriceId) {

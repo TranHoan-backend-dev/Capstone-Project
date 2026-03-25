@@ -2,13 +2,18 @@ package com.capstone.construction.application.usecase;
 
 import com.capstone.common.exception.NotExistingException;
 import com.capstone.common.response.WrapperApiResponse;
+import com.capstone.construction.application.business.constructionrequest.ConstructionRequestService;
 import com.capstone.construction.application.business.settlement.SettlementService;
 import com.capstone.construction.application.dto.request.settlement.AssignTheSignificanceRequest;
 import com.capstone.construction.application.dto.request.settlement.SettlementRequest;
 import com.capstone.construction.application.dto.request.settlement.SignificanceRequest;
 import com.capstone.construction.application.dto.response.PageResponse;
+import com.capstone.construction.application.dto.response.constructionrequest.ConstructionRequestResponse;
 import com.capstone.construction.application.dto.response.settlement.SettlementResponse;
 import com.capstone.construction.application.event.producer.MessageProducer;
+import com.capstone.construction.domain.model.utils.InstallationForm;
+import com.capstone.construction.domain.model.utils.InstallationFormId;
+import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
 import com.capstone.construction.infrastructure.service.EmployeeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,7 +27,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -42,6 +49,12 @@ class SettlementUseCaseTest {
   @Mock
   EmployeeService employeeService;
 
+  @Mock
+  InstallationFormRepository installationFormRepository;
+
+  @Mock
+  ConstructionRequestService constructionRequestService;
+
   @InjectMocks
   SettlementUseCase settlementUseCase;
 
@@ -57,13 +70,17 @@ class SettlementUseCaseTest {
   @DisplayName("Create settlement successfully")
   void createSettlement_ShouldReturnResponse() {
     var request = new SettlementRequest("CODE-001", "FORM-001", "Job", "Addr", BigDecimal.ZERO, "Note", LocalDate.now());
-    var response = new SettlementResponse("id", "Job", "Addr", BigDecimal.ZERO, "Note", null, null, LocalDate.now(), "CODE-001", "FORM-001", null);
+    var response1 = new SettlementResponse("id", "Job", "Addr", BigDecimal.ZERO, "Note", null, null, LocalDate.now(), "CODE-001", "FORM-001", null, null);
+    var installationForm = mock(InstallationForm.class);
+    var constructionRequest = mock(ConstructionRequestResponse.class);
 
-    when(settlementService.createSettlement(request)).thenReturn(response);
+    when(installationFormRepository.findById(any(InstallationFormId.class))).thenReturn(Optional.of(installationForm));
+    when(constructionRequestService.getByInstallationForm(installationForm)).thenReturn(constructionRequest);
+    when(constructionRequest.isApproved()).thenReturn("true");
+    when(settlementService.createSettlement(request)).thenReturn(response1);
 
-    var result = settlementUseCase.createSettlement(request);
-
-    assertThat(result).isEqualTo(response);
+    var result1 = settlementUseCase.createSettlement(request);
+    assertThat(result1).isEqualTo(response1);
     verify(settlementService).createSettlement(request);
   }
 
@@ -72,13 +89,10 @@ class SettlementUseCaseTest {
   void updateSettlement_ShouldReturnResponse() {
     var id = "id123";
     var request = new SettlementRequest("CODE-001", "FORM-001", "Job", "Addr", BigDecimal.ZERO, "Note", LocalDate.now());
-    var response = new SettlementResponse(id, "Job", "Addr", BigDecimal.ZERO, "Note", null, null, LocalDate.now(), "CODE-001", "FORM-001", null);
-
-    when(settlementService.updateSettlement(id, request)).thenReturn(response);
-
-    var result = settlementUseCase.updateSettlement(id, request);
-
-    assertThat(result).isEqualTo(response);
+    var response2 = new SettlementResponse(id, "Job", "Addr", BigDecimal.ZERO, "Note", null, null, LocalDate.now(), "CODE-001", "FORM-001", null, null);
+    when(settlementService.updateSettlement(id, request)).thenReturn(response2);
+    var result2 = settlementUseCase.updateSettlement(id, request);
+    assertThat(result2).isEqualTo(response2);
     verify(settlementService).updateSettlement(id, request);
   }
 
@@ -86,13 +100,10 @@ class SettlementUseCaseTest {
   @DisplayName("Get settlement by id successfully")
   void getSettlementById_ShouldReturnResponse() {
     var id = "id123";
-    var response = new SettlementResponse(id, "Job", "Addr", BigDecimal.ZERO, "Note", null, null, LocalDate.now(), "CODE-001", "FORM-001", null);
-
-    when(settlementService.getSettlementById(id)).thenReturn(response);
-
-    var result = settlementUseCase.getSettlementById(id);
-
-    assertThat(result).isEqualTo(response);
+    var response3 = new SettlementResponse(id, "Job", "Addr", BigDecimal.ZERO, "Note", null, null, LocalDate.now(), "CODE-001", "FORM-001", null, null);
+    when(settlementService.getSettlementById(id)).thenReturn(response3);
+    var result3 = settlementUseCase.getSettlementById(id);
+    assertThat(result3).isEqualTo(response3);
     verify(settlementService).getSettlementById(id);
   }
 
@@ -114,11 +125,12 @@ class SettlementUseCaseTest {
   @DisplayName("Significance should send message when fully signed")
   void significance_ShouldSendMessage_WhenFullySigned() {
     var id = "id123";
-    var request = new SignificanceRequest("P", "PT", "S", "CP");
+    var userId = "User1";
+    var request = new SignificanceRequest("URL");
 
-    when(settlementService.signSettlement(request, id)).thenReturn(true);
+    when(settlementService.signSettlement(userId, id, request)).thenReturn(true);
 
-    settlementUseCase.significance(request, id);
+    settlementUseCase.significance(userId, id, request);
 
     verify(messageProducer).send(eq("construction_queue.settlement.approve"), any());
   }
@@ -127,11 +139,12 @@ class SettlementUseCaseTest {
   @DisplayName("Significance should not send message when not fully signed")
   void significance_ShouldNotSendMessage_WhenNotFullySigned() {
     var id = "id123";
-    var request = new SignificanceRequest("P", "PT", "S", "CP");
+    var userId = "User1";
+    var request = new SignificanceRequest("URL");
 
-    when(settlementService.signSettlement(request, id)).thenReturn(false);
+    when(settlementService.signSettlement(userId, id, request)).thenReturn(false);
 
-    settlementUseCase.significance(request, id);
+    settlementUseCase.significance(userId, id, request);
 
     verify(messageProducer, never()).send(anyString(), any());
   }
@@ -154,10 +167,10 @@ class SettlementUseCaseTest {
   void assignStaffForSignCostEstimate_ShouldThrow_WhenEmployeeNotFound() {
     var request = new AssignTheSignificanceRequest("sid", "ss", "ph", "cl", "cp");
 
-    when(employeeService.isEmployeeExisting(anyString())).thenReturn(new WrapperApiResponse(200, "err", false, null));
+    when(employeeService.isEmployeeExisting(anyString())).thenReturn(new WrapperApiResponse(200, "err", false, OffsetDateTime.now()));
 
     assertThatThrownBy(() -> settlementUseCase.assignStaffForSignCostEstimate(request))
-        .isInstanceOf(NotExistingException.class);
+      .isInstanceOf(NotExistingException.class);
 
     verify(messageProducer, never()).send(anyString(), any());
   }
@@ -171,8 +184,9 @@ class SettlementUseCaseTest {
     when(settlementService.isExistingSettlement("sid")).thenReturn(false);
 
     assertThatThrownBy(() -> settlementUseCase.assignStaffForSignCostEstimate(request))
-        .isInstanceOf(NotExistingException.class);
+      .isInstanceOf(NotExistingException.class);
 
     verify(messageProducer, never()).send(anyString(), any());
   }
 }
+

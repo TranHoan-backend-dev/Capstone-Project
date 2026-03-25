@@ -1,19 +1,18 @@
 import { Metadata } from "next";
 
-import { FeeTable } from "./components/fee-table";
-
 import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
+import FeeCollectionPage from "./fee-collection-page";
 
 export const metadata: Metadata = {
-  title: "Thu tiền lắp đặt",
-  description: "Thu tiền lắp đặt",
+  title: "Quản lý Thu tiền lắp đặt",
+  description: "Quản lý Thu tiền lắp đặt",
 };
 
-const FeeCollectionPage = () => {
+const FeeCollection = () => {
   const breadcrumbItems = [
     { label: "Trang chủ", href: "/home" },
     { label: "Ghi chỉ số & Hóa đơn" },
-    { label: "Thu tiền lắp đặt" },
+    { label: "Quản lý Thu tiền lắp đặt" },
   ];
 
   return (
@@ -21,10 +20,10 @@ const FeeCollectionPage = () => {
       <CustomBreadcrumb items={breadcrumbItems} />
 
       <div className="pt-2 space-y-6">
-        <FeeTable />
+        <FeeCollectionPage />
       </div>
     </>
   );
 };
 
-export default FeeCollectionPage;
+export default FeeCollection;
