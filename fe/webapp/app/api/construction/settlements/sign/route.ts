@@ -2,10 +2,7 @@ import { NextRequest } from "next/dist/server/web/spec-extension/request";
 import { NextResponse } from "next/server";
 import { getAccessToken } from "@/utils/getAccessToken";
 import {
-  getAllSettlements,
-  createSettlement,
-  filterSettlements,
-  signSettlement,
+  requestSignSettlement,
 } from "@/services/construction.service";
 
 export async function POST(req: NextRequest) {
@@ -20,8 +17,8 @@ export async function POST(req: NextRequest) {
 
     const {
       settlementId,
-      president,
-      ptHead,
+      companyLeadership,
+      plHead,
       surveyStaff,
       constructionPresident,
     } = body;
@@ -33,17 +30,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const signatures = {
-      president,
-      ptHead,
-      surveyStaff,
-      constructionPresident,
-    };
-
-    const response = await signSettlement(
+    const response = await requestSignSettlement(
       accessToken,
       settlementId,
-      signatures,
+      surveyStaff,
+      plHead,
+      companyLeadership,
+      constructionPresident,
     );
 
     return NextResponse.json(

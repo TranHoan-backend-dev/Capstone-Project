@@ -1,14 +1,12 @@
 import { NextRequest } from "next/dist/server/web/spec-extension/request";
 import { NextResponse } from "next/server";
 import { getAccessToken } from "@/utils/getAccessToken";
-import {
-  getAllSettlements,
-  createSettlement,
-  filterSettlements,
-  signSettlement,
-} from "@/services/construction.service";
+import { signSettlement } from "@/services/construction.service";
 
-export async function POST(req: NextRequest) {
+export async function POST(
+  req: NextRequest,
+  { params }: { params: Promise<{ setlementId: string }> },
+) {
   try {
     const accessToken = getAccessToken(req);
 
@@ -17,33 +15,24 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
+    const { setlementId } = await params;
+    console.log("SettlementId from params:", setlementId);
+    const { president, ptHead, surveyStaff, constructionPresident } = body;
 
-    const {
-      settlementId,
-      president,
-      ptHead,
-      surveyStaff,
-      constructionPresident,
-    } = body;
-
-    if (!settlementId) {
+    if (!setlementId) {
       return NextResponse.json(
         { message: "settlementId is required" },
         { status: 400 },
       );
     }
 
-    const signatures = {
-      president,
-      ptHead,
-      surveyStaff,
-      constructionPresident,
-    };
-
     const response = await signSettlement(
       accessToken,
-      settlementId,
-      signatures,
+      setlementId,
+      surveyStaff,
+      ptHead,
+      president,
+      constructionPresident,
     );
 
     return NextResponse.json(

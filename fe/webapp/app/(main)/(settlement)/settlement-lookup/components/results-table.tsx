@@ -20,6 +20,7 @@ import {
   DeleteIcon,
   EditIcon,
   TitleDarkColor,
+  ApprovalIcon,
 } from "@/config/chip-and-icon";
 import {
   SettlementItem,
@@ -32,6 +33,8 @@ import { authFetch } from "@/utils/authFetch";
 import { SETLEMENT_LOOKUP_COLUMN } from "@/config/table-columns";
 import { CallToast } from "@/components/ui/CallToast";
 import { ConfirmDialog } from "@/components/ui/modal/ConfirmDialog";
+import BaseModal from "@/components/ui/modal/BaseModal";
+import CustomButton from "@/components/ui/custom/CustomButton";
 
 const statusMap = {
   APPROVED: {
@@ -55,6 +58,7 @@ const statusMap = {
     bg: DarkYellowChip,
   },
 };
+
 interface ResultsTableProps {
   keyword?: string;
   reloadKey?: number;
@@ -65,6 +69,7 @@ interface ResultsTableProps {
   onDeleted: () => void;
   onFilterStatus?: (status: string) => void;
 }
+
 export const ResultsTable = ({
   keyword,
   reloadKey,
@@ -105,6 +110,82 @@ export const ResultsTable = ({
   const [selectedFormNumber, setSelectedFormNumber] = useState<string | null>(
     null,
   );
+
+  // State cho user hiện tại
+  const [currentUser, setCurrentUser] = useState<{
+    id: string;
+    fullname: string;
+    role: string;
+    significanceUrl: string;
+  } | null>(null);
+
+  // State cho modal tạo yêu cầu ký duyệt
+  const [isCreateSignModalOpen, setIsCreateSignModalOpen] = useState(false);
+  const [selectedItemForSign, setSelectedItemForSign] =
+    useState<SettlementItem | null>(null);
+  const [surveyStaffId, setSurveyStaffId] = useState("");
+  const [planningHeadId, setPlanningHeadId] = useState("");
+  const [companyLeadershipId, setCompanyLeadershipId] = useState("");
+  const [constructionPresidentId, setConstructionPresidentId] = useState("");
+
+  // State cho modal ký duyệt
+  const [isSignModalOpen, setIsSignModalOpen] = useState(false);
+  const [selectedItemForSigning, setSelectedItemForSigning] =
+    useState<SettlementItem | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  // All employees for dropdowns
+  const [allEmployees, setAllEmployees] = useState<
+    { id: string; fullName: string; departmentName?: string; role?: string }[]
+  >([]);
+
+  // Fetch current user info
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const res = await authFetch("/api/auth/me");
+        const json = await res.json();
+        if (json) {
+          setCurrentUser({
+            id: json.id,
+            fullname: json.fullname,
+            role: json.role,
+            significanceUrl: json.significanceUrl || "",
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching current user:", error);
+      }
+    };
+
+    fetchCurrentUser();
+  }, []);
+
+  // Fetch all employees for dropdowns
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        const res = await authFetch("/api/auth/employees?size=1000");
+        const json = await res.json();
+        const employees = json?.data?.content || [];
+
+        const mappedEmployees = employees.map((emp: any) => ({
+          id: emp.id,
+          fullName: emp.fullName,
+          departmentName: emp.departmentName,
+          role: emp.role,
+        }));
+
+        setAllEmployees(mappedEmployees);
+      } catch (error) {
+        console.error("Error fetching employees:", error);
+        setAllEmployees([]);
+      }
+    };
+
+    fetchEmployees();
+  }, []);
+
   // Fetch data khi filter thay đổi
   useEffect(() => {
     setLoading(true);
@@ -214,6 +295,7 @@ export const ResultsTable = ({
       };
     });
   };
+
   const fetchSettlementDocument = async (id: string) => {
     try {
       setDocumentLoading(true);
@@ -241,6 +323,7 @@ export const ResultsTable = ({
       setDocumentLoading(false);
     }
   };
+
   const mapToDocumentRows = (detail: SettlementDetail) => {
     return [
       {
@@ -256,6 +339,7 @@ export const ResultsTable = ({
       },
     ];
   };
+
   const handleConfirmDelete = async () => {
     if (!deleteId) return;
     try {
@@ -286,28 +370,217 @@ export const ResultsTable = ({
     }
   };
 
+  // Handle create signature request (gửi yêu cầu ký đến các bên)
+  const handleCreateSignatureRequest = (item: SettlementItem) => {
+    setSelectedItemForSign(item);
+    setSurveyStaffId("");
+    setPlanningHeadId("");
+    setCompanyLeadershipId("");
+    setConstructionPresidentId("");
+    setIsCreateSignModalOpen(true);
+  };
+
+  const handleConfirmCreateSignatureRequest = async () => {
+    if (!selectedItemForSign) return;
+
+    // Validate at least one signer is selected
+    if (
+      !surveyStaffId &&
+      !planningHeadId &&
+      !companyLeadershipId &&
+      !constructionPresidentId
+    ) {
+      CallToast({
+        title: "Thất bại",
+        message: "Vui lòng chọn ít nhất một người ký",
+        color: "danger",
+      });
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      const requestBody = {
+        settlementId: selectedItemForSign.id,
+        surveyStaff: surveyStaffId || null,
+        ptHead: planningHeadId || null,
+        president: companyLeadershipId || null,
+        constructionPresident: constructionPresidentId || null,
+      };
+
+      const res = await authFetch(`/api/construction/settlements/sign`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Tạo yêu cầu ký thất bại");
+      }
+
+      CallToast({
+        title: "Thành công",
+        message: "Gửi yêu cầu ký duyệt quyết toán thành công",
+        color: "success",
+      });
+
+      setIsCreateSignModalOpen(false);
+      onDeleted(); // Refresh data
+    } catch (error: any) {
+      CallToast({
+        title: "Thất bại",
+        message: error.message || "Có lỗi xảy ra",
+        color: "danger",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  // Handle sign action (người được phân công thực hiện ký)
+  const handleSignAction = (item: SettlementItem) => {
+    setSelectedItemForSigning(item);
+    setIsSignModalOpen(true);
+  };
+
+  const handleConfirmSign = async () => {
+    if (!selectedItemForSigning) return;
+
+    if (!currentUser?.significanceUrl) {
+      CallToast({
+        title: "Thất bại",
+        message:
+          "Bạn chưa có chữ ký điện tử. Vui lòng cập nhật thông tin cá nhân.",
+        color: "danger",
+      });
+      return;
+    }
+
+    // Xác định field ký dựa trên role của user
+    let signatureField = "";
+    switch (currentUser.role) {
+      case "COMPANY_LEADERSHIP":
+        signatureField = "president";
+        break;
+      case "PLANNING_TECHNICAL_DEPARTMENT_HEAD":
+        signatureField = "ptHead";
+        break;
+      case "survey_staff":
+        signatureField = "surveyStaff";
+        break;
+      case "CONSTRUCTION_DEPARTMENT_HEAD":
+        signatureField = "constructionPresident";
+        break;
+      default:
+        CallToast({
+          title: "Thất bại",
+          message: "Bạn không có quyền ký duyệt quyết toán này",
+          color: "danger",
+        });
+        return;
+    }
+
+    setIsProcessing(true);
+    try {
+      const requestBody: any = {};
+      requestBody[signatureField] = currentUser.significanceUrl;
+
+      const res = await authFetch(
+        `/api/construction/settlements/sign/${selectedItemForSigning.id}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        },
+      );
+
+      if (!res.ok) {
+        if (res.status === 403) {
+          throw new Error("Bạn không có quyền thực hiện hành động này");
+        }
+        if (res.status === 404) {
+          throw new Error("Không tìm thấy bản quyết toán");
+        }
+        const err = await res.json();
+        throw new Error(err.message || "Ký duyệt thất bại");
+      }
+
+      CallToast({
+        title: "Thành công",
+        message: "Ký duyệt quyết toán thành công",
+        color: "success",
+      });
+
+      setIsSignModalOpen(false);
+      onDeleted(); // Refresh data
+    } catch (error: any) {
+      CallToast({
+        title: "Thất bại",
+        message: error.message || "Có lỗi xảy ra",
+        color: "danger",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   useEffect(() => {
     setPage(1);
   }, [keyword]);
 
+  // Lọc nhân viên theo role cho từng dropdown
+  const surveyStaffOptions = allEmployees.filter(
+    (emp) => emp.role === "SURVEY_STAFF",
+  );
+  const planningHeadOptions = allEmployees.filter(
+    (emp) => emp.role === "PLANNING_TECHNICAL_DEPARTMENT_HEAD",
+  );
+  const companyLeadershipOptions = allEmployees.filter(
+    (emp) => emp.role === "COMPANY_LEADERSHIP",
+  );
+  const constructionPresidentOptions = allEmployees.filter(
+    (emp) => emp.role === "CONSTRUCTION_DEPARTMENT_HEAD",
+  );
+
+  // Kiểm tra xem user có role được phép ký không
+  // const canSign =
+  //   currentUser?.role &&
+  //   [
+  //     "COMPANY_LEADERSHIP",
+  //     "PLANNING_TECHNICAL_DEPARTMENT_HEAD",
+  //     "SURVEY_STAFF",
+  //     "CONSTRUCTION_DEPARTMENT_HEAD",
+  //   ].includes(currentUser.role);
+
   const actionItems = useMemo(() => {
     return [
-      // {
-      //   content: "Quyết toán",
-      //   icon: CalculatorIcon,
-      //   className:
-      //     "text-blue-600 dark:text-primary hover:bg-blue-50 dark:hover:bg-blue-900/30",
-      //   onClick: (id: string) => {
-      //     // Gọi hàm fetch chi tiết thay vì onEdit
-      //     fetchSettlementDetail(id);
-      //   },
-      // },
+      // Nút ký duyệt - chỉ hiển thị khi user có quyền ký
+      // ...(canSign
+      //   ? [
       {
         content: "Ký duyệt",
-        icon: PencilSquareIcon,
+        icon: ApprovalIcon,
         className: "text-green-600 hover:bg-green-50",
         onClick: (id: string) => {
-          fetchSettlementDocument(id);
+          const found = data.find((i) => i.id === id);
+          if (found) handleSignAction(found);
+        },
+      },
+      //   ]
+      // : []),
+      // Nút tạo yêu cầu ký
+      {
+        content: "Tạo yêu cầu ký",
+        icon: PencilSquareIcon,
+        className: "text-blue-600 hover:bg-blue-50",
+        onClick: (id: string) => {
+          const found = data.find((i) => i.id === id);
+          if (found) handleCreateSignatureRequest(found);
         },
       },
       {
@@ -320,21 +593,20 @@ export const ResultsTable = ({
           if (found) onEdit(found);
         },
       },
-      // {
-      //   content: "Xóa",
-      //   icon: DeleteIcon,
-      //   className: "text-red-500 hover:bg-red-50",
-      //   onClick: (id: string) => {
-      //     setDeleteId(id);
-      //   },
-      // },
+      {
+        content: "Xem chi tiết",
+        icon: CalculatorIcon,
+        className: "text-blue-600 hover:bg-blue-50",
+        onClick: (id: string) => {
+          fetchSettlementDetail(id);
+        },
+      },
     ];
   }, [data, onEdit]);
 
   const renderCell = (item: SettlementItem, columnKey: string) => {
     switch (columnKey) {
       case "stt":
-        const index = data.findIndex((d) => d.id === item.id);
         return (
           <span className="font-medium text-black dark:text-white">
             {item.stt}
@@ -361,9 +633,7 @@ export const ResultsTable = ({
       default:
         const value = item[columnKey as keyof SettlementItem];
 
-        // If the value is an object, don't render it directly
         if (value && typeof value === "object") {
-          // For debugging, you might want to see what's being passed
           console.warn(`Object found in column ${columnKey}:`, value);
           return <span className="text-gray-600">-</span>;
         }
@@ -430,6 +700,253 @@ export const ResultsTable = ({
         settlementId={selectedSettlementId || undefined}
         selectedFormNumber={selectedFormNumber || ""}
       />
+
+      {/* Modal for creating signature request */}
+      <BaseModal
+        isOpen={isCreateSignModalOpen}
+        onOpenChange={() => setIsCreateSignModalOpen(false)}
+        title={`Tạo yêu cầu ký duyệt - ${selectedItemForSign?.formCode || selectedItemForSign?.formNumber}`}
+        size="2xl"
+      >
+        <div className="space-y-6 py-4">
+          <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Mã đơn
+                </p>
+                <p className="font-semibold text-gray-900 dark:text-gray-100">
+                  {selectedItemForSign?.formCode ||
+                    selectedItemForSign?.formNumber}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Nội dung công việc
+                </p>
+                <p className="font-semibold text-gray-900 dark:text-gray-100">
+                  {selectedItemForSign?.jobContent}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Phí kết nối
+                </p>
+                {/* <p className="font-semibold text-primary">
+                  {selectedItemForSign?.connectionFee?.toLocaleString("vi-VN")}{" "}
+                  ₫
+                </p> */}
+              </div>
+              <div className="col-span-2">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Địa chỉ
+                </p>
+                <p className="font-medium text-gray-900 dark:text-gray-100">
+                  {selectedItemForSign?.address}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Nhân viên khảo sát ký (SURVEY_STAFF)
+              </label>
+              <select
+                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={surveyStaffId}
+                onChange={(e) => setSurveyStaffId(e.target.value)}
+              >
+                <option value="">-- Chọn nhân viên khảo sát --</option>
+                {surveyStaffOptions.map((employee) => (
+                  <option key={employee.id} value={employee.id}>
+                    {employee.fullName}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Trưởng phòng Kế hoạch Kỹ thuật
+                (PLANNING_TECHNICAL_DEPARTMENT_HEAD)
+              </label>
+              <select
+                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={planningHeadId}
+                onChange={(e) => setPlanningHeadId(e.target.value)}
+              >
+                <option value="">-- Chọn trưởng phòng --</option>
+                {planningHeadOptions.map((employee) => (
+                  <option key={employee.id} value={employee.id}>
+                    {employee.fullName}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Lãnh đạo công ty (COMPANY_LEADERSHIP)
+              </label>
+              <select
+                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={companyLeadershipId}
+                onChange={(e) => setCompanyLeadershipId(e.target.value)}
+              >
+                <option value="">-- Chọn lãnh đạo --</option>
+                {companyLeadershipOptions.map((employee) => (
+                  <option key={employee.id} value={employee.id}>
+                    {employee.fullName}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Giám đốc chi nhánh Xây lắp (CONSTRUCTION_DEPARTMENT_HEAD)
+              </label>
+              <select
+                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={constructionPresidentId}
+                onChange={(e) => setConstructionPresidentId(e.target.value)}
+              >
+                <option value="">-- Chọn giám đốc --</option>
+                {constructionPresidentOptions.map((employee) => (
+                  <option key={employee.id} value={employee.id}>
+                    {employee.fullName}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex gap-3 pt-6 border-t border-divider">
+          <CustomButton
+            onPress={() => {
+              setIsCreateSignModalOpen(false);
+              setSelectedItemForSign(null);
+            }}
+            className="font-medium"
+            color="default"
+            variant="bordered"
+          >
+            Hủy
+          </CustomButton>
+          <CustomButton
+            onPress={handleConfirmCreateSignatureRequest}
+            isLoading={isProcessing}
+            className="text-white font-medium"
+            color="primary"
+          >
+            Tạo yêu cầu
+          </CustomButton>
+        </div>
+      </BaseModal>
+
+      {/* Modal for signing */}
+      <BaseModal
+        isOpen={isSignModalOpen}
+        onOpenChange={() => setIsSignModalOpen(false)}
+        title={`Ký duyệt quyết toán - ${selectedItemForSigning?.formCode || selectedItemForSigning?.formNumber}`}
+        size="2xl"
+      >
+        <div className="space-y-4 py-4">
+          <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Mã đơn
+                </p>
+                <p className="font-semibold text-gray-900 dark:text-gray-100">
+                  {selectedItemForSigning?.formCode ||
+                    selectedItemForSigning?.formNumber}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Nội dung công việc
+                </p>
+                <p className="font-semibold text-gray-900 dark:text-gray-100">
+                  {selectedItemForSigning?.jobContent}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Phí kết nối
+                </p>
+                {/* <p className="font-semibold text-primary">
+                  {selectedItemForSigning?.connectionFee?.toLocaleString(
+                    "vi-VN",
+                  )}{" "}
+                  ₫
+                </p> */}
+              </div>
+            </div>
+          </div>
+
+          {/* Hiển thị thông tin người ký */}
+          <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                <span className="text-primary text-xl font-semibold">
+                  {currentUser?.fullname?.charAt(0) || "?"}
+                </span>
+              </div>
+              <div className="flex-1">
+                <p className="font-semibold text-gray-900 dark:text-gray-100">
+                  {currentUser?.fullname || "Đang tải..."}
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Vai trò: {currentUser?.role?.replace(/_/g, " ") || "..."}
+                </p>
+              </div>
+            </div>
+
+            {currentUser?.significanceUrl ? (
+              <div className="mt-3 p-2 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800">
+                <p className="text-sm text-green-700 dark:text-green-300">
+                  Đã có chữ ký điện tử sẵn sàng
+                </p>
+              </div>
+            ) : (
+              <div className="mt-3 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded border border-yellow-200 dark:border-yellow-800">
+                <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                  Chưa có chữ ký điện tử. Vui lòng cập nhật thông tin cá nhân.
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+            <p>
+              Bằng cách nhấn "Xác nhận ký", bạn đồng ý ký duyệt quyết toán này
+              bằng chữ ký điện tử của mình.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex gap-3 pt-6 border-t border-divider">
+          <CustomButton
+            onPress={() => setIsSignModalOpen(false)}
+            color="default"
+            variant="bordered"
+          >
+            Hủy
+          </CustomButton>
+          <CustomButton
+            onPress={handleConfirmSign}
+            isLoading={isProcessing}
+            color="success"
+            isDisabled={!currentUser?.significanceUrl}
+          >
+            Xác nhận ký
+          </CustomButton>
+        </div>
+      </BaseModal>
     </>
   );
 };

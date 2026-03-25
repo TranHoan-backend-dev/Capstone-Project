@@ -628,19 +628,47 @@ export const deleteSettlement = (accessToken: string, settlementId: string) => {
   );
 };
 
-export const signSettlement = (
+export const requestSignSettlement = (
   accessToken: string,
   settlementId: string,
-  signatures: {
-    president: string;
-    ptHead: string;
-    surveyStaff: string;
-    constructionPresident: string;
-  },
+  surveyStaff: string,
+  plHead: string,
+  companyLeadership: string,
+  constructionPresident: string,
 ) => {
   return axios.post(
-    `${API_GATEWAY_URL}/construction/settlements/sign/${settlementId}`,
-    signatures,
+    `${API_GATEWAY_URL}/construction/settlements/sign`,
+    {
+      settlementId,
+      surveyStaff,
+      plHead,
+      companyLeadership,
+      constructionPresident,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    },
+  );
+};
+export const signSettlement = (
+  accessToken: string,
+  setlementId: string,
+  surveyStaff?: string,
+  ptHead?: string,
+  president?: string,
+  constructionPresident?: string,
+) => {
+  return axios.post(
+    `${API_GATEWAY_URL}/construction/settlements/sign/${setlementId}`,
+    {
+      president,
+      ptHead,
+      surveyStaff,
+      constructionPresident,
+    },
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
