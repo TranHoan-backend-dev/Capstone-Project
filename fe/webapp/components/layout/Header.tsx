@@ -23,7 +23,6 @@ import Sidebar from "./sidebar";
 import NotificationDropdown from "./NotificationDropdown";
 import { CallToast } from "../ui/CallToast";
 import axios from "axios";
-import { useEmployeeProfile } from "@/hooks/useEmployeeProfile";
 import { useProfile } from "@/hooks/useLogin";
 
 export interface SubMenuItemChild {

@@ -11,6 +11,114 @@ import { authFetch } from "@/utils/authFetch";
 import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
 import { LookupModal } from "@/components/ui/modal/LookupModal";
 
+// Hàm chuyển đổi số thành chữ (cần cài đặt chi tiết)
+const numberToVietnameseWords = (num: number): string => {
+  if (num === 0) return "Không đồng";
+
+  const units = [
+    "",
+    "Một",
+    "Hai",
+    "Ba",
+    "Bốn",
+    "Năm",
+    "Sáu",
+    "Bảy",
+    "Tám",
+    "Chín",
+  ];
+  const tens = [
+    "",
+    "Mười",
+    "Hai Mươi",
+    "Ba Mươi",
+    "Bốn Mươi",
+    "Năm Mươi",
+    "Sáu Mươi",
+    "Bảy Mươi",
+    "Tám Mươi",
+    "Chín Mươi",
+  ];
+  const hundreds = [
+    "",
+    "Một Trăm",
+    "Hai Trăm",
+    "Ba Trăm",
+    "Bốn Trăm",
+    "Năm Trăm",
+    "Sáu Trăm",
+    "Bảy Trăm",
+    "Tám Trăm",
+    "Chín Trăm",
+  ];
+
+  const convertBlock = (n: number): string => {
+    if (n === 0) return "";
+
+    const h = Math.floor(n / 100);
+    const t = Math.floor((n % 100) / 10);
+    const u = n % 10;
+
+    let result = "";
+    if (h > 0) {
+      result += hundreds[h] + " ";
+    }
+
+    if (t > 0) {
+      if (t === 1) {
+        result += "mười ";
+      } else {
+        result += tens[t] + " ";
+      }
+    }
+
+    if (u > 0) {
+      if (t > 1 || t === 0) {
+        if (u === 1 && t > 1) {
+          result += "mốt ";
+        } else if (u === 5 && t > 0) {
+          result += "lăm ";
+        } else {
+          result += units[u] + " ";
+        }
+      } else if (t === 1) {
+        result += units[u] + " ";
+      }
+    }
+
+    return result.trim();
+  };
+
+  if (num < 1000) {
+    return convertBlock(num) + " đồng";
+  }
+
+  const billions = Math.floor(num / 1000000000);
+  const millions = Math.floor((num % 1000000000) / 1000000);
+  const thousands = Math.floor((num % 1000000) / 1000);
+  const remainder = num % 1000;
+
+  let result = "";
+
+  if (billions > 0) {
+    result += convertBlock(billions) + " tỷ ";
+  }
+
+  if (millions > 0) {
+    result += convertBlock(millions) + " triệu ";
+  }
+
+  if (thousands > 0) {
+    result += convertBlock(thousands) + " nghìn ";
+  }
+
+  if (remainder > 0) {
+    result += convertBlock(remainder);
+  }
+
+  return result.trim() + " đồng";
+};
+
 export const FeeForm = ({
   initialData,
   onSuccess,
@@ -39,7 +147,6 @@ export const FeeForm = ({
   const isEdit = !!initialData?.receiptNumber;
   const isPrefill = !!initialData?.formCode && !initialData?.formNumber;
 
-  // Fetch current user info
   useEffect(() => {
     const fetchCurrentUser = async () => {
       try {
@@ -76,6 +183,18 @@ export const FeeForm = ({
       setTotalMoneyInCharacters(initialData.totalMoneyInCharacters || "");
     }
   }, [initialData]);
+
+  const handleTotalMoneyChange = (value: string) => {
+    const numValue = Number(value);
+    setTotalMoneyInDigits(numValue);
+
+    if (numValue > 0) {
+      const words = numberToVietnameseWords(numValue);
+      setTotalMoneyInCharacters(words);
+    } else {
+      setTotalMoneyInCharacters("");
+    }
+  };
 
   // Format date function
   const formatDateForBackend = (dateStr: string) => {
@@ -163,14 +282,25 @@ export const FeeForm = ({
           paymentReason: paymentReason,
           totalMoneyInDigit: totalMoneyInDigits,
           totalMoneyInCharacters: totalMoneyInCharacters || null,
-          // Dùng significanceUrl từ API /api/auth/me
           significanceOfReceiptCreator:
             currentUser?.significanceUrl || "System",
         };
       } else {
-        // Cho update - cũng dùng significanceUrl
+        // CẬP NHẬT: Thêm tất cả các field có thể cập nhật
         payload = {
           ...payload,
+          // Các field cơ bản
+          receiptNumber: receiptNumber,
+          customerName: customerName,
+          address: address,
+          paymentDate: formattedPaymentDate,
+          isPaid: isPaid,
+
+          // Các field bổ sung - đảm bảo không bỏ sót
+          attach: attach || null,
+          paymentReason: paymentReason,
+          totalMoneyInDigit: totalMoneyInDigits,
+          totalMoneyInCharacters: totalMoneyInCharacters || null,
           significanceOfTreasurer: currentUser?.significanceUrl,
         };
       }
@@ -219,7 +349,7 @@ export const FeeForm = ({
           </h2>
         </div>
 
-        <div className="px-6 py-5 space-y-5">
+        <div className="px-6 py-5">
           {/* Form Code - Ẩn vì là ID */}
           <CustomInput
             label="Mã đơn"
@@ -229,53 +359,56 @@ export const FeeForm = ({
             isDisabled={isEdit || isPrefill}
           />
 
-          {/* Form Number - Sử dụng SearchInputWithButton */}
-          <SearchInputWithButton
-            label="Số đơn"
-            value={formNumber}
-            onSearch={() => setShowFormModal(true)}
-            onChange={(e) => {
-              setFormNumber(e.target.value);
-              if (!e.target.value) {
-                setFormCode("");
-                setCustomerName("");
-                setAddress("");
-              }
-            }}
-            isDisabled={isEdit || isPrefill}
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {/* Cột trái */}
+            <div className="space-y-5">
+              {/* Form Number - Sử dụng SearchInputWithButton */}
+              <SearchInputWithButton
+                label="Số đơn"
+                value={formNumber}
+                onSearch={() => setShowFormModal(true)}
+                onChange={(e) => {
+                  setFormNumber(e.target.value);
+                  if (!e.target.value) {
+                    setFormCode("");
+                    setCustomerName("");
+                    setAddress("");
+                  }
+                }}
+                isDisabled={isEdit || isPrefill}
+              />
 
-          <CustomInput
-            label="Số phiếu thu"
-            value={receiptNumber}
-            onChange={(e) => setReceiptNumber(e.target.value)}
-            required
-          />
+              <CustomInput
+                label="Số phiếu thu"
+                value={receiptNumber}
+                onChange={(e) => setReceiptNumber(e.target.value)}
+                required
+              />
 
-          <CustomInput
-            label="Tên khách hàng"
-            value={customerName}
-            onChange={(e) => setCustomerName(e.target.value)}
-            isDisabled={true}
-          />
+              <CustomInput
+                label="Tên khách hàng"
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                isDisabled={true}
+              />
 
-          <CustomInput
-            label="Địa chỉ"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            isDisabled={true}
-          />
+              <CustomInput
+                label="Địa chỉ"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                isDisabled={true}
+              />
 
-          <CustomInput
-            type="date"
-            label="Ngày thanh toán"
-            value={paymentDate}
-            onChange={(e) => setPaymentDate(e.target.value)}
-          />
+              <CustomInput
+                type="date"
+                label="Ngày thanh toán"
+                value={paymentDate}
+                onChange={(e) => setPaymentDate(e.target.value)}
+              />
+            </div>
 
-          {/* Các trường bổ sung cho phiếu thu */}
-          {!isEdit && (
-            <>
+            {/* Cột phải */}
+            <div className="space-y-5">
               <CustomInput
                 label="Lý do thanh toán"
                 value={paymentReason}
@@ -287,7 +420,7 @@ export const FeeForm = ({
                 type="number"
                 label="Tổng tiền (số)"
                 value={totalMoneyInDigits.toString()}
-                onChange={(e) => setTotalMoneyInDigits(Number(e.target.value))}
+                onChange={(e) => handleTotalMoneyChange(e.target.value)}
                 required
               />
 
@@ -296,6 +429,7 @@ export const FeeForm = ({
                 value={totalMoneyInCharacters}
                 onChange={(e) => setTotalMoneyInCharacters(e.target.value)}
                 placeholder="Tổng tiền bằng chữ"
+                isDisabled={true}
               />
 
               <CustomInput
@@ -304,20 +438,20 @@ export const FeeForm = ({
                 onChange={(e) => setAttach(e.target.value)}
                 placeholder="URL hoặc tên file đính kèm"
               />
-            </>
-          )}
 
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={isPaid}
-              onChange={(e) => setIsPaid(e.target.checked)}
-              className="w-4 h-4"
-            />
-            <span className="text-sm">Đã thu tiền</span>
-          </label>
+              <label className="flex items-center gap-2 pt-2">
+                <input
+                  type="checkbox"
+                  checked={isPaid}
+                  onChange={(e) => setIsPaid(e.target.checked)}
+                  className="w-4 h-4"
+                />
+                <span className="text-sm">Đã thu tiền</span>
+              </label>
+            </div>
+          </div>
 
-          <div className="flex justify-end gap-4 pt-4 border-t border-divider">
+          <div className="flex justify-end gap-4 pt-6 mt-4 border-t border-divider">
             <CustomButton variant="light" onPress={onClose}>
               Huỷ
             </CustomButton>

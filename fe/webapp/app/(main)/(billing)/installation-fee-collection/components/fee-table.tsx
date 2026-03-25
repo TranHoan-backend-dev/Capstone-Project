@@ -1,16 +1,10 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { PencilIcon } from "@heroicons/react/24/outline";
 import { Button, Chip, Tooltip } from "@heroui/react";
 
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import {
-  BlueYellowIconColor,
-  DeleteIcon,
-  EditIcon,
-  RedIconColor,
-} from "@/config/chip-and-icon";
+import { DeleteIcon, EditIcon } from "@/config/chip-and-icon";
 import { FEE_COLLECTION_COLUMN } from "@/config/table-columns";
 import { authFetch } from "@/utils/authFetch";
 import { CallToast } from "@/components/ui/CallToast";
@@ -19,8 +13,9 @@ import {
   FeeCollectionResponse,
   FeeTableTableProps,
 } from "@/types";
-import { formatDate1, formatToDDMMYYYY } from "@/utils/format";
+import { formatDate1 } from "@/utils/format";
 import { ConfirmDialog } from "@/components/ui/modal/ConfirmDialog";
+import { ReceiptDetailModal } from "./receipt-detail-modal";
 
 export const FeeTable = ({
   filter,
@@ -41,8 +36,42 @@ export const FeeTable = ({
     field: "createdAt",
     direction: "desc",
   });
+  const [viewItem, setViewItem] = useState<FeeCollectionItem | null>(null);
+  const [viewLoading, setViewLoading] = useState(false);
+  const [detailData, setDetailData] = useState<any>(null);
   const [page, setPage] = useState(1);
   const pageSize = 10;
+
+  // Hàm fetch chi tiết
+  const fetchReceiptDetail = async (formCode: string, formNumber: string) => {
+    try {
+      setViewLoading(true);
+      const res = await authFetch(
+        `/api/construction/receipts/${formCode}/${formNumber}`,
+      );
+
+      if (!res.ok) {
+        throw new Error("Không thể lấy thông tin chi tiết");
+      }
+
+      const data = await res.json();
+      setDetailData(data.data);
+    } catch (error: any) {
+      CallToast({
+        title: "Lỗi",
+        message: error.message,
+        color: "danger",
+      });
+    } finally {
+      setViewLoading(false);
+    }
+  };
+
+  // Hàm xử lý click vào formNumber
+  const handleViewDetail = (item: FeeCollectionItem) => {
+    setViewItem(item);
+    fetchReceiptDetail(item.formCode, item.formNumber);
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -59,10 +88,8 @@ export const FeeTable = ({
           params.append("filter", filter.name.trim());
         }
 
-        if (filter.fromDate)
-          params.append("fromDate", formatToDDMMYYYY(filter.fromDate));
-        if (filter.toDate)
-          params.append("toDate", formatToDDMMYYYY(filter.toDate));
+        if (filter.fromDate) params.append("fromDate", filter.fromDate);
+        if (filter.toDate) params.append("toDate", filter.toDate);
 
         if (filter.isPaid !== undefined && filter.isPaid !== null) {
           params.append("isPaid", String(filter.isPaid));
@@ -82,7 +109,6 @@ export const FeeTable = ({
         setTotalItems(pageData?.page.totalElements ?? 0);
         setTotalPages(pageData?.page.totalPages ?? 1);
 
-        // Trong fee-table.tsx, sửa phần map data
         const mapped = items.map(
           (item: FeeCollectionResponse, index: number) => ({
             id: `${item.formCode}_${item.formNumber}`,
@@ -151,8 +177,8 @@ export const FeeTable = ({
         color: "success",
       });
 
-      setDeleteItem(null); // đóng modal
-      onDeleted(); // reload table
+      setDeleteItem(null);
+      onDeleted();
     } catch (e: any) {
       CallToast({
         title: "Lỗi",
@@ -192,6 +218,15 @@ export const FeeTable = ({
     switch (columnKey) {
       case "stt":
         return <span className="text-blue-600 font-bold">{item.stt}</span>;
+      case "formNumber":
+        return (
+          <button
+            onClick={() => handleViewDetail(item)}
+            className="text-blue-600 hover:text-blue-800 hover:underline font-semibold cursor-pointer transition-colors"
+          >
+            {item.formNumber}
+          </button>
+        );
       case "isPaid":
         return (
           <Chip
@@ -232,7 +267,6 @@ export const FeeTable = ({
 
   return (
     <>
-      {" "}
       <GenericDataTable
         isLoading={loading}
         title="Danh sách phiếu thu"
@@ -249,6 +283,7 @@ export const FeeTable = ({
         }}
         onSortChange={handleSortChange}
       />
+
       <ConfirmDialog
         isOpen={!!deleteItem}
         title="Xác nhận xoá"
@@ -258,6 +293,18 @@ export const FeeTable = ({
         isLoading={deleteLoading}
         onClose={() => setDeleteItem(null)}
         onConfirm={handleConfirmDelete}
+      />
+
+      <ReceiptDetailModal
+        isOpen={!!viewItem}
+        onClose={() => {
+          setViewItem(null);
+          setDetailData(null);
+        }}
+        detailData={detailData}
+        isLoading={viewLoading}
+        formCode={viewItem?.formCode}
+        formNumber={viewItem?.formNumber}
       />
     </>
   );

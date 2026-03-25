@@ -648,3 +648,18 @@ export const deleteReceipt = (
     },
   );
 };
+
+export const getDetailReceipt = (
+  accessToken: string,
+  formCode: string,
+  formNumber: string,
+) => {
+  return axios.get(
+    `${API_GATEWAY_URL}/construction/receipts/${formCode}/${formNumber}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+};

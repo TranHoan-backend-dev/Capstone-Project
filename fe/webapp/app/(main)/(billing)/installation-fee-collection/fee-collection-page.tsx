@@ -11,11 +11,12 @@ import { FeeCollectionFilter, FeeCollectionItem } from "@/types";
 import { FilterSection } from "./components/filter-section";
 import { FeeForm } from "./components/fee-form";
 import { useSearchParams } from "next/navigation";
+import { useProfile } from "@/hooks/useLogin";
 
 const FeeCollectionPage = () => {
-  const { profile, loading: profileLoading } = useEmployeeProfile();
+  const { profile } = useProfile();
   const { isITStaff, loading: roleLoading } = useIsITStaff();
-  const loading = profileLoading || roleLoading;
+  const loading = roleLoading;
   const [filter, setFilter] = useState<FeeCollectionFilter>({});
   const [showAddForm, setShowAddForm] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);

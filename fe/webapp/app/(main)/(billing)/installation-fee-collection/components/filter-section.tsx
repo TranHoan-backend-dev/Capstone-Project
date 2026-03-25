@@ -8,8 +8,7 @@ import CustomInput from "@/components/ui/custom/CustomInput";
 import { AddNewIcon } from "@/config/chip-and-icon";
 import FilterButton from "@/components/ui/FilterButton";
 import { FilterActionButton } from "@/components/ui/FilterActionButton";
-import { FilterSectionFeeCollectionProps, FilterSectionJobProps } from "@/types";
-import { useIsITStaff } from "@/hooks/useHasRole";
+import { FilterSectionFeeCollectionProps } from "@/types";
 
 export const FilterSection = ({
   filter,
@@ -21,17 +20,42 @@ export const FilterSection = ({
   const [toDate, setToDate] = useState("");
 
   const handleSearch = () => {
+    // Gửi date trực tiếp với format YYYY-MM-DD (không chuyển đổi)
     onSearch({
       name,
-      fromDate,
-      toDate,
+      fromDate: fromDate, // Giữ nguyên format YYYY-MM-DD
+      toDate: toDate, // Giữ nguyên format YYYY-MM-DD
     });
   };
+
   const formatToInputDate = (dateStr: string) => {
     if (!dateStr) return "";
-    const parts = dateStr.split("/");
-    if (parts.length !== 3) return "";
-    return `${parts[2]}-${parts[1].padStart(2, "0")}-${parts[0].padStart(2, "0")}`;
+
+    // Nếu đã là YYYY-MM-DD thì giữ nguyên
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+      return dateStr;
+    }
+
+    // Nếu là DD-MM-YYYY thì chuyển sang YYYY-MM-DD
+    const parts = dateStr.split("-");
+    if (
+      parts.length === 3 &&
+      parts[0].length === 2 &&
+      parts[1].length === 2 &&
+      parts[2].length === 4
+    ) {
+      return `${parts[2]}-${parts[1]}-${parts[0]}`;
+    }
+
+    // Nếu là DD/MM/YYYY
+    if (dateStr.includes("/")) {
+      const parts = dateStr.split("/");
+      if (parts.length === 3) {
+        return `${parts[2]}-${parts[1].padStart(2, "0")}-${parts[0].padStart(2, "0")}`;
+      }
+    }
+
+    return "";
   };
 
   useEffect(() => {
@@ -60,7 +84,7 @@ export const FilterSection = ({
       }
     >
       <section className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
           <CustomInput
             label="Từ khóa"
             value={name}
@@ -71,7 +95,7 @@ export const FilterSection = ({
               }
             }}
           />
-          <CustomInput
+          {/* <CustomInput
             label="Từ ngày"
             type="date"
             value={fromDate}
@@ -83,7 +107,7 @@ export const FilterSection = ({
             type="date"
             value={toDate}
             onChange={(e) => setToDate(e.target.value)}
-          />
+          /> */}
         </div>
       </section>
     </GenericSearchFilter>
