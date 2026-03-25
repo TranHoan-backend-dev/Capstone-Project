@@ -7,13 +7,13 @@ import {
   EmployeeProfileUpdatePayload,
 } from "@/types";
 
-export const signinService = (accessToken: string) =>
+export const signinService = (username: string, password: string) =>
   axios.post(
     `${API_GATEWAY_URL}/auth/auth/login`,
-    {},
+    { username, password },
     {
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
       },
     },
   );
@@ -61,29 +61,30 @@ export const getProfileEmployee = async (
 };
 
 export const updateProfileEmployee = async (
-  payload: Partial<EmployeeProfileUpdatePayload>,
+  payload: any,
   accessToken: string,
-): Promise<EmployeeProfileUpdatePayload> => {
-  const response = await axios.patch<ApiResponse<EmployeeProfileUpdatePayload>>(
+): Promise<any> => {
+  const response = await axios.patch<ApiResponse<any>>(
     `${API_GATEWAY_URL}/auth/me`,
     payload,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
       },
     },
   );
   return response.data.data;
 };
 
-export const updateAvatar = async (file: FormData, accessToken: string) => {
-  const response = await axios.patch(`${API_GATEWAY_URL}/auth/me`, file, {
+export const updateAvatar = async (formData: FormData, accessToken: string) => {
+  const response = await axios.patch(`${API_GATEWAY_URL}/auth/me`, formData, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "multipart/form-data",
     },
   });
-
-  return response.data;
+  return response.data.data;
 };
 
 export const checkExistenceService = async (

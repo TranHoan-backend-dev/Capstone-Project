@@ -24,6 +24,7 @@ import NotificationDropdown from "./NotificationDropdown";
 import { CallToast } from "../ui/CallToast";
 import axios from "axios";
 import { useEmployeeProfile } from "@/hooks/useEmployeeProfile";
+import { useProfile } from "@/hooks/useLogin";
 
 export interface SubMenuItemChild {
   key: string;
@@ -56,7 +57,7 @@ const Header = ({ menuItems }: NavigationProps) => {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
-  const { profile, loading } = useEmployeeProfile();
+  const { profile } = useProfile();
 
   const isMenuItemActive = (item: MenuItem) => {
     if (item.href && pathname === item.href) {
