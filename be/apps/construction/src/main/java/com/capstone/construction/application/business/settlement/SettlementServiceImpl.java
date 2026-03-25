@@ -62,8 +62,6 @@ public class SettlementServiceImpl implements SettlementService {
         log.info("Updating settlement with id: {}", id);
         var settlement = settlementRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Settlement not found with id: " + id));
-
-<<<<<<< HEAD
         settlement.setJobContent(request.jobContent());
         settlement.setAddress(request.address());
         settlement.setConnectionFee(request.connectionFee());
