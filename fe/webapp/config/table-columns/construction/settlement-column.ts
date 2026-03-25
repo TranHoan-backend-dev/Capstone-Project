@@ -6,7 +6,6 @@ export const SETLEMENT_LOOKUP_COLUMN = [
   { key: "connectionFee", label: "Phí lắp đặt" },
   { key: "address", label: "Địa chỉ lắp đặt" },
   { key: "registrationAt", label: "Ngày đăng ký" },
-  { key: "status", label: "Trạng thái đơn" },
   { key: "actions", label: "Hoạt động", align: "center" as const },
 ];
 

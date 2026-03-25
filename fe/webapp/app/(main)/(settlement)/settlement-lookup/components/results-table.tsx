@@ -26,6 +26,7 @@ import {
   SettlementDetail,
   SettlementResponse,
   SettlementTableProps,
+  SettlementStatus,
 } from "@/types";
 import { authFetch } from "@/utils/authFetch";
 import { SETLEMENT_LOOKUP_COLUMN } from "@/config/table-columns";
@@ -339,31 +340,6 @@ export const ResultsTable = ({
             {item.stt}
           </span>
         );
-      case "status":
-        const config = statusMap[item.status as keyof typeof statusMap] || {
-          label: item.status,
-          color: "default" as const,
-          bg: "bg-gray-100",
-        };
-
-        return (
-          <button
-            className="hover:opacity-80 transition-opacity focus:outline-none"
-            onClick={() => {
-              console.log("CLICK STATUS:", item.status);
-              onFilterStatus?.(item.status);
-            }}
-          >
-            <Chip
-              className={`${config.bg}`}
-              color={config.color}
-              size="sm"
-              variant="flat"
-            >
-              {config.label}
-            </Chip>
-          </button>
-        );
       case "actions":
         return (
           <div className="flex items-center justify-center gap-2">
@@ -383,9 +359,18 @@ export const ResultsTable = ({
           </div>
         );
       default:
+        const value = item[columnKey as keyof SettlementItem];
+
+        // If the value is an object, don't render it directly
+        if (value && typeof value === "object") {
+          // For debugging, you might want to see what's being passed
+          console.warn(`Object found in column ${columnKey}:`, value);
+          return <span className="text-gray-600">-</span>;
+        }
+
         return (
           <span className="text-gray-600 dark:text-default-600">
-            {item[columnKey as keyof SettlementItem]}
+            {String(value || "")}
           </span>
         );
     }

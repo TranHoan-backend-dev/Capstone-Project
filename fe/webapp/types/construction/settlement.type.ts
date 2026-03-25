@@ -1,3 +1,10 @@
+export interface SettlementStatus {
+  registration: string;
+  estimate: string;
+  contract: string;
+  construction: string;
+}
+
 export interface SettlementItem {
   stt: string;
   id: string;
@@ -7,7 +14,7 @@ export interface SettlementItem {
   connectionFee: string;
   address: string;
   registrationAt: string;
-  status: "PROCESSING" | "PENDING_FOR_APPROVAL" | "APPROVED" | "REJECTED";
+  status: SettlementStatus;
   note?: string;
   createdAt?: string;
   updatedAt?: string;
@@ -81,19 +88,20 @@ export interface SettlementRequest {
   connectionFee: number;
   note?: string;
   registrationAt: string;
-  status: string[]; 
+  status: string[];
 }
 
 export interface SettlementResponse {
-  formCode: string;
-  formNumber: string;
+  settlementId: string;
+  jobContent: string;
   address: string;
   connectionFee: number;
   createdAt: string;
-  jobContent: string;
+  formCode: string;
+  formNumber: string;
   note: string;
   registrationAt: string;
-  settlementId: string;
-  status: string;
+  significance: any;
+  status: SettlementStatus;
   updatedAt: string;
 }
