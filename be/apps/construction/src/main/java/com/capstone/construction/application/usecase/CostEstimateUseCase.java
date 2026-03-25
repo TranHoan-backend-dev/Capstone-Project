@@ -32,7 +32,6 @@ import org.springframework.stereotype.Component;
 public class CostEstimateUseCase {
   final CostEstimateService estSrv;
   final EmployeeService empSrv;
-  final UseCaseUtils utils;
   final MessageProducer messageProducer;
 
   // <editor-fold> desc="constant"
@@ -128,7 +127,13 @@ public class CostEstimateUseCase {
   }
 
   public void signForInstallationRequest(String currentUserId, @NonNull SignRequest request) {
-    var role = utils.validateUserId(currentUserId);
+    var response = empSrv.getRoleOfEmployeeById(currentUserId);
+    var role = response.data().toString();
+    if (!role.equalsIgnoreCase(RoleName.SURVEY_STAFF.name()) &&
+      !role.equalsIgnoreCase(RoleName.COMPANY_LEADERSHIP.name()) &&
+      !role.equalsIgnoreCase(RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD.name())) {
+      throw new ForbiddenException(SharedMessage.MES_23);
+    }
 
     var electronicSignificance = empSrv.getElectronicSignificance(currentUserId);
 

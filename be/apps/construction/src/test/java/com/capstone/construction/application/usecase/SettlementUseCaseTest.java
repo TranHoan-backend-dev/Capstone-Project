@@ -2,13 +2,18 @@ package com.capstone.construction.application.usecase;
 
 import com.capstone.common.exception.NotExistingException;
 import com.capstone.common.response.WrapperApiResponse;
+import com.capstone.construction.application.business.constructionrequest.ConstructionRequestService;
 import com.capstone.construction.application.business.settlement.SettlementService;
 import com.capstone.construction.application.dto.request.settlement.AssignTheSignificanceRequest;
 import com.capstone.construction.application.dto.request.settlement.SettlementRequest;
 import com.capstone.construction.application.dto.request.settlement.SignificanceRequest;
 import com.capstone.construction.application.dto.response.PageResponse;
+import com.capstone.construction.application.dto.response.constructionrequest.ConstructionRequestResponse;
 import com.capstone.construction.application.dto.response.settlement.SettlementResponse;
 import com.capstone.construction.application.event.producer.MessageProducer;
+import com.capstone.construction.domain.model.utils.InstallationForm;
+import com.capstone.construction.domain.model.utils.InstallationFormId;
+import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
 import com.capstone.construction.infrastructure.service.EmployeeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,6 +29,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -43,6 +49,12 @@ class SettlementUseCaseTest {
   @Mock
   EmployeeService employeeService;
 
+  @Mock
+  InstallationFormRepository installationFormRepository;
+
+  @Mock
+  ConstructionRequestService constructionRequestService;
+
   @InjectMocks
   SettlementUseCase settlementUseCase;
 
@@ -59,7 +71,14 @@ class SettlementUseCaseTest {
   void createSettlement_ShouldReturnResponse() {
     var request = new SettlementRequest("CODE-001", "FORM-001", "Job", "Addr", BigDecimal.ZERO, "Note", LocalDate.now());
     var response1 = new SettlementResponse("id", "Job", "Addr", BigDecimal.ZERO, "Note", null, null, LocalDate.now(), "CODE-001", "FORM-001", null, null);
+    var installationForm = mock(InstallationForm.class);
+    var constructionRequest = mock(ConstructionRequestResponse.class);
+
+    when(installationFormRepository.findById(any(InstallationFormId.class))).thenReturn(Optional.of(installationForm));
+    when(constructionRequestService.getByInstallationForm(installationForm)).thenReturn(constructionRequest);
+    when(constructionRequest.isApproved()).thenReturn("true");
     when(settlementService.createSettlement(request)).thenReturn(response1);
+
     var result1 = settlementUseCase.createSettlement(request);
     assertThat(result1).isEqualTo(response1);
     verify(settlementService).createSettlement(request);
@@ -107,11 +126,11 @@ class SettlementUseCaseTest {
   void significance_ShouldSendMessage_WhenFullySigned() {
     var id = "id123";
     var userId = "User1";
-    var request = new SignificanceRequest("P", "PT", "S", "CP");
+    var request = new SignificanceRequest("URL");
 
-    when(settlementService.signSettlement(userId, id)).thenReturn(true);
+    when(settlementService.signSettlement(userId, id, request)).thenReturn(true);
 
-    settlementUseCase.significance(userId, id);
+    settlementUseCase.significance(userId, id, request);
 
     verify(messageProducer).send(eq("construction_queue.settlement.approve"), any());
   }
@@ -121,11 +140,11 @@ class SettlementUseCaseTest {
   void significance_ShouldNotSendMessage_WhenNotFullySigned() {
     var id = "id123";
     var userId = "User1";
-    var request = new SignificanceRequest("P", "PT", "S", "CP");
+    var request = new SignificanceRequest("URL");
 
-    when(settlementService.signSettlement(userId, id)).thenReturn(false);
+    when(settlementService.signSettlement(userId, id, request)).thenReturn(false);
 
-    settlementUseCase.significance(userId, id);
+    settlementUseCase.significance(userId, id, request);
 
     verify(messageProducer, never()).send(anyString(), any());
   }
@@ -170,3 +189,4 @@ class SettlementUseCaseTest {
     verify(messageProducer, never()).send(anyString(), any());
   }
 }
+

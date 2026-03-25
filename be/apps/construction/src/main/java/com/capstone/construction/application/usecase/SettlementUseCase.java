@@ -1,15 +1,13 @@
 package com.capstone.construction.application.usecase;
 
-import com.capstone.common.enumerate.RoleName;
-import com.capstone.common.exception.ForbiddenException;
 import com.capstone.common.exception.NotExistingException;
 import com.capstone.common.utils.SharedMessage;
 import com.capstone.construction.application.business.constructionrequest.ConstructionRequestService;
 import com.capstone.construction.application.business.settlement.SettlementService;
 import com.capstone.construction.application.dto.request.settlement.AssignTheSignificanceRequest;
-import com.capstone.construction.application.dto.request.settlement.SignificanceRequest;
 import com.capstone.construction.application.dto.request.settlement.SettlementFilterRequest;
 import com.capstone.construction.application.dto.request.settlement.SettlementRequest;
+import com.capstone.construction.application.dto.request.settlement.SignificanceRequest;
 import com.capstone.construction.application.dto.response.settlement.SettlementResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.application.event.producer.MessageProducer;
@@ -35,7 +33,6 @@ public class SettlementUseCase {
   final EmployeeService employeeService;
   final ConstructionRequestService constructionRequestService;
   final InstallationFormRepository installationFormRepository;
-  final UseCaseUtils utils;
 
   @Value(".${rabbit-mq-config.entities[8]}.")
   String PREFIX;
@@ -76,10 +73,9 @@ public class SettlementUseCase {
     return settlementService.filterSettlements(filterRequest, pageable);
   }
 
-  public void significance(String userId, String id) {
+  public void significance(String userId, String id, SignificanceRequest request) {
     // du 4 chu ky thi thong bao cho phong tai vu de phong tai vu yeu cau khach hang toi thanh toan quyet toan
-    var role = utils.validateUserId(userId);
-    var status = settlementService.signSettlement(userId, id);
+    var status = settlementService.signSettlement(userId, id, request);
     if (status) {
       var routingKey = QUEUE_NAME + PREFIX + APPROVE_ACTION;
       messageProducer.send(routingKey, null);

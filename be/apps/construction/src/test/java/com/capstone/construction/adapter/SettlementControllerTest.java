@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
@@ -139,13 +140,15 @@ class SettlementControllerTest {
   @DisplayName("Sign settlement successfully via controller")
   void sign_ShouldReturnOk() {
     var id = "id-123";
-    var significanceRequest = new SignificanceRequest("P", "PT", "S", "CP");
+    var significanceRequest = new SignificanceRequest("URL");
+    var jwt = mock(Jwt.class);
+    when(jwt.getSubject()).thenReturn("user-123");
 
-    var responseEntity = settlementController.sign(significanceRequest, id);
+    var responseEntity = settlementController.sign(jwt, significanceRequest, id);
 
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(Objects.requireNonNull(responseEntity.getBody()).message()).isEqualTo("Ký quyết toán thành công");
-    verify(settlementUseCase).significance(significanceRequest, id);
+    verify(settlementUseCase).significance("user-123", id, significanceRequest);
   }
 
   @Test
@@ -160,3 +163,4 @@ class SettlementControllerTest {
     verify(settlementUseCase).assignStaffForSignCostEstimate(assignRequest);
   }
 }
+

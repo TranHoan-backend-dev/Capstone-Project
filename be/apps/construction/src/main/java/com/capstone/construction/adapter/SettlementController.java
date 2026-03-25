@@ -110,12 +110,13 @@ public class SettlementController {
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'SURVEY_STAFF')")
   public ResponseEntity<WrapperApiResponse> sign(
     @AuthenticationPrincipal Jwt jwt,
+    @RequestBody SignificanceRequest request,
     @PathVariable @Parameter(description = "ID của bản quyết toán cần ký", required = true) String id
   ) {
-    log.info("Received request to sign settlement: {}", id);
+    log.info("Received request to sign settlement: {}", request);
 
     var userId = jwt.getSubject();
-    settlementUseCase.significance(userId, id);
+    settlementUseCase.significance(userId, id, request);
     return Utils.returnOkResponse("Ký quyết toán thành công", null);
   }
 
