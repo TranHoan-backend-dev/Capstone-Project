@@ -125,13 +125,13 @@ class SettlementServiceImplTest {
   @DisplayName("Sign settlement - Fully signed")
   void signSettlement_ShouldReturnTrue_WhenFullySigned() {
     var id = "id123";
-    var request = new SignificanceRequest("P", "PT", "S", "CP");
+    var userId = "User1";
     var significance = new SettlementSignificance();
     var settlement = mock(Settlement.class);
     when(settlement.getSignificance()).thenReturn(significance);
     when(settlementRepository.findById(id)).thenReturn(Optional.of(settlement));
 
-    var result = settlementService.signSettlement(request, id);
+    var result = settlementService.signSettlement(userId, id);
 
     assertThat(result).isTrue();
   }
@@ -140,13 +140,13 @@ class SettlementServiceImplTest {
   @DisplayName("Sign settlement - Partially signed")
   void signSettlement_ShouldReturnFalse_WhenPartiallySigned() {
     var id = "id123";
-    var request = new SignificanceRequest("P", "", "", "");
+    var userId = "User1";
     var significance = new SettlementSignificance();
     var settlement = mock(Settlement.class);
     when(settlement.getSignificance()).thenReturn(significance);
     when(settlementRepository.findById(id)).thenReturn(Optional.of(settlement));
 
-    var result = settlementService.signSettlement(request, id);
+    var result = settlementService.signSettlement(userId, id);
 
     assertThat(result).isFalse();
   }

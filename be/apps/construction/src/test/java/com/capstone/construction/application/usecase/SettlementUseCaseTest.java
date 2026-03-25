@@ -106,11 +106,12 @@ class SettlementUseCaseTest {
   @DisplayName("Significance should send message when fully signed")
   void significance_ShouldSendMessage_WhenFullySigned() {
     var id = "id123";
+    var userId = "User1";
     var request = new SignificanceRequest("P", "PT", "S", "CP");
 
-    when(settlementService.signSettlement(request, id)).thenReturn(true);
+    when(settlementService.signSettlement(userId, id)).thenReturn(true);
 
-    settlementUseCase.significance(request, id);
+    settlementUseCase.significance(userId, id);
 
     verify(messageProducer).send(eq("construction_queue.settlement.approve"), any());
   }
@@ -119,11 +120,12 @@ class SettlementUseCaseTest {
   @DisplayName("Significance should not send message when not fully signed")
   void significance_ShouldNotSendMessage_WhenNotFullySigned() {
     var id = "id123";
+    var userId = "User1";
     var request = new SignificanceRequest("P", "PT", "S", "CP");
 
-    when(settlementService.signSettlement(request, id)).thenReturn(false);
+    when(settlementService.signSettlement(userId, id)).thenReturn(false);
 
-    settlementUseCase.significance(request, id);
+    settlementUseCase.significance(userId, id);
 
     verify(messageProducer, never()).send(anyString(), any());
   }

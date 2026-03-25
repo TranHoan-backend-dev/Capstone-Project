@@ -4,7 +4,6 @@ import com.capstone.common.annotation.AppLog;
 import com.capstone.common.exception.NotExistingException;
 import com.capstone.construction.application.dto.request.settlement.SettlementFilterRequest;
 import com.capstone.construction.application.dto.request.settlement.SettlementRequest;
-import com.capstone.construction.application.dto.request.settlement.SignificanceRequest;
 import com.capstone.construction.application.dto.response.settlement.SettlementResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.domain.model.Settlement;
@@ -93,7 +92,7 @@ public class SettlementServiceImpl implements SettlementService {
   }
 
   @Override
-  public boolean signSettlement(@NonNull SignificanceRequest request, String id) {
+  public boolean signSettlement(String userId, String id) {
     var settlement = settlementRepository.findById(id)
       .orElseThrow(() -> new IllegalArgumentException("Settlement not found with id: " + id));
     var significance = settlement.getSignificance();
