@@ -128,14 +128,15 @@ public class CostEstimateUseCase {
   }
 
   public void signForInstallationRequest(String currentUserId, @NonNull SignRequest request) {
-    var role = empSrv.getRoleOfEmployeeById(currentUserId).data().toString();
+    var response = empSrv.getRoleOfEmployeeById(currentUserId);
+    var role = response.data().toString();
     if (!role.equalsIgnoreCase(RoleName.SURVEY_STAFF.name()) &&
       !role.equalsIgnoreCase(RoleName.COMPANY_LEADERSHIP.name()) &&
       !role.equalsIgnoreCase(RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD.name())) {
       throw new ForbiddenException(SharedMessage.MES_23);
     }
 
-    var electronicSignificance = empSrv.getElectronicSignificance(currentUserId).data().toString();
+    var electronicSignificance = empSrv.getElectronicSignificance(currentUserId);
 
     // ký với chữ ký. Đủ 3 chữ ký rồi thì mới làm được bước kế tiếp
     var status = estSrv.signForCostEstimate(electronicSignificance, RoleName.valueOf(role), request.estimateId());
