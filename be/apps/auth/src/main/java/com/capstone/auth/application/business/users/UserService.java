@@ -39,4 +39,6 @@ public interface UserService {
   List<EmployeeResponse> getAllSurveyStaffs();
 
   String getSignificanceOfEmployee(String id);
+
+  UserDTO getByUserNameOrEmail(String value);
 }

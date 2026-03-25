@@ -16,7 +16,6 @@ export const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
       ...((options.headers as Record<string, string>) || {}),
     };
 
-
     if (accessToken) {
       headers.Authorization = `Bearer ${accessToken}`;
       console.log(`[API Debug] Auth Header: Bearer ${accessToken.substring(0, 10)}...`);
@@ -26,10 +25,47 @@ export const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
 
     console.log(`[API Request] ${options.method || 'GET'} ${BASE_URL}${endpoint}`);
 
-    const response = await fetch(`${BASE_URL}${endpoint}`, {
+    let response = await fetch(`${BASE_URL}${endpoint}`, {
       ...options,
       headers,
     });
+
+    // Handle token expiration (401)
+    if (response.status === 401 && endpoint !== '/auth/login' && endpoint !== '/auth/refresh-token') {
+      console.log('[API] Access Token expired. Attempting refresh...');
+      const refreshToken = await TokenManager.getRefreshToken();
+
+      if (refreshToken) {
+        try {
+          const refreshResponse = await fetch(`${BASE_URL}/auth/refresh-token`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: refreshToken }),
+          });
+
+          if (refreshResponse.ok) {
+            const refreshData = await refreshResponse.json();
+            const tokenData = refreshData.data || refreshData;
+
+            if (tokenData && tokenData.access_token) {
+              console.log('[API] Token refresh successful. Retrying request...');
+              await TokenManager.setTokens(tokenData.access_token, tokenData.refresh_token || refreshToken);
+
+              // Retry the original request with new token
+              headers.Authorization = `Bearer ${tokenData.access_token}`;
+              response = await fetch(`${BASE_URL}${endpoint}`, {
+                ...options,
+                headers,
+              });
+            }
+          } else {
+            console.log('[API] Token refresh failed with status:', refreshResponse.status);
+          }
+        } catch (refreshError) {
+          console.error('[API] Error during token refresh:', refreshError);
+        }
+      }
+    }
 
     if (!response.ok) {
       let errorMessage = `Lỗi hệ thống (${response.status})`;
@@ -37,11 +73,13 @@ export const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
         const errorData = await response.json();
         errorMessage = errorData.message || errorData.error || errorMessage;
       } catch (e: any) {
-        // Response không phải JSON
-        console.error(e.message)
+        console.error('[API] Parse error data failed:', e.message);
       }
 
-      showToast.error(errorMessage);
+      // Don't show toast for some endpoints or if explicitly requested (could add an option for this)
+      if (endpoint !== '/auth/login') {
+        showToast.error(errorMessage);
+      }
       throw new Error(errorMessage);
     }
 
@@ -50,7 +88,7 @@ export const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
   } catch (error: any) {
     if (error.message === 'Network request failed') {
       showToast.error('Không thể kết nối máy chủ. Vui lòng kiểm tra mạng (Wifi/4G).');
-    } else if (!error.message.includes('Lỗi')) {
+    } else if (!error.message.includes('Lỗi') && !endpoint.includes('login')) {
       showToast.error('Có lỗi xảy ra, vui lòng thử lại sau.');
     }
     throw error;
