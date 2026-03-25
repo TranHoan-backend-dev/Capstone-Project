@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class LoginParam {
+public class TokenParam {
   @FormProperty("grant_type")
   String grantType;
 
@@ -23,4 +23,7 @@ public class LoginParam {
 
   String password;
   String scope;
+
+  @FormProperty("refresh_token")
+  String refreshToken;
 }

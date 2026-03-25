@@ -5,11 +5,12 @@ import com.capstone.auth.application.business.profile.ProfileService;
 import com.capstone.auth.application.business.roles.RoleService;
 import com.capstone.auth.application.business.users.UserService;
 import com.capstone.auth.application.business.dto.ProfileDTO;
-import com.capstone.auth.application.dto.request.keycloakparam.LoginParam;
+import com.capstone.auth.application.dto.request.keycloakparam.TokenParam;
 import com.capstone.auth.application.dto.request.users.NewUserRequest;
 import com.capstone.auth.application.dto.request.keycloakparam.Credential;
 import com.capstone.auth.application.dto.request.keycloakparam.TokenExchangeParam;
 import com.capstone.auth.application.dto.request.keycloakparam.UserCreationParam;
+import com.capstone.auth.application.dto.response.TokenExchangeResponse;
 import com.capstone.auth.application.dto.response.TokenResponse;
 import com.capstone.auth.application.dto.response.UserProfileResponse;
 import com.capstone.auth.application.event.producer.message.AccountCreationEvent;
@@ -25,7 +26,6 @@ import com.capstone.common.exception.NotExistingException;
 import com.capstone.common.enumerate.RoleName;
 import com.capstone.auth.infrastructure.utils.Message;
 import com.capstone.auth.infrastructure.service.keycloak.KeycloakFeignClient;
-import com.capstone.auth.infrastructure.utils.AuthUtils;
 import jakarta.transaction.Transactional;
 import org.jspecify.annotations.NonNull;
 import lombok.AccessLevel;
@@ -116,7 +116,7 @@ public class AuthUseCase {
     var profile = pSrv.getProfileById(user.userId());
     Objects.requireNonNull(profile, Message.SE_05);
 
-    var token = keycloakFeignClient.login(LoginParam.builder()
+    var token = keycloakFeignClient.token(TokenParam.builder()
       .grantType("password")
       .clientId(clientId)
       .clientSecret(clientSecret)
@@ -125,10 +125,16 @@ public class AuthUseCase {
       .scope("openid")
       .build());
 
-    return new TokenResponse(
-      returnUserProfile(profile, user),
-      token
-    );
+    return new TokenResponse(returnUserProfile(profile, user), token);
+  }
+
+  public TokenExchangeResponse refreshToken(String refreshToken) {
+    return keycloakFeignClient.token(TokenParam.builder()
+      .grantType("refresh_token")
+      .clientId(clientId)
+      .clientSecret(clientSecret)
+      .refreshToken(refreshToken)
+      .build());
   }
 
   @Transactional(rollbackOn = Exception.class)

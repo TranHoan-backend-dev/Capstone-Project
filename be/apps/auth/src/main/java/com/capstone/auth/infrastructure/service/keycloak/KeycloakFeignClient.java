@@ -1,6 +1,6 @@
 package com.capstone.auth.infrastructure.service.keycloak;
 
-import com.capstone.auth.application.dto.request.keycloakparam.LoginParam;
+import com.capstone.auth.application.dto.request.keycloakparam.TokenParam;
 import com.capstone.auth.application.dto.request.keycloakparam.TokenExchangeParam;
 import com.capstone.auth.application.dto.request.keycloakparam.UserCreationParam;
 import com.capstone.auth.application.dto.request.keycloakparam.UserTokenExchangeParam;
@@ -50,5 +50,5 @@ public interface KeycloakFeignClient {
   );
 
   @PostMapping(value = TOKEN_URL, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-  TokenExchangeResponse login(@RequestBody LoginParam param);
+  TokenExchangeResponse token(@RequestBody TokenParam param);
 }

@@ -16,6 +16,10 @@ export const TokenManager = {
     return AsyncStorage.getItem('accessToken');
   },
 
+  async getRefreshToken(): Promise<string | null> {
+    return AsyncStorage.getItem('refreshToken');
+  },
+
   async setTokens(accessToken: string, refreshToken?: string): Promise<void> {
     await AsyncStorage.setItem('accessToken', accessToken);
     if (refreshToken) {

@@ -2,6 +2,7 @@ package com.capstone.auth.adapter;
 
 import com.capstone.auth.application.dto.request.CheckExistenceRequest;
 import com.capstone.auth.application.dto.request.CredentialsRequest;
+import com.capstone.auth.application.dto.request.RefreshTokenRequest;
 import com.capstone.auth.application.dto.request.otp.SendOtpRequest;
 import com.capstone.auth.application.dto.request.otp.VerifyOtpRequest;
 import com.capstone.auth.application.dto.request.password.ChangePasswordRequest;
@@ -153,5 +154,11 @@ public class AuthenticationController {
     log.info("Login request comes to endpoint: {}", request);
     var response = authUC.login(request.username(), request.password());
     return Utils.returnOkResponse("Đăng nhập thành công", response);
+  }
+
+  @PostMapping("/refresh-token")
+  public ResponseEntity<?> getToken(@RequestBody RefreshTokenRequest request) {
+    log.info("Get refresh token: {}", request);
+    return Utils.returnOkResponse("", authUC.refreshToken(request.token()));
   }
 }

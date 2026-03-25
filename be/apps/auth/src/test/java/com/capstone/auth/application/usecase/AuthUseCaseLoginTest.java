@@ -5,7 +5,7 @@ import com.capstone.auth.application.business.dto.UserDTO;
 import com.capstone.auth.application.business.profile.ProfileService;
 import com.capstone.auth.application.business.roles.RoleService;
 import com.capstone.auth.application.business.users.UserService;
-import com.capstone.auth.application.dto.request.keycloakparam.LoginParam;
+import com.capstone.auth.application.dto.request.keycloakparam.TokenParam;
 import com.capstone.auth.application.dto.response.TokenExchangeResponse;
 import com.capstone.auth.application.event.producer.MessageProducer;
 import com.capstone.auth.application.exception.AccountBlockedException;
@@ -82,7 +82,7 @@ class AuthUseCaseLoginTest {
     when(uSrv.checkExistence(username)).thenReturn(true);
     when(uSrv.getByUserNameOrEmail(username)).thenReturn(user);
     when(pSrv.getProfileById(userId)).thenReturn(profile);
-    when(keycloakFeignClient.login(any(LoginParam.class))).thenReturn(tokenExchangeResponse);
+    when(keycloakFeignClient.token(any(TokenParam.class))).thenReturn(tokenExchangeResponse);
 
     var response = authUseCase.login(username, password);
 
