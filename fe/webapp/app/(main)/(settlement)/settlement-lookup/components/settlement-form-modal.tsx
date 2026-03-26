@@ -16,6 +16,8 @@ import {
 } from "@heroui/react";
 import CustomDatePicker from "@/components/ui/custom/CustomDatePicker";
 import CustomInput from "@/components/ui/custom/CustomInput";
+import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
+import { LookupModal } from "@/components/ui/modal/LookupModal";
 
 interface SettlementFormModalProps {
   isOpen: boolean;
@@ -39,12 +41,12 @@ export const SettlementFormModal = ({
     address: "",
     connectionFee: "",
     note: "",
-    status: "",
     registrationAt: "",
   });
 
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showFormModal, setShowFormModal] = useState(false); // State cho modal lookup
 
   // Fill data khi update
   useEffect(() => {
@@ -56,7 +58,6 @@ export const SettlementFormModal = ({
         address: initialData.address || "",
         connectionFee: initialData.connectionFee || "",
         note: initialData.note || "",
-        status: initialData.status || "",
         registrationAt: initialData.registrationAt || "",
       });
     } else if (mode === "create") {
@@ -67,7 +68,6 @@ export const SettlementFormModal = ({
         address: "",
         connectionFee: "",
         note: "",
-        status: "PENDING_FOR_APPROVAL",
         registrationAt: "",
       });
     }
@@ -75,6 +75,10 @@ export const SettlementFormModal = ({
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
+
+    if (!form.formNumber) {
+      newErrors.formNumber = "Vui lòng chọn số đơn";
+    }
 
     if (!form.jobContent.trim()) {
       newErrors.jobContent = "Vui lòng nhập nội dung công việc";
@@ -118,7 +122,6 @@ export const SettlementFormModal = ({
       const payload = {
         ...form,
         connectionFee: Number(form.connectionFee),
-        status: mode === "create" ? "PENDING_FOR_APPROVAL" : form.status,
         registrationAt: form.registrationAt + "T00:00:00",
       };
 
@@ -131,111 +134,139 @@ export const SettlementFormModal = ({
     }
   };
 
-  const statusOptions = [
-    { value: "PENDING_FOR_APPROVAL", label: "Chờ duyệt" },
-    { value: "PROCESSING", label: "Đang xử lý" },
-    { value: "APPROVED", label: "Đã duyệt dự toán" },
-    { value: "REJECTED", label: "Lập lại dự toán" },
-  ];
-
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="2xl" scrollBehavior="inside">
-      <ModalContent>
-        <ModalHeader className="flex flex-col gap-1">
-          <h2 className="text-xl font-semibold">
-            {mode === "create"
-              ? "Tạo quyết toán công trình"
-              : "Cập nhật quyết toán"}
-          </h2>
-        </ModalHeader>
+    <>
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        size="2xl"
+        scrollBehavior="inside"
+      >
+        <ModalContent>
+          <ModalHeader className="flex flex-col gap-1">
+            <h2 className="text-xl font-semibold">
+              {mode === "create"
+                ? "Tạo quyết toán công trình"
+                : "Cập nhật quyết toán"}
+            </h2>
+          </ModalHeader>
 
-        <ModalBody className="gap-4">
-          <CustomInput
-            label="Mã form"
-            value={form.formCode}
-            onChange={(e) => handleChange("formCode", e.target.value)}
-          />
+          <ModalBody className="gap-4">
+            {/* Ẩn input Mã form (formCode) */}
+            {form.formCode && <input type="hidden" value={form.formCode} />}
 
-          <CustomInput
-            label="Số form"
-            value={form.formNumber}
-            onChange={(e) => handleChange("formNumber", e.target.value)}
-          />
+            <SearchInputWithButton
+              label="Số đơn"
+              value={form.formNumber}
+              onSearch={() => setShowFormModal(true)}
+              onChange={(e) => {
+                handleChange("formNumber", e.target.value);
+                if (!e.target.value) {
+                  // Xóa dữ liệu liên quan khi xóa số đơn
+                  handleChange("formCode", "");
+                  handleChange("address", "");
+                  handleChange("jobContent", "");
+                }
+              }}
+              isInvalid={!!errors.formNumber}
+              errorMessage={errors.formNumber}
+              required
+            />
 
-          <CustomInput
-            label="Nội dung công việc"
-            value={form.jobContent}
-            onChange={(e) => handleChange("jobContent", e.target.value)}
-            isRequired
-            isInvalid={!!errors.jobContent}
-            errorMessage={errors.jobContent}
-            variant="bordered"
-          />
+            <CustomInput
+              label="Nội dung công việc"
+              value={form.jobContent}
+              onChange={(e) => handleChange("jobContent", e.target.value)}
+              isRequired
+              isInvalid={!!errors.jobContent}
+              errorMessage={errors.jobContent}
+              variant="bordered"
+              isDisabled={!form.formNumber} // Disable nếu chưa chọn số đơn
+            />
 
-          <CustomInput
-            label="Địa chỉ lắp đặt"
-            value={form.address}
-            onChange={(e) => handleChange("address", e.target.value)}
-            isRequired
-            isInvalid={!!errors.address}
-            errorMessage={errors.address}
-            variant="bordered"
-          />
+            <CustomInput
+              label="Địa chỉ lắp đặt"
+              value={form.address}
+              onChange={(e) => handleChange("address", e.target.value)}
+              isRequired
+              isInvalid={!!errors.address}
+              errorMessage={errors.address}
+              variant="bordered"
+              isDisabled={!form.formNumber} // Disable nếu chưa chọn số đơn
+            />
 
-          <CustomInput
-            label="Chi phí đấu nối"
-            value={form.connectionFee}
-            onChange={(e) => handleChange("connectionFee", e.target.value)}
-            isRequired
-            isInvalid={!!errors.connectionFee}
-            errorMessage={errors.connectionFee}
-            variant="bordered"
-          />
+            <CustomInput
+              label="Chi phí đấu nối"
+              value={form.connectionFee}
+              onChange={(e) => handleChange("connectionFee", e.target.value)}
+              isRequired
+              isInvalid={!!errors.connectionFee}
+              errorMessage={errors.connectionFee}
+              variant="bordered"
+            />
 
-          <CustomInput
-            type="date"
-            label="Ngày đăng ký"
-            value={form.registrationAt}
-            onChange={(e) => handleChange("registrationAt", e.target.value)}
-            isRequired
-            isInvalid={!!errors.registrationAt}
-            errorMessage={errors.registrationAt}
-            variant="bordered"
-          />
-          {mode === "update" && (
-            <Select
-              label="Trạng thái"
-              selectedKeys={[form.status]}
-              onSelectionChange={(keys) =>
-                handleChange("status", Array.from(keys)[0])
-              }
-            >
-              <SelectItem key="PENDING_FOR_APPROVAL">Chờ duyệt</SelectItem>
-              <SelectItem key="PROCESSING">Đang xử lý</SelectItem>
-              <SelectItem key="APPROVED">Đã duyệt</SelectItem>
-              <SelectItem key="REJECTED">Từ chối</SelectItem>
-            </Select>
-          )}
-          <Textarea
-            label="Ghi chú"
-            placeholder="Nhập ghi chú (nếu có)"
-            value={form.note}
-            onChange={(e) => handleChange("note", e.target.value)}
-            variant="bordered"
-            rows={3}
-          />
-        </ModalBody>
+            <CustomInput
+              type="date"
+              label="Ngày đăng ký"
+              value={form.registrationAt}
+              onChange={(e) => handleChange("registrationAt", e.target.value)}
+              isRequired
+              isInvalid={!!errors.registrationAt}
+              errorMessage={errors.registrationAt}
+              variant="bordered"
+            />
 
-        <ModalFooter className="gap-2">
-          <Button variant="light" onPress={onClose} disabled={loading}>
-            Hủy
-          </Button>
+            <Textarea
+              label="Ghi chú"
+              placeholder="Nhập ghi chú (nếu có)"
+              value={form.note}
+              onChange={(e) => handleChange("note", e.target.value)}
+              variant="bordered"
+              rows={3}
+            />
+          </ModalBody>
 
-          <Button color="primary" onPress={handleSubmit} isLoading={loading}>
-            {mode === "create" ? "Tạo mới" : "Cập nhật"}
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+          <ModalFooter className="gap-2">
+            <Button variant="light" onPress={onClose} disabled={loading}>
+              Hủy
+            </Button>
+
+            <Button color="primary" onPress={handleSubmit} isLoading={loading}>
+              {mode === "create" ? "Tạo mới" : "Cập nhật"}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <LookupModal
+        dataKey="content"
+        isOpen={showFormModal}
+        onClose={() => setShowFormModal(false)}
+        title="Chọn đơn lắp đặt"
+        api="/api/construction/installation-forms"
+        columns={[
+          { key: "stt", label: "STT" },
+          { key: "formNumber", label: "Số đơn" },
+          { key: "customerName", label: "Tên khách hàng" },
+          { key: "address", label: "Địa chỉ" },
+        ]}
+        mapData={(item, index, page) => ({
+          stt: (page - 1) * 10 + index + 1,
+          id: item.formCode,
+          formNumber: item.formNumber,
+          customerName: item.customerName,
+          address: item.address,
+        })}
+        onSelect={(item) => {
+          // Cập nhật dữ liệu khi chọn từ lookup
+          handleChange("formCode", item.id);
+          handleChange("formNumber", item.formNumber);
+          handleChange("address", item.address);
+          // Có thể cập nhật thêm jobContent từ dữ liệu lookup nếu có
+          // handleChange("jobContent", item.jobContent || "");
+          setShowFormModal(false);
+        }}
+      />
+    </>
   );
 };

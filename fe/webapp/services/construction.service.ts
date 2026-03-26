@@ -692,18 +692,12 @@ export const requestSignSettlement = (
 export const signSettlement = (
   accessToken: string,
   setlementId: string,
-  surveyStaff?: string,
-  ptHead?: string,
-  president?: string,
-  constructionPresident?: string,
+  url?: string,
 ) => {
   return axios.post(
     `${API_GATEWAY_URL}/construction/settlements/sign/${setlementId}`,
     {
-      president,
-      ptHead,
-      surveyStaff,
-      constructionPresident,
+      url,
     },
     {
       headers: {

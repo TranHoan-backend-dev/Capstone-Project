@@ -90,6 +90,7 @@ export const ResultsTable = ({
     field: "createdAt",
     direction: "desc",
   });
+  const router = useRouter();
   const [showFeeForm, setShowFeeForm] = useState(false);
   const [initialFeeData, setInitialFeeData] = useState<{
     formCode: string;
@@ -244,8 +245,6 @@ export const ResultsTable = ({
           connectionFee: item.connectionFee,
           note: item.note,
           status: item.status,
-            formCode: item.formCode,
-  formNumber: item.formNumber,
         }));
         setData(mapped);
       } catch (error: any) {
@@ -563,40 +562,34 @@ export const ResultsTable = ({
 
   const actionItems = useMemo(() => {
     return [
-      // Nút ký duyệt - chỉ hiển thị khi user có quyền ký
-      // ...(canSign
-      //   ? [
-      {
-        content: "Ký duyệt",
-        icon: ApprovalIcon,
-        className: "text-green-600 hover:bg-green-50",
-        onClick: (id: string) => {
-          const found = data.find((i) => i.id === id);
-          if (found) handleSignAction(found);
-        },
-      },
-      //   ]
-      // : []),
-      // Nút tạo yêu cầu ký
       {
         content: "Tạo yêu cầu ký",
-        icon: PencilSquareIcon,
-        className: "text-blue-600 hover:bg-blue-50",
+        icon: ApprovalIcon,
+        className: "text-green-600 hover:bg-green-50",
         onClick: (id: string) => {
           const found = data.find((i) => i.id === id);
           if (found) handleCreateSignatureRequest(found);
         },
       },
-      // {
-      //   content: "Quyết toán",
-      //   icon: CalculatorIcon,
-      //   className:
-      //     "text-blue-600 dark:text-primary hover:bg-blue-50 dark:hover:bg-blue-900/30",
-      //   onClick: (id: string) => {
-      //     // Gọi hàm fetch chi tiết thay vì onEdit
-      //     fetchSettlementDetail(id);
-      //   },
-      // },
+      {
+        content: "Ký duyệt",
+        icon: PencilSquareIcon,
+        className: "text-blue-600 hover:bg-blue-50",
+        onClick: (id: string) => {
+          const found = data.find((i) => i.id === id);
+          if (found) handleSignAction(found);
+        },
+      },
+      {
+        content: "Chỉnh sửa",
+        icon: EditIcon,
+        className:
+          "text-amber-500 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/30",
+        onClick: (id: string) => {
+          const found = data.find((i) => i.id === id);
+          if (found) onEdit(found);
+        },
+      },
       {
         content: "Tạo phiếu thu",
         icon: CalculatorIcon,
@@ -611,24 +604,6 @@ export const ResultsTable = ({
           }
         },
       },
-      {
-        content: "Chỉnh sửa",
-        icon: EditIcon,
-        className:
-          "text-amber-500 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/30",
-        onClick: (id: string) => {
-          const found = data.find((i) => i.id === id);
-          if (found) onEdit(found);
-        },
-      },
-      {
-        content: "Xem chi tiết",
-        icon: CalculatorIcon,
-        className: "text-blue-600 hover:bg-blue-50",
-        onClick: (id: string) => {
-          fetchSettlementDetail(id);
-        },
-      },
     ];
   }, [data, onEdit]);
 
@@ -640,31 +615,15 @@ export const ResultsTable = ({
             {item.stt}
           </span>
         );
-      // case "status":
-      //   const config = statusMap[item.status as keyof typeof statusMap] || {
-      //     label: item.status,
-      //     color: "default" as const,
-      //     bg: "bg-gray-100",
-      //   };
-
-      //   return (
-      //     <button
-      //       className="hover:opacity-80 transition-opacity focus:outline-none"
-      //       onClick={() => {
-      //         console.log("CLICK STATUS:", item.status);
-      //         onFilterStatus?.(item.status);
-      //       }}
-      //     >
-      //       <Chip
-      //         className={`${config.bg}`}
-      //         color={config.color}
-      //         size="sm"
-      //         variant="flat"
-      //       >
-      //         {config.label}
-      //       </Chip>
-      //     </button>
-      //   );
+      case "formNumber":
+        return (
+          <button
+            onClick={() => fetchSettlementDetail(item.id)}
+            className="text-blue-600 hover:text-blue-800 hover:underline font-medium cursor-pointer transition-colors"
+          >
+            {item.formNumber}
+          </button>
+        );
       case "actions":
         return (
           <div className="flex items-center justify-center gap-2">

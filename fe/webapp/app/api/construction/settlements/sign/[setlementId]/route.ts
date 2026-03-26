@@ -16,8 +16,7 @@ export async function POST(
 
     const body = await req.json();
     const { setlementId } = await params;
-    console.log("SettlementId from params:", setlementId);
-    const { president, ptHead, surveyStaff, constructionPresident } = body;
+    const { electronicSignUrl } = body;
 
     if (!setlementId) {
       return NextResponse.json(
@@ -29,10 +28,7 @@ export async function POST(
     const response = await signSettlement(
       accessToken,
       setlementId,
-      surveyStaff,
-      ptHead,
-      president,
-      constructionPresident,
+      electronicSignUrl,
     );
 
     return NextResponse.json(
