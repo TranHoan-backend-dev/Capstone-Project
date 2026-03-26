@@ -22,6 +22,7 @@ import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
 import { LookupModal } from "@/components/ui/modal/LookupModal";
 import { authFetch } from "@/utils/authFetch";
 import { CallToast } from "@/components/ui/CallToast";
+import { TotalCostDisplay } from "./total-cost-display ";
 
 interface TechnicalInfoCardProps {
   estimateData: EstimateResponse | null;
@@ -333,6 +334,24 @@ export const TechnicalInfoCard = ({
                 Đã chọn ảnh mới: {designImageFile.name}
               </div>
             )}
+
+            <CustomButton
+              onPress={() => handleSave(false)}
+              className="font-bold px-6 shadow-md shadow-primary/20"
+              color="primary"
+              startContent={<SaveDocumentCheckIcon className="w-4 h-4" />}
+              isDisabled={isUploading}
+            >
+              {isUploading ? "Đang lưu..." : "Lưu bản nháp"}
+            </CustomButton>
+            <CustomButton
+              onPress={() => handleSave(true)}
+              className="text-white font-bold px-6 shadow-md shadow-success/20"
+              color="success"
+              isDisabled={isUploading}
+            >
+              {isUploading ? "Đang lưu..." : "Hoàn thành"}
+            </CustomButton>
           </>
         </div>
       }
@@ -445,7 +464,7 @@ export const TechnicalInfoCard = ({
         </div>
       </div>
 
-      <div className="lg:col-span-2 pt-8 border-t border-divider space-y-4">
+      <div className="lg:col-span-3 pt-8 border-t border-divider space-y-4">
         <h3
           className={`text-sm font-bold ${TitleDarkColor} uppercase tracking-wider`}
         >
@@ -510,25 +529,8 @@ export const TechnicalInfoCard = ({
         </div>
 
         {/* Buttons Save */}
-        <div className="flex flex-wrap gap-3 pt-4">
-          <CustomButton
-            onPress={() => handleSave(false)}
-            className="font-bold px-6 shadow-md shadow-primary/20"
-            color="primary"
-            startContent={<SaveDocumentCheckIcon className="w-4 h-4" />}
-            isDisabled={isUploading}
-          >
-            {isUploading ? "Đang lưu..." : "Lưu bản nháp"}
-          </CustomButton>
-          <CustomButton
-            onPress={() => handleSave(true)}
-            className="text-white font-bold px-6 shadow-md shadow-success/20"
-            color="success"
-            isDisabled={isUploading}
-          >
-            {isUploading ? "Đang lưu..." : "Hoàn thành"}
-          </CustomButton>
-        </div>
+
+        <TotalCostDisplay estimateData={estimateData} materials={materials} />
       </div>
     </GenericSearchFilter>
   );
