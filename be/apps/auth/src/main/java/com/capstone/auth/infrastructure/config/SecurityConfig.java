@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,11 +34,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@Slf4j
 @Configuration
 @EnableWebSecurity
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequiredArgsConstructor
 @EnableMethodSecurity
+@RequiredArgsConstructor
 @Import(SharedSecurityConfig.class)
 public class SecurityConfig {
   @Component
@@ -48,10 +49,10 @@ public class SecurityConfig {
     private List<String> allowedOrigins;
   }
 
-  JwtAuthenticationConverter converter;
-  CorsProperties corsProperties;
-  JwtDecoder decoder;
-  final String[] PUBLIC_URLS = {
+  private final JwtAuthenticationConverter converter;
+  private final CorsProperties corsProperties;
+  private final JwtDecoder decoder;
+  private final String[] PUBLIC_URLS = {
     "/auth/**",
     "/login/oauth2/code/google",
     "/oauth2/authorization/google",
@@ -72,6 +73,7 @@ public class SecurityConfig {
         .anyRequest().authenticated())
       .exceptionHandling(ex -> ex
         .authenticationEntryPoint((request, response, authException) -> {
+          log.info(authException.getMessage());
           response.setContentType("application/json");
           response.setStatus(HttpStatus.UNAUTHORIZED.value());
           response.getWriter().write("{\"error\": \"Authentication required\"}");
@@ -87,25 +89,6 @@ public class SecurityConfig {
           .jwtAuthenticationConverter(converter))
       )
       .build();
-  }
-
-  @Bean
-  public OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService() {
-    var delegate = new DefaultOAuth2UserService();
-    return userRequest -> {
-      var user = delegate.loadUser(userRequest);
-      Set<GrantedAuthority> authorities = new HashSet<>();
-
-      String email = user.getAttribute("email");
-      if (email != null) {
-        authorities.add(new SimpleGrantedAuthority(!email.endsWith("@fpt.edu.vn") ? "ROLE_USER" : "ROLE_ADMIN"));
-      }
-
-      return new DefaultOAuth2User(
-        authorities,
-        user.getAttributes(),
-        "email");
-    };
   }
 
   UrlBasedCorsConfigurationSource corsConfigurationSource() {
