@@ -37,12 +37,33 @@ const MOCK_DATA = [
 ];
 
 export default function MeterRouteList() {
+  const [routes] = React.useState(MOCK_DATA);
+  // const [loading, setLoading] = React.useState(false);
+
+  /* Code mẫu gọi API từ backend (Để trong comment để dùng khi backend sẵn sàng)
+  React.useEffect(() => {
+    const fetchRoutes = async () => {
+      try {
+        setLoading(true);
+        // Giả sử lấy dữ liệu cho kỳ hiện tại
+        // const res = await roadmapService.getMyRoadmaps('12', '2025', '02');
+        // if (res && res.length > 0) setRoutes(res);
+      } catch (err) {
+        console.error('Failed to fetch routes:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    // fetchRoutes();
+  }, []);
+  */
+
   return (
     <>
       <Text style={styles.sectionTitle}>Danh sách tuyến ghi</Text>
 
       <ScrollView contentContainerStyle={styles.list}>
-        {MOCK_DATA.map(item => (
+        {routes.map(item => (
           <MeterRouteCard key={item.id} data={item} />
         ))}
       </ScrollView>

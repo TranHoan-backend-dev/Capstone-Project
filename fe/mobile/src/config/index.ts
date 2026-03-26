@@ -1,17 +1,5 @@
-import {
-  API_BASE_URL,
-  KEYCLOAK_URL,
-  KEYCLOAK_REALM,
-  KEYCLOAK_CLIENT_ID,
-  KEYCLOAK_CLIENT_SECRET
-} from '@env';
+import { API_BASE_URL } from '@env';
 
 export const CONFIG = {
   API_BASE_URL: API_BASE_URL || 'http://14.225.198.198:8000',
-  KEYCLOAK: {
-    URL: KEYCLOAK_URL || 'http://14.225.198.198:8080',
-    REALM: KEYCLOAK_REALM || 'cmsn',
-    CLIENT_ID: KEYCLOAK_CLIENT_ID || 'cmsn',
-    CLIENT_SECRET: KEYCLOAK_CLIENT_SECRET || '',
-  }
 };

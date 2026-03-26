@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, TouchableOpacity } from 'react-native';
-import { Surface, Text, IconButton, Divider, Chip } from 'react-native-paper';
+import { View } from 'react-native';
+import { Surface, Text, Divider, Chip } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import styles from './styles';
 import ProfileInfoRow from './ProfileInfoRow';
 
@@ -8,50 +9,59 @@ type Props = {
   data: {
     name: string;
     address: string;
-    customerId: string;
+    employeeId: string;
     status: string;
+    role: string;
+    phoneNumber: string;
   };
 };
+
+const ROLE_MAP: Record<string, string> = {
+  IT_STAFF: 'Nhân viên IT',
+  PLANNING_TECHNICAL_DEPARTMENT_HEAD: 'Trưởng phòng Kế hoạch - Kỹ thuật',
+  SURVEY_STAFF: 'Nhân viên khảo sát',
+  ORDER_RECEIVING_STAFF: 'Nhân viên tiếp nhận hồ sơ',
+  FINANCE_DEPARTMENT: 'Bộ phận Tài chính',
+  CONSTRUCTION_DEPARTMENT_HEAD: 'Trưởng phòng Thi công',
+  CONSTRUCTION_DEPARTMENT_STAFF: 'Nhân viên Thi công',
+  BUSINESS_DEPARTMENT_HEAD: 'Trưởng phòng Kinh doanh',
+  METER_INSPECTION_STAFF: 'Nhân viên Ghi chỉ số',
+  COMPANY_LEADERSHIP: 'Lãnh đạo Công ty',
+};
+
+const translateRole = (role: string) => ROLE_MAP[role] || role;
+
+const ChipIcon = () => (
+  <Icon name="circle" size={10} color="#10B981" style={styles.statusIconInner} />
+);
 
 export default function ProfileCard({ data }: Props) {
   return (
     <Surface style={styles.card} elevation={1}>
-      {/* Header */}
+      {/* Header Banner Section */}
       <View style={styles.cardHeader}>
-        <Text style={styles.cardTitle}>Thông Tin Nhân Viên</Text>
+        <View style={styles.headerInfo}>
+          <Text style={styles.cardTitle}>{data.name}</Text>
+          <Text style={styles.roleText}>{translateRole(data.role)}</Text>
+        </View>
+        <Chip
+          style={styles.statusChip}
+          textStyle={styles.statusText}
+          icon={ChipIcon}
+          mode="flat"
+        >
+          {data.status}
+        </Chip>
       </View>
 
-      <Divider />
+      <Divider style={styles.divider} />
 
       <View style={styles.profileContent}>
         <ProfileInfoRow
-          leftLabel="TÊN KHÁCH HÀNG"
-          leftValue={data.name}
-          rightLabel="ĐỊA CHỈ"
-          rightValue={data.address}
-        />
-
-        <ProfileInfoRow
-          leftLabel="MÃ KHÁCH HÀNG"
-          leftValue={data.customerId}
-          strongLeft
-          rightLabel="TRẠNG THÁI"
-          rightComponent={
-            <Chip
-              icon={({ size, color }) => (
-                <IconButton
-                  icon="circle"
-                  size={size}
-                  iconColor="#10B981"
-                  style={{ margin: 0 }}
-                />
-              )}
-              style={styles.statusChip}
-              textStyle={styles.statusText}
-            >
-              {data.status}
-            </Chip>
-          }
+          leftLabel="ĐỊA CHỈ"
+          leftValue={data.address}
+          rightLabel="SỐ ĐIỆN THOẠI"
+          rightValue={data.phoneNumber}
         />
       </View>
     </Surface>
