@@ -74,7 +74,8 @@ public class AuthorizationController {
   }
 
   @GetMapping("/employees/{id}/name")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF', " +
+    "'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP')")
   public ResponseEntity<WrapperApiResponse> getEmployeeNameById(
     @PathVariable @NotBlank @NotEmpty @NotNull String id
   ) {
