@@ -12,8 +12,8 @@ Accept: application/json
 grant_type = password &
 client_id = cmsn &
 client_secret = {{client_secret}} &
-username =  test &
-password = 12345678 &
+username =   test&
+password = 123456 &
 scope = openid
 
 > {%
@@ -27,15 +27,16 @@ Content-Type: application/json
 
 {
   "name": "Trần Văn A",
+  "address": "Landmark 72 ",
   "email": "tranvana@example.com",
   "phoneNumber": "0901234567",
-  "address": "abc xyz",
   "type": "FAMILY",
   "isBigCustomer": false,
   "usageTarget": "DOMESTIC",
   "numberOfHouseholds": 1,
   "householdRegistrationNumber": 123456,
   "protectEnvironmentFee": 1000,
+  "roadmapId":"R001",
   "isFree": false,
   "isSale": false,
   "m3Sale": "0",
@@ -54,11 +55,10 @@ Content-Type: application/json
   "passportCode": "P001",
   "connectionPoint": "CP001",
   "isActive": true,
-  "formNumber": "FORM-2024-0002",
-  "formCode": "b1eebc99-9c0b-4ef8-bb6d-6bb9bd380a12",
+  "formNumber": "FORM-2024-0001",
+  "formCode": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
   "waterPriceId": "00000000-0000-0000-0000-B00000000001",
-  "waterMeterId": "00000000-0000-0000-0000-A00000000001",
-  "roadmapId": "5e6f7081-4000-4eee-9fff-eeeeeeee0001"
+  "waterMeterId": "00000000-0000-0000-0000-A00000000001"
 }
 
 > {%
@@ -369,7 +369,7 @@ Content-Type: application/json
 %}
 
 ### TC12 - Update customer successfully (200)
-PUT {{customersUrl}}/{{customer_id}}
+PUT {{customersUrl}}/05ed5e38-f889-44b2-9f6f-8c3d82cdee68
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
@@ -448,7 +448,7 @@ Content-Type: application/json
 %}
 
 ### TC14 - Get customer by current ID (200)
-GET {{customersUrl}}/{{customer_id}}
+GET {{customersUrl}}/05ed5e38-f889-44b2-9f6f-8c3d82cdee68
 Authorization: Bearer {{access_token}}
 
 > {%
@@ -602,9 +602,9 @@ Content-Type: application/json
 }
 
 > {%
-client.test("Status is 400", function() {
-  client.assert(response.status === 400);
-});
+  client.test("Status is 400", function() {
+    client.assert(response.status === 400);
+  });
 %}
 
 ### TC21 - Update customer with invalid phone number
@@ -617,9 +617,9 @@ Content-Type: application/json
 }
 
 > {%
-client.test("Status is 400", function() {
-  client.assert(response.status === 400);
-});
+  client.test("Status is 400", function() {
+    client.assert(response.status === 400);
+  });
 %}
 
 ### TC22 - Update customer with very long name (boundary case)
@@ -632,9 +632,9 @@ Content-Type: application/json
 }
 
 > {%
-client.test("Status is 200 or 400 depending on length constraints", function() {
-  client.assert(response.status === 200 || response.status === 400);
-});
+  client.test("Status is 200 or 400 depending on length constraints", function() {
+    client.assert(response.status === 200 || response.status === 400);
+  });
 %}
 
 ### TC23 - Update customer with special characters and unicode
@@ -647,9 +647,9 @@ Content-Type: application/json
 }
 
 > {%
-client.test("Status is 200", function() {
-  client.assert(response.status === 200);
-});
+  client.test("Status is 200", function() {
+    client.assert(response.status === 200);
+  });
 %}
 
 ### TC24 - Update customer with SQL Injection attempt
@@ -663,9 +663,9 @@ Content-Type: application/json
 }
 
 > {%
-client.test("Status is 200 or 400 (if sanitized/blocked)", function() {
-  client.assert(response.status === 200 || response.status === 400);
-});
+  client.test("Status is 200 or 400 (if sanitized/blocked)", function() {
+    client.assert(response.status === 200 || response.status === 400);
+  });
 %}
 
 ### TC25 - Update customer with non-existent waterPriceId
@@ -678,9 +678,9 @@ Content-Type: application/json
 }
 
 > {%
-client.test("Status is 400", function() {
-  client.assert(response.status === 400);
-});
+  client.test("Status is 400", function() {
+    client.assert(response.status === 400);
+  });
 %}
 
 ### TC26 - Update customer with non-existent formCode/Number
@@ -694,7 +694,7 @@ Content-Type: application/json
 }
 
 > {%
-client.test("Status is 404 (NotExistingException)", function() {
-  client.assert(response.status === 404);
-});
+  client.test("Status is 404 (NotExistingException)", function() {
+    client.assert(response.status === 404);
+  });
 %}

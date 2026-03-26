@@ -1,22 +1,24 @@
-import { getWaterPriceById } from "@/services/device.service";
+import {
+  deleteCustomer,
+  getCustomerById,
+  updateCustomer,
+} from "@/services/customer.service";
 import { getAccessToken } from "@/utils/getAccessToken";
 import { NextRequest, NextResponse } from "next/server";
-import { deleteWaterPrice, updateWaterPrice } from "@/services/device.service";
-
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ customerId: string }> },
 ) {
   try {
     const accessToken = getAccessToken(req);
-    const { id } = await params;
+    const { customerId } = await params;
 
     if (!accessToken) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const response = await getWaterPriceById(accessToken, id);
+    const response = await getCustomerById(accessToken, customerId);
 
     return NextResponse.json(response.data);
   } catch (error: any) {
@@ -32,9 +34,9 @@ export async function GET(
   }
 }
 
-export async function PUT(
+export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ customerId: string }> },
 ) {
   try {
     const accessToken = getAccessToken(req);
@@ -43,26 +45,24 @@ export async function PUT(
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = await params;
-    const body = await req.json();
+    const { customerId } = await params;
 
-    const response = await updateWaterPrice(accessToken, id, body);
+    const response = await deleteCustomer(accessToken, customerId);
 
     return NextResponse.json(response.data, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(
       {
-        message:
-          error.response?.data?.message || "Cập nhật giá nước thất bại",
+        message: error.response?.data?.message || "Xóa khách hàng thất bại",
       },
       { status: error.response?.status || 500 },
     );
   }
 }
 
-export async function DELETE(
+export async function PUT(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ customerId: string }> },
 ) {
   try {
     const accessToken = getAccessToken(req);
@@ -70,18 +70,15 @@ export async function DELETE(
     if (!accessToken) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
+    const { customerId } = await params;
+    const body = await req.json();
+    const response = await updateCustomer(accessToken, body, customerId);
 
-    const { id } = await params;
-
-    const response = await deleteWaterPrice(accessToken, id);
-
-    return NextResponse.json(response.data, { status: 200 });
-  } catch (error: any) {
+    return NextResponse.json(response.data, { status: 201 });
+  } catch (error) {
     return NextResponse.json(
-      {
-        message: error.response?.data?.message || "Xóa giá nước thất bại",
-      },
-      { status: error.response?.status || 500 },
+      { message: "Internal server error" },
+      { status: 500 },
     );
   }
 }

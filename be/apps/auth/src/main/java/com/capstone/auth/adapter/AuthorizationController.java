@@ -37,7 +37,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/authorization")
 @RequiredArgsConstructor
-@PreAuthorize("hasAuthority('IT_STAFF')")
 @Tag(name = "Authorization", description = "Các endpoints để quản lý ủy quyền và truy xuất thông tin nhân viên. Được xử lý bởi tài khoản có role là IT_STAFF")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthorizationController {
@@ -61,6 +60,7 @@ public class AuthorizationController {
     @ApiResponse(responseCode = "403", description = "Bị cấm - Người dùng không có vai trò 'IT_STAFF' bắt buộc", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "500", description = "Lỗi máy chủ nội bộ - Đã xảy ra lỗi không mong muốn", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
+  @PreAuthorize("hasAuthority('IT_STAFF')")
   @GetMapping("/employees")
   public ResponseEntity<WrapperApiResponse> getAllEmployees(
     @ParameterObject Pageable pageable,
@@ -74,7 +74,8 @@ public class AuthorizationController {
   }
 
   @GetMapping("/employees/{id}/name")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF', " +
+    "'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP')")
   public ResponseEntity<WrapperApiResponse> getEmployeeNameById(
     @PathVariable @NotBlank @NotEmpty @NotNull String id
   ) {
@@ -164,6 +165,7 @@ public class AuthorizationController {
 
   @Operation(description = "Lay ra toan bo nhan vien khao sat")
   @GetMapping("/employee/survey-staff")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD')")
   public ResponseEntity<?> getAllSurveyStaffs() {
     log.info("Get all survey staffs");
     var response = userService.getAllSurveyStaffs();
@@ -185,6 +187,7 @@ public class AuthorizationController {
     @ApiResponse(responseCode = "404", description = "Không tìm thấy nhân viên", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "500", description = "Lỗi máy chủ nội bộ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
+  @PreAuthorize("hasAuthority('IT_STAFF')")
   @GetMapping("/employees/{empId}/pages")
   public ResponseEntity<WrapperApiResponse> getBusinessPageNamesOfEmployees(
     @Parameter(description = "ID của nhân viên", required = true)
@@ -213,6 +216,7 @@ public class AuthorizationController {
     @ApiResponse(responseCode = "403", description = "Bị cấm - Người dùng không có vai trò 'IT_STAFF' bắt buộc", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "500", description = "Lỗi máy chủ nội bộ - Đã xảy ra lỗi không mong muốn trong quá trình cập nhật", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
+  @PreAuthorize("hasAuthority('IT_STAFF')")
   @PutMapping("employees/pages")
   public ResponseEntity<WrapperApiResponse> updateBusinessPageNamesOfEmployee(
     @Parameter(description = "Danh sách các yêu cầu cập nhật chứa ID nhân viên và bộ ID trang được ủy quyền mới của họ.", required = true)

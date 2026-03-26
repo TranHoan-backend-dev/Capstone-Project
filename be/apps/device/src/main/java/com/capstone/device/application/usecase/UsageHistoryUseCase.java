@@ -52,4 +52,8 @@ public class UsageHistoryUseCase {
   public void confirmMeterReading(String reviewId, java.math.BigDecimal finalIndex, String status) {
     usageHistoryService.confirmMeterReading(reviewId, finalIndex, status);
   }
+
+  public UsageResponse getUsageHistoryByCustomerId(String customerId) {
+    return usageHistoryService.getUsageHistoryByCustomerId(customerId);
+  }
 }

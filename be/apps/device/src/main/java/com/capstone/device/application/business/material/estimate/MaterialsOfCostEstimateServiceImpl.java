@@ -37,13 +37,14 @@ public class MaterialsOfCostEstimateServiceImpl implements MaterialsOfCostEstima
   @Override
   @Transactional(rollbackFor = Exception.class)
   public void update(@NonNull List<BaseMaterial> materials, String estimateId) {
+    log.info("Updating materials of cost estimate " + estimateId);
     repo.deleteById_CostEstId(estimateId);
     materials.forEach(material -> {
       var materialsOfCostEstimate = MaterialsOfCostEstimate.builder()
         .id(new MaterialsOfCostEstimateId(material.getMaterialCode(), estimateId))
         .material(materialRepository.findById(material.getMaterialCode()).orElseThrow(() -> new IllegalArgumentException("Khong tim thay vat tu")))
-        .totalLaborCost(material.getLaborPrice())
-        .totalMaterialCost(material.getMaterialCost())
+        .totalLaborCost(material.getTotalLaborPrice())
+        .totalMaterialCost(material.getTotalMaterialPrice())
         .note(material.getNote())
         .mass(Float.parseFloat(material.getMass()))
         .build();
