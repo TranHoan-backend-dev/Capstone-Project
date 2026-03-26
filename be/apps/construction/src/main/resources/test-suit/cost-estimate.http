@@ -59,128 +59,8 @@ GET {{uri}}?from=2023-01-01
 Authorization: Bearer {{access_token}}
 Accept: application/json
 
-### Filter by customerName
-GET {{uri}}?customerName=Trần Văn A
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### Filter by address
-GET {{uri}}?address=123 Đường ABC
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### Filter by note
-GET {{uri}}?note=lắp nhanh
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### Filter by contractFee
-GET {{uri}}?contractFee=2000000
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### Filter by surveyFee
-GET {{uri}}?surveyFee=100000
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### Filter by surveyEffort
-GET {{uri}}?surveyEffort=1
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### Filter by installationFee
-GET {{uri}}?installationFee=1500000
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### Filter by laborCoefficient
-GET {{uri}}?laborCoefficient=20
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### Filter by generalCostCoefficient
-GET {{uri}}?generalCostCoefficient=5
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### Filter by precalculatedTaxCoefficient
-GET {{uri}}?precalculatedTaxCoefficient=10
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### Filter by constructionMachineryCoefficient
-GET {{uri}}?constructionMachineryCoefficient=0
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### Filter by vatCoefficient
-GET {{uri}}?vatCoefficient=10
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### Filter by designCoefficient
-GET {{uri}}?designCoefficient=2
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### Filter by designFee
-GET {{uri}}?designFee=500000
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### Filter by registrationAt
-GET {{uri}}?registrationAt=27-10-2023
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### Filter by createBy
-GET {{uri}}?createBy=6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### Filter by waterMeterSerial
-GET {{uri}}?waterMeterSerial=SN12345678
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### Filter by overallWaterMeterId
-GET {{uri}}?overallWaterMeterId=METER-001
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### Filter by designImageUrl
-GET {{uri}}?designImageUrl=http://storage.com/design.png
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### Combined filter - customerName + address
-GET {{uri}}?customerName=Trần Văn A&address=123 Đường ABC
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### Combined filter - Multiple fields
-GET {{uri}}?customerName=Trần Văn A&contractFee=2000000&surveyFee=100000&registrationAt=27-10-2023
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### Combined filter - With pagination and sorting
-GET {{uri}}?customerName=Trần Văn A&page=0&size=5&sort=contractFee,desc
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### Filter with invalid registrationAt format (Should return 400)
-GET {{uri}}?registrationAt=2023-10-27
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### Filter with empty customerName
-GET {{uri}}?customerName=
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### Filter with non-existent customerName
-GET {{uri}}?customerName=NonexistentCustomer
+### Get estimate by ID
+GET {{uri}}/{{estimate_id}}
 Authorization: Bearer {{access_token}}
 Accept: application/json
 
@@ -227,31 +107,20 @@ Accept: application/json
 }
 
 ###
-@estimate_id = 5513e1e5-a627-440a-be72-a84aa1315fc6
+@estimate_id = 65eace3c-fcb5-45e5-8a4b-cfaed3164bc0
 
-### U - Update estimate
+### U - Update estimate (Happy Case - Finish)
 PUT {{uri}}/{{estimate_id}}
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 Accept: application/json
 
 {
- "customerName": "Trần Văn A Updated",
- "address": "456 Đường XYZ, Phường X, Quận Y",
- "note": "Cập nhật ghi chú",
- "contractFee": 2500000,
- "surveyFee": 120000,
- "surveyEffort": 2,
- "installationFee": 1800000,
- "laborCoefficient": 25,
- "generalCostCoefficient": 6,
- "precalculatedTaxCoefficient": 10,
- "constructionMachineryCoefficient": 5,
- "vatCoefficient": 10,
- "designCoefficient": 3,
- "designFee": 600000,
- "waterMeterSerial": "SN12345678",
- "overallWaterMeterId": "METER-001"
+  "generalInformation": {
+    "note": "Lưu bản nháp"
+  },
+  "material": [],
+  "isFinished": false
 }
 
 ### U - Update estimate (Not found)
@@ -261,25 +130,23 @@ Authorization: Bearer {{access_token}}
 Accept: application/json
 
 {
- "customerName": "Test",
- "address": "Test",
- "status": "PROCESSING",
- "waterMeterSerial": "SN123",
- "overallWaterMeterId": "METER-001"
+  "generalInformation": {
+    "customerName": "Test"
+  },
+  "material": [],
+  "isFinished": false
 }
 
-### U - Blank params
+### U - Validation failure (missing isFinished)
 PUT {{uri}}/{{estimate_id}}
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 Accept: application/json
 
 {
- "customerName": "",
- "address": "",
- "status": "",
- "waterMeterSerial": "",
- "overallWaterMeterId": ""
+  "generalInformation": {
+    "customerName": "Trần Văn A"
+  }
 }
 
 ### P - Approve estimate
