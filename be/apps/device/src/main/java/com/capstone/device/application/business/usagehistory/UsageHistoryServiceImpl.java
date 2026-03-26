@@ -152,18 +152,18 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
 
   private WaterPrice resolveWaterPrice(String waterPriceId) {
     if (waterPriceId == null || waterPriceId.isBlank()) {
-      throw new NotExistingException("Khách hàng chưa được gán bảng giá nước");
+      throw new NotExistingException("Không tìm thấy bảng giá nước");
     }
 
     return waterPriceRepository.findById(waterPriceId)
         .orElseThrow(() -> new NotExistingException("Không tìm thấy bảng giá nước"));
   }
 
-  private UsageResponse mapToResponse(@NonNull UsageHistory entity, String customerId, String customerName, @NonNull WaterPrice waterPrice) {
-    log.info("Mapping usage response for price ID: {}", waterPrice.getPriceId());
-    var priceTypeResponses = waterPrice.getPriceTypes().stream()
+  private UsageResponse mapToResponse(@NonNull UsageHistory entity, String customerId, String customerName, WaterPrice waterPrice) {
+    log.info("Mapping usage response for price ID: {}", waterPrice != null ? waterPrice.getPriceId() : "null");
+    List<PriceTypeResponse> priceTypeResponses = waterPrice != null && waterPrice.getPriceTypes() != null ? waterPrice.getPriceTypes().stream()
         .map(pt -> new PriceTypeResponse(pt.getPriceTypeId(), pt.getArea(), pt.getPrice()))
-        .toList();
+        .toList() : List.of();
 
     List<Usage> usagesList = new ArrayList<>();
     if (entity.getUsages() != null && !entity.getUsages().isEmpty()) {
@@ -181,7 +181,7 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
         }
         
         BigDecimal calculatedPrice = BigDecimal.ZERO;
-        if (mass.compareTo(BigDecimal.ZERO) > 0 && waterChargeCalculator != null) {
+        if (mass.compareTo(BigDecimal.ZERO) > 0 && waterChargeCalculator != null && waterPrice != null) {
             try {
                 calculatedPrice = waterChargeCalculator.calculateProgressiveCharge(mass, waterPrice).totalAmount();
             } catch (Exception e) {
