@@ -58,6 +58,7 @@ export default function CaptureWaterMeterScreen({ route }: any) {
     } else if (result.assets && result.assets.length > 0) {
       const uri = result.assets[0].uri;
       if (uri) {
+        console.log('[CaptrureWaterMeterScreen.tsx] photo uri: ' + uri)
         setPhotoUri(uri);
         checkImageQuality();
       }

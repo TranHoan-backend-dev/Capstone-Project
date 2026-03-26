@@ -83,6 +83,7 @@ export default StyleSheet.create({
   card: {
     marginBottom: 12,
     borderRadius: 8,
+    backgroundColor: '#FFFFFF', // Đảm bảo card có nền trắng
   },
 
   headerRow: {
