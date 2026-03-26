@@ -27,7 +27,6 @@ export interface MaterialEstimateItem {
   unit: string;
 
   quantity: number;
-  reductionFactor: number;
 
   materialPrice: number;
   laborPrice: number;
@@ -106,7 +105,6 @@ export type UpdateEstimatePayload = {
     jobContent: string;
     note?: string;
     unit: string;
-    reductionCoefficient: string;
     mass: string;
     materialCost: string;
     laborPrice: string;
@@ -148,7 +146,6 @@ export interface MaterialItem {
   jobContent: string;
   note: string;
   unit: string;
-  reductionCoefficient: string;
   mass: string;
   materialCost: string;
   laborPrice: string;
@@ -168,7 +165,6 @@ export interface MaterialEstimateItem {
   description: string;
   unit: string;
   quantity: number;
-  reductionFactor: number;
   materialPrice: number;
   laborPrice: number;
   materialTotal: number;
@@ -204,7 +200,6 @@ export interface UpdateEstimateRequest {
     jobContent: string;
     note?: string;
     unit: string;
-    reductionCoefficient: string;
     mass: string;
     materialCost: string;
     laborPrice: string;

@@ -197,7 +197,6 @@ export const TechnicalInfoCard = ({
         jobContent: m.description,
         note: m.note,
         unit: m.unit,
-        reductionCoefficient: String(safeNumber(m.reductionFactor)),
         mass: String(safeNumber(m.quantity)),
         materialCost: String(safeNumber(m.materialPrice)),
         laborPrice: String(safeNumber(m.laborPrice)),

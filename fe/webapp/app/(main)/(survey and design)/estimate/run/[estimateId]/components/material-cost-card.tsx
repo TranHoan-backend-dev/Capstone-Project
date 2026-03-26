@@ -48,7 +48,6 @@ export const MaterialCostCard = ({
           description: item.jobContent,
           unit: item.unit,
           quantity: parseFloat(item.mass) || 0,
-          reductionFactor: parseFloat(item.reductionCoefficient) || 1,
           materialPrice: parseFloat(item.materialCost) || 0,
           laborPrice: parseFloat(item.laborPrice) || 0,
           materialTotal: parseFloat(item.totalMaterialPrice) || 0,
@@ -69,7 +68,6 @@ export const MaterialCostCard = ({
         jobContent: m.description,
         note: m.note,
         unit: m.unit,
-        reductionCoefficient: m.reductionFactor.toString(),
         mass: m.quantity.toString(),
         materialCost: m.materialPrice.toString(),
         laborPrice: m.laborPrice.toString(),
@@ -132,9 +130,7 @@ export const MaterialCostCard = ({
 
         const updated = { ...item, [field]: value };
 
-        // Recalculate totals
-        updated.materialTotal =
-          updated.quantity * updated.materialPrice * updated.reductionFactor;
+        updated.materialTotal = updated.quantity * updated.materialPrice;
         updated.laborTotal = updated.quantity * updated.laborPrice;
 
         return updated;
@@ -156,18 +152,6 @@ export const MaterialCostCard = ({
             value={String(item.quantity || "")}
             onChange={(e) =>
               handleChange(item.id, "quantity", Number(e.target.value))
-            }
-            size="sm"
-            type="number"
-            step="0.01"
-          />
-        );
-      case "reductionFactor":
-        return (
-          <Input
-            value={String(item.reductionFactor || "")}
-            onChange={(e) =>
-              handleChange(item.id, "reductionFactor", Number(e.target.value))
             }
             size="sm"
             type="number"
@@ -249,7 +233,6 @@ export const MaterialCostCard = ({
         description: item.name,
         unit: item.unit,
         quantity: 1,
-        reductionFactor: 1,
         materialPrice: item.price,
         laborPrice: 0,
         materialTotal: item.price,
