@@ -3,6 +3,7 @@ package com.capstone.di;
 import com.capstone.data.repository.NotificationRepositoryImpl;
 import com.capstone.data.source.remote.NotificationApi;
 import com.capstone.domain.repository.NotificationRepository;
+
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;

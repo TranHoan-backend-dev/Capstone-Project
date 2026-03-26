@@ -1,9 +1,12 @@
 package com.capstone.ui.views;
 
 import android.os.Bundle;
+
 import androidx.activity.ComponentActivity;
 import androidx.lifecycle.ViewModelProvider;
+
 import com.capstone.ui.viewmodel.NotificationViewModel;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 /**
@@ -19,13 +22,13 @@ public class NotificationActivity extends ComponentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         // Khởi tạo ViewModel thông qua Hilt/ViewModelProvider
         viewModel = new ViewModelProvider(this).get(NotificationViewModel.class);
-        
+
         // Bắt đầu tải danh sách thông báo (trang đầu tiên)
         viewModel.fetchNotifications(currentPage, 20);
-        
+
         observeViewModel();
     }
 

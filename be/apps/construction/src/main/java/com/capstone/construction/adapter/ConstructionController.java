@@ -90,4 +90,14 @@ public class ConstructionController {
     constructionRequestService.updatePendingRequest(id, empId);
     return Utils.returnOkResponse("Cập nhật đơn chờ thi công thành công", null);
   }
+
+  @PostMapping("/review/{id}/{status}")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF')")
+  public ResponseEntity<WrapperApiResponse> requirePreviewConstruction(
+    @PathVariable String id, // id of construction request
+    @PathVariable Boolean status
+  ) {
+    useCase.approveTheConstruction(id, status);
+    return Utils.returnOkResponse("", null);
+  }
 }

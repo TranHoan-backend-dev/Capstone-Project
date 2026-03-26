@@ -4,8 +4,8 @@ import com.capstone.common.utils.Result;
 import com.capstone.domain.model.MeterReading;
 import com.capstone.domain.repository.MeterRepository;
 
-import java.io.File;
 import java.util.List;
+
 import javax.inject.Inject;
 
 /**
@@ -25,19 +25,19 @@ public class VerifyMeterReadingUseCase {
      */
     public Result<MeterReading> processCapture() {
         try {
-            File file = meterRepository.captureMeterImage();
+            var file = meterRepository.captureMeterImage();
             if (file == null) {
                 return Result.failure(new Exception("Capture failed"));
             }
-            
-            boolean isValid = meterRepository.validateImageQuality(file);
+
+            var isValid = meterRepository.validateImageQuality(file);
             if (!isValid) {
                 return Result.failure(new Exception("Ảnh bị mờ hoặc không đủ tiêu chuẩn. Vui lòng chụp lại."));
             }
 
-            MeterReading reading = new MeterReading(file.getAbsolutePath(), MeterReading.Status.PENDING);
+            var reading = new MeterReading(file.getAbsolutePath(), MeterReading.Status.PENDING);
             meterRepository.submitToAiProcessing(reading);
-            
+
             return Result.success(reading);
         } catch (Exception e) {
             return Result.failure(e);
@@ -60,26 +60,26 @@ public class VerifyMeterReadingUseCase {
      * Xác nhận hoặc hiệu chỉnh chỉ số nước sau khi AI đã nhận diện.
      */
     public boolean finalizeReading(
-        MeterReading reading,
-        boolean isApproved,
-        Double manualValue,
-        String manualSerial
+            MeterReading reading,
+            boolean isApproved,
+            Double manualValue,
+            String manualSerial
     ) {
         MeterReading finalReading;
-        
+
         if (isApproved && reading.getAiResult() != null) {
             // Duyệt kết quả của AI
             finalReading = reading.copy(
-                reading.getAiResult().getSerialNumber(),
-                reading.getAiResult().getReadingValue(),
-                MeterReading.Status.COMPLETED
+                    reading.getAiResult().getSerialNumber(),
+                    reading.getAiResult().getReadingValue(),
+                    MeterReading.Status.COMPLETED
             );
         } else {
             // Nhập lại thủ công nếu AI sai hoặc không duyệt
             finalReading = reading.copy(
-                manualSerial != null ? manualSerial : reading.getSerialNumber(),
-                manualValue != null ? manualValue : reading.getReadingValue(),
-                MeterReading.Status.VALIDATED
+                    manualSerial != null ? manualSerial : reading.getSerialNumber(),
+                    manualValue != null ? manualValue : reading.getReadingValue(),
+                    MeterReading.Status.VALIDATED
             );
         }
 

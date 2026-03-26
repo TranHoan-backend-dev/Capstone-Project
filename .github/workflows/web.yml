@@ -5,10 +5,12 @@ on:
     branches: ["main", "dev", "feat/**", "refactor/**", "style/**", "fix/**"]
     paths:
       - fe/webapp/**
+      - .github/workflows/web.yml
   pull_request:
     branches: ["dev"]
     paths:
       - fe/webapp/**
+      - .github/workflows/web.yml
 
 permissions:
   contents: read

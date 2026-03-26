@@ -1,33 +1,29 @@
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
-import { keycloakLogin } from "@/services/keycloak.service";
 import { signinService } from "@/services/auth.service";
 import { IS_PRODUCTION } from "@/constants/auth.constants";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { identifier, password } = body;
+    const { username, password } = body;
 
-    if (!identifier || !password) {
+    if (!username || !password) {
       return NextResponse.json(
         { message: "Thiếu tên đăng nhập hoặc mật khẩu" },
         { status: 400 },
       );
     }
 
-    const tokenRes = await keycloakLogin({ identifier, password });
-
-    if (!tokenRes?.access_token) {
-      throw new Error("NO_TOKEN");
-    }
-
     let backendData;
     try {
-      const backendRes = await signinService(tokenRes.access_token);
-      backendData = backendRes.data?.data;
-    } catch (backendError: any) {
+      const backendRes = await signinService(username, password);
 
+      backendData = backendRes.data;
+      if (!backendData) {
+        throw new Error("No data from backend");
+      }
+    } catch (backendError: any) {
       if (axios.isAxiosError(backendError)) {
         const status = backendError.response?.status;
         const message = backendError.response?.data?.message;
@@ -45,18 +41,19 @@ export async function POST(req: NextRequest) {
             { status: 400 },
           );
         }
+
+        if (status === 401) {
+          return NextResponse.json(
+            { message: "Sai tên đăng nhập hoặc mật khẩu" },
+            { status: 401 },
+          );
+        }
       }
 
       throw backendError;
     }
-
-    const res = NextResponse.json(
-      {
-        message: "Đăng nhập thành công",
-        data: backendData,
-      },
-      { status: 200 },
-    );
+    const tokenResponse = backendData.data?.token;
+    const res = NextResponse.json(backendData.data);
 
     const cookieOptions = {
       httpOnly: true,
@@ -65,39 +62,44 @@ export async function POST(req: NextRequest) {
       path: "/",
     };
 
-    res.cookies.set(
-      IS_PRODUCTION ? "__Secure-access_token" : "access_token",
-      tokenRes.access_token,
-      {
-        ...cookieOptions,
-        maxAge: tokenRes.expires_in
-      },
-    );
+    if (tokenResponse?.access_token) {
+      res.cookies.set(
+        IS_PRODUCTION ? "__Secure-access_token" : "access_token",
+        tokenResponse.access_token,
+        {
+          ...cookieOptions,
+          maxAge: tokenResponse.expires_in || 300,
+        },
+      );
+    }
 
-    res.cookies.set(
-      IS_PRODUCTION ? "__Secure-refresh_token" : "refresh_token",
-      tokenRes.refresh_token,
-      {
-        ...cookieOptions,
-      },
-    );
+    if (tokenResponse?.refresh_token) {
+      res.cookies.set(
+        IS_PRODUCTION ? "__Secure-refresh_token" : "refresh_token",
+        tokenResponse.refresh_token,
+        {
+          ...cookieOptions,
+        },
+      );
+    }
 
     return res;
   } catch (error: any) {
     let message = "Đăng nhập thất bại";
     let status = 401;
-    console.log(error);
+    console.error("Login error:", error);
 
     if (axios.isAxiosError(error)) {
-      const kcError = error.response?.data?.error;
-
-      if (kcError === "invalid_grant") {
+      if (error.response?.status === 401) {
         message = "Sai tên đăng nhập hoặc mật khẩu";
-      } else if (error.response?.status === 401) {
-        message = "Sai tên đăng nhập hoặc mật khẩu";
-      } else {
-        message = "Không thể kết nối hệ thống xác thực";
+      } else if (error.response?.status === 500) {
+        message = "Lỗi hệ thống, vui lòng thử lại sau";
         status = 500;
+      } else {
+        message =
+          error.response?.data?.message ||
+          "Không thể kết nối hệ thống xác thực";
+        status = error.response?.status || 500;
       }
     }
 

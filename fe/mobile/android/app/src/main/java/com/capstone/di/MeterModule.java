@@ -1,13 +1,12 @@
 package com.capstone.di;
 
-import android.content.Context;
 import com.capstone.data.repository.MeterRepositoryImpl;
 import com.capstone.domain.repository.MeterRepository;
 import com.capstone.infrastructure.meter.MeterCaptureManager;
+
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
-import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
 
 import javax.inject.Singleton;
@@ -21,8 +20,8 @@ public class MeterModule {
 
     @Provides
     @Singleton
-    public MeterCaptureManager provideMeterCaptureManager(@ApplicationContext Context context) {
-        return new MeterCaptureManager(context);
+    public MeterCaptureManager provideMeterCaptureManager() {
+        return new MeterCaptureManager();
     }
 
     @Provides

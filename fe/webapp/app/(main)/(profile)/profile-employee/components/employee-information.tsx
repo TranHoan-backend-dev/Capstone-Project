@@ -10,6 +10,8 @@ import CustomSelect from "@/components/ui/custom/CustomSelect";
 import { ROLE_META } from "@/config/role.config";
 import { Role } from "@/constants/roles";
 import { CallToast } from "@/components/ui/CallToast";
+import { formatDateProfile } from "@/utils/format";
+import { validateProfile } from "@/utils/profileValidation";
 
 interface EmployeeProfileProps {
   data: EmployeeProfileData;
@@ -29,23 +31,44 @@ const EmployeeProfile = ({ data }: EmployeeProfileProps) => {
         : "Chưa cập nhật";
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  const displayValue = (value?: string | null) => {
+    return value && value.trim() !== "" ? value : "Không xác định";
+  };
+
   const handleChange = (key: keyof EmployeeProfileData, value: string) => {
     setFormData({ ...formData, [key]: value });
   };
 
   const handleSave = async () => {
     try {
+      if (!formData.birthday || formData.birthday.trim() === "") {
+        CallToast({
+          title: "Lỗi",
+          message: "Vui lòng nhập ngày sinh",
+          color: "danger",
+        });
+        return;
+      }
+
       const payload = {
-        fullname: formData.fullname,
+        fullName: formData.fullname,
         phoneNumber: formData.phoneNumber,
-        avatarUrl: formData.avatarUrl,
-        gender: formData.gender,
-        birthday: formData.birthday,
+        gender: formData.gender === "true",
+        birthdate: formatDateProfile(formData.birthday),
         address: formData.address,
       };
 
+      const error = validateProfile(payload);
+      if (error) {
+        CallToast({
+          title: "Lỗi",
+          message: error,
+          color: "danger",
+        });
+        return;
+      }
       const res = await fetch("/api/auth/me", {
-        method: "POST",
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
@@ -103,7 +126,7 @@ const EmployeeProfile = ({ data }: EmployeeProfileProps) => {
       formDataUpload.append("avatar", file);
 
       const res = await fetch("/api/auth/avatar", {
-        method: "PUT",
+        method: "PATCH",
         body: formDataUpload,
       });
 
@@ -172,7 +195,7 @@ const EmployeeProfile = ({ data }: EmployeeProfileProps) => {
               <div>
                 <CustomField
                   label="Họ và tên"
-                  value={formData.fullname}
+                  value={displayValue(formData.fullname)}
                   isEditing={isEditing}
                   onChange={(v) => handleChange("fullname", v)}
                 />
@@ -189,27 +212,27 @@ const EmployeeProfile = ({ data }: EmployeeProfileProps) => {
 
               <CustomField
                 label="Chức vụ"
-                value={roleLabel}
+                value={displayValue(roleLabel)}
                 isEditing={false}
                 onChange={(v) => handleChange("role", v)}
               />
 
               <CustomField
                 label="Email"
-                value={formData.email}
+                value={displayValue(formData.email)}
                 isEditing={false}
               />
 
               <CustomField
                 label="Số điện thoại"
-                value={formData.phoneNumber}
+                value={displayValue(formData.phoneNumber)}
                 isEditing={isEditing}
                 onChange={(v) => handleChange("phoneNumber", v)}
               />
 
               <CustomField
                 label="Ngày sinh"
-                value={formData.birthday}
+                value={displayValue(formData.birthday)}
                 type="date"
                 isEditing={isEditing}
                 onChange={(v) => handleChange("birthday", v)}
@@ -217,7 +240,7 @@ const EmployeeProfile = ({ data }: EmployeeProfileProps) => {
 
               <CustomField
                 label="Địa chỉ"
-                value={formData.address}
+                value={displayValue(formData.address)}
                 isEditing={isEditing}
                 onChange={(v) => handleChange("address", v)}
               />

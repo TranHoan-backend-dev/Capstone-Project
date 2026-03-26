@@ -12,6 +12,7 @@ import org.jspecify.annotations.NonNull;
 import com.capstone.customer.utils.Message;
 
 import java.util.Objects;
+import java.util.Stack;
 import java.util.function.Consumer;
 
 import java.time.LocalDateTime;
@@ -33,6 +34,10 @@ public class Customer {
 
   @Column(nullable = false)
   String email;
+
+  @Column(nullable = false)
+  @Setter
+  String address;
 
   @Column(nullable = false)
   String phoneNumber;
@@ -116,10 +121,27 @@ public class Customer {
   @Column(nullable = false)
   String waterMeterId;
 
+  @Setter
+  @Column(nullable = false)
+  String roadmapId;
+
+  @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+  @ToString.Exclude
+  Stack<Bill> bill;
+
   @PrePersist
   void onCreate() {
     this.createdAt = LocalDateTime.now();
     this.updatedAt = this.createdAt;
+    this.bill = new Stack<>();
+  }
+
+  public void addNewBill(Bill bill) {
+    this.bill.push(bill);
+  }
+
+  public Bill getTheClosestBill() {
+    return bill.peek();
   }
 
   @PreUpdate
@@ -470,6 +492,11 @@ public class Customer {
 
     public CustomerBuilder formCode(String value) {
       customer.setFormCode(value);
+      return this;
+    }
+
+    public CustomerBuilder address(String value) {
+      customer.setAddress(value);
       return this;
     }
 

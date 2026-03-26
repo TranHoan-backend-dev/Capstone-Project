@@ -14,9 +14,9 @@ interface MeterInputStatusCardProps {
 const STATUS_OPTIONS = [
   { label: 'Bình thường', value: 'binh-thuong' },
   { label: 'Vòng', value: 'vong' },
-  { label: 'Thay đổi độ lệch chỉ số', value: 'thay-doi-do-lech' },
+  { label: 'Thay đồng hồ', value: 'thay-dong-ho' },
+  { label: 'Không lưu được chỉ số', value: 'khong-luu-chi-so' },
   { label: 'Cất nước', value: 'cat-nuoc' },
-  { label: 'Bình thường', value: 'binh-thuong-2' },
 ];
 
 export default function MeterInputStatusCard({
@@ -36,16 +36,21 @@ export default function MeterInputStatusCard({
       <Card style={styles.card}>
         <Card.Content>
           <View style={styles.threeMonthsButtonRow}>
-            <Text style={styles.infoLabel}>Trạng thái đồng hồ</Text>
+            <View style={styles.sectionHeader}>
+              <Icon name="gauge" size={20} color="#1E88E5" style={styles.sectionIcon} />
+              <Text style={styles.cardTitle}>Trạng thái đồng hồ</Text>
+            </View>
             <Button
               mode="outlined"
               onPress={() => setShowThreeMonthsModal(true)}
               style={styles.threeMonthsButton}
               labelStyle={styles.threeMonthsButtonLabel}
             >
-              <Icon name="information" size={16} color="#1E88E5" /> 3 tháng liền kề
+              <Icon name="calendar-clock" size={16} color="#1E88E5" /> 3 tháng
             </Button>
           </View>
+
+
           <Divider style={styles.divider} />
 
           <View style={styles.dropdownContainer}>

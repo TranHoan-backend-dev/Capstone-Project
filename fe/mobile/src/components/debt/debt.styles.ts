@@ -3,47 +3,51 @@ import { StyleSheet } from 'react-native';
 export default StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#E0F2F7',
+    backgroundColor: '#fff',
   },
   header: {
-    backgroundColor: '#1E88E5',
+    backgroundColor: '#fff',
+    elevation: 0,
+    borderBottomWidth: 0,
   },
   headerTitle: {
-    color: '#fff',
+    color: '#333',
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: 'normal',
   },
   content: {
     flex: 1,
-    padding: 12,
+    padding: 16,
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 12,
+    fontSize: 18,
+    fontWeight: 'normal',
+    color: '#333',
+    marginBottom: 20,
   },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    paddingHorizontal: 8,
+    gap: 20,
   },
 
   cardContainer: {
-    flex: 1,
+    width: '30%',
     alignItems: 'center',
+    marginBottom: 20,
   },
   cardButton: {
-    width: '100%',
-    height: 60,
+    width: 80,
+    height: 80,
     justifyContent: 'center',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    backgroundColor: '#fff',
+    alignItems: 'center',
+    borderRadius: 20,
+    backgroundColor: '#F5F7FA',
   },
   cardLabel: {
     marginTop: 8,
-    fontSize: 13,
+    fontSize: 14,
     color: '#333',
+    textAlign: 'center',
   },
 });

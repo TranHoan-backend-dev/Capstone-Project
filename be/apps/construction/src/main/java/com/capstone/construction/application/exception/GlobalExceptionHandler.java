@@ -15,8 +15,8 @@ public class GlobalExceptionHandler {
     return Utils.returnConflictResponse(ex.getMessage(), null);
   }
 
-  @ExceptionHandler(Exception.class)
-  public ResponseEntity<WrapperApiResponse> handleGlobalException(@NonNull Exception ex) {
+  @ExceptionHandler(IllegalStateException.class)
+  public ResponseEntity<WrapperApiResponse> handleIllegalStateException(@NonNull IllegalStateException ex) {
     return Utils.returnInternalServerErrorResponse(ex.getMessage(), null);
   }
 }

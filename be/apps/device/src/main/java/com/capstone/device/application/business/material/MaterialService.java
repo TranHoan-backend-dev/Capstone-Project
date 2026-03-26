@@ -42,22 +42,22 @@ public interface MaterialService {
    */
   MaterialResponse getMaterialById(String id);
 
-    /**
-     * Retrieves all materials with pagination.
-     *
-     * @param pageable pagination information
-     * @return a page of material responses
-     */
-    Page<MaterialResponse> getAllMaterials(Pageable pageable);
+  /**
+   * Retrieves all materials with pagination.
+   *
+   * @param pageable pagination information
+   * @return a page of material responses
+   */
+  Page<MaterialResponse> getAllMaterials(Pageable pageable);
 
-    /**
-     * Searches materials by job content (name) and/or price range.
-     *
-     * @param searchRequest contains search criteria for jobContent (name) and price range
-     * @param pageable pagination information
-     * @return a page of material responses matching the search criteria
-     */
-    Page<MaterialResponse> searchMaterials(SearchRequest searchRequest, Pageable pageable);
+  /**
+   * Searches materials by job content (name) and/or price range.
+   *
+   * @param searchRequest contains search criteria for jobContent (name) and price range
+   * @param pageable      pagination information
+   * @return a page of material responses matching the search criteria
+   */
+  Page<MaterialResponse> searchMaterials(SearchRequest searchRequest, Pageable pageable);
 
   boolean materialExists(String id);
 

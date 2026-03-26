@@ -2,8 +2,11 @@ package com.capstone.construction.application.business.constructionrequest;
 
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.enumerate.RoleName;
+import com.capstone.common.exception.NotExistingException;
 import com.capstone.common.utils.SharedMessage;
+import com.capstone.construction.application.dto.response.construction.ConstructionResponse;
 import com.capstone.construction.domain.model.ConstructionRequest;
+import com.capstone.construction.domain.model.InstallationForm;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
 import com.capstone.construction.infrastructure.persistence.ConstructionRequestRepository;
 import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
@@ -13,9 +16,8 @@ import com.capstone.construction.infrastructure.utils.Message;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
-
-import java.util.Objects;
 
 @AppLog
 @Service
@@ -28,7 +30,7 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
   EmployeeService employeeService;
 
   @Override
-  public ConstructionRequest createPendingRequest(String employeeId, String contractId, String formCode, String formNumber) {
+  public ConstructionResponse createPendingRequest(String employeeId, String contractId, String formCode, String formNumber) {
     if (!customerService.checkExistenceOfCustomer(employeeId)) {
       throw new IllegalArgumentException("Customer with id " + employeeId + " does not exist");
     }
@@ -45,19 +47,40 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
       .contractId(contractId)
       .installationForm(installationForm)
       .build();
-    return repository.save(constructionRequest);
+    return convert(repository.save(constructionRequest));
   }
 
   @Override
   public void updatePendingRequest(String id, String employeeId) {
-    var request = repository.findById(id)
-      .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy đơn chờ thi công"));
+    var request = getRequest(id);
 
     validateEmployee(employeeId);
 
     var installationForm = request.getInstallationForm();
     installationForm.setConstructedBy(employeeId);
     ifRepo.save(installationForm);
+  }
+
+  @Override
+  public void approveTheConstruction(String id, Boolean approved) {
+    var request = getRequest(id);
+    request.setIsApproved(approved);
+  }
+
+  @Override
+  public ConstructionResponse getById(String id) {
+    var result = repository.findById(id).orElseThrow(() -> new NotExistingException("Không tìm thấy đơn thi công"));
+    return convert(result);
+  }
+
+  @Override
+  public ConstructionResponse getByInstallationForm(InstallationForm installationForm) {
+    return convert(repository.findByInstallationForm(installationForm));
+  }
+
+  private ConstructionRequest getRequest(String id) {
+    return repository.findById(id)
+      .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy đơn chờ thi công"));
   }
 
   private void validateEmployee(String employeeId) {
@@ -70,5 +93,16 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
       throw new IllegalArgumentException(
         String.format(Message.PT_28, "đội trưởng đội thi công (nhân viên chi nhánh Xây lắp"));
     }
+  }
+
+  private ConstructionResponse convert(@NonNull ConstructionRequest request) {
+    return ConstructionResponse.builder()
+      .id(request.getId())
+      .contractId(request.getContractId())
+      .formCode(request.getInstallationForm().getFormCode())
+      .formNumber(request.getInstallationForm().getFormNumber())
+      .isApproved(request.getIsApproved().toString())
+      .createdAt(request.getCreatedAt().toString())
+      .build();
   }
 }

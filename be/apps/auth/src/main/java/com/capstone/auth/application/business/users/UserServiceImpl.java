@@ -202,6 +202,7 @@ public class UserServiceImpl implements UserService {
     }
     if (request.isActive() != null) {
       user.setIsEnabled(request.isActive());
+      // TODO: dùng keycloak để xác định session đăng nhập của người dùng, sau đó gửi thông báo và email cho họ
     }
     if (request.departmentId() != null && !request.departmentId().isBlank()) {
       var status = organizationService.checkDepartmentExistence(request.departmentId());
@@ -228,8 +229,6 @@ public class UserServiceImpl implements UserService {
     if (!emp.getIsEnabled()) {
       throw new IllegalArgumentException(Message.SE_16);
     }
-    var profile = profileRepo.findById(id)
-      .orElseThrow(() -> new NotExistingException(String.format(Message.SE_15, id)));
 
     emp.setIsEnabled(false);
     indRepo.deleteByUserId(id);
@@ -264,6 +263,21 @@ public class UserServiceImpl implements UserService {
     return employees.stream()
       .map(this::mapToEmployeeResponse)
       .collect(Collectors.toList());
+  }
+
+  @Override
+  public String getSignificanceOfEmployee(String id) {
+    var user = getById(id);
+    return user.getElectronicSigningUrl();
+  }
+
+  @Override
+  public UserDTO getByUserNameOrEmail(@NonNull String value) {
+    if (value.trim().matches(SharedConstant.EMAIL_PATTERN)) {
+      return getUserByEmail(value);
+    } else {
+      return returnUserDTO(repo.findByUsername(value));
+    }
   }
 
   private Users getById(String id) {

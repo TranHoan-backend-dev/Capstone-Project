@@ -7,35 +7,16 @@ import {
   EmployeeProfileUpdatePayload,
 } from "@/types";
 
-export interface SigninRequest {
-  username: string;
-  password: string;
-}
-
-export interface SigninResponse {
-  accessToken: string;
-  refreshToken?: string;
-  user: {
-    id: string;
-    username: string;
-    role: string;
-  };
-}
-
-export const signinService = (accessToken: string) =>
+export const signinService = (username: string, password: string) =>
   axios.post(
     `${API_GATEWAY_URL}/auth/auth/login`,
-    {},
+    { username, password },
     {
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
       },
     },
   );
-
-export const forgotPasswordService = async (email: string): Promise<void> => {
-  await axiosBase.post(`/auth/forgot-password`, { email });
-};
 
 export const verifyOtpService = async (email: string, otp: string) => {
   const res = await axios.post(`${API_GATEWAY_URL}/auth/auth/verify-otp`, {
@@ -80,32 +61,30 @@ export const getProfileEmployee = async (
 };
 
 export const updateProfileEmployee = async (
-  payload: Partial<EmployeeProfileUpdatePayload>,
+  payload: any,
   accessToken: string,
-): Promise<EmployeeProfileUpdatePayload> => {
-  const response = await axios.post<ApiResponse<EmployeeProfileUpdatePayload>>(
+): Promise<any> => {
+  const response = await axios.patch<ApiResponse<any>>(
     `${API_GATEWAY_URL}/auth/me`,
     payload,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
       },
     },
   );
   return response.data.data;
 };
 
-export const updateAvatar = async (file: File, accessToken: string) => {
-  const formData = new FormData();
-  formData.append("avatar", file);
-
-  const response = await axios.put(`${API_GATEWAY_URL}/auth/me`, formData, {
+export const updateAvatar = async (formData: FormData, accessToken: string) => {
+  const response = await axios.patch(`${API_GATEWAY_URL}/auth/me`, formData, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "multipart/form-data",
     },
   });
-
-  return response.data;
+  return response.data.data;
 };
 
 export const checkExistenceService = async (

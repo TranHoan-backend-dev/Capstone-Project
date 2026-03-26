@@ -1,6 +1,6 @@
 package com.capstone.construction.domain.model;
 
-import com.capstone.construction.domain.model.utils.Significance;
+import com.capstone.construction.domain.model.utils.significance.CostEstimateSignificance;
 import jakarta.persistence.*;
 import com.capstone.common.utils.SharedMessage;
 import com.capstone.construction.infrastructure.utils.Message;
@@ -82,7 +82,7 @@ public class CostEstimate implements Serializable {
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(columnDefinition = "jsonb")
-  Significance significance;
+  CostEstimateSignificance significance;
 
   @PrePersist
   void onCreate() {
@@ -106,7 +106,7 @@ public class CostEstimate implements Serializable {
     this.installationForm = value;
   }
 
-  public void setSignificance(Significance value) {
+  public void setSignificance(CostEstimateSignificance value) {
     Objects.requireNonNull(value, Message.PT_64);
     this.significance = value;
   }

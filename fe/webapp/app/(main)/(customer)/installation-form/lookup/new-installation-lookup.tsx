@@ -24,8 +24,8 @@ const NewInstallationLookup = () => {
   const [keywordSearch, setKeywordSearch] = useState("");
 
   const handleSearch = () => {
-    setKeywordSearch(keywordInput);
-  };
+  setKeywordSearch(keywordInput);
+  };  
   return (
     <>
       <FilterSection

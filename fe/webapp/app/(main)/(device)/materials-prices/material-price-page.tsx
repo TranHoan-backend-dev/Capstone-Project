@@ -67,12 +67,12 @@ const MaterialPricePage = () => {
         scrollBehavior="inside"
       >
         <ModalContent>
-        <MaterialPriceForm
-          key={editingItem?.id || "create"}
-          initialData={editingItem || undefined}
-          onSuccess={handleSuccess}
-          onClose={handleCloseForm}
-        />
+          <MaterialPriceForm
+            key={editingItem?.id || "create"}
+            initialData={editingItem || undefined}
+            onSuccess={handleSuccess}
+            onClose={handleCloseForm}
+          />
         </ModalContent>
       </Modal>
       <MaterialPriceTable

@@ -1,7 +1,10 @@
 package com.capstone.infrastructure.security;
 
+import androidx.annotation.NonNull;
+
 import java.util.Arrays;
 import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -17,13 +20,13 @@ public class PermissionManager {
     }
 
     public boolean canAccessFullFeatures() {
-        String currentRole = tokenManager.getUserRole();
+        var currentRole = tokenManager.getUserRole();
         return ROLE_BUSINESS_EMPLOYEE.equals(currentRole);
     }
 
-    public boolean canAccessModule(String moduleName) {
+    public boolean canAccessModule(@NonNull String moduleName) {
         List<String> publicModules = Arrays.asList("HOME", "AUTH", "PROFILE");
-        
+
         if (publicModules.contains(moduleName.toUpperCase())) {
             return true;
         }

@@ -1,10 +1,11 @@
 CREATE
-EXTENSION IF NOT EXISTS unaccent;
+  EXTENSION IF NOT EXISTS unaccent;
 
 create table public.customer
 (
   customer_id                       varchar(255) not null
     primary key,
+  address                           varchar(255) not null,
   bank_account_name                 varchar(255) not null,
   bank_account_number               varchar(255) not null,
   bank_account_provider_location    varchar(255) not null,
@@ -35,6 +36,7 @@ create table public.customer
   payment_method                    varchar(255) not null,
   phone_number                      varchar(255) not null,
   protect_environment_fee           integer      not null,
+  roadmap_id                        varchar(255) not null,
   type                              varchar(255) not null
     constraint customer_type_check
       check ((type)::text = ANY ((ARRAY ['FAMILY'::character varying, 'COMPANY'::character varying])::text[])),
@@ -53,9 +55,12 @@ alter table public.customer
 
 create table public.bill
 (
+  amount_need_to_pay   varchar(255),
   bill_name            varchar(255) not null,
   export_address       varchar(255) not null,
   note                 varchar(255),
+  pay_date             date,
+  total_amount         varchar(255),
   customer_customer_id varchar(255) not null
     primary key
     constraint fkgyrd47ch48jc8rkya5r5e5t9y
@@ -86,4 +91,3 @@ create table public.water_usage_contract
 
 alter table public.water_usage_contract
   owner to postgres;
-

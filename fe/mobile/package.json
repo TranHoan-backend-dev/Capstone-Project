@@ -24,10 +24,12 @@
     "react-native-screens": "^4.16.0",
     "react-native-svg": "^15.14.0",
     "react-native-vector-icons": "^10.3.0",
-    "react-native-worklets": "^0.6.1"
+    "react-native-worklets": "^0.6.1",
+    "react-native-image-picker": "5.6.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
+    "react-native-dotenv": "^3.4.11",
     "@babel/preset-env": "^7.25.3",
     "@babel/runtime": "^7.25.0",
     "@react-native-community/cli": "13.6.6",

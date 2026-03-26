@@ -181,7 +181,7 @@ const ResetPasswordForm = ({ email, otp }: ResetPasswordFormProps) => {
           color="primary"
           disabled={isLoading}
           isLoading={isLoading}
-          startContent={<DocumentIcon className="w-5 h-5" />}
+          startContent={isLoading ? null : <DocumentIcon className="w-5 h-5" />}
           type="submit"
         >
           {isLoading ? "Đang xử lý..." : "Đặt lại mật khẩu"}

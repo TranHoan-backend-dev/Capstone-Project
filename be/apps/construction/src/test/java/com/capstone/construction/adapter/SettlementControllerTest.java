@@ -1,0 +1,166 @@
+package com.capstone.construction.adapter;
+
+import com.capstone.common.enumerate.ProcessingStatus;
+import com.capstone.construction.application.dto.request.settlement.AssignTheSignificanceRequest;
+import com.capstone.construction.application.dto.request.settlement.SettlementFilterRequest;
+import com.capstone.construction.application.dto.request.settlement.SettlementRequest;
+import com.capstone.construction.application.dto.request.settlement.SignificanceRequest;
+import com.capstone.construction.application.dto.response.PageResponse;
+import com.capstone.construction.application.dto.response.settlement.SettlementResponse;
+import com.capstone.construction.application.usecase.SettlementUseCase;
+import com.capstone.construction.domain.model.utils.FormProcessingStatus;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class SettlementControllerTest {
+
+  @Mock
+  private SettlementUseCase settlementUseCase;
+
+  @Mock
+  private Logger log;
+
+  @InjectMocks
+  private SettlementController settlementController;
+
+  private SettlementRequest settlementRequest;
+  private SettlementResponse mockResponse;
+
+  @BeforeEach
+  void setUp() {
+    ReflectionTestUtils.setField(settlementController, "log", log);
+
+    settlementRequest = new SettlementRequest(
+      "CODE-001", "FORM-001", "Job Content", "Address", BigDecimal.TEN, "Note", LocalDate.now()
+    );
+
+    mockResponse = new SettlementResponse(
+      "id-123", "Job Content", "Address", BigDecimal.TEN, "Note",
+      LocalDateTime.now(), LocalDateTime.now(), LocalDate.now(),
+      "CODE-001", "FORM-001", new com.capstone.construction.domain.model.utils.significance.SettlementSignificance(),
+      new FormProcessingStatus(
+        ProcessingStatus.APPROVED, ProcessingStatus.APPROVED, ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING
+      )
+    );
+  }
+
+  @Test
+  @DisplayName("Create settlement successfully via controller")
+  void createSettlement_ShouldReturnCreated() {
+    when(settlementUseCase.createSettlement(any(SettlementRequest.class))).thenReturn(mockResponse);
+
+    var responseEntity = settlementController.createSettlement(settlementRequest);
+
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).message()).isEqualTo("Tạo quyết toán công trình thành công");
+    verify(settlementUseCase).createSettlement(settlementRequest);
+  }
+
+  @Test
+  @DisplayName("Update settlement successfully via controller")
+  void updateSettlement_ShouldReturnOk() {
+    var id = "id-123";
+    when(settlementUseCase.updateSettlement(eq(id), any(SettlementRequest.class))).thenReturn(mockResponse);
+
+    var responseEntity = settlementController.updateSettlement(id, settlementRequest);
+
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).message()).isEqualTo("Cập nhật quyết toán công trình thành công");
+    verify(settlementUseCase).updateSettlement(id, settlementRequest);
+  }
+
+  @Test
+  @DisplayName("Get settlement by id successfully via controller")
+  void getSettlementById_ShouldReturnOk() {
+    var id = "id-123";
+    when(settlementUseCase.getSettlementById(id)).thenReturn(mockResponse);
+
+    var responseEntity = settlementController.getSettlementById(id);
+
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).message()).isEqualTo("Lấy thông tin quyết toán công trình thành công");
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).data()).isEqualTo(mockResponse);
+    verify(settlementUseCase).getSettlementById(id);
+  }
+
+  @Test
+  @DisplayName("Get all settlements successfully via controller")
+  void getAllSettlements_ShouldReturnOk() {
+    var pageable = mock(Pageable.class);
+    var pageResponse = new PageResponse<>(List.of(mockResponse), 0, 10, 1, 1, true);
+    when(settlementUseCase.getAllSettlements(pageable)).thenReturn(pageResponse);
+
+    var responseEntity = settlementController.getAllSettlements(pageable);
+
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).message()).isEqualTo("Lấy danh sách quyết toán công trình thành công");
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).data()).isEqualTo(pageResponse);
+    verify(settlementUseCase).getAllSettlements(pageable);
+  }
+
+  @Test
+  @DisplayName("Filter settlements successfully via controller")
+  void filterSettlements_ShouldReturnOk() {
+    var filterRequest = mock(SettlementFilterRequest.class);
+    var pageable = mock(Pageable.class);
+    var pageResponse = new PageResponse<>(List.of(mockResponse), 0, 10, 1, 1, true);
+    when(settlementUseCase.filterSettlements(filterRequest, pageable)).thenReturn(pageResponse);
+
+    var responseEntity = settlementController.filterSettlements(filterRequest, pageable);
+
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).message()).isEqualTo("Lấy danh sách quyết toán công trình thành công");
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).data()).isEqualTo(pageResponse);
+    verify(settlementUseCase).filterSettlements(filterRequest, pageable);
+  }
+
+  @Test
+  @DisplayName("Sign settlement successfully via controller")
+  void sign_ShouldReturnOk() {
+    var id = "id-123";
+    var significanceRequest = new SignificanceRequest("URL");
+    var jwt = mock(Jwt.class);
+    when(jwt.getSubject()).thenReturn("user-123");
+
+    var responseEntity = settlementController.sign(jwt, significanceRequest, id);
+
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).message()).isEqualTo("Ký quyết toán thành công");
+    verify(settlementUseCase).significance("user-123", id, significanceRequest);
+  }
+
+  @Test
+  @DisplayName("Require significances successfully via controller")
+  void requireSignificances_ShouldReturnOk() {
+    var assignRequest = new AssignTheSignificanceRequest("id-123", "S", "P", "L", "C");
+
+    var responseEntity = settlementController.requireSignificances(assignRequest);
+
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(Objects.requireNonNull(responseEntity.getBody()).message()).isEqualTo("Yêu cầu ký duyệt quyết toán thành công");
+    verify(settlementUseCase).assignStaffForSignCostEstimate(assignRequest);
+  }
+}
+

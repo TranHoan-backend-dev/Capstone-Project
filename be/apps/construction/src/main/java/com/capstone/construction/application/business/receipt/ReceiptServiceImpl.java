@@ -2,10 +2,13 @@ package com.capstone.construction.application.business.receipt;
 
 import com.capstone.common.annotation.AppLog;
 import com.capstone.construction.application.dto.request.receipt.CreateRequest;
+import com.capstone.construction.application.dto.request.receipt.ReceiptFilterRequest;
 import com.capstone.construction.application.dto.request.receipt.UpdateRequest;
+import com.capstone.construction.application.dto.response.receipt.ReceiptListResponse;
 import com.capstone.construction.application.dto.response.receipt.ReceiptResponse;
 import com.capstone.construction.domain.model.Receipt;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
+import com.capstone.construction.domain.model.utils.significance.ReceiptSignificance;
 import com.capstone.construction.infrastructure.persistence.CostEstimateRepository;
 import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
 import com.capstone.construction.infrastructure.persistence.ReceiptRepository;
@@ -14,8 +17,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @AppLog
@@ -48,13 +56,21 @@ public class ReceiptServiceImpl implements ReceiptService {
       throw new IllegalArgumentException("Dự toán chưa được ký duyệt đầy đủ bởi các bộ phận liên quan.");
     }
 
-    var receipt = Receipt.create(builder -> builder
+    var receipt = Receipt.builder()
       .installationForm(form)
       .receiptNumber(request.receiptNumber())
-      .customerName(request.customerName())
-      .address(request.address())
+      .customerName(form.getCustomerName())
+      .address(form.getAddress())
+      .attach(request.attach())
+      .paymentReason(request.paymentReason())
+      .totalMoneyInDigits(request.totalMoneyInDigit())
+      .totalMoneyInCharacters(request.totalMoneyInCharacters())
       .paymentDate(request.paymentDate())
-      .isPaid(request.isPaid()));
+      .isPaid(request.isPaid())
+      .significance(ReceiptSignificance.builder()
+        .receiptCreator(request.significanceOfReceiptCreator())
+        .build())
+      .build();
 
     var saved = receiptRepo.save(receipt);
     log.info("Receipt saved with id: {}", saved.getInstallationFormId());
@@ -66,12 +82,9 @@ public class ReceiptServiceImpl implements ReceiptService {
   @Transactional
   public ReceiptResponse updateReceipt(@NonNull UpdateRequest request) {
     log.info("Updating receipt for form: {}/{}", request.formCode(), request.formNumber());
-    if (request.formCode() == null || request.formNumber() == null) {
-      throw new IllegalArgumentException("Form code and number must not be null for update");
-    }
     var formId = new InstallationFormId(request.formCode(), request.formNumber());
     var receipt = receiptRepo.findById(formId)
-      .orElseThrow(() -> new IllegalArgumentException("Receipt not found for form: " + request.formNumber()));
+      .orElseThrow(() -> new IllegalArgumentException("Khong tim thay phieu thu voi so don: " + request.formNumber()));
 
     if (request.receiptNumber() != null) {
       receipt.setReceiptNumber(request.receiptNumber());
@@ -87,6 +100,10 @@ public class ReceiptServiceImpl implements ReceiptService {
     }
     if (request.isPaid() != null) {
       receipt.setIsPaid(request.isPaid());
+    }
+    if (request.significanceOfTreasurer() != null && !request.significanceOfTreasurer().isBlank()) {
+      var significance = receipt.getSignificance();
+      significance.setTreasurer(request.significanceOfTreasurer());
     }
 
     var saved = receiptRepo.save(receipt);
@@ -105,6 +122,39 @@ public class ReceiptServiceImpl implements ReceiptService {
   }
 
   @Override
+  @Transactional(readOnly = true)
+  public Page<ReceiptListResponse> getReceipts(ReceiptFilterRequest filter, Pageable pageable) {
+    log.info("Fetching receipts with filter: {}", filter);
+
+    var spec = ReceiptRepository.search(
+      filter.keyword(),
+      filter.from() != null ? LocalDate.parse(filter.from(), DateTimeFormatter.ofPattern("dd-MM-yyyy")) : null,
+      filter.to() != null ? LocalDate.parse(filter.to(), DateTimeFormatter.ofPattern("dd-MM-yyyy")) : null,
+      filter.isPaid(),
+      filter.formCode(),
+      filter.formNumber(),
+      filter.receiptNumber()
+    );
+
+    return receiptRepo.findAll(spec, pageable)
+      .map(this::mapToListResponse);
+  }
+
+  private ReceiptListResponse mapToListResponse(Receipt receipt) {
+    return new ReceiptListResponse(
+      receipt.getInstallationFormId().getFormCode(),
+      receipt.getInstallationFormId().getFormNumber(),
+      receipt.getReceiptNumber(),
+      receipt.getCustomerName(),
+      receipt.getAddress(),
+      receipt.getPaymentDate(),
+      receipt.getIsPaid(),
+      receipt.getCreatedAt(),
+      receipt.getUpdatedAt()
+    );
+  }
+
+  @Override
   public ReceiptResponse getReceipt(String formCode, String formNumber) {
     log.info("Fetching receipt for form: {}/{}", formCode, formNumber);
     return receiptRepo.findById(new InstallationFormId(formCode, formNumber))
@@ -112,7 +162,7 @@ public class ReceiptServiceImpl implements ReceiptService {
       .orElseThrow(() -> new IllegalArgumentException("Receipt not found for form: " + formNumber));
   }
 
-  private ReceiptResponse mapToResponse(Receipt receipt) {
+  private @NonNull ReceiptResponse mapToResponse(@NonNull Receipt receipt) {
     return new ReceiptResponse(
       receipt.getInstallationFormId().getFormCode(),
       receipt.getInstallationFormId().getFormNumber(),
@@ -121,6 +171,11 @@ public class ReceiptServiceImpl implements ReceiptService {
       receipt.getAddress(),
       receipt.getPaymentDate(),
       receipt.getIsPaid(),
+      receipt.getPaymentReason(),
+      receipt.getTotalMoneyInDigits(),
+      receipt.getTotalMoneyInCharacters(),
+      receipt.getAttach(),
+      receipt.getSignificance(),
       receipt.getCreatedAt(),
       receipt.getUpdatedAt()
     );

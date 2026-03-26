@@ -13,8 +13,19 @@ public class WrapperApiResponse<T> {
         this.timestamp = timestamp;
     }
 
-    public int getStatus() { return status; }
-    public String getMessage() { return message; }
-    public T getData() { return data; }
-    public String getTimestamp() { return timestamp; }
+    public int getStatus() {
+        return status;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public T getData() {
+        return data;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
+    }
 }

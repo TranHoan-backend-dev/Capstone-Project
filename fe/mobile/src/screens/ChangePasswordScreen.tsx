@@ -13,7 +13,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import styles from '../components/change-password/styles';
 import PasswordInput from '../components/change-password/PasswordInput';
 import PasswordRequirements from '../components/change-password/PasswordRequirements';
+import authService from '../services/auth.service';
 import { useNavigation } from '@react-navigation/core';
+import { showToast } from '../utils/toast';
 
 export default function ChangePasswordScreen() {
   const navigation = useNavigation();
@@ -22,6 +24,7 @@ export default function ChangePasswordScreen() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -29,7 +32,7 @@ export default function ChangePasswordScreen() {
       duration: 600,
       useNativeDriver: true,
     }).start();
-  }, []);
+  }, [fadeAnim]);
 
   const hasMinLength = newPassword.length >= 8;
   const hasUpperCase = /[A-Z]/.test(newPassword);
@@ -42,8 +45,23 @@ export default function ChangePasswordScreen() {
     setConfirmPassword('');
   };
 
-  const handleSave = () => {
-    console.log('Change password');
+  const handleSave = async () => {
+    if (newPassword !== confirmPassword) {
+      showToast.error('Mật khẩu xác nhận không khớp');
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      await authService.changePassword(currentPassword, newPassword);
+      showToast.success('Mật khẩu đã được thay đổi thành công');
+      navigation.goBack();
+    } catch (error: any) {
+      console.error('Change password error:', error);
+      // apiFetch đã hiển thị toast rồi
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -103,6 +121,7 @@ export default function ChangePasswordScreen() {
                     style={styles.cancelButton}
                     labelStyle={styles.cancelButtonLabel}
                     onPress={handleCancel}
+                    disabled={isSaving}
                   >
                     Hủy
                   </Button>
@@ -112,7 +131,10 @@ export default function ChangePasswordScreen() {
                     style={styles.saveButton}
                     labelStyle={styles.saveButtonLabel}
                     buttonColor="#2563EB"
+                    onPress={handleSave}
+                    loading={isSaving}
                     disabled={
+                      isSaving ||
                       !currentPassword ||
                       !newPassword ||
                       !confirmPassword ||
@@ -121,7 +143,6 @@ export default function ChangePasswordScreen() {
                       !hasUpperCase ||
                       !hasNumber
                     }
-                    onPress={handleSave}
                   >
                     Lưu thay đổi
                   </Button>

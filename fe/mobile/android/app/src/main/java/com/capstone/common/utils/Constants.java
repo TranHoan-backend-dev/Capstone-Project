@@ -4,13 +4,14 @@ package com.capstone.common.utils;
  * Lớp chứa các hằng số hệ thống (Environment strings, API Keys, URLs).
  */
 public final class Constants {
-    private Constants() {} // Ngăn việc khởi tạo instance
+    private Constants() {
+    } // Ngăn việc khởi tạo instance
 
     /**
      * Base URL cho các API của hệ thống.
      * Sử dụng 10.0.2.2 cho Android Emulator.
      */
-    public static final String BASE_URL = "http://10.0.2.2:8080";
+    public static final String BASE_URL = "http://14.225.198.198:8000/";
 
     /**
      * Google Maps API Key placeholder.

@@ -1,3 +1,6 @@
+CREATE
+EXTENSION IF NOT EXISTS unaccent;
+
 create table public.materials_group
 (
   group_id   varchar(255) not null
@@ -39,6 +42,17 @@ create table public.parameters
 alter table public.parameters
   owner to postgres;
 
+create table public.price_type
+(
+  price_type_id varchar(255) not null
+    primary key,
+  area          varchar(255),
+  price jsonb
+);
+
+alter table public.price_type
+  owner to postgres;
+
 create table public.unit
 (
   unit_id    varchar(255) not null
@@ -59,8 +73,8 @@ create table public.material
   construction_machinery_price                  numeric(19, 2) not null,
   construction_machinery_price_at_rural_commune numeric(19, 2) not null,
   created_at                                    timestamp(6)   not null,
-  job_content                                   varchar(255)   not null,
-  labor_code                                    varchar(255)   not null,
+  job_content                                   text           not null,
+  labor_code                                    text           not null,
   labor_price                                   numeric(19, 2) not null,
   labor_price_at_rural_commune                  numeric(19, 2) not null,
   price                                         numeric(19, 2) not null,
@@ -77,14 +91,11 @@ alter table public.material
 create table public.materials_of_cost_estimate
 (
   cost_est_id           varchar(255)             not null,
-  labor_cost            varchar(255)             not null,
   mass                  real                     not null,
-  material_cost         varchar(255)             not null,
   note                  varchar(255),
   reduction_coefficient numeric(38, 2) default 0 not null,
   total_labor_cost      varchar(255),
   total_material_cost   varchar(255),
-  used_labor_cost       real,
   material_material_id  varchar(255)             not null constraint fk8hlrkyr0pdjjk5yooog6ewvin
             references public.material,
   primary key (cost_est_id, material_material_id)
@@ -142,8 +153,10 @@ alter table public.water_meter
 
 create table public.usage_history
 (
+  customer_id varchar(255) not null constraint uk7bgg9a3lubti663eagw8kamso
+            unique,
   usages jsonb,
-  meter_code varchar(255) not null
+  meter_code  varchar(255) not null
     primary key constraint fkrxiqn18008bmpbc73g3acvm3o
             references public.water_meter
 );
@@ -171,29 +184,13 @@ create table public.water_price
 alter table public.water_price
   owner to postgres;
 
-create table public.price_type
-(
-  price_type_id        varchar(255) not null
-    primary key,
-  area                 varchar(255),
-  price jsonb,
-  water_price_price_id varchar(255) constraint fkfx8ro9xwqdyyos5n8ro3r9dxy
-            references public.water_price
-);
-
-alter table public.price_type
-  owner to postgres;
-
 create table public.water_price_price_types
 (
   water_price_price_id      varchar(255) not null constraint fkhgabkm67kgm264uwq6shrfw7r
             references public.water_price,
-  price_types_price_type_id varchar(255) not null constraint ukmtk56wlf8b7n6lqlv65gfxl22
-            unique
-        constraint fkdb51bbihy0304wg8eg4omfu1i
+  price_types_price_type_id varchar(255) not null constraint fkdb51bbihy0304wg8eg4omfu1i
             references public.price_type
 );
 
 alter table public.water_price_price_types
   owner to postgres;
-

@@ -15,4 +15,12 @@ public interface RoadmapService {
   RoadmapResponse getRoadmapById(String id);
 
   PageResponse<RoadmapResponse> getAllRoadmaps(Pageable pageable, String keyword, String lateralId, String networkId);
+
+  RoadmapResponse assignStaff(String roadmapId, String staffId);
+
+  RoadmapResponse cancelAssignment(String roadmapId);
+
+  RoadmapResponse updateAssignment(String roadmapId, String staffId);
+
+  boolean isExistingRoadmap(String id);
 }

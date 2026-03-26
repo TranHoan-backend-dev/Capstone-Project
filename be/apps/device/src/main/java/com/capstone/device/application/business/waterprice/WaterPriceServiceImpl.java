@@ -88,7 +88,6 @@ public class WaterPriceServiceImpl implements WaterPriceService {
     if (!waterPriceRepository.existsById(id)) {
       throw new IllegalArgumentException("Water price not found: " + id);
     }
-    ptRepo.deleteByWaterPrice_PriceId(id);
     waterPriceRepository.deleteById(id);
   }
 

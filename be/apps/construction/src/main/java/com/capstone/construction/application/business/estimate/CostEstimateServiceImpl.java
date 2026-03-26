@@ -14,7 +14,7 @@ import com.capstone.construction.application.dto.response.estimate.MaterialsOfCo
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.domain.model.CostEstimate;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
-import com.capstone.construction.domain.model.utils.Significance;
+import com.capstone.construction.domain.model.utils.significance.CostEstimateSignificance;
 import com.capstone.construction.infrastructure.persistence.CostEstimateRepository;
 import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
 import com.capstone.construction.infrastructure.service.GcsService;
@@ -90,8 +90,11 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   @Transactional(rollbackFor = Exception.class)
   public CostEstimateResponse updateEstimate(String id, @NonNull UpdateRequest request) {
     log.info("Updating cost estimate with id: {}", id);
-    var estimate = eRepo.findById(id)
-      .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_61, id)));
+    var estimate = getById(id);
+    var installationForm = estimate.getInstallationForm();
+    if (installationForm.getStatus().getEstimate().name().equals(ProcessingStatus.APPROVED.name())) {
+      throw new IllegalArgumentException("Dự toán đã được duyệt, không được phép chỉnh sửa");
+    }
 
     var generalInformation = request.generalInformation();
 
@@ -143,9 +146,8 @@ public class CostEstimateServiceImpl implements CostEstimateService {
       estimate.setDesignImageUrl(url);
     }
     if (generalInformation.waterMeterSerial() != null && !generalInformation.waterMeterSerial().isBlank()) {
-      var meterStatus = deviceSrv.isMeterExisting(generalInformation.waterMeterSerial())
-        .data().toString();
-      if (!Boolean.parseBoolean(meterStatus)) {
+      var meterStatus = deviceSrv.isMeterExisting(generalInformation.waterMeterSerial());
+      if (!meterStatus) {
         throw new IllegalArgumentException("Đồng hồ nước không tồn tại");
       }
       estimate.setWaterMeterSerial(generalInformation.waterMeterSerial());
@@ -173,8 +175,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   @Override
   public CostEstimateResponse getEstimateById(String id) {
     log.info("Fetching cost estimate with id: {}", id);
-    var costEst = eRepo.findById(id)
-      .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_61, id)));
+    var costEst = getById(id);
     var materials = deviceSrv.getMaterialsOfCostEstimate(id);
     return mapToResponse(costEst, mapMaterials(materials));
   }
@@ -198,8 +199,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
 
   @Override
   public void approveEstimate(String id, Boolean request) {
-    var est = eRepo.findById(id)
-      .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_61, id)));
+    var est = getById(id);
     var form = est.getInstallationForm();
     var status = form.getStatus();
     status.setEstimate(request ? ProcessingStatus.APPROVED : ProcessingStatus.REJECTED);
@@ -208,19 +208,36 @@ public class CostEstimateServiceImpl implements CostEstimateService {
 
   @Override
   public boolean signForCostEstimate(String significance, @NonNull RoleName role, String estimateId) {
-    var costEstimate = eRepo.findById(estimateId)
-      .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_61, estimateId)));
+    var costEstimate = getById(estimateId);
     var costEstSignificance = costEstimate.getSignificance();
 
     if (costEstSignificance == null) {
-      costEstSignificance = new Significance();
+      costEstSignificance = new CostEstimateSignificance();
       costEstimate.setSignificance(costEstSignificance);
+    }
+    if (costEstSignificance.isCostEstimateFullySigned()) {
+      throw new IllegalArgumentException("Du toan da co du chu ky");
     }
 
     switch (role) {
-      case COMPANY_LEADERSHIP -> costEstSignificance.setCompanyLeaderShip(significance);
-      case SURVEY_STAFF -> costEstSignificance.setSurveyStaff(significance);
-      case PLANNING_TECHNICAL_DEPARTMENT_HEAD -> costEstSignificance.setPlanningTechnicalHead(significance);
+      case COMPANY_LEADERSHIP -> {
+        if (!costEstSignificance.getCompanyLeaderShip().isBlank()) {
+          throw new IllegalArgumentException("Lanh dao da ky tai lieu nay");
+        }
+        costEstSignificance.setCompanyLeaderShip(significance);
+      }
+      case SURVEY_STAFF -> {
+        if (!costEstSignificance.getSurveyStaff().isBlank()) {
+          throw new IllegalArgumentException("Nhan vien khao sat da ky tai lieu nay");
+        }
+        costEstSignificance.setSurveyStaff(significance);
+      }
+      case PLANNING_TECHNICAL_DEPARTMENT_HEAD -> {
+        if (!costEstSignificance.getPlanningTechnicalHead().isBlank()) {
+          throw new IllegalArgumentException("Truong phong da ky tai lieu nay");
+        }
+        costEstSignificance.setPlanningTechnicalHead(significance);
+      }
     }
     eRepo.save(costEstimate);
 
@@ -291,8 +308,15 @@ public class CostEstimateServiceImpl implements CostEstimateService {
         estimate.getCreateBy(),
         estimate.getWaterMeterSerial(),
         estimate.getOverallWaterMeterId(),
-        estimate.getInstallationForm().getId()),
+        estimate.getInstallationForm().getId(),
+        estimate.getInstallationForm().getStatus()
+      ),
       material);
+  }
+
+  private CostEstimate getById(String id) {
+    return eRepo.findById(id)
+      .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_61, id)));
   }
 
   private @NonNull ArrayList<BaseMaterial> getMaterials(String id) {

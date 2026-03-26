@@ -28,6 +28,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.mock.web.MockMultipartFile;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -120,7 +121,7 @@ class CostEstimateServiceImplTest {
     when(ifRepo.findById(new InstallationFormId(formCode, formNumber))).thenReturn(Optional.of(installationForm));
     when(eRepo.existsByInstallationForm(installationForm)).thenReturn(false);
     when(eRepo.save(any(CostEstimate.class))).thenReturn(costEstimate);
-    when(owmSrv.updateMaterialsOfCostEstimate(any(), any())).thenReturn(new WrapperApiResponse(200, "Success", null, LocalDateTime.now()));
+    when(owmSrv.updateMaterialsOfCostEstimate(any(), any())).thenReturn(new WrapperApiResponse(200, "Success", null, OffsetDateTime.now()));
     when(owmSrv.getDefaultMaterials()).thenReturn(Collections.emptyList());
 
     // Act
@@ -148,11 +149,11 @@ class CostEstimateServiceImplTest {
     // Arrange
     when(eRepo.findById(estimateId)).thenReturn(Optional.of(costEstimate));
     when(owmSrv.isOverallMeterExisting("METER-123-UPDATED"))
-      .thenReturn(new WrapperApiResponse(200, "Success", "true", LocalDateTime.now()));
+      .thenReturn(new WrapperApiResponse(200, "Success", "true", OffsetDateTime.now()));
     when(owmSrv.isMeterExisting("SN123-UPDATED"))
-      .thenReturn(new WrapperApiResponse(200, "Success", "true", LocalDateTime.now()));
+      .thenReturn(true);
     when(eRepo.save(any(CostEstimate.class))).thenReturn(costEstimate);
-    when(owmSrv.updateMaterialsOfCostEstimate(any(), any())).thenReturn(new WrapperApiResponse(200, "Success", null, LocalDateTime.now()));
+    when(owmSrv.updateMaterialsOfCostEstimate(any(), any())).thenReturn(new WrapperApiResponse(200, "Success", null, OffsetDateTime.now()));
     when(owmSrv.getMaterialsOfCostEstimate(any())).thenReturn(Collections.emptyList());
 
     // Act
@@ -177,12 +178,12 @@ class CostEstimateServiceImplTest {
 
     when(eRepo.findById(estimateId)).thenReturn(Optional.of(costEstimate));
     when(owmSrv.isOverallMeterExisting("METER"))
-      .thenReturn(new WrapperApiResponse(200, "Success", "true", LocalDateTime.now()));
+      .thenReturn(new WrapperApiResponse(200, "Success", "true", OffsetDateTime.now()));
     when(owmSrv.isMeterExisting("SN"))
-      .thenReturn(new WrapperApiResponse(200, "Success", "true", LocalDateTime.now()));
+      .thenReturn(true);
     when(gcsService.upload(image)).thenReturn("http://new-image.url");
     when(eRepo.save(any(CostEstimate.class))).thenReturn(costEstimate);
-    when(owmSrv.updateMaterialsOfCostEstimate(any(), any())).thenReturn(new WrapperApiResponse(200, "Success", null, LocalDateTime.now()));
+    when(owmSrv.updateMaterialsOfCostEstimate(any(), any())).thenReturn(new WrapperApiResponse(200, "Success", null, OffsetDateTime.now()));
     when(owmSrv.getMaterialsOfCostEstimate(any())).thenReturn(Collections.emptyList());
 
     // Act

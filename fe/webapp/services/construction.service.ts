@@ -1,7 +1,15 @@
 import {
+  ApiResponse,
   ApproveInstallationPayload,
   NewInstallationFormPayload,
+  ReceiptRequest,
+  SettlementItem,
 } from "@/types";
+import {
+  SettlementDetail,
+  SettlementFilterRequest,
+  SettlementRequest,
+} from "@/types/construction/settlement.type";
 import { API_GATEWAY_URL } from "@/utils/constraints";
 import axios from "axios";
 
@@ -254,15 +262,17 @@ export const getAllHamlets = (
   accessToken: string,
   page: number,
   size: number,
-  sort: string,
   keyword?: string | null,
+  communeId?: string | null,
+  type?: string,
 ) =>
   axios.get(`${API_GATEWAY_URL}/construction/hamlets`, {
     params: {
       page,
       size,
-      sort,
       keyword,
+      communeId,
+      type,
     },
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -496,4 +506,160 @@ export const assignInstallationForm = async (
     },
   );
   return res.data;
+};
+
+export const getAllSettlements = (
+  accessToken: string,
+  page: number,
+  size: number,
+  sort: string,
+) =>
+  axios.get(`${API_GATEWAY_URL}/construction/settlements`, {
+    params: {
+      page,
+      size,
+      sort,
+    },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+export const filterSettlements = async (
+  accessToken: string,
+  filterRequest: any,
+  page: number,
+  size: number,
+  sort: string,
+) =>
+  axios.get(`${API_GATEWAY_URL}/construction/settlements/filter`, {
+    params: {
+      ...filterRequest,
+      page,
+      size,
+      sort,
+      status: filterRequest.status?.[0],
+    },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+export const getSettlementById = async (
+  accessToken: string,
+  settlementId: string,
+) =>
+  axios.get(`${API_GATEWAY_URL}/construction/settlements/${settlementId}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+export const createSettlement = (
+  accessToken: string,
+  request: SettlementRequest,
+) => {
+  return axios.post(`${API_GATEWAY_URL}/construction/settlements`, request, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
+export const updateSettlement = (
+  accessToken: string,
+  settlementId: string,
+  request: SettlementRequest,
+) => {
+  return axios.put(
+    `${API_GATEWAY_URL}/construction/settlements/${settlementId}`,
+    request,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+};
+
+export const deleteSettlement = (accessToken: string, settlementId: string) => {
+  return axios.delete(
+    `${API_GATEWAY_URL}/construction/settlements/${settlementId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+};
+
+export const getAllReceipts = (
+  accessToken: string,
+  page: number,
+  size: number,
+  sort: string,
+  keyword?: string,
+  from?: string,
+  to?: string,
+  isPaid?: string,
+) =>
+  axios.get(`${API_GATEWAY_URL}/construction/receipts`, {
+    params: {
+      page,
+      size,
+      sort,
+      keyword,
+      from,
+      to,
+      isPaid,
+    },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+export const createReceipt = (accessToken: string, request: ReceiptRequest) => {
+  return axios.post(`${API_GATEWAY_URL}/construction/receipts`, request, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
+export const updateReceipt = (accessToken: string, request: ReceiptRequest) => {
+  return axios.put(`${API_GATEWAY_URL}/construction/receipts`, request, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
+export const deleteReceipt = (
+  accessToken: string,
+  formCode: string,
+  formNumber: string,
+) => {
+  return axios.delete(
+    `${API_GATEWAY_URL}/construction/receipts/${formCode}/${formNumber}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+};
+
+export const getDetailReceipt = (
+  accessToken: string,
+  formCode: string,
+  formNumber: string,
+) => {
+  return axios.get(
+    `${API_GATEWAY_URL}/construction/receipts/${formCode}/${formNumber}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
 };

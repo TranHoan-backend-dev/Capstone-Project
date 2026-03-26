@@ -1,29 +1,42 @@
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F5F5' },
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
 
   header: {
-    backgroundColor: '#0288D1',
-    paddingHorizontal: 8,
+    backgroundColor: '#F3F9FF',
+    paddingHorizontal: 16,
+    justifyContent: 'space-between',
+    elevation: 0,
+    borderBottomWidth: 1,
+    borderBottomColor: '#EAF2F8',
   },
 
   userName: {
-    color: '#fff',
-    marginLeft: 12,
-    fontSize: 16,
-    fontWeight: '600',
+    color: '#3B82F6',
+    fontSize: 18,
+    fontWeight: '700',
+    textAlign: 'center',
     flex: 1,
   },
   userInfo: {
-    flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: 8,
+  },
+  notificationBtn: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  notificationText: {
+    fontSize: 10,
+    color: '#6B7280',
+    marginTop: -4,
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: '600',
     padding: 16,
+    color: '#333333',
   },
 
   grid: {
