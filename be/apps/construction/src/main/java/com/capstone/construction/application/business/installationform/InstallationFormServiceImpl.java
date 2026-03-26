@@ -214,6 +214,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   }
 
   private @NonNull InstallationFormListResponse mapToResponse(@NonNull InstallationForm entity) {
+    log.info("Get staff who will handle this request");
     var creatorFullName = empSrv.getEmployeeNameById(entity.getCreatedBy());
     var handOverByFullName = empSrv.getEmployeeNameById(entity.getHandoverBy());
     var constructionEmployeeName = empSrv.getEmployeeNameById(entity.getConstructedBy());
