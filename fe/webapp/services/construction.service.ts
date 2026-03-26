@@ -663,3 +663,16 @@ export const getDetailReceipt = (
     },
   );
 };
+
+export const getAllConstruction = (
+  accessToken: string,
+  page: number,
+  size: number,
+  sort: string,
+  keyword?: string | null,
+) =>
+  axios.get(`${API_GATEWAY_URL}/construction/construction/construction`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });

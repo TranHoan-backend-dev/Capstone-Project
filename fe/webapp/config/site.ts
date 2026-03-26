@@ -232,6 +232,12 @@ export const siteConfig = {
           label: "Quản lý Lộ trình ghi",
           href: "/roadmaps",
         },
+        
+        {
+          key: "pending-construction",
+          label: "Quản lý Đơn chờ xây dựng",
+          href: "/pending-construction",
+        },
         {
           key: "settlement-lookup",
           label: "Tra cứu quyết toán",
@@ -249,11 +255,12 @@ export const siteConfig = {
           key: "meter-verification",
           label: "Kiểm tra chỉ số bằng hình ảnh",
           href: "/meter-verification",
-        },{
+        },
+        {
           key: "installation-fee-collection",
           label: "Thu phí lắp đặt",
           href: "/installation-fee-collection",
-        }
+        },
       ],
     },
   ],
