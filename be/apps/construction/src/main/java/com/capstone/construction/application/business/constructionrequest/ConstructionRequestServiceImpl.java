@@ -1,6 +1,7 @@
 package com.capstone.construction.application.business.constructionrequest;
 
 import com.capstone.common.annotation.AppLog;
+import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.common.enumerate.RoleName;
 import com.capstone.common.exception.NotExistingException;
 import com.capstone.common.utils.SharedMessage;
@@ -64,7 +65,10 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
   @Override
   public void approveTheConstruction(String id, Boolean approved) {
     var request = getRequest(id);
-    request.setIsApproved(approved);
+    var installationForm = request.getInstallationForm();
+    var status = installationForm.getStatus();
+    status.setConstruction(ProcessingStatus.APPROVED);
+    ifRepo.save(installationForm);
   }
 
   @Override
@@ -96,12 +100,14 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
   }
 
   private ConstructionResponse convert(@NonNull ConstructionRequest request) {
+    var installationForm = request.getInstallationForm();
+    var isApproved = installationForm.getStatus().getConstruction().equals(ProcessingStatus.APPROVED);
     return ConstructionResponse.builder()
       .id(request.getId())
       .contractId(request.getContractId())
-      .formCode(request.getInstallationForm().getFormCode())
-      .formNumber(request.getInstallationForm().getFormNumber())
-      .isApproved(request.getIsApproved().toString())
+      .formCode(installationForm.getFormCode())
+      .formNumber(installationForm.getFormNumber())
+      .isApproved(String.valueOf(isApproved))
       .createdAt(request.getCreatedAt().toString())
       .build();
   }

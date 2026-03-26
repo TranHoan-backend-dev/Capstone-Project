@@ -23,10 +23,8 @@ public class ConstructionRequest {
   @Column(nullable = false)
   String contractId;
 
-  @OneToOne
+  @OneToOne(fetch = FetchType.EAGER)
   InstallationForm installationForm;
-
-  Boolean isApproved;
 
   @Column(nullable = false)
   LocalDateTime createdAt;
@@ -38,7 +36,6 @@ public class ConstructionRequest {
   void onCreate() {
     this.createdAt = LocalDateTime.now();
     this.updatedAt = this.createdAt;
-    this.isApproved = false;
   }
 
   @PreUpdate
