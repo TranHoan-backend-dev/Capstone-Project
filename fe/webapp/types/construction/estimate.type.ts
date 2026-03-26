@@ -1,3 +1,5 @@
+import { DateValue } from "@heroui/react";
+
 export type EstimateStatus =
   | "PENDING_FOR_APPROVAL"
   | "APPROVED"
@@ -209,4 +211,40 @@ export interface UpdateEstimateRequest {
     totalMaterialPrice: string;
     totalLaborPrice: string;
   }>;
+}
+
+export interface EstimateOrder {  
+  stt: string;
+  id: number;
+  code: string;
+  designProfileName: string;
+  phone: string;
+  installationAddress: string;
+  totalAmount: string;
+  createdDate: string;
+  creator: string;
+  status: "pending" | "processing" | "approved" | "rejected";
+}
+
+export interface EstimateTableProps {
+  data: EstimateOrder[];
+  loading?: boolean;
+  page: number;
+  totalPages: number;
+  totalItems: number;
+  onPageChange: (page: number) => void;
+  onApproveAction?: (item: EstimateOrder) => void;
+  onRejectAction?: (item: EstimateOrder) => void;
+  onViewAction: (item: EstimateOrder) => void;
+  onEstimateAction?: (item: EstimateOrder) => void;
+  onSignAction?: (item: EstimateOrder) => void;
+  activeTab?: "pending" | "approved" | "signing";
+  onCreateSignatureRequest?: (item: EstimateOrder) => void;
+}
+
+export interface ApprovalInputSectionProps {
+  approvalDate: DateValue | null | undefined;
+  approvalNote: string;
+  setApprovalDateAction: (date: DateValue | null | undefined) => void;
+  setApprovalNoteAction: (note: string) => void;
 }

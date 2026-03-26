@@ -5,7 +5,7 @@ import BaseModal from "@/components/ui/modal/BaseModal";
 import CustomButton from "@/components/ui/custom/CustomButton";
 import EstimateInfoCard from "./estimate-info-card";
 import SignerSelector from "./signer-selector";
-import { EstimateOrder } from "./estimate-table";
+import { EstimateOrder } from "@/types";
 
 interface Employee {
   id: string;
@@ -44,13 +44,13 @@ const CreateSignatureModal = ({
   onConfirm,
 }: CreateSignatureModalProps) => {
   const handleClose = () => {
-    onOpenChange(); 
+    onOpenChange();
   };
 
   return (
     <BaseModal
       isOpen={isOpen}
-      onOpenChange={onOpenChange} 
+      onOpenChange={onOpenChange}
       title={`Tạo yêu cầu ký duyệt - ${selectedItem?.code}`}
       size="2xl"
     >

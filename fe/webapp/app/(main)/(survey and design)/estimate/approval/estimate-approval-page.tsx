@@ -15,7 +15,7 @@ import {
   Button,
 } from "@heroui/react";
 
-import { EstimateTable, EstimateOrder } from "./components/estimate-table";
+import { EstimateTable } from "./components/estimate-table";
 import { FilterSection } from "./components/filter-section";
 import { CallToast } from "@/components/ui/CallToast";
 import { authFetch } from "@/utils/authFetch";
@@ -23,6 +23,7 @@ import { useProfile } from "@/hooks/useLogin";
 import CreateSignatureModal from "./components/create-signature-modal";
 import SignModal from "./components/sign-modal";
 import { calculateTotalAmount } from "@/utils/calculateTotalAmount";
+import { EstimateOrder } from "@/types";
 
 const PENDING_STATUSES = ["pending", "processing", "pending_for_approval"];
 const APPROVED_STATUS = "approved";
@@ -36,22 +37,18 @@ const EstimateApprovalPage = () => {
 
   const [activeTab, setActiveTab] = useState<string>("pending");
 
-  // Modal state for creating signature request
   const [isCreateSignModalOpen, setIsCreateSignModalOpen] = useState(false);
   const [selectedItemForSign, setSelectedItemForSign] =
     useState<EstimateOrder | null>(null);
 
-  // State for signer selection
   const [surveyStaffId, setSurveyStaffId] = useState("");
   const [planningHeadId, setPlanningHeadId] = useState("");
   const [companyLeadershipId, setCompanyLeadershipId] = useState("");
 
-  // Available employees for dropdowns - store all employees
   const [allEmployees, setAllEmployees] = useState<
     { id: string; fullName: string; departmentName?: string }[]
   >([]);
 
-  // Modal state for signing
   const [isSignModalOpen, setIsSignModalOpen] = useState(false);
   const [selectedItemForSigning, setSelectedItemForSigning] =
     useState<EstimateOrder | null>(null);
@@ -131,19 +128,6 @@ const EstimateApprovalPage = () => {
           items.map(async (item: any, index: number) => {
             const info = item.generalInformation;
             const form = info.installationFormId;
-
-            let creatorName = info.createBy;
-
-            try {
-              const res = await authFetch(
-                `/api/auth/employees/${info.createBy}/name`,
-              );
-              const nameJson = await res.json();
-              creatorName = nameJson?.data || info.createBy;
-            } catch (e) {
-              console.error("Fetch employee name failed");
-            }
-
             return {
               stt: (page - 1) * pageSize + index + 1,
               id: info.estimationId,
@@ -153,7 +137,6 @@ const EstimateApprovalPage = () => {
               installationAddress: info.address,
               totalAmount: calculateTotalAmount(item.material, info),
               createdDate: new Date(info.createdAt).toLocaleDateString("vi-VN"),
-              creator: creatorName,
               status: info.status?.estimate?.toLowerCase() || "pending",
             };
           }),

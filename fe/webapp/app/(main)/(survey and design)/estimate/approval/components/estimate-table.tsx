@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { Button, Tooltip } from "@heroui/react";
+import React from "react";
+import { Tooltip } from "@heroui/react";
 
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import {
@@ -11,41 +11,11 @@ import {
   BlueYellowIconColor,
   RejectIcon,
   RedIconColor,
-  ViewIcon,
   TitleDarkColor,
   PencilIcon,
 } from "@/config/chip-and-icon";
 import { ESTIMATE_APPROVAL_COLUMN } from "@/config/table-columns";
-
-export interface EstimateOrder {
-  stt: string;
-  id: number;
-  code: string;
-  designProfileName: string;
-  phone: string;
-  installationAddress: string;
-  totalAmount: string;
-  createdDate: string;
-  creator: string;
-  status: "pending" | "waiting_sign" | "signing" | "approved" | "rejected";
-}
-
-interface EstimateTableProps {
-  data: EstimateOrder[];
-  loading?: boolean;
-  page: number;
-  totalPages: number;
-  totalItems: number;
-  onPageChange: (page: number) => void;
-  onApproveAction?: (item: EstimateOrder) => void; // Make optional
-  onRejectAction?: (item: EstimateOrder) => void; // Make optional
-  onViewAction: (item: EstimateOrder) => void;
-  onEstimateAction?: (item: EstimateOrder) => void; // Make optional
-  onSignAction?: (item: EstimateOrder) => void;
-  activeTab?: "pending" | "approved" | "signing";
-  onCreateSignatureRequest?: (item: EstimateOrder) => void;
-}
-
+import { EstimateOrder, EstimateTableProps } from "@/types";
 export const EstimateTable = ({
   data,
   loading = false,
@@ -60,7 +30,6 @@ export const EstimateTable = ({
   onSignAction,
   onCreateSignatureRequest,
 }: EstimateTableProps) => {
-
   const renderCell = (item: EstimateOrder, columnKey: string) => {
     switch (columnKey) {
       case "stt":
@@ -95,8 +64,7 @@ export const EstimateTable = ({
       case "actions":
         return (
           <div className="flex items-center justify-center gap-2">
-            {/* Only show Approve button if onApproveAction is provided */}
-            {onApproveAction && (
+            {onApproveAction && item.status === "processing" && (
               <Tooltip color="success" content="Duyệt dự toán">
                 <ApprovalIcon
                   className={GreenIconColor}
@@ -105,8 +73,7 @@ export const EstimateTable = ({
               </Tooltip>
             )}
 
-            {/* Only show Reject button if onRejectAction is provided */}
-            {onRejectAction && (
+            {onRejectAction && item.status === "processing" && (
               <Tooltip color="danger" content="Từ chối dự toán">
                 <RejectIcon
                   className={RedIconColor}
@@ -131,29 +98,6 @@ export const EstimateTable = ({
                 />
               </Tooltip>
             )}
-            {/* Tạo yêu cầu ký button */}
-            {/* {onCreateSignatureRequest && (
-              <Button
-                size="sm"
-                color="primary"
-                variant="flat"
-                onPress={() => onCreateSignatureRequest(item)}
-              >
-                Tạo yêu cầu ký
-              </Button>
-            )} */}
-
-            {/* Ký duyệt button - only show for signing status */}
-            {/* {onSignAction && item.status === "approved" && (
-              <Button
-                size="sm"
-                color="success"
-                variant="flat"
-                onPress={() => onSignAction(item)}
-              >
-                Ký duyệt
-              </Button>
-            )} */}
           </div>
         );
       default:
@@ -164,22 +108,22 @@ export const EstimateTable = ({
 
   return (
     <GenericDataTable
+      title=""
+      isLoading={loading}
+      headerSummary={`${totalItems}`}
       columns={ESTIMATE_APPROVAL_COLUMN as any}
       data={data}
       isCollapsible
-      paginationProps={{
-        total: totalPages,
-        page: page,
-        onChange: onPageChange,
-        summary: `${totalItems}`,
-      }}
       renderCellAction={renderCell}
       tableProps={{
         selectionMode: "none",
       }}
-      title=""
-      isLoading={loading}
-      headerSummary={`${totalItems}`}
+      paginationProps={{
+        total: totalPages,
+        page: page,
+        onChange: onPageChange,
+        summary: `${data.length}`,
+      }}
     />
   );
 };

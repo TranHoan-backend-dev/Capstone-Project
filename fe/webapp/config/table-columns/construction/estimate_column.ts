@@ -2,7 +2,7 @@ export const ESTIMATE_COLUMN = [
   { key: "stt", label: "STT", width: "40px" },
   // { key: "code", label: "Mã vật tư", sortable: true },
   { key: "description", label: "Nội dung công việc" },
-  { key: "note", label: "Ghi chú" },
+  { key: "note", label: "Ghi chú", width: "160px" },
   { key: "unit", label: "ĐVT" },
   { key: "quantity", label: "Khối lượng", align: "center" as const },
   { key: "materialPrice", label: "Đơn giá vật tư", align: "end" as const },

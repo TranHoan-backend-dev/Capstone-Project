@@ -5,7 +5,7 @@ import BaseModal from "@/components/ui/modal/BaseModal";
 import CustomButton from "@/components/ui/custom/CustomButton";
 import EstimateInfoCard from "./estimate-info-card";
 import UserInfoCard from "./user-info-card";
-import { EstimateOrder } from "./estimate-table";
+import { EstimateOrder } from "@/types";
 
 interface SignModalProps {
   isOpen: boolean;
