@@ -513,13 +513,13 @@ export const getAllSettlements = (
   accessToken: string,
   page: number,
   size: number,
-  sort: string,
+  // sort: string,
 ) =>
   axios.get(`${API_GATEWAY_URL}/construction/settlements`, {
     params: {
       page,
       size,
-      sort,
+      // sort,
     },
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -531,14 +531,14 @@ export const filterSettlements = async (
   filterRequest: any,
   page: number,
   size: number,
-  sort: string,
+  // sort: string,
 ) =>
   axios.get(`${API_GATEWAY_URL}/construction/settlements/filter`, {
     params: {
       ...filterRequest,
       page,
       size,
-      sort,
+      // sort,
       status: filterRequest.status?.[0],
     },
     headers: {

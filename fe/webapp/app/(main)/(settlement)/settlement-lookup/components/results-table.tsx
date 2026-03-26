@@ -58,10 +58,9 @@ interface ResultsTableProps {
   reloadKey?: number;
   from?: string | null;
   to?: string | null;
-  status?: string;
+  // status?: string;
   onEdit: (item: SettlementItem) => void;
   onDeleted: () => void;
-  onFilterStatus?: (status: string) => void;
 }
 export const ResultsTable = ({
   keyword,
@@ -70,7 +69,6 @@ export const ResultsTable = ({
   to,
   onEdit,
   onDeleted,
-  onFilterStatus,
 }: ResultsTableProps) => {
   const [data, setData] = useState<SettlementItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
@@ -82,7 +80,7 @@ export const ResultsTable = ({
     field: string;
     direction: "asc" | "desc";
   }>({
-    field: "createdAt",
+    field: "",
     direction: "desc",
   });
   const [showFeeForm, setShowFeeForm] = useState(false);
@@ -109,7 +107,7 @@ export const ResultsTable = ({
         const params = new URLSearchParams({
           page: String(page - 1),
           size: String(pageSize),
-          sort: `${sort.field},${sort.direction}`,
+          // sort: `${sort.field},${sort.direction}`,
         });
         if (keyword?.trim()) {
           params.append("keyword", keyword.trim());
@@ -123,9 +121,9 @@ export const ResultsTable = ({
           params.append("toDate", to);
         }
 
-        if (status) {
-          params.append("status", status);
-        }
+        // if (status) {
+        //   params.append("status", status);
+        // }
         const res = await authFetch(
           `/api/construction/settlements?${params.toString()}`,
         );
@@ -169,7 +167,7 @@ export const ResultsTable = ({
     };
 
     fetchData();
-  }, [page, keyword, reloadKey, sort, from, to, status]);
+  }, [page, keyword, reloadKey, sort, from, to]);
 
   // Hàm fetch chi tiết quyết toán
   const fetchSettlementDetail = async (settlementId: string) => {
