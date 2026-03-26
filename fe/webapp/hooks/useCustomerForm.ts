@@ -22,7 +22,8 @@ const initialFormData: CreateCustomerPayload = {
   bankAccountProviderLocation: "",
   bankAccountName: "",
   isActive: true,
-
+  roadmapId: "",
+  
   // Form Info
   formNumber: "",
   formCode: "",
