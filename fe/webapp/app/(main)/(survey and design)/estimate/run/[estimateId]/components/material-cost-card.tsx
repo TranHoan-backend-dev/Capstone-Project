@@ -39,85 +39,34 @@ export const MaterialCostCard = ({
   const [showMaterialModal, setShowMaterialModal] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  // Trong MaterialCostCard
   useEffect(() => {
     if (estimateData?.material) {
       const mappedMaterials = estimateData.material.map(
-        (item: any, index: number) => ({
-          id: item.materialCode,
-          code: item.materialCode,
-          description: item.jobContent,
-          unit: item.unit,
-          quantity: parseFloat(item.mass) || 0,
-          materialPrice: parseFloat(item.materialCost) || 0,
-          laborPrice: parseFloat(item.laborPrice) || 0,
-          materialTotal: parseFloat(item.totalMaterialPrice) || 0,
-          laborTotal: parseFloat(item.totalLaborPrice) || 0,
-          note: item.note || "",
-          stt: index + 1,
-        }),
+        (item: any, index: number) => {
+          const quantity = parseFloat(item.mass) || 0;
+          const materialPrice = parseFloat(item.materialCost) || 0;
+          const laborPrice = parseFloat(item.laborPrice) || 0;
+
+          return {
+            id: item.materialCode,
+            code: item.materialCode,
+            description: item.jobContent,
+            unit: item.unit,
+            quantity: quantity,
+            materialPrice: materialPrice,
+            laborPrice: laborPrice,
+            materialTotal: quantity * materialPrice,
+            laborTotal: laborPrice,
+            note: item.note || "",
+            stt: index + 1,
+          };
+        },
       );
       setMaterials(mappedMaterials);
     }
     setLoading(false);
   }, [estimateData]);
-
-  const handleSave = async (isFinished: boolean) => {
-    try {
-      const materialPayload = materials.map((m) => ({
-        materialCode: m.id,
-        jobContent: m.description,
-        note: m.note,
-        unit: m.unit,
-        mass: m.quantity.toString(),
-        materialCost: m.materialPrice.toString(),
-        laborPrice: m.laborPrice.toString(),
-      }));
-
-      const payload = {
-        generalInformation: {
-          estimationId: estimateId,
-        },
-        material: materialPayload,
-        isFinished: isFinished,
-      };
-
-      const res = await fetch(`/api/construction/estimates/${estimateId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.message || "Save failed");
-      }
-
-      const json = await res.json();
-      if (!res.ok) {
-        CallToast({
-          title: "Thất bại",
-          message: json?.message || "Lưu vật tư thất bại",
-          color: "danger",
-        });
-        return;
-      }
-      setEstimateData(json.data);
-
-      CallToast({
-        title: "Thành công",
-        message: isFinished ? "Hoàn thành dự toán" : "Lưu nháp thành công",
-        color: "success",
-      });
-    } catch (err) {
-      CallToast({
-        title: "Thất bại",
-        message: "Có lỗi xảy ra khi lưu vật tư",
-        color: "danger",
-      });
-    }
-  };
 
   const handleChange = (
     id: string,
@@ -131,7 +80,7 @@ export const MaterialCostCard = ({
         const updated = { ...item, [field]: value };
 
         updated.materialTotal = updated.quantity * updated.materialPrice;
-        updated.laborTotal = updated.quantity * updated.laborPrice;
+        updated.laborTotal = updated.laborPrice;
 
         return updated;
       }),

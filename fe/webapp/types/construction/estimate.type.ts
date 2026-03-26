@@ -108,6 +108,9 @@ export type UpdateEstimatePayload = {
     mass: string;
     materialCost: string;
     laborPrice: string;
+    laborPriceAtRuralCommune: string;
+    totalMaterialPrice: string;
+    totalLaborPrice: string;
   }[];
   isFinished: boolean;
 };
@@ -203,5 +206,7 @@ export interface UpdateEstimateRequest {
     mass: string;
     materialCost: string;
     laborPrice: string;
+    totalMaterialPrice: string;
+    totalLaborPrice: string;
   }>;
 }

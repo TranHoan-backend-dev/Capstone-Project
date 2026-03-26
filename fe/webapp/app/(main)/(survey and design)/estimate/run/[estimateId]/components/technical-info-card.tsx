@@ -186,7 +186,7 @@ export const TechnicalInfoCard = ({
   const handleSave = async (isFinished: boolean) => {
     try {
       setIsUploading(true);
-
+      console.log("Materials before save:", materials);
       let designImageBase64 = undefined;
       if (designImageFile instanceof File) {
         designImageBase64 = await fileToBase64(designImageFile);
@@ -200,6 +200,8 @@ export const TechnicalInfoCard = ({
         mass: String(safeNumber(m.quantity)),
         materialCost: String(safeNumber(m.materialPrice)),
         laborPrice: String(safeNumber(m.laborPrice)),
+        totalMaterialPrice: String(m.materialTotal),
+        totalLaborPrice: String(m.laborTotal),
       }));
 
       const payload = {
