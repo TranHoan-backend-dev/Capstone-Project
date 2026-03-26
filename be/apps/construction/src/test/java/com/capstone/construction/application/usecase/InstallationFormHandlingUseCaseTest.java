@@ -120,7 +120,7 @@ class InstallationFormHandlingUseCaseTest {
 
     when(ifSrv.getByFormCodeAndFormNumber("C-001", "F-001")).thenReturn(order);
 
-    useCase.approveInstallationForm(USER_ID, request);
+    useCase.reviewInstallationForm(USER_ID, request);
 
     verify(ifSrv).approveInstallationForm(USER_ID, request);
     verify(costEstimateUseCase).createEstimate(any());
@@ -133,7 +133,7 @@ class InstallationFormHandlingUseCaseTest {
     var order = mock(InstallationFormListResponse.class);
     when(ifSrv.getByFormCodeAndFormNumber("C-001", "F-001")).thenReturn(order);
 
-    useCase.approveInstallationForm(USER_ID, request);
+    useCase.reviewInstallationForm(USER_ID, request);
 
     verify(ifSrv).approveInstallationForm(USER_ID, request);
     verify(costEstimateUseCase, never()).createEstimate(any());
