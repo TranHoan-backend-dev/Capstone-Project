@@ -1,5 +1,5 @@
 @keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
-@client_secret=
+@client_secret=t2io8dzbyJ9qdVdR2uoL01L6vBfViILJ
 @baseUrl = http://localhost:9005/api/v1
 @customersUrl = {{baseUrl}}/customers
 
@@ -10,10 +10,10 @@ Content-Type: application/x-www-form-urlencoded
 Accept: application/json
 
 grant_type = password &
-client_id =  &
+client_id = cmsn &
 client_secret = {{client_secret}} &
-username =   &
-password =  &
+username =   test&
+password = 123456 &
 scope = openid
 
 > {%

@@ -1,6 +1,8 @@
 package com.capstone.auth.adapter;
 
 import com.capstone.auth.application.dto.request.CheckExistenceRequest;
+import com.capstone.auth.application.dto.request.CredentialsRequest;
+import com.capstone.auth.application.dto.request.RefreshTokenRequest;
 import com.capstone.auth.application.dto.request.otp.SendOtpRequest;
 import com.capstone.auth.application.dto.request.otp.VerifyOtpRequest;
 import com.capstone.auth.application.dto.request.password.ChangePasswordRequest;
@@ -148,13 +150,15 @@ public class AuthenticationController {
     @ApiResponse(responseCode = "500", description = "Lỗi máy chủ nội bộ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PostMapping("/login")
-  public ResponseEntity<?> login(@AuthenticationPrincipal Jwt jwt) {
-    var id = jwt.getSubject();
-    Map<String, Object> claims = jwt.getClaims(); // username, prefered_username, realm_access->roles
+  public ResponseEntity<?> login(@RequestBody CredentialsRequest request) {
+    log.info("Login request comes to endpoint: {}", request);
+    var response = authUC.login(request.username(), request.password());
+    return Utils.returnOkResponse("Đăng nhập thành công", response);
+  }
 
-    return Utils.returnOkResponse("Đăng nhập thành công", authUC.login(
-      id,
-      claims.get("email").toString(),
-      claims.get("preferred_username").toString()));
+  @PostMapping("/refresh-token")
+  public ResponseEntity<?> getToken(@RequestBody RefreshTokenRequest request) {
+    log.info("Get refresh token: {}", request);
+    return Utils.returnOkResponse("", authUC.refreshToken(request.token()));
   }
 }

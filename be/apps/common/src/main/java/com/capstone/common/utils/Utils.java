@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.UUID;
@@ -69,7 +69,7 @@ public class Utils {
       statusCode,
       message,
       data,
-      LocalDateTime.now()
+      OffsetDateTime.now()
     ));
   }
 }

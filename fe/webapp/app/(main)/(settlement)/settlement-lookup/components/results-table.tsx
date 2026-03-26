@@ -8,7 +8,6 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import { useRouter, useSearchParams } from "next/navigation";
-
 import { SettlementDetailModal } from "./settlement-detail-modal";
 import { SettlementDocumentModal } from "./settlement-document-modal";
 
@@ -32,28 +31,28 @@ import { SETLEMENT_LOOKUP_COLUMN } from "@/config/table-columns";
 import { CallToast } from "@/components/ui/CallToast";
 import { ConfirmDialog } from "@/components/ui/modal/ConfirmDialog";
 
-const statusMap = {
-  APPROVED: {
-    label: "Đã duyệt quyết toán",
-    color: "success" as const,
-    bg: DarkGreenChip,
-  },
-  REJECTED: {
-    label: "Lập lại quyết toán",
-    color: "danger" as const,
-    bg: DarkRedChip,
-  },
-  PENDING_FOR_APPROVAL: {
-    label: "Đang xử lý",
-    color: "default" as const,
-    bg: "bg-blue-100 text-blue-800",
-  },
-  PROCESSING: {
-    label: "Chờ duyệt",
-    color: "warning" as const,
-    bg: DarkYellowChip,
-  },
-};
+// const statusMap = {
+//   APPROVED: {
+//     label: "Đã duyệt quyết toán",
+//     color: "success" as const,
+//     bg: DarkGreenChip,
+//   },
+//   REJECTED: {
+//     label: "Lập lại quyết toán",
+//     color: "danger" as const,
+//     bg: DarkRedChip,
+//   },
+//   PENDING_FOR_APPROVAL: {
+//     label: "Đang xử lý",
+//     color: "default" as const,
+//     bg: "bg-blue-100 text-blue-800",
+//   },
+//   PROCESSING: {
+//     label: "Chờ duyệt",
+//     color: "warning" as const,
+//     bg: DarkYellowChip,
+//   },
+// };
 interface ResultsTableProps {
   keyword?: string;
   reloadKey?: number;
@@ -86,7 +85,11 @@ export const ResultsTable = ({
     field: "createdAt",
     direction: "desc",
   });
-
+  const [showFeeForm, setShowFeeForm] = useState(false);
+  const [initialFeeData, setInitialFeeData] = useState<{
+    formCode: string;
+    formNumber: string;
+  } | null>(null);
   // State cho SettlementDetailModal
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedSettlementDetail, setSelectedSettlementDetail] = useState<
@@ -96,6 +99,7 @@ export const ResultsTable = ({
 
   const [page, setPage] = useState(1);
   const pageSize = 10;
+  const router = useRouter();
 
   // Fetch data khi filter thay đổi
   useEffect(() => {
@@ -151,6 +155,8 @@ export const ResultsTable = ({
           connectionFee: item.connectionFee,
           note: item.note,
           status: item.status,
+            formCode: item.formCode,
+  formNumber: item.formNumber,
         }));
         setData(mapped);
       } catch (error: any) {
@@ -252,6 +258,20 @@ export const ResultsTable = ({
       //   },
       // },
       {
+        content: "Tạo phiếu thu",
+        icon: CalculatorIcon,
+        className:
+          "text-green-600 hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-900/30",
+        onClick: (id: string) => {
+          const found = data.find((i) => i.id === id);
+          if (found) {
+            router.push(
+              `/installation-fee-collection?formCode=${found.formCode}&formNumber=${found.formNumber}`,
+            );
+          }
+        },
+      },
+      {
         content: "Chỉnh sửa",
         icon: EditIcon,
         className:
@@ -281,31 +301,31 @@ export const ResultsTable = ({
             {item.stt}
           </span>
         );
-      case "status":
-        const config = statusMap[item.status as keyof typeof statusMap] || {
-          label: item.status,
-          color: "default" as const,
-          bg: "bg-gray-100",
-        };
+      // case "status":
+      //   const config = statusMap[item.status as keyof typeof statusMap] || {
+      //     label: item.status,
+      //     color: "default" as const,
+      //     bg: "bg-gray-100",
+      //   };
 
-        return (
-          <button
-            className="hover:opacity-80 transition-opacity focus:outline-none"
-            onClick={() => {
-              console.log("CLICK STATUS:", item.status);
-              onFilterStatus?.(item.status);
-            }}
-          >
-            <Chip
-              className={`${config.bg}`}
-              color={config.color}
-              size="sm"
-              variant="flat"
-            >
-              {config.label}
-            </Chip>
-          </button>
-        );
+      //   return (
+      //     <button
+      //       className="hover:opacity-80 transition-opacity focus:outline-none"
+      //       onClick={() => {
+      //         console.log("CLICK STATUS:", item.status);
+      //         onFilterStatus?.(item.status);
+      //       }}
+      //     >
+      //       <Chip
+      //         className={`${config.bg}`}
+      //         color={config.color}
+      //         size="sm"
+      //         variant="flat"
+      //       >
+      //         {config.label}
+      //       </Chip>
+      //     </button>
+      //   );
       case "actions":
         return (
           <div className="flex items-center justify-center gap-2">

@@ -5,10 +5,13 @@ import com.capstone.auth.application.business.profile.ProfileService;
 import com.capstone.auth.application.business.roles.RoleService;
 import com.capstone.auth.application.business.users.UserService;
 import com.capstone.auth.application.business.dto.ProfileDTO;
+import com.capstone.auth.application.dto.request.keycloakparam.TokenParam;
 import com.capstone.auth.application.dto.request.users.NewUserRequest;
 import com.capstone.auth.application.dto.request.keycloakparam.Credential;
 import com.capstone.auth.application.dto.request.keycloakparam.TokenExchangeParam;
 import com.capstone.auth.application.dto.request.keycloakparam.UserCreationParam;
+import com.capstone.auth.application.dto.response.TokenExchangeResponse;
+import com.capstone.auth.application.dto.response.TokenResponse;
 import com.capstone.auth.application.dto.response.UserProfileResponse;
 import com.capstone.auth.application.event.producer.message.AccountCreationEvent;
 import com.capstone.auth.application.event.producer.MessageProducer;
@@ -23,7 +26,6 @@ import com.capstone.common.exception.NotExistingException;
 import com.capstone.common.enumerate.RoleName;
 import com.capstone.auth.infrastructure.utils.Message;
 import com.capstone.auth.infrastructure.service.keycloak.KeycloakFeignClient;
-import com.capstone.auth.infrastructure.utils.AuthUtils;
 import jakarta.transaction.Transactional;
 import org.jspecify.annotations.NonNull;
 import lombok.AccessLevel;
@@ -84,6 +86,14 @@ public class AuthUseCase {
   @NonFinal
   String realm;
 
+  @Value("${keycloak.client-id}")
+  @NonFinal
+  String clientId;
+
+  @Value("${keycloak.client-secret}")
+  @NonFinal
+  String clientSecret;
+
   @Value("${keycloak.client-id-admin}")
   @NonFinal
   String adminClientId;
@@ -92,25 +102,39 @@ public class AuthUseCase {
   @NonFinal
   String adminClientSecret;
 
-  public UserProfileResponse login(String userId, String email, String username) {
-    var user = uSrv.getUserById(userId);
-    Objects.requireNonNull(user, Message.SE_03);
-
-    AuthUtils.validateCredentials(user, email, username);
-
-    if (!uSrv.checkExistence(email) || !uSrv.checkExistence(username)) {
+  public TokenResponse login(String username, String password) {
+    if (!uSrv.checkExistence(username)) {
       throw new NotExistingException(Message.SE_04);
     }
+    var user = uSrv.getByUserNameOrEmail(username);
 
     // kiem tra xem tai khoan co bi khoa hay khong
     if (user.isLocked()) {
       throw new AccountBlockedException(Message.SE_06);
     }
 
-    var profile = pSrv.getProfileById(userId);
+    var profile = pSrv.getProfileById(user.userId());
     Objects.requireNonNull(profile, Message.SE_05);
 
-    return returnUserProfile(profile, user);
+    var token = keycloakFeignClient.token(TokenParam.builder()
+      .grantType("password")
+      .clientId(clientId)
+      .clientSecret(clientSecret)
+      .username(username)
+      .password(password)
+      .scope("openid")
+      .build());
+
+    return new TokenResponse(returnUserProfile(profile, user), token);
+  }
+
+  public TokenExchangeResponse refreshToken(String refreshToken) {
+    return keycloakFeignClient.token(TokenParam.builder()
+      .grantType("refresh_token")
+      .clientId(clientId)
+      .clientSecret(clientSecret)
+      .refreshToken(refreshToken)
+      .build());
   }
 
   @Transactional(rollbackOn = Exception.class)

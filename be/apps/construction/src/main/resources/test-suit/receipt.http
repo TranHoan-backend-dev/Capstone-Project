@@ -1,3 +1,5 @@
+
+
 ### TC01 - Tạo mới biên lai thành công (Happy Path)
 POST http://localhost:9004/api/v1/receipts
 Content-Type: application/json
@@ -170,5 +172,60 @@ Authorization: Bearer {{auth_token}}
 > {%
 client.test("Status is 400", function() {
   client.assert(response.status === 400);
+});
+%}
+
+
+### TC11 - Lấy danh sách biên lai với phân trang
+GET http://localhost:9004/api/v1/receipts?page=0&size=10
+Authorization: Bearer {{access_token}}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC12 - Lọc danh sách biên lai theo từ khóa
+GET http://localhost:9004/api/v1/receipts?keyword=Nguyễn&page=0&size=10
+Authorization: Bearer {{access_token}}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC13 - Lọc danh sách biên lai theo khoảng thời gian
+GET http://localhost:9004/api/v1/receipts?from=01-01-2024&to=31-12-2024&page=0&size=10
+Authorization: Bearer {{access_token}}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC14 - Lọc danh sách biên lai theo trạng thái thanh toán
+GET http://localhost:9004/api/v1/receipts?isPaid=true&page=0&size=10
+Authorization: Bearer {{access_token}}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC15 - Lọc kết hợp nhiều điều kiện
+GET http://localhost:9004/api/v1/receipts?keyword=A&from=01-01-2024&to=31-12-2024&isPaid=true&page=0&size=10
+Authorization: Bearer {{access_token}}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
 });
 %}

@@ -184,6 +184,7 @@ export interface CreateCustomerPayload {
   budgetRelationshipCode: string;
   passportCode: string;
   connectionPoint: string;
+  roadmapId: string;
 }
 
 export interface CustomerResponse {

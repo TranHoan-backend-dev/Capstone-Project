@@ -132,6 +132,7 @@ create table public.construction_request
     primary key,
   contract_id                   varchar(255) not null,
   created_at                    timestamp(6) not null,
+  is_approved                   boolean,
   updated_at                    timestamp(6) not null,
   installation_form_form_code   varchar(255),
   installation_form_form_number varchar(36),
@@ -201,11 +202,16 @@ alter table public.laterals
 create table public.receipt
 (
   address                       varchar(255) not null,
+  attach                        varchar(255),
   created_at                    timestamp(6) not null,
   customer_name                 varchar(255) not null,
   is_paid                       boolean      not null,
   payment_date                  date         not null,
+  payment_reason                varchar(255) not null,
   receipt_number                varchar(255) not null,
+  significance                  jsonb,
+  total_money_in_characters     varchar(255),
+  total_money_in_digits         varchar(255) not null,
   updated_at                    timestamp(6) not null,
   installation_form_form_code   varchar(255) not null,
   installation_form_form_number varchar(36)  not null,
@@ -221,6 +227,7 @@ create table public.roadmap
 (
   roadmap_id              varchar(255) not null
     primary key,
+  assigned_staff_id       varchar(255),
   created_at              timestamp(6) not null,
   name                    varchar(255) not null
     constraint uken8xqs8c9yv3lca2n3wdk93fp

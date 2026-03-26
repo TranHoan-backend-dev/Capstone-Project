@@ -1,7 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apiFetch } from './api';
 import { TokenManager } from './token';
-import { keycloakService } from './keycloak.service';
 
 export interface LoginResponse {
   accessToken: string;
@@ -25,39 +24,45 @@ const authService = {
   },
 
   async login(identifier: string, password: string): Promise<LoginResponse> {
-    // 1. Đăng nhập qua Keycloak
-    console.log("[auth.service.ts]: " + identifier + ", " + password)
-    const kcData = await keycloakService.login({ identifier, password });
-    console.log("[auth.service.ts] Ket qua cua keycloak: " + kcData)
+    console.log("[auth.service.ts] Đang đăng nhập cho:", identifier);
 
-    // 2. Lưu token tạm thời để sử dụng cho apiFetch tiếp theo (vì apiFetch sẽ tự động lấy token từ TokenManager)
-    await TokenManager.setTokens(kcData.access_token, kcData.refresh_token);
+    // Gọi backend trực tiếp thay vì qua Keycloak
+    const response = await apiFetch('/auth/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({
+        username: identifier,
+        password: password,
+      }),
+    });
 
-    try {
-      // 3. Gọi backend xác thực và lấy thông tin User chi tiết
-      // apiFetch(..., { method: 'POST' }) sẽ tự động đính kèm Authorization: Bearer <kcData.access_token>
-      const response = await apiFetch('/auth/login', {
-        method: 'POST',
-      });
-
-      // response ở đây thường là WrapperApiResponse<UserProfileResponse> từ backend
-      const userData = response.data || response;
-      console.log("[auth.service.ts] userData: " + userData);
-
-      // 4. Đồng bộ hóa với AsyncStorage
-      await AsyncStorage.setItem('user', JSON.stringify(userData));
-
-      return {
-        accessToken: kcData.access_token,
-        refreshToken: kcData.refresh_token,
-        user: userData,
-      };
-    } catch (error: any) {
-      console.error('Login backend sync error:', error.message);
-      // Nếu lỗi ở bước sync backend, chúng ta nên xóa token đã lưu để đảm bảo tính toàn vẹn
-      await TokenManager.logout();
-      throw error;
+    // response từ backend là WrapperApiResponse<TokenResponse>
+    // TokenResponse { userDetails, token: TokenExchangeResponse }
+    const authData = response.data;
+    if (!authData || !authData.token) {
+      throw new Error('Dữ liệu xác thực không hợp lệ từ máy chủ');
     }
+
+    const { userDetails, token } = authData;
+
+    // Lưu token vào TokenManager
+    await TokenManager.setTokens(token.access_token, token.refresh_token);
+
+    // Lưu thông tin user vào AsyncStorage
+    const user = {
+      id: userDetails.id,
+      email: userDetails.email,
+      username: userDetails.username,
+      role: userDetails.role,
+      fullName: userDetails.fullname,
+      avatarUrl: userDetails.avatarUrl,
+    };
+    await AsyncStorage.setItem('user', JSON.stringify(user));
+
+    return {
+      accessToken: token.access_token,
+      refreshToken: token.refresh_token,
+      user: user,
+    };
   },
 
   async logout(): Promise<void> {
@@ -95,6 +100,31 @@ const authService = {
   async isAuthenticated(): Promise<boolean> {
     const token = await TokenManager.getAccessToken();
     return !!token;
+  },
+
+  async refreshToken(): Promise<string | null> {
+    const refreshToken = await TokenManager.getRefreshToken();
+    if (!refreshToken) return null;
+
+    try {
+      // Gọi backend để lấy access token mới
+      const response = await apiFetch('/auth/refresh-token', {
+        method: 'POST',
+        body: JSON.stringify({ token: refreshToken }),
+      });
+
+      // Backend trả về TokenExchangeResponse trực tiếp hoặc trong data
+      const tokenData = response.data || response;
+      if (tokenData && tokenData.access_token) {
+        await TokenManager.setTokens(tokenData.access_token, tokenData.refresh_token || refreshToken);
+        return tokenData.access_token;
+      }
+      return null;
+    } catch (error) {
+      console.error('Refresh token error:', error);
+      await this.logout();
+      return null;
+    }
   },
 };
 

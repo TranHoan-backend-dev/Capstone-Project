@@ -10,6 +10,7 @@ import { TitleDarkColor } from "@/config/chip-and-icon";
 import { CustomerInfoProps, usageTargetMap } from "@/types";
 import { LookupModal } from "@/components/ui/modal/LookupModal";
 import { authFetch } from "@/utils/authFetch";
+import { CallToast } from "@/components/ui/CallToast";
 
 export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
   const [showFormModal, setShowFormModal] = useState(false);
@@ -17,6 +18,8 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
   const [displayWaterPrice, setDisplayWaterPrice] = useState("");
   const [showWaterMeterModal, setShowWaterMeterModal] = useState(false);
   const [displayWaterMeter, setDisplayWaterMeter] = useState("");
+  const [showRoadmapModal, setShowRoadmapModal] = useState(false);
+  const [displayRoadmap, setDisplayRoadmap] = useState("");
 
   useEffect(() => {
     const fetchWaterPriceDetails = async () => {
@@ -62,12 +65,89 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
     fetchWaterMeterDetails();
   }, [formData.waterMeterId, displayWaterMeter]);
 
-  const handleSelectForm = (form: { formNumber: string; formCode: string }) => {
-    onUpdate("formNumber", form.formNumber);
-    onUpdate("formCode", form.formCode);
-    setShowFormModal(false);
+  useEffect(() => {
+    const fetchRoadmapDetails = async () => {
+      if (formData.roadmapId && !displayRoadmap) {
+        try {
+          const response = await authFetch(
+            `/api/construction/roadmaps/${formData.roadmapId}`,
+          );
+          const result = await response.json();
+          if (result.data.content) {
+            setDisplayRoadmap(
+              `${result.data.lateralName} - ${result.data.networkName}`,
+            );
+          }
+        } catch (error) {
+          console.error("Failed to fetch roadmap:", error);
+        }
+      }
+    };
+
+    fetchRoadmapDetails();
+  }, [formData.roadmapId, displayRoadmap]);
+
+  // Add handler for roadmap selection:
+  const handleSelectRoadmap = (item: any) => {
+    onUpdate("roadmapId", item.id);
+    setDisplayRoadmap(`${item.lateralName} - ${item.networkName}`);
+    setShowRoadmapModal(false);
   };
 
+  const handleSelectForm = async (selectedForm: any) => {
+    try {
+      onUpdate("formNumber", selectedForm.formNumber);
+      onUpdate("formCode", selectedForm.formCode);
+
+      if (selectedForm.customerName) {
+        onUpdate("name", selectedForm.customerName);
+      }
+
+      if (selectedForm.address) {
+        onUpdate("address", selectedForm.address);
+      }
+
+      if (selectedForm.phoneNumber) {
+        onUpdate("phoneNumber", selectedForm.phoneNumber);
+      }
+
+      if (selectedForm.email) {
+        onUpdate("email", selectedForm.email);
+      }
+
+      if (selectedForm.citizenIdentificationNumber) {
+        onUpdate(
+          "citizenIdentificationNumber",
+          selectedForm.citizenIdentificationNumber,
+        );
+      }
+
+      if (selectedForm.overallWaterMeterId) {
+        onUpdate("waterMeterId", selectedForm.overallWaterMeterId);
+        fetchWaterMeterDetailsById(selectedForm.overallWaterMeterId);
+      }
+
+      setShowFormModal(false);
+
+    } catch (error) {
+      console.error("Failed to process form data:", error);
+    }
+  };
+  const fetchWaterMeterDetailsById = async (waterMeterId: string) => {
+    try {
+      const response = await authFetch(
+        `/api/device/water-meters/${waterMeterId}`,
+      );
+      const result = await response.json();
+      if (result.data) {
+        setDisplayWaterMeter(
+          `Loại: ${result.data.typeName} - Size: ${result.data.size} - Lắp: ${result.data.installationDate}`,
+        );
+      }
+    } catch (error) {
+      console.error("Failed to fetch water meter:", error);
+    }
+  };
   const handleSelectWaterPrice = (item: any) => {
     onUpdate("waterPriceId", item.id);
     setDisplayWaterPrice(
@@ -119,12 +199,21 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
           columns={[
             { key: "stt", label: "STT" },
             { key: "formNumber", label: "Mã đơn" },
+            { key: "customerName", label: "Tên khách hàng" },
+            { key: "address", label: "Địa chỉ" },
+            { key: "phoneNumber", label: "Số điện thoại" },
           ]}
           mapData={(item: any, index: number) => ({
             stt: index + 1,
             id: item.formCode,
             formNumber: item.formNumber,
             formCode: item.formCode,
+            customerName: item.customerName,
+            address: item.address,
+            phoneNumber: item.phoneNumber,
+            email: item.email,
+            citizenIdentificationNumber: item.citizenIdentificationNumber,
+            overallWaterMeterId: item.overallWaterMeterId,
           })}
           onSelect={handleSelectForm}
         />
@@ -235,16 +324,34 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
           })}
           onSelect={handleSelectWaterMeter}
         />
-        <div className="flex items-center h-full pt-4">
-          <Checkbox
-            size="sm"
-            color="primary"
-            isSelected={formData.isActive}
-            onValueChange={(checked) => onUpdate("isActive", checked)}
-          >
-            Kích hoạt
-          </Checkbox>
-        </div>
+        <SearchInputWithButton
+          label="Lộ trình ghi"
+          isRequired
+          value={displayRoadmap}
+          onValueChange={() => {}}
+          onSearch={() => setShowRoadmapModal(true)}
+        />
+
+        <LookupModal
+          enableSearch={false}
+          dataKey="content"
+          isOpen={showRoadmapModal}
+          onClose={() => setShowRoadmapModal(false)}
+          title="Chọn lộ trình ghi"
+          api="/api/construction/roadmaps"
+          columns={[
+            { key: "stt", label: "STT" },
+            { key: "lateralName", label: "Tên lộ trình" },
+            { key: "networkName", label: "Chi nhánh" },
+          ]}
+          mapData={(item: any, index: number) => ({
+            stt: index + 1,
+            id: item.roadmapId,
+            lateralName: item.lateralName,
+            networkName: item.networkName,
+          })}
+          onSelect={handleSelectRoadmap}
+        />
       </div>
       <Divider className="mt-6 mb-6" />
     </div>

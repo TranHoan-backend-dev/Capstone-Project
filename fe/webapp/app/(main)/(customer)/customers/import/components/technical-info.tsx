@@ -141,6 +141,15 @@ export const TechnicalInfo = ({ formData, onUpdate }: TechnicalInfoProps) => {
           <Checkbox
             size="sm"
             color="primary"
+            isSelected={formData.isActive}
+            onValueChange={(checked) => onUpdate("isActive", checked)}
+          >
+            Kích hoạt
+          </Checkbox>
+
+          <Checkbox
+            size="sm"
+            color="primary"
             isSelected={formData.isBigCustomer}
             onValueChange={(checked) => onUpdate("isBigCustomer", checked)}
           >

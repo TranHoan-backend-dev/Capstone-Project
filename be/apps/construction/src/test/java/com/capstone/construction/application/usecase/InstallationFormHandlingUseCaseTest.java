@@ -18,6 +18,7 @@ import org.springframework.data.domain.*;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.*;
@@ -92,7 +93,7 @@ class InstallationFormHandlingUseCaseTest {
       "FORM-001", "Customer", "CODE-001", USER_ID, LocalDateTime.now());
     when(ifSrv.createNewInstallationForm(USER_ID, request)).thenReturn(formResponse);
     when(empSrv.getEmployeeNameById(USER_ID))
-      .thenReturn(new WrapperApiResponse(200, "OK", "Staff Name", LocalDateTime.now()));
+      .thenReturn(new WrapperApiResponse(200, "OK", "Staff Name", OffsetDateTime.now()));
 
     var result = useCase.createNewInstallationRequest(USER_ID, request);
 
@@ -119,7 +120,7 @@ class InstallationFormHandlingUseCaseTest {
 
     when(ifSrv.getByFormCodeAndFormNumber("C-001", "F-001")).thenReturn(order);
 
-    useCase.approveInstallationForm(USER_ID, request);
+    useCase.reviewInstallationForm(USER_ID, request);
 
     verify(ifSrv).approveInstallationForm(USER_ID, request);
     verify(costEstimateUseCase).createEstimate(any());
@@ -132,7 +133,7 @@ class InstallationFormHandlingUseCaseTest {
     var order = mock(InstallationFormListResponse.class);
     when(ifSrv.getByFormCodeAndFormNumber("C-001", "F-001")).thenReturn(order);
 
-    useCase.approveInstallationForm(USER_ID, request);
+    useCase.reviewInstallationForm(USER_ID, request);
 
     verify(ifSrv).approveInstallationForm(USER_ID, request);
     verify(costEstimateUseCase, never()).createEstimate(any());

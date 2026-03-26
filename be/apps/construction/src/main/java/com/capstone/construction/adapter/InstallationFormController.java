@@ -41,7 +41,7 @@ import java.time.format.DateTimeFormatter;
 @Tag(name = "Installation Form", description = "Quản lý đơn lắp đặt (Tiếp nhận và xử lý hồ sơ lắp đặt nước)")
 public class InstallationFormController {
   InstallationFormUseCase installationFormHandlingUseCase;
-  InstallationFormService service;
+  InstallationFormService installationFormService;
   @NonFinal
   Logger log;
 
@@ -87,14 +87,14 @@ public class InstallationFormController {
   })
   @PatchMapping("/approve")
   @PreAuthorize("hasAnyAuthority('SURVEY_STAFF', 'IT_STAFF')")
-  public ResponseEntity<WrapperApiResponse> approveInstallationForm(
+  public ResponseEntity<WrapperApiResponse> reviewInstallationForm(
     @AuthenticationPrincipal Jwt jwt,
     @RequestBody @Valid ApproveRequest request
   ) {
     log.info("Received request to approve installation form: {}", request.formCode());
 
     var id = jwt.getSubject();
-    installationFormHandlingUseCase.approveInstallationForm(id, request);
+    installationFormHandlingUseCase.reviewInstallationForm(id, request);
     return Utils.returnOkResponse("Thay đổi trạng thái thành công", null);
   }
 
@@ -151,6 +151,6 @@ public class InstallationFormController {
     @RequestParam String formCode,
     @RequestParam String formNumber
   ) {
-    return service.isInstallationFormExisting(formNumber, formCode);
+    return installationFormService.isInstallationFormExisting(formNumber, formCode);
   }
 }

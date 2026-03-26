@@ -27,7 +27,7 @@ public final class Message {
   public static final String ENT_24 = "Phụ lục không được để trống";
   public static final String ENT_25 = "Trường khách hàng lớn không được để trống";
   public static final String ENT_26 = "Mã đồng hồ không được để trống";
-  public static final String ENT_27 = "Không tìm thấy loại đồng hồ nước";
+  public static final String ENT_27 = "Không tìm thấy lộ trình ghi phù hợp";
   public static final String ENT_28 = "Không tìm thấy giá nước";
   public static final String ENT_29 = "Không tìm thấy đồng hồ nước";
 }

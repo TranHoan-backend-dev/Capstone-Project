@@ -18,6 +18,7 @@ import java.util.function.Consumer;
 
 import java.time.LocalDateTime;
 
+@Builder
 @Table
 @Getter
 @Entity
@@ -126,23 +127,27 @@ public class Customer {
   @Column(nullable = false)
   String roadmapId;
 
-  @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @ToString.Exclude
-  List<Bill> bill;
+  List<Bill> bills;
 
   @PrePersist
   void onCreate() {
     this.createdAt = LocalDateTime.now();
     this.updatedAt = this.createdAt;
-    this.bill = new ArrayList<>();
+    this.bills = new ArrayList<>();
   }
 
   public void addNewBill(Bill bill) {
-    this.bill.add(bill);
+    bill.setCustomer(this);
+    this.bills.addFirst(bill);
   }
 
   public Bill getTheClosestBill() {
-    return bill.isEmpty() ? null : bill.get(bill.size() - 1);
+    if (bills == null || bills.isEmpty()) {
+      return null;
+    }
+    return bills.getFirst();
   }
 
   @PreUpdate
@@ -323,196 +328,6 @@ public class Customer {
     Objects.requireNonNull(value, message);
     if (value < 0)
       throw new IllegalArgumentException(message);
-  }
-  // </editor-fold>
-
-  // <editor-fold> desc="builder"
-  public static Customer create(@NonNull Consumer<CustomerBuilder> consumer) {
-    var builder = new CustomerBuilder();
-    consumer.accept(builder);
-    return builder.build();
-  }
-
-  public static class CustomerBuilder {
-    private final Customer customer = new Customer();
-
-    public CustomerBuilder name(String name) {
-      customer.setName(name);
-      return this;
-    }
-
-    public CustomerBuilder email(String email) {
-      customer.setEmail(email);
-      return this;
-    }
-
-    public CustomerBuilder phoneNumber(String phoneNumber) {
-      customer.setPhoneNumber(phoneNumber);
-      return this;
-    }
-
-    public CustomerBuilder type(CustomerType type) {
-      customer.setType(type);
-      return this;
-    }
-
-    public CustomerBuilder isBigCustomer(Boolean isBigCustomer) {
-      customer.setIsBigCustomer(isBigCustomer);
-      return this;
-    }
-
-    public CustomerBuilder usageTarget(String usageTarget) {
-      customer.setUsageTarget(usageTarget);
-      return this;
-    }
-
-    public CustomerBuilder numberOfHouseholds(Integer numberOfHouseholds) {
-      customer.setNumberOfHouseholds(numberOfHouseholds);
-      return this;
-    }
-
-    public CustomerBuilder householdRegistrationNumber(Integer householdRegistrationNumber) {
-      customer.setHouseholdRegistrationNumber(householdRegistrationNumber);
-      return this;
-    }
-
-    public CustomerBuilder protectEnvironmentFee(Integer protectEnvironmentFee) {
-      customer.setProtectEnvironmentFee(protectEnvironmentFee);
-      return this;
-    }
-
-    public CustomerBuilder isFree(Boolean isFree) {
-      customer.setIsFree(isFree);
-      return this;
-    }
-
-    public CustomerBuilder isSale(Boolean isSale) {
-      customer.setIsSale(isSale);
-      return this;
-    }
-
-    public CustomerBuilder m3Sale(String m3Sale) {
-      customer.setM3Sale(m3Sale);
-      return this;
-    }
-
-    public CustomerBuilder fixRate(String fixRate) {
-      customer.setFixRate(fixRate);
-      return this;
-    }
-
-    public CustomerBuilder installationFee(Integer installationFee) {
-      customer.setInstallationFee(installationFee);
-      return this;
-    }
-
-    public CustomerBuilder deductionPeriod(String deductionPeriod) {
-      customer.setDeductionPeriod(deductionPeriod);
-      return this;
-    }
-
-    public CustomerBuilder monthlyRent(Integer monthlyRent) {
-      customer.setMonthlyRent(monthlyRent);
-      return this;
-    }
-
-    public CustomerBuilder waterMeterType(String waterMeterType) {
-      customer.setWaterMeterType(waterMeterType);
-      return this;
-    }
-
-    public CustomerBuilder citizenIdentificationNumber(String citizenIdentificationNumber) {
-      customer.setCitizenIdentificationNumber(citizenIdentificationNumber);
-      return this;
-    }
-
-    public CustomerBuilder citizenIdentificationProvideAt(String citizenIdentificationProvideAt) {
-      customer.setCitizenIdentificationProvideAt(citizenIdentificationProvideAt);
-      return this;
-    }
-
-    public CustomerBuilder paymentMethod(String paymentMethod) {
-      customer.setPaymentMethod(paymentMethod);
-      return this;
-    }
-
-    public CustomerBuilder bankAccountNumber(String bankAccountNumber) {
-      customer.setBankAccountNumber(bankAccountNumber);
-      return this;
-    }
-
-    public CustomerBuilder bankAccountProviderLocation(String bankAccountProviderLocation) {
-      customer.setBankAccountProviderLocation(bankAccountProviderLocation);
-      return this;
-    }
-
-    public CustomerBuilder bankAccountName(String bankAccountName) {
-      customer.setBankAccountName(bankAccountName);
-      return this;
-    }
-
-    public CustomerBuilder budgetRelationshipCode(String budgetRelationshipCode) {
-      customer.setBudgetRelationshipCode(budgetRelationshipCode);
-      return this;
-    }
-
-    public CustomerBuilder passportCode(String passportCode) {
-      customer.setPassportCode(passportCode);
-      return this;
-    }
-
-    public CustomerBuilder connectionPoint(String connectionPoint) {
-      customer.setConnectionPoint(connectionPoint);
-      return this;
-    }
-
-    public CustomerBuilder isActive(Boolean isActive) {
-      customer.setIsActive(isActive);
-      return this;
-    }
-
-    public CustomerBuilder cancelReason(String cancelReason) {
-      customer.setCancelReason(cancelReason);
-      return this;
-    }
-
-    public CustomerBuilder waterMeterId(String value) {
-      customer.setWaterMeterId(value);
-      return this;
-    }
-
-    public CustomerBuilder waterPriceId(String value) {
-      customer.setWaterPriceId(value);
-      return this;
-    }
-
-    public CustomerBuilder roadmapId(String value) {
-      customer.setRoadmapId(value);
-      return this;
-    }
-
-    public CustomerBuilder formNumber(String value) {
-      customer.setFormNumber(value);
-      return this;
-    }
-
-    public CustomerBuilder formCode(String value) {
-      customer.setFormCode(value);
-      return this;
-    }
-
-    public CustomerBuilder address(String value) {
-      customer.setAddress(value);
-      return this;
-    }
-
-    public Customer build() {
-      Objects.requireNonNull(customer.name, SharedMessage.MES_05);
-      if (customer.name.trim().isEmpty()) {
-        throw new IllegalArgumentException(SharedMessage.MES_05);
-      }
-      return customer;
-    }
   }
   // </editor-fold>
 }

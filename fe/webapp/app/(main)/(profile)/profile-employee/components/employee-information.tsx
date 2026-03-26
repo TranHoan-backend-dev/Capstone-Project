@@ -41,6 +41,15 @@ const EmployeeProfile = ({ data }: EmployeeProfileProps) => {
 
   const handleSave = async () => {
     try {
+      if (!formData.birthday || formData.birthday.trim() === "") {
+        CallToast({
+          title: "Lỗi",
+          message: "Vui lòng nhập ngày sinh",
+          color: "danger",
+        });
+        return;
+      }
+
       const payload = {
         fullName: formData.fullname,
         phoneNumber: formData.phoneNumber,
