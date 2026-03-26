@@ -21,10 +21,10 @@ scope = openid
 ### login
 POST http://localhost:9003/api/v1/auth/login
 Content-Type: application/json
-Authorization: Bearer {{access_token}}
-Accept: application/json
 
 {
+  "username": "survey_staff1",
+  "password": "12345678"
 }
 
 ### logout

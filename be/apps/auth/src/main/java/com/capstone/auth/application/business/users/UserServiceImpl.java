@@ -271,6 +271,15 @@ public class UserServiceImpl implements UserService {
     return user.getElectronicSigningUrl();
   }
 
+  @Override
+  public UserDTO getByUserNameOrEmail(@NonNull String value) {
+    if (value.trim().matches(SharedConstant.EMAIL_PATTERN)) {
+      return getUserByEmail(value);
+    } else {
+      return returnUserDTO(repo.findByUsername(value));
+    }
+  }
+
   private Users getById(String id) {
     return repo
       .findById(id)

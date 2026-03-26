@@ -18,6 +18,8 @@ export interface SettlementItem {
   note?: string;
   createdAt?: string;
   updatedAt?: string;
+  formCode: string;
+  formNumber: string;
 }
 
 export interface SettlementDetail extends SettlementItem {
@@ -104,4 +106,6 @@ export interface SettlementResponse {
   significance: any;
   status: SettlementStatus;
   updatedAt: string;
+  formCode: string;
+  formNumber: string;
 }

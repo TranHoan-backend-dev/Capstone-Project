@@ -9,4 +9,6 @@ public interface MaterialsOfCostEstimateService {
   List<MaterialsOfCostEstimateResponse> getByEstimateId(String id);
 
   void update(List<BaseMaterial> material, String estimateId);
+
+  List<MaterialsOfCostEstimateResponse> getDefaultMaterial();
 }
