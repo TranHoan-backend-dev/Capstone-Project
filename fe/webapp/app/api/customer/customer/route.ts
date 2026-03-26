@@ -11,12 +11,68 @@ export async function GET(req: NextRequest) {
     }
 
     const { searchParams } = new URL(req.url);
+
+    // Pagination params
     const page = Number(searchParams.get("page") ?? 0);
     const size = Number(searchParams.get("size") ?? 10);
     const sort = searchParams.get("sort") || "createdAt,desc";
-    const filter = searchParams.get("filter") || undefined;
 
-    const response = await getAllCustomers(accessToken, page, size, sort);
+    // Filter params - Lấy tất cả filter từ query params
+    const filters: Record<string, any> = {};
+
+    // Lấy các filter từ searchParams
+    const filterFields = [
+      "name",
+      "email",
+      "phoneNumber",
+      "type",
+      "isBigCustomer",
+      "usageTarget",
+      "numberOfHouseholds",
+      "householdRegistrationNumber",
+      "protectEnvironmentFee",
+      "isFree",
+      "isSale",
+      "m3Sale",
+      "fixRate",
+      "installationFee",
+      "deductionPeriod",
+      "monthlyRent",
+      "waterMeterType",
+      "citizenIdentificationNumber",
+      "citizenIdentificationProvideAt",
+      "paymentMethod",
+      "bankAccountNumber",
+      "bankAccountProviderLocation",
+      "bankAccountName",
+      "budgetRelationshipCode",
+      "passportCode",
+      "connectionPoint",
+      "isActive",
+      "cancelReason",
+      "formNumber",
+      "formCode",
+      "waterPriceId",
+      "waterMeterId",
+      "roadmapId",
+      "address",
+      "search",
+    ];
+
+    filterFields.forEach((field) => {
+      const value = searchParams.get(field);
+      if (value !== null && value !== undefined && value !== "") {
+        filters[field] = value;
+      }
+    });
+
+    const response = await getAllCustomers(
+      accessToken,
+      page,
+      size,
+      sort,
+      filters,
+    );
 
     return NextResponse.json(
       {
@@ -26,6 +82,7 @@ export async function GET(req: NextRequest) {
       { status: 200 },
     );
   } catch (error: any) {
+    console.error("Error fetching customers:", error);
     const status = error?.response?.status ?? 500;
 
     return NextResponse.json(

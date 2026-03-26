@@ -14,10 +14,13 @@ import { CallToast } from "@/components/ui/CallToast";
 
 export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
   const [showFormModal, setShowFormModal] = useState(false);
+  
   const [showWaterPriceModal, setShowWaterPriceModal] = useState(false);
   const [displayWaterPrice, setDisplayWaterPrice] = useState("");
+
   const [showWaterMeterModal, setShowWaterMeterModal] = useState(false);
   const [displayWaterMeter, setDisplayWaterMeter] = useState("");
+
   const [showRoadmapModal, setShowRoadmapModal] = useState(false);
   const [displayRoadmap, setDisplayRoadmap] = useState("");
 

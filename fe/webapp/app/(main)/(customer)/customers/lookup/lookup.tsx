@@ -11,41 +11,27 @@ const CustomersLookup = () => {
   const areas = [{ label: "Tất cả", value: "all" }];
   const wards = [{ label: "Tất cả", value: "all" }];
   const neighborhoods = [{ label: "Tất cả", value: "all" }];
+
   const [keyword, setKeyword] = useState<CustomerFilter>({
     name: "",
+    phoneNumber: "",
+    formNumber: "",
+    roadmapId: "",
   });
-  const [showAddForm, setShowAddForm] = useState(false);
+
   const [reloadKey, setReloadKey] = useState(0);
-  const [editingItem, setEditingItem] = useState<CustomerLookupItem | null>(null);
+
+  const handleSearch = (filters: CustomerFilter) => {
+    setKeyword(filters);
+    setReloadKey((prev) => prev + 1);
+  };
 
   const handleReload = () => setReloadKey((prev) => prev + 1);
-  const handleAddNew = () => {
-    setEditingItem(null);
-    setShowAddForm(true);
-  };
-
-  const handleEdit = (item: CustomerLookupItem) => {
-    setEditingItem(item);
-    setShowAddForm(true);
-  };
-
-  const handleCloseForm = () => {
-    setShowAddForm(false);
-    setEditingItem(null);
-  };
-
-  const handleSuccess = () => {
-    handleReload();
-    handleCloseForm();
-  };
 
   return (
     <>
       <FilterSection
-        areas={areas}
-        branches={branches}
-        wards={wards}
-        neighborhoods={neighborhoods}
+        onSearch={handleSearch}
       />
 
       <ResultsTable

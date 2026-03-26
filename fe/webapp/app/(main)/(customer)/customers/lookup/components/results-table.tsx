@@ -1,12 +1,9 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { Chip, Link, Tooltip, Button, useDisclosure } from "@heroui/react";
-import NextLink from "next/link";
-
+import { Chip, Tooltip, Button, useDisclosure } from "@heroui/react";
 import { PriceApplicationModal } from "./price-application-modal";
 import { MeterChangeHistoryModal } from "./meter-change-history-modal";
-
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import {
   AmberIconColor,
@@ -17,7 +14,6 @@ import {
   ProfileIcon,
   ReplaceWaterMeter,
   SetPriceIcon,
-  TitleDarkColor,
   UsageIcon,
   WhiteIconColor,
 } from "@/config/chip-and-icon";
@@ -72,21 +68,40 @@ export const ResultsTable = ({
         if (keyword.name?.trim()) {
           params.append("name", keyword.name.trim());
         }
+        if (keyword.phoneNumber?.trim()) {
+          params.append("phoneNumber", keyword.phoneNumber.trim());
+        }
+        if (keyword.citizenIdentificationNumber?.trim()) {
+          params.append(
+            "citizenIdentificationNumber",
+            keyword.citizenIdentificationNumber.trim(),
+          );
+        }
+        if (keyword.address?.trim()) {
+          params.append("address", keyword.address.trim());
+        }
+        if (keyword.type?.trim()) {
+          params.append("type", keyword.type.trim());
+        }
+        if (keyword.usageTarget?.trim()) {
+          params.append("usageTarget", keyword.usageTarget.trim());
+        }
+        if (keyword.roadmapId?.trim()) {
+          params.append("roadmapId", keyword.roadmapId.trim());
+        }
+        if (keyword.formNumber?.trim()) {
+          params.append("formNumber", keyword.formNumber.trim());
+        }
 
         const res = await authFetch(
           `/api/customer/customer?${params.toString()}`,
         );
 
-        if (!res.ok) {
-          console.error("Fetch failed", res.status);
-          return;
-        }
-
         const json = await res.json();
         const pageData = json?.data;
         const items = pageData?.content ?? [];
-        setTotalItems(pageData?.totalItems ?? 0);
-        setTotalPages(pageData?.totalPages ?? 1);
+        setTotalItems(pageData?.page.totalElements ?? 0);
+        setTotalPages(pageData?.page.totalPages ?? 1);
 
         const mapped = items.map(
           (item: CustomerLookupResponse, index: number) => ({
@@ -98,6 +113,7 @@ export const ResultsTable = ({
             monthlyRent: item.monthlyRent,
             type: item.type?.toUpperCase(),
             status: item.isActive,
+            roadmapId: item.roadmapId,
           }),
         );
         setData(mapped);
@@ -112,20 +128,6 @@ export const ResultsTable = ({
 
     fetchData();
   }, [page, keyword, reloadKey, sort]);
-
-  const handleSortChange = (columnKey: string) => {
-    setPage(1);
-
-    setSort((prev) => {
-      const direction =
-        prev.field === columnKey && prev.direction === "asc" ? "desc" : "asc";
-
-      return {
-        field: columnKey === "stt" ? "createdAt" : columnKey,
-        direction,
-      };
-    });
-  };
 
   const handleConfirmDelete = async () => {
     if (!deleteId) return;
@@ -281,6 +283,20 @@ export const ResultsTable = ({
     ];
   }, [data]);
 
+  const handleSortChange = (columnKey: string) => {
+    setPage(1);
+
+    setSort((prev) => {
+      const direction =
+        prev.field === columnKey && prev.direction === "asc" ? "desc" : "asc";
+
+      return {
+        field: columnKey === "stt" ? "createdAt" : columnKey,
+        direction,
+      };
+    });
+  };
+
   const renderCell = (item: CustomerLookupItem, columnKey: string) => {
     switch (columnKey) {
       case "stt":
@@ -352,12 +368,14 @@ export const ResultsTable = ({
           </div>
         }
         paginationProps={{
-          total: 1,
-          page: 1,
+          total: totalPages,
+          page: page,
+          onChange: setPage,
           summary: `${data.length}`,
         }}
         renderCellAction={renderCell}
         title="Kết quả tìm kiếm"
+        onSortChange={handleSortChange}
       />
       <PriceApplicationModal
         isOpen={isPriceOpen}

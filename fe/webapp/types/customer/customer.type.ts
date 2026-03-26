@@ -28,9 +28,7 @@ export const statusCustomerConfig: Record<string, { className: string }> = {
     className: `bg-red-100 text-red-700 ${DarkRedChip}`,
   },
 };
-export type CustomerType =
-  | "FAMILY"
-  | "COMPANY";
+export type CustomerType = "FAMILY" | "COMPANY";
 export const typeLabelMap: Record<string, string> = {
   FAMILY: "Hộ gia đình",
   COMPANY: "Công ty",
@@ -38,17 +36,17 @@ export const typeLabelMap: Record<string, string> = {
   PRODUCTION: "Sản xuất",
   BUSINESS: "Kinh doanh dịch vụ",
 };
+// types.ts
+// types.ts
 export interface CustomerFilter {
-  materialCode?: string;
-  symbol?: string;
   name?: string;
-  unit?: string;
-  group?: string;
-  price?: string;
-  laborPrice?: string;
-  laborPriceDistrict?: string;
-  machinePrice?: string;
-  machinePriceDistrict?: string;
+  phoneNumber?: string;
+  citizenIdentificationNumber?: string;
+  address?: string;
+  type?: string;
+  usageTarget?: string;
+  roadmapId?: string;
+  formNumber?: string;
 }
 
 export interface CustomerLookupTableProps {
@@ -97,6 +95,7 @@ export interface CustomerLookupItem {
   waterMeterId?: string;
   waterMeterType?: string;
   waterPrice?: WaterPrice;
+  roadmapId?: string;
 }
 
 export interface CustomerLookupResponse {
@@ -134,6 +133,7 @@ export interface CustomerLookupResponse {
   waterMeterId?: string;
   waterMeterType?: string;
   waterPrice?: WaterPrice;
+  roadmapId?: string;
 }
 
 export interface WaterPrice {

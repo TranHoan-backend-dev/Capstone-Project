@@ -7,17 +7,28 @@ export const getAllCustomers = (
   page: number,
   size: number,
   sort: string,
-) =>
-  axios.get(`${API_GATEWAY_URL}/customer/customers`, {
-    params: {
-      page,
-      size,
-      sort,
-    },
+  filters?: Record<string, any>,
+) => {
+  const params: Record<string, any> = {
+    page,
+    size,
+    sort,
+  };
+
+  if (filters) {
+    Object.keys(filters).forEach((key) => {
+      params[key] = filters[key];
+    });
+  }
+
+
+  return axios.get(`${API_GATEWAY_URL}/customer/customers`, {
+    params: params,
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
   });
+};
 
 export const getCustomerById = (accessToken: string, customerId: string) => {
   return axios.get(`${API_GATEWAY_URL}/customer/customers/${customerId}`, {
