@@ -7,7 +7,6 @@ import {
   Tabs,
   Chip,
   DateValue,
-  useDisclosure,
   Modal,
   ModalContent,
   ModalHeader,
@@ -23,21 +22,10 @@ import { authFetch } from "@/utils/authFetch";
 import { useProfile } from "@/hooks/useLogin";
 import CreateSignatureModal from "./components/create-signature-modal";
 import SignModal from "./components/sign-modal";
+import { calculateTotalAmount } from "@/utils/calculateTotalAmount";
 
 const PENDING_STATUSES = ["pending", "processing", "pending_for_approval"];
 const APPROVED_STATUS = "approved";
-
-const calculateTotalAmount = (materials: any[]): string => {
-  if (!materials || materials.length === 0) return "0";
-
-  const total = materials.reduce((sum, item) => {
-    const materialTotal = parseFloat(item.totalMaterialPrice ?? 0) || 0;
-    const laborTotal = parseFloat(item.totalLaborPrice ?? 0) || 0;
-    return sum + materialTotal + laborTotal;
-  }, 0);
-
-  return total.toLocaleString("vi-VN");
-};
 
 const EstimateApprovalPage = () => {
   const router = useRouter();
@@ -163,7 +151,7 @@ const EstimateApprovalPage = () => {
               designProfileName: info.customerName,
               phone: item.phoneNumber,
               installationAddress: info.address,
-              totalAmount: calculateTotalAmount(item.material),
+              totalAmount: calculateTotalAmount(item.material, info),
               createdDate: new Date(info.createdAt).toLocaleDateString("vi-VN"),
               creator: creatorName,
               status: info.status?.estimate?.toLowerCase() || "pending",
