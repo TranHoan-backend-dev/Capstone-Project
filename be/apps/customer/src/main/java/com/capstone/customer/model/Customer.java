@@ -11,8 +11,9 @@ import org.jspecify.annotations.NonNull;
 
 import com.capstone.customer.utils.Message;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Stack;
 import java.util.function.Consumer;
 
 import java.time.LocalDateTime;
@@ -127,21 +128,21 @@ public class Customer {
 
   @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
   @ToString.Exclude
-  Stack<Bill> bill;
+  List<Bill> bill;
 
   @PrePersist
   void onCreate() {
     this.createdAt = LocalDateTime.now();
     this.updatedAt = this.createdAt;
-    this.bill = new Stack<>();
+    this.bill = new ArrayList<>();
   }
 
   public void addNewBill(Bill bill) {
-    this.bill.push(bill);
+    this.bill.add(bill);
   }
 
   public Bill getTheClosestBill() {
-    return bill.peek();
+    return bill.isEmpty() ? null : bill.get(bill.size() - 1);
   }
 
   @PreUpdate
@@ -482,6 +483,11 @@ public class Customer {
 
     public CustomerBuilder waterPriceId(String value) {
       customer.setWaterPriceId(value);
+      return this;
+    }
+
+    public CustomerBuilder roadmapId(String value) {
+      customer.setRoadmapId(value);
       return this;
     }
 

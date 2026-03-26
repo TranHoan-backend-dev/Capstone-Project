@@ -138,8 +138,14 @@ public record CreateRequest(
   @NotEmpty(message = Message.ENT_18)
   String waterPriceId,
 
+  @Schema(description = "", example = "R001")
+  @NotBlank(message = "roadmapId is required")
+  String roadmapId,
+
   @Schema(description = "", example = "WM001")
   @NotBlank(message = Message.ENT_26)
   @NotEmpty(message = Message.ENT_26)
-  String waterMeterId) {
+  String waterMeterId)
+
+{
 }

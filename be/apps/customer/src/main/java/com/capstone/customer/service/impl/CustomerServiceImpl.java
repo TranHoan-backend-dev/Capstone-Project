@@ -63,7 +63,8 @@ public class CustomerServiceImpl implements CustomerService {
       .bankAccountNumber(request.bankAccountNumber())
       .bankAccountProviderLocation(request.bankAccountProviderLocation())
       .bankAccountName(request.bankAccountName())
-      .isActive(request.isActive() != null ? request.isActive() : true));
+      .isActive(request.isActive() != null ? request.isActive() : true)
+ .roadmapId(request.roadmapId()));
 
     setProperties2(
       customer, request.formCode(), request.formNumber(),

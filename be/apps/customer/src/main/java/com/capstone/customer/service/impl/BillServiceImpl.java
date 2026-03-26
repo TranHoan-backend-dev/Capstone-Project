@@ -114,7 +114,7 @@ public class BillServiceImpl implements BillService {
 
     List<BillResponse> bills = result.stream()
       .filter(c -> c.getBill() != null && !c.getBill().isEmpty())
-      .map(c -> mapToResponse(c.getBill().peek()))
+      .map(c -> mapToResponse(c.getBill().get(c.getBill().size() - 1)))
       .toList();
 
     // 3. Return as a page (preserving the pagination from customers)
