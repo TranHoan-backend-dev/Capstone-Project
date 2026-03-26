@@ -1,12 +1,12 @@
 package com.capstone.device.domain.model;
 
-import com.capstone.device.domain.model.utils.Usage;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Builder
@@ -29,20 +29,14 @@ public class UsageHistory {
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(columnDefinition = "jsonb")
-  Stack<Usage> usages;
+  @Builder.Default
+  Map<String, BigDecimal> usages = new LinkedHashMap<>();
 
-  @Column(nullable = false, unique = true)
-  String customerId;
-
-  public void addNewUsage(Usage usage) {
-    Objects.requireNonNull(usage);
-    usages.push(usage);
-  }
-
-  public Optional<Usage> getLatestUsage() {
-    if (usages == null || usages.isEmpty()) {
-      return Optional.empty();
+  public void addOrUpdateUsage(String monthYear, BigDecimal index) {
+    if (usages == null) {
+      usages = new LinkedHashMap<>();
     }
-    return Optional.of(usages.peek());
+    usages.put(monthYear, index);
   }
 }
+
