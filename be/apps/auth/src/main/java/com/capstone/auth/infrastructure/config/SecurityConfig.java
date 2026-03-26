@@ -1,5 +1,6 @@
 package com.capstone.auth.infrastructure.config;
 
+import com.capstone.common.config.SharedSecurityConfig;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,6 +23,7 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Component;
 import org.springframework.web.cors.CorsConfiguration;
@@ -35,6 +38,7 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 @EnableMethodSecurity
+@Import(SharedSecurityConfig.class)
 public class SecurityConfig {
   @Component
   @ConfigurationProperties(prefix = "cors")
@@ -44,40 +48,45 @@ public class SecurityConfig {
     private List<String> allowedOrigins;
   }
 
+  JwtAuthenticationConverter converter;
   CorsProperties corsProperties;
   JwtDecoder decoder;
   final String[] PUBLIC_URLS = {
-      "/auth/**",
-      "/login/oauth2/code/google",
-      "/oauth2/authorization/google",
-      "/actuator/**",
-      "/v3/api-docs/**",
-      "/swagger-ui/**",
-      "/public/**",
-      "/health",
+    "/auth/**",
+    "/login/oauth2/code/google",
+    "/oauth2/authorization/google",
+    "/actuator/**",
+    "/v3/api-docs/**",
+    "/swagger-ui/**",
+    "/public/**",
+    "/health",
   };
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     return http
-        .csrf(AbstractHttpConfigurer::disable)
-        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers(PUBLIC_URLS).permitAll()
-            .anyRequest().authenticated())
-        .exceptionHandling(ex -> ex
-            .authenticationEntryPoint((request, response, authException) -> {
-              response.setContentType("application/json");
-              response.setStatus(HttpStatus.UNAUTHORIZED.value());
-              response.getWriter().write("{\"error\": \"Authentication required\"}");
-            })
-            .accessDeniedHandler((request, response, exception) -> {
-              response.setContentType("application/json");
-              response.setStatus(HttpStatus.FORBIDDEN.value());
-              response.getWriter().write("{\"error\": \"Access denied\"}");
-            }))
-        .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(decoder)))
-        .build();
+      .csrf(AbstractHttpConfigurer::disable)
+      .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+      .authorizeHttpRequests(auth -> auth
+        .requestMatchers(PUBLIC_URLS).permitAll()
+        .anyRequest().authenticated())
+      .exceptionHandling(ex -> ex
+        .authenticationEntryPoint((request, response, authException) -> {
+          response.setContentType("application/json");
+          response.setStatus(HttpStatus.UNAUTHORIZED.value());
+          response.getWriter().write("{\"error\": \"Authentication required\"}");
+        })
+        .accessDeniedHandler((request, response, exception) -> {
+          response.setContentType("application/json");
+          response.setStatus(HttpStatus.FORBIDDEN.value());
+          response.getWriter().write("{\"error\": \"Access denied\"}");
+        }))
+      .oauth2ResourceServer(oauth2 -> oauth2
+        .jwt(jwt -> jwt
+          .decoder(decoder)
+          .jwtAuthenticationConverter(converter))
+      )
+      .build();
   }
 
   @Bean
@@ -93,9 +102,9 @@ public class SecurityConfig {
       }
 
       return new DefaultOAuth2User(
-          authorities,
-          user.getAttributes(),
-          "email");
+        authorities,
+        user.getAttributes(),
+        "email");
     };
   }
 
