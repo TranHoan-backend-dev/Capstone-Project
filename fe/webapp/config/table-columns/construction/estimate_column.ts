@@ -34,6 +34,6 @@ export const ESTIMATE_APPROVAL_COLUMN = [
   { key: "installationAddress", label: "Địa chỉ lắp đặt", align: "start" },
   { key: "totalAmount", label: "Tổng tiền", align: "end" },
   { key: "createdDate", label: "Ngày lập", align: "center" },
-  { key: "creator", label: "Người lập", align: "start" },
+  // { key: "creator", label: "Người lập", align: "start" },
   { key: "actions", label: "Hành động", align: "center" },
 ];
