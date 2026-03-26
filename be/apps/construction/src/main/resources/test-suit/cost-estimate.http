@@ -59,6 +59,11 @@ GET {{uri}}?from=2023-01-01
 Authorization: Bearer {{access_token}}
 Accept: application/json
 
+### Get estimate by ID
+GET {{uri}}/{{estimate_id}}
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
 ### C - Create estimate (Validation Failure - missing required fields)
 POST {{uri}}
 Content-Type: application/json
@@ -102,31 +107,62 @@ Accept: application/json
 }
 
 ###
-@estimate_id = 5513e1e5-a627-440a-be72-a84aa1315fc6
+@estimate_id = 65eace3c-fcb5-45e5-8a4b-cfaed3164bc0
 
-### U - Update estimate
+### U - Update estimate (Happy Case - Finish)
 PUT {{uri}}/{{estimate_id}}
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 Accept: application/json
 
 {
-  "customerName": "Trần Văn A Updated",
-  "address": "456 Đường XYZ, Phường X, Quận Y",
-  "note": "Cập nhật ghi chú",
-  "contractFee": 2500000,
-  "surveyFee": 120000,
-  "surveyEffort": 2,
-  "installationFee": 1800000,
-  "laborCoefficient": 25,
-  "generalCostCoefficient": 6,
-  "precalculatedTaxCoefficient": 10,
-  "constructionMachineryCoefficient": 5,
-  "vatCoefficient": 10,
-  "designCoefficient": 3,
-  "designFee": 600000,
-  "waterMeterSerial": "SN12345678",
-  "overallWaterMeterId": "METER-001"
+  "generalInformation": {
+    "estimationId": "65eace3c-fcb5-45e5-8a4b-cfaed3164bc0",
+    "customerName": "Nguyen Van Dung",
+    "address": "Quyet Thang, Nam Dinh",
+    "note": "",
+    "contractFee": 0,
+    "surveyFee": 0,
+    "surveyEffort": 0,
+    "installationFee": 0,
+    "laborCoefficient": 0,
+    "generalCostCoefficient": 0,
+    "precalculatedTaxCoefficient": 0,
+    "constructionMachineryCoefficient": 0,
+    "vatCoefficient": 0,
+    "designCoefficient": 0,
+    "designFee": 0,
+    "waterMeterSerial": "00000000-0000-0000-0000-A00000000002",
+    "overallWaterMeterId": "00000000-0000-0000-0000-400000000002"
+  },
+  "material": [
+    {
+      "materialCode": "00000000-0000-0000-0000-600000000021",
+      "jobContent": "Vòi hợp kim DN15",
+      "note": "",
+      "unit": "Cái",
+      "mass": "11",
+      "materialCost": "45000",
+      "laborPrice": "20000",
+      "totalMaterialPrice": "495000",
+      "totalLaborPrice": "20000"
+    }
+  ],
+  "isFinished": false
+}
+
+### U - Update estimate (Draft)
+PUT {{uri}}/{{estimate_id}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "generalInformation": {
+    "note": "Lưu bản nháp"
+  },
+  "material": [],
+  "isFinished": false
 }
 
 ### U - Update estimate (Not found)
@@ -136,25 +172,23 @@ Authorization: Bearer {{access_token}}
 Accept: application/json
 
 {
-  "customerName": "Test",
-  "address": "Test",
-  "status": "PROCESSING",
-  "waterMeterSerial": "SN123",
-  "overallWaterMeterId": "METER-001"
+  "generalInformation": {
+    "customerName": "Test"
+  },
+  "material": [],
+  "isFinished": false
 }
 
-### U - Blank params
+### U - Validation failure (missing isFinished)
 PUT {{uri}}/{{estimate_id}}
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 Accept: application/json
 
 {
-  "customerName": "",
-  "address": "",
-  "status": "",
-  "waterMeterSerial": "",
-  "overallWaterMeterId": ""
+  "generalInformation": {
+    "customerName": "Trần Văn A"
+  }
 }
 
 ### P - Approve estimate

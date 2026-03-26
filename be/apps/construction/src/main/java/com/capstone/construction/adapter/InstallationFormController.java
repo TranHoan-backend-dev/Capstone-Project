@@ -4,8 +4,6 @@ import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.BaseFilterRequest;
 import com.capstone.common.utils.Utils;
-import com.capstone.construction.application.dto.request.estimate.SignRequest;
-import com.capstone.construction.application.business.installationform.InstallationFormService;
 import com.capstone.construction.application.business.installationform.InstallationFormService;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
@@ -89,14 +87,14 @@ public class InstallationFormController {
   })
   @PatchMapping("/approve")
   @PreAuthorize("hasAnyAuthority('SURVEY_STAFF', 'IT_STAFF')")
-  public ResponseEntity<WrapperApiResponse> approveInstallationForm(
+  public ResponseEntity<WrapperApiResponse> reviewInstallationForm(
     @AuthenticationPrincipal Jwt jwt,
     @RequestBody @Valid ApproveRequest request
   ) {
     log.info("Received request to approve installation form: {}", request.formCode());
 
     var id = jwt.getSubject();
-    installationFormHandlingUseCase.approveInstallationForm(id, request);
+    installationFormHandlingUseCase.reviewInstallationForm(id, request);
     return Utils.returnOkResponse("Thay đổi trạng thái thành công", null);
   }
 
@@ -126,7 +124,6 @@ public class InstallationFormController {
     @ApiResponse(responseCode = "500", description = "Lỗi hệ thống.", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @GetMapping
-  @PreAuthorize("hasAnyAuthority('PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF', 'IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> getInstallationForms(
     @Parameter(description = "Thông tin phân trang (page, size, sort)", schema = @Schema(implementation = Pageable.class)) Pageable pageable,
     @Parameter(description = "Thông tin lọc (từ khóa, khoảng thời gian)") BaseFilterRequest request

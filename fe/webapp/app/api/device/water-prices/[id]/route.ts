@@ -1,6 +1,36 @@
-import { deleteWaterPrice, updateWaterPrice } from "@/services/device.service";
+import { getWaterPriceById } from "@/services/device.service";
 import { getAccessToken } from "@/utils/getAccessToken";
 import { NextRequest, NextResponse } from "next/server";
+import { deleteWaterPrice, updateWaterPrice } from "@/services/device.service";
+
+
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    const accessToken = getAccessToken(req);
+    const { id } = await params;
+
+    if (!accessToken) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    const response = await getWaterPriceById(accessToken, id);
+
+    return NextResponse.json(response.data);
+  } catch (error: any) {
+    const status = error?.response?.status ?? 500;
+
+    return NextResponse.json(
+      {
+        message: error?.response?.data?.message ?? "Internal Server Error",
+        error: error?.response?.data ?? null,
+      },
+      { status },
+    );
+  }
+}
 
 export async function PUT(
   req: NextRequest,

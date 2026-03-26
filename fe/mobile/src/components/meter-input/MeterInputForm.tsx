@@ -9,8 +9,9 @@ import MeterInputStatusCard from './MeterInputStatusCard';
 import MeterInputIndexCard from './MeterInputIndexCard';
 import MeterInputActionButtons from './MeterInputActionButtons';
 import ImagePreviewModal from './ImagePreviewModal';
-import { meterService, Usage } from '../../services/meterService';
-import { storageService } from '../../services/storageService';
+// import { meterService, Usage } from '../../services/meterService';
+import { Usage } from '../../services/meterService';
+// import { storageService } from '../../services/storageService';
 import styles from './meterInput.styles';
 import { showToast } from '../../utils/toast';
 
@@ -53,6 +54,8 @@ export default function MeterInputForm({
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
+      
+      /* Comment out real fetch for development bypass
       const [details, history] = await Promise.all([
         meterService.getCustomerDetails(initialCustomerId),
         meterService.getUsageHistory(initialCustomerId)
@@ -68,13 +71,6 @@ export default function MeterInputForm({
           const lastUsage = usages[usages.length - 1];
           setOldIndex(lastUsage.index.toString());
 
-          // --- BEGIN GOOGLE CLOUD STORAGE INTEGRATION ---
-          // const gcsImageUrl = await storageService.getImageUrl(lastUsage.meterImageUrl);
-          // if (gcsImageUrl) {
-          //   _setImage({ uri: gcsImageUrl });
-          // }
-          // --- END GOOGLE CLOUD STORAGE INTEGRATION ---
-
           if (lastUsage.meterImageUrl) {
             _setImage({ uri: lastUsage.meterImageUrl });
           }
@@ -84,12 +80,45 @@ export default function MeterInputForm({
       if (details) {
         setWaterType(details.waterPrice?.name || 'Sinh hoạt dân cư');
       }
+      */
+
+      // --- MOCK DATA FOR DEVELOPMENT ---
+      const mockDetails = {
+        customerId: initialCustomerId,
+        name: initialCustomerName,
+        address: initialAddress,
+        phoneNumber: '0987.654.321',
+        waterMeterId: 'WM-2024-TEST-001',
+        numberOfHouseholds: 1,
+        householdRegistrationNumber: 4,
+        waterPrice: { name: 'Sinh hoạt dân cư' }
+      };
+
+      const mockUsageHistory: Usage[] = [
+        {
+          index: 1245,
+          recordingDate: new Date().toISOString(),
+          mass: 15,
+          price: 150000,
+          meterImageUrl: 'https://via.placeholder.com/600x400',
+          isPaid: false,
+          paymentMethod: null
+        }
+      ];
+
+      setCustomerData(mockDetails);
+      setUsageHistory(mockUsageHistory);
+      setOldIndex(mockUsageHistory[0].index.toString());
+      setWaterType('Sinh hoạt dân cư');
+      _setImage({ uri: mockUsageHistory[0].meterImageUrl });
+      // ---------------------------------
+
     } catch (error) {
       console.error('Error fetching meter data:', error);
     } finally {
       setLoading(false);
     }
-  }, [initialCustomerId]);
+  }, [initialCustomerId, initialCustomerName, initialAddress]);
 
   useEffect(() => {
     fetchData();
@@ -127,25 +156,33 @@ export default function MeterInputForm({
       return;
     }
 
-    const serial = customerData?.waterMeterId || 'UNKNOWN';
+    // const serial = customerData?.waterMeterId || 'UNKNOWN';
 
     try {
       setLoading(true);
+      /* Comment out real save
       await meterService.updateMeterIndex(
         serial,
         parseFloat(newIndex),
         new Date().toISOString().split('T')[0],
         image
       );
-      showToast.success('Cập nhật chỉ số thành công');
+      */
+      
+      console.log('[Mock Save] Saving index:', newIndex);
+      await new Promise<void>(resolve => setTimeout(resolve, 1000)); // Giả lập độ trễ
+
+      showToast.success('Cập nhật chỉ số thành công (MOCK)');
       // Refresh data
-      fetchData();
+      // fetchData();
     } catch (error) {
       console.error('Save failed:', error);
     } finally {
       setLoading(false);
     }
   };
+
+
 
 
   const handleNext = () => {
