@@ -46,7 +46,6 @@ public class MaterialsOfCostEstimateServiceImpl implements MaterialsOfCostEstima
         .totalMaterialCost(material.getMaterialCost())
         .note(material.getNote())
         .mass(Float.parseFloat(material.getMass()))
-        .reductionCoefficient(Float.parseFloat(material.getReductionCoefficient()))
         .build();
       repo.save(materialsOfCostEstimate);
     });
@@ -65,7 +64,6 @@ public class MaterialsOfCostEstimateServiceImpl implements MaterialsOfCostEstima
       null,
       m.getUnit().getName(),
       0F,
-      0F,
       m.getPrice(),
       m.getLaborPrice(),
       m.getLaborPriceAtRuralCommune(),
@@ -82,7 +80,6 @@ public class MaterialsOfCostEstimateServiceImpl implements MaterialsOfCostEstima
       material.getJobContent(),
       m.getNote(),
       material.getUnit().getName(),
-      m.getReductionCoefficient(),
       m.getMass(),
       material.getPrice(),
       material.getLaborPrice(),

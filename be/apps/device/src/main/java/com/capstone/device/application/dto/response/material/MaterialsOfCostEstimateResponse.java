@@ -7,7 +7,6 @@ public record MaterialsOfCostEstimateResponse(
   String jobContent,
   String note,
   String unitName,
-  Float reductionCoefficient,
   Float mass,
   BigDecimal materialCost,
   BigDecimal laborPrice,

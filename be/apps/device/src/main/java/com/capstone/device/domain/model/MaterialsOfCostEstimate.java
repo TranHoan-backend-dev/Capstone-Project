@@ -30,7 +30,4 @@ public class MaterialsOfCostEstimate {
 
   @Column(nullable = false)
   Float mass;
-
-  @Column(nullable = false, columnDefinition = "NUMERIC(38,2) DEFAULT 0")
-  Float reductionCoefficient;
 }
