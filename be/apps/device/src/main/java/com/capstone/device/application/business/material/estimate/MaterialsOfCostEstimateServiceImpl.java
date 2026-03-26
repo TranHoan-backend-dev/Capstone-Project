@@ -2,6 +2,7 @@ package com.capstone.device.application.business.material.estimate;
 
 import com.capstone.common.request.BaseMaterial;
 import com.capstone.device.application.dto.response.material.MaterialsOfCostEstimateResponse;
+import com.capstone.device.domain.model.Material;
 import com.capstone.device.domain.model.MaterialsOfCostEstimate;
 import com.capstone.device.domain.model.utils.MaterialsOfCostEstimateId;
 import com.capstone.device.infrastructure.persistence.MaterialRepository;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,6 +52,28 @@ public class MaterialsOfCostEstimateServiceImpl implements MaterialsOfCostEstima
     });
   }
 
+  @Override
+  public List<MaterialsOfCostEstimateResponse> getDefaultMaterial() {
+    return materialRepository.findAll(PageRequest.of(0, 20))
+      .getContent().stream().map(this::mapToResponse).toList();
+  }
+
+  private @NonNull MaterialsOfCostEstimateResponse mapToResponse(@NonNull Material m) {
+    return new MaterialsOfCostEstimateResponse(
+      m.getMaterialId(),
+      m.getJobContent(),
+      null,
+      m.getUnit().getName(),
+      0F,
+      0F,
+      m.getPrice(),
+      m.getLaborPrice(),
+      m.getLaborPriceAtRuralCommune(),
+      0F,
+      0F
+    );
+  }
+
   private @NonNull MaterialsOfCostEstimateResponse mapToResponse(@NonNull MaterialsOfCostEstimate m) {
     var material = m.getMaterial();
 
@@ -60,11 +84,11 @@ public class MaterialsOfCostEstimateServiceImpl implements MaterialsOfCostEstima
       material.getUnit().getName(),
       m.getReductionCoefficient(),
       m.getMass(),
-      material.getPrice().toString(),
-      material.getLaborPrice().toString(),
-      material.getLaborPriceAtRuralCommune().toString(),
-      m.getTotalLaborCost(),
-      m.getTotalMaterialCost()
+      material.getPrice(),
+      material.getLaborPrice(),
+      material.getLaborPriceAtRuralCommune(),
+      Float.parseFloat(m.getTotalLaborCost()),
+      Float.parseFloat(m.getTotalMaterialCost())
     );
   }
 }

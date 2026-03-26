@@ -24,7 +24,7 @@ public interface DeviceService {
   @DeleteMapping("/water-meters/overall/lateral")
   WrapperApiResponse deleteWaterMeter(@RequestParam String id);
 
-  @GetMapping("/materials/default")
+  @GetMapping("/materials/estimate/default")
   List<MaterialsOfCostEstimateResponse> getDefaultMaterials();
 
   @GetMapping("/materials/estimate/{id}")
