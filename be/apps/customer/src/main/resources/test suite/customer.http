@@ -13,7 +13,7 @@ grant_type = password &
 client_id = cmsn &
 client_secret = {{client_secret}} &
 username =  test &
-password = 123456 &
+password = 12345678 &
 scope = openid
 
 > {%
@@ -30,6 +30,7 @@ Content-Type: application/json
   "address": "Landmark 72 ",
   "email": "tranvana@example.com",
   "phoneNumber": "0901234567",
+  "address": "abc xyz",
   "type": "FAMILY",
   "isBigCustomer": false,
   "usageTarget": "DOMESTIC",
@@ -54,10 +55,11 @@ Content-Type: application/json
   "passportCode": "P001",
   "connectionPoint": "CP001",
   "isActive": true,
-  "formNumber": "FORM-2024-0001",
-  "formCode": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+  "formNumber": "FORM-2024-0002",
+  "formCode": "b1eebc99-9c0b-4ef8-bb6d-6bb9bd380a12",
   "waterPriceId": "00000000-0000-0000-0000-B00000000001",
-  "waterMeterId": "00000000-0000-0000-0000-A00000000001"
+  "waterMeterId": "00000000-0000-0000-0000-A00000000001",
+  "roadmapId": "5e6f7081-4000-4eee-9fff-eeeeeeee0001"
 }
 
 > {%

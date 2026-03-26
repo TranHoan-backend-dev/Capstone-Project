@@ -60,7 +60,6 @@ class ConstructionRequestServiceImplTest {
       .id("REQ1")
       .contractId(contractId)
       .installationForm(form)
-      .isApproved(false)
       .createdAt(LocalDateTime.now())
       .build();
     when(repository.save(any())).thenReturn(request);

@@ -141,5 +141,10 @@ public record CreateRequest(
   @Schema(description = "", example = "WM001")
   @NotBlank(message = Message.ENT_26)
   @NotEmpty(message = Message.ENT_26)
-  String waterMeterId) {
+  String waterMeterId,
+
+  @Schema(description = "Lộ trình ghi của khách hàng")
+  @NotBlank
+  @NotEmpty
+  String roadmapId) {
 }

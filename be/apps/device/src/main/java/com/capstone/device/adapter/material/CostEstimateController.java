@@ -42,4 +42,11 @@ public class CostEstimateController {
     mOfCostEstimateService.update(request, id);
     return Utils.returnOkResponse("Cập nhật bảng vật tư dự toán thành công", null);
   }
+
+  @Operation(hidden = true)
+  @GetMapping("/default")
+  public List<MaterialsOfCostEstimateResponse> getDefaultMaterial() {
+    log.info("REST request to get default material");
+    return mOfCostEstimateService.getDefaultMaterial();
+  }
 }
