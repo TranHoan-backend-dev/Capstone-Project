@@ -137,6 +137,7 @@ public class SettlementServiceImpl implements SettlementService {
         significance.setSurveyStaff(request.url());
       }
     }
+    settlementRepository.save(settlement);
 
     return significance.isSettlementFullySigned();
   }
