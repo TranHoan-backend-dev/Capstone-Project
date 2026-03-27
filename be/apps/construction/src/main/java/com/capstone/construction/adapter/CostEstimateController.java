@@ -134,7 +134,7 @@ public class CostEstimateController {
     @RequestBody @Valid SignRequest request,
     @AuthenticationPrincipal Jwt jwt
   ) {
-    log.info("Received request to sign installation forms");
+    log.info("Received request to sign cost estimate");
     var id = jwt.getSubject();
     estimateUseCase.signForInstallationRequest(id, request);
 

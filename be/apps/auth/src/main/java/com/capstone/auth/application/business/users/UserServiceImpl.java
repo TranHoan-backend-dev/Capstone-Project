@@ -5,6 +5,7 @@ import com.capstone.auth.application.business.pages.BusinessPageService;
 import com.capstone.auth.application.dto.request.users.FilterUsersRequest;
 import com.capstone.auth.application.dto.request.users.UpdateRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
+import com.capstone.auth.application.dto.response.NameAndIdResponse;
 import com.capstone.auth.infrastructure.persistence.*;
 import com.capstone.common.enumerate.RoleName;
 import com.capstone.common.exception.NotExistingException;
@@ -229,8 +230,6 @@ public class UserServiceImpl implements UserService {
     if (!emp.getIsEnabled()) {
       throw new IllegalArgumentException(Message.SE_16);
     }
-    var profile = profileRepo.findById(id)
-      .orElseThrow(() -> new NotExistingException(String.format(Message.SE_15, id)));
 
     emp.setIsEnabled(false);
     indRepo.deleteByUserId(id);
@@ -265,6 +264,51 @@ public class UserServiceImpl implements UserService {
     return employees.stream()
       .map(this::mapToEmployeeResponse)
       .collect(Collectors.toList());
+  }
+
+  @Override
+  public String getSignificanceOfEmployee(String id) {
+    var user = getById(id);
+    return user.getElectronicSigningUrl();
+  }
+
+  @Override
+  public UserDTO getByUserNameOrEmail(@NonNull String value) {
+    if (value.trim().matches(SharedConstant.EMAIL_PATTERN)) {
+      return getUserByEmail(value);
+    } else {
+      return returnUserDTO(repo.findByUsername(value));
+    }
+  }
+
+  @Override
+  public List<NameAndIdResponse> getAllPtHeads() {
+    log.info("Getting all pt heads");
+    return getNameAndId(RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD);
+  }
+
+  @Override
+  public List<NameAndIdResponse> getAllConstructionHeads() {
+    log.info("Getting all construction heads");
+    return getNameAndId(RoleName.CONSTRUCTION_DEPARTMENT_HEAD);
+  }
+
+  @Override
+  public List<NameAndIdResponse> getAllLeaderShips() {
+    log.info("Getting all leader ships");
+    return getNameAndId(RoleName.COMPANY_LEADERSHIP);
+  }
+
+  private List<NameAndIdResponse> getNameAndId(@NonNull RoleName roleName) {
+    var role = roleRepo.findRolesByName(roleName);
+    var users = repo.findByRole(role);
+    return users.stream().map(user -> {
+      var name = profileRepo.findFullNameByProfileId(user.getUserId());
+      return NameAndIdResponse.builder()
+        .id(user.getUserId())
+        .name(name)
+        .build();
+    }).toList();
   }
 
   private Users getById(String id) {

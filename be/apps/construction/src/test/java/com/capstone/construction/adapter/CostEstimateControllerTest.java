@@ -1,12 +1,14 @@
 package com.capstone.construction.adapter;
 
 import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.construction.application.dto.request.estimate.AssignTheSignificanceRequest;
 import com.capstone.construction.application.dto.request.estimate.SignRequest;
 import com.capstone.construction.application.dto.request.estimate.UpdateRequest;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.application.dto.response.estimate.CostEstimateResponse;
 import com.capstone.construction.application.usecase.CostEstimateUseCase;
+import com.capstone.construction.domain.model.utils.FormProcessingStatus;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,7 +64,10 @@ class CostEstimateControllerTest {
       new CostEstimateResponse.GeneralInformation(
         "id", "Customer", "Address", "Note", 1000, 100, 1, 1000, 1, 1, 1, 1, 1, 1, 100, "url",
         LocalDateTime.now(), LocalDateTime.now(), LocalDate.now(), "user", "SN", "METER",
-        new InstallationFormId("CODE", "NUM")
+        new InstallationFormId("CODE", "NUM"),
+        new FormProcessingStatus(
+          ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING, ProcessingStatus.PROCESSING, ProcessingStatus.PROCESSING
+        )
       ),
       Collections.emptyList()
     );
@@ -96,6 +101,7 @@ class CostEstimateControllerTest {
     // Assert
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(responseEntity.getBody()).isNotNull();
+    assertThat(responseEntity.getBody().message()).isEqualTo("Lấy thông tin dự toán chi phí thành công");
     assertThat(responseEntity.getBody().data()).isEqualTo(mockResponse);
     verify(estimateUseCase).getEstimateById(id);
   }

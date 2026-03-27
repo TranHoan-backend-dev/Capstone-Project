@@ -25,6 +25,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -76,7 +77,10 @@ class CostEstimateUseCaseTest {
       new CostEstimateResponse.GeneralInformation(
         "id-123", "Customer Name", "Address", "Note", 1000, 500, 1, 2000, 10, 5, 10, 5, 10, 2, 100, "url",
         LocalDateTime.now(), LocalDateTime.now(), LocalDate.now(), "user-123", "SN123", "METER-123",
-        new InstallationFormId(formCode, formNumber)),
+        new InstallationFormId(formCode, formNumber),
+        new com.capstone.construction.domain.model.utils.FormProcessingStatus(
+          com.capstone.common.enumerate.ProcessingStatus.APPROVED, com.capstone.common.enumerate.ProcessingStatus.PROCESSING, com.capstone.common.enumerate.ProcessingStatus.PROCESSING, com.capstone.common.enumerate.ProcessingStatus.PROCESSING
+        )),
       Collections.emptyList());
   }
 
@@ -98,7 +102,7 @@ class CostEstimateUseCaseTest {
     // Arrange
     when(estSrv.updateEstimate(anyString(), any(UpdateRequest.class))).thenReturn(mockResponse);
     when(empSrv.getEmployeeNameById(anyString()))
-      .thenReturn(new WrapperApiResponse(200, "Success", "Updated By Employee", LocalDateTime.now()));
+      .thenReturn(new WrapperApiResponse(200, "Success", "Updated By Employee", OffsetDateTime.now()));
 
     // Act
     var response = costEstimateUseCase.updateEstimate("id-123", updateRequest);
@@ -114,7 +118,7 @@ class CostEstimateUseCaseTest {
     // Arrange
     when(estSrv.getEstimateById("id-123")).thenReturn(mockResponse);
     when(empSrv.getEmployeeNameById(anyString()))
-      .thenReturn(new WrapperApiResponse(200, "Success", "Employee", LocalDateTime.now()));
+      .thenReturn(new WrapperApiResponse(200, "Success", "Employee", OffsetDateTime.now()));
 
     // Act
     var response = costEstimateUseCase.approveEstimate("id-123", true);
@@ -157,7 +161,7 @@ class CostEstimateUseCaseTest {
     var request = new AssignTheSignificanceRequest(
       "EST001", "EMP001", "EMP002", "EMP003");
     when(estSrv.isExisting("EST001")).thenReturn(true);
-    when(empSrv.isEmployeeExisting(anyString())).thenReturn(new WrapperApiResponse(200, "Success", "true", LocalDateTime.now()));
+    when(empSrv.isEmployeeExisting(anyString())).thenReturn(new WrapperApiResponse(200, "Success", "true", OffsetDateTime.now()));
 
     // Act
     costEstimateUseCase.assignStaffForSignCostEstimate(request);
@@ -184,7 +188,7 @@ class CostEstimateUseCaseTest {
     var request = new AssignTheSignificanceRequest(
       "EST001", "EMP001", "EMP002", "EMP003");
     when(estSrv.isExisting("EST001")).thenReturn(true);
-    when(empSrv.isEmployeeExisting(anyString())).thenReturn(new WrapperApiResponse(200, "Success", "false", LocalDateTime.now()));
+    when(empSrv.isEmployeeExisting(anyString())).thenReturn(new WrapperApiResponse(200, "Success", "false", OffsetDateTime.now()));
 
     // Act & Assert
     assertThrows(NotExistingException.class,
@@ -195,8 +199,8 @@ class CostEstimateUseCaseTest {
   void should_SignForInstallationRequest_Success_As_SurveyStaff() {
     // Arrange
     var request = new SignRequest("EST001", "url");
-    when(empSrv.getRoleOfEmployeeById("user-123")).thenReturn(new WrapperApiResponse(200, "Success", "SURVEY_STAFF", LocalDateTime.now()));
-    when(empSrv.getElectronicSignificance("user-123")).thenReturn(new WrapperApiResponse(200, "Success", "sign-data", LocalDateTime.now()));
+    when(empSrv.getRoleOfEmployeeById("user-123")).thenReturn(new WrapperApiResponse(200, "Success", "SURVEY_STAFF", OffsetDateTime.now()));
+    when(empSrv.getElectronicSignificance("user-123")).thenReturn(String.valueOf(new WrapperApiResponse(200, "Success", "sign-data", OffsetDateTime.now())));
     when(estSrv.signForCostEstimate(anyString(), eq(RoleName.SURVEY_STAFF), eq("EST001"))).thenReturn(true);
 
     // Act
@@ -211,8 +215,8 @@ class CostEstimateUseCaseTest {
   void should_SignForInstallationRequest_Success_As_PlanningHead() {
     // Arrange
     var request = new SignRequest("EST001", "url");
-    when(empSrv.getRoleOfEmployeeById("user-123")).thenReturn(new WrapperApiResponse(200, "Success", "PLANNING_TECHNICAL_DEPARTMENT_HEAD", LocalDateTime.now()));
-    when(empSrv.getElectronicSignificance("user-123")).thenReturn(new WrapperApiResponse(200, "Success", "sign-data", LocalDateTime.now()));
+    when(empSrv.getRoleOfEmployeeById("user-123")).thenReturn(new WrapperApiResponse(200, "Success", "PLANNING_TECHNICAL_DEPARTMENT_HEAD", OffsetDateTime.now()));
+    when(empSrv.getElectronicSignificance("user-123")).thenReturn(String.valueOf(new WrapperApiResponse(200, "Success", "sign-data", OffsetDateTime.now())));
     when(estSrv.signForCostEstimate(anyString(), eq(RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD), eq("EST001"))).thenReturn(true);
 
     // Act
@@ -227,8 +231,8 @@ class CostEstimateUseCaseTest {
   void should_SignForInstallationRequest_Success_As_Leadership() {
     // Arrange
     var request = new SignRequest("EST001", "url");
-    when(empSrv.getRoleOfEmployeeById("user-123")).thenReturn(new WrapperApiResponse(200, "Success", "COMPANY_LEADERSHIP", LocalDateTime.now()));
-    when(empSrv.getElectronicSignificance("user-123")).thenReturn(new WrapperApiResponse(200, "Success", "sign-data", LocalDateTime.now()));
+    when(empSrv.getRoleOfEmployeeById("user-123")).thenReturn(new WrapperApiResponse(200, "Success", "COMPANY_LEADERSHIP", OffsetDateTime.now()));
+    when(empSrv.getElectronicSignificance("user-123")).thenReturn(String.valueOf(new WrapperApiResponse(200, "Success", "sign-data", OffsetDateTime.now())));
     when(estSrv.signForCostEstimate(anyString(), eq(RoleName.COMPANY_LEADERSHIP), eq("EST001"))).thenReturn(true);
 
     // Act
@@ -243,7 +247,7 @@ class CostEstimateUseCaseTest {
   void should_ThrowException_When_UserHasInvalidRole() {
     // Arrange
     var request = new SignRequest("EST001", "url");
-    when(empSrv.getRoleOfEmployeeById("user-123")).thenReturn(new WrapperApiResponse(200, "Success", "IT_STAFF", LocalDateTime.now()));
+    when(empSrv.getRoleOfEmployeeById("user-123")).thenReturn(new WrapperApiResponse(200, "Success", "IT_STAFF", OffsetDateTime.now()));
 
     // Act & Assert
     assertThrows(ForbiddenException.class,

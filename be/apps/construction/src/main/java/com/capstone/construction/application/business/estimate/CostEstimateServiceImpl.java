@@ -90,8 +90,11 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   @Transactional(rollbackFor = Exception.class)
   public CostEstimateResponse updateEstimate(String id, @NonNull UpdateRequest request) {
     log.info("Updating cost estimate with id: {}", id);
-    var estimate = eRepo.findById(id)
-      .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_61, id)));
+    var estimate = getById(id);
+    var installationForm = estimate.getInstallationForm();
+    if (installationForm.getStatus().getEstimate().name().equals(ProcessingStatus.APPROVED.name())) {
+      throw new IllegalArgumentException("Dự toán đã được duyệt, không được phép chỉnh sửa");
+    }
 
     var generalInformation = request.generalInformation();
 
@@ -172,8 +175,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   @Override
   public CostEstimateResponse getEstimateById(String id) {
     log.info("Fetching cost estimate with id: {}", id);
-    var costEst = eRepo.findById(id)
-      .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_61, id)));
+    var costEst = getById(id);
     var materials = deviceSrv.getMaterialsOfCostEstimate(id);
     return mapToResponse(costEst, mapMaterials(materials));
   }
@@ -197,8 +199,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
 
   @Override
   public void approveEstimate(String id, Boolean request) {
-    var est = eRepo.findById(id)
-      .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_61, id)));
+    var est = getById(id);
     var form = est.getInstallationForm();
     var status = form.getStatus();
     status.setEstimate(request ? ProcessingStatus.APPROVED : ProcessingStatus.REJECTED);
@@ -207,19 +208,36 @@ public class CostEstimateServiceImpl implements CostEstimateService {
 
   @Override
   public boolean signForCostEstimate(String significance, @NonNull RoleName role, String estimateId) {
-    var costEstimate = eRepo.findById(estimateId)
-      .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_61, estimateId)));
+    var costEstimate = getById(estimateId);
     var costEstSignificance = costEstimate.getSignificance();
 
     if (costEstSignificance == null) {
       costEstSignificance = new CostEstimateSignificance();
       costEstimate.setSignificance(costEstSignificance);
     }
+    if (costEstSignificance.isCostEstimateFullySigned()) {
+      throw new IllegalArgumentException("Du toan da co du chu ky");
+    }
 
     switch (role) {
-      case COMPANY_LEADERSHIP -> costEstSignificance.setCompanyLeaderShip(significance);
-      case SURVEY_STAFF -> costEstSignificance.setSurveyStaff(significance);
-      case PLANNING_TECHNICAL_DEPARTMENT_HEAD -> costEstSignificance.setPlanningTechnicalHead(significance);
+      case COMPANY_LEADERSHIP -> {
+        if (!costEstSignificance.getCompanyLeaderShip().isBlank()) {
+          throw new IllegalArgumentException("Lanh dao da ky tai lieu nay");
+        }
+        costEstSignificance.setCompanyLeaderShip(significance);
+      }
+      case SURVEY_STAFF -> {
+        if (!costEstSignificance.getSurveyStaff().isBlank()) {
+          throw new IllegalArgumentException("Nhan vien khao sat da ky tai lieu nay");
+        }
+        costEstSignificance.setSurveyStaff(significance);
+      }
+      case PLANNING_TECHNICAL_DEPARTMENT_HEAD -> {
+        if (!costEstSignificance.getPlanningTechnicalHead().isBlank()) {
+          throw new IllegalArgumentException("Truong phong da ky tai lieu nay");
+        }
+        costEstSignificance.setPlanningTechnicalHead(significance);
+      }
     }
     eRepo.save(costEstimate);
 
@@ -254,7 +272,6 @@ public class CostEstimateServiceImpl implements CostEstimateService {
       m.jobContent(),
       m.note(),
       m.unitName(),
-      m.reductionCoefficient() != null ? m.reductionCoefficient().toString() : null,
       m.mass() != null ? m.mass().toString() : null,
       m.materialCost(),
       m.laborPrice(),
@@ -290,8 +307,15 @@ public class CostEstimateServiceImpl implements CostEstimateService {
         estimate.getCreateBy(),
         estimate.getWaterMeterSerial(),
         estimate.getOverallWaterMeterId(),
-        estimate.getInstallationForm().getId()),
+        estimate.getInstallationForm().getId(),
+        estimate.getInstallationForm().getStatus()
+      ),
       material);
+  }
+
+  private CostEstimate getById(String id) {
+    return eRepo.findById(id)
+      .orElseThrow(() -> new IllegalArgumentException(String.format(Message.PT_61, id)));
   }
 
   private @NonNull ArrayList<BaseMaterial> getMaterials(String id) {
@@ -303,7 +327,6 @@ public class CostEstimateServiceImpl implements CostEstimateService {
         defaultMaterial.jobContent(),
         defaultMaterial.note(),
         defaultMaterial.unitName(),
-        defaultMaterial.reductionCoefficient().toString(),
         defaultMaterial.mass().toString(),
         defaultMaterial.materialCost(),
         defaultMaterial.laborPrice(),

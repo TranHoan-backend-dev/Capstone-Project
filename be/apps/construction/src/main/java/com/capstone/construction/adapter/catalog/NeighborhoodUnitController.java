@@ -16,12 +16,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 
 @Slf4j
 @RestController
@@ -91,8 +89,7 @@ public class NeighborhoodUnitController {
     @PathVariable @Parameter(description = "ID of the unit to retrieve", required = true) String id) {
     log.info("REST request to get unit: {}", id);
     var response = unitUseCase.getUnitById(id);
-    return ResponseEntity.ok(new WrapperApiResponse(
-      HttpStatus.OK.value(), "Lấy thông tin tổ/khu/xóm thành công", response, LocalDateTime.now()));
+    return Utils.returnOkResponse("Lấy thông tin tổ/khu/xóm thành công", response);
   }
 
   @GetMapping
@@ -106,7 +103,6 @@ public class NeighborhoodUnitController {
   ) {
     log.info("REST request to get all units");
     var response = unitUseCase.getAllUnits(pageable, keyword, communeId);
-    return ResponseEntity.ok(new WrapperApiResponse(
-      HttpStatus.OK.value(), "Lấy danh sách tổ/khu/xóm thành công", response, LocalDateTime.now()));
+    return Utils.returnOkResponse("Lấy danh sách tổ/khu/xóm thành công", response);
   }
 }

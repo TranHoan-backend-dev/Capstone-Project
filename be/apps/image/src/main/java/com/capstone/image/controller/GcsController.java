@@ -44,4 +44,10 @@ public class GcsController {
 
     return ResponseEntity.ok("File deleted successfully");
   }
+
+  @GetMapping("/signed-url")
+  public ResponseEntity<String> getSignedUrl(@RequestParam("fileName") String fileName) {
+    var signedUrl = storageService.generateSignedUrl(fileName);
+    return ResponseEntity.ok(signedUrl);
+  }
 }

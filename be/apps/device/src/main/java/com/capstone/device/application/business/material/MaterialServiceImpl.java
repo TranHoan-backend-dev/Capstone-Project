@@ -190,12 +190,6 @@ public class MaterialServiceImpl implements MaterialService {
     gRepo.save(entity);
   }
 
-  @Override
-  public List<MaterialResponse> getDefaultMaterial() {
-    return mRepo.findAll(PageRequest.of(0, 20))
-      .getContent().stream().map(this::mapToResponse).toList();
-  }
-
   private @NonNull MaterialResponse mapToResponse(@NonNull Material material) {
     return new MaterialResponse(
       material.getMaterialId(),

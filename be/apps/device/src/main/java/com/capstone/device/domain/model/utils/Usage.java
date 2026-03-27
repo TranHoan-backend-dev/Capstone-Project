@@ -2,6 +2,7 @@ package com.capstone.device.domain.model.utils;
 
 import lombok.*;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -11,7 +12,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class Usage {
+public class Usage implements Serializable {
+  String id; // Added for pending reviews
   LocalDate recordingDate;
   BigDecimal index;
   BigDecimal mass;
@@ -19,4 +21,5 @@ public class Usage {
   String meterImageUrl;
   Boolean isPaid;
   String paymentMethod;
+  String status; // New field: PENDING, APPROVED, REJECTED
 }

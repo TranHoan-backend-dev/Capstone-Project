@@ -111,13 +111,6 @@ public class MaterialController {
     log.info("REST request to check existence of water meter: {}", id);
     return Utils.returnOkResponse("Kiểm tra ID vật tư thành công", mService.materialExists(id));
   }
-
-  @Operation(hidden = true)
-  @GetMapping("/default")
-  public List<MaterialResponse> getDefaultMaterial() {
-    log.info("REST request to get default material");
-    return mService.getDefaultMaterial();
-  }
   // </editor-fold>
 
   // <editor-fold> desc="material group"

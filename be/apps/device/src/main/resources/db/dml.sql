@@ -451,3 +451,31 @@ VALUES ('C001',
 ON CONFLICT (meter_code) DO UPDATE
   SET customer_id = EXCLUDED.customer_id,
       usages      = EXCLUDED.usages;
+
+-- Sample meters for Roadmap 0003 customers
+INSERT INTO public.water_meter (meter_code, installation_date, size, water_meter_type_id)
+VALUES ('M008', '2023-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('M009', '2023-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('M010', '2023-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('M011', '2023-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('M012', '2023-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('M013', '2023-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('M014', '2023-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('M016', '2023-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('M017', '2023-01-01', 15, '00000000-0000-0000-0000-900000000006')
+ON CONFLICT (meter_code) DO NOTHING;
+
+-- Usage history for these customers
+INSERT INTO public.usage_history (customer_id, meter_code, usages)
+VALUES ('C008', 'M008', '[{"recordingDate": "2026-03-01", "index": 50.0, "mass": 5.0, "price": 15000.0, "isPaid": false}]'::jsonb),
+       ('C009', 'M009', '[{"recordingDate": "2026-03-01", "index": 60.0, "mass": 6.0, "price": 18000.0, "isPaid": false}]'::jsonb),
+       ('C010', 'M010', '[{"recordingDate": "2026-03-01", "index": 70.0, "mass": 7.0, "price": 21000.0, "isPaid": false}]'::jsonb),
+       ('C011', 'M011', '[{"recordingDate": "2026-03-01", "index": 80.0, "mass": 8.0, "price": 24000.0, "isPaid": false}]'::jsonb),
+       ('C012', 'M012', '[{"recordingDate": "2026-03-01", "index": 90.0, "mass": 9.0, "price": 27000.0, "isPaid": false}]'::jsonb),
+       ('C013', 'M013', '[{"recordingDate": "2026-03-01", "index": 100.0, "mass": 10.0, "price": 30000.0, "isPaid": false}]'::jsonb),
+       ('C014', 'M014', '[{"recordingDate": "2026-03-01", "index": 110.0, "mass": 11.0, "price": 33000.0, "isPaid": false}]'::jsonb),
+       ('C016', 'M016', '[{"recordingDate": "2026-03-01", "index": 120.0, "mass": 12.0, "price": 36000.0, "isPaid": false}]'::jsonb),
+       ('C017', 'M017', '[{"recordingDate": "2026-03-01", "index": 130.0, "mass": 13.0, "price": 39000.0, "isPaid": false}]'::jsonb)
+ON CONFLICT (meter_code) DO UPDATE
+  SET customer_id = EXCLUDED.customer_id,
+      usages      = EXCLUDED.usages;

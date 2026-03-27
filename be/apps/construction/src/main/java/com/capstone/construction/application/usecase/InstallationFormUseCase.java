@@ -96,22 +96,8 @@ public class InstallationFormUseCase {
     messageProducer.send(routingKey, event);
   }
 
-  public void approveInstallationForm(ApproveRequest request) {
-    ifSrv.approveAndAssignInstallationForm(request);
-
-    var installationForm = ifSrv.getByFormCodeAndFormNumber(request.formCode(), request.formNumber());
-
-    if (request.status()) {
-      costEstimateUseCase.createEstimate(new CreateRequest(
-        installationForm.customerName(),
-        installationForm.address(),
-        LocalDateTime.parse(installationForm.registrationAt()),
-        installationForm.creator(),
-        request.formCode(),
-        request.formNumber(),
-        installationForm.overallWaterMeterId()
-      ));
-    }
+  public void reviewInstallationForm(String userId, ApproveRequest request) {
+    ifSrv.approveInstallationForm(userId, request);
   }
 
   private String getCreatorName(String creator) {
