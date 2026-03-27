@@ -469,7 +469,7 @@ export const ResultsTable = ({
                 <CustomButton
                   isIconOnly
                   variant="light"
-                  size="sm"
+                  size="lg"
                   className={`${action.className} rounded-lg`}
                   onPress={() => action.onClick(item.id)}
                 >
