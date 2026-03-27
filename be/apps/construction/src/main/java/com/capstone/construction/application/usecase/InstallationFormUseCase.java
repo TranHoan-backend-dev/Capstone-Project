@@ -3,7 +3,6 @@ package com.capstone.construction.application.usecase;
 import com.capstone.common.enumerate.RoleName;
 import com.capstone.construction.application.business.installationform.InstallationFormService;
 import com.capstone.common.utils.BaseFilterRequest;
-import com.capstone.construction.application.dto.request.estimate.CreateRequest;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
@@ -26,7 +25,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Component
@@ -35,7 +33,6 @@ import java.util.Objects;
 public class InstallationFormUseCase {
   final InstallationFormService ifSrv;
   final MessageProducer messageProducer;
-  final CostEstimateUseCase costEstimateUseCase;
   final EmployeeService empSrv;
 
   // <editor-fold> desc="constant"
@@ -56,12 +53,12 @@ public class InstallationFormUseCase {
     return ifSrv.getInstallationForms(pageable, request);
   }
 
-  public Page<InstallationFormListResponse> findByEstimateStatus_Pending(Pageable pageable) {
-    return ifSrv.findByEstimateStatus_Pending(pageable);
+  public Page<InstallationFormListResponse> findByEstimateStatusPending(Pageable pageable) {
+    return ifSrv.findByEstimateStatusPending(pageable);
   }
 
-  public Page<InstallationFormListResponse> findByRegistrationStatus_Pending(Pageable pageable) {
-    return ifSrv.findByRegistrationStatus_Pending(pageable);
+  public Page<InstallationFormListResponse> findByRegistrationStatusPending(Pageable pageable) {
+    return ifSrv.findByRegistrationStatusPending(pageable);
   }
 
   public ReviewedInstallationFormsResponse getReviewedInstallationFormsList() {

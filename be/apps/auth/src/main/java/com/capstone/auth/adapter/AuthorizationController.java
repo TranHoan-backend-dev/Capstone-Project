@@ -65,7 +65,7 @@ public class AuthorizationController {
   @GetMapping(EMPLOYEE_PREFIX)
   public ResponseEntity<WrapperApiResponse> getAllEmployees(
     @ParameterObject Pageable pageable,
-    @Parameter(description = "") FilterUsersRequest request
+    @Parameter FilterUsersRequest request
   ) {
     log.info("Getting all employees with page index {} and page size {}", pageable.getPageNumber(),
       pageable.getPageSize());
@@ -195,6 +195,14 @@ public class AuthorizationController {
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_HEAD')")
   public ResponseEntity<?> getLeaderships() {
     log.info("Get planning leaderships");
+    return Utils.returnOkResponse("", usersUseCase.getListOfCompanyLeaderShips());
+  }
+
+  @Operation
+  @GetMapping(EMPLOYEE_PREFIX + "/leadership")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD')")
+  public ResponseEntity<?> getConstructionStaffs() {
+    log.info("Get construction staffs");
     return Utils.returnOkResponse("", usersUseCase.getListOfCompanyLeaderShips());
   }
   // </editor-fold>

@@ -25,19 +25,18 @@ public interface InstallationFormService {
 
   Boolean checkAnyFormsBelongedToNetwork(String id);
 
-  Page<InstallationFormListResponse> findByEstimateStatus_Pending(Pageable pageable);
+  Page<InstallationFormListResponse> findByEstimateStatusPending(Pageable pageable);
 
-  Page<InstallationFormListResponse> findByRegistrationStatus_Pending(Pageable pageable);
+  Page<InstallationFormListResponse> findByRegistrationStatusPending(Pageable pageable);
 
   ReviewedInstallationFormsResponse getReviewedInstallationFormsList();
 
   Page<InstallationFormListResponse> findByHandoverByIsNotNull(Pageable pageable);
 
   /**
-   *
    * @param id
    * @param installationFormId
-   * @param status neu true thi la giao cho nv khao sat, false => doi truong doi thi cong
+   * @param status             neu true thi la giao cho nv khao sat, false => doi truong doi thi cong
    */
   void assignInstallationForm(String id, InstallationFormId installationFormId, Boolean status);
 }

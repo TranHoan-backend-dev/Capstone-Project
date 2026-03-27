@@ -48,4 +48,6 @@ public interface UserService {
   List<NameAndIdResponse> getAllConstructionHeads();
 
   List<NameAndIdResponse> getAllLeaderShips();
+
+  List<NameAndIdResponse> getAllConstructionStaffs();
 }
