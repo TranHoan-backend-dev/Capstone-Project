@@ -106,13 +106,13 @@ public class SettlementController {
   @Operation(summary = "Ký duyệt bản quyết toán", description = """
     Thực hiện ký duyệt điện tử lên bản quyết toán bởi các bên có thẩm quyền liên quan.
     Luồng này sẽ kích hoạt thông báo đến các nhân viên được chỉ định.
-    Người thực hiện phải có quyền tương ứng (CONSTRUCTION_DEPARTMENT_HEAD, COMPANY_LEADERSHIP, SURVEY_STAFF, PLANNING_TECHNICAL_DEPARTMENT_HEAD hoặc IT_STAFF).
+    Người thực hiện phải có quyền tương ứng (COMPANY_LEADERSHIP, SURVEY_STAFF, PLANNING_TECHNICAL_DEPARTMENT_HEAD).
     """, responses = {
     @ApiResponse(responseCode = "200", description = "Ký thành công"),
     @ApiResponse(responseCode = "404", description = "Không tìm thấy bản quyết toán"),
     @ApiResponse(responseCode = "403", description = "Không có quyền thực hiện hành động này")
   })
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'SURVEY_STAFF')")
+  @PreAuthorize("hasAnyAuthority('PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'SURVEY_STAFF')")
   public ResponseEntity<WrapperApiResponse> sign(
     @AuthenticationPrincipal Jwt jwt,
     @RequestBody SignificanceRequest request,
