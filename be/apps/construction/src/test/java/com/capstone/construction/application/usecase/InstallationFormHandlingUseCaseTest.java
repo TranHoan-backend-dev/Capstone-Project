@@ -18,6 +18,7 @@ import org.springframework.data.domain.*;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.*;
@@ -70,6 +71,71 @@ class InstallationFormHandlingUseCaseTest {
   }
 
   @Test
+  @DisplayName("Should return pending estimate forms")
+  void should_ReturnPendingEstimateForms_When_ServiceReturnsData() {
+    var pageable = PageRequest.of(0, 10);
+    var responseItem = mock(InstallationFormListResponse.class);
+    var expectedPage = new PageImpl<>(List.of(responseItem));
+
+    when(ifSrv.findByEstimateStatus_Pending(pageable)).thenReturn(expectedPage);
+
+    var actualPage = useCase.findByEstimateStatus_Pending(pageable);
+
+    assertThat(actualPage).isNotNull();
+    assertThat(actualPage.getContent()).hasSize(1);
+    verify(ifSrv).findByEstimateStatus_Pending(pageable);
+  }
+
+  @Test
+  @DisplayName("Should return pending registration forms")
+  void should_ReturnPendingRegistrationForms_When_ServiceReturnsData() {
+    var pageable = PageRequest.of(0, 10);
+    var responseItem = mock(InstallationFormListResponse.class);
+    var expectedPage = new PageImpl<>(List.of(responseItem));
+
+    when(ifSrv.findByRegistrationStatus_Pending(pageable)).thenReturn(expectedPage);
+
+    var actualPage = useCase.findByRegistrationStatus_Pending(pageable);
+
+    assertThat(actualPage).isNotNull();
+    assertThat(actualPage.getContent()).hasSize(1);
+    verify(ifSrv).findByRegistrationStatus_Pending(pageable);
+  }
+
+  @Test
+  @DisplayName("Should return reviewed installation forms")
+  void should_ReturnReviewedForms_When_ServiceReturnsData() {
+    var approvedList = List.of(mock(InstallationFormListResponse.class));
+    var rejectedList = List.of(mock(InstallationFormListResponse.class));
+    var expectedResponse = new ReviewedInstallationFormsResponse(approvedList, rejectedList);
+
+    when(ifSrv.getReviewedInstallationFormsList()).thenReturn(expectedResponse);
+
+    var actualResponse = useCase.getReviewedInstallationFormsList();
+
+    assertThat(actualResponse).isNotNull();
+    assertThat(actualResponse.approved()).hasSize(1);
+    assertThat(actualResponse.rejected()).hasSize(1);
+    verify(ifSrv).getReviewedInstallationFormsList();
+  }
+
+  @Test
+  @DisplayName("Should return assigned forms")
+  void should_ReturnAssignedForms_When_ServiceReturnsData() {
+    var pageable = PageRequest.of(0, 10);
+    var responseItem = mock(InstallationFormListResponse.class);
+    var expectedPage = new PageImpl<>(List.of(responseItem));
+
+    when(ifSrv.findByHandoverByIsNotNull(pageable)).thenReturn(expectedPage);
+
+    var actualPage = useCase.findByHandoverByIsNotNull(pageable);
+
+    assertThat(actualPage).isNotNull();
+    assertThat(actualPage.getContent()).hasSize(1);
+    verify(ifSrv).findByHandoverByIsNotNull(pageable);
+  }
+
+  @Test
   @DisplayName("Should throw exception when form already exists")
   void should_ThrowException_When_FormAlreadyExists() {
     var request = createValidNewOrderRequest();
@@ -92,7 +158,7 @@ class InstallationFormHandlingUseCaseTest {
       "FORM-001", "Customer", "CODE-001", USER_ID, LocalDateTime.now());
     when(ifSrv.createNewInstallationForm(USER_ID, request)).thenReturn(formResponse);
     when(empSrv.getEmployeeNameById(USER_ID))
-      .thenReturn(new WrapperApiResponse(200, "OK", "Staff Name", LocalDateTime.now()));
+      .thenReturn(new WrapperApiResponse(200, "OK", "Staff Name", OffsetDateTime.now()));
 
     var result = useCase.createNewInstallationRequest(USER_ID, request);
 
@@ -119,7 +185,7 @@ class InstallationFormHandlingUseCaseTest {
 
     when(ifSrv.getByFormCodeAndFormNumber("C-001", "F-001")).thenReturn(order);
 
-    useCase.approveInstallationForm(USER_ID, request);
+    useCase.reviewInstallationForm(USER_ID, request);
 
     verify(ifSrv).approveInstallationForm(USER_ID, request);
     verify(costEstimateUseCase).createEstimate(any());
@@ -132,7 +198,7 @@ class InstallationFormHandlingUseCaseTest {
     var order = mock(InstallationFormListResponse.class);
     when(ifSrv.getByFormCodeAndFormNumber("C-001", "F-001")).thenReturn(order);
 
-    useCase.approveInstallationForm(USER_ID, request);
+    useCase.reviewInstallationForm(USER_ID, request);
 
     verify(ifSrv).approveInstallationForm(USER_ID, request);
     verify(costEstimateUseCase, never()).createEstimate(any());

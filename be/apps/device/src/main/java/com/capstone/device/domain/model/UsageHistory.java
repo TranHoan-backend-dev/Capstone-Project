@@ -1,6 +1,5 @@
 package com.capstone.device.domain.model;
 
-import com.capstone.device.domain.model.utils.Usage;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,6 +7,8 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.util.*;
+
+import com.capstone.device.domain.model.utils.Usage;
 
 @Builder
 @Setter
@@ -29,20 +30,17 @@ public class UsageHistory {
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(columnDefinition = "jsonb")
-  Stack<Usage> usages;
+  @Builder.Default
+  List<Usage> usages = new ArrayList<>();
 
-  @Column(nullable = false, unique = true)
-  String customerId;
-
-  public void addNewUsage(Usage usage) {
-    Objects.requireNonNull(usage);
-    usages.push(usage);
-  }
-
-  public Optional<Usage> getLatestUsage() {
-    if (usages == null || usages.isEmpty()) {
-      return Optional.empty();
+  public void addOrUpdateUsage(Usage usage) {
+    if (usages == null) {
+      usages = new ArrayList<>();
     }
-    return Optional.of(usages.peek());
+    // Remove old usage for same month/year if exists
+    usages.removeIf(u -> u.getRecordingDate().getMonth() == usage.getRecordingDate().getMonth() &&
+      u.getRecordingDate().getYear() == usage.getRecordingDate().getYear());
+    usages.add(usage);
   }
 }
+

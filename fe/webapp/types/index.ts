@@ -1,9 +1,10 @@
 import { SVGProps } from "react";
-export * from "./construction/index";
+export * from "./auth/index";
 export * from "./organization/index";
+export * from "./construction/index";
 export * from "./device/index";
+export * from "./customer/index";
 
-export * from "./device/index";
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
@@ -24,15 +25,17 @@ export interface ApiResponse<T> {
 }
 
 export interface EmployeeProfileData {
+  id: string;
+  username: string;
   fullname: string;
-  avatarUrl: string;
-  address: string;
+  email: string;
   phoneNumber: string;
   gender: string;
   birthday: string;
+  address: string;
+  avatarUrl: string;
   role: string;
-  username: string;
-  email: string;
+  significanceUrl: string;
 }
 
 export interface EmployeeProfileUpdatePayload {
@@ -160,5 +163,11 @@ export type FormField =
   | SearchInputField
   | CheckboxField
   | TextareaField;
+
+export type OrderStage =
+  | "registration"
+  | "estimate"
+  | "contract"
+  | "construction";
 
 export type OrderStatus = "processing" | "pending" | "approved" | "rejected";

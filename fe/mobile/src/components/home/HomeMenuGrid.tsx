@@ -27,16 +27,6 @@ export default function HomeMenuGrid() {
         />
 
         <MenuItemCard
-          icon="pipe-leak"
-          label="Báo sự cố"
-        />
-
-        <MenuItemCard
-          icon="access-point"
-          label="Nghe rò rỉ"
-        />
-
-        <MenuItemCard
           icon="message-badge-outline"
           label="Gửi thông báo"
           onPress={() => navigation.navigate('Notification')}

@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @ToString
 public class Usage implements Serializable {
+  String id; // Added for pending reviews
   LocalDate recordingDate;
   BigDecimal index;
   BigDecimal mass;
@@ -20,4 +21,5 @@ public class Usage implements Serializable {
   String meterImageUrl;
   Boolean isPaid;
   String paymentMethod;
+  String status; // New field: PENDING, APPROVED, REJECTED
 }

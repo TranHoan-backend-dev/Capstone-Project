@@ -4,7 +4,9 @@ import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.customer.dto.request.customer.CreateRequest;
 import com.capstone.customer.dto.request.customer.UpdateRequest;
 import com.capstone.customer.dto.response.CustomerResponse;
+import com.capstone.customer.dto.request.customer.CustomerFilterRequest;
 import com.capstone.customer.service.boundary.CustomerService;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -133,7 +135,7 @@ class CustomerControllerTest {
   void should_ReturnOk_When_GetAllCustomers_IsSuccessful() {
     Pageable pageable = PageRequest.of(0, 10);
     Page<CustomerResponse> page = new PageImpl<>(List.of(customerResponse));
-    when(customerService.getAllCustomers(eq(pageable), any())).thenReturn(page);
+    when(customerService.getAllCustomers(eq(pageable), any(CustomerFilterRequest.class))).thenReturn(page);
 
     ResponseEntity<WrapperApiResponse> response = customerController.getAllCustomers(pageable, null);
 
@@ -150,6 +152,7 @@ class CustomerControllerTest {
     String waterPriceId = "price-123";
     when(customerService.areCustomersAppliedThisPrice(waterPriceId)).thenReturn(true);
 
+    @SuppressWarnings("unchecked")
     ResponseEntity<WrapperApiResponse> response = (ResponseEntity<WrapperApiResponse>) customerController.checkWhetherCustomersAreApplied(waterPriceId);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -157,5 +160,30 @@ class CustomerControllerTest {
     assertThat(response.getBody().message()).isEqualTo("Kiểm tra thành công");
     assertThat(response.getBody().data()).isEqualTo(true);
     verify(customerService).areCustomersAppliedThisPrice(waterPriceId);
+  }
+
+  @Test
+  @DisplayName("should_ReturnBoolean_When_CheckExistenceOfCustomer_IsSuccessful")
+  void should_ReturnBoolean_When_CheckExistenceOfCustomer_IsSuccessful() {
+    String id = "uuid-123";
+    when(customerService.isExistingCustomer(id)).thenReturn(true);
+
+    boolean result = customerController.checkExistenceOfCustomer(id);
+
+    assertThat(result).isTrue();
+    verify(customerService).isExistingCustomer(id);
+  }
+
+  @Test
+  @DisplayName("should_ReturnId_When_GetCustomerIdByMeterId_IsSuccessful")
+  void should_ReturnId_When_GetCustomerIdByMeterId_IsSuccessful() {
+    String meterId = "meter-123";
+    String expectedId = "uuid-123";
+    when(customerService.getIdByMeterId(meterId)).thenReturn(expectedId);
+
+    String result = customerController.getCustomerIdByMeterId(meterId);
+
+    assertThat(result).isEqualTo(expectedId);
+    verify(customerService).getIdByMeterId(meterId);
   }
 }

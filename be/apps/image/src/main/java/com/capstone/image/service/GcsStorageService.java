@@ -2,7 +2,6 @@ package com.capstone.image.service;
 
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.RequiredArgsConstructor;
@@ -29,8 +28,8 @@ public class GcsStorageService {
       var fileName = folder + "/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
 
       var blobInfo = BlobInfo.newBuilder(bucketName, fileName)
-          .setContentType(file.getContentType())
-          .build();
+        .setContentType(file.getContentType())
+        .build();
 
       storage.create(blobInfo, file.getBytes());
 
@@ -48,5 +47,11 @@ public class GcsStorageService {
 
   public void delete(String fileName) {
     storage.delete(bucketName, fileName);
+  }
+
+  public String generateSignedUrl(String blobName) {
+    var blobInfo = BlobInfo.newBuilder(bucketName, blobName).build();
+    var url = storage.signUrl(blobInfo, 1, java.util.concurrent.TimeUnit.HOURS, Storage.SignUrlOption.withV4Signature());
+    return url.toString();
   }
 }

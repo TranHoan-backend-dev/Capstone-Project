@@ -12,7 +12,7 @@ import { CallToast } from "@/components/ui/CallToast";
 import { z } from "zod";
 
 const loginSchema = z.object({
-  identifier: z.string().trim().min(1, "Vui lòng nhập email hoặc tên đăng nhập"),
+  username: z.string().trim().min(1, "Vui lòng nhập email hoặc tên đăng nhập"),
   password: z.string().min(1, "Vui lòng nhập đủ thông tin đăng nhập"),
 });
 
@@ -20,7 +20,7 @@ export type LoginFormData = z.infer<typeof loginSchema>;
 const LoginForm = () => {
   const router = useRouter();
   const [formData, setFormData] = useState<LoginFormData>({
-    identifier: "",
+    username: "",
     password: "",
   });
   const [loading, setLoading] = useState(false);
@@ -56,8 +56,8 @@ const LoginForm = () => {
 
       const data = await res.json();
 
-      if (data.data) {
-        localStorage.setItem("user", JSON.stringify(data.data));
+      if (data.userDetails) {
+        localStorage.setItem("user", JSON.stringify(data.userDetails));
       }
 
       CallToast({
@@ -99,9 +99,9 @@ const LoginForm = () => {
               </div>
             }
             label="Nhập tên đăng nhập"
-            value={formData.identifier}
+            value={formData.username}
             onChange={(e) =>
-              setFormData({ ...formData, identifier: e.target.value })
+              setFormData({ ...formData, username: e.target.value })
             }
           />
           <PasswordInput

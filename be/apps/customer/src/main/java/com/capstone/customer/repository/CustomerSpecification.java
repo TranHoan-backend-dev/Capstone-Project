@@ -3,6 +3,7 @@ package com.capstone.customer.repository;
 import com.capstone.customer.dto.request.customer.CustomerFilterRequest;
 import com.capstone.customer.model.Customer;
 import jakarta.persistence.criteria.Predicate;
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import java.util.List;
 
 public class CustomerSpecification {
 
-  public static Specification<Customer> filter(CustomerFilterRequest filter) {
+  public static @NonNull Specification<Customer> filter(CustomerFilterRequest filter) {
     return (root, query, cb) -> {
       List<Predicate> predicates = new ArrayList<>();
 
@@ -26,7 +27,7 @@ public class CustomerSpecification {
           cb.like(cb.lower(root.get("phoneNumber")), searchPattern),
           cb.like(cb.lower(root.get("formCode")), searchPattern),
           cb.like(cb.lower(root.get("waterMeterId")), searchPattern),
-          cb.like(cb.lower(root.join("bill").get("exportAddress")), searchPattern)
+          cb.like(cb.lower(root.get("address")), searchPattern)
         ));
       }
 

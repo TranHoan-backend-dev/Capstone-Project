@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Card, TextInput, Text } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface MeterInputIndexCardProps {
   oldIndex: string;
@@ -22,9 +23,17 @@ export default function MeterInputIndexCard({
   return (
     <Card style={styles.card}>
       <Card.Content>
+        <View style={styles.cardHeader}>
+          <Icon name="water-pump" size={20} color="#1E88E5" style={styles.headerIcon} />
+          <Text style={styles.headerTitle}>Chỉ số tiêu thụ</Text>
+        </View>
+
         <View style={styles.indexRow}>
           <View style={styles.indexColumn}>
-            <Text style={styles.indexLabel}>Chỉ số cũ</Text>
+            <View style={styles.labelContainer}>
+              <Icon name="numeric-off" size={16} color="#999" style={styles.labelIcon} />
+              <Text style={styles.indexLabel}>Chỉ số cũ</Text>
+            </View>
             <TextInput
               mode="outlined"
               value={oldIndex}
@@ -37,14 +46,17 @@ export default function MeterInputIndexCard({
             />
           </View>
           <View style={styles.indexColumn}>
-            <Text style={styles.indexLabel}>Chỉ số mới</Text>
+             <View style={styles.labelContainer}>
+              <Icon name="numeric-positive-1" size={18} color="#1E88E5" style={styles.labelIcon} />
+              <Text style={styles.indexLabel}>Chỉ số mới</Text>
+            </View>
             <TextInput
               mode="outlined"
               value={newIndex}
               onChangeText={onNewIndexChange}
               keyboardType="numeric"
               style={styles.indexInput}
-              outlineColor="#333"
+              outlineColor="#1E88E5"
               activeOutlineColor="#1E88E5"
               theme={{ colors: { background: '#fff' } }}
               contentStyle={styles.inputContentTextActive}
@@ -76,6 +88,29 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderRadius: 8,
     backgroundColor: '#fff',
+    elevation: 2,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  headerIcon: {
+    marginRight: 8,
+  },
+  headerTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#333',
+  },
+  labelContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  labelIcon: {
+    marginRight: 4,
   },
   indexRow: {
     flexDirection: 'row',
@@ -90,11 +125,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 14,
     color: '#333',
-    marginBottom: 8,
   },
   indexInput: {
     height: 48,
-    borderRadius: 8,
+    backgroundColor: '#fff',
   },
   inputContentTextDisabled: {
     textAlign: 'center',
@@ -121,7 +155,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   resultValue: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '700',
   },
   blueText: {
@@ -131,3 +165,4 @@ const styles = StyleSheet.create({
     color: '#EF4444',
   },
 });
+

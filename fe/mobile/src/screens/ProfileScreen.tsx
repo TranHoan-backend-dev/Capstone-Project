@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from 'react';
-import { ScrollView, Animated, StatusBar } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { ScrollView, Animated, StatusBar, View, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import styles from '../components/profile/styles';
+import authService from '../services/auth.service';
 
 import ProfileHeader from '../components/profile/ProfileHeader';
 import ProfileCard from '../components/profile/ProfileCard';
@@ -9,20 +10,41 @@ import ProfileActions from '../components/profile/ProfileActions';
 
 export default function ProfileScreen() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 600,
-      useNativeDriver: true,
-    }).start();
-  }, []);
+    const fetchUser = async () => {
+      try {
+        const userData = await authService.getCurrentUser();
+        setUser(userData);
+      } finally {
+        setLoading(false);
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 600,
+          useNativeDriver: true,
+        }).start();
+      }
+    };
+    fetchUser();
+  }, [fadeAnim]);
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#2563EB" />
+      </View>
+    );
+  }
 
   const profileData = {
-    name: 'Nguyễn Thị Minh Hạnh',
-    customerId: 'KH-2024-001234',
-    address: '123 Đường Lê Lợi, Phường 1, Quận 1, TP. HCM',
-    status: 'Đang hoạt động',
+    name: user?.fullName || 'N/A',
+    employeeId: user?.id || 'N/A',
+    address: user?.address || 'N/A',
+    status: 'Đang hoạt động', // Có thể cập nhật từ role hoặc field khác nếu có
+    role: user?.role || 'N/A',
+    phoneNumber: user?.phoneNumber || 'N/A',
   };
 
   return (

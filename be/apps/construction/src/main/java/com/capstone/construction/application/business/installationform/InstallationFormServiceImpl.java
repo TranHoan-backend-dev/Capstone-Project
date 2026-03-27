@@ -10,9 +10,11 @@ import com.capstone.construction.application.dto.request.installationform.Approv
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import com.capstone.construction.application.dto.response.installationform.NewInstallationFormResponse;
+import com.capstone.construction.application.dto.response.installationform.ReviewedInstallationFormsResponse;
 import com.capstone.construction.domain.model.InstallationForm;
 import com.capstone.construction.domain.model.WaterSupplyNetwork;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
+import com.capstone.construction.infrastructure.persistence.CostEstimateRepository;
 import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
 import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRepository;
 import com.capstone.construction.infrastructure.utils.Message;
@@ -43,6 +45,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   InstallationFormRepository ifRepo;
   WaterSupplyNetworkRepository wsnRepo;
   CostEstimateService costEstimateService;
+  CostEstimateRepository costEstimateRepo;
   EmployeeService empSrv;
   DeviceService owmSrv;
   @NonFinal
@@ -155,6 +158,10 @@ public class InstallationFormServiceImpl implements InstallationFormService {
         requestStatus.setRegistration(ProcessingStatus.APPROVED);
         requestStatus.setEstimate(ProcessingStatus.PENDING_FOR_APPROVAL);
 
+        if (costEstimateRepo.existsByInstallationForm(order)) {
+          throw new IllegalArgumentException(SharedMessage.MES_25);
+        }
+
         // tao san du toan rong
         costEstimateService.createEstimate(new CreateRequest(
           order.getCustomerName(),
@@ -183,6 +190,41 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   }
 
   @Override
+  public Page<InstallationFormListResponse> findByEstimateStatus_Pending(Pageable pageable) {
+    log.info("Fetching installation forms with estimate status PENDING_FOR_APPROVAL");
+    var result = ifRepo.findByEstimateStatus_Pending(pageable);
+    return result.map(this::mapToResponse);
+  }
+
+  @Override
+  public Page<InstallationFormListResponse> findByRegistrationStatus_Pending(Pageable pageable) {
+    log.info("Fetching installation forms with registration status PENDING_FOR_APPROVAL");
+    var result = ifRepo.findByRegistrationStatus_Pending(pageable);
+    return result.map(this::mapToResponse);
+  }
+
+  @Override
+  public ReviewedInstallationFormsResponse getReviewedInstallationFormsList() {
+    log.info("Fetching installation forms with estimate status APPROVED and REJECTED");
+    var approved = ifRepo.findByEstimateStatus(ProcessingStatus.APPROVED.name())
+      .stream()
+      .map(this::mapToResponse)
+      .toList();
+    var rejected = ifRepo.findByEstimateStatus(ProcessingStatus.REJECTED.name())
+      .stream()
+      .map(this::mapToResponse)
+      .toList();
+    return new ReviewedInstallationFormsResponse(approved, rejected);
+  }
+
+  @Override
+  public Page<InstallationFormListResponse> findByHandoverByIsNotNull(Pageable pageable) {
+    log.info("Fetching installation forms that have been assigned to survey staff");
+    var result = ifRepo.findByHandoverByIsNotNull(pageable);
+    return result.map(this::mapToResponse);
+  }
+
+  @Override
   public Boolean checkAnyFormsBelongedToNetwork(String id) {
     log.info("Checking if installation form with id: {}", id);
     return ifRepo.existsByNetwork_BranchId(id);
@@ -208,9 +250,11 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   }
 
   private @NonNull InstallationFormListResponse mapToResponse(@NonNull InstallationForm entity) {
+    log.info("Get staff who will handle this request");
     var creatorFullName = empSrv.getEmployeeNameById(entity.getCreatedBy());
-    var handOverByFullName = empSrv.getEmployeeNameById(entity.getHandoverBy());
-    var constructionEmployeeName = empSrv.getEmployeeNameById(entity.getConstructedBy());
+    log.info("Creator: {}", creatorFullName);
+    var handOverByFullName = entity.getHandoverBy() != null ? empSrv.getEmployeeNameById(entity.getHandoverBy()) : null;
+    var constructionEmployeeName = entity.getConstructedBy() != null ? empSrv.getEmployeeNameById(entity.getConstructedBy()) : null;
     var unknown = "Trống";
 
     return new InstallationFormListResponse(

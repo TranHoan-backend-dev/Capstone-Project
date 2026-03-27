@@ -22,9 +22,6 @@ public class BaseMaterial{
   @Schema(description = "Đơn vị tính", example = "Mét")
   String unit;
 
-  @Schema(description = "Hệ số giảm", example = "1.0")
-  String reductionCoefficient;
-
   @Schema(description = "Khối lượng/Số lượng", example = "10.5")
   String mass;
 

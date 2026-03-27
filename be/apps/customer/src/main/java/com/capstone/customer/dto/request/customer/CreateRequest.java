@@ -65,6 +65,11 @@ public record CreateRequest(
   @Schema(description = "", example = "2023-12")
   String deductionPeriod,
 
+  @Schema(description = "", example = "2023-12")
+  @NotEmpty
+  @NotBlank
+  String address,
+
   @Schema(description = "", example = "20000")
   Integer monthlyRent,
 
@@ -133,8 +138,14 @@ public record CreateRequest(
   @NotEmpty(message = Message.ENT_18)
   String waterPriceId,
 
+  @Schema(description = "", example = "R001")
+  @NotBlank(message = "roadmapId is required")
+  String roadmapId,
+
   @Schema(description = "", example = "WM001")
   @NotBlank(message = Message.ENT_26)
   @NotEmpty(message = Message.ENT_26)
-  String waterMeterId) {
+  String waterMeterId)
+
+{
 }

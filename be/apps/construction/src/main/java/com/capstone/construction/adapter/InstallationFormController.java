@@ -41,7 +41,7 @@ import java.time.format.DateTimeFormatter;
 @Tag(name = "Installation Form", description = "Quản lý đơn lắp đặt (Tiếp nhận và xử lý hồ sơ lắp đặt nước)")
 public class InstallationFormController {
   InstallationFormUseCase installationFormHandlingUseCase;
-  InstallationFormService service;
+  InstallationFormService installationFormService;
   @NonFinal
   Logger log;
 
@@ -87,14 +87,14 @@ public class InstallationFormController {
   })
   @PatchMapping("/approve")
   @PreAuthorize("hasAnyAuthority('SURVEY_STAFF', 'IT_STAFF')")
-  public ResponseEntity<WrapperApiResponse> approveInstallationForm(
+  public ResponseEntity<WrapperApiResponse> reviewInstallationForm(
     @AuthenticationPrincipal Jwt jwt,
     @RequestBody @Valid ApproveRequest request
   ) {
     log.info("Received request to approve installation form: {}", request.formCode());
 
     var id = jwt.getSubject();
-    installationFormHandlingUseCase.approveInstallationForm(id, request);
+    installationFormHandlingUseCase.reviewInstallationForm(id, request);
     return Utils.returnOkResponse("Thay đổi trạng thái thành công", null);
   }
 
@@ -124,7 +124,6 @@ public class InstallationFormController {
     @ApiResponse(responseCode = "500", description = "Lỗi hệ thống.", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @GetMapping
-  @PreAuthorize("hasAnyAuthority('PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF', 'IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> getInstallationForms(
     @Parameter(description = "Thông tin phân trang (page, size, sort)", schema = @Schema(implementation = Pageable.class)) Pageable pageable,
     @Parameter(description = "Thông tin lọc (từ khóa, khoảng thời gian)") BaseFilterRequest request
@@ -145,12 +144,44 @@ public class InstallationFormController {
     return Utils.returnOkResponse("Lấy danh sách đơn lắp đặt thành công", response);
   }
 
+  @Operation(summary = "Lấy danh sách đơn chờ duyệt dự toán", description = "Lấy các đơn lắp đặt có trạng thái của estimate là PENDING_FOR_APPROVAL")
+  @GetMapping("/estimate/pending")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> getPendingEstimateForms(Pageable pageable) {
+    var response = installationFormHandlingUseCase.findByEstimateStatus_Pending(pageable);
+    return Utils.returnOkResponse("Lấy danh sách thành công", response);
+  }
+
+  @Operation(summary = "Lấy danh sách đơn chờ duyệt khảo sát", description = "Lấy các đơn lắp đặt mới có trạng thái registration là PENDING_FOR_APPROVAL")
+  @GetMapping("/registration/pending")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> getPendingRegistrationForms(Pageable pageable) {
+    var response = installationFormHandlingUseCase.findByRegistrationStatus_Pending(pageable);
+    return Utils.returnOkResponse("Lấy danh sách thành công", response);
+  }
+
+  @Operation(summary = "Lấy danh sách đơn đã duyệt dự toán", description = "Lấy các đơn lắp đặt mới có trạng thái estimate là APPROVED và REJECTED (Tách riêng)")
+  @GetMapping("/reviewed")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> getReviewedEstimateForms() {
+    var response = installationFormHandlingUseCase.getReviewedInstallationFormsList();
+    return Utils.returnOkResponse("Lấy danh sách thành công", response);
+  }
+
+  @Operation(summary = "Lấy danh sách đơn đã giao khảo sát", description = "Lấy các đơn lắp đặt mới đã được giao cho nhân viên khảo sát")
+  @GetMapping("/assigned")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> getAssignedForms(Pageable pageable) {
+    var response = installationFormHandlingUseCase.findByHandoverByIsNotNull(pageable);
+    return Utils.returnOkResponse("Lấy danh sách thành công", response);
+  }
+
   @Operation(hidden = true)
   @GetMapping("/exist")
   public boolean isExisting(
     @RequestParam String formCode,
     @RequestParam String formNumber
   ) {
-    return service.isInstallationFormExisting(formNumber, formCode);
+    return installationFormService.isInstallationFormExisting(formNumber, formCode);
   }
 }

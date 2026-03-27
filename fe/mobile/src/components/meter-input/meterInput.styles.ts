@@ -18,20 +18,33 @@ export default StyleSheet.create({
 
   content: {
     flex: 1,
-    padding: 12,
   },
 
   formContainer: {
     flex: 1,
+    backgroundColor: '#F5F5F5',
   },
 
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    zIndex: 1000,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+
   scrollContent: {
-    paddingBottom: 220, // Enough to clear the absolute buttons (110 + 40 + height)
+    paddingTop: 12,
+    paddingBottom: 220, 
   },
 
   card: {
+    marginHorizontal: 12,
     marginBottom: 12,
     borderRadius: 8,
+    backgroundColor: '#fff',
+    elevation: 2,
   },
 
   cardTitle: {
@@ -238,7 +251,46 @@ export default StyleSheet.create({
 
   /* NOTES INPUT */
   notesInput: {
-    minHeight: 80,
+    minHeight: 100,
+    backgroundColor: '#fff',
+    marginTop: 4,
+  },
+
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+
+  sectionIcon: {
+    marginRight: 8,
+  },
+
+  imageActionCard: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+
+  cameraButton: {
+    width: 56,
+    height: 56,
+    justifyContent: 'center',
+    borderRadius: 8,
+  },
+
+  viewImageButton: {
+    flex: 1,
+    marginLeft: 12,
+    height: 56,
+    justifyContent: 'center',
+    borderColor: '#1E88E5',
+    borderRadius: 8,
+  },
+
+  viewImageButtonLabel: {
+    fontSize: 16,
+    fontWeight: '700',
   },
 
   /* CONDITION ITEM */
@@ -259,18 +311,10 @@ export default StyleSheet.create({
 
   /* ACTION BUTTONS - TOP ROW */
   actionButtonsContainer: {
-    position: 'absolute',
-    bottom: 110,
-    left: 0,
-    right: 0,
     flexDirection: 'row',
-    gap: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    gap: 12,
+    paddingVertical: 12,
     backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#E0E0E0',
-    zIndex: 2,
   },
 
   actionButton: {
@@ -281,36 +325,52 @@ export default StyleSheet.create({
   /* BOTTOM BUTTONS - BOTTOM ROW */
   bottomButtonsContainer: {
     position: 'absolute',
-    bottom: 40,
+    bottom: 0,
     left: 0,
     right: 0,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    paddingBottom: 16,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
     backgroundColor: '#fff',
     borderTopWidth: 1,
     borderTopColor: '#E0E0E0',
-    zIndex: 1,
+    zIndex: 10,
   },
 
   bottomButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 8,
+    alignItems: 'stretch',
+    height: 60,
   },
 
   navButton: {
-    flex: 0.22,
+    flex: 1,
     backgroundColor: '#1E88E5',
+    borderRadius: 0,
+    justifyContent: 'center',
   },
 
-  leftButton: {},
+  leftButton: {
+    borderRightWidth: 1,
+    borderRightColor: 'rgba(255,255,255,0.3)',
+  },
 
-  rightButton: {},
+  rightButton: {
+    borderLeftWidth: 1,
+    borderLeftColor: 'rgba(255,255,255,0.3)',
+  },
 
   saveButton: {
-    flex: 0.56,
+    flex: 2,
     backgroundColor: '#4CAF50',
+    borderRadius: 0,
+    justifyContent: 'center',
+  },
+
+  saveButtonLabel: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#fff',
   },
 
   /* IMAGE PREVIEW MODAL */
@@ -521,5 +581,9 @@ export default StyleSheet.create({
     fontSize: 14,
     color: '#333',
     fontWeight: '500',
+  },
+
+  buttonContent56: {
+    height: 56,
   },
 });
