@@ -10,6 +10,7 @@ import com.capstone.construction.application.dto.request.installationform.Approv
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import com.capstone.construction.application.dto.response.installationform.NewInstallationFormResponse;
+import com.capstone.construction.application.dto.response.installationform.ReviewedInstallationFormsResponse;
 import com.capstone.construction.domain.model.InstallationForm;
 import com.capstone.construction.domain.model.WaterSupplyNetwork;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
@@ -186,6 +187,41 @@ public class InstallationFormServiceImpl implements InstallationFormService {
     var result = ifRepo.findById(new InstallationFormId(formCode, formNumber))
       .orElseThrow(() -> new IllegalArgumentException(Message.PT_36));
     return mapToResponse(result);
+  }
+
+  @Override
+  public Page<InstallationFormListResponse> findByEstimateStatus_Pending(Pageable pageable) {
+    log.info("Fetching installation forms with estimate status PENDING_FOR_APPROVAL");
+    var result = ifRepo.findByEstimateStatus_Pending(pageable);
+    return result.map(this::mapToResponse);
+  }
+
+  @Override
+  public Page<InstallationFormListResponse> findByRegistrationStatus_Pending(Pageable pageable) {
+    log.info("Fetching installation forms with registration status PENDING_FOR_APPROVAL");
+    var result = ifRepo.findByRegistrationStatus_Pending(pageable);
+    return result.map(this::mapToResponse);
+  }
+
+  @Override
+  public ReviewedInstallationFormsResponse getReviewedInstallationFormsList() {
+    log.info("Fetching installation forms with estimate status APPROVED and REJECTED");
+    var approved = ifRepo.findByEstimateStatus(ProcessingStatus.APPROVED.name())
+      .stream()
+      .map(this::mapToResponse)
+      .toList();
+    var rejected = ifRepo.findByEstimateStatus(ProcessingStatus.REJECTED.name())
+      .stream()
+      .map(this::mapToResponse)
+      .toList();
+    return new ReviewedInstallationFormsResponse(approved, rejected);
+  }
+
+  @Override
+  public Page<InstallationFormListResponse> findByHandoverByIsNotNull(Pageable pageable) {
+    log.info("Fetching installation forms that have been assigned to survey staff");
+    var result = ifRepo.findByHandoverByIsNotNull(pageable);
+    return result.map(this::mapToResponse);
   }
 
   @Override

@@ -1,4 +1,6 @@
-import { CreateCustomerPayload, CustomerResponse } from "@/types";
+import {
+  CreateCustomerPayload,
+} from "@/types";
 import { API_GATEWAY_URL } from "@/utils/constraints";
 import axios from "axios";
 
@@ -20,7 +22,6 @@ export const getAllCustomers = (
       params[key] = filters[key];
     });
   }
-
 
   return axios.get(`${API_GATEWAY_URL}/customer/customers`, {
     params: params,
@@ -75,6 +76,63 @@ export const updateCustomer = async (
 
 export const deleteCustomer = (accessToken: string, customerId: string) => {
   return axios.delete(`${API_GATEWAY_URL}/customer/customers/${customerId}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
+export const getAllContracts = (
+  accessToken: string,
+  page: number,
+  size: number,
+  sort: string,
+  filters?: Record<string, any>,
+) => {
+  const params: Record<string, any> = {
+    page,
+    size,
+    sort,
+  };
+
+  if (filters) {
+    Object.keys(filters).forEach((key) => {
+      params[key] = filters[key];
+    });
+  }
+
+  return axios.get(`${API_GATEWAY_URL}/customer/contracts`, {
+    params: params,
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
+export const getContractById = (accessToken: string, customerId: string) => {
+  return axios.get(`${API_GATEWAY_URL}/customer/contracts/${customerId}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
+export const createContract = async (accessToken: string, payload: any) => {
+  const response = await axios.post(
+    `${API_GATEWAY_URL}/customer/contracts`,
+    payload,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+  return response.data;
+};
+
+export const deleteContract = (accessToken: string, customerId: string) => {
+  return axios.delete(`${API_GATEWAY_URL}/customer/contracts/${customerId}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },

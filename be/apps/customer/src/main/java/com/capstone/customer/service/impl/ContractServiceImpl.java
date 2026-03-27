@@ -15,6 +15,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,22 +40,18 @@ public class ContractServiceImpl implements ContractService {
 
   @Override
   @Transactional(rollbackFor = Exception.class)
-  public ContractResponse createContract(CreateRequest request) {
+  public ContractResponse createContract(@NonNull CreateRequest request) {
     log.info("Creating contract with ID: {}", request.contractId());
     var status = cSrv.checkExistence(request.formCode(), request.formNumber());
     if (!status) {
       throw new IllegalArgumentException(Message.ENT_16);
     }
 
-    var contract = WaterUsageContract.create(builder -> builder
-      .id(request.contractId())
+    var contract = WaterUsageContract.builder()
+      .contractId(request.contractId())
       .formNumber(request.formNumber())
-      .formCode(request.formCode()));
-    if (request.customerId() != null) {
-      var customer = customerRepository.findById(request.customerId())
-        .orElseThrow(() -> new IllegalArgumentException("Customer not found with ID: " + request.customerId()));
-      contract.setCustomer(customer);
-    }
+      .formCode(request.formCode())
+      .build();
     if (request.representatives() != null && !request.representatives().isEmpty()) {
       contract.setRepresentative(request.representatives());
     }
@@ -115,13 +112,11 @@ public class ContractServiceImpl implements ContractService {
     return LocalDate.parse(to, DateTimeFormatter.ofPattern(SharedConstant.DATE_PATTERN)).atTime(LocalTime.MAX);
   }
 
-  private ContractResponse mapToResponse(WaterUsageContract contract) {
+  private @NonNull ContractResponse mapToResponse(@NonNull WaterUsageContract contract) {
     return new ContractResponse(
       contract.getContractId(),
       contract.getCreatedAt(),
       contract.getUpdatedAt(),
-      contract.getCustomer().getName(),
-      contract.getCustomer().getCustomerId(),
       contract.getFormCode(),
       contract.getRepresentative());
   }

@@ -50,7 +50,7 @@ Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 ###
-@empId =
+@empId =6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20
 
 ### get all pages of employee
 GET {{uri}}/authorization/employees/{{empId}}/pages
@@ -166,3 +166,9 @@ Content-Type: application/json
 DELETE {{uri}}/authorization/employees/NON_EXISTENT_ID
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
+
+### 9. Xóa tài khoản nhân viên (Thất bại - ID không tồn tại)
+GET {{uri}}/authorization/employees/survey-staff
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+

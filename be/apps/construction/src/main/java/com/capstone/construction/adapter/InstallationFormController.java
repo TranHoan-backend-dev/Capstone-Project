@@ -144,6 +144,38 @@ public class InstallationFormController {
     return Utils.returnOkResponse("Lấy danh sách đơn lắp đặt thành công", response);
   }
 
+  @Operation(summary = "Lấy danh sách đơn chờ duyệt dự toán", description = "Lấy các đơn lắp đặt có trạng thái của estimate là PENDING_FOR_APPROVAL")
+  @GetMapping("/estimate/pending")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> getPendingEstimateForms(Pageable pageable) {
+    var response = installationFormHandlingUseCase.findByEstimateStatus_Pending(pageable);
+    return Utils.returnOkResponse("Lấy danh sách thành công", response);
+  }
+
+  @Operation(summary = "Lấy danh sách đơn chờ duyệt khảo sát", description = "Lấy các đơn lắp đặt mới có trạng thái registration là PENDING_FOR_APPROVAL")
+  @GetMapping("/registration/pending")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> getPendingRegistrationForms(Pageable pageable) {
+    var response = installationFormHandlingUseCase.findByRegistrationStatus_Pending(pageable);
+    return Utils.returnOkResponse("Lấy danh sách thành công", response);
+  }
+
+  @Operation(summary = "Lấy danh sách đơn đã duyệt dự toán", description = "Lấy các đơn lắp đặt mới có trạng thái estimate là APPROVED và REJECTED (Tách riêng)")
+  @GetMapping("/reviewed")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> getReviewedEstimateForms() {
+    var response = installationFormHandlingUseCase.getReviewedInstallationFormsList();
+    return Utils.returnOkResponse("Lấy danh sách thành công", response);
+  }
+
+  @Operation(summary = "Lấy danh sách đơn đã giao khảo sát", description = "Lấy các đơn lắp đặt mới đã được giao cho nhân viên khảo sát")
+  @GetMapping("/assigned")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> getAssignedForms(Pageable pageable) {
+    var response = installationFormHandlingUseCase.findByHandoverByIsNotNull(pageable);
+    return Utils.returnOkResponse("Lấy danh sách thành công", response);
+  }
+
   @Operation(hidden = true)
   @GetMapping("/exist")
   public boolean isExisting(

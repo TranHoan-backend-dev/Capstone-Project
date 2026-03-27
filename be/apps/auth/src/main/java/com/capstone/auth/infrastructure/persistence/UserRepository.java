@@ -1,6 +1,6 @@
 package com.capstone.auth.infrastructure.persistence;
 
-import com.capstone.auth.application.business.dto.UserDTO;
+import com.capstone.auth.domain.model.Roles;
 import com.capstone.auth.domain.model.Users;
 import com.capstone.common.enumerate.RoleName;
 import org.springframework.data.domain.Page;
@@ -30,4 +30,6 @@ public interface UserRepository extends JpaRepository<Users, String> {
   Boolean existsByUserId(String userId);
 
   Users findByUsername(String name);
+
+  List<Users> findByRole(Roles role);
 }

@@ -1,9 +1,10 @@
 package com.capstone.customer.controller;
 
-import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.customer.dto.request.ContractFilterRequest;
 import com.capstone.customer.dto.request.contract.CreateRequest;
 import com.capstone.customer.dto.response.ContractResponse;
 import com.capstone.customer.service.boundary.ContractService;
+import com.capstone.common.response.WrapperApiResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -50,12 +50,14 @@ class ContractControllerTest {
   void setUp() {
     ReflectionTestUtils.setField(contractController, "log", log);
 
+    // CreateRequest has 5 fields: contractId, formCode, formNumber, representatives, appendix
     createRequest = new CreateRequest(
-      "HD001", "CUST001", "FORM001", "NUM001", Collections.emptyList(), Collections.emptyList()
+      "HD001", "FORM001", "NUM001", Collections.emptyList(), Collections.emptyList()
     );
 
+    // ContractResponse has 5 fields: contractId, createdAt, updatedAt, installationFormId, representatives
     mockResponse = new ContractResponse(
-      "HD001", LocalDateTime.now(), LocalDateTime.now(), "Customer Name", "CUST001", "FORM001", Collections.emptyList()
+      "HD001", LocalDateTime.now(), LocalDateTime.now(), "FORM001", Collections.emptyList()
     );
 
     pageable = PageRequest.of(0, 10);
@@ -119,9 +121,10 @@ class ContractControllerTest {
   @DisplayName("Should return OK when getAllContracts is successful")
   void should_ReturnOk_When_GetAllContracts() {
     // Arrange
-    BaseFilterRequest filter = new BaseFilterRequest("HD", null, null);
+    // Use ContractFilterRequest instead of BaseFilterRequest
+    ContractFilterRequest filter = new ContractFilterRequest("HD", null, null, null, null, null, null, null, null, null, null);
     Page<ContractResponse> mockPage = new PageImpl<>(List.of(mockResponse));
-    when(contractService.getAllContracts(any(Pageable.class), any(BaseFilterRequest.class))).thenReturn(mockPage);
+    when(contractService.getAllContracts(any(Pageable.class), any(ContractFilterRequest.class))).thenReturn(mockPage);
 
     // Act
     var responseEntity = contractController.getAllContracts(pageable, filter);
