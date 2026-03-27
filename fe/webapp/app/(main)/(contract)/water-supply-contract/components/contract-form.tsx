@@ -1,4 +1,3 @@
-// app/contracts/components/contract-form.tsx
 "use client";
 
 import React, { useState } from "react";
@@ -6,9 +5,7 @@ import {
   Card,
   CardBody,
   CardHeader,
-  Button,
   Spinner,
-  Input,
   Textarea,
   Divider,
   Tooltip,
@@ -20,8 +17,6 @@ import {
   DocumentIcon,
   HomeIcon,
   PhoneIcon,
-  EnvelopeIcon,
-  IdentificationIcon,
 } from "@heroicons/react/24/outline";
 
 import { authFetch } from "@/utils/authFetch";
@@ -31,6 +26,8 @@ import { LookupModal } from "@/components/ui/modal/LookupModal";
 import { SaveDocumentCheckIcon } from "@/config/chip-and-icon";
 import { RefreshIcon } from "@/components/ui/Icons";
 import CustomButton from "@/components/ui/custom/CustomButton";
+import CustomInput from "@/components/ui/custom/CustomInput";
+import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
 
 interface ContractFormProps {
   onSuccess?: () => void;
@@ -138,9 +135,6 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
     if (!formData.formNumber?.trim()) {
       newErrors.formNumber = "Vui lòng chọn số đơn";
     }
-    // if (!formData.customerId?.trim()) {
-    //   newErrors.customerId = "Vui lòng chọn khách hàng";
-    // }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -155,7 +149,6 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
         contractId: formData.contractId,
         formCode: formData.formCode,
         formNumber: formData.formNumber,
-        customerId: formData.customerId,
         representatives: formData.representatives || [],
         appendix: formData.appendix || [],
       };
@@ -183,7 +176,6 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
         contractId: "",
         formCode: "",
         formNumber: "",
-        customerId: "",
         representatives: [],
         appendix: [],
       });
@@ -209,7 +201,6 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
       contractId: "",
       formCode: "",
       formNumber: "",
-      customerId: "",
       representatives: [],
       appendix: [],
     });
@@ -220,37 +211,6 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
   return (
     <>
       <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">
-            Tạo hợp đồng cấp nước mới
-          </h1>
-          <div className="flex gap-3">
-            <CustomButton
-              color="success"
-              className="font-medium"
-              startContent={
-                loading ? (
-                  <Spinner size="sm" color="white" />
-                ) : (
-                  <SaveDocumentCheckIcon className="w-5 h-5" />
-                )
-              }
-              onClick={handleSubmit}
-              isDisabled={loading}
-            >
-              {loading ? "Đang lưu..." : "Lưu hợp đồng"}
-            </CustomButton>
-            <CustomButton
-              variant="flat"
-              startContent={<RefreshIcon className="w-5 h-5" />}
-              onClick={handleReset}
-              isDisabled={loading}
-            >
-              Làm mới
-            </CustomButton>
-          </div>
-        </div>
-
         <Card className="shadow-lg">
           <CardHeader className="flex gap-3 px-6 pt-6 pb-0">
             <DocumentIcon className="w-6 h-6 text-primary" />
@@ -265,13 +225,8 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
 
           <CardBody className="p-6 space-y-6">
             <div>
-              <h4 className="text-md font-semibold text-primary mb-4 flex items-center gap-2">
-                <DocumentIcon className="w-5 h-5" />
-                A. THÔNG TIN HỢP ĐỒNG
-              </h4>
-              <Input
+              <CustomInput
                 label="Mã hợp đồng"
-                placeholder="Nhập mã hợp đồng"
                 value={formData.contractId || ""}
                 onChange={(e) => handleChange("contractId", e.target.value)}
                 errorMessage={errors.contractId}
@@ -286,37 +241,22 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
             <Divider />
 
             <div>
-              <h4 className="text-md font-semibold text-primary mb-4 flex items-center gap-2">
-                <HomeIcon className="w-5 h-5" />
-                B. THÔNG TIN ĐƠN
-              </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input
+                <SearchInputWithButton
                   label="Số đơn"
-                  placeholder="Nhấn tìm kiếm để chọn số đơn"
                   value={formData.formNumber || ""}
                   onValueChange={(value) => handleChange("formNumber", value)}
                   errorMessage={errors.formNumber}
                   isRequired
                   isInvalid={!!errors.formNumber}
-                  endContent={
-                    <Button
-                      size="sm"
-                      variant="light"
-                      onClick={() => setShowFormModal(true)}
-                      className="min-w-[80px]"
-                    >
-                      Tìm kiếm
-                    </Button>
-                  }
+                  onSearch={() => setShowFormModal(true)}
                 />
-                <Input
+                <CustomInput
                   label="Mã đơn"
                   value={formData.formCode || ""}
                   isReadOnly
                   errorMessage={errors.formCode}
                   isInvalid={!!errors.formCode}
-                  placeholder="Tự động điền khi chọn số đơn"
                 />
               </div>
             </div>
@@ -326,12 +266,8 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
             {selectedForm && (
               <>
                 <div>
-                  <h4 className="text-md font-semibold text-primary mb-4 flex items-center gap-2">
-                    <UserIcon className="w-5 h-5" />
-                    C. THÔNG TIN KHÁCH HÀNG
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Input
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <CustomInput
                       label="Tên khách hàng"
                       value={selectedForm?.customerName || ""}
                       isReadOnly
@@ -339,16 +275,15 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
                         <UserIcon className="w-4 h-4 text-gray-400" />
                       }
                     />
-                    <Input
+                    <CustomInput
                       label="Địa chỉ"
                       value={selectedForm?.address || ""}
                       isReadOnly
                       startContent={
                         <HomeIcon className="w-4 h-4 text-gray-400" />
                       }
-                      className="md:col-span-2"
                     />
-                    <Input
+                    <CustomInput
                       label="Số điện thoại"
                       value={selectedForm?.phoneNumber || ""}
                       isReadOnly
@@ -356,8 +291,8 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
                         <PhoneIcon className="w-4 h-4 text-gray-400" />
                       }
                     />
-                    {selectedForm?.email && (
-                      <Input
+                    {/* {selectedForm?.email && (
+                      <CustomInput
                         label="Email"
                         value={selectedForm.email}
                         isReadOnly
@@ -367,7 +302,7 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
                       />
                     )}
                     {selectedForm?.citizenIdentificationNumber && (
-                      <Input
+                      <CustomInput
                         label="CMND/CCCD"
                         value={selectedForm.citizenIdentificationNumber}
                         isReadOnly
@@ -375,7 +310,7 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
                           <IdentificationIcon className="w-4 h-4 text-gray-400" />
                         }
                       />
-                    )}
+                    )} */}
                   </div>
                 </div>
                 <Divider />
@@ -383,13 +318,9 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
             )}
 
             <div>
-              <h4 className="text-md font-semibold text-primary mb-4 flex items-center gap-2">
-                <UserIcon className="w-5 h-5" />
-                D. NGƯỜI ĐẠI DIỆN
-              </h4>
               <div className="space-y-4">
                 <div className="flex justify-end">
-                  <Button
+                  <CustomButton
                     size="sm"
                     color="primary"
                     variant="flat"
@@ -397,7 +328,7 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
                     onClick={handleAddRepresentative}
                   >
                     Thêm người đại diện
-                  </Button>
+                  </CustomButton>
                 </div>
 
                 {(formData.representatives || []).length === 0 ? (
@@ -413,12 +344,11 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
                     {(formData.representatives || []).map((rep, index) => (
                       <div
                         key={index}
-                        className="flex gap-3 items-start p-4 bg-gray-50 rounded-lg"
+                        className="flex gap-3 items-start rounded-lg"
                       >
                         <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
-                          <Input
+                          <CustomInput
                             label="Tên người đại diện"
-                            placeholder="Nhập tên người đại diện"
                             value={rep.name}
                             onChange={(e) =>
                               handleRepresentativeChange(
@@ -431,9 +361,8 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
                               <UserIcon className="w-4 h-4 text-gray-400" />
                             }
                           />
-                          <Input
+                          <CustomInput
                             label="Chức vụ"
-                            placeholder="Nhập chức vụ"
                             value={rep.position}
                             onChange={(e) =>
                               handleRepresentativeChange(
@@ -445,7 +374,7 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
                           />
                         </div>
                         <Tooltip content="Xóa">
-                          <Button
+                          <CustomButton
                             isIconOnly
                             color="danger"
                             variant="light"
@@ -453,7 +382,7 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
                             onClick={() => handleRemoveRepresentative(index)}
                           >
                             <TrashIcon className="w-4 h-4" />
-                          </Button>
+                          </CustomButton>
                         </Tooltip>
                       </div>
                     ))}
@@ -465,10 +394,6 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
             <Divider />
 
             <div>
-              <h4 className="text-md font-semibold text-primary mb-4 flex items-center gap-2">
-                <DocumentIcon className="w-5 h-5" />
-                E. PHỤ LỤC HỢP ĐỒNG
-              </h4>
               <Textarea
                 label="Nội dung phụ lục"
                 placeholder="Nhập nội dung phụ lục hợp đồng (nếu có)..."
@@ -476,6 +401,33 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
                 onChange={(e) => handleAppendixChange(e.target.value)}
                 minRows={4}
               />
+            </div>
+            <div className="flex justify-end items-end">
+              <div className="flex gap-3">
+                <CustomButton
+                  color="success"
+                  className="font-medium"
+                  startContent={
+                    loading ? (
+                      <Spinner size="sm" color="white" />
+                    ) : (
+                      <SaveDocumentCheckIcon className="w-5 h-5" />
+                    )
+                  }
+                  onClick={handleSubmit}
+                  isDisabled={loading}
+                >
+                  {loading ? "Đang lưu..." : "Lưu hợp đồng"}
+                </CustomButton>
+                <CustomButton
+                  variant="flat"
+                  startContent={<RefreshIcon className="w-5 h-5" />}
+                  onClick={handleReset}
+                  isDisabled={loading}
+                >
+                  Làm mới
+                </CustomButton>
+              </div>
             </div>
           </CardBody>
         </Card>

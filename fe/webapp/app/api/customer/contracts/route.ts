@@ -28,7 +28,6 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(response.data);
   } catch (error: any) {
-    console.error("Error fetching customers:", error);
     const status = error?.response?.status ?? 500;
 
     return NextResponse.json(
@@ -50,18 +49,10 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    console.log("Request body:", body);
-
     const response = await createContract(accessToken, body);
 
     return NextResponse.json(response.data, { status: 201 });
   } catch (error: any) {
-    console.error("API Error:", {
-      message: error.message,
-      response: error.response?.data,
-      status: error.response?.status,
-    });
-
     return NextResponse.json(
       {
         message:

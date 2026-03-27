@@ -1,23 +1,14 @@
-// app/contracts/page.tsx
-"use client"; // Thêm "use client" vì có state
+"use client";
 
 import { useState } from "react";
 
 import { ContractForm } from "./components/contract-form";
 import { ContractTable } from "./components/contract-table";
 
-import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
-
 export default function NewWaterContractPage() {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  const breadcrumbItems = [
-    { label: "Trang chủ", href: "/home" },
-    { label: "Hợp đồng cấp nước mới" },
-  ];
-
   const handleContractSuccess = () => {
-    // Trigger refresh của table
     setRefreshTrigger((prev) => prev + 1);
   };
 

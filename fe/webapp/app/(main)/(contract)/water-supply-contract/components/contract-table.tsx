@@ -1,4 +1,3 @@
-// app/contracts/components/contract-table.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -11,6 +10,8 @@ import { authFetch } from "@/utils/authFetch";
 import { CallToast } from "@/components/ui/CallToast";
 import { ContractResponse, Representative } from "@/types";
 import { formatDate1 } from "@/utils/format";
+import { CONTRACT_COLUMN } from "@/config/table-columns/customer/contract-column";
+import { ConfirmDialog } from "@/components/ui/modal/ConfirmDialog";
 
 interface ContractTableProps {
   filters?: any;
@@ -20,6 +21,7 @@ interface ContractTableProps {
 
 interface TableContractData {
   id: string;
+  stt: number;
   contractId: string;
   customerName: string;
   customerId: string;
@@ -39,7 +41,8 @@ export const ContractTable = ({
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
@@ -78,7 +81,8 @@ export const ContractTable = ({
 
       if (pageData?.content) {
         const transformedData: TableContractData[] = pageData.content.map(
-          (item: ContractResponse) => ({
+          (item: ContractResponse, index: number) => ({
+            stt: (page - 1) * pageSize + index + 1,
             id: item.contractId,
             contractId: item.contractId,
             customerName: item.customerName,
@@ -117,14 +121,12 @@ export const ContractTable = ({
     fetchContracts();
   }, [page, refreshTrigger, JSON.stringify(filters)]);
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm("Bạn có chắc chắn muốn xóa hợp đồng này?")) {
-      return;
-    }
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return;
 
-    setDeleteLoading(id);
+    setDeleteLoading(true);
     try {
-      const res = await authFetch(`/api/customer/contracts/${id}`, {
+      const res = await authFetch(`/api/customer/contracts/${deleteId}`, {
         method: "DELETE",
       });
 
@@ -139,7 +141,12 @@ export const ContractTable = ({
         color: "success",
       });
 
-      await fetchContracts();
+      // Reset page về 1 nếu là trang cuối và chỉ còn 1 item
+      if (data.length === 1 && page > 1) {
+        setPage(page - 1);
+      } else {
+        await fetchContracts();
+      }
 
       if (onDeleteSuccess) {
         onDeleteSuccess();
@@ -152,13 +159,18 @@ export const ContractTable = ({
         color: "danger",
       });
     } finally {
-      setDeleteLoading(null);
+      setDeleteLoading(false);
+      setDeleteId(null);
     }
   };
 
-  const handleViewDetail = (id: string) => {
-    router.push(`/contracts/${id}`);
+  const handleDelete = (id: string) => {
+    setDeleteId(id);
   };
+
+  // const handleViewDetail = (id: string) => {
+  //   router.push(`/contracts/${id}`);
+  // };
 
   const handlePrint = (rawData: ContractResponse) => {
     const printWindow = window.open("", "_blank");
@@ -168,23 +180,88 @@ export const ContractTable = ({
           <head>
             <title>Hợp đồng ${rawData.contractId}</title>
             <style>
-              body { font-family: Arial, sans-serif; padding: 20px; }
-              .header { text-align: center; margin-bottom: 30px; }
-              .info { margin-bottom: 10px; }
-              .label { font-weight: bold; }
+              body { 
+                font-family: Arial, sans-serif; 
+                padding: 20px;
+                margin: 0;
+              }
+              .container {
+                max-width: 800px;
+                margin: 0 auto;
+              }
+              .header { 
+                text-align: center; 
+                margin-bottom: 30px;
+                border-bottom: 2px solid #333;
+                padding-bottom: 20px;
+              }
+              .title {
+                font-size: 24px;
+                font-weight: bold;
+                color: #333;
+              }
+              .subtitle {
+                font-size: 18px;
+                color: #666;
+                margin-top: 10px;
+              }
+              .info { 
+                margin-bottom: 15px;
+                padding: 10px;
+                border-bottom: 1px solid #eee;
+              }
+              .label { 
+                font-weight: bold;
+                display: inline-block;
+                width: 150px;
+              }
+              .value {
+                display: inline-block;
+                color: #333;
+              }
+              .footer {
+                margin-top: 30px;
+                text-align: center;
+                font-size: 12px;
+                color: #999;
+              }
+              @media print {
+                .no-print {
+                  display: none;
+                }
+              }
             </style>
           </head>
           <body>
-            <div class="header">
-              <h1>HỢP ĐỒNG CẤP NƯỚC</h1>
-              <h2>Mã hợp đồng: ${rawData.contractId}</h2>
-            </div>
-            <div class="info">
-              <p><span class="label">Tên khách hàng:</span> ${rawData.customerName}</p>
-              <p><span class="label">Mã khách hàng:</span> ${rawData.customerId}</p>
-              <p><span class="label">Mã form:</span> ${rawData.installationFormId}</p>
-              <p><span class="label">Người đại diện:</span> ${formatRepresentatives(rawData.representatives)}</p>
-              <p><span class="label">Ngày tạo:</span> ${formatDate1(rawData.createdAt)}</p>
+            <div class="container">
+              <div class="header">
+                <div class="title">HỢP ĐỒNG CẤP NƯỚC</div>
+                <div class="subtitle">Mã hợp đồng: ${rawData.contractId}</div>
+              </div>
+              <div class="info">
+                <span class="label">Tên khách hàng:</span>
+                <span class="value">${rawData.customerName}</span>
+              </div>
+              <div class="info">
+                <span class="label">Mã khách hàng:</span>
+                <span class="value">${rawData.customerId}</span>
+              </div>
+              <div class="info">
+                <span class="label">Mã form:</span>
+                <span class="value">${rawData.installationFormId}</span>
+              </div>
+              <div class="info">
+                <span class="label">Người đại diện:</span>
+                <span class="value">${formatRepresentatives(rawData.representatives)}</span>
+              </div>
+              <div class="info">
+                <span class="label">Ngày tạo:</span>
+                <span class="value">${formatDate1(rawData.createdAt)}</span>
+              </div>
+              <div class="footer">
+                <p>Hợp đồng được tạo từ hệ thống quản lý cấp nước</p>
+                <p>Ngày in: ${new Date().toLocaleString("vi-VN")}</p>
+              </div>
             </div>
           </body>
         </html>
@@ -194,31 +271,25 @@ export const ContractTable = ({
     }
   };
 
-  const columns = [
-    { key: "contractId", label: "Mã hợp đồng" },
-    { key: "customerName", label: "Tên khách hàng" },
-    { key: "customerId", label: "Mã khách hàng" },
-    { key: "installationFormId", label: "Mã form" },
-    { key: "representatives", label: "Người đại diện" },
-    { key: "createdAt", label: "Ngày tạo" },
-    { key: "actions", label: "Hoạt động", align: "center" as const },
-  ];
-
   const renderCell = (item: TableContractData, columnKey: string) => {
     switch (columnKey) {
+      case "stt":
+        return <span className="text-center">{item.stt}</span>;
       case "contractId":
         return (
           <span
             className="font-medium text-blue-600 cursor-pointer hover:underline"
-            onClick={() => handleViewDetail(item.contractId)}
+            // onClick={() => handleViewDetail(item.contractId)}
           >
             {item.contractId}
           </span>
         );
       case "customerName":
         return (
-          <span className="font-bold text-gray-900">{item.customerName}</span>
+          <span className="font-medium text-gray-900">{item.customerName}</span>
         );
+      case "customerId":
+        return <span>{item.customerId}</span>;
       case "installationFormId":
         return <span>{item.installationFormId}</span>;
       case "representatives":
@@ -228,7 +299,7 @@ export const ContractTable = ({
       case "actions":
         return (
           <div className="flex items-center justify-center gap-2">
-            <Tooltip content="Xem chi tiết" closeDelay={0}>
+            {/* <Tooltip content="Xem chi tiết" closeDelay={0}>
               <Button
                 isIconOnly
                 variant="light"
@@ -238,7 +309,7 @@ export const ContractTable = ({
               >
                 <EyeIcon className="w-5 h-5" />
               </Button>
-            </Tooltip>
+            </Tooltip> */}
             <Tooltip content="In hợp đồng" closeDelay={0}>
               <Button
                 isIconOnly
@@ -257,11 +328,8 @@ export const ContractTable = ({
                 size="sm"
                 className="text-red-500 hover:bg-red-50 rounded-lg"
                 onClick={() => handleDelete(item.contractId)}
-                isLoading={deleteLoading === item.contractId}
               >
-                {deleteLoading !== item.contractId && (
-                  <TrashIcon className="w-5 h-5" />
-                )}
+                <TrashIcon className="w-5 h-5" />
               </Button>
             </Tooltip>
           </div>
@@ -280,19 +348,33 @@ export const ContractTable = ({
   }
 
   return (
-    <GenericDataTable
-      title="DANH SÁCH HỢP ĐỒNG"
-      columns={columns}
-      data={data}
-      renderCellAction={renderCell}
-      isCollapsible={false}
-      paginationProps={{
-        total: totalPages,
-        page: page,
-        onChange: setPage,
-        summary: `${totalItems}`,
-      }}
-      headerSummary={`${totalItems}`}
-    />
+    <>
+      <GenericDataTable
+        title="DANH SÁCH HỢP ĐỒNG"
+        columns={CONTRACT_COLUMN}
+        data={data}
+        renderCellAction={renderCell}
+        isCollapsible={false}
+        paginationProps={{
+          total: totalPages,
+          page: page,
+          onChange: setPage,
+          summary: `${data.length}`,
+        }}
+        headerSummary={`${totalItems}`}
+      />
+
+      <ConfirmDialog
+        isOpen={!!deleteId}
+        title="Xác nhận xóa hợp đồng"
+        message="Bạn có chắc chắn muốn xóa hợp đồng này không?"
+        confirmText="Xóa"
+        cancelText="Hủy"
+        confirmColor="danger"
+        isLoading={deleteLoading}
+        onClose={() => setDeleteId(null)}
+        onConfirm={handleConfirmDelete}
+      />
+    </>
   );
 };
