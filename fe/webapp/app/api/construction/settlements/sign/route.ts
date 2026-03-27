@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       {
-        message: "Tạo quyết toán công trình thành công",
+        message: "Tạo yêu cầu ký quyết toán công trình thành công",
         data: response.data,
       },
       { status: 201 },
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     return NextResponse.json(
       {
-        message: error.response?.data?.message || "Tạo quyết toán thất bại",
+        message: error.response?.data?.message || "Tạo yêu cầu ký quyết toán thất bại",
         error: error.response?.data || null,
       },
       { status: error.response?.status || 500 },

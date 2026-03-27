@@ -144,9 +144,18 @@ export const ResultsTable = ({
     useState<SettlementItem | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // All employees for dropdowns
-  const [allEmployees, setAllEmployees] = useState<
-    { id: string; fullName: string; departmentName?: string; role?: string }[]
+  // Separate employees by role using 4 different endpoints
+  const [surveyStaff, setSurveyStaff] = useState<
+    { id: string; fullName: string }[]
+  >([]);
+  const [planningHead, setPlanningHead] = useState<
+    { id: string; name: string }[]
+  >([]);
+  const [companyLeadership, setCompanyLeadership] = useState<
+    { id: string; name: string }[]
+  >([]);
+  const [constructionPresident, setConstructionPresident] = useState<
+    { id: string; name: string }[]
   >([]);
 
   const { profile } = useProfile();
@@ -159,20 +168,49 @@ export const ResultsTable = ({
       }
     : null;
 
-  // Fetch all employees for dropdowns
+  // Fetch employees from 4 different endpoints
   useEffect(() => {
-    const fetchEmployees = async () => {
+    const fetchEmployeesByRole = async () => {
       try {
-        const res = await authFetch("/api/auth/employees?size=1000");
-        const json = await res.json();
-        const employees = json?.data?.content || [];
-        setAllEmployees(employees);
+        // Fetch survey staff
+        const surveyRes = await authFetch(
+          "/api/auth/employees/survey-staff",
+        );
+        if (surveyRes.ok) {
+          const surveyJson = await surveyRes.json();
+          setSurveyStaff(surveyJson?.data || []);
+        }
+
+        // Fetch planning head
+        const planningRes = await authFetch("/api/auth/employees/pt-head");
+        if (planningRes.ok) {
+          const planningJson = await planningRes.json();
+          setPlanningHead(planningJson?.data || []);
+        }
+
+        // Fetch company leadership
+        const leadershipRes = await authFetch(
+          "/api/auth/employees/leadership",
+        );
+        if (leadershipRes.ok) {
+          const leadershipJson = await leadershipRes.json();
+          setCompanyLeadership(leadershipJson?.data || []);
+        }
+
+        // Fetch construction head
+        const constructionRes = await authFetch(
+          "/api/auth/employees/construction-head",
+        );
+        if (constructionRes.ok) {
+          const constructionJson = await constructionRes.json();
+          setConstructionPresident(constructionJson?.data || []);
+        }
       } catch (error) {
         console.error("Error fetching employees:", error);
-        setAllEmployees([]);
       }
     };
-    fetchEmployees();
+
+    fetchEmployeesByRole();
   }, []);
 
   // Fetch data
@@ -307,8 +345,8 @@ export const ResultsTable = ({
       const requestBody = {
         settlementId: selectedItemForSign.id,
         surveyStaff: surveyStaffId || null,
-        ptHead: planningHeadId || null,
-        president: companyLeadershipId || null,
+        plHead: planningHeadId || null,
+        companyLeadership: companyLeadershipId || null,
         constructionPresident: constructionPresidentId || null,
       };
 
@@ -608,12 +646,10 @@ export const ResultsTable = ({
 
                   <CustomSelect
                     label="Nhân viên khảo sát"
-                    options={allEmployees
-                      .filter((emp) => emp.role === "SURVEY_STAFF")
-                      .map((emp) => ({
-                        label: emp.fullName,
-                        value: emp.id,
-                      }))}
+                    options={surveyStaff.map((emp) => ({
+                      label: emp.fullName,
+                      value: emp.id,
+                    }))}
                     selectedKeys={surveyStaffId ? [surveyStaffId] : []}
                     onSelectionChange={(keys) => {
                       const selectedKey = Array.from(keys)[0]?.toString() || "";
@@ -623,15 +659,10 @@ export const ResultsTable = ({
 
                   <CustomSelect
                     label="Trưởng phòng Kế hoạch Kỹ thuật"
-                    options={allEmployees
-                      .filter(
-                        (emp) =>
-                          emp.role === "PLANNING_TECHNICAL_DEPARTMENT_HEAD",
-                      )
-                      .map((emp) => ({
-                        label: emp.fullName,
-                        value: emp.id,
-                      }))}
+                    options={planningHead.map((emp) => ({
+                      label: emp.name,
+                      value: emp.id,
+                    }))}
                     selectedKeys={planningHeadId ? [planningHeadId] : []}
                     onSelectionChange={(keys) => {
                       const selectedKey = Array.from(keys)[0]?.toString() || "";
@@ -641,12 +672,10 @@ export const ResultsTable = ({
 
                   <CustomSelect
                     label="Lãnh đạo công ty"
-                    options={allEmployees
-                      .filter((emp) => emp.role === "COMPANY_LEADERSHIP")
-                      .map((emp) => ({
-                        label: emp.fullName,
-                        value: emp.id,
-                      }))}
+                    options={companyLeadership.map((emp) => ({
+                      label: emp.name,
+                      value: emp.id,
+                    }))}
                     selectedKeys={
                       companyLeadershipId ? [companyLeadershipId] : []
                     }
@@ -658,14 +687,10 @@ export const ResultsTable = ({
 
                   <CustomSelect
                     label="Giám đốc chi nhánh Xây lắp"
-                    options={allEmployees
-                      .filter(
-                        (emp) => emp.role === "CONSTRUCTION_DEPARTMENT_HEAD",
-                      )
-                      .map((emp) => ({
-                        label: emp.fullName,
-                        value: emp.id,
-                      }))}
+                    options={constructionPresident.map((emp) => ({
+                      label: emp.name,
+                      value: emp.id,
+                    }))}
                     selectedKeys={
                       constructionPresidentId ? [constructionPresidentId] : []
                     }
@@ -747,10 +772,6 @@ export const ResultsTable = ({
                 <Card className="border border-default-200">
                   <CardBody className="gap-4">
                     <div className="flex items-center gap-4">
-                      {/* <Avatar
-                        name={currentUser?.fullname?.charAt(0) || "?"}
-                        className="w-14 h-14 text-large font-semibold bg-primary/10 text-primary"
-                      /> */}
                       <div className="flex-1">
                         <p className="font-semibold text-default-900 text-lg">
                           {currentUser?.fullname || "Đang tải..."}
