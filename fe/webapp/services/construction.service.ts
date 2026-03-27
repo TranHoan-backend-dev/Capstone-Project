@@ -676,3 +676,21 @@ export const getAllConstruction = (
       Authorization: `Bearer ${accessToken}`,
     },
   });
+
+export const assignConstructionOrder = (
+  accessToken: string,
+  id: string,
+  formCode: string,
+  formNumbe: string,
+  customerId: string,
+  contractId: string,
+) =>
+  axios.patch(
+    `${API_GATEWAY_URL}/construction/construction/${id}`,
+    { formCode, formNumbe, customerId, contractId },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );

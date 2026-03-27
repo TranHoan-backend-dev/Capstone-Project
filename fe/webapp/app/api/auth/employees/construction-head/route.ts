@@ -1,4 +1,4 @@
-import { getSurveyStaff } from "@/services/authorization.service";
+import { getConstructionHead } from "@/services/authorization.service";
 import { getAccessToken } from "@/utils/getAccessToken";
 import { NextRequest } from "next/dist/server/web/spec-extension/request";
 import { NextResponse } from "next/server";
@@ -11,11 +11,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const { searchParams } = new URL(req.url);
-    const page = Number(searchParams.get("page") ?? 0);
-    const size = Number(searchParams.get("size") ?? 10);
-
-    const response = await getSurveyStaff(accessToken);
+    const response = await getConstructionHead(accessToken);
 
     return NextResponse.json(response.data);
   } catch (error: any) {
