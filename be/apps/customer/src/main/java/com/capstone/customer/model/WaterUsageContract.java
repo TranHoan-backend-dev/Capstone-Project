@@ -7,11 +7,9 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 import java.time.LocalDateTime;
 

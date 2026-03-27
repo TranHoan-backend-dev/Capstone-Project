@@ -235,6 +235,73 @@ class InstallationFormServiceImplTest {
   }
 
   @Test
+  void should_ReturnPendingEstimateForms_When_RepositoryReturnsData() {
+    // Given
+    var pageable = PageRequest.of(0, 10);
+    var entity = createMockEntity();
+    when(ifRepo.findByEstimateStatus_Pending(pageable)).thenReturn(new PageImpl<>(List.of(entity)));
+    when(empSrv.getEmployeeNameById(any())).thenReturn(new WrapperApiResponse(200, "OK", "Staff", OffsetDateTime.now()));
+
+    // When
+    var result = service.findByEstimateStatus_Pending(pageable);
+
+    // Then
+    assertThat(result.getContent()).hasSize(1);
+    verify(ifRepo).findByEstimateStatus_Pending(pageable);
+  }
+
+  @Test
+  void should_ReturnPendingRegistrationForms_When_RepositoryReturnsData() {
+    // Given
+    var pageable = PageRequest.of(0, 10);
+    var entity = createMockEntity();
+    when(ifRepo.findByRegistrationStatus_Pending(pageable)).thenReturn(new PageImpl<>(List.of(entity)));
+    when(empSrv.getEmployeeNameById(any())).thenReturn(new WrapperApiResponse(200, "OK", "Staff", OffsetDateTime.now()));
+
+    // When
+    var result = service.findByRegistrationStatus_Pending(pageable);
+
+    // Then
+    assertThat(result.getContent()).hasSize(1);
+    verify(ifRepo).findByRegistrationStatus_Pending(pageable);
+  }
+
+  @Test
+  void should_ReturnReviewedForms_When_RepositoryReturnsData() {
+    // Given
+    var entity1 = createMockEntity();
+    var entity2 = createMockEntity();
+    when(ifRepo.findByEstimateStatus(ProcessingStatus.APPROVED.name())).thenReturn(List.of(entity1));
+    when(ifRepo.findByEstimateStatus(ProcessingStatus.REJECTED.name())).thenReturn(List.of(entity2));
+    when(empSrv.getEmployeeNameById(any())).thenReturn(new WrapperApiResponse(200, "OK", "Staff", OffsetDateTime.now()));
+
+    // When
+    var result = service.getReviewedInstallationFormsList();
+
+    // Then
+    assertThat(result.approved()).hasSize(1);
+    assertThat(result.rejected()).hasSize(1);
+    verify(ifRepo).findByEstimateStatus(ProcessingStatus.APPROVED.name());
+    verify(ifRepo).findByEstimateStatus(ProcessingStatus.REJECTED.name());
+  }
+
+  @Test
+  void should_ReturnAssignedForms_When_RepositoryReturnsData() {
+    // Given
+    var pageable = PageRequest.of(0, 10);
+    var entity = createMockEntity();
+    when(ifRepo.findByHandoverByIsNotNull(pageable)).thenReturn(new PageImpl<>(List.of(entity)));
+    when(empSrv.getEmployeeNameById(any())).thenReturn(new WrapperApiResponse(200, "OK", "Staff", OffsetDateTime.now()));
+
+    // When
+    var result = service.findByHandoverByIsNotNull(pageable);
+
+    // Then
+    assertThat(result.getContent()).hasSize(1);
+    verify(ifRepo).findByHandoverByIsNotNull(pageable);
+  }
+
+  @Test
   void should_MapToResponse_When_ScheduleSurveyAtIsNull() {
     // Given
     var pageable = PageRequest.of(0, 10);
