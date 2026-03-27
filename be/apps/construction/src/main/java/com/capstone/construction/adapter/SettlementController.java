@@ -41,6 +41,7 @@ public class SettlementController {
     @ApiResponse(responseCode = "201", description = "Tạo quyết toán thành công"),
     @ApiResponse(responseCode = "400", description = "Dữ liệu yêu cầu không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'CONSTRUCTION_DEPARTMENT_STAFF')")
   public ResponseEntity<WrapperApiResponse> createSettlement(@RequestBody @Valid SettlementRequest request) {
     log.info("REST request to create settlement for address: {}", request.address());
     var response = settlementUseCase.createSettlement(request);
@@ -54,6 +55,7 @@ public class SettlementController {
     @ApiResponse(responseCode = "404", description = "Không tìm thấy bản quyết toán", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "400", description = "Dữ liệu yêu cầu không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'CONSTRUCTION_DEPARTMENT_STAFF')")
   public ResponseEntity<WrapperApiResponse> updateSettlement(
     @PathVariable @Parameter(description = "ID của bản quyết toán cần cập nhật", required = true) String id,
     @RequestBody @Valid SettlementRequest request) {
@@ -67,6 +69,7 @@ public class SettlementController {
     @ApiResponse(responseCode = "200", description = "Tìm thấy bản quyết toán", content = @Content(schema = @Schema(implementation = SettlementResponse.class))),
     @ApiResponse(responseCode = "404", description = "Không tìm thấy bản quyết toán", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'CONSTRUCTION_DEPARTMENT_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD')")
   public ResponseEntity<WrapperApiResponse> getSettlementById(
     @PathVariable @Parameter(description = "ID của bản quyết toán cần tra cứu", required = true) String id) {
     log.info("REST request to get settlement with id: {}", id);
@@ -78,6 +81,7 @@ public class SettlementController {
   @Operation(summary = "Lấy danh sách tất cả quyết toán công trình", description = "Trả về danh sách phân trang của tất cả các bản quyết toán trong hệ thống.", responses = {
     @ApiResponse(responseCode = "200", description = "Lấy danh sách thành công")
   })
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'CONSTRUCTION_DEPARTMENT_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD')")
   public ResponseEntity<WrapperApiResponse> getAllSettlements(
     @PageableDefault @Parameter(description = "Thông số phân trang (page, size, sort)") Pageable pageable) {
     log.info("REST request to get all settlements");
@@ -89,6 +93,7 @@ public class SettlementController {
   @Operation(summary = "Lọc danh sách quyết toán theo tiêu chí", description = "Tìm kiếm và lọc các bản quyết toán dựa trên các tham số như nội dung, trạng thái, ngày đăng ký, chi phí...", responses = {
     @ApiResponse(responseCode = "200", description = "Lọc danh sách thành công")
   })
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'CONSTRUCTION_DEPARTMENT_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD')")
   public ResponseEntity<WrapperApiResponse> filterSettlements(
     @ModelAttribute @Parameter(description = "Các tiêu chí lọc dữ liệu") SettlementFilterRequest filterRequest,
     @PageableDefault @Parameter(description = "Thông số phân trang") Pageable pageable) {
@@ -101,13 +106,13 @@ public class SettlementController {
   @Operation(summary = "Ký duyệt bản quyết toán", description = """
     Thực hiện ký duyệt điện tử lên bản quyết toán bởi các bên có thẩm quyền liên quan.
     Luồng này sẽ kích hoạt thông báo đến các nhân viên được chỉ định.
-    Người thực hiện phải có quyền tương ứng (CONSTRUCTION_DEPARTMENT_HEAD, COMPANY_LEADERSHIP, SURVEY_STAFF, PLANNING_TECHNICAL_DEPARTMENT_HEAD hoặc IT_STAFF).
+    Người thực hiện phải có quyền tương ứng (COMPANY_LEADERSHIP, SURVEY_STAFF, PLANNING_TECHNICAL_DEPARTMENT_HEAD).
     """, responses = {
     @ApiResponse(responseCode = "200", description = "Ký thành công"),
     @ApiResponse(responseCode = "404", description = "Không tìm thấy bản quyết toán"),
     @ApiResponse(responseCode = "403", description = "Không có quyền thực hiện hành động này")
   })
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'SURVEY_STAFF')")
+  @PreAuthorize("hasAnyAuthority('PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'SURVEY_STAFF')")
   public ResponseEntity<WrapperApiResponse> sign(
     @AuthenticationPrincipal Jwt jwt,
     @RequestBody SignificanceRequest request,

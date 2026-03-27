@@ -58,7 +58,7 @@ export default function CaptureWaterMeterScreen({ route }: any) {
     } else if (result.assets && result.assets.length > 0) {
       const uri = result.assets[0].uri;
       if (uri) {
-        console.log('[CaptrureWaterMeterScreen.tsx] photo uri: ' + uri)
+        console.log('[CaptureWaterMeterScreen.tsx] photo uri: ' + uri)
         setPhotoUri(uri);
         checkImageQuality();
       }
@@ -95,13 +95,14 @@ export default function CaptureWaterMeterScreen({ route }: any) {
 
       // Gửi ảnh về Backend để Backend thực hiện luồng:
       // Upload GCS -> RabbitMQ -> AI Worker -> Trả kết quả bất đồng bộ
-      await meterService.updateMeterIndex(
-        meterId || 'UNKNOWN',
+      const response = await meterService.updateMeterIndex(
+        meterId || '00000000-0000-0000-0000-A00000000001',
         0, // Chỉ số tạm thời sẽ được AI cập nhật sau
         new Date().toISOString().split('T')[0],
         { uri: photoUri }
       );
 
+      console.log("[CaptureWaterMeterScreen.tsx] response: " + response)
       showToast.success('Đã gửi ảnh thành công. AI sẽ xử lý trong giây lát!');
       navigation.goBack();
     } catch (error: any) {
