@@ -15,6 +15,7 @@ import java.util.function.Consumer;
 
 import java.time.LocalDateTime;
 
+@Builder
 @Table
 @Getter
 @Entity
@@ -31,9 +32,6 @@ public class WaterUsageContract {
 
   @Column(nullable = false)
   LocalDateTime updatedAt;
-
-  @OneToOne(fetch = FetchType.EAGER)
-  Customer customer;
 
   @Column(nullable = false, unique = true)
   String formCode;
@@ -65,11 +63,6 @@ public class WaterUsageContract {
     this.contractId = id;
   }
 
-  public void setCustomer(Customer customer) {
-    Objects.requireNonNull(customer, Message.ENT_04);
-    this.customer = customer;
-  }
-
   public void setFormCode(String value) {
     Objects.requireNonNull(value, SharedMessage.MES_21);
     if (value.trim().isEmpty()) {
@@ -94,45 +87,5 @@ public class WaterUsageContract {
   public void setRepresentative(List<Representative> representative) {
     Objects.requireNonNull(representative, "Representatives cannot be null");
     this.representative = representative;
-  }
-
-  public static WaterUsageContract create(@NonNull Consumer<ContractBuilder> consumer) {
-    var builder = new ContractBuilder();
-    consumer.accept(builder);
-    return builder.build();
-  }
-
-  public static class ContractBuilder {
-    private final WaterUsageContract waterUsageContract = new WaterUsageContract();
-
-    public ContractBuilder id(String id) {
-      waterUsageContract.setContractId(id);
-      return this;
-    }
-
-    public void customer(Customer customer) {
-      waterUsageContract.setCustomer(customer);
-    }
-
-    public void formCode(String value) {
-      waterUsageContract.setFormCode(value);
-    }
-
-    public ContractBuilder formNumber(String value) {
-      waterUsageContract.setFormNumber(value);
-      return this;
-    }
-
-    public void representative(List<Representative> representative) {
-      waterUsageContract.setRepresentative(representative);
-    }
-
-    public void appendix(List<Appendix> value) {
-      waterUsageContract.setAppendix(value);
-    }
-
-    public WaterUsageContract build() {
-      return waterUsageContract;
-    }
   }
 }
