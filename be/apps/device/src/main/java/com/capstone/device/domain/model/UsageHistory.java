@@ -6,8 +6,9 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import java.math.BigDecimal;
 import java.util.*;
+
+import com.capstone.device.domain.model.utils.Usage;
 
 @Builder
 @Setter
@@ -30,13 +31,16 @@ public class UsageHistory {
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(columnDefinition = "jsonb")
   @Builder.Default
-  Map<String, BigDecimal> usages = new LinkedHashMap<>();
+  List<Usage> usages = new ArrayList<>();
 
-  public void addOrUpdateUsage(String monthYear, BigDecimal index) {
+  public void addOrUpdateUsage(Usage usage) {
     if (usages == null) {
-      usages = new LinkedHashMap<>();
+      usages = new ArrayList<>();
     }
-    usages.put(monthYear, index);
+    // Remove old usage for same month/year if exists
+    usages.removeIf(u -> u.getRecordingDate().getMonth() == usage.getRecordingDate().getMonth() &&
+      u.getRecordingDate().getYear() == usage.getRecordingDate().getYear());
+    usages.add(usage);
   }
 }
 
