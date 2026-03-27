@@ -18,7 +18,6 @@ export async function POST(
     const { setlementId } = await params;
 
     const { url } = body;
-    console.log("url" + url);
     if (!setlementId) {
       return NextResponse.json(
         { message: "settlementId is required" },

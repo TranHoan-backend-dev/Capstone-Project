@@ -30,6 +30,9 @@ import {
   XCircleIcon,
   ClockIcon,
 } from "@heroicons/react/24/outline";
+import { useSettlementUpdates } from "@/hooks/useWebSocketRefresh";
+import { sendSignRequestNotification } from "@/utils/notification-helper";
+import { getAccessTokenFromCookie } from "@/utils/token-helper";
 import { useRouter } from "next/navigation";
 import { SettlementDetailModal } from "./settlement-detail-modal";
 import { SettlementDocumentModal } from "./settlement-document-modal";
@@ -102,6 +105,7 @@ export const ResultsTable = ({
   const [loading, setLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [sort, setSort] = useState<{
     field: string;
     direction: "asc" | "desc";
@@ -111,7 +115,11 @@ export const ResultsTable = ({
   });
   const router = useRouter();
 
-  // State cho SettlementDetailModal
+  // Auto-refresh data khi có settlement updates từ WebSocket
+  useSettlementUpdates(() => {
+    console.log("📊 Settlement updated, refreshing data...");
+    setRefreshTrigger((prev) => prev + 1);
+  });
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedSettlementDetail, setSelectedSettlementDetail] = useState<
     SettlementDetail | undefined
@@ -266,7 +274,7 @@ export const ResultsTable = ({
       }
     };
     fetchData();
-  }, [page, keyword, reloadKey, sort, from, to, status]);
+  }, [page, keyword, reloadKey, sort, from, to, status, refreshTrigger]);
 
   const fetchSettlementDetail = async (settlementId: string) => {
     try {
@@ -359,6 +367,36 @@ export const ResultsTable = ({
       if (!res.ok) {
         const err = await res.json();
         throw new Error(err.message || "Tạo yêu cầu ký thất bại");
+      }
+
+      // Gửi notification cho những user được chỉ định ký
+      const recipientIds = [
+        surveyStaffId,
+        planningHeadId,
+        companyLeadershipId,
+        constructionPresidentId,
+      ].filter(Boolean) as string[];
+
+      if (recipientIds.length > 0) {
+        try {
+          const accessToken = getAccessTokenFromCookie();
+          if (accessToken) {
+            await sendSignRequestNotification(
+              accessToken,
+              recipientIds,
+              selectedItemForSign.id,
+              selectedItemForSign.formNumber,
+              currentUser?.fullname || "Admin",
+            );
+            console.log(
+              "📧 Notification sent to signers:",
+              recipientIds,
+            );
+          }
+        } catch (notificationError) {
+          console.error("Failed to send notification:", notificationError);
+          // Notification error không bao gồm API error, chỉ log warning
+        }
       }
 
       CallToast({

@@ -166,7 +166,7 @@ public class AuthorizationController {
 
   @Operation(description = "Lay ra toan bo nhan vien khao sat")
   @GetMapping(EMPLOYEE_PREFIX + "/survey-staff")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_HEAD')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF', 'SURVEY_STAFF')")
   public ResponseEntity<?> getAllSurveyStaffs() {
     log.info("Get all survey staffs");
     var response = userService.getAllSurveyStaffs();
@@ -176,7 +176,7 @@ public class AuthorizationController {
 
   @Operation
   @GetMapping(EMPLOYEE_PREFIX + "/pt-head")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF', 'SURVEY_STAFF')")
   public ResponseEntity<?> getPlanningTechnicalDepartmentHeads() {
     log.info("Get planning technical department heads");
     return Utils.returnOkResponse("", usersUseCase.getListOfPtHeads());
@@ -184,7 +184,7 @@ public class AuthorizationController {
 
   @Operation
   @GetMapping(EMPLOYEE_PREFIX + "/construction-head")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF')")
   public ResponseEntity<?> getConstructionHeads() {
     log.info("Get planning construction heads");
     return Utils.returnOkResponse("", usersUseCase.getListOfConstructionHeads());
@@ -192,7 +192,7 @@ public class AuthorizationController {
 
   @Operation
   @GetMapping(EMPLOYEE_PREFIX + "/leadership")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_HEAD')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF')")
   public ResponseEntity<?> getLeaderships() {
     log.info("Get planning leaderships");
     return Utils.returnOkResponse("", usersUseCase.getListOfCompanyLeaderShips());

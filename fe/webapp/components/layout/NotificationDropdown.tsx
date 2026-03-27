@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dropdown,
   DropdownTrigger,
@@ -11,117 +11,99 @@ import {
   Avatar,
   ScrollShadow,
   Button,
+  Spinner,
 } from "@heroui/react";
 import {
   BellIcon,
   CheckCircleIcon,
   EllipsisHorizontalIcon,
+  TrashIcon,
 } from "@heroicons/react/24/outline";
-
-interface Notification {
-  id: string;
-  sender: string;
-  message: string;
-  time: string;
-  isRead: boolean;
-  avatar: string;
-  type: "message" | "system" | "billing";
-}
+import { useNotifications } from "@/context/NotificationContext";
+import { Notification } from "@/services/notification.service";
 
 const NotificationDropdown = () => {
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: "1",
-      sender: "Hệ thống",
-      message: "Đơn hàng 01025120007 của bạn đã được thanh toán thành công.",
-      time: "2 phút trước",
-      isRead: false,
-      avatar: "",
-      type: "system",
-    },
-    {
-      id: "2",
-      sender: "Trần Thị Nguyệt",
-      message: "Đã gửi một yêu cầu khảo sát thiết kế mới.",
-      time: "1 giờ trước",
-      isRead: false,
-      avatar: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
-      type: "message",
-    },
-    {
-      id: "3",
-      sender: "Phòng Kế toán",
-      message: "Thông báo chốt số nước tháng 12/2025.",
-      time: "3 giờ trước",
-      isRead: true,
-      avatar: "",
-      type: "billing",
-    },
-    {
-      id: "4",
-      sender: "Nguyễn Văn Vũ",
-      message: "Bạn có một tin nhắn mới về bản vẽ thiết kế.",
-      time: "Hôm qua",
-      isRead: true,
-      avatar: "https://i.pravatar.cc/150?u=a04258114e29026302d",
-      type: "message",
-    },
-    {
-      id: "5",
-      sender: "Hệ thống",
-      message: "Bảo trì hệ thống vào lúc 00:00 ngày 30/12/2025.",
-      time: "2 ngày trước",
-      isRead: true,
-      avatar: "",
-      type: "system",
-    },
-    {
-      id: "6",
-      sender: "Hoàng Thế Quý",
-      message: "Yêu cầu hỗ trợ thay đổi địa chỉ lắp đặt.",
-      time: "3 ngày trước",
-      isRead: true,
-      avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704d",
-      type: "message",
-    },
-  ]);
+  const {
+    notifications,
+    unreadCount,
+    isConnected,
+    loading,
+    markAsRead,
+    markAllAsRead,
+    deleteNotification,
+  } = useNotifications();
 
   const [filter, setFilter] = useState<"all" | "unread">("all");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   const filteredNotifications =
     filter === "all" ? notifications : notifications.filter((n) => !n.isRead);
-
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   const handleScroll = (e: React.UIEvent<HTMLElement>) => {
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
 
     if (
       scrollHeight - scrollTop <= clientHeight + 10 &&
-      !isLoading &&
+      !isLoadingMore &&
       filter === "all"
     ) {
-      setIsLoading(true);
+      setIsLoadingMore(true);
+      // Có thể thêm logic load more notifications nếu cần
       setTimeout(() => {
-        const newBatch: Notification[] = [
-          {
-            id: Math.random().toString(),
-            sender: "Hệ thống",
-            message:
-              "Thông báo lịch sử về hoạt động trước đây đã được lưu trữ.",
-            time: "1 tuần trước",
-            isRead: true,
-            avatar: "",
-            type: "system",
-          },
-        ];
-
-        setNotifications((prev) => [...prev, ...newBatch]);
-        setIsLoading(false);
+        setIsLoadingMore(false);
       }, 800);
     }
   };
+
+  const getNotificationIcon = (type: Notification["type"]) => {
+    switch (type) {
+      case "sign-request":
+        return "bg-purple-600";
+      case "system":
+        return "bg-blue-600";
+      case "billing":
+        return "bg-green-600";
+      case "message":
+      default:
+        return "bg-orange-600";
+    }
+  };
+
+  const getNotificationTypeLabel = (type: Notification["type"]) => {
+    switch (type) {
+      case "sign-request":
+        return "Yêu cầu ký";
+      case "system":
+        return "Hệ thống";
+      case "billing":
+        return "Thanh toán";
+      case "message":
+      default:
+        return "Tin nhắn";
+    }
+  };
+
+  if (loading) {
+    return (
+      <Button
+        isIconOnly
+        className="relative text-default-600 hover:bg-default-100"
+        radius="full"
+        variant="light"
+        disabled
+      >
+        <Badge
+          className="border-2 border-background"
+          color="danger"
+          content="..."
+          shape="circle"
+          size="sm"
+        >
+          <BellIcon className="w-6 h-6 text-default-600" />
+        </Badge>
+      </Button>
+    );
+  }
 
   return (
     <Dropdown className="p-0" placement="bottom-end">
@@ -143,6 +125,9 @@ const NotificationDropdown = () => {
           >
             <BellIcon className="w-6 h-6 text-default-600" />
           </Badge>
+          {isConnected && (
+            <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-600 rounded-full border border-background" />
+          )}
         </Button>
       </DropdownTrigger>
       <DropdownMenu
@@ -164,22 +149,38 @@ const NotificationDropdown = () => {
           >
             <div className="flex flex-col gap-4 px-4 pt-4 pb-2 border-b border-divider bg-content1 rounded-t-2xl pointer-events-auto">
               <div className="flex justify-between items-center">
-                <span className="text-2xl font-black text-foreground tracking-tight">
-                  Thông báo
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl font-black text-foreground tracking-tight">
+                    Thông báo
+                  </span>
+                  {isConnected && (
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 bg-green-50 rounded-full">
+                      <div className="w-2 h-2 bg-green-600 rounded-full animate-pulse" />
+                      <span className="text-xs font-bold text-green-700">
+                        Trực tuyến
+                      </span>
+                    </div>
+                  )}
+                </div>
                 <Button
                   isIconOnly
                   className="hover:bg-default-100"
                   radius="full"
                   size="sm"
                   variant="light"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (unreadCount > 0) {
+                      markAllAsRead();
+                    }
+                  }}
                 >
                   <EllipsisHorizontalIcon className="w-6 h-6 text-default-600" />
                 </Button>
               </div>
               <div className="flex gap-2">
                 <Button
-                  className={`font-bold px-4 ${filter === "all" ? "bg-primary-50 text-primary" : "bg-transparent text-default-600 hover:bg-default-100"}`}
+                  className={`font-bold px-4 text-sm ${filter === "all" ? "bg-primary-50 text-primary" : "bg-transparent text-default-600 hover:bg-default-100"}`}
                   radius="full"
                   size="sm"
                   onClick={(e) => {
@@ -187,10 +188,10 @@ const NotificationDropdown = () => {
                     setFilter("all");
                   }}
                 >
-                  Tất cả
+                  Tất cả ({notifications.length})
                 </Button>
                 <Button
-                  className={`font-bold px-4 ${filter === "unread" ? "bg-primary-50 text-primary" : "bg-transparent text-default-600 hover:bg-default-100"}`}
+                  className={`font-bold px-4 text-sm ${filter === "unread" ? "bg-primary-50 text-primary" : "bg-transparent text-default-600 hover:bg-default-100"}`}
                   radius="full"
                   size="sm"
                   onClick={(e) => {
@@ -198,7 +199,7 @@ const NotificationDropdown = () => {
                     setFilter("unread");
                   }}
                 >
-                  Chưa đọc
+                  Chưa đọc ({unreadCount})
                 </Button>
               </div>
             </div>
@@ -223,66 +224,105 @@ const NotificationDropdown = () => {
               onScroll={handleScroll}
             >
               <div className="flex flex-col py-2 px-2">
-                {filteredNotifications.map((n) => (
-                  <div
-                    key={n.id}
-                    className={`flex items-center gap-3 px-3 py-3 cursor-pointer transition-all rounded-xl relative group hover:bg-default-50 mb-1`}
-                  >
-                    <div className="relative shrink-0">
-                      <Avatar
-                        className={
-                          !n.avatar
-                            ? "bg-primary-50 text-primary font-bold"
-                            : "border border-divider"
+                {filteredNotifications.length > 0 ? (
+                  filteredNotifications.map((n) => (
+                    <div
+                      key={n.id}
+                      className={`flex items-start gap-3 px-3 py-3 transition-all rounded-xl relative group hover:bg-default-50 mb-1 ${!n.isRead ? "bg-default-100" : ""}`}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.classList.add("bg-default-100");
+                      }}
+                      onMouseLeave={(e) => {
+                        if (n.isRead) {
+                          e.currentTarget.classList.remove("bg-default-100");
                         }
-                        name={n.sender}
-                        size="lg"
-                        src={n.avatar}
-                      />
-                      <div
-                        className={`absolute -bottom-1 -right-1 rounded-full p-1 border-2 border-background ${n.type === "system" ? "bg-blue-600" : n.type === "billing" ? "bg-green-600" : "bg-orange-600"}`}
-                      >
-                        {n.type === "message" ? (
-                          <div className="w-2.5 h-2.5 bg-white rounded-full" />
-                        ) : (
-                          <CheckCircleIcon className="w-2.5 h-2.5 text-white" />
-                        )}
+                      }}
+                      onClick={() => {
+                        if (!n.isRead) {
+                          markAsRead(n.id);
+                        }
+                      }}
+                    >
+                      <div className="relative shrink-0">
+                        <Avatar
+                          className={
+                            !n.avatar
+                              ? "bg-primary-50 text-primary font-bold"
+                              : "border border-divider"
+                          }
+                          name={n.sender}
+                          size="lg"
+                          src={n.avatar}
+                        />
+                        <div
+                          className={`absolute -bottom-1 -right-1 rounded-full p-1 border-2 border-background ${getNotificationIcon(n.type)}`}
+                        >
+                          {n.type === "message" ? (
+                            <div className="w-2.5 h-2.5 bg-white rounded-full" />
+                          ) : (
+                            <CheckCircleIcon className="w-2.5 h-2.5 text-white" />
+                          )}
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex-1 min-w-0 pr-4">
-                      <p
-                        className={`text-[14px] leading-[1.3] ${!n.isRead ? "font-bold text-foreground" : "text-default-600 font-medium"}`}
-                      >
-                        <span className="text-foreground">{n.sender}</span>{" "}
-                        {n.message}
-                      </p>
-                      <p
-                        className={`text-[12px] mt-1 ${!n.isRead ? "text-primary font-bold" : "text-default-400 font-medium"}`}
-                      >
-                        {n.time}
-                      </p>
-                    </div>
-                    {!n.isRead && (
-                      <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                        <div className="w-3 h-3 bg-primary rounded-full" />
+                      <div className="flex-1 min-w-0 pr-4">
+                        <div className="flex items-baseline gap-2 mb-1">
+                          <p
+                            className={`text-[14px] leading-[1.3] ${!n.isRead ? "font-bold text-foreground" : "text-default-600 font-medium"}`}
+                          >
+                            <span className="text-foreground font-bold">
+                              {n.sender}
+                            </span>
+                          </p>
+                          <span className="text-xs px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full font-medium">
+                            {getNotificationTypeLabel(n.type)}
+                          </span>
+                        </div>
+                        <p
+                          className={`text-[13px] leading-[1.4] ${!n.isRead ? "text-foreground" : "text-default-500"}`}
+                        >
+                          {n.message}
+                        </p>
+                        <p
+                          className={`text-[12px] mt-1.5 ${!n.isRead ? "text-primary font-bold" : "text-default-400 font-medium"}`}
+                        >
+                          {n.time}
+                        </p>
                       </div>
-                    )}
-                  </div>
-                ))}
-                {filteredNotifications.length === 0 && (
+                      <Button
+                        isIconOnly
+                        className="opacity-0 group-hover:opacity-100 transition-opacity"
+                        size="sm"
+                        variant="light"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteNotification(n.id);
+                        }}
+                      >
+                        <TrashIcon className="w-4 h-4 text-danger" />
+                      </Button>
+                      {!n.isRead && (
+                        <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                          <div className="w-3 h-3 bg-primary rounded-full" />
+                        </div>
+                      )}
+                    </div>
+                  ))
+                ) : (
                   <div className="py-20 text-center text-default-400 px-4">
                     <BellIcon className="w-12 h-12 mx-auto opacity-20 mb-3" />
                     <p className="font-bold text-default-500">
                       Không có thông báo mới
                     </p>
                     <p className="text-sm">
-                      Khi có bình luận hoặc tin nhắn, bạn sẽ thấy ở đây.
+                      {filter === "unread"
+                        ? "Bạn đã đọc tất cả thông báo!"
+                        : "Khi có bình luận hoặc tin nhắn, bạn sẽ thấy ở đây."}
                     </p>
                   </div>
                 )}
-                {isLoading && (
+                {isLoadingMore && (
                   <div className="p-6 text-center">
-                    <div className="inline-block w-6 h-6 border-[3px] border-primary border-t-transparent rounded-full animate-spin" />
+                    <Spinner size="sm" color="primary" />
                   </div>
                 )}
               </div>
