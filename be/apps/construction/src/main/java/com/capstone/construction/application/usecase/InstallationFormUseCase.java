@@ -8,6 +8,7 @@ import com.capstone.construction.application.dto.request.installationform.Approv
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import com.capstone.construction.application.dto.response.installationform.NewInstallationFormResponse;
+import com.capstone.construction.application.dto.response.installationform.ReviewedInstallationFormsResponse;
 import com.capstone.construction.application.event.producer.order.AssignEvent;
 import com.capstone.construction.application.event.producer.order.CreatedEvent;
 import com.capstone.construction.application.event.producer.MessageProducer;
@@ -53,6 +54,22 @@ public class InstallationFormUseCase {
 
   public Page<InstallationFormListResponse> getPaginatedInstallationForms(Pageable pageable, BaseFilterRequest request) {
     return ifSrv.getInstallationForms(pageable, request);
+  }
+
+  public Page<InstallationFormListResponse> findByEstimateStatus_Pending(Pageable pageable) {
+    return ifSrv.findByEstimateStatus_Pending(pageable);
+  }
+
+  public Page<InstallationFormListResponse> findByRegistrationStatus_Pending(Pageable pageable) {
+    return ifSrv.findByRegistrationStatus_Pending(pageable);
+  }
+
+  public ReviewedInstallationFormsResponse getReviewedInstallationFormsList() {
+    return ifSrv.getReviewedInstallationFormsList();
+  }
+
+  public Page<InstallationFormListResponse> findByHandoverByIsNotNull(Pageable pageable) {
+    return ifSrv.findByHandoverByIsNotNull(pageable);
   }
 
   @Transactional(rollbackFor = Exception.class)
