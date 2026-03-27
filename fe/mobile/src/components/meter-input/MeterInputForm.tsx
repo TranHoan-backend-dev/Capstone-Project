@@ -47,7 +47,7 @@ export default function MeterInputForm({
   const [oldIndex, setOldIndex] = useState('0');
   const [newIndex, setNewIndex] = useState('');
   const [m3, setM3] = useState('0');
-  const [image, _setImage] = useState<any>(null);
+  const [image, _setImage] = useState<string | null>(null);
   const [showImagePreview, setShowImagePreview] = useState(false);
 
 
@@ -56,24 +56,23 @@ export default function MeterInputForm({
       setLoading(true);
       
       /* Comment out real fetch for development bypass
-      const [details, history] = await Promise.all([
+      const [details, history, recentData] = await Promise.all([
         meterService.getCustomerDetails(initialCustomerId),
-        meterService.getUsageHistory(initialCustomerId)
+        meterService.getUsageHistory(initialCustomerId),
+        meterService.getRecentUsage(initialCustomerId)
       ]);
 
       setCustomerData(details);
-
-      if (history && history.length > 0) {
-        const usages = history[0].usagesList || [];
-        setUsageHistory(usages);
-
-        if (usages.length > 0) {
-          const lastUsage = usages[usages.length - 1];
-          setOldIndex(lastUsage.index.toString());
-
-          if (lastUsage.meterImageUrl) {
-            _setImage({ uri: lastUsage.meterImageUrl });
-          }
+      
+      // Sử dụng recentData để hiển thị 3 tháng gần nhất và ảnh mới nhất
+      if (recentData && recentData.usagesList) {
+        setUsageHistory(recentData.usagesList);
+        if (recentData.usagesList.length > 0) {
+           const latest = recentData.usagesList[0]; // record mới nhất
+           setOldIndex(latest.index.toString());
+           if (latest.meterImageUrl) {
+             _setImage(latest.meterImageUrl);
+           }
         }
       }
 
@@ -110,7 +109,7 @@ export default function MeterInputForm({
       setUsageHistory(mockUsageHistory);
       setOldIndex(mockUsageHistory[0].index.toString());
       setWaterType('Sinh hoạt dân cư');
-      _setImage({ uri: mockUsageHistory[0].meterImageUrl });
+      _setImage(mockUsageHistory[0].meterImageUrl);
       // ---------------------------------
 
     } catch (error) {
@@ -129,7 +128,7 @@ export default function MeterInputForm({
     if (ocrResult) {
       const newIdx = ocrResult.currentIndex.toString();
       setNewIndex(newIdx);
-      _setImage({ uri: ocrResult.imageUrl });
+      _setImage(ocrResult.imageUrl);
       
       // Tính toán lại m3 tiêu thụ
       const difference = Math.max(0, parseInt(newIdx, 10) - parseInt(oldIndex || '0', 10));
@@ -198,7 +197,20 @@ export default function MeterInputForm({
   };
 
 
-  const handleViewInvoice = () => {
+  const handleViewInvoice = async () => {
+    /* Comment out real fetch for on-demand image loading
+    try {
+      setLoading(true);
+      const latestImageUrl = await meterService.getLatestImage(initialCustomerId);
+      if (latestImageUrl) {
+        _setImage(latestImageUrl);
+      }
+    } catch (error) {
+       console.error("Failed to fetch latest image:", error);
+    } finally {
+      setLoading(false);
+    }
+    */
     setShowImagePreview(true);
   };
 

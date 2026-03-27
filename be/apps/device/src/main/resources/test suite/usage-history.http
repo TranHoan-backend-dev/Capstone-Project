@@ -21,9 +21,6 @@ scope=openid
   client.global.set("refresh_token", response.body.refresh_token);
 %}
 
-
-
-
 ### Case 1: Lấy lịch sử sử dụng nước thành công theo customer ID
 GET {{uri}}/customer/{{customerId}}
 Authorization: Bearer {{access_token}}
@@ -228,3 +225,341 @@ Accept: application/json
 GET {{uri}}/batch?ids=CUST-2024-001&ids=CUST-2024-002
 Authorization: Bearer {{access_token}}
 Accept: application/json
+
+### TC01 - Update water index successfully (Happy Path)
+POST http://localhost:9006/api/v1/usage/00000000-0000-0000-0000-A00000000001
+Authorization: Bearer {{access_token}}
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="index"
+
+125.5
+--WebAppBoundary
+Content-Disposition: form-data; name="recordingDate"
+
+2024-03-27
+--WebAppBoundary
+Content-Disposition: form-data; name="image"; filename="img.png"
+Content-Type: image/png
+
+< ./img.png
+--WebAppBoundary--
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC02 - Update failed - Missing image
+POST http://localhost:9006/api/v1/usage/WM-2024-001
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="index"
+
+125.5
+--WebAppBoundary
+Content-Disposition: form-data; name="recordingDate"
+
+2024-03-27
+--WebAppBoundary--
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC03 - Update failed - Missing index
+POST http://localhost:9006/api/v1/usage/WM-2024-001
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="recordingDate"
+
+2024-03-27
+--WebAppBoundary
+Content-Disposition: form-data; name="image"; filename="img.png"
+Content-Type: image/png
+
+< ./img.png
+--WebAppBoundary--
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC04 - Update failed - Missing recordingDate
+POST http://localhost:9006/api/v1/usage/WM-2024-001
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="index"
+
+125.5
+--WebAppBoundary
+Content-Disposition: form-data; name="image"; filename="img.png"
+Content-Type: image/png
+
+< ./img.png
+--WebAppBoundary--
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC05 - Update failed - Invalid serial (Not Found)
+POST http://localhost:9006/api/v1/usage/NOT-FOUND-SERIAL
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="index"
+
+125.5
+--WebAppBoundary
+Content-Disposition: form-data; name="recordingDate"
+
+2024-03-27
+--WebAppBoundary
+Content-Disposition: form-data; name="image"; filename="img.png"
+Content-Type: image/png
+
+< ./img.png
+--WebAppBoundary--
+
+> {%
+client.test("Status is 404", function() {
+  client.assert(response.status === 404);
+});
+%}
+
+
+### TC06 - Update failed - Invalid index type (String instead of Number)
+POST http://localhost:9006/api/v1/usage/WM-2024-001
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="index"
+
+invalid_index
+--WebAppBoundary
+Content-Disposition: form-data; name="recordingDate"
+
+2024-03-27
+--WebAppBoundary
+Content-Disposition: form-data; name="image"; filename="img.png"
+Content-Type: image/png
+
+< ./img.png
+--WebAppBoundary--
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC07 - Update failed - Invalid recordingDate format
+POST http://localhost:9006/api/v1/usage/WM-2024-001
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="index"
+
+125.5
+--WebAppBoundary
+Content-Disposition: form-data; name="recordingDate"
+
+27-03-2024
+--WebAppBoundary
+Content-Disposition: form-data; name="image"; filename="img.png"
+Content-Type: image/png
+
+< ./img.png
+--WebAppBoundary--
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC08 - Update failed - Empty body (no multipart parts)
+POST http://localhost:9006/api/v1/usage/WM-2024-001
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary--
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC09 - Update failed - Index is lower than previous (Business rule)
+POST http://localhost:9006/api/v1/usage/WM-2024-001
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="index"
+
+0.1
+--WebAppBoundary
+Content-Disposition: form-data; name="recordingDate"
+
+2026-03-27
+--WebAppBoundary
+Content-Disposition: form-data; name="image"; filename="img.png"
+Content-Type: image/png
+
+< ./img.png
+--WebAppBoundary--
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC10 - SQL Injection attempt in serial
+POST http://localhost:9006/api/v1/usage/' OR 1=1 --
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="index"
+
+125.5
+--WebAppBoundary
+Content-Disposition: form-data; name="recordingDate"
+
+2024-03-27
+--WebAppBoundary
+Content-Disposition: form-data; name="image"; filename="img.png"
+Content-Type: image/png
+
+< ./img.png
+--WebAppBoundary--
+
+> {%
+client.test("Status is 400 or 404", function() {
+  client.assert(response.status === 400 || response.status === 404);
+});
+%}
+
+
+### TC11 - XSS attempt in serial
+POST http://localhost:9006/api/v1/usage/<script>alert(1)</script>
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="index"
+
+125.5
+--WebAppBoundary
+Content-Disposition: form-data; name="recordingDate"
+
+2024-03-27
+--WebAppBoundary
+Content-Disposition: form-data; name="image"; filename="img.png"
+Content-Type: image/png
+
+< ./img.png
+--WebAppBoundary--
+
+> {%
+client.test("Status is 400 or 404", function() {
+  client.assert(response.status === 400 || response.status === 404);
+});
+%}
+
+
+### TC12 - Large index value boundary test
+POST http://localhost:9006/api/v1/usage/WM-2024-001
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="index"
+
+999999999.99
+--WebAppBoundary
+Content-Disposition: form-data; name="recordingDate"
+
+2024-03-27
+--WebAppBoundary
+Content-Disposition: form-data; name="image"; filename="img.png"
+Content-Type: image/png
+
+< ./img.png
+--WebAppBoundary--
+
+> {%
+client.test("Status is 200 or 400 depending on DB constraints", function() {
+  client.assert(response.status === 200 || response.status === 400);
+});
+%}
+
+
+### TC13 - Future recordingDate
+POST http://localhost:9006/api/v1/usage/WM-2024-001
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="index"
+
+150.0
+--WebAppBoundary
+Content-Disposition: form-data; name="recordingDate"
+
+2099-12-31
+--WebAppBoundary
+Content-Disposition: form-data; name="image"; filename="img.png"
+Content-Type: image/png
+
+< ./img.png
+--WebAppBoundary--
+
+> {%
+client.test("Status is 400 (if future date not allowed)", function() {
+  client.assert(response.status === 400 || response.status === 200);
+});
+%}
+
+
+### TC14 - Update failed - Wrong Content-Type for image
+POST http://localhost:9006/api/v1/usage/WM-2024-001
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="index"
+
+125.5
+--WebAppBoundary
+Content-Disposition: form-data; name="recordingDate"
+
+2024-03-27
+--WebAppBoundary
+Content-Disposition: form-data; name="image"; filename="img.png"
+Content-Type: text/plain
+
+This is not an image content
+--WebAppBoundary--
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}

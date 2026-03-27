@@ -24,6 +24,13 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     setVisible(true);
   }, []);
 
+  // Đăng ký listener toàn cục để các hàm static cũng có thể gọi Toast (với delay 5s)
+  React.useEffect(() => {
+    const { setGlobalToastListener } = require('../utils/toast');
+    setGlobalToastListener((msg: string, t: any) => show(msg, t));
+    return () => setGlobalToastListener(null);
+  }, [show]);
+
   const success = useCallback((msg: string) => show(msg, 'success'), [show]);
   const error = useCallback((msg: string) => show(msg, 'error'), [show]);
 
@@ -41,7 +48,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       <Snackbar
         visible={visible}
         onDismiss={onDismiss}
-        duration={3000}
+        duration={5000}
         style={{ backgroundColor: getBackgroundColor() }}
       >
         {message}

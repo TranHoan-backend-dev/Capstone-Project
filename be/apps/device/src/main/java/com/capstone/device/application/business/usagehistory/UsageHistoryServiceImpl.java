@@ -12,6 +12,7 @@ import com.capstone.device.infrastructure.persistence.UsageHistoryRepository;
 import com.capstone.device.infrastructure.persistence.WaterMeterRepository;
 import com.capstone.device.infrastructure.persistence.WaterPriceRepository;
 import com.capstone.device.infrastructure.service.CustomerService;
+import com.capstone.device.infrastructure.service.GcsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -39,25 +40,35 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
   CustomerService customerService;
   WaterChargeCalculator waterChargeCalculator;
   ObjectMapper objectMapper;
+  GcsService gcsService;
 
   @Override
   @Transactional
-  public UsageResponse addWaterIndexOfThisMonth(String imageUrl, String serial, BigDecimal index, LocalDate recordingDate) {
-    var meter = waterMeterRepository.findById(serial).orElseThrow(() -> new NotExistingException("Không tìm thấy thiết bị: " + serial));
-    var history = repository.findByMeter(meter).orElseGet(() -> {
-      return UsageHistory.builder()
-          .usageHistory(serial)
-          .meter(meter)
-          .usages(new LinkedHashMap<>())
-          .build();
-    });
+  public UsageResponse addWaterIndexOfThisMonth(String imageUrl, String serial, BigDecimal index,
+                                                @NonNull LocalDate recordingDate) {
+    var meter = waterMeterRepository.findById(serial)
+      .orElseThrow(() -> new NotExistingException("Không tìm thấy thiết bị: " + serial));
+    var history = repository.findByMeter(meter).orElseGet(() -> UsageHistory.builder()
+      .usageHistory(serial)
+      .meter(meter)
+      .usages(new ArrayList<>())
+      .build());
 
-    String monthStr = recordingDate.format(DateTimeFormatter.ofPattern("yyyy-MM"));
-    history.addOrUpdateUsage(monthStr, index);
+    var monthStr = recordingDate.format(DateTimeFormatter.ofPattern("yyyy-MM"));
+    var newUsage = Usage.builder()
+      .id(monthStr)
+      .recordingDate(recordingDate)
+      .index(index)
+      .meterImageUrl(imageUrl)
+      .status("PENDING")
+      .isPaid(false)
+      .build();
+
+    history.addOrUpdateUsage(newUsage);
     history = repository.save(history);
 
     try {
-      String customerId = customerService.getCustomerIdByMeterId(serial);
+      var customerId = customerService.getCustomerIdByMeterId(serial);
       if (customerId != null) {
         var customerInfo = getCustomerInfo(customerId);
         var waterPrice = resolveWaterPrice(customerInfo.waterPriceId());
@@ -73,7 +84,16 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
   @Transactional
   public void updatePaymentStatus(String serial, String method) {
     log.info("Cập nhật thanh toán thiết bị {} với phương thức {}", serial, method);
-    // Tính năng payment status không được hỗ trợ trong thiết kế Map JSONB đơn giản {"yyyy-MM": index}
+    var meter = waterMeterRepository.findById(serial)
+      .orElseThrow(() -> new NotExistingException("Không tìm thấy thiết bị"));
+    var history = repository.findByMeter(meter).orElseThrow(() -> new NotExistingException("Không tìm thấy lịch sử"));
+    if (!history.getUsages().isEmpty()) {
+      var latest = history.getUsages().stream().max(Comparator.comparing(Usage::getRecordingDate)).get();
+      latest.setIsPaid(true);
+      latest.setPaymentMethod(method);
+      latest.setStatus("APPROVED");
+      repository.save(history);
+    }
   }
 
   @Override
@@ -82,13 +102,15 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
 
     var customerInfo = getCustomerInfo(customerId);
     var waterMeterId = customerInfo.waterMeterId();
-    if(waterMeterId == null) {
-        throw new NotExistingException("Khách hàng chưa được gán đồng hồ nước: " + customerId);
+    if (waterMeterId == null) {
+      throw new NotExistingException("Khách hàng chưa được gán đồng hồ nước: " + customerId);
     }
 
-    var meter = waterMeterRepository.findById(waterMeterId).orElseThrow(() -> new NotExistingException("Không tìm thấy đồng hồ nước của khách hàng!"));
-    var history = repository.findByMeter(meter).orElseThrow(() -> new NotExistingException("Không tìm thấy lịch sử sử dụng nước cho khách hàng: " + customerId));
-    
+    var meter = waterMeterRepository.findById(waterMeterId)
+      .orElseThrow(() -> new NotExistingException("Không tìm thấy đồng hồ nước của khách hàng!"));
+    var history = repository.findByMeter(meter).orElseThrow(
+      () -> new NotExistingException("Không tìm thấy lịch sử sử dụng nước cho khách hàng: " + customerId));
+
     var waterPrice = resolveWaterPrice(customerInfo.waterPriceId());
 
     return mapToResponse(history, customerId, customerInfo.name(), waterPrice);
@@ -99,11 +121,11 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
     log.info("getUsageByCustomerIds: {}", customerIds);
     List<UsageResponse> responses = new ArrayList<>();
     for (String cid : customerIds) {
-        try {
-            responses.add(getUsageHistoryByCustomerId(cid));
-        } catch (Exception e) {
-            log.warn("Không tìm thấy dữ liệu cho khách hàng {}: {}", cid, e.getMessage());
-        }
+      try {
+        responses.add(getUsageHistoryByCustomerId(cid));
+      } catch (Exception e) {
+        log.warn("Không tìm thấy dữ liệu cho khách hàng {}: {}", cid, e.getMessage());
+      }
     }
     return responses;
   }
@@ -111,15 +133,26 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
   @Override
   @Transactional
   public UsageResponse updateUsageDetails(String serial, LocalDate recordingDate, BigDecimal index, String imageUrl) {
-    var meter = waterMeterRepository.findById(serial).orElseThrow(() -> new NotExistingException("Không tìm thấy thiết bị mang serial: " + serial));
-    var history = repository.findByMeter(meter).orElseThrow(() -> new NotExistingException("Không tìm thấy lịch sử sử dụng cho serial: " + serial));
+    var meter = waterMeterRepository.findById(serial)
+      .orElseThrow(() -> new NotExistingException("Không tìm thấy thiết bị mang serial: " + serial));
+    var history = repository.findByMeter(meter)
+      .orElseThrow(() -> new NotExistingException("Không tìm thấy lịch sử sử dụng cho serial: " + serial));
 
-    String monthStr = recordingDate.format(DateTimeFormatter.ofPattern("yyyy-MM"));
-    history.addOrUpdateUsage(monthStr, index);
+    var monthStr = recordingDate.format(DateTimeFormatter.ofPattern("yyyy-MM"));
+    var newUsage = Usage.builder()
+      .id(monthStr)
+      .recordingDate(recordingDate)
+      .index(index)
+      .meterImageUrl(imageUrl)
+      .status("APPROVED")
+      .isPaid(true)
+      .build();
+
+    history.addOrUpdateUsage(newUsage);
     history = repository.save(history);
 
     try {
-      String customerId = customerService.getCustomerIdByMeterId(serial);
+      var customerId = customerService.getCustomerIdByMeterId(serial);
       if (customerId != null) {
         var customerInfo = getCustomerInfo(customerId);
         var waterPrice = resolveWaterPrice(customerInfo.waterPriceId());
@@ -133,13 +166,43 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
 
   @Override
   public List<PendingReviewResponse> getPendingReviews() {
-    return Collections.emptyList(); // Không hỗ trợ duyệt chỉ số trên thiết kế map JSONB tối giản hiện tại
+    List<PendingReviewResponse> pendingReviews = new ArrayList<>();
+    var histories = repository.findAll();
+    for (var history : histories) {
+      for (var u : history.getUsages()) {
+        if ("PENDING".equals(u.getStatus())) {
+          pendingReviews.add(PendingReviewResponse.builder()
+            .id(u.getId())
+            .serial(history.getUsageHistory())
+            .newIndexAI(u.getIndex())
+            .imageUrl(u.getMeterImageUrl())
+            .status("PENDING")
+            .build());
+        }
+      }
+    }
+    return pendingReviews;
   }
 
   @Override
   @Transactional
   public void confirmMeterReading(String reviewId, BigDecimal finalIndex, String status) {
-    // Không hỗ trợ chức năng phê duyệt cho jsonb {"yyyy-MM": index}
+    var histories = repository.findAll();
+    for (var history : histories) {
+      var found = false;
+      for (var u : history.getUsages()) {
+        if (u.getId().equals(reviewId)) {
+          u.setIndex(finalIndex);
+          u.setStatus(status);
+          found = true;
+          break;
+        }
+      }
+      if (found) {
+        repository.save(history);
+        return;
+      }
+    }
   }
 
   private CustomerWaterPriceRefResponse getCustomerInfo(String customerId) {
@@ -156,66 +219,112 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
     }
 
     return waterPriceRepository.findById(waterPriceId)
-        .orElseThrow(() -> new NotExistingException("Không tìm thấy bảng giá nước"));
+      .orElseThrow(() -> new NotExistingException("Không tìm thấy bảng giá nước"));
   }
 
   private UsageResponse mapToResponse(@NonNull UsageHistory entity, String customerId, String customerName, WaterPrice waterPrice) {
     log.info("Mapping usage response for price ID: {}", waterPrice != null ? waterPrice.getPriceId() : "null");
     List<PriceTypeResponse> priceTypeResponses = waterPrice != null && waterPrice.getPriceTypes() != null ? waterPrice.getPriceTypes().stream()
-        .map(pt -> new PriceTypeResponse(pt.getPriceTypeId(), pt.getArea(), pt.getPrice()))
-        .toList() : List.of();
+      .map(pt -> new PriceTypeResponse(pt.getPriceTypeId(), pt.getArea(), pt.getPrice()))
+      .toList() : List.of();
 
     List<Usage> usagesList = new ArrayList<>();
     if (entity.getUsages() != null && !entity.getUsages().isEmpty()) {
-      // Sắp xếp khóa dữ liệu (tháng/năm) đúng thứ tự biên niên
-      List<String> sortedKeys = new ArrayList<>(entity.getUsages().keySet());
-      Collections.sort(sortedKeys);
+      // Sắp xếp theo ngày ghi nhận
+      List<Usage> sortedUsages = entity.getUsages().stream()
+        .sorted(Comparator.comparing(Usage::getRecordingDate))
+        .toList();
 
-      BigDecimal previousIndex = BigDecimal.ZERO;
+      var previousIndex = BigDecimal.ZERO;
 
-      for (String monthStr : sortedKeys) {
-        BigDecimal index = entity.getUsages().get(monthStr);
-        BigDecimal mass = index.subtract(previousIndex);
+      for (var u : sortedUsages) {
+        var mass = u.getIndex().subtract(previousIndex);
         if (mass.compareTo(BigDecimal.ZERO) < 0) {
-          mass = BigDecimal.ZERO; 
+          mass = BigDecimal.ZERO;
         }
-        
-        BigDecimal calculatedPrice = BigDecimal.ZERO;
+
+        var calculatedPrice = BigDecimal.ZERO;
         if (mass.compareTo(BigDecimal.ZERO) > 0 && waterChargeCalculator != null && waterPrice != null) {
-            try {
-                calculatedPrice = waterChargeCalculator.calculateProgressiveCharge(mass, waterPrice).totalAmount();
-            } catch (Exception e) {
-                log.warn("Lỗi tính tiền cho tháng {}: {}", monthStr, e.getMessage());
-            }
+          try {
+            calculatedPrice = waterChargeCalculator.calculateProgressiveCharge(mass, waterPrice).totalAmount();
+          } catch (Exception e) {
+            log.warn("Lỗi tính tiền cho tháng {}: {}", u.getRecordingDate(), e.getMessage());
+          }
         }
 
-        Usage usage = Usage.builder()
-            .id(monthStr)
-            .recordingDate(LocalDate.parse(monthStr + "-01"))
-            .index(index)
-            .mass(mass)
-            .price(calculatedPrice)
-            .status("APPROVED")
-            .isPaid(true)
-            .build();
+        u.setMass(mass);
+        u.setPrice(calculatedPrice);
+        
+        // Resolve Signed URL for Mobile display
+        u.setMeterImageUrl(resolveSignedUrl(u.getMeterImageUrl()));
 
-        usagesList.add(usage);
-        previousIndex = index;
+        usagesList.add(u);
+        previousIndex = u.getIndex();
       }
-      
+
       // Đảo ngược danh sách sang dạng stack (dữ liệu mới nhất lên đầu)
+      usagesList = new ArrayList<>(usagesList);
       Collections.reverse(usagesList);
     }
 
     return UsageResponse.builder()
-        .serial(entity.getUsageHistory())
-        .customerId(customerId)
-        .customerName(customerName)
-        .priceTypes(priceTypeResponses)
-        .usagesList(usagesList)
-        .tax(waterPrice.getTax())
-        .environmentPrice(waterPrice.getEnvironmentPrice())
-        .build();
+      .serial(entity.getUsageHistory())
+      .customerId(customerId)
+      .customerName(customerName)
+      .priceTypes(priceTypeResponses)
+      .usagesList(usagesList)
+      .tax(waterPrice != null ? waterPrice.getTax() : BigDecimal.ZERO)
+      .environmentPrice(waterPrice != null ? waterPrice.getEnvironmentPrice() : BigDecimal.ZERO)
+      .build();
+  }
+
+  @Override
+  public UsageResponse getRecentUsage(String customerId) {
+    var fullHistory = getUsageHistoryByCustomerId(customerId);
+    if (fullHistory == null || fullHistory.usagesList() == null) {
+      return fullHistory;
+    }
+
+    // mapToResponse already sorted them Newest first
+    List<Usage> recentUsages = fullHistory.usagesList().stream()
+      .limit(3)
+      .collect(Collectors.toList());
+
+    return UsageResponse.builder()
+      .serial(fullHistory.serial())
+      .customerId(fullHistory.customerId())
+      .customerName(fullHistory.customerName())
+      .priceTypes(fullHistory.priceTypes())
+      .usagesList(recentUsages)
+      .tax(fullHistory.tax())
+      .environmentPrice(fullHistory.environmentPrice())
+      .build();
+  }
+
+  @Override
+  public String getLatestImage(String customerId) {
+    var fullHistory = getUsageHistoryByCustomerId(customerId);
+    if (fullHistory == null || fullHistory.usagesList() == null || fullHistory.usagesList().isEmpty()) {
+      return null;
+    }
+    // Newest is at index 0 because it was reversed in mapToResponse
+    return fullHistory.usagesList().getFirst().getMeterImageUrl();
+  }
+
+  private String resolveSignedUrl(String storedUrl) {
+    if (storedUrl == null || !storedUrl.startsWith("https://storage.googleapis.com/")) {
+      return storedUrl;
+    }
+    try {
+      // URL format: https://storage.googleapis.com/[BUCKET]/[FILENAME]
+      String[] parts = storedUrl.split("/", 5);
+      if (parts.length >= 5) {
+        String fileName = parts[4];
+        return gcsService.getSignedUrl(fileName);
+      }
+    } catch (Exception e) {
+      log.error("Failed to resolve signed URL for {}: {}", storedUrl, e.getMessage());
+    }
+    return storedUrl;
   }
 }
-

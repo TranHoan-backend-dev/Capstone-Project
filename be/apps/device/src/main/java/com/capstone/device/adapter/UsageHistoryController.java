@@ -20,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.math.BigDecimal;
@@ -37,14 +36,15 @@ public class UsageHistoryController {
 
   @Operation(summary = "Cập nhật chỉ số nước tháng này", description = "Ghi nhận chỉ số nước mới từ hình ảnh đồng hồ cho thiết bị theo mã Serial")
   @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "Cập nhật thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-      @ApiResponse(responseCode = "400", description = "Dữ liệu không hợp lệ hoặc chỉ số mới thấp hơn kỳ trước"),
-      @ApiResponse(responseCode = "404", description = "Không tìm thấy thiết bị")
+    @ApiResponse(responseCode = "200", description = "Cập nhật thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Dữ liệu không hợp lệ hoặc chỉ số mới thấp hơn kỳ trước"),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy thiết bị")
   })
   @PostMapping(value = "/{serial}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<WrapperApiResponse> updateWaterIndexThisMonth(
-      @Parameter(description = "Mã Serial của thiết bị", example = "WM-2024-001") @PathVariable String serial,
-      @ModelAttribute @Valid UsageHistoryRequest request) {
+    @Parameter(description = "Mã Serial của thiết bị", example = "WM-2024-001") @PathVariable String serial,
+    @ModelAttribute @Valid UsageHistoryRequest request
+  ) {
     log.info("Updating usage history for serial {}", serial);
     var response = useCase.updateWaterIndex(request, serial);
     return Utils.returnOkResponse("Cập nhật chỉ số nước thành công", response);
@@ -52,14 +52,15 @@ public class UsageHistoryController {
 
   @Operation(summary = "Cập nhật trạng thái thanh toán", description = "Đánh dấu là đã thanh toán cho bản ghi có ngày đo mới nhất của thiết bị")
   @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "Cập nhật trạng thái thành công"),
-      @ApiResponse(responseCode = "404", description = "Không tìm thấy lịch sử sử dụng")
+    @ApiResponse(responseCode = "200", description = "Cập nhật trạng thái thành công"),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy lịch sử sử dụng")
   })
   @PatchMapping("/{serial}")
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'BUSINESS_DEPARTMENT_HEAD', 'METER_INSPECTION_STAFF')")
   public ResponseEntity<WrapperApiResponse> updatePaymentStatus(
-      @Parameter(description = "Mã Serial của thiết bị") @PathVariable String serial,
-      @Parameter(description = "Phương thức thanh toán (CASH, BANK_TRANSFER, ...)") @RequestParam String method) {
+    @Parameter(description = "Mã Serial của thiết bị") @PathVariable String serial,
+    @Parameter(description = "Phương thức thanh toán (CASH, BANK_TRANSFER, ...)") @RequestParam String method
+  ) {
     log.info("Updating payment status for serial {}", serial);
     useCase.updatePaymentStatus(serial, method);
     return Utils.returnOkResponse("Cập nhật trạng thái thanh toán thành công", null);
@@ -80,7 +81,8 @@ public class UsageHistoryController {
   })
   @GetMapping("/customer/{customerId}")
   public ResponseEntity<WrapperApiResponse> getUsageHistoryByCustomerId(
-    @Parameter(description = "Mã ID của khách hàng", example = "CUST-2024-001") @PathVariable String customerId) {
+    @Parameter(description = "Mã ID của khách hàng", example = "CUST-2024-001") @PathVariable String customerId
+  ) {
     log.info("Get usage history for customer {}", customerId);
     var response = useCase.getUsageHistoryByCustomerId(customerId);
     return Utils.returnOkResponse("Lấy lịch sử sử dụng nước thành công", response);
@@ -90,7 +92,8 @@ public class UsageHistoryController {
   @GetMapping("/consumption-report")
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'BUSINESS_DEPARTMENT_HEAD', 'METER_INSPECTION_STAFF')")
   public ResponseEntity<WrapperApiResponse> getConsumptionReport(
-      @RequestParam(required = false) Collection<String> ids) {
+    @RequestParam(required = false) Collection<String> ids
+  ) {
     // For now, reuse getByCustomerIds or add pagination if needed
     var response = useCase.getUsageByCustomerIds(ids);
     return Utils.returnOkResponse("Lấy báo cáo tiêu thụ thành công", response);
@@ -100,10 +103,11 @@ public class UsageHistoryController {
   @PutMapping("/{serial}")
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'BUSINESS_DEPARTMENT_HEAD', 'METER_INSPECTION_STAFF')")
   public ResponseEntity<WrapperApiResponse> updateUsage(
-      @PathVariable String serial,
-      @RequestParam LocalDate date,
-      @RequestParam BigDecimal index,
-      @RequestParam(required = false) String imageUrl) {
+    @PathVariable String serial,
+    @RequestParam LocalDate date,
+    @RequestParam BigDecimal index,
+    @RequestParam(required = false) String imageUrl
+  ) {
     var response = useCase.updateUsage(serial, date, index, imageUrl);
     return Utils.returnOkResponse("Cập nhật bản ghi tiêu thụ thành công", response);
   }
@@ -119,11 +123,31 @@ public class UsageHistoryController {
   @Operation(summary = "Xác nhận chỉ số sau khi đã kiểm tra", description = "Phê duyệt hoặc sửa đổi chỉ số AI gợi ý")
   @PostMapping("/confirm/{reviewId}")
   public ResponseEntity<WrapperApiResponse> confirmMeterReading(
-      @PathVariable String reviewId,
-      @RequestParam BigDecimal finalIndex,
-      @RequestParam String status) {
+    @PathVariable String reviewId,
+    @RequestParam BigDecimal finalIndex,
+    @RequestParam String status) {
     log.info("Confirming meter reading for id {}", reviewId);
     useCase.confirmMeterReading(reviewId, finalIndex, status);
     return Utils.returnOkResponse("Xác nhận chỉ số thành công", null);
+  }
+
+  @Operation(summary = "Lấy dữ liệu tiêu thụ gần nhất (3 tháng)", description = "Lấy hình ảnh mới nhất và chỉ số + số tiền của 3 tháng liền kề")
+  @GetMapping("/recent/{customerId}")
+  public ResponseEntity<WrapperApiResponse> getRecentUsage(
+    @Parameter(description = "Mã ID của khách hàng", example = "CUST-2024-001") @PathVariable String customerId
+  ) {
+    log.info("Fetching recent usage for customer {}", customerId);
+    var response = useCase.getRecentUsage(customerId);
+    return Utils.returnOkResponse("Lấy dữ liệu tiêu thụ gần nhất thành công", response);
+  }
+
+  @Operation(summary = "Lấy hình ảnh đồng hồ mới nhất", description = "Lấy ra URL hình ảnh của lần gần nhất đã chụp đồng hồ của khách hàng")
+  @GetMapping("/latest-image/{customerId}")
+  public ResponseEntity<WrapperApiResponse> getLatestImage(
+    @Parameter(description = "Mã ID của khách hàng", example = "CUST-2024-001") @PathVariable String customerId
+  ) {
+    log.info("Fetching latest image for customer {}", customerId);
+    var response = useCase.getLatestImage(customerId);
+    return Utils.returnOkResponse("Lấy hình ảnh đồng hồ mới nhất thành công", response);
   }
 }
