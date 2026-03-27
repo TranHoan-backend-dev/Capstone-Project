@@ -166,7 +166,7 @@ public class AuthorizationController {
 
   @Operation(description = "Lay ra toan bo nhan vien khao sat")
   @GetMapping(EMPLOYEE_PREFIX + "/survey-staff")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_HEAD')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF')")
   public ResponseEntity<?> getAllSurveyStaffs() {
     log.info("Get all survey staffs");
     var response = userService.getAllSurveyStaffs();
