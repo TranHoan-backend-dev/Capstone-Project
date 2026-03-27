@@ -166,14 +166,38 @@ public class AuthorizationController {
 
   @Operation(description = "Lay ra toan bo nhan vien khao sat")
   @GetMapping(EMPLOYEE_PREFIX + "/survey-staff")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_HEAD')")
   public ResponseEntity<?> getAllSurveyStaffs() {
     log.info("Get all survey staffs");
     var response = userService.getAllSurveyStaffs();
     log.info("Get all survey staffs: {}", response);
     return Utils.returnOkResponse("Lay toan bo nhan vien khao sat thanh cong", response);
   }
-// </editor-fold>
+
+  @Operation
+  @GetMapping(EMPLOYEE_PREFIX + "/pt-head")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD')")
+  public ResponseEntity<?> getPlanningTechnicalDepartmentHeads() {
+    log.info("Get planning technical department heads");
+    return Utils.returnOkResponse("", usersUseCase.getListOfPtHeads());
+  }
+
+  @Operation
+  @GetMapping(EMPLOYEE_PREFIX + "/construction-head")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD')")
+  public ResponseEntity<?> getConstructionHeads() {
+    log.info("Get planning construction heads");
+    return Utils.returnOkResponse("", usersUseCase.getListOfConstructionHeads());
+  }
+
+  @Operation
+  @GetMapping(EMPLOYEE_PREFIX + "/leadership")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_HEAD')")
+  public ResponseEntity<?> getLeaderships() {
+    log.info("Get planning leaderships");
+    return Utils.returnOkResponse("", usersUseCase.getListOfCompanyLeaderShips());
+  }
+  // </editor-fold>
 
   // <editor-fold> desc="business pages"
   @Operation(summary = "Lấy các trang web nghiệp vụ được ủy quyền cho nhân viên", description = """
