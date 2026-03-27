@@ -35,8 +35,8 @@ import java.time.format.DateTimeFormatter;
 
 @AppLog
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/installation-forms")
+@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Tag(name = "Installation Form", description = "Quản lý đơn lắp đặt (Tiếp nhận và xử lý hồ sơ lắp đặt nước)")
 public class InstallationFormController {
@@ -71,7 +71,6 @@ public class InstallationFormController {
     }
 
     var response = installationFormHandlingUseCase.createNewInstallationRequest(id, request);
-
     log.info("Successfully created installation form: {}", response.formNumber());
 
     return Utils.returnCreatedResponse("Tạo đơn lắp đặt thành công");
@@ -111,7 +110,7 @@ public class InstallationFormController {
   @PreAuthorize("hasAnyAuthority('PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> assignInstallationForm(
     @RequestBody @Valid InstallationFormId request,
-    @PathVariable String empId // nv khao sat duoc giao nhiem vu
+    @PathVariable String empId
   ) {
     log.info("Received request to assign installation form: {}", request.getFormCode());
     installationFormHandlingUseCase.assignInstallationFormToSurveyStaff(request, empId);
@@ -140,6 +139,7 @@ public class InstallationFormController {
     }
 
     var response = installationFormHandlingUseCase.getPaginatedInstallationForms(pageable, request);
+    log.info("Successfully fetched installation forms");
 
     return Utils.returnOkResponse("Lấy danh sách đơn lắp đặt thành công", response);
   }
@@ -151,5 +151,21 @@ public class InstallationFormController {
     @RequestParam String formNumber
   ) {
     return installationFormService.isInstallationFormExisting(formNumber, formCode);
+  }
+
+  @Operation(summary = "Cập nhật trạng thái hợp đồng", description = "API này cập nhật trạng thái hợp đồng cho đơn lắp đặt", responses = {
+    @ApiResponse(responseCode = "200", description = "Cập nhật trạng thái hợp đồng thành công"),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy đơn lắp đặt", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+  })
+  @PostMapping("/contract-status")
+  @PatchMapping("/contract-status")
+  @PreAuthorize("hasAnyAuthority('INSTALLATION_FORM_MANAGER', 'IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> updateContractStatus(
+    @RequestParam String formCode,
+    @RequestParam String formNumber
+  ) {
+    log.info("Updating contract status for formCode: {} and formNumber: {}", formCode, formNumber);
+    installationFormService.updateContractStatus(formCode, formNumber);
+    return Utils.returnOkResponse("Cập nhật trạng thái hợp đồng thành công", null);
   }
 }

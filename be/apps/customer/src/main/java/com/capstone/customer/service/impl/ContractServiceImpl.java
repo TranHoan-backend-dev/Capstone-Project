@@ -63,6 +63,10 @@ public class ContractServiceImpl implements ContractService {
     }
 
     var saved = contractRepository.save(contract);
+
+    // Update contract status in installation form
+    cSrv.updateContractStatus(request.formCode(), request.formNumber());
+
     return mapToResponse(saved);
   }
 

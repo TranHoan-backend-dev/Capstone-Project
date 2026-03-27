@@ -213,6 +213,18 @@ public class InstallationFormServiceImpl implements InstallationFormService {
     return status;
   }
 
+  @Override
+  @Transactional(rollbackFor = Exception.class)
+  public void updateContractStatus(String formCode, String formNumber) {
+    log.info("Updating contract status for formCode: {} and formNumber: {}", formCode, formNumber);
+    var installationForm = ifRepo.findById(new InstallationFormId(formCode, formNumber))
+      .orElseThrow(() -> new IllegalArgumentException(Message.PT_36));
+
+    // Update contract status to APPROVED
+    installationForm.getStatus().setContract(ProcessingStatus.APPROVED);
+    ifRepo.save(installationForm);
+  }
+
   private @NonNull InstallationFormListResponse mapToResponse(@NonNull InstallationForm entity) {
     log.info("Get staff who will handle this request");
     var creatorFullName = empSrv.getEmployeeNameById(entity.getCreatedBy());

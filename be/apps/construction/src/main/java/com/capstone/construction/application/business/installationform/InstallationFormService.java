@@ -25,6 +25,13 @@ public interface InstallationFormService {
   Boolean checkAnyFormsBelongedToNetwork(String id);
 
   /**
+   * Update contract status to APPROVED for an installation form
+   * @param formCode form code of the installation form
+   * @param formNumber form number of the installation form
+   */
+  void updateContractStatus(String formCode, String formNumber);
+
+  /**
    *
    * @param id
    * @param installationFormId
