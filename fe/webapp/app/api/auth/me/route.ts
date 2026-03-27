@@ -20,36 +20,10 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    try {
-      const profile = await getProfileEmployee(accessToken);
-      return NextResponse.json(profile);
-    } catch (error: any) {
-      if (error?.response?.status === 401) {
-        const refreshToken = getRefreshToken(req);
-
-        if (refreshToken) {
-          try {
-            const tokenRes = await keycloakRefreshToken(refreshToken);
-
-            const profile = await getProfileEmployee(tokenRes.access_token);
-
-            const response = NextResponse.json(profile);
-            setAuthCookies(response, tokenRes);
-
-            return response;
-          } catch (refreshError) {
-            return NextResponse.json(
-              { message: "Refresh token expired" },
-              { status: 401 },
-            );
-          }
-        }
-      }
-
-      throw error;
-    }
-  } catch (error) {
-    return NextResponse.json({ message: "Lỗi hệ thống" }, { status: 500 });
+    const profile = await getProfileEmployee(accessToken);
+    return NextResponse.json(profile);
+  } catch (error: any) {
+    return NextResponse.json({ message: error }, { status: 500 });
   }
 }
 

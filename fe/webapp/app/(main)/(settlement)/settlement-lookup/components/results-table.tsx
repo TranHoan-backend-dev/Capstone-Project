@@ -1,62 +1,53 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { Chip, Link, Tooltip, Button, Spinner } from "@heroui/react";
+import {
+  Chip,
+  Link,
+  Tooltip,
+  Button,
+  Spinner,
+  Card,
+  CardBody,
+  Select,
+  SelectItem,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Avatar,
+  Divider,
+  Badge,
+} from "@heroui/react";
 import {
   CalculatorIcon,
   PencilSquareIcon,
   TrashIcon,
+  DocumentTextIcon,
+  UserGroupIcon,
+  CheckCircleIcon,
+  XCircleIcon,
+  ClockIcon,
 } from "@heroicons/react/24/outline";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { SettlementDetailModal } from "./settlement-detail-modal";
 import { SettlementDocumentModal } from "./settlement-document-modal";
 
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import {
-  DarkGreenChip,
-  DarkRedChip,
-  DarkYellowChip,
-  DeleteIcon,
-  EditIcon,
-  TitleDarkColor,
-  ApprovalIcon,
-} from "@/config/chip-and-icon";
-import {
-  SettlementItem,
-  SettlementDetail,
-  SettlementResponse,
-  SettlementTableProps,
-  SettlementStatus,
-} from "@/types";
+import { DeleteIcon, EditIcon, ApprovalIcon } from "@/config/chip-and-icon";
+import { SettlementItem, SettlementDetail, SettlementResponse } from "@/types";
 import { authFetch } from "@/utils/authFetch";
 import { SETLEMENT_LOOKUP_COLUMN } from "@/config/table-columns";
 import { CallToast } from "@/components/ui/CallToast";
 import { ConfirmDialog } from "@/components/ui/modal/ConfirmDialog";
 import BaseModal from "@/components/ui/modal/BaseModal";
 import CustomButton from "@/components/ui/custom/CustomButton";
+import { useProfile } from "@/hooks/useLogin";
+import { formatDate1 } from "@/utils/format";
+import { getRoleVietnamese } from "@/utils/getRoleVietnamese";
+import CustomSelect from "@/components/ui/custom/CustomSelect";
 
-// const statusMap = {
-//   APPROVED: {
-//     label: "Đã duyệt quyết toán",
-//     color: "success" as const,
-//     bg: DarkGreenChip,
-//   },
-//   REJECTED: {
-//     label: "Lập lại quyết toán",
-//     color: "danger" as const,
-//     bg: DarkRedChip,
-//   },
-//   PENDING_FOR_APPROVAL: {
-//     label: "Đang xử lý",
-//     color: "default" as const,
-//     bg: "bg-blue-100 text-blue-800",
-//   },
-//   PROCESSING: {
-//     label: "Chờ duyệt",
-//     color: "warning" as const,
-//     bg: DarkYellowChip,
-//   },
-// };
 interface ResultsTableProps {
   keyword?: string;
   reloadKey?: number;
@@ -67,6 +58,34 @@ interface ResultsTableProps {
   onDeleted: () => void;
   onFilterStatus?: (status: string) => void;
 }
+
+// Component hiển thị trạng thái với màu sắc đẹp
+const StatusChip = ({ status }: { status: string }) => {
+  const statusConfig: Record<string, { color: any; icon: any; label: string }> =
+    {
+      PENDING: { color: "warning", icon: ClockIcon, label: "Chờ duyệt" },
+      APPROVED: { color: "success", icon: CheckCircleIcon, label: "Đã duyệt" },
+      REJECTED: { color: "danger", icon: XCircleIcon, label: "Từ chối" },
+      DRAFT: { color: "default", icon: DocumentTextIcon, label: "Nháp" },
+    };
+
+  const config = statusConfig[status] || statusConfig.PENDING;
+  const Icon = config.icon;
+
+  return (
+    <Chip
+      color={config.color}
+      variant="flat"
+      startContent={<Icon className="w-4 h-4" />}
+      classNames={{
+        base: "gap-1",
+        content: "font-medium",
+      }}
+    >
+      {config.label}
+    </Chip>
+  );
+};
 
 export const ResultsTable = ({
   keyword,
@@ -91,11 +110,7 @@ export const ResultsTable = ({
     direction: "desc",
   });
   const router = useRouter();
-  const [showFeeForm, setShowFeeForm] = useState(false);
-  const [initialFeeData, setInitialFeeData] = useState<{
-    formCode: string;
-    formNumber: string;
-  } | null>(null);
+
   // State cho SettlementDetailModal
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedSettlementDetail, setSelectedSettlementDetail] = useState<
@@ -113,14 +128,6 @@ export const ResultsTable = ({
   const [selectedFormNumber, setSelectedFormNumber] = useState<string | null>(
     null,
   );
-
-  // State cho user hiện tại
-  const [currentUser, setCurrentUser] = useState<{
-    id: string;
-    fullname: string;
-    role: string;
-    significanceUrl: string;
-  } | null>(null);
 
   // State cho modal tạo yêu cầu ký duyệt
   const [isCreateSignModalOpen, setIsCreateSignModalOpen] = useState(false);
@@ -142,27 +149,15 @@ export const ResultsTable = ({
     { id: string; fullName: string; departmentName?: string; role?: string }[]
   >([]);
 
-  // Fetch current user info
-  useEffect(() => {
-    const fetchCurrentUser = async () => {
-      try {
-        const res = await authFetch("/api/auth/me");
-        const json = await res.json();
-        if (json) {
-          setCurrentUser({
-            id: json.id,
-            fullname: json.fullname,
-            role: json.role,
-            significanceUrl: json.significanceUrl || "",
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching current user:", error);
+  const { profile } = useProfile();
+  const currentUser = profile
+    ? {
+        id: profile.id,
+        fullname: profile.fullname,
+        role: profile.role,
+        significanceUrl: profile.significanceUrl || "",
       }
-    };
-
-    fetchCurrentUser();
-  }, []);
+    : null;
 
   // Fetch all employees for dropdowns
   useEffect(() => {
@@ -171,25 +166,16 @@ export const ResultsTable = ({
         const res = await authFetch("/api/auth/employees?size=1000");
         const json = await res.json();
         const employees = json?.data?.content || [];
-
-        const mappedEmployees = employees.map((emp: any) => ({
-          id: emp.id,
-          fullName: emp.fullName,
-          departmentName: emp.departmentName,
-          role: emp.role,
-        }));
-
-        setAllEmployees(mappedEmployees);
+        setAllEmployees(employees);
       } catch (error) {
         console.error("Error fetching employees:", error);
         setAllEmployees([]);
       }
     };
-
     fetchEmployees();
   }, []);
 
-  // Fetch data khi filter thay đổi
+  // Fetch data
   useEffect(() => {
     setLoading(true);
     const fetchData = async () => {
@@ -199,34 +185,22 @@ export const ResultsTable = ({
           size: String(pageSize),
           sort: `${sort.field},${sort.direction}`,
         });
-        if (keyword?.trim()) {
-          params.append("keyword", keyword.trim());
-        }
+        if (keyword?.trim()) params.append("keyword", keyword.trim());
+        if (from) params.append("fromDate", from);
+        if (to) params.append("toDate", to);
+        if (status) params.append("status", status);
 
-        if (from) {
-          params.append("fromDate", from);
-        }
-
-        if (to) {
-          params.append("toDate", to);
-        }
-
-        if (status) {
-          params.append("status", status);
-        }
         const res = await authFetch(
           `/api/construction/settlements?${params.toString()}`,
         );
-        if (!res.ok) {
-          console.error("Fetch failed", res.status);
-          return;
-        }
+        if (!res.ok) return;
+
         const json = await res.json();
         const pageData = json?.data;
         const items = pageData?.content ?? [];
-        const totalElements = pageData?.totalElements ?? 0;
         const totalPagesValue = pageData?.totalPages ?? 1;
-        setTotalItems(totalElements);
+
+        setTotalItems(pageData?.totalElements ?? 0);
         setTotalPages(totalPagesValue || 1);
 
         if (page > totalPagesValue && totalPagesValue > 0) {
@@ -241,7 +215,7 @@ export const ResultsTable = ({
           formNumber: item.formNumber,
           jobContent: item.jobContent,
           address: item.address,
-          registrationAt: item.registrationAt,
+          registrationAt: formatDate1(item.registrationAt),
           connectionFee: item.connectionFee,
           note: item.note,
           status: item.status,
@@ -249,28 +223,20 @@ export const ResultsTable = ({
         setData(mapped);
       } catch (error: any) {
         setData([]);
-        setTotalItems(0);
-        setTotalPages(1);
       } finally {
         setLoading(false);
       }
     };
-
     fetchData();
   }, [page, keyword, reloadKey, sort, from, to, status]);
 
-  // Hàm fetch chi tiết quyết toán
   const fetchSettlementDetail = async (settlementId: string) => {
     try {
       setIsDetailLoading(true);
       const res = await authFetch(
         `/api/construction/settlements/${settlementId}`,
       );
-
-      if (!res.ok) {
-        throw new Error("Failed to fetch settlement detail");
-      }
-
+      if (!res.ok) throw new Error("Failed to fetch");
       const json = await res.json();
       setSelectedSettlementDetail(json?.data);
       setIsDetailModalOpen(true);
@@ -285,81 +251,19 @@ export const ResultsTable = ({
     }
   };
 
-  const handleSortChange = (columnKey: string) => {
-    setPage(1);
-
-    setSort((prev) => {
-      const direction =
-        prev.field === columnKey && prev.direction === "asc" ? "desc" : "asc";
-
-      return {
-        field: columnKey === "stt" ? "createdAt" : columnKey,
-        direction,
-      };
-    });
-  };
-
-  const fetchSettlementDocument = async (id: string) => {
-    try {
-      setDocumentLoading(true);
-
-      const res = await authFetch(`/api/construction/settlements/${id}`);
-
-      if (!res.ok) throw new Error("Fetch failed");
-
-      const json = await res.json();
-      const detail = json?.data.data;
-
-      const mapped = mapToDocumentRows(detail);
-
-      setDocumentData(mapped);
-      setSelectedSettlementId(id);
-      setSelectedFormNumber(detail.formNumber);
-      setIsDocumentModalOpen(true);
-    } catch (e: any) {
-      CallToast({
-        title: "Lỗi",
-        message: e.message,
-        color: "danger",
-      });
-    } finally {
-      setDocumentLoading(false);
-    }
-  };
-
-  const mapToDocumentRows = (detail: SettlementDetail) => {
-    return [
-      {
-        id: detail.id || detail.id,
-        stt: 1,
-        formNumber: detail.formNumber,
-        jobContent: detail.jobContent,
-        note: detail.note,
-        connectionFee: detail.connectionFee,
-        address: detail.address,
-        registrationAt: detail.registrationAt,
-        status: detail.status,
-      },
-    ];
-  };
-
   const handleConfirmDelete = async () => {
     if (!deleteId) return;
     try {
       setDeleteLoading(true);
-
       const res = await authFetch(`/api/construction/settlements/${deleteId}`, {
         method: "DELETE",
       });
-
       if (!res.ok) throw new Error("Delete failed");
-
       CallToast({
         title: "Thành công",
         message: "Xóa quyết toán thành công",
         color: "success",
       });
-
       setDeleteId(null);
       onDeleted();
     } catch (e: any) {
@@ -373,7 +277,6 @@ export const ResultsTable = ({
     }
   };
 
-  // Handle create signature request (gửi yêu cầu ký đến các bên)
   const handleCreateSignatureRequest = (item: SettlementItem) => {
     setSelectedItemForSign(item);
     setSurveyStaffId("");
@@ -385,8 +288,6 @@ export const ResultsTable = ({
 
   const handleConfirmCreateSignatureRequest = async () => {
     if (!selectedItemForSign) return;
-
-    // Validate at least one signer is selected
     if (
       !surveyStaffId &&
       !planningHeadId &&
@@ -413,9 +314,7 @@ export const ResultsTable = ({
 
       const res = await authFetch(`/api/construction/settlements/sign`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestBody),
       });
 
@@ -431,7 +330,7 @@ export const ResultsTable = ({
       });
 
       setIsCreateSignModalOpen(false);
-      onDeleted(); // Refresh data
+      onDeleted();
     } catch (error: any) {
       CallToast({
         title: "Thất bại",
@@ -443,7 +342,6 @@ export const ResultsTable = ({
     }
   };
 
-  // Handle sign action (người được phân công thực hiện ký)
   const handleSignAction = (item: SettlementItem) => {
     setSelectedItemForSigning(item);
     setIsSignModalOpen(true);
@@ -462,53 +360,22 @@ export const ResultsTable = ({
       return;
     }
 
-    // Xác định field ký dựa trên role của user
-    let signatureField = "";
-    switch (currentUser.role) {
-      case "COMPANY_LEADERSHIP":
-        signatureField = "president";
-        break;
-      case "PLANNING_TECHNICAL_DEPARTMENT_HEAD":
-        signatureField = "ptHead";
-        break;
-      case "survey_staff":
-        signatureField = "surveyStaff";
-        break;
-      case "CONSTRUCTION_DEPARTMENT_HEAD":
-        signatureField = "constructionPresident";
-        break;
-      default:
-        CallToast({
-          title: "Thất bại",
-          message: "Bạn không có quyền ký duyệt quyết toán này",
-          color: "danger",
-        });
-        return;
-    }
-
     setIsProcessing(true);
     try {
-      const requestBody: any = {};
-      requestBody[signatureField] = currentUser.significanceUrl;
-
       const res = await authFetch(
         `/api/construction/settlements/sign/${selectedItemForSigning.id}`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestBody),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: currentUser.significanceUrl }),
         },
       );
 
       if (!res.ok) {
-        if (res.status === 403) {
+        if (res.status === 403)
           throw new Error("Bạn không có quyền thực hiện hành động này");
-        }
-        if (res.status === 404) {
+        if (res.status === 404)
           throw new Error("Không tìm thấy bản quyết toán");
-        }
         const err = await res.json();
         throw new Error(err.message || "Ký duyệt thất bại");
       }
@@ -520,7 +387,7 @@ export const ResultsTable = ({
       });
 
       setIsSignModalOpen(false);
-      onDeleted(); // Refresh data
+      onDeleted();
     } catch (error: any) {
       CallToast({
         title: "Thất bại",
@@ -535,30 +402,6 @@ export const ResultsTable = ({
   useEffect(() => {
     setPage(1);
   }, [keyword]);
-
-  // Lọc nhân viên theo role cho từng dropdown
-  const surveyStaffOptions = allEmployees.filter(
-    (emp) => emp.role === "SURVEY_STAFF",
-  );
-  const planningHeadOptions = allEmployees.filter(
-    (emp) => emp.role === "PLANNING_TECHNICAL_DEPARTMENT_HEAD",
-  );
-  const companyLeadershipOptions = allEmployees.filter(
-    (emp) => emp.role === "COMPANY_LEADERSHIP",
-  );
-  const constructionPresidentOptions = allEmployees.filter(
-    (emp) => emp.role === "CONSTRUCTION_DEPARTMENT_HEAD",
-  );
-
-  // Kiểm tra xem user có role được phép ký không
-  // const canSign =
-  //   currentUser?.role &&
-  //   [
-  //     "COMPANY_LEADERSHIP",
-  //     "PLANNING_TECHNICAL_DEPARTMENT_HEAD",
-  //     "SURVEY_STAFF",
-  //     "CONSTRUCTION_DEPARTMENT_HEAD",
-  //   ].includes(currentUser.role);
 
   const actionItems = useMemo(() => {
     return [
@@ -583,8 +426,7 @@ export const ResultsTable = ({
       {
         content: "Chỉnh sửa",
         icon: EditIcon,
-        className:
-          "text-amber-500 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/30",
+        className: "text-amber-500 hover:bg-amber-50",
         onClick: (id: string) => {
           const found = data.find((i) => i.id === id);
           if (found) onEdit(found);
@@ -593,8 +435,7 @@ export const ResultsTable = ({
       {
         content: "Tạo phiếu thu",
         icon: CalculatorIcon,
-        className:
-          "text-green-600 hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-900/30",
+        className: "text-green-600 hover:bg-green-50",
         onClick: (id: string) => {
           const found = data.find((i) => i.id === id);
           if (found) {
@@ -610,26 +451,22 @@ export const ResultsTable = ({
   const renderCell = (item: SettlementItem, columnKey: string) => {
     switch (columnKey) {
       case "stt":
-        return (
-          <span className="font-medium text-black dark:text-white">
-            {item.stt}
-          </span>
-        );
+        return <span className="font-medium text-default-700">{item.stt}</span>;
       case "formNumber":
         return (
-          <button
-            onClick={() => fetchSettlementDetail(item.id)}
-            className="text-blue-600 hover:text-blue-800 hover:underline font-medium cursor-pointer transition-colors"
+          <Link
+            className="text-primary font-medium hover:underline p-0 h-auto min-w-0"
+            onPress={() => fetchSettlementDetail(item.id)}
           >
             {item.formNumber}
-          </button>
+          </Link>
         );
       case "actions":
         return (
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-1">
             {actionItems.map((action, idx) => (
               <Tooltip key={idx} content={action.content} closeDelay={0}>
-                <Button
+                <CustomButton
                   isIconOnly
                   variant="light"
                   size="sm"
@@ -637,31 +474,21 @@ export const ResultsTable = ({
                   onPress={() => action.onClick(item.id)}
                 >
                   <action.icon className="w-5 h-5" />
-                </Button>
+                </CustomButton>
               </Tooltip>
             ))}
           </div>
         );
       default:
         const value = item[columnKey as keyof SettlementItem];
-
-        if (value && typeof value === "object") {
-          console.warn(`Object found in column ${columnKey}:`, value);
-          return <span className="text-gray-600">-</span>;
-        }
-
-        return (
-          <span className="text-gray-600 dark:text-default-600">
-            {String(value || "")}
-          </span>
-        );
+        return <span className="text-default-600">{String(value || "")}</span>;
     }
   };
 
   if (loading) {
     return (
       <div className="flex justify-center items-center py-20">
-        <Spinner label="Đang tải dữ liệu..." />
+        <Spinner size="lg" label="Đang tải dữ liệu..." />
       </div>
     );
   }
@@ -694,7 +521,6 @@ export const ResultsTable = ({
         onConfirm={handleConfirmDelete}
       />
 
-      {/* Settlement Detail Modal */}
       <SettlementDetailModal
         isOpen={isDetailModalOpen}
         onClose={() => {
@@ -713,252 +539,282 @@ export const ResultsTable = ({
         selectedFormNumber={selectedFormNumber || ""}
       />
 
-      {/* Modal for creating signature request */}
-      <BaseModal
+      {/* Modal tạo yêu cầu ký duyệt - Thiết kế lại với HeroUI */}
+      <Modal
         isOpen={isCreateSignModalOpen}
         onOpenChange={() => setIsCreateSignModalOpen(false)}
-        title={`Tạo yêu cầu ký duyệt - ${selectedItemForSign?.formCode || selectedItemForSign?.formNumber}`}
         size="2xl"
+        backdrop="blur"
       >
-        <div className="space-y-6 py-4">
-          <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Mã đơn
-                </p>
-                <p className="font-semibold text-gray-900 dark:text-gray-100">
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                <h3 className="text-xl font-semibold">Tạo yêu cầu ký duyệt</h3>
+                <p className="text-sm text-default-500 font-normal">
                   {selectedItemForSign?.formCode ||
                     selectedItemForSign?.formNumber}
                 </p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Nội dung công việc
-                </p>
-                <p className="font-semibold text-gray-900 dark:text-gray-100">
-                  {selectedItemForSign?.jobContent}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Phí kết nối
-                </p>
-                {/* <p className="font-semibold text-primary">
-                  {selectedItemForSign?.connectionFee?.toLocaleString("vi-VN")}{" "}
-                  ₫
-                </p> */}
-              </div>
-              <div className="col-span-2">
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Địa chỉ
-                </p>
-                <p className="font-medium text-gray-900 dark:text-gray-100">
-                  {selectedItemForSign?.address}
-                </p>
-              </div>
-            </div>
-          </div>
+              </ModalHeader>
+              <ModalBody className="py-4">
+                {/* Thông tin quyết toán */}
+                <Card className="bg-primary-50 dark:bg-primary-900/20 border border-primary-200">
+                  <CardBody className="gap-3">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-xs text-default-500 uppercase tracking-wider">
+                          Mã đơn
+                        </p>
+                        <p className="font-semibold text-default-900 mt-1">
+                          {selectedItemForSign?.formCode ||
+                            selectedItemForSign?.formNumber}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-default-500 uppercase tracking-wider">
+                          Ngày đăng ký
+                        </p>
+                        <p className="font-semibold text-default-900 mt-1">
+                          {selectedItemForSign?.registrationAt}
+                        </p>
+                      </div>
+                      <div className="col-span-2">
+                        <p className="text-xs text-default-500 uppercase tracking-wider">
+                          Nội dung công việc
+                        </p>
+                        <p className="font-medium text-default-900 mt-1">
+                          {selectedItemForSign?.jobContent}
+                        </p>
+                      </div>
+                      <div className="col-span-2">
+                        <p className="text-xs text-default-500 uppercase tracking-wider">
+                          Địa chỉ
+                        </p>
+                        <p className="font-medium text-default-900 mt-1">
+                          {selectedItemForSign?.address}
+                        </p>
+                      </div>
+                    </div>
+                  </CardBody>
+                </Card>
 
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Nhân viên khảo sát ký (SURVEY_STAFF)
-              </label>
-              <select
-                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                value={surveyStaffId}
-                onChange={(e) => setSurveyStaffId(e.target.value)}
-              >
-                <option value="">-- Chọn nhân viên khảo sát --</option>
-                {surveyStaffOptions.map((employee) => (
-                  <option key={employee.id} value={employee.id}>
-                    {employee.fullName}
-                  </option>
-                ))}
-              </select>
-            </div>
+                <Divider className="my-2" />
 
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Trưởng phòng Kế hoạch Kỹ thuật
-                (PLANNING_TECHNICAL_DEPARTMENT_HEAD)
-              </label>
-              <select
-                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                value={planningHeadId}
-                onChange={(e) => setPlanningHeadId(e.target.value)}
-              >
-                <option value="">-- Chọn trưởng phòng --</option>
-                {planningHeadOptions.map((employee) => (
-                  <option key={employee.id} value={employee.id}>
-                    {employee.fullName}
-                  </option>
-                ))}
-              </select>
-            </div>
+                {/* Chọn người ký */}
+                <div className="space-y-4">
+                  <p className="text-sm font-semibold text-default-700">
+                    Chọn người ký duyệt
+                  </p>
 
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Lãnh đạo công ty (COMPANY_LEADERSHIP)
-              </label>
-              <select
-                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                value={companyLeadershipId}
-                onChange={(e) => setCompanyLeadershipId(e.target.value)}
-              >
-                <option value="">-- Chọn lãnh đạo --</option>
-                {companyLeadershipOptions.map((employee) => (
-                  <option key={employee.id} value={employee.id}>
-                    {employee.fullName}
-                  </option>
-                ))}
-              </select>
-            </div>
+                  <CustomSelect
+                    label="Nhân viên khảo sát"
+                    options={allEmployees
+                      .filter((emp) => emp.role === "SURVEY_STAFF")
+                      .map((emp) => ({
+                        label: emp.fullName,
+                        value: emp.id,
+                      }))}
+                    selectedKeys={surveyStaffId ? [surveyStaffId] : []}
+                    onSelectionChange={(keys) => {
+                      const selectedKey = Array.from(keys)[0]?.toString() || "";
+                      setSurveyStaffId(selectedKey);
+                    }}
+                  />
 
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Giám đốc chi nhánh Xây lắp (CONSTRUCTION_DEPARTMENT_HEAD)
-              </label>
-              <select
-                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                value={constructionPresidentId}
-                onChange={(e) => setConstructionPresidentId(e.target.value)}
-              >
-                <option value="">-- Chọn giám đốc --</option>
-                {constructionPresidentOptions.map((employee) => (
-                  <option key={employee.id} value={employee.id}>
-                    {employee.fullName}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </div>
+                  <CustomSelect
+                    label="Trưởng phòng Kế hoạch Kỹ thuật"
+                    options={allEmployees
+                      .filter(
+                        (emp) =>
+                          emp.role === "PLANNING_TECHNICAL_DEPARTMENT_HEAD",
+                      )
+                      .map((emp) => ({
+                        label: emp.fullName,
+                        value: emp.id,
+                      }))}
+                    selectedKeys={planningHeadId ? [planningHeadId] : []}
+                    onSelectionChange={(keys) => {
+                      const selectedKey = Array.from(keys)[0]?.toString() || "";
+                      setPlanningHeadId(selectedKey);
+                    }}
+                  />
 
-        <div className="flex gap-3 pt-6 border-t border-divider">
-          <CustomButton
-            onPress={() => {
-              setIsCreateSignModalOpen(false);
-              setSelectedItemForSign(null);
-            }}
-            className="font-medium"
-            color="default"
-            variant="bordered"
-          >
-            Hủy
-          </CustomButton>
-          <CustomButton
-            onPress={handleConfirmCreateSignatureRequest}
-            isLoading={isProcessing}
-            className="text-white font-medium"
-            color="primary"
-          >
-            Tạo yêu cầu
-          </CustomButton>
-        </div>
-      </BaseModal>
+                  <CustomSelect
+                    label="Lãnh đạo công ty"
+                    options={allEmployees
+                      .filter((emp) => emp.role === "COMPANY_LEADERSHIP")
+                      .map((emp) => ({
+                        label: emp.fullName,
+                        value: emp.id,
+                      }))}
+                    selectedKeys={
+                      companyLeadershipId ? [companyLeadershipId] : []
+                    }
+                    onSelectionChange={(keys) => {
+                      const selectedKey = Array.from(keys)[0]?.toString() || "";
+                      setCompanyLeadershipId(selectedKey);
+                    }}
+                  />
 
-      {/* Modal for signing */}
-      <BaseModal
+                  <CustomSelect
+                    label="Giám đốc chi nhánh Xây lắp"
+                    options={allEmployees
+                      .filter(
+                        (emp) => emp.role === "CONSTRUCTION_DEPARTMENT_HEAD",
+                      )
+                      .map((emp) => ({
+                        label: emp.fullName,
+                        value: emp.id,
+                      }))}
+                    selectedKeys={
+                      constructionPresidentId ? [constructionPresidentId] : []
+                    }
+                    onSelectionChange={(keys) => {
+                      const selectedKey = Array.from(keys)[0]?.toString() || "";
+                      setConstructionPresidentId(selectedKey);
+                    }}
+                  />
+                </div>
+              </ModalBody>
+              <ModalFooter>
+                <CustomButton variant="flat" onPress={onClose}>
+                  Hủy
+                </CustomButton>
+                <CustomButton
+                  color="primary"
+                  onPress={handleConfirmCreateSignatureRequest}
+                  isLoading={isProcessing}
+                >
+                  Tạo yêu cầu
+                </CustomButton>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+
+      <Modal
         isOpen={isSignModalOpen}
         onOpenChange={() => setIsSignModalOpen(false)}
-        title={`Ký duyệt quyết toán - ${selectedItemForSigning?.formCode || selectedItemForSigning?.formNumber}`}
         size="2xl"
+        backdrop="blur"
       >
-        <div className="space-y-4 py-4">
-          <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Mã đơn
-                </p>
-                <p className="font-semibold text-gray-900 dark:text-gray-100">
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                <h3 className="text-xl font-semibold">Ký duyệt quyết toán</h3>
+                <p className="text-sm text-default-500 font-normal">
                   {selectedItemForSigning?.formCode ||
                     selectedItemForSigning?.formNumber}
                 </p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Nội dung công việc
-                </p>
-                <p className="font-semibold text-gray-900 dark:text-gray-100">
-                  {selectedItemForSigning?.jobContent}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Phí kết nối
-                </p>
-                {/* <p className="font-semibold text-primary">
-                  {selectedItemForSigning?.connectionFee?.toLocaleString(
-                    "vi-VN",
-                  )}{" "}
-                  ₫
-                </p> */}
-              </div>
-            </div>
-          </div>
+              </ModalHeader>
+              <ModalBody className="py-4">
+                <Card className="bg-primary-50 dark:bg-primary-900/20 border border-primary-200">
+                  <CardBody className="gap-3">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-xs text-default-500 uppercase tracking-wider">
+                          Mã đơn
+                        </p>
+                        <p className="font-semibold text-default-900 mt-1">
+                          {selectedItemForSigning?.formCode ||
+                            selectedItemForSigning?.formNumber}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-default-500 uppercase tracking-wider">
+                          Nội dung công việc
+                        </p>
+                        <p className="font-semibold text-default-900 mt-1">
+                          {selectedItemForSigning?.jobContent}
+                        </p>
+                      </div>
+                      <div className="col-span-2">
+                        <p className="text-xs text-default-500 uppercase tracking-wider">
+                          Địa chỉ
+                        </p>
+                        <p className="font-medium text-default-900 mt-1">
+                          {selectedItemForSigning?.address}
+                        </p>
+                      </div>
+                    </div>
+                  </CardBody>
+                </Card>
 
-          {/* Hiển thị thông tin người ký */}
-          <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                <span className="text-primary text-xl font-semibold">
-                  {currentUser?.fullname?.charAt(0) || "?"}
-                </span>
-              </div>
-              <div className="flex-1">
-                <p className="font-semibold text-gray-900 dark:text-gray-100">
-                  {currentUser?.fullname || "Đang tải..."}
-                </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Vai trò: {currentUser?.role?.replace(/_/g, " ") || "..."}
-                </p>
-              </div>
-            </div>
+                <Divider className="my-2" />
 
-            {currentUser?.significanceUrl ? (
-              <div className="mt-3 p-2 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800">
-                <p className="text-sm text-green-700 dark:text-green-300">
-                  Đã có chữ ký điện tử sẵn sàng
-                </p>
-              </div>
-            ) : (
-              <div className="mt-3 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded border border-yellow-200 dark:border-yellow-800">
-                <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                  Chưa có chữ ký điện tử. Vui lòng cập nhật thông tin cá nhân.
-                </p>
-              </div>
-            )}
-          </div>
+                <Card className="border border-default-200">
+                  <CardBody className="gap-4">
+                    <div className="flex items-center gap-4">
+                      {/* <Avatar
+                        name={currentUser?.fullname?.charAt(0) || "?"}
+                        className="w-14 h-14 text-large font-semibold bg-primary/10 text-primary"
+                      /> */}
+                      <div className="flex-1">
+                        <p className="font-semibold text-default-900 text-lg">
+                          {currentUser?.fullname || "Đang tải..."}
+                        </p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Badge variant="flat" color="primary">
+                            {currentUser?.role
+                              ? getRoleVietnamese(
+                                  currentUser.role.toUpperCase(),
+                                )
+                              : "..."}
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
 
-          <div className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-            <p>
-              Bằng cách nhấn "Xác nhận ký", bạn đồng ý ký duyệt quyết toán này
-              bằng chữ ký điện tử của mình.
-            </p>
-          </div>
-        </div>
+                    {currentUser?.significanceUrl ? (
+                      <div className="flex items-center gap-2 p-3 bg-success-50 dark:bg-success-900/20 rounded-lg border border-success-200">
+                        <CheckCircleIcon className="w-5 h-5 text-success" />
+                        <span className="text-success-700 dark:text-success-300 text-sm">
+                          Đã có chữ ký điện tử sẵn sàng
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 p-3 bg-warning-50 dark:bg-warning-900/20 rounded-lg border border-warning-200">
+                        <XCircleIcon className="w-5 h-5 text-warning" />
+                        <span className="text-warning-700 dark:text-warning-300 text-sm">
+                          Chưa có chữ ký điện tử. Vui lòng cập nhật thông tin cá
+                          nhân.
+                        </span>
+                      </div>
+                    )}
+                  </CardBody>
+                </Card>
 
-        <div className="flex gap-3 pt-6 border-t border-divider">
-          <CustomButton
-            onPress={() => setIsSignModalOpen(false)}
-            color="default"
-            variant="bordered"
-          >
-            Hủy
-          </CustomButton>
-          <CustomButton
-            onPress={handleConfirmSign}
-            isLoading={isProcessing}
-            color="success"
-            isDisabled={!currentUser?.significanceUrl}
-          >
-            Xác nhận ký
-          </CustomButton>
-        </div>
-      </BaseModal>
+                <div className="bg-default-50 p-4 rounded-lg">
+                  <p className="text-sm text-default-600 flex items-start gap-2">
+                    Bằng cách nhấn "Xác nhận ký", bạn đồng ý ký duyệt quyết toán
+                    này bằng chữ ký điện tử của mình.
+                  </p>
+                </div>
+              </ModalBody>
+              <ModalFooter>
+                <CustomButton variant="flat" onPress={onClose}>
+                  Hủy
+                </CustomButton>
+                <CustomButton
+                  color="success"
+                  onPress={handleConfirmSign}
+                  isLoading={isProcessing}
+                  isDisabled={!currentUser?.significanceUrl}
+                  startContent={
+                    !isProcessing ? (
+                      <CheckCircleIcon className="w-4 h-4" />
+                    ) : undefined
+                  }
+                >
+                  Xác nhận ký
+                </CustomButton>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </>
   );
 };

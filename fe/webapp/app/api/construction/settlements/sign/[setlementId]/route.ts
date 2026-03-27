@@ -16,8 +16,9 @@ export async function POST(
 
     const body = await req.json();
     const { setlementId } = await params;
-    const { electronicSignUrl } = body;
 
+    const { url } = body;
+    console.log("url" + url);
     if (!setlementId) {
       return NextResponse.json(
         { message: "settlementId is required" },
@@ -25,23 +26,13 @@ export async function POST(
       );
     }
 
-    const response = await signSettlement(
-      accessToken,
-      setlementId,
-      electronicSignUrl,
-    );
+    const response = await signSettlement(accessToken, setlementId, url);
 
-    return NextResponse.json(
-      {
-        message: "Tạo quyết toán công trình thành công",
-        data: response.data,
-      },
-      { status: 201 },
-    );
+    return NextResponse.json(response.data);
   } catch (error: any) {
     return NextResponse.json(
       {
-        message: error.response?.data?.message || "Tạo quyết toán thất bại",
+        message: error.response?.data?.message || "Ký duyệt quyết toán thất bại",
         error: error.response?.data || null,
       },
       { status: error.response?.status || 500 },
