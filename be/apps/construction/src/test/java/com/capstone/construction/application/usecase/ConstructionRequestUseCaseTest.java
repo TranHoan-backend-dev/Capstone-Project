@@ -53,7 +53,7 @@ class ConstructionRequestUseCaseTest {
     when(ifSrv.getByFormCodeAndFormNumber(anyString(), anyString())).thenReturn(mock(InstallationFormListResponse.class));
 
     // Act
-    useCase.assignToConstructionCaptain(request, empId);
+    useCase.createAndAssignToConstructionCaptain(request, empId);
 
     // Assert
     verify(constructionRequestService).createPendingRequest(eq(empId), eq("CON1"), eq("LDN"), eq("001"));
@@ -72,7 +72,7 @@ class ConstructionRequestUseCaseTest {
       .when(constructionRequestService).createPendingRequest(anyString(), anyString(), anyString(), anyString());
 
     // Act & Assert
-    assertThrows(IllegalArgumentException.class, () -> useCase.assignToConstructionCaptain(request, empId));
+    assertThrows(IllegalArgumentException.class, () -> useCase.createAndAssignToConstructionCaptain(request, empId));
   }
 
   @Test

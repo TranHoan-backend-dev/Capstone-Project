@@ -1,6 +1,6 @@
 package com.capstone.notification.dto.request;
 
-import com.capstone.notification.event.websocket.Topic;
+import com.capstone.notification.event.consumer.Topic;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
