@@ -29,10 +29,10 @@ export const sendNotificationToUsers = async (
       },
     );
 
-    console.log("✅ Notification sent successfully:", response.data);
+    console.log("Notification sent successfully:", response.data);
     return response.data;
   } catch (error) {
-    console.error("❌ Failed to send notification:", error);
+    console.error("Failed to send notification:", error);
     throw error;
   }
 };
@@ -75,10 +75,10 @@ export const sendBulkNotification = async (
     );
     const results = await Promise.allSettled(promises);
 
-    console.log("📧 Bulk notification results:", results);
+    console.log("Bulk notification results:", results);
     return results;
   } catch (error) {
-    console.error("❌ Failed to send bulk notifications:", error);
+    console.error("Failed to send bulk notifications:", error);
     throw error;
   }
 };

@@ -117,7 +117,7 @@ export const ResultsTable = ({
 
   // Auto-refresh data khi có settlement updates từ WebSocket
   useSettlementUpdates(() => {
-    console.log("📊 Settlement updated, refreshing data...");
+    console.log("Settlement updated, refreshing data...");
     setRefreshTrigger((prev) => prev + 1);
   });
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -144,7 +144,7 @@ export const ResultsTable = ({
   const [surveyStaffId, setSurveyStaffId] = useState("");
   const [planningHeadId, setPlanningHeadId] = useState("");
   const [companyLeadershipId, setCompanyLeadershipId] = useState("");
-  const [constructionPresidentId, setConstructionPresidentId] = useState("");
+  // const [constructionPresidentId, setConstructionPresidentId] = useState("");
 
   // State cho modal ký duyệt
   const [isSignModalOpen, setIsSignModalOpen] = useState(false);
@@ -162,9 +162,9 @@ export const ResultsTable = ({
   const [companyLeadership, setCompanyLeadership] = useState<
     { id: string; name: string }[]
   >([]);
-  const [constructionPresident, setConstructionPresident] = useState<
-    { id: string; name: string }[]
-  >([]);
+  // const [constructionPresident, setConstructionPresident] = useState<
+  //   { id: string; name: string }[]
+  // >([]);
 
   const { profile } = useProfile();
   const currentUser = profile
@@ -205,14 +205,14 @@ export const ResultsTable = ({
           setCompanyLeadership(leadershipJson?.data || []);
         }
 
-        // Fetch construction head
-        const constructionRes = await authFetch(
-          "/api/auth/employees/construction-head",
-        );
-        if (constructionRes.ok) {
-          const constructionJson = await constructionRes.json();
-          setConstructionPresident(constructionJson?.data || []);
-        }
+        // // Fetch construction head
+        // const constructionRes = await authFetch(
+        //   "/api/auth/employees/construction-head",
+        // );
+        // if (constructionRes.ok) {
+        //   const constructionJson = await constructionRes.json();
+        //   setConstructionPresident(constructionJson?.data || []);
+        // }
       } catch (error) {
         console.error("Error fetching employees:", error);
       }
@@ -328,7 +328,7 @@ export const ResultsTable = ({
     setSurveyStaffId("");
     setPlanningHeadId("");
     setCompanyLeadershipId("");
-    setConstructionPresidentId("");
+    // setConstructionPresidentId("");
     setIsCreateSignModalOpen(true);
   };
 
@@ -337,8 +337,8 @@ export const ResultsTable = ({
     if (
       !surveyStaffId &&
       !planningHeadId &&
-      !companyLeadershipId &&
-      !constructionPresidentId
+      !companyLeadershipId 
+      // !constructionPresidentId
     ) {
       CallToast({
         title: "Thất bại",
@@ -355,7 +355,7 @@ export const ResultsTable = ({
         surveyStaff: surveyStaffId || null,
         plHead: planningHeadId || null,
         companyLeadership: companyLeadershipId || null,
-        constructionPresident: constructionPresidentId || null,
+        // constructionPresident: constructionPresidentId || null,
       };
 
       const res = await authFetch(`/api/construction/settlements/sign`, {
@@ -374,7 +374,6 @@ export const ResultsTable = ({
         surveyStaffId,
         planningHeadId,
         companyLeadershipId,
-        constructionPresidentId,
       ].filter(Boolean) as string[];
 
       if (recipientIds.length > 0) {
@@ -389,7 +388,7 @@ export const ResultsTable = ({
               currentUser?.fullname || "Admin",
             );
             console.log(
-              "📧 Notification sent to signers:",
+              "Notification sent to signers:",
               recipientIds,
             );
           }
@@ -723,7 +722,7 @@ export const ResultsTable = ({
                     }}
                   />
 
-                  <CustomSelect
+                  {/* <CustomSelect
                     label="Giám đốc chi nhánh Xây lắp"
                     options={constructionPresident.map((emp) => ({
                       label: emp.name,
@@ -736,7 +735,7 @@ export const ResultsTable = ({
                       const selectedKey = Array.from(keys)[0]?.toString() || "";
                       setConstructionPresidentId(selectedKey);
                     }}
-                  />
+                  /> */}
                 </div>
               </ModalBody>
               <ModalFooter>

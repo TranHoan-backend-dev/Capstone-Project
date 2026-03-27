@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
       companyLeadership,
       plHead,
       surveyStaff,
-      constructionPresident,
+      // constructionPresident,
     } = body;
 
     if (!settlementId) {
@@ -33,10 +33,10 @@ export async function POST(req: NextRequest) {
     const response = await requestSignSettlement(
       accessToken,
       settlementId,
-      surveyStaff,
+      "694e6123-d3cf-4f07-96ee-66ed832918b0",
       plHead,
       companyLeadership,
-      constructionPresident,
+      // constructionPresident,
     );
 
     return NextResponse.json(

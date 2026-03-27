@@ -670,7 +670,7 @@ export const requestSignSettlement = (
   surveyStaff: string,
   plHead: string,
   companyLeadership: string,
-  constructionPresident: string,
+  // constructionPresident: string,
 ) => {
   return axios.post(
     `${API_GATEWAY_URL}/construction/settlements/sign`,
@@ -679,7 +679,7 @@ export const requestSignSettlement = (
       surveyStaff,
       plHead,
       companyLeadership,
-      constructionPresident,
+      // constructionPresident,
     },
     {
       headers: {

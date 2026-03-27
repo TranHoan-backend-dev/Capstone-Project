@@ -81,7 +81,7 @@ public class SettlementController {
   @Operation(summary = "Lấy danh sách tất cả quyết toán công trình", description = "Trả về danh sách phân trang của tất cả các bản quyết toán trong hệ thống.", responses = {
     @ApiResponse(responseCode = "200", description = "Lấy danh sách thành công")
   })
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'CONSTRUCTION_DEPARTMENT_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'CONSTRUCTION_DEPARTMENT_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD', 'SURVEY_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD')")
   public ResponseEntity<WrapperApiResponse> getAllSettlements(
     @PageableDefault @Parameter(description = "Thông số phân trang (page, size, sort)") Pageable pageable) {
     log.info("REST request to get all settlements");
