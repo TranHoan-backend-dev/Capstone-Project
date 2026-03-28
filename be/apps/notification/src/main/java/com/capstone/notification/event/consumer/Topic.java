@@ -1,4 +1,4 @@
-package com.capstone.notification.event.websocket;
+package com.capstone.notification.event.consumer;
 
 import com.capstone.common.enumerate.RoleName;
 import org.jspecify.annotations.NonNull;

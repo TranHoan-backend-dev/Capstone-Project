@@ -77,13 +77,13 @@ class InstallationFormHandlingUseCaseTest {
     var responseItem = mock(InstallationFormListResponse.class);
     var expectedPage = new PageImpl<>(List.of(responseItem));
 
-    when(ifSrv.findByEstimateStatus_Pending(pageable)).thenReturn(expectedPage);
+    when(ifSrv.findByEstimateStatusPending(pageable)).thenReturn(expectedPage);
 
-    var actualPage = useCase.findByEstimateStatus_Pending(pageable);
+    var actualPage = useCase.findByEstimateStatusPending(pageable);
 
     assertThat(actualPage).isNotNull();
     assertThat(actualPage.getContent()).hasSize(1);
-    verify(ifSrv).findByEstimateStatus_Pending(pageable);
+    verify(ifSrv).findByEstimateStatusPending(pageable);
   }
 
   @Test
@@ -93,13 +93,13 @@ class InstallationFormHandlingUseCaseTest {
     var responseItem = mock(InstallationFormListResponse.class);
     var expectedPage = new PageImpl<>(List.of(responseItem));
 
-    when(ifSrv.findByRegistrationStatus_Pending(pageable)).thenReturn(expectedPage);
+    when(ifSrv.findByRegistrationStatusPending(pageable)).thenReturn(expectedPage);
 
-    var actualPage = useCase.findByRegistrationStatus_Pending(pageable);
+    var actualPage = useCase.findByRegistrationStatusPending(pageable);
 
     assertThat(actualPage).isNotNull();
     assertThat(actualPage.getContent()).hasSize(1);
-    verify(ifSrv).findByRegistrationStatus_Pending(pageable);
+    verify(ifSrv).findByRegistrationStatusPending(pageable);
   }
 
   @Test

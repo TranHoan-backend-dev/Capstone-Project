@@ -2,10 +2,10 @@ package com.capstone.notification.event.consumer.commune.processing;
 
 import com.capstone.common.annotation.AppLog;
 import com.capstone.notification.event.producer.MessageProducer;
-import com.capstone.notification.event.websocket.GeneralEventConsumer;
+import com.capstone.notification.event.consumer.GeneralEventConsumer;
 import com.capstone.notification.event.consumer.commune.message.UpdateEventMessage;
 
-import com.capstone.notification.event.websocket.Topic;
+import com.capstone.notification.event.consumer.Topic;
 
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;

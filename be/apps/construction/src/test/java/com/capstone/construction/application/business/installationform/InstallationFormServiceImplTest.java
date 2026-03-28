@@ -243,7 +243,7 @@ class InstallationFormServiceImplTest {
     when(empSrv.getEmployeeNameById(any())).thenReturn(new WrapperApiResponse(200, "OK", "Staff", OffsetDateTime.now()));
 
     // When
-    var result = service.findByEstimateStatus_Pending(pageable);
+    var result = service.findByEstimateStatusPending(pageable);
 
     // Then
     assertThat(result.getContent()).hasSize(1);
@@ -259,7 +259,7 @@ class InstallationFormServiceImplTest {
     when(empSrv.getEmployeeNameById(any())).thenReturn(new WrapperApiResponse(200, "OK", "Staff", OffsetDateTime.now()));
 
     // When
-    var result = service.findByRegistrationStatus_Pending(pageable);
+    var result = service.findByRegistrationStatusPending(pageable);
 
     // Then
     assertThat(result.getContent()).hasSize(1);
