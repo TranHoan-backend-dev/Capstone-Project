@@ -21,16 +21,16 @@ export async function GET(req: NextRequest) {
     const size = Number(searchParams.get("size") ?? 10);
     const sort = searchParams.get("sort") || "createdAt,desc";
 
-    const keyword = searchParams.get("keyword");
+    const search = searchParams.get("search");
     const fromDate = searchParams.get("fromDate");
     const toDate = searchParams.get("toDate");
     const status = searchParams.get("status");
 
-    const hasFilter = keyword || fromDate || toDate || status;
+    const hasFilter = search || fromDate || toDate || status;
 
     if (hasFilter) {
       const filterRequest = {
-        search: keyword || null,
+        search: search || null,
         status: status ? [status] : null,
         registrationFrom: fromDate || null,
         registrationTo: toDate || null,

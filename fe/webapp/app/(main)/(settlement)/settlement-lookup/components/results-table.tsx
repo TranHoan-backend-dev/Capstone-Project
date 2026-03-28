@@ -181,9 +181,7 @@ export const ResultsTable = ({
     const fetchEmployeesByRole = async () => {
       try {
         // Fetch survey staff
-        const surveyRes = await authFetch(
-          "/api/auth/employees/survey-staff",
-        );
+        const surveyRes = await authFetch("/api/auth/employees/survey-staff");
         if (surveyRes.ok) {
           const surveyJson = await surveyRes.json();
           setSurveyStaff(surveyJson?.data || []);
@@ -197,9 +195,7 @@ export const ResultsTable = ({
         }
 
         // Fetch company leadership
-        const leadershipRes = await authFetch(
-          "/api/auth/employees/leadership",
-        );
+        const leadershipRes = await authFetch("/api/auth/employees/leadership");
         if (leadershipRes.ok) {
           const leadershipJson = await leadershipRes.json();
           setCompanyLeadership(leadershipJson?.data || []);
@@ -334,12 +330,7 @@ export const ResultsTable = ({
 
   const handleConfirmCreateSignatureRequest = async () => {
     if (!selectedItemForSign) return;
-    if (
-      !surveyStaffId &&
-      !planningHeadId &&
-      !companyLeadershipId 
-      // !constructionPresidentId
-    ) {
+    if (!surveyStaffId && !planningHeadId && !companyLeadershipId) {
       CallToast({
         title: "Thất bại",
         message: "Vui lòng chọn ít nhất một người ký",
@@ -387,10 +378,7 @@ export const ResultsTable = ({
               selectedItemForSign.formNumber,
               currentUser?.fullname || "Admin",
             );
-            console.log(
-              "Notification sent to signers:",
-              recipientIds,
-            );
+            console.log("Notification sent to signers:", recipientIds);
           }
         } catch (notificationError) {
           console.error("Failed to send notification:", notificationError);
