@@ -7,6 +7,15 @@ const BASE_URL = CONFIG.API_BASE_URL;
 // Global variables for single refresh promise management
 let isRefreshing = false;
 let refreshPromise: Promise<string | null> | null = null;
+let logoutHandler: (() => void) | null = null;
+
+/**
+ * Register a callback to be called when the session has expired and refresh fails.
+ * This allows the AuthContext to reset its state.
+ */
+export const setLogoutHandler = (handler: () => void) => {
+  logoutHandler = handler;
+};
 
 export const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
   try {
@@ -46,7 +55,7 @@ export const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
             const refreshToken = await TokenManager.getRefreshToken();
             if (!refreshToken) return null;
 
-            // Use correct endpoint mapping (likely /auth/auth/refresh-token based on context)
+            // Use correct gateway endpoint: /auth/auth/refresh-token
             const refreshResponse = await fetch(`${BASE_URL}/auth/auth/refresh-token`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -69,12 +78,13 @@ export const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
             return null;
           } finally {
             isRefreshing = false;
-            refreshPromise = null;
           }
         })();
       }
 
       const newAccessToken = await refreshPromise;
+      // Clear promise after use to free memory, but only after it's no longer actively refreshing
+      if (!isRefreshing) refreshPromise = null;
 
       if (newAccessToken) {
         console.log('[API] Retrying original request with new token...');
@@ -86,8 +96,12 @@ export const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
           headers,
         });
       } else {
-        // Refresh failed, clear session and throw error
+        // Refresh failed, clear session and force logout
+        console.log('[API] Token refresh failed permanently. Logging out...');
         await TokenManager.logout();
+        if (logoutHandler) {
+          logoutHandler();
+        }
         throw new Error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
       }
     }

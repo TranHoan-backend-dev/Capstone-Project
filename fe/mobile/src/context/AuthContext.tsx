@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import authService, { LoginResponse } from '../services/auth.service';
+import { apiFetch, setLogoutHandler } from '../services/api';
 
 interface AuthContextType {
   user: LoginResponse['user'] | null;
@@ -23,13 +24,30 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     // Restore session on app start
     const initAuth = async () => {
+      // Register global logout handler to sync UI with API 401 failures
+      // This is crucial because apiFetch might discover the session is dead
+      // and we need the UI to update immediately.
+      setLogoutHandler(() => {
+        setUser(null);
+        setIsAuthenticated(false);
+      });
+
       try {
         const currentUser = await authService.getCurrentUser();
-        const authed = await authService.isAuthenticated();
+        const hasToken = await authService.isAuthenticated();
 
-        if (currentUser && authed) {
-          setUser(currentUser);
-          setIsAuthenticated(true);
+        if (currentUser && hasToken) {
+          // Proactively verify the session. This will trigger 401 refresh in apiFetch if needed.
+          try {
+            console.log('[AuthContext] Proactively verifying session...');
+            // Calling /auth/me to verify token and potentially trigger refresh
+            await apiFetch('/auth/me'); 
+            setUser(currentUser);
+            setIsAuthenticated(true);
+          } catch (e) {
+            console.warn('[AuthContext] Session invalid or refresh failed during init:', e);
+            // Storage is already cleared and logoutHandler already called by apiFetch if refresh failed
+          }
         }
       } catch (error) {
         console.error('Auth initialization error:', error);

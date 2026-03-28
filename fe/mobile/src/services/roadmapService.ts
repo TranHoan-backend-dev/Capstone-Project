@@ -1,4 +1,4 @@
-// import { apiFetch } from './api';
+import { apiFetch } from './api';
 
 export interface MeterRoute {
   id: string;
@@ -15,20 +15,21 @@ export interface MeterRoute {
 export const roadmapService = {
   /**
    * Lấy danh sách tuyến ghi chỉ số (Roadmaps) cho nhân viên hiện tại
-   * @param _period Kỳ ghi (tháng)
-   * @param _year Năm
-   * @param _dot Đợt ghi
+   * @param period Kỳ ghi (tháng)
+   * @param year Năm
+   * @param dot Đợt ghi
    */
-  getMyRoadmaps: async (_period: string, _year: string, _dot: string): Promise<MeterRoute[]> => {
-    // Ghi chú: Hiện tại backend RoadmapController.java chưa có endpoint gán staffId và filter theo period/stats
-    // Đây là code mẫu hướng tới việc gọi API thật sau khi backend cập nhật
-    
-    /*
-    const response = await apiFetch(`/roadmaps/my-assigned?period=${_period}&year=${_year}&dot=${_dot}`);
-    return response.data; // Giả định response.data trả về mảng MeterRoute
-    */
-    
-    // Tạm thời trả về mảng rỗng hoặc xử lý mock trong service này nếu cần
-    return [];
+  getMyRoadmaps: async (period: string, year: string, dot: string): Promise<MeterRoute[]> => {
+    try {
+      // Gọi API thực từ backend (Thông qua Gateway)
+      // Path gợi ý: /customer/roadmaps/assigned cho service customer hoặc /construction/roadmaps/my-assigned
+      const response = await apiFetch(`/customer/roadmaps/assigned?period=${period}&year=${year}&dot=${dot}`);
+      
+      // Giả sử backend trả về WrapperApiResponse<MeterRoute[]>
+      return response.data || [];
+    } catch (error) {
+      console.error('[roadmapService] Failed to fetch roadmaps:', error);
+      throw error;
+    }
   }
 };
