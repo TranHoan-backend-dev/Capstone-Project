@@ -2,7 +2,7 @@ package com.capstone.construction.application.usecase;
 
 import com.capstone.common.enumerate.RoleName;
 import com.capstone.construction.application.business.installationform.InstallationFormService;
-import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;

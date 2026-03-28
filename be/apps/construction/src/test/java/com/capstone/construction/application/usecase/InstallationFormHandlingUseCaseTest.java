@@ -2,7 +2,7 @@ package com.capstone.construction.application.usecase;
 
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.construction.application.business.installationform.InstallationFormService;
-import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.construction.application.dto.request.installationform.*;
 import com.capstone.construction.application.dto.response.installationform.*;
 import com.capstone.construction.application.event.producer.MessageProducer;

@@ -203,7 +203,7 @@ public class AuthorizationController {
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD')")
   public ResponseEntity<?> getConstructionStaffs() {
     log.info("Get construction staffs");
-    return Utils.returnOkResponse("", usersUseCase.getListOfCompanyLeaderShips());
+    return Utils.returnOkResponse("", usersUseCase.getListOfConstructionStaffs());
   }
   // </editor-fold>
 

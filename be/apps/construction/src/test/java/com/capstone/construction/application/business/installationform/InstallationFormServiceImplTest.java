@@ -2,7 +2,7 @@ package com.capstone.construction.application.business.installationform;
 
 import com.capstone.common.enumerate.*;
 import com.capstone.common.response.WrapperApiResponse;
-import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.construction.application.business.estimate.CostEstimateService;
 import com.capstone.construction.application.dto.request.estimate.CreateRequest;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
