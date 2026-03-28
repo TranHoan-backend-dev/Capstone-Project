@@ -141,7 +141,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
 
   @Override
   @Transactional(rollbackFor = Exception.class)
-  public void approveInstallationForm(String userId, @NonNull ApproveRequest request) {
+  public void reviewInstallationForm(String userId, @NonNull ApproveRequest request) {
     log.info("Approving and assigning installation form with number: {}", request.formNumber());
     var order = ifRepo.findById(new InstallationFormId(request.formCode(), request.formNumber()))
       .orElseThrow(() -> new IllegalArgumentException(String.format(SharedMessage.MES_24, request.formNumber(), request.formCode())));
