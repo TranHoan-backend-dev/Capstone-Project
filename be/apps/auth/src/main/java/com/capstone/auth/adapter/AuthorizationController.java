@@ -199,7 +199,7 @@ public class AuthorizationController {
   }
 
   @Operation
-  @GetMapping(EMPLOYEE_PREFIX + "/leadership")
+  @GetMapping(EMPLOYEE_PREFIX + "/construction-staff")
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD')")
   public ResponseEntity<?> getConstructionStaffs() {
     log.info("Get construction staffs");
