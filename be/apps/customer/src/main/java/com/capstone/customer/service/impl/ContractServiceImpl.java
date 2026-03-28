@@ -1,13 +1,11 @@
 package com.capstone.customer.service.impl;
 
 import com.capstone.common.annotation.AppLog;
-import com.capstone.common.utils.SharedConstant;
 import com.capstone.customer.dto.request.ContractFilterRequest;
 import com.capstone.customer.dto.request.contract.CreateRequest;
 import com.capstone.customer.dto.response.ContractResponse;
 import com.capstone.customer.model.WaterUsageContract;
 import com.capstone.customer.repository.ContractRepository;
-import com.capstone.customer.repository.CustomerRepository;
 import com.capstone.customer.service.boundary.ConstructionService;
 import com.capstone.customer.service.boundary.ContractService;
 import com.capstone.customer.utils.Message;
@@ -23,10 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 
 @AppLog
 @Service
@@ -34,7 +28,6 @@ import java.time.format.DateTimeFormatter;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ContractServiceImpl implements ContractService {
   ContractRepository contractRepository;
-  CustomerRepository customerRepository;
   ConstructionService cSrv;
   @NonFinal
   Logger log;
@@ -105,18 +98,9 @@ public class ContractServiceImpl implements ContractService {
     return contractRepository.findContractIdsByFormCodeAndFormNumber(formCode, formNumber);
   }
 
-  private LocalDateTime parseFrom(String from) {
-    if (from == null || from.isBlank()) {
-      return null;
-    }
-    return LocalDate.parse(from, DateTimeFormatter.ofPattern(SharedConstant.DATE_PATTERN)).atStartOfDay();
-  }
-
-  private LocalDateTime parseTo(String to) {
-    if (to == null || to.isBlank()) {
-      return null;
-    }
-    return LocalDate.parse(to, DateTimeFormatter.ofPattern(SharedConstant.DATE_PATTERN)).atTime(LocalTime.MAX);
+  @Override
+  public Boolean isExist(String id) {
+    return contractRepository.existsById(id);
   }
 
   private @NonNull ContractResponse mapToResponse(@NonNull WaterUsageContract contract) {

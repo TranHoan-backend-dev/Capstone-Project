@@ -97,4 +97,9 @@ public class ContractController {
     var response = contractService.findContractIdsByFormCodeAndFormNumber(formCode, formNumber);
     return Utils.returnOkResponse("Lấy danh sách ID hợp đồng thành công", response);
   }
+
+  @GetMapping("/exist")
+  public Boolean isExisting(@RequestParam String id) {
+    return contractService.isExist(id);
+  }
 }

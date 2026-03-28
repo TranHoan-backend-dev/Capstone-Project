@@ -10,9 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping;
   configuration = FeignAuthInterceptor.class
 )
 public interface CustomerService {
-  @GetMapping("/customers/exist")
-  Boolean checkExistenceOfCustomer(String customerId);
-
   @GetMapping("/contracts/exist")
   Boolean checkExistenceOfContract(String contractId);
 }

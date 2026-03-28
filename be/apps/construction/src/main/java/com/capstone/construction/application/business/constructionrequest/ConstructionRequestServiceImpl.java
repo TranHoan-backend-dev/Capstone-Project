@@ -32,11 +32,8 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
 
   @Override
   public ConstructionResponse createPendingRequest(String employeeId, String contractId, String formCode, String formNumber) {
-    if (!customerService.checkExistenceOfCustomer(employeeId)) {
-      throw new IllegalArgumentException("Customer with id " + employeeId + " does not exist");
-    }
     if (!customerService.checkExistenceOfContract(contractId)) {
-      throw new IllegalArgumentException("Contract with id " + contractId + " does not exist");
+      throw new IllegalArgumentException("Không tìm thấy hợp đồng");
     }
 
     validateEmployee(employeeId);
@@ -53,7 +50,7 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
 
   @Override
   public void updatePendingRequest(String id, String employeeId) {
-    var request = getRequest(id);
+    var request = getConstructionRequest(id);
 
     validateEmployee(employeeId);
 
@@ -64,7 +61,7 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
 
   @Override
   public void approveTheConstruction(String id, Boolean approved) {
-    var request = getRequest(id);
+    var request = getConstructionRequest(id);
     var installationForm = request.getInstallationForm();
     var status = installationForm.getStatus();
     status.setConstruction(ProcessingStatus.APPROVED);
@@ -82,7 +79,7 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
     return convert(repository.findByInstallationForm(installationForm));
   }
 
-  private ConstructionRequest getRequest(String id) {
+  private ConstructionRequest getConstructionRequest(String id) {
     return repository.findById(id)
       .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy đơn chờ thi công"));
   }
@@ -90,7 +87,7 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
   private void validateEmployee(String employeeId) {
     var status = employeeService.isEmployeeExisting(employeeId).data().toString();
     if (!Boolean.parseBoolean(status)) {
-      throw new IllegalArgumentException("Employee with id " + employeeId + " does not exist");
+      throw new IllegalArgumentException("Không tìm thấy nhân viên với id " + employeeId);
     }
     var role = employeeService.getRoleOfEmployeeById(employeeId).data().toString();
     if (!RoleName.CONSTRUCTION_DEPARTMENT_STAFF.name().equalsIgnoreCase(role)) {
