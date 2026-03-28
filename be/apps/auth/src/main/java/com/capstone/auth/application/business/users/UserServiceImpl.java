@@ -5,6 +5,7 @@ import com.capstone.auth.application.business.pages.BusinessPageService;
 import com.capstone.auth.application.dto.request.users.FilterUsersRequest;
 import com.capstone.auth.application.dto.request.users.UpdateRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
+import com.capstone.auth.application.dto.response.NameAndIdResponse;
 import com.capstone.auth.infrastructure.persistence.*;
 import com.capstone.common.enumerate.RoleName;
 import com.capstone.common.exception.NotExistingException;
@@ -278,6 +279,42 @@ public class UserServiceImpl implements UserService {
     } else {
       return returnUserDTO(repo.findByUsername(value));
     }
+  }
+
+  @Override
+  public List<NameAndIdResponse> getAllPtHeads() {
+    log.info("Getting all pt heads");
+    return getNameAndId(RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD);
+  }
+
+  @Override
+  public List<NameAndIdResponse> getAllConstructionHeads() {
+    log.info("Getting all construction heads");
+    return getNameAndId(RoleName.CONSTRUCTION_DEPARTMENT_HEAD);
+  }
+
+  @Override
+  public List<NameAndIdResponse> getAllLeaderShips() {
+    log.info("Getting all leader ships");
+    return getNameAndId(RoleName.COMPANY_LEADERSHIP);
+  }
+
+  @Override
+  public List<NameAndIdResponse> getAllConstructionStaffs() {
+    log.info("Getting all construction staffs");
+    return getNameAndId(RoleName.CONSTRUCTION_DEPARTMENT_STAFF);
+  }
+
+  private List<NameAndIdResponse> getNameAndId(@NonNull RoleName roleName) {
+    var role = roleRepo.findRolesByName(roleName);
+    var users = repo.findByRole(role);
+    return users.stream().map(user -> {
+      var name = profileRepo.findFullNameByProfileId(user.getUserId());
+      return NameAndIdResponse.builder()
+        .id(user.getUserId())
+        .name(name)
+        .build();
+    }).toList();
   }
 
   private Users getById(String id) {

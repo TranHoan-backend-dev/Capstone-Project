@@ -56,6 +56,16 @@ export interface MeterService {
    * Lấy chi tiết khách hàng (bao gồm mã đồng hồ, loại giá...)
    */
   getCustomerDetails: (customerId: string) => Promise<any>;
+
+  /**
+   * Lấy dữ liệu tiêu thụ gần nhất (3 tháng)
+   */
+  getRecentUsage: (customerId: string) => Promise<UsageHistoryResponse>;
+
+  /**
+   * Lấy URL hình ảnh đồng hồ mới nhất
+   */
+  getLatestImage: (customerId: string) => Promise<string>;
 }
 
 export const meterService: MeterService = {
@@ -71,6 +81,16 @@ export const meterService: MeterService = {
     });
   },
 
+  getRecentUsage: async (customerId: string) => {
+    const response = await apiFetch(`/d/usage/recent/${customerId}`);
+    return response.data;
+  },
+
+  getLatestImage: async (customerId: string) => {
+    const response = await apiFetch(`/d/usage/latest-image/${customerId}`);
+    return response.data;
+  },
+
   getUsageHistory: async (customerId: string) => {
 
     const response = await apiFetch(`/d/usage/batch?ids=${customerId}`);
@@ -84,8 +104,9 @@ export const meterService: MeterService = {
     formData.append('recordingDate', recordingDate);
 
     if (image) {
+      const uri = typeof image === 'string' ? image : image.uri;
       formData.append('image', {
-        uri: image.uri,
+        uri: uri,
         type: 'image/jpeg',
         name: 'meter_reading.jpg',
       } as any);

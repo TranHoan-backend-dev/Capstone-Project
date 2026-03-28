@@ -18,9 +18,6 @@ public record CreateRequest(
   String contractId,
 
   @Schema(description = "")
-  String customerId,
-
-  @Schema(description = "")
   @NotBlank(message = SharedMessage.MES_21)
   @NotEmpty(message = SharedMessage.MES_21)
   String formCode,

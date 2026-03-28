@@ -103,6 +103,18 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
 
   Boolean existsByNetwork_BranchId(String id);
 
+  @Query(value = "SELECT * FROM installation_form i WHERE i.status->>'estimate' = 'PENDING_FOR_APPROVAL'", nativeQuery = true)
+  Page<InstallationForm> findByEstimateStatus_Pending(Pageable pageable);
+
+  @Query(value = "SELECT * FROM installation_form i WHERE i.status->>'registration' = 'PENDING_FOR_APPROVAL' AND i.handover_by IS NULL", nativeQuery = true)
+  Page<InstallationForm> findByRegistrationStatus_Pending(Pageable pageable);
+
+  @Query(value = "SELECT * FROM installation_form i WHERE i.status->>'estimate' = :status", nativeQuery = true)
+  List<InstallationForm> findByEstimateStatus(String status);
+
+  @Query(value = "SELECT * FROM installation_form i WHERE i.handover_by IS NOT NULL AND i.status->>'registration' = 'PENDING_FOR_APPROVAL'", nativeQuery = true)
+  Page<InstallationForm> findByHandoverByIsNotNull(Pageable pageable);
+
   @Query(value = """
     SELECT *
     FROM installation_form i

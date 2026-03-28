@@ -2,7 +2,7 @@ package com.capstone.construction.adapter;
 
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
-import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.common.utils.Utils;
 import com.capstone.construction.application.business.constructionrequest.ConstructionRequestService;
 import com.capstone.construction.application.dto.request.construction.AssignRequest;
@@ -44,7 +44,7 @@ public class ConstructionController {
     @ApiResponse(responseCode = "403", description = "Không có quyền thực hiện hành động này", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "400", description = "Định dạng ngày không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
-  @GetMapping("/construction")
+  @GetMapping
   @PreAuthorize("hasAnyAuthority('ORDER_RECEIVING_STAFF', 'IT_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF')")
   public ResponseEntity<WrapperApiResponse> getConstructionOrdersList(
     @Parameter(description = "Thông tin phân trang (page, size, sort)") Pageable pageable,
@@ -55,8 +55,8 @@ public class ConstructionController {
     return Utils.returnOkResponse("Lấy danh sách đơn chờ thi công thành công", response);
   }
 
-  @Operation(summary = "Giao thi công cho đội trưởng", description = """
-    API này cho phép nhân viên tiếp nhận hồ sơ gán đơn chờ lắp đặt cho một đội trưởng đội thi công. <br/>
+  @Operation(summary = "Tạo đơn chờ thi công và giao thi công cho đội trưởng", description = """
+    API này cho phép nhân viên tiếp nhận hồ sơ tạo và gán đơn chờ lắp đặt cho một đội trưởng đội thi công. <br/>
     Đồng thời tạo đơn chờ thi công mới và gửi thông báo qua RabbitMQ cho trưởng phòng chi nhánh Xây lắp.
     """, responses = {
     @ApiResponse(responseCode = "200", description = "Giao thi công thành công"),
@@ -65,12 +65,12 @@ public class ConstructionController {
   })
   @PatchMapping("/{id}")
   @PreAuthorize("hasAnyAuthority('ORDER_RECEIVING_STAFF', 'IT_STAFF')")
-  public ResponseEntity<?> assignConstructionOrder(
+  public ResponseEntity<?> createAndAssignConstructionOrder(
     @Parameter(description = "ID của đội trưởng được giao việc") @PathVariable String id,
     @RequestBody AssignRequest request
   ) {
     log.info("Received request to assign construction order");
-    useCase.assignToConstructionCaptain(request, id);
+    useCase.createAndAssignToConstructionCaptain(request, id);
     return Utils.returnOkResponse("Giao thi công thành công", null);
   }
 

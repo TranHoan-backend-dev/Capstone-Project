@@ -3,6 +3,7 @@ package com.capstone.construction.application.dto.response.installationform;
 import com.capstone.construction.domain.model.utils.FormProcessingStatus;
 
 public record InstallationFormListResponse(
+  String constructionRequestId,
   String formCode,
   String formNumber,
   String customerName,

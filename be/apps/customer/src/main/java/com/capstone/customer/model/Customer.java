@@ -127,6 +127,10 @@ public class Customer {
   @Column(nullable = false)
   String roadmapId;
 
+  @Setter
+  @OneToOne(fetch = FetchType.EAGER)
+  WaterUsageContract contract;
+
   @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @ToString.Exclude
   List<Bill> bills;
@@ -138,7 +142,7 @@ public class Customer {
     this.bills = new ArrayList<>();
   }
 
-  public void addNewBill(Bill bill) {
+  public void addNewBill(@NonNull Bill bill) {
     bill.setCustomer(this);
     this.bills.addFirst(bill);
   }

@@ -3,7 +3,7 @@ package com.capstone.construction.application.business.estimate;
 import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.construction.application.dto.request.estimate.EstimateFilterRequest;
 import com.capstone.common.enumerate.RoleName;
-import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.construction.application.dto.request.estimate.CreateRequest;
 import com.capstone.construction.application.dto.request.estimate.UpdateRequest;
 import com.capstone.construction.application.dto.response.estimate.CostEstimateResponse;

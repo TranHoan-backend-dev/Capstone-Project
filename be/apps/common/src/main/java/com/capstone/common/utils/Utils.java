@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -30,6 +32,24 @@ public class Utils {
     } catch (IllegalArgumentException e) {
       return false;
     }
+  }
+
+  public static LocalDateTime parseFrom(String from) {
+    LocalDateTime startDate = null;
+
+    if (from != null) {
+      startDate = LocalDate.parse(from, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay();
+    }
+    return startDate;
+  }
+
+  public static LocalDateTime parseTo(String to) {
+    LocalDateTime endDate = null;
+
+    if (to != null) {
+      endDate = LocalDate.parse(to, DateTimeFormatter.ISO_LOCAL_DATE).atTime(LocalTime.MAX);
+    }
+    return endDate;
   }
 
   public static @NonNull ResponseEntity<WrapperApiResponse> returnOkResponse(String message, Object data) {

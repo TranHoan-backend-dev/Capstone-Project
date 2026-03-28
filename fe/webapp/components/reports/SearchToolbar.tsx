@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { ArrowDownTrayIcon, PrinterIcon } from "@heroicons/react/24/outline";
 import {
   Dropdown,
@@ -12,9 +12,46 @@ import {
 } from "@heroui/react";
 
 import { SearchInputWithButton } from "../ui/SearchInputWithButton";
+import { exportToCSV, exportToHTML, exportToJSON, printData } from "@/lib/exportUtils";
 
-export const SearchToolbar = () => {
+interface SearchToolbarProps {
+  onSearch?: (query: string) => void;
+  data?: any[];
+  columns?: Array<{ key: string; label: string }>;
+  reportTitle?: string;
+}
+
+export const SearchToolbar = ({
+  onSearch,
+  data = [],
+  columns = [],
+  reportTitle = "Báo cáo",
+}: SearchToolbarProps) => {
   const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = useCallback(
+    (value: string) => {
+      setSearchQuery(value);
+      onSearch?.(value);
+    },
+    [onSearch]
+  );
+
+  const handleExportCSV = () => {
+    exportToCSV(data, columns, reportTitle);
+  };
+
+  const handleExportHTML = () => {
+    exportToHTML(data, columns, reportTitle);
+  };
+
+  const handleExportJSON = () => {
+    exportToJSON(data, columns, reportTitle);
+  };
+
+  const handlePrint = () => {
+    printData(data, columns, reportTitle);
+  };
 
   return (
     <div className="flex flex-col md:flex-row items-center justify-between gap-4 py-4 px-1">
@@ -23,7 +60,7 @@ export const SearchToolbar = () => {
           label="Nhập từ khóa tìm kiếm"
           type="text"
           value={searchQuery}
-          onChange={(e: any) => setSearchQuery(e.target.value)}
+          onChange={(e: any) => handleSearch(e.target.value)}
         />
       </div>
 
@@ -47,24 +84,27 @@ export const SearchToolbar = () => {
               startContent={
                 <span className="text-green-600 font-bold w-8">XLS</span>
               }
+              onPress={handleExportCSV}
             >
-              Xuất Excel
+              Xuất Excel (CSV)
             </DropdownItem>
             <DropdownItem
-              key="pdf"
+              key="html"
               startContent={
-                <span className="text-red-600 font-bold w-8">PDF</span>
+                <span className="text-orange-600 font-bold w-8">HTML</span>
               }
+              onPress={handleExportHTML}
             >
-              Xuất PDF
+              Xuất HTML
             </DropdownItem>
             <DropdownItem
-              key="word"
+              key="json"
               startContent={
-                <span className="text-blue-600 font-bold w-8">DOC</span>
+                <span className="text-blue-600 font-bold w-8">JSON</span>
               }
+              onPress={handleExportJSON}
             >
-              Xuất Word
+              Xuất JSON
             </DropdownItem>
           </DropdownMenu>
         </Dropdown>
@@ -75,6 +115,7 @@ export const SearchToolbar = () => {
             className="h-10 w-10 min-w-0 font-bold"
             color="secondary"
             variant="flat"
+            onPress={handlePrint}
           >
             <PrinterIcon className="h-5 w-5" />
           </Button>

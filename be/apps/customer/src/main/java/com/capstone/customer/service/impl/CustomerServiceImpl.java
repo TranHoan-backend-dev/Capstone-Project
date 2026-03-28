@@ -7,6 +7,7 @@ import com.capstone.customer.dto.request.customer.UpdateRequest;
 import com.capstone.customer.dto.response.CustomerResponse;
 import com.capstone.customer.dto.response.WaterPriceInfoResponse;
 import com.capstone.customer.model.Customer;
+import com.capstone.customer.repository.ContractRepository;
 import com.capstone.customer.repository.CustomerRepository;
 import com.capstone.customer.service.boundary.ConstructionService;
 import com.capstone.customer.service.boundary.CustomerService;
@@ -32,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CustomerServiceImpl implements CustomerService {
   CustomerRepository customerRepository;
+  ContractRepository contractRepository;
   DeviceService deviceService;
   ConstructionService constructionService;
   ObjectMapper objectMapper;
@@ -163,6 +165,11 @@ public class CustomerServiceImpl implements CustomerService {
       customer, request.formCode(), request.formNumber(),
       request.waterPriceId(), request.waterMeterId());
 
+    if (request.contractId() != null && !request.contractId().isBlank()) {
+      var contract = contractRepository.findById(request.contractId())
+        .orElseThrow(() -> new IllegalArgumentException(String.format(Message.ENT_22, request.contractId())));
+      customer.setContract(contract);
+    }
     if (request.name() != null) {
       customer.setName(request.name());
     }

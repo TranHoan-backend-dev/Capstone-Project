@@ -2,7 +2,7 @@ package com.capstone.construction.adapter;
 
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
-import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.common.utils.Utils;
 import com.capstone.construction.application.business.installationform.InstallationFormService;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
@@ -35,8 +35,8 @@ import java.time.format.DateTimeFormatter;
 
 @AppLog
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/installation-forms")
+@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Tag(name = "Installation Form", description = "Quản lý đơn lắp đặt (Tiếp nhận và xử lý hồ sơ lắp đặt nước)")
 public class InstallationFormController {
@@ -71,7 +71,6 @@ public class InstallationFormController {
     }
 
     var response = installationFormHandlingUseCase.createNewInstallationRequest(id, request);
-
     log.info("Successfully created installation form: {}", response.formNumber());
 
     return Utils.returnCreatedResponse("Tạo đơn lắp đặt thành công");
@@ -111,7 +110,7 @@ public class InstallationFormController {
   @PreAuthorize("hasAnyAuthority('PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> assignInstallationForm(
     @RequestBody @Valid InstallationFormId request,
-    @PathVariable String empId // nv khao sat duoc giao nhiem vu
+    @PathVariable String empId
   ) {
     log.info("Received request to assign installation form: {}", request.getFormCode());
     installationFormHandlingUseCase.assignInstallationFormToSurveyStaff(request, empId);
@@ -124,6 +123,7 @@ public class InstallationFormController {
     @ApiResponse(responseCode = "500", description = "Lỗi hệ thống.", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @GetMapping
+  @PreAuthorize("hasAnyAuthority('PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'IT_STAFF', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF', 'CONSTRUCTION_DEPARTMENT_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP')")
   public ResponseEntity<WrapperApiResponse> getInstallationForms(
     @Parameter(description = "Thông tin phân trang (page, size, sort)", schema = @Schema(implementation = Pageable.class)) Pageable pageable,
     @Parameter(description = "Thông tin lọc (từ khóa, khoảng thời gian)") BaseFilterRequest request
@@ -140,8 +140,41 @@ public class InstallationFormController {
     }
 
     var response = installationFormHandlingUseCase.getPaginatedInstallationForms(pageable, request);
+    log.info("Successfully fetched installation forms");
 
     return Utils.returnOkResponse("Lấy danh sách đơn lắp đặt thành công", response);
+  }
+
+  @Operation(summary = "Lấy danh sách đơn chờ duyệt dự toán", description = "Lấy các đơn lắp đặt có trạng thái của estimate là PENDING_FOR_APPROVAL")
+  @GetMapping("/estimate/pending")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> getPendingEstimateForms(Pageable pageable) {
+    var response = installationFormHandlingUseCase.findByEstimateStatusPending(pageable);
+    return Utils.returnOkResponse("Lấy danh sách thành công", response);
+  }
+
+  @Operation(summary = "Lấy danh sách đơn chờ duyệt khảo sát", description = "Lấy các đơn lắp đặt mới có trạng thái registration là PENDING_FOR_APPROVAL")
+  @GetMapping("/registration/pending")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> getPendingRegistrationForms(Pageable pageable) {
+    var response = installationFormHandlingUseCase.findByRegistrationStatusPending(pageable);
+    return Utils.returnOkResponse("Lấy danh sách thành công", response);
+  }
+
+  @Operation(summary = "Lấy danh sách đơn đã duyệt dự toán", description = "Lấy các đơn lắp đặt mới có trạng thái estimate là APPROVED và REJECTED (Tách riêng)")
+  @GetMapping("/reviewed")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> getReviewedEstimateForms() {
+    var response = installationFormHandlingUseCase.getReviewedInstallationFormsList();
+    return Utils.returnOkResponse("Lấy danh sách thành công", response);
+  }
+
+  @Operation(summary = "Lấy danh sách đơn đã giao khảo sát", description = "Lấy các đơn lắp đặt mới đã được giao cho nhân viên khảo sát")
+  @GetMapping("/assigned")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> getAssignedForms(Pageable pageable) {
+    var response = installationFormHandlingUseCase.findByHandoverByIsNotNull(pageable);
+    return Utils.returnOkResponse("Lấy danh sách thành công", response);
   }
 
   @Operation(hidden = true)
@@ -151,5 +184,21 @@ public class InstallationFormController {
     @RequestParam String formNumber
   ) {
     return installationFormService.isInstallationFormExisting(formNumber, formCode);
+  }
+
+  @Operation(summary = "Cập nhật trạng thái hợp đồng", description = "API này cập nhật trạng thái hợp đồng cho đơn lắp đặt", responses = {
+    @ApiResponse(responseCode = "200", description = "Cập nhật trạng thái hợp đồng thành công"),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy đơn lắp đặt", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+  })
+  @PostMapping("/contract-status")
+  @PatchMapping("/contract-status")
+  @PreAuthorize("hasAnyAuthority('INSTALLATION_FORM_MANAGER', 'IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> updateContractStatus(
+    @RequestParam String formCode,
+    @RequestParam String formNumber
+  ) {
+    log.info("Updating contract status for formCode: {} and formNumber: {}", formCode, formNumber);
+    installationFormService.updateContractStatus(formCode, formNumber);
+    return Utils.returnOkResponse("Cập nhật trạng thái hợp đồng thành công", null);
   }
 }

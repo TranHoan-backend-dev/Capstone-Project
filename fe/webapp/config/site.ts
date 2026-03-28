@@ -219,7 +219,7 @@ export const siteConfig = {
           children: [
             {
               key: "report-budget-wait",
-              label: "Danh sách đơn chờ dự toán",
+              label: "Danh sách đơn chờ lập dự toán",
               href: "/waiting-budget",
               roles: ["it_staff", "planning_technical_department_head"],
             },
@@ -230,21 +230,15 @@ export const siteConfig = {
               roles: ["it_staff", "planning_technical_department_head"],
             },
             {
-              key: "report-budget-reject",
-              label: "Danh sách đơn từ chối duyệt dự toán",
-              href: "/rejected-budget-approval",
+              key: "report-budget-reviewed",
+              label: "Danh sách đơn đã phê duyệt dự toán",
+              href: "/reviewed-budget",
               roles: ["it_staff", "planning_technical_department_head"],
             },
             {
               key: "report-survey-assigned",
               label: "Danh sách đơn đã phân công khảo sát",
               href: "/assigned-survey",
-              roles: ["it_staff", "planning_technical_department_head"],
-            },
-            {
-              key: "report-customer-call",
-              label: "Danh sách khách hàng gọi điện",
-              href: "/customer-calls",
               roles: ["it_staff", "planning_technical_department_head"],
             },
           ],
@@ -345,49 +339,44 @@ export const siteConfig = {
           key: "meter-verification",
           label: "Kiểm tra chỉ số bằng hình ảnh",
           href: "/meter-verification",
-        },{
+        },
+        {
           key: "installation-fee-collection",
           label: "Thu phí lắp đặt",
           href: "/installation-fee-collection",
-        }
+        },
       ],
     },
   ],
 
   columnsWaitingBudgetApproval: [
     { key: "stt", label: "STT", width: "60px" },
-    { key: "soDon", label: "Số đơn", width: "120px" },
-    { key: "tenKhachHang", label: "Tên khách hàng", width: "200px" },
-    { key: "diaChi", label: "Địa chỉ", width: "200px" },
-    { key: "dienThoai", label: "Điện thoại", width: "120px" },
-    { key: "ngayDK", label: "Ngày đăng ký", width: "120px" },
-    { key: "ngayLap", label: "Ngày lập", width: "120px" },
-    { key: "tongTien", label: "Tổng tiền", width: "150px" },
-    { key: "nvLap", label: "NV lập", width: "150px" },
+    { key: "formNumber", label: "Số đơn", width: "120px" },
+    { key: "customerName", label: "Tên khách hàng", width: "200px" },
+    { key: "address", label: "Địa chỉ", width: "200px" },
+    { key: "phoneNumber", label: "Điện thoại", width: "120px" },
+    { key: "createdAt", label: "Ngày đăng ký", width: "120px" },
+    { key: "creatorName", label: "NV tiếp nhận", width: "150px" },
   ],
 
   columnsWaitingBudget: [
     { key: "stt", label: "STT", width: "60px" },
-    { key: "soDon", label: "Số đơn", width: "120px" },
-    { key: "tenKhachHang", label: "Tên khách hàng", width: "200px" },
-    { key: "diaChi", label: "Địa chỉ", width: "200px" },
-    { key: "dienThoai", label: "Điện thoại", width: "120px" },
-    { key: "ngayDK", label: "Ngày đăng ký", width: "120px" },
-    { key: "ngayHenKS", label: "Ngày hẹn khảo sát", width: "120px" },
-    { key: "ngayDuyetKS", label: "Ngày duyệt khảo sát", width: "120px" },
-    { key: "ghiChu", label: "Ghi chú", width: "120px" },
+    { key: "formNumber", label: "Số đơn", width: "120px" },
+    { key: "customerName", label: "Tên khách hàng", width: "200px" },
+    { key: "address", label: "Địa chỉ", width: "200px" },
+    { key: "phoneNumber", label: "Điện thoại", width: "120px" },
+    { key: "createdAt", label: "Ngày đăng ký", width: "120px" },
+    { key: "scheduleSurveyAt", label: "Ngày hẹn khảo sát", width: "120px" },
+    { key: "creatorName", label: "NV tiếp nhận", width: "150px" },
   ],
 
-  columnsRejectedBudgetApproval: [
+  columnsReviewedBudget: [
     { key: "stt", label: "STT", width: "60px" },
-    { key: "soDon", label: "Số đơn", width: "120px" },
-    { key: "tenKhachHang", label: "Tên khách hàng", width: "200px" },
-    { key: "diaChi", label: "Địa chỉ", width: "200px" },
-    { key: "dienThoai", label: "Điện thoại", width: "120px" },
-    { key: "ngayDK", label: "Ngày đăng ký", width: "120px" },
-    { key: "ngayLap", label: "Ngày lập chiết tính", width: "120px" },
-    { key: "nvLapChietTinh", label: "N/V lập chiết tính", width: "120px" },
-    { key: "ghiChu", label: "Ghi chú", width: "150px" },
+    { key: "formNumber", label: "Số đơn", width: "120px" },
+    { key: "customerName", label: "Tên khách hàng", width: "200px" },
+    { key: "address", label: "Địa chỉ", width: "200px" },
+    { key: "phoneNumber", label: "Điện thoại", width: "120px" },
+    { key: "createdAt", label: "Ngày đăng ký", width: "120px" },
   ],
 
   columnsReportContract: [
@@ -415,14 +404,13 @@ export const siteConfig = {
 
   columnsAssignedSurvay: [
     { key: "stt", label: "STT", width: "60px" },
-    { key: "soDon", label: "Số đơn", width: "120px" },
-    { key: "tenKhachHang", label: "Tên khách hàng", width: "200px" },
-    { key: "diaChi", label: "Địa chỉ", width: "200px" },
-    { key: "dienThoai", label: "Điện thoại", width: "120px" },
-    { key: "mucDichSD", label: "Mục đích sử dụng", width: "150Px" },
-    { key: "ngayDK", label: "Ngày đăng ký", width: "120px" },
-    { key: "ngayHenKS", label: "Ngày hẹn khảo sát", width: "120px" },
-    { key: "nhanvienKS", label: "Nhân viên khảo sát", width: "120px" },
+    { key: "formNumber", label: "Số đơn", width: "120px" },
+    { key: "customerName", label: "Tên khách hàng", width: "200px" },
+    { key: "address", label: "Địa chỉ", width: "200px" },
+    { key: "phoneNumber", label: "Điện thoại", width: "120px" },
+    { key: "createdAt", label: "Ngày đăng ký", width: "120px" },
+    { key: "scheduleSurveyAt", label: "Ngày hẹn khảo sát", width: "120px" },
+    { key: "handoverByName", label: "Nhân viên khảo sát", width: "120px" },
   ],
 
   columnsUnassignedSurvay: [

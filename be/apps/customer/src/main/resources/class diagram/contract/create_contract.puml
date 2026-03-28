@@ -1,0 +1,115 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam class {
+    BackgroundColor White
+    BorderColor #263238
+    ArrowColor #263238
+}
+
+package "Customer Service" #GhostWhite {
+    package "Adapter" as CustAdapter {
+        class ContractController {
+            + createContract(CreateRequest): ResponseEntity<WrapperApiResponse>
+        }
+        
+        interface ConstructionService <<FeignClient>> {
+            + checkExistence(String, String): Boolean
+        }
+    }
+
+    package "Application" as CustApp {
+        interface ContractService {
+            + createContract(CreateRequest): ContractResponse
+        }
+        
+        class ContractServiceImpl {
+            - contractRepository: ContractRepository
+            - cSrv: ConstructionService
+            + createContract(CreateRequest): ContractResponse
+        }
+    }
+
+    package "Infrastructure" as CustInfra {
+        interface ContractRepository {
+            + save(WaterUsageContract): WaterUsageContract
+        }
+    }
+
+    package "Domain" as CustDomain {
+        class WaterUsageContract {
+            - contractId: String
+            - formCode: String
+            - formNumber: String
+            - representative: String
+            - appendix: String
+        }
+    }
+}
+
+package "Construction Service" #AliceBlue {
+    package "Adapter" as ConstAdapter {
+        class InstallationFormController {
+            + isExisting(String, String): boolean
+        }
+    }
+
+    package "Application" as ConstApp {
+        interface InstallationFormService {
+            + isInstallationFormExisting(String, String): boolean
+        }
+        
+        class InstallationFormServiceImpl {
+            - ifRepo: InstallationFormRepository
+            + isInstallationFormExisting(String, String): boolean
+        }
+    }
+
+    package "Infrastructure" as ConstInfra {
+        interface InstallationFormRepository {
+            + existsById_FormNumberAndId_FormCode(String, String): boolean
+        }
+    }
+    
+    package "Domain" as ConstDomain {
+        class InstallationForm {
+            - id: InstallationFormId
+        }
+    }
+}
+
+package "DTOs" #Ivory {
+    class CreateRequest <<Record>> {
+        + contractId: String
+        + formCode: String
+        + formNumber: String
+        + representatives: String
+        + appendix: String
+    }
+    
+    class ContractResponse <<Record>> {
+        + contractId: String
+        + formCode: String
+        + representative: String
+    }
+}
+
+' Relationships
+ContractController o-- ContractService
+ContractService <|.. ContractServiceImpl
+ContractServiceImpl o-- ContractRepository
+ContractServiceImpl o-- ConstructionService
+
+ContractController ..> CreateRequest : uses
+ContractServiceImpl ..> CreateRequest : uses
+ContractServiceImpl ..> ContractResponse : returns
+
+ConstructionService ..> InstallationFormController : calls (Feign)
+
+InstallationFormController o-- InstallationFormService
+InstallationFormService <|.. InstallationFormServiceImpl
+InstallationFormServiceImpl o-- InstallationFormRepository
+
+@enduml

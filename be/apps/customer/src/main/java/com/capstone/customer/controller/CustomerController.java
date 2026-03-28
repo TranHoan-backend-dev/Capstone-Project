@@ -115,7 +115,7 @@ public class CustomerController {
 
   @Operation(hidden = true)
   @GetMapping("/exist")
-  public Boolean checkExistenceOfCustomer(String customerId) {
+  public Boolean checkExistenceOfCustomer(@RequestParam String customerId) {
     return customerService.isExistingCustomer(customerId);
   }
 

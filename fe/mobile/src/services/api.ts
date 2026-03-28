@@ -4,6 +4,19 @@ import { CONFIG } from '../config';
 
 const BASE_URL = CONFIG.API_BASE_URL;
 
+// Global variables for single refresh promise management
+let isRefreshing = false;
+let refreshPromise: Promise<string | null> | null = null;
+let logoutHandler: (() => void) | null = null;
+
+/**
+ * Register a callback to be called when the session has expired and refresh fails.
+ * This allows the AuthContext to reset its state.
+ */
+export const setLogoutHandler = (handler: () => void) => {
+  logoutHandler = handler;
+};
+
 export const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
   try {
     console.log('hehe')
@@ -11,6 +24,7 @@ export const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
 
     const isFormData = options.body instanceof FormData;
 
+    // Build initial headers (Authorization and Content-Type)
     const headers: Record<string, string> = {
       ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       ...((options.headers as Record<string, string>) || {}),
@@ -31,39 +45,64 @@ export const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
     });
 
     // Handle token expiration (401)
-    if (response.status === 401 && endpoint !== '/auth/login' && endpoint !== '/auth/refresh-token') {
+    if (response.status === 401 && !endpoint.includes('/auth/login') && !endpoint.includes('/refresh-token')) {
       console.log('[API] Access Token expired. Attempting refresh...');
-      const refreshToken = await TokenManager.getRefreshToken();
 
-      if (refreshToken) {
-        try {
-          const refreshResponse = await fetch(`${BASE_URL}/auth/refresh-token`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token: refreshToken }),
-          });
+      if (!isRefreshing) {
+        isRefreshing = true;
+        refreshPromise = (async () => {
+          try {
+            const refreshToken = await TokenManager.getRefreshToken();
+            if (!refreshToken) return null;
 
-          if (refreshResponse.ok) {
-            const refreshData = await refreshResponse.json();
-            const tokenData = refreshData.data || refreshData;
+            // Use correct gateway endpoint: /auth/auth/refresh-token
+            const refreshResponse = await fetch(`${BASE_URL}/auth/auth/refresh-token`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ token: refreshToken }),
+            });
 
-            if (tokenData && tokenData.access_token) {
-              console.log('[API] Token refresh successful. Retrying request...');
-              await TokenManager.setTokens(tokenData.access_token, tokenData.refresh_token || refreshToken);
+            if (refreshResponse.ok) {
+              const refreshData = await refreshResponse.json();
+              const tokenData = refreshData.data || refreshData;
 
-              // Retry the original request with new token
-              headers.Authorization = `Bearer ${tokenData.access_token}`;
-              response = await fetch(`${BASE_URL}${endpoint}`, {
-                ...options,
-                headers,
-              });
+              if (tokenData && tokenData.access_token) {
+                console.log('[API] Token refresh successful.');
+                await TokenManager.setTokens(tokenData.access_token, tokenData.refresh_token || refreshToken);
+                return tokenData.access_token;
+              }
             }
-          } else {
-            console.log('[API] Token refresh failed with status:', refreshResponse.status);
+            return null;
+          } catch (e: any) {
+            console.error('[API] Error during token refresh:', e.message);
+            return null;
+          } finally {
+            isRefreshing = false;
           }
-        } catch (refreshError) {
-          console.error('[API] Error during token refresh:', refreshError);
+        })();
+      }
+
+      const newAccessToken = await refreshPromise;
+      // Clear promise after use to free memory, but only after it's no longer actively refreshing
+      if (!isRefreshing) refreshPromise = null;
+
+      if (newAccessToken) {
+        console.log('[API] Retrying original request with new token...');
+        headers.Authorization = `Bearer ${newAccessToken}`;
+
+        // Retry the original request with new token
+        response = await fetch(`${BASE_URL}${endpoint}`, {
+          ...options,
+          headers,
+        });
+      } else {
+        // Refresh failed, clear session and force logout
+        console.log('[API] Token refresh failed permanently. Logging out...');
+        await TokenManager.logout();
+        if (logoutHandler) {
+          logoutHandler();
         }
+        throw new Error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
       }
     }
 
@@ -76,8 +115,7 @@ export const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
         console.error('[API] Parse error data failed:', e.message);
       }
 
-      // Don't show toast for some endpoints or if explicitly requested (could add an option for this)
-      if (endpoint !== '/auth/login') {
+      if (!endpoint.includes('/auth/login')) {
         showToast.error(errorMessage);
       }
       throw new Error(errorMessage);
@@ -88,6 +126,8 @@ export const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
   } catch (error: any) {
     if (error.message === 'Network request failed') {
       showToast.error('Không thể kết nối máy chủ. Vui lòng kiểm tra mạng (Wifi/4G).');
+    } else if (error.message.includes('Phiên đăng nhập')) {
+      // Skip toast if session expired error which already might show a message or redirect to login
     } else if (!error.message.includes('Lỗi') && !endpoint.includes('login')) {
       showToast.error('Có lỗi xảy ra, vui lòng thử lại sau.');
     }

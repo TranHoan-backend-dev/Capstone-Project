@@ -94,21 +94,24 @@ class CustomerServiceImplTest {
     lenient().when(customer.getFormNumber()).thenReturn("IF001");
     lenient().when(customer.getWaterPriceId()).thenReturn("WP001");
     lenient().when(customer.getWaterMeterId()).thenReturn("WM001");
+    lenient().when(customer.getAddress()).thenReturn("TP. HCM");
 
+    // CreateRequest has 34 fields: missing address (index 15) and roadmapId (index 32)
     createRequest = new CreateRequest(
       "Trần Văn A", "tranvana@example.com", "0901234567", CustomerType.FAMILY, false,
       UsageTarget.DOMESTIC, 1, 123456, 1000, false, false, "0", "5000",
-      1500000, "2023-12", 20000, "CƠ", "012345678901", "Cục CSQLHC về TTXH",
+      1500000, "2023-12", "TP. HCM", 20000, "CƠ", "012345678901", "Cục CSQLHC về TTXH",
       "TIỀN MẶT", "123456789", "Vietcombank", "TRAN VAN A", "BRC001", "P001",
-      "CP001", true, null, "IF001", "FORMCODE-1", "WP001", "WM001"
+      "CP001", true, null, "IF001", "FORMCODE-1", "WP001", "RM-001", "WM001"
     );
 
+    // UpdateRequest has 33 fields: missing contractId (index 32)
     updateRequest = new UpdateRequest(
       "Update Name", "update@example.com", "0987654321", CustomerType.COMPANY, true,
       UsageTarget.INDUSTRIAL, 2, 654321, 2000, true, true, "10", "10000",
       2000000, "2024-01", 30000, "ĐIỆN TỬ", "987654321098", "Hà Nội",
       "CHUYỂN KHOẢN", "987654321", "Agribank", "TRAN VAN B", "BRC002", "P002",
-      "CP002", true, "Reason", "IF002", "FORMCODE-2", "WP002", "WM002"
+      "CP002", true, "Reason", "IF002", "FORMCODE-2", "WP002", "WM002", "CON-123"
     );
   }
 
@@ -169,7 +172,7 @@ class CustomerServiceImplTest {
       null, null, null, null, null, null, null, null, null, null,
       null, null, null, null, null, null, null, null, null, null,
       null, null, null, null, null, null, null, null, null, null,
-      null, null
+      null, null, null
     );
     when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
     when(customerRepository.save(any(Customer.class))).thenReturn(customer);
@@ -191,7 +194,7 @@ class CustomerServiceImplTest {
       null, null, null, null, null, null, null, null, null, null,
       null, null, null, null, null, null, null, null, null, null,
       null, null, null, null, null, null, null, null, "ONLY_CODE", null,
-      null, null
+      null, null, null
     );
     when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
     when(customerRepository.save(any(Customer.class))).thenReturn(customer);

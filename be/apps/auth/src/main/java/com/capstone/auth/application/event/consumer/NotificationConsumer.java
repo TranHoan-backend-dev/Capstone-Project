@@ -13,6 +13,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
@@ -31,7 +32,7 @@ public class NotificationConsumer {
   @RabbitListener(queues = "auth.individual-notification.queue")
   public void handle(NotificationCreatedEvent message) {
     if (log == null) {
-      log = org.slf4j.LoggerFactory.getLogger(NotificationConsumer.class);
+      log = LoggerFactory.getLogger(NotificationConsumer.class);
     }
 
     log.info("Received notification create event: {}", message);
@@ -48,9 +49,9 @@ public class NotificationConsumer {
       return;
     }
 
-    Set<RoleName> targetRoles = new HashSet<>();
+    var targetRoles = new HashSet<RoleName>();
     String userId = null;
-    for (String topic : topics) {
+    for (var topic : topics) {
       var components = topic.split("/");
       if (components.length == 4) {
         userId = components[3];

@@ -2,7 +2,7 @@ package com.capstone.construction.application.usecase;
 
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.construction.application.business.installationform.InstallationFormService;
-import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.construction.application.dto.request.installationform.*;
 import com.capstone.construction.application.dto.response.installationform.*;
 import com.capstone.construction.application.event.producer.MessageProducer;
@@ -71,6 +71,71 @@ class InstallationFormHandlingUseCaseTest {
   }
 
   @Test
+  @DisplayName("Should return pending estimate forms")
+  void should_ReturnPendingEstimateForms_When_ServiceReturnsData() {
+    var pageable = PageRequest.of(0, 10);
+    var responseItem = mock(InstallationFormListResponse.class);
+    var expectedPage = new PageImpl<>(List.of(responseItem));
+
+    when(ifSrv.findByEstimateStatusPending(pageable)).thenReturn(expectedPage);
+
+    var actualPage = useCase.findByEstimateStatusPending(pageable);
+
+    assertThat(actualPage).isNotNull();
+    assertThat(actualPage.getContent()).hasSize(1);
+    verify(ifSrv).findByEstimateStatusPending(pageable);
+  }
+
+  @Test
+  @DisplayName("Should return pending registration forms")
+  void should_ReturnPendingRegistrationForms_When_ServiceReturnsData() {
+    var pageable = PageRequest.of(0, 10);
+    var responseItem = mock(InstallationFormListResponse.class);
+    var expectedPage = new PageImpl<>(List.of(responseItem));
+
+    when(ifSrv.findByRegistrationStatusPending(pageable)).thenReturn(expectedPage);
+
+    var actualPage = useCase.findByRegistrationStatusPending(pageable);
+
+    assertThat(actualPage).isNotNull();
+    assertThat(actualPage.getContent()).hasSize(1);
+    verify(ifSrv).findByRegistrationStatusPending(pageable);
+  }
+
+  @Test
+  @DisplayName("Should return reviewed installation forms")
+  void should_ReturnReviewedForms_When_ServiceReturnsData() {
+    var approvedList = List.of(mock(InstallationFormListResponse.class));
+    var rejectedList = List.of(mock(InstallationFormListResponse.class));
+    var expectedResponse = new ReviewedInstallationFormsResponse(approvedList, rejectedList);
+
+    when(ifSrv.getReviewedInstallationFormsList()).thenReturn(expectedResponse);
+
+    var actualResponse = useCase.getReviewedInstallationFormsList();
+
+    assertThat(actualResponse).isNotNull();
+    assertThat(actualResponse.approved()).hasSize(1);
+    assertThat(actualResponse.rejected()).hasSize(1);
+    verify(ifSrv).getReviewedInstallationFormsList();
+  }
+
+  @Test
+  @DisplayName("Should return assigned forms")
+  void should_ReturnAssignedForms_When_ServiceReturnsData() {
+    var pageable = PageRequest.of(0, 10);
+    var responseItem = mock(InstallationFormListResponse.class);
+    var expectedPage = new PageImpl<>(List.of(responseItem));
+
+    when(ifSrv.findByHandoverByIsNotNull(pageable)).thenReturn(expectedPage);
+
+    var actualPage = useCase.findByHandoverByIsNotNull(pageable);
+
+    assertThat(actualPage).isNotNull();
+    assertThat(actualPage.getContent()).hasSize(1);
+    verify(ifSrv).findByHandoverByIsNotNull(pageable);
+  }
+
+  @Test
   @DisplayName("Should throw exception when form already exists")
   void should_ThrowException_When_FormAlreadyExists() {
     var request = createValidNewOrderRequest();
@@ -122,7 +187,7 @@ class InstallationFormHandlingUseCaseTest {
 
     useCase.reviewInstallationForm(USER_ID, request);
 
-    verify(ifSrv).approveInstallationForm(USER_ID, request);
+    verify(ifSrv).reviewInstallationForm(USER_ID, request);
     verify(costEstimateUseCase).createEstimate(any());
   }
 
@@ -135,7 +200,7 @@ class InstallationFormHandlingUseCaseTest {
 
     useCase.reviewInstallationForm(USER_ID, request);
 
-    verify(ifSrv).approveInstallationForm(USER_ID, request);
+    verify(ifSrv).reviewInstallationForm(USER_ID, request);
     verify(costEstimateUseCase, never()).createEstimate(any());
   }
 
