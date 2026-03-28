@@ -1,6 +1,6 @@
 package com.capstone.construction.application.usecase;
 
-import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.construction.application.business.constructionrequest.ConstructionRequestService;
 import com.capstone.construction.application.business.installationform.InstallationFormService;
 import com.capstone.construction.application.dto.request.construction.AssignRequest;
@@ -46,7 +46,7 @@ public class ConstructionRequestUseCase {
   String QUEUE_NAME;
   // </editor-fold>
 
-  public void assignToConstructionCaptain(@NonNull AssignRequest request, String empId) {
+  public void createAndAssignToConstructionCaptain(@NonNull AssignRequest request, String empId) {
     constructionRequestService.createPendingRequest(
       empId, request.contractId(),
       request.formCode(), request.formNumber()

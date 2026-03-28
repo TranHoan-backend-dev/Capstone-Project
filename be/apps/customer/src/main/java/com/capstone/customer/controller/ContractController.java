@@ -84,4 +84,22 @@ public class ContractController {
     var response = contractService.getAllContracts(pageable, request);
     return Utils.returnOkResponse("Lấy danh sách hợp đồng thành công", response);
   }
+
+  @Operation(summary = "Lấy danh sách ID hợp đồng theo mã form và số form", description = "Truy xuất danh sách ID hợp đồng dựa trên mã form và số form.", responses = {
+    @ApiResponse(responseCode = "200", description = "Lấy danh sách ID hợp đồng thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)))
+  })
+  @GetMapping("/ids")
+  public ResponseEntity<WrapperApiResponse> getContractIdsByForms(
+    @RequestParam @Parameter(description = "Mã form", example = "CN01") String formCode,
+    @RequestParam @Parameter(description = "Số form", example = "001/2024") String formNumber
+  ) {
+    log.info("REST request to get contract IDs by formCode: {} and formNumber: {}", formCode, formNumber);
+    var response = contractService.findContractIdsByFormCodeAndFormNumber(formCode, formNumber);
+    return Utils.returnOkResponse("Lấy danh sách ID hợp đồng thành công", response);
+  }
+
+  @GetMapping("/exist")
+  public Boolean isExisting(@RequestParam String id) {
+    return contractService.isExist(id);
+  }
 }

@@ -2,7 +2,7 @@ package com.capstone.construction.application.business.installationform;
 
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.enumerate.ProcessingStatus;
-import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.common.utils.SharedMessage;
 import com.capstone.construction.application.business.estimate.CostEstimateService;
 import com.capstone.construction.application.dto.request.estimate.CreateRequest;
@@ -10,6 +10,7 @@ import com.capstone.construction.application.dto.request.installationform.Approv
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import com.capstone.construction.application.dto.response.installationform.NewInstallationFormResponse;
+import com.capstone.construction.application.dto.response.installationform.ReviewedInstallationFormsResponse;
 import com.capstone.construction.domain.model.InstallationForm;
 import com.capstone.construction.domain.model.WaterSupplyNetwork;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
@@ -140,7 +141,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
 
   @Override
   @Transactional(rollbackFor = Exception.class)
-  public void approveInstallationForm(String userId, @NonNull ApproveRequest request) {
+  public void reviewInstallationForm(String userId, @NonNull ApproveRequest request) {
     log.info("Approving and assigning installation form with number: {}", request.formNumber());
     var order = ifRepo.findById(new InstallationFormId(request.formCode(), request.formNumber()))
       .orElseThrow(() -> new IllegalArgumentException(String.format(SharedMessage.MES_24, request.formNumber(), request.formCode())));
@@ -189,6 +190,41 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   }
 
   @Override
+  public Page<InstallationFormListResponse> findByEstimateStatusPending(Pageable pageable) {
+    log.info("Fetching installation forms with estimate status PENDING_FOR_APPROVAL");
+    var result = ifRepo.findByEstimateStatus_Pending(pageable);
+    return result.map(this::mapToResponse);
+  }
+
+  @Override
+  public Page<InstallationFormListResponse> findByRegistrationStatusPending(Pageable pageable) {
+    log.info("Fetching installation forms with registration status PENDING_FOR_APPROVAL");
+    var result = ifRepo.findByRegistrationStatus_Pending(pageable);
+    return result.map(this::mapToResponse);
+  }
+
+  @Override
+  public ReviewedInstallationFormsResponse getReviewedInstallationFormsList() {
+    log.info("Fetching installation forms with estimate status APPROVED and REJECTED");
+    var approved = ifRepo.findByEstimateStatus(ProcessingStatus.APPROVED.name())
+      .stream()
+      .map(this::mapToResponse)
+      .toList();
+    var rejected = ifRepo.findByEstimateStatus(ProcessingStatus.REJECTED.name())
+      .stream()
+      .map(this::mapToResponse)
+      .toList();
+    return new ReviewedInstallationFormsResponse(approved, rejected);
+  }
+
+  @Override
+  public Page<InstallationFormListResponse> findByHandoverByIsNotNull(Pageable pageable) {
+    log.info("Fetching installation forms that have been assigned to survey staff");
+    var result = ifRepo.findByHandoverByIsNotNull(pageable);
+    return result.map(this::mapToResponse);
+  }
+
+  @Override
   public Boolean checkAnyFormsBelongedToNetwork(String id) {
     log.info("Checking if installation form with id: {}", id);
     return ifRepo.existsByNetwork_BranchId(id);
@@ -211,6 +247,18 @@ public class InstallationFormServiceImpl implements InstallationFormService {
     var status = ifRepo.existsById_FormNumberAndId_FormCode(formNumber, formCode);
     log.info("Installation form with form number: {} and form code {} is exist: {}", formNumber, formCode, status);
     return status;
+  }
+
+  @Override
+  @Transactional(rollbackFor = Exception.class)
+  public void updateContractStatus(String formCode, String formNumber) {
+    log.info("Updating contract status for formCode: {} and formNumber: {}", formCode, formNumber);
+    var installationForm = ifRepo.findById(new InstallationFormId(formCode, formNumber))
+      .orElseThrow(() -> new IllegalArgumentException(Message.PT_36));
+
+    // Update contract status to APPROVED
+    installationForm.getStatus().setContract(ProcessingStatus.APPROVED);
+    ifRepo.save(installationForm);
   }
 
   private @NonNull InstallationFormListResponse mapToResponse(@NonNull InstallationForm entity) {

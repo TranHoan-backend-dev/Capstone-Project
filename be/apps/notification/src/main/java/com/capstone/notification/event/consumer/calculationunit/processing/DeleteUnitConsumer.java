@@ -1,8 +1,7 @@
 package com.capstone.notification.event.consumer.calculationunit.processing;
 
-import com.capstone.common.annotation.AppLog;
-import com.capstone.notification.event.websocket.GeneralEventConsumer;
-import com.capstone.notification.event.websocket.Topic;
+import com.capstone.notification.event.consumer.GeneralEventConsumer;
+import com.capstone.notification.event.consumer.Topic;
 import com.capstone.notification.event.consumer.calculationunit.message.DeleteUnitEventMessage;
 import com.capstone.notification.event.producer.MessageProducer;
 import lombok.extern.slf4j.Slf4j;

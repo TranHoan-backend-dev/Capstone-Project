@@ -46,17 +46,16 @@ class ConstructionRequestServiceImplTest {
     var formCode = "LDN";
     var formNumber = "001";
 
-    when(customerService.checkExistenceOfCustomer(empId)).thenReturn(true);
     when(customerService.checkExistenceOfContract(contractId)).thenReturn(true);
     when(employeeService.isEmployeeExisting(empId)).thenReturn(new WrapperApiResponse(200, "OK", true, OffsetDateTime.now()));
     when(employeeService.getRoleOfEmployeeById(empId)).thenReturn(new WrapperApiResponse(200, "OK", RoleName.CONSTRUCTION_DEPARTMENT_STAFF.name(), OffsetDateTime.now()));
 
-    InstallationForm form = new InstallationForm();
+    var form = new InstallationForm();
     form.setFormCode(formCode);
     form.setFormNumber(formNumber);
     when(ifRepo.findById(new InstallationFormId(formCode, formNumber))).thenReturn(Optional.of(form));
 
-    ConstructionRequest request = ConstructionRequest.builder()
+    var request = ConstructionRequest.builder()
       .id("REQ1")
       .contractId(contractId)
       .installationForm(form)
@@ -75,7 +74,6 @@ class ConstructionRequestServiceImplTest {
 
   @Test
   void should_ThrowException_When_ContractNotFound() {
-    when(customerService.checkExistenceOfCustomer(anyString())).thenReturn(true);
     when(customerService.checkExistenceOfContract(anyString())).thenReturn(false);
     assertThrows(IllegalArgumentException.class, () -> service.createPendingRequest("E1", "C1", "F", "N"));
   }

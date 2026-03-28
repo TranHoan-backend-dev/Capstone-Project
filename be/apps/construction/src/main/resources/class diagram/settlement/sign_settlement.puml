@@ -1,0 +1,113 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam class {
+    BackgroundColor White
+    BorderColor #263238
+    ArrowColor #263238
+}
+
+package "Construction Service" #AliceBlue {
+    package "Adapter" as ConstAdapter {
+        class SettlementController {
+            + sign(Jwt, SignificanceRequest, String): ResponseEntity
+        }
+        
+        interface EmployeeService <<FeignClient>> {
+            + getRoleOfEmployeeById(String): WrapperApiResponse
+        }
+    }
+
+    package "UseCase" as ConstUseCase {
+        class SettlementUseCase {
+            - settlementService: SettlementService
+            - messageProducer: MessageProducer
+            + significance(String, String, SignificanceRequest): void
+        }
+    }
+
+    package "Application" as ConstApp {
+        interface SettlementService {
+            + signSettlement(String, String, SignificanceRequest): boolean
+        }
+        
+        class SettlementServiceImpl {
+            - settlementRepository: SettlementRepository
+            - empSrv: EmployeeService
+            + signSettlement(String, String, SignificanceRequest): boolean
+        }
+    }
+
+    package "Infrastructure" as ConstInfra {
+        interface SettlementRepository {
+            + findById(String): Optional<Settlement>
+            + save(Settlement): Settlement
+        }
+        
+        class MessageProducer {
+            + send(String, Object): void
+        }
+    }
+
+    package "Domain" as ConstDomain {
+        class Settlement {
+            - id: String
+            - significance: SettlementSignificance
+        }
+        
+        class SettlementSignificance <<ValueObject>> {
+            - president: String
+            - ptHead: String
+            - surveyStaff: String
+            - constructionPresident: String
+            + isSettlementFullySigned(): boolean
+        }
+    }
+}
+
+package "Notification Service" #HoneyDew {
+    package "Event Consumer" as NotifConsumer {
+        class FinanceConsumerForSettlement {
+            + handle(ApproveEventMessage): void
+            # buildMessage(Object): String
+        }
+    }
+}
+
+package "Auth Service" #GhostWhite {
+    package "Adapter" as AuthAdapter {
+        class AuthorizationController {
+            + getRoleOfEmployeeById(String): ResponseEntity
+        }
+    }
+}
+
+package "DTOs & Events" #Ivory {
+    class SignificanceRequest <<Record>> {
+        + url: String
+        + significanceId: String
+    }
+}
+
+' Relationships
+SettlementController o-- SettlementUseCase
+SettlementUseCase o-- SettlementService
+SettlementUseCase o-- MessageProducer
+
+SettlementService <|.. SettlementServiceImpl
+SettlementServiceImpl o-- SettlementRepository
+SettlementServiceImpl o-- EmployeeService
+
+Settlement *-- SettlementSignificance
+
+SettlementController ..> SignificanceRequest : uses
+SettlementUseCase ..> SignificanceRequest : uses
+SettlementServiceImpl ..> SignificanceRequest : uses
+
+EmployeeService ..> AuthorizationController : calls (Feign)
+
+FinanceConsumerForSettlement ..> "ApprovedEvent" : consumes
+
+@enduml

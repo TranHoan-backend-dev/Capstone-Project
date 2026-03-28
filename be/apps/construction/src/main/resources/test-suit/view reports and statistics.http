@@ -1,0 +1,111 @@
+### TC01 - Get pending estimate forms successfully
+GET http://localhost:9004/api/v1/installation-forms/estimate/pending?page=0&size=10
+Authorization: Bearer {{auth_token}}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC02 - Get pending registration forms successfully
+GET http://localhost:9004/api/v1/installation-forms/registration/pending?page=0&size=10
+Authorization: Bearer {{auth_token}}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC03 - Get reviewed installation forms successfully
+GET http://localhost:9004/api/v1/installation-forms/reviewed
+Authorization: Bearer {{auth_token}}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+  client.assert(response.body.data.approved !== undefined);
+  client.assert(response.body.data.rejected !== undefined);
+});
+%}
+
+
+### TC04 - Get assigned survey forms successfully
+GET http://localhost:9004/api/v1/installation-forms/assigned?page=0&size=10
+Authorization: Bearer {{auth_token}}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC05 - Access denied without IT_STAFF role (Security check)
+# Giả sử dùng một token của nhân viên không có quyền IT_STAFF
+GET http://localhost:9004/api/v1/installation-forms/estimate/pending
+Authorization: Bearer {{staff_token}}
+
+> {%
+client.test("Status is 403", function() {
+  client.assert(response.status === 403);
+});
+%}
+
+
+### TC06 - Access denied without token
+GET http://localhost:9004/api/v1/installation-forms/estimate/pending
+
+> {%
+client.test("Status is 401", function() {
+  client.assert(response.status === 401);
+});
+%}
+
+
+### TC07 - Pagination test for pending estimate
+GET http://localhost:9004/api/v1/installation-forms/estimate/pending?page=0&size=1
+Authorization: Bearer {{auth_token}}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC08 - Status check for pending registration (Ensure correct path)
+GET http://localhost:9004/api/v1/installation-forms/registration/pending?page=0&size=5
+Authorization: Bearer {{auth_token}}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC09 - Reviewed forms data structure check
+GET http://localhost:9004/api/v1/installation-forms/reviewed
+Authorization: Bearer {{auth_token}}
+
+> {%
+client.test("Contains approved and rejected lists", function() {
+  client.assert(response.body.data.hasOwnProperty('approved'));
+  client.assert(response.body.data.hasOwnProperty('rejected'));
+});
+%}
+
+
+### TC10 - Assigned forms endpoint validation
+GET http://localhost:9004/api/v1/installation-forms/assigned
+Authorization: Bearer {{auth_token}}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}

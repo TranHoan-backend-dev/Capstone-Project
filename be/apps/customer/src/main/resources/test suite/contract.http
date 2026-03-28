@@ -9,10 +9,10 @@ POST {{keycloak}}/token
 Content-Type: application/x-www-form-urlencoded
 
 grant_type=password&
-client_id= &
+client_id= cmsn &
 client_secret={{client_secret}}&
-username= &
-password= &
+username= test&
+password= 123456&
 scope=openid
 
 > {%
@@ -25,13 +25,13 @@ Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 {
-  "contractId": "HDN_001",
-  "customerId": "C001",
-  "formCode": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
-  "formNumber": "FORM-2024-0001",
+  "contractId": "HDN_002",
+  "customerId": "05ed5e38-f889-44b2-9f6f-8c3d82cdee68",
+  "formCode": "b1eebc99-9c0b-4ef8-bb6d-6bb9bd380a12",
+  "formNumber": "FORM-2024-0002",
   "representatives": [
     {
-      "name": "Nguyễn Văn A",
+      "name": "Tran Thi B",
       "position": "Chủ hộ"
     }
   ],

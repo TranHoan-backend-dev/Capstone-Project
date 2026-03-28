@@ -1,0 +1,117 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam class {
+    BackgroundColor White
+    BorderColor #263238
+    ArrowColor #263238
+}
+
+package "Construction Service" #AliceBlue {
+    package "Adapter" as ConstAdapter {
+        class ConstructionController {
+            + requirePreviewConstruction(String, Boolean): ResponseEntity
+        }
+        
+        interface EmployeeService <<FeignClient>> {
+            + getEmployeeNameById(String): WrapperApiResponse
+        }
+    }
+
+    package "UseCase" as ConstUseCase {
+        class ConstructionRequestUseCase {
+            - constructionRequestService: ConstructionRequestService
+            - ifSrv: InstallationFormService
+            - messageProducer: MessageProducer
+            - employeeService: EmployeeService
+            + approveTheConstruction(String, Boolean): void
+        }
+    }
+
+    package "Application" as ConstApp {
+        interface ConstructionRequestService {
+            + approveTheConstruction(String, Boolean): void
+            + getById(String): ConstructionResponse
+        }
+        
+        interface InstallationFormService {
+            + getByFormCodeAndFormNumber(String, String): InstallationFormListResponse
+        }
+    }
+
+    package "Infrastructure" as ConstInfra {
+        class MessageProducer {
+            + send(String, Object): void
+        }
+    }
+
+    package "Domain" as ConstDomain {
+        class ConstructionRequest {
+            - id: String
+            - installationForm: InstallationForm
+        }
+        
+        class InstallationForm {
+            - formCode: String
+            - formNumber: String
+            - constructedBy: String
+        }
+    }
+}
+
+package "Notification Service" #HoneyDew {
+    package "Event Consumer" as NotifConsumer {
+        class ApprovedConstructionEvent {
+            + handle(ApproveMessage): void
+            # buildMessage(ApproveMessage): String
+        }
+    }
+    
+    package "DTOs" as NotifDTO {
+        class ApproveMessage <<Record>> {
+            + pattern: String
+            + data: ApproveEventData
+        }
+        
+        class ApproveEventData <<Record>> {
+            + formCode: String
+            + formNumber: String
+            + constructionCaptain: String
+        }
+    }
+}
+
+package "Auth Service" #GhostWhite {
+    package "Adapter" as AuthAdapter {
+        class AuthorizationController {
+            + getEmployeeNameById(String): ResponseEntity
+        }
+    }
+}
+
+package "DTOs & Events" #Ivory {
+    class ApprovedEvent <<Record>> {
+        + formCode: String
+        + formNumber: String
+        + constructionCaptain: String
+    }
+}
+
+' Relationships
+ConstructionController o-- ConstructionRequestUseCase
+ConstructionRequestUseCase o-- ConstructionRequestService
+ConstructionRequestUseCase o-- InstallationFormService
+ConstructionRequestUseCase o-- MessageProducer
+ConstructionRequestUseCase o-- EmployeeService
+
+ConstructionRequestUseCase ..> ApprovedEvent : produces
+MessageProducer ..> ApprovedEvent : wraps as payload(pattern, data)
+
+ApprovedConstructionEvent ..> ApproveMessage : consumes
+ApproveMessage *-- ApproveEventData
+
+EmployeeService ..> AuthorizationController : calls (Feign)
+
+@enduml

@@ -25,10 +25,45 @@ const MOCK_INVOICES = [
   },
 ];
 
+import { meterService } from '../services/meterService';
+import { useEffect } from 'react';
+
 export default function InvoiceDetailScreen({ navigation, route }: Props) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showReceipt, setShowReceipt] = useState(false);
   const [showImage, setShowImage] = useState(false);
+  const [_invoiceData, _setInvoiceData] = useState<any>(null);
+
+  useEffect(() => {
+    /* Comment out real fetch for development bypass
+    const fetchInvoice = async () => {
+      try {
+        const customerId = route.params?.customerId || '015281';
+        const recentData = await meterService.getRecentUsage(customerId);
+        if (recentData && recentData.usagesList && recentData.usagesList.length > 0) {
+          const latest = recentData.usagesList[0];
+          _setInvoiceData({
+            customerId: recentData.customerId,
+            status: latest.isPaid ? 'collected' : 'pending',
+            khoaKy: latest.recordingDate.substring(0, 7), // YYYY-MM
+            soHD: latest.index, 
+            soHDMoi: latest.index, 
+            m3: latest.mass,
+            tienThu: latest.price,
+            tienNo: 0,
+            ngayThu: latest.recordingDate,
+            nvThu: latest.paymentMethod || 'N/A',
+            imageUrl: latest.meterImageUrl
+          });
+        }
+      } catch (error) {
+        console.error('Fetch invoice failed:', error);
+      }
+    };
+    fetchInvoice();
+    */
+  }, [route.params?.customerId]);
+
   const invoice = MOCK_INVOICES[currentIndex];
 
   const handleNext = () => {
@@ -62,7 +97,7 @@ export default function InvoiceDetailScreen({ navigation, route }: Props) {
             </View>
             <Icon name="dots-horizontal-circle-outline" size={24} color="#fff" />
           </View>
-          
+
           <View style={{ padding: 12, backgroundColor: '#fff' }}>
             <View style={{ flexDirection: 'row', marginBottom: 12 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
@@ -116,18 +151,18 @@ export default function InvoiceDetailScreen({ navigation, route }: Props) {
 
       {/* Footer Navigation */}
       <View style={{ flexDirection: 'row', height: 60 }}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={{ flex: 1, backgroundColor: '#1E88E5', justifyContent: 'center', alignItems: 'center', borderRightWidth: 1, borderRightColor: '#fff' }}
           onPress={handlePrev}
         >
           <Text style={{ color: '#fff', fontSize: 24 }}>{'<'}</Text>
         </TouchableOpacity>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={{ flex: 2, backgroundColor: '#1E88E5', justifyContent: 'center', alignItems: 'center' }}
         >
           <Text style={{ color: '#fff', fontSize: 18, fontWeight: '500' }}>Thanh toán</Text>
         </TouchableOpacity>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={{ flex: 1, backgroundColor: '#1E88E5', justifyContent: 'center', alignItems: 'center', borderLeftWidth: 1, borderLeftColor: '#fff' }}
           onPress={handleNext}
         >
@@ -137,8 +172,8 @@ export default function InvoiceDetailScreen({ navigation, route }: Props) {
 
       {/* Modal View for Receipt (Image 2) */}
       <Portal>
-        <Modal 
-          visible={showReceipt} 
+        <Modal
+          visible={showReceipt}
           onDismiss={() => setShowReceipt(false)}
           contentContainerStyle={{ backgroundColor: '#fff', margin: 20, borderRadius: 8, padding: 0, overflow: 'hidden' }}
         >
@@ -156,11 +191,11 @@ export default function InvoiceDetailScreen({ navigation, route }: Props) {
               <Text style={{ fontSize: 14 }}>Kỳ HĐ: 12/2025</Text>
             </View>
             <View style={{ gap: 4, marginBottom: 16 }}>
-               <Text>Từ ngày: 25/11/2025</Text>
-               <Text>đến ngày: 24/12/2025</Text>
-               <Text>Tên KH: Trần đăng Long</Text>
-               <Text>Địa chỉ: 24/605 Trường Chinh, Phường Nam Định</Text>
-               <Text>Mã KH: 015329</Text>
+              <Text>Từ ngày: 25/11/2025</Text>
+              <Text>đến ngày: 24/12/2025</Text>
+              <Text>Tên KH: Trần đăng Long</Text>
+              <Text>Địa chỉ: 24/605 Trường Chinh, Phường Nam Định</Text>
+              <Text>Mã KH: 015329</Text>
             </View>
             <View style={{ borderWidth: 1, borderColor: '#333' }}>
               {/* Header row */}
@@ -190,8 +225,8 @@ export default function InvoiceDetailScreen({ navigation, route }: Props) {
 
       {/* Modal View for Image (Image 3) */}
       <Portal>
-        <Modal 
-          visible={showImage} 
+        <Modal
+          visible={showImage}
           onDismiss={() => setShowImage(false)}
           contentContainerStyle={{ backgroundColor: '#fff', margin: 40, borderRadius: 8, padding: 0 }}
         >
