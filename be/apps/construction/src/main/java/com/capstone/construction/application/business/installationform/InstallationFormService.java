@@ -34,9 +34,16 @@ public interface InstallationFormService {
   Page<InstallationFormListResponse> findByHandoverByIsNotNull(Pageable pageable);
 
   /**
+   * Update contract status to APPROVED for an installation form
+   * @param formCode form code of the installation form
+   * @param formNumber form number of the installation form
+   */
+  void updateContractStatus(String formCode, String formNumber);
+
+  /**
    * @param id
    * @param installationFormId
-   * @param status             neu true thi la giao cho nv khao sat, false => doi truong doi thi cong
+   * @param status neu true thi la giao cho nv khao sat, false => doi truong doi thi cong
    */
   void assignInstallationForm(String id, InstallationFormId installationFormId, Boolean status);
 }
