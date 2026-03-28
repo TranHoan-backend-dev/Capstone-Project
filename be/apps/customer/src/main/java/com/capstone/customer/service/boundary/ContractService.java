@@ -6,6 +6,8 @@ import com.capstone.customer.dto.response.ContractResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 /**
  * Service interface for managing Water Usage Contract operations.
  */
@@ -41,4 +43,13 @@ public interface ContractService {
      * @return a page of contract responses
      */
     Page<ContractResponse> getAllContracts(Pageable pageable, ContractFilterRequest request);
+
+    /**
+     * Retrieves a list of contract IDs based on formCode and formNumber.
+     *
+     * @param formCode form code
+     * @param formNumber form number
+     * @return a list of contract IDs
+     */
+    List<String> findContractIdsByFormCodeAndFormNumber(String formCode, String formNumber);
 }

@@ -1,6 +1,6 @@
 package com.capstone.construction.application.usecase;
 
-import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.construction.application.business.constructionrequest.ConstructionRequestService;
 import com.capstone.construction.application.business.installationform.InstallationFormService;
 import com.capstone.construction.application.dto.request.construction.AssignRequest;
@@ -46,14 +46,14 @@ class ConstructionRequestUseCaseTest {
   void should_AssignSuccessfully_When_ValidInput() {
     // Arrange
     var empId = "EMP001";
-    var request = new AssignRequest("LDN", "001", "CUS1", "CON1");
+    var request = new AssignRequest("LDN", "001", "CON1");
 
     // ConstructionRequestUseCase itself doesn't validate the role.
     // If we want to simulate role validation failure, we need to mock the service behavior.
     when(ifSrv.getByFormCodeAndFormNumber(anyString(), anyString())).thenReturn(mock(InstallationFormListResponse.class));
 
     // Act
-    useCase.assignToConstructionCaptain(request, empId);
+    useCase.createAndAssignToConstructionCaptain(request, empId);
 
     // Assert
     verify(constructionRequestService).createPendingRequest(eq(empId), eq("CON1"), eq("LDN"), eq("001"));
@@ -65,14 +65,14 @@ class ConstructionRequestUseCaseTest {
   void should_ThrowException_When_ServiceThrows() {
     // Arrange
     var empId = "EMP001";
-    var request = new AssignRequest("LDN", "001", "CUS1", "CON1");
+    var request = new AssignRequest("LDN", "001", "CON1");
 
     // Simulating Service layer throwing an error
     doThrow(new IllegalArgumentException("Role invalid"))
       .when(constructionRequestService).createPendingRequest(anyString(), anyString(), anyString(), anyString());
 
     // Act & Assert
-    assertThrows(IllegalArgumentException.class, () -> useCase.assignToConstructionCaptain(request, empId));
+    assertThrows(IllegalArgumentException.class, () -> useCase.createAndAssignToConstructionCaptain(request, empId));
   }
 
   @Test

@@ -22,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -96,6 +97,12 @@ public class ContractServiceImpl implements ContractService {
     log.info(result.toString());
 
     return result.map(this::mapToResponse);
+  }
+
+  @Override
+  public List<String> findContractIdsByFormCodeAndFormNumber(String formCode, String formNumber) {
+    log.info("Fetching contract IDs by formCode: {} and formNumber: {}", formCode, formNumber);
+    return contractRepository.findContractIdsByFormCodeAndFormNumber(formCode, formNumber);
   }
 
   private LocalDateTime parseFrom(String from) {

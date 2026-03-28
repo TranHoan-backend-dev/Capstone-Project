@@ -15,9 +15,18 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 @Repository
 public interface ContractRepository extends JpaRepository<WaterUsageContract, String>,
   JpaSpecificationExecutor<WaterUsageContract> {
+
+  @Query("SELECT c.contractId FROM WaterUsageContract c WHERE c.formCode = :formCode AND c.formNumber = :formNumber")
+  List<String> findContractIdsByFormCodeAndFormNumber(
+    @Param("formCode") String formCode,
+    @Param("formNumber") String formNumber
+  );
 
   static @NonNull Specification<WaterUsageContract> filter(ContractFilterRequest request) {
     return (root, query, cb) -> {

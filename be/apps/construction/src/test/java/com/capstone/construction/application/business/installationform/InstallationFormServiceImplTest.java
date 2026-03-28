@@ -2,7 +2,7 @@ package com.capstone.construction.application.business.installationform;
 
 import com.capstone.common.enumerate.*;
 import com.capstone.common.response.WrapperApiResponse;
-import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.construction.application.business.estimate.CostEstimateService;
 import com.capstone.construction.application.dto.request.estimate.CreateRequest;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
@@ -243,7 +243,7 @@ class InstallationFormServiceImplTest {
     when(empSrv.getEmployeeNameById(any())).thenReturn(new WrapperApiResponse(200, "OK", "Staff", OffsetDateTime.now()));
 
     // When
-    var result = service.findByEstimateStatus_Pending(pageable);
+    var result = service.findByEstimateStatusPending(pageable);
 
     // Then
     assertThat(result.getContent()).hasSize(1);
@@ -259,7 +259,7 @@ class InstallationFormServiceImplTest {
     when(empSrv.getEmployeeNameById(any())).thenReturn(new WrapperApiResponse(200, "OK", "Staff", OffsetDateTime.now()));
 
     // When
-    var result = service.findByRegistrationStatus_Pending(pageable);
+    var result = service.findByRegistrationStatusPending(pageable);
 
     // Then
     assertThat(result.getContent()).hasSize(1);

@@ -1,6 +1,6 @@
 package com.capstone.construction.application.business.installationform;
 
-import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
@@ -25,9 +25,9 @@ public interface InstallationFormService {
 
   Boolean checkAnyFormsBelongedToNetwork(String id);
 
-  Page<InstallationFormListResponse> findByEstimateStatus_Pending(Pageable pageable);
+  Page<InstallationFormListResponse> findByEstimateStatusPending(Pageable pageable);
 
-  Page<InstallationFormListResponse> findByRegistrationStatus_Pending(Pageable pageable);
+  Page<InstallationFormListResponse> findByRegistrationStatusPending(Pageable pageable);
 
   ReviewedInstallationFormsResponse getReviewedInstallationFormsList();
 
@@ -41,7 +41,6 @@ public interface InstallationFormService {
   void updateContractStatus(String formCode, String formNumber);
 
   /**
-   *
    * @param id
    * @param installationFormId
    * @param status neu true thi la giao cho nv khao sat, false => doi truong doi thi cong

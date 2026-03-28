@@ -1,6 +1,5 @@
-package com.capstone.notification.event.websocket;
+package com.capstone.notification.event.consumer;
 
-import com.capstone.common.annotation.AppLog;
 import com.capstone.notification.dto.request.CreateNotificationRequest;
 import com.capstone.notification.event.producer.MessageProducer;
 import com.capstone.notification.event.producer.NotificationCreatedEvent;
@@ -13,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Base class for all RabbitMQ event consumers.
