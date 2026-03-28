@@ -50,6 +50,7 @@ const SettlementLookupPage = () => {
     handleReload();
     handleCloseForm();
   };
+  
   const handleCreate = async (payload: any) => {
     const res = await authFetch("/api/construction/settlements", {
       method: "POST",

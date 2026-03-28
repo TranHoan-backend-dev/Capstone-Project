@@ -27,10 +27,7 @@ interface AssignConstructionPopupProps {
 
 interface Employee {
   id: string;
-  fullName: string;
-  departmentName: string;
-  email?: string;
-  phoneNumber?: string;
+  name: string;
 }
 
 export const AssignConstructionPopup = ({
@@ -60,29 +57,17 @@ export const AssignConstructionPopup = ({
     setLoading(true);
     setError(null);
     try {
-      const res = await authFetch("/api/auth/employees");
+      const res = await authFetch("/api/auth/employees/construction-staff");
       if (!res.ok) {
         throw new Error("Không thể tải danh sách nhân viên");
       }
       const json = await res.json();
-      const allEmployees = json?.data?.content ?? json?.data ?? [];
+      const allEmployees = json?.data ?? json?.data ?? [];
 
-      // Lọc chỉ lấy nhân viên thuộc phòng Xây dựng hoặc có role phù hợp
-      // Bạn có thể điều chỉnh điều kiện lọc theo nghiệp vụ
-      const constructionStaff = allEmployees.filter((emp: Employee) => {
-        // Lọc theo departmentName hoặc fullName chứa từ khóa "xây dựng", "thi công"
-        return (
-          emp.departmentName?.toLowerCase().includes("xây dựng") ||
-          emp.departmentName?.toLowerCase().includes("thi công") ||
-          emp.fullName?.toLowerCase().includes("đội trưởng") ||
-          emp.fullName?.toLowerCase().includes("thi công")
-        );
-      });
-
-      setTeamLeaders(constructionStaff);
+      setTeamLeaders(allEmployees);
 
       // Nếu không có nhân viên nào được lọc, hiển thị thông báo
-      if (constructionStaff.length === 0) {
+      if (allEmployees.length === 0) {
         setError("Không tìm thấy đội trưởng đội thi công");
       }
     } catch (err) {
@@ -140,9 +125,8 @@ export const AssignConstructionPopup = ({
     }
   };
 
-  // Chuyển đổi danh sách đội trưởng thành options cho CustomSelect
   const selectOptions = teamLeaders.map((leader) => ({
-    label: `${leader.fullName}${leader.departmentName ? ` - ${leader.departmentName}` : ""}`,
+    label: `${leader.name}`,
     value: leader.id,
   }));
 

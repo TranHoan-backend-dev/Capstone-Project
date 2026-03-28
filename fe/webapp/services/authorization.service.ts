@@ -38,8 +38,21 @@ export const getSurveyStaff = (accessToken: string) =>
   });
 
 export const getConstructionHead = (accessToken: string) =>
-  axios.get(`${API_GATEWAY_URL}/auth/authorization/employees/construction-head`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
+  axios.get(
+    `${API_GATEWAY_URL}/auth/authorization/employees/construction-head`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
     },
-  });
+  );
+
+export const getConstructionStaff = (accessToken: string) =>
+  axios.get(
+    `${API_GATEWAY_URL}/auth/authorization/employees/construction-staff`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
