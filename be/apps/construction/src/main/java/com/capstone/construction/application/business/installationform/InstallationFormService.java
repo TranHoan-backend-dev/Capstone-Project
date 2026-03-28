@@ -19,7 +19,7 @@ public interface InstallationFormService {
 
   Page<InstallationFormListResponse> getConstructionRequestsList(Pageable pageable, BaseFilterRequest request);
 
-  void approveInstallationForm(String userId, ApproveRequest request);
+  void reviewInstallationForm(String userId, ApproveRequest request);
 
   InstallationFormListResponse getByFormCodeAndFormNumber(String formCode, String formNumber);
 

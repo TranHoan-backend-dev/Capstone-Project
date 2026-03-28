@@ -436,7 +436,7 @@ class InstallationFormServiceImplTest {
     when(ifRepo.findById(new InstallationFormId("FC01", "FN01"))).thenReturn(Optional.of(entity));
 
     // When
-    service.approveInstallationForm(USER_ID, request);
+    service.reviewInstallationForm(USER_ID, request);
 
     // Then
     assertThat(status.getRegistration()).isEqualTo(ProcessingStatus.APPROVED);
@@ -457,7 +457,7 @@ class InstallationFormServiceImplTest {
     when(ifRepo.findById(new InstallationFormId("FC01", "FN01"))).thenReturn(Optional.of(entity));
 
     // When
-    service.approveInstallationForm(USER_ID, request);
+    service.reviewInstallationForm(USER_ID, request);
 
     // Then
     assertThat(status.getRegistration()).isEqualTo(ProcessingStatus.REJECTED);
@@ -471,7 +471,7 @@ class InstallationFormServiceImplTest {
     when(ifRepo.findById(new InstallationFormId("C-001", "F-001"))).thenReturn(Optional.empty());
 
     // When & Then
-    assertThatThrownBy(() -> service.approveInstallationForm(USER_ID, request))
+    assertThatThrownBy(() -> service.reviewInstallationForm(USER_ID, request))
       .isInstanceOf(IllegalArgumentException.class);
   }
 

@@ -187,7 +187,7 @@ class InstallationFormHandlingUseCaseTest {
 
     useCase.reviewInstallationForm(USER_ID, request);
 
-    verify(ifSrv).approveInstallationForm(USER_ID, request);
+    verify(ifSrv).reviewInstallationForm(USER_ID, request);
     verify(costEstimateUseCase).createEstimate(any());
   }
 
@@ -200,7 +200,7 @@ class InstallationFormHandlingUseCaseTest {
 
     useCase.reviewInstallationForm(USER_ID, request);
 
-    verify(ifSrv).approveInstallationForm(USER_ID, request);
+    verify(ifSrv).reviewInstallationForm(USER_ID, request);
     verify(costEstimateUseCase, never()).createEstimate(any());
   }
 

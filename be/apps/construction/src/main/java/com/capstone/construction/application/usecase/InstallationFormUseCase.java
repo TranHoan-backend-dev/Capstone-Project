@@ -111,7 +111,7 @@ public class InstallationFormUseCase {
   }
 
   public void reviewInstallationForm(String userId, ApproveRequest request) {
-    ifSrv.approveInstallationForm(userId, request);
+    ifSrv.reviewInstallationForm(userId, request);
   }
 
   private String getCreatorName(String creator) {
