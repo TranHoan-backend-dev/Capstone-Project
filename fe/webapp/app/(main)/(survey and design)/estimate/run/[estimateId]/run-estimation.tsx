@@ -6,7 +6,6 @@ import { useParams } from "next/navigation";
 import { TechnicalInfoCard } from "./components/technical-info-card";
 import { MaterialCostCard } from "./components/material-cost-card";
 import { EstimateResponse, MaterialEstimateItem } from "@/types";
-import { TotalCostDisplay } from "./components/total-cost-display ";
 
 const RunEstimationPage = () => {
   const params = useParams();

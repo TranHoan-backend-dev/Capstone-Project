@@ -8,13 +8,9 @@ import CustomInput from "@/components/ui/custom/CustomInput";
 import {
   DeleteIcon,
   SaveDocumentCheckIcon,
-  PictureIcon,
   DocumentMagnifyGlassIcon,
-  RestoreIcon,
-  SumIcon,
   TitleDarkColor,
 } from "@/config/chip-and-icon";
-import CustomSelect from "@/components/ui/custom/CustomSelect";
 import CustomButton from "@/components/ui/custom/CustomButton";
 import CustomTextarea from "@/components/ui/custom/CustomTextarea";
 import { EstimateResponse, MaterialEstimateItem } from "@/types";
@@ -63,6 +59,8 @@ export const TechnicalInfoCard = ({
 
   const [designImageFile, setDesignImageFile] = useState<File | null>(null);
   const [designImageUrl, setDesignImageUrl] = useState("");
+  const [isImageDeleted, setIsImageDeleted] = useState(false);
+
   const [showWaterMeterModal, setShowWaterMeterModal] = useState(false);
 
   const [showOverallModal, setShowOverallModal] = useState(false);
@@ -85,9 +83,7 @@ export const TechnicalInfoCard = ({
   //         );
   //         const result = await response.json();
   //         if (result.data) {
-  //           setDisplayOverallWaterMeter(
-  //             `${result.data.name}`,
-  //           );
+  //           setDisplayOverallWaterMeter(`${result.data.name}`);
   //         }
   //       } catch (error) {
   //         console.error("Failed to fetch water meter overall:", error);
@@ -171,6 +167,7 @@ export const TechnicalInfoCard = ({
       setWaterMeterSerial(info.waterMeterSerial || "");
       setOverallWaterMeterId(info.overallWaterMeterId || "");
       setDesignImageUrl(info.designImageUrl || "");
+      setIsImageDeleted(false);
     }
   }, [estimateData]);
 
@@ -295,6 +292,15 @@ export const TechnicalInfoCard = ({
     setShowOverallModal(false);
   };
 
+  const handleRemoveImage = () => {
+    setDesignImageFile(null);
+    setDesignImageUrl("");
+    setIsImageDeleted(true);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   return (
     <GenericSearchFilter
       actions={
@@ -309,6 +315,7 @@ export const TechnicalInfoCard = ({
                 const file = e.target.files?.[0];
                 if (!file) return;
                 setDesignImageFile(file);
+                setIsImageDeleted(false); // Reset trạng thái xóa khi chọn ảnh mới
                 const previewUrl = URL.createObjectURL(file);
               }}
             />
@@ -323,15 +330,25 @@ export const TechnicalInfoCard = ({
               {designImageFile ? "Đã chọn ảnh mới" : "Ảnh cụm đồng hồ"}
             </CustomButton>
 
-            {designImageUrl && !designImageFile && (
-              <div className="text-sm text-green-600">
-                Đã có ảnh: {designImageUrl.split("/").pop()?.slice(0, 30)}...
-              </div>
-            )}
-
-            {designImageFile && (
-              <div className="text-sm text-blue-600">
-                Đã chọn ảnh mới: {designImageFile.name}
+            {/* Hiển thị trạng thái ảnh */}
+            {(designImageUrl || designImageFile) && !isImageDeleted && (
+              <div className="flex items-center gap-2">
+                <div className="text-sm text-green-600">
+                  {designImageFile
+                    ? `Đã chọn ảnh mới: ${designImageFile.name}`
+                    : designImageUrl &&
+                      `Đã có ảnh: ${designImageUrl.split("/").pop()?.slice(0, 30)}...`}
+                </div>
+                <Button
+                  isIconOnly
+                  size="sm"
+                  variant="light"
+                  color="danger"
+                  onPress={handleRemoveImage}
+                  className="min-w-unit-8 w-8 h-8"
+                >
+                  <DeleteIcon className="w-4 h-4" />
+                </Button>
               </div>
             )}
 
@@ -344,6 +361,7 @@ export const TechnicalInfoCard = ({
             >
               {isUploading ? "Đang lưu..." : "Lưu bản nháp"}
             </CustomButton>
+
             <CustomButton
               onPress={() => handleSave(true)}
               className="text-white font-bold px-6 shadow-md shadow-success/20"
@@ -501,7 +519,6 @@ export const TechnicalInfoCard = ({
             })}
             onSelect={handleSelectWaterMeter}
           />
-
           <SearchInputWithButton
             label="Đồng hồ nước tổng"
             value={displayOverallWaterMeter}
@@ -527,9 +544,6 @@ export const TechnicalInfoCard = ({
             onSelect={handleSelectOverallMeter}
           />
         </div>
-
-        {/* Buttons Save */}
-
         <TotalCostDisplay estimateData={estimateData} materials={materials} />
       </div>
     </GenericSearchFilter>

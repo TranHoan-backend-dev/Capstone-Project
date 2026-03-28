@@ -4,20 +4,11 @@ import React, { useEffect, useState } from "react";
 import { Button, Input, Tooltip } from "@heroui/react";
 
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import CustomInput from "@/components/ui/custom/CustomInput";
 import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
-import {
-  ApprovalIcon,
-  DeleteIcon,
-  DocumentChartIcon,
-  DocumentMagnifyGlassIcon,
-  SaveDocumentCheckIcon,
-} from "@/config/chip-and-icon";
-import CustomButton from "@/components/ui/custom/CustomButton";
-import { EstimateItem, EstimateResponse, MaterialEstimateItem } from "@/types";
+import { DeleteIcon } from "@/config/chip-and-icon";
+import { EstimateResponse, MaterialEstimateItem } from "@/types";
 import { ESTIMATE_COLUMN } from "@/config/table-columns";
 import { LookupModal } from "@/components/ui/modal/LookupModal";
-import { CallToast } from "@/components/ui/CallToast";
 
 interface MaterialCostCardProps {
   estimateId: string;
@@ -39,7 +30,6 @@ export const MaterialCostCard = ({
   const [showMaterialModal, setShowMaterialModal] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Trong MaterialCostCard
   useEffect(() => {
     if (estimateData?.material) {
       const mappedMaterials = estimateData.material.map(

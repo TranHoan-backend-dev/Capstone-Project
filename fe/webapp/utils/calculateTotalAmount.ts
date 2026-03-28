@@ -1,60 +1,77 @@
-export const calculateTotalAmount = (materials: any[], generalInfo?: any): string => {
+export const calculateTotalAmount = (
+  materials: any[],
+  generalInfo?: any,
+): string => {
   if (!materials || materials.length === 0) return "0";
 
-  // Tính tổng từ materials
-  const materialTotal = materials.reduce((sum, item) => {
-    const materialPrice = parseFloat(item.totalMaterialPrice ?? 0) || 0;
-    return sum + materialPrice;
+  // Tính VL và NC từ materials
+  const materialCost = materials.reduce((sum, item) => {
+    const materialPrice = parseFloat(
+      item.totalMaterialPrice ?? item.materialTotal ?? 0,
+    );
+    return sum + (isNaN(materialPrice) ? 0 : materialPrice);
   }, 0);
 
-  const laborTotal = materials.reduce((sum, item) => {
-    const laborPrice = parseFloat(item.totalLaborPrice ?? 0) || 0;
-    return sum + laborPrice;
+  // Chi phí nhân công gốc từ materials
+  const baseLaborCost = materials.reduce((sum, item) => {
+    const laborPrice = parseFloat(item.totalLaborPrice ?? item.laborTotal ?? 0);
+    return sum + (isNaN(laborPrice) ? 0 : laborPrice);
   }, 0);
 
-  const subtotal = materialTotal + laborTotal;
-
-  // Lấy các hệ số và phí từ generalInformation (nếu có)
+  // Áp dụng hệ số nhân công
   const laborCoefficient = (generalInfo?.laborCoefficient || 0) / 100;
+  const laborCost = baseLaborCost * (1 + laborCoefficient);
+
+  // A - CHI PHÍ XÂY DỰNG
+  const directTotal = materialCost + laborCost; // T
+
+  // Chi phí chung (C) = T * hệ số chi phí chung
   const generalCostCoefficient =
     (generalInfo?.generalCostCoefficient || 0) / 100;
+  const generalCost = directTotal * generalCostCoefficient;
+
+  // Thu nhập thuế tính trước (TL) = (T + C) * hệ số thuế tính trước
   const precalculatedTaxCoefficient =
     (generalInfo?.precalculatedTaxCoefficient || 0) / 100;
-  const constructionMachineryCoefficient =
-    (generalInfo?.constructionMachineryCoefficient || 0) / 100;
+  const preTaxIncome =
+    (directTotal + generalCost) * precalculatedTaxCoefficient;
+
+  // Chi phí xây dựng trước thuế (G) = T + C + TL
+  const constructionCostBeforeTax = directTotal + generalCost + preTaxIncome;
+
+  // Thuế GTGT (GTGT) = G * hệ số VAT
   const vatCoefficient = (generalInfo?.vatCoefficient || 0) / 100;
+  const vat = constructionCostBeforeTax * vatCoefficient;
+
+  // Chi phí xây dựng sau thuế (GXD) = G + GTGT
+  const constructionCostAfterTax = constructionCostBeforeTax + vat;
+
+  // B - CHI PHÍ TƯ VẤN XÂY DỰNG
+  // Chi phí thiết kế & lắp dự toán = phí thiết kế * (1 + hệ số thiết kế)
   const designCoefficient = (generalInfo?.designCoefficient || 0) / 100;
+  const designAndEstimate =
+    (generalInfo?.designFee || 0) * (1 + designCoefficient);
 
-  const contractFee = generalInfo?.contractFee || 0;
-  const surveyFee = generalInfo?.surveyFee || 0;
-  const installationFee = generalInfo?.installationFee || 0;
-  const designFee = generalInfo?.designFee || 0;
+  // Nhân công khảo sát, đo đạc thực tế = ngày công khảo sát * phí khảo sát
+  const surveyLaborCost =
+    (generalInfo?.surveyEffort || 0) * (generalInfo?.surveyFee || 0);
 
-  // Tính các khoản phí theo hệ số
-  const laborCost = subtotal * laborCoefficient;
-  const generalCost = subtotal * generalCostCoefficient;
-  const precalculatedTax = subtotal * precalculatedTaxCoefficient;
-  const constructionMachinery = subtotal * constructionMachineryCoefficient;
-  const designCost = subtotal * designCoefficient;
+  // Chi phí lắp đặt
+  const installationCost = generalInfo?.installationFee || 0;
 
-  // Tổng phụ trước VAT
-  const beforeVAT =
-    subtotal +
-    laborCost +
-    generalCost +
-    precalculatedTax +
-    constructionMachinery +
-    designCost +
-    contractFee +
-    surveyFee +
-    installationFee +
-    designFee;
+  const consultingTotal =
+    designAndEstimate + surveyLaborCost + installationCost;
 
-  // Tổng cộng (bao gồm VAT)
-  const grandTotal = beforeVAT + beforeVAT * vatCoefficient;
+  // C - CHI PHÍ KHÁC
+  // Chi phí in ấn hợp đồng
+  const printingCost = generalInfo?.contractFee || 0;
+  const otherTotal = printingCost;
 
-  // Làm tròn lên đến số nguyên (ví dụ: 986520.61 -> 986521)
-  const roundedTotal = Math.ceil(grandTotal);
+  // Tổng dự toán xây dựng công trình = GXD + GTV + GK
+  const grandTotal = constructionCostAfterTax + consultingTotal + otherTotal;
 
-  return roundedTotal.toLocaleString("vi-VN");
+  // Làm tròn đến hàng trăm
+  const roundedGrandTotal = Math.round(grandTotal / 100) * 100;
+
+  return roundedGrandTotal.toLocaleString("vi-VN");
 };
