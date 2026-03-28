@@ -100,6 +100,7 @@ public class ContractServiceImpl implements ContractService {
 
   @Override
   public Boolean isExist(String id) {
+    log.info("Is exist with id: {}", id);
     return contractRepository.existsById(id);
   }
 

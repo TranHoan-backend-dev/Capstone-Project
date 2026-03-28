@@ -141,7 +141,8 @@ const authService = {
 
     try {
       // Gọi backend để lấy access token mới
-      const response = await apiFetch('/auth/refresh-token', {
+      // Sử dụng đúng path cho gateway: /auth/auth/refresh-token
+      const response = await apiFetch('/auth/auth/refresh-token', {
         method: 'POST',
         body: JSON.stringify({ token: refreshToken }),
       });

@@ -34,7 +34,7 @@ interface CollectionItem {
 // Mock data matching the image
 const MOCK_COLLECTIONS: CollectionItem[] = [
   {
-    id: '01C137',
+    id: '5e6f7081-4000-4eee-9fff-eeeeeeee0001',
     meterId: '93Vc',
     soHD: '389',
     daZhu: '317',

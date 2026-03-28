@@ -1,10 +1,11 @@
 package com.capstone.construction.application.business.constructionrequest;
 
-import com.capstone.common.annotation.AppLog;
 import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.common.enumerate.RoleName;
 import com.capstone.common.exception.NotExistingException;
+import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.common.utils.SharedMessage;
+import com.capstone.common.utils.Utils;
 import com.capstone.construction.application.dto.response.construction.ConstructionResponse;
 import com.capstone.construction.domain.model.ConstructionRequest;
 import com.capstone.construction.domain.model.InstallationForm;
@@ -17,10 +18,14 @@ import com.capstone.construction.infrastructure.utils.Message;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-@AppLog
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -32,6 +37,7 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
 
   @Override
   public ConstructionResponse createPendingRequest(String employeeId, String contractId, String formCode, String formNumber) {
+    log.info("Creating pending request");
     if (!customerService.checkExistenceOfContract(contractId)) {
       throw new IllegalArgumentException("Không tìm thấy hợp đồng");
     }
@@ -41,6 +47,7 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
     var installationForm = ifRepo.findById(new InstallationFormId(formCode, formNumber))
       .orElseThrow(() -> new IllegalArgumentException(String.format(SharedMessage.MES_24, formNumber, formCode)));
 
+    log.info("Creating pending request");
     var constructionRequest = ConstructionRequest.builder()
       .contractId(contractId)
       .installationForm(installationForm)
@@ -79,12 +86,35 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
     return convert(repository.findByInstallationForm(installationForm));
   }
 
+  @Override
+  public Page<ConstructionResponse> getConstructionRequestsList(Pageable pageable,
+                                                                @NonNull BaseFilterRequest request) {
+    log.info("Fetching paginated construction request with pageable: {}", pageable);
+    var startDate = Utils.parseFrom(request.from());
+    var endDate = Utils.parseTo(request.to());
+    var specification = InstallationFormRepository.search(
+      request.keyword(), startDate, endDate,
+      ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING);
+
+    var response = (startDate != null || endDate != null || (request.keyword() != null && !request.keyword().isBlank()))
+      ? ifRepo.findAll(specification, pageable)
+      : ifRepo.findByStatus_ContractAndStatus_Construction(ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING,
+      pageable);
+    var result = response.getContent()
+      .stream()
+      .map(this::mapToResponse)
+      .toList();
+
+    return new PageImpl<>(result, pageable, response.getTotalElements());
+  }
+
   private ConstructionRequest getConstructionRequest(String id) {
     return repository.findById(id)
       .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy đơn chờ thi công"));
   }
 
   private void validateEmployee(String employeeId) {
+    log.info("Validating employee {}", employeeId);
     var status = employeeService.isEmployeeExisting(employeeId).data().toString();
     if (!Boolean.parseBoolean(status)) {
       throw new IllegalArgumentException("Không tìm thấy nhân viên với id " + employeeId);
@@ -107,5 +137,10 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
       .isApproved(String.valueOf(isApproved))
       .createdAt(request.getCreatedAt().toString())
       .build();
+  }
+
+  private @NonNull ConstructionResponse mapToResponse(@NonNull InstallationForm entity) {
+    var constructionRequest = repository.findByInstallationForm(entity);
+    return convert(constructionRequest);
   }
 }
