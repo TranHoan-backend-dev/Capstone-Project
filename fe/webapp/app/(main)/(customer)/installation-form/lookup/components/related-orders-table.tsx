@@ -21,6 +21,7 @@ import { NEW_INSTALLATION_LOOKUP_COLUMN } from "@/config/table-columns";
 import { authFetch } from "@/utils/authFetch";
 import { formatDate1 } from "@/utils/format";
 import { AssignConstructionPopup } from "./assign-construction-popup";
+import CustomButton from "@/components/ui/custom/CustomButton";
 
 interface ResultsTableProps {
   keyword?: string;
@@ -244,18 +245,18 @@ export const RelatedOrdersTable = ({
           <div className="flex items-center gap-2 justify-center">
             {item.canAssign && (
               <Tooltip closeDelay={0} color="primary" content="Giao thi công">
-                <Button
+                <CustomButton
                   isIconOnly
                   className="bg-transparent text-primary-500 data-[hover=true]:bg-primary-50"
-                  size="sm"
+                  size="lg"
                   variant="light"
                   onPress={() => handleOpenAssignPopup(item)}
                 >
                   <PencilIcon className="w-5 h-5" />
-                </Button>
+                </CustomButton>
               </Tooltip>
             )}
-            {actionButtons.map((action, idx) => (
+            {/* {actionButtons.map((action, idx) => (
               <Tooltip
                 key={idx}
                 closeDelay={0}
@@ -271,7 +272,7 @@ export const RelatedOrdersTable = ({
                   <action.icon className="w-5 h-5" />
                 </Button>
               </Tooltip>
-            ))}
+            ))} */}
           </div>
         );
       default:

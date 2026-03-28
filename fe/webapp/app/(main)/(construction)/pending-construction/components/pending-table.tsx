@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import { Button, Tooltip } from "@heroui/react";
 
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import { CancelIcon, CheckApprovalIcon } from "@/config/chip-and-icon";
+import { CancelIcon, CheckApprovalIcon, PencilIcon } from "@/config/chip-and-icon";
 import { PENDING_CONSTRUCTION } from "@/config/table-columns/construction/pending-construction-column";
 import { authFetch } from "@/utils/authFetch";
 import {
@@ -14,6 +14,7 @@ import {
   PendingConstructionResponse,
 } from "@/types";
 import AssignConstructionPopup from "./assign-construction-popup";
+import CustomButton from "@/components/ui/custom/CustomButton";
 
 interface PendingTableProps {
   filters?: FilterPendingConstructionRequest;
@@ -106,7 +107,7 @@ export const PendingTable = ({
       formCode: item.formCode,
       formNumber: item.formNumber,
       customerName: item.customerName,
-      constructionId: item.id, 
+      constructionId: item.id,
       customerId: (item as any).customerId,
     });
     setShowAssignPopup(true);
@@ -142,22 +143,33 @@ export const PendingTable = ({
         return (
           <div className="flex items-center justify-center gap-2">
             {actionItems.map((action, idx) => (
-              <Tooltip
-                key={idx}
-                content={action.content}
-                closeDelay={0}
-                color={action.color}
-              >
-                <Button
+              <Tooltip closeDelay={0} color="primary" content="Giao thi công">
+                <CustomButton
                   isIconOnly
+                  className="bg-transparent text-primary-500 data-[hover=true]:bg-primary-50"
+                  size="lg"
                   variant="light"
-                  size="sm"
-                  className={`${action.className} rounded-lg`}
                   onPress={() => action.onClick(item)}
                 >
-                  <action.icon className="w-5 h-5" />
-                </Button>
+                  <PencilIcon className="w-5 h-5" />
+                </CustomButton>
               </Tooltip>
+              // <Tooltip
+              //   key={idx}
+              //   content={action.content}
+              //   closeDelay={0}
+              //   color={action.color}
+              // >
+              //   <Button
+              //     isIconOnly
+              //     variant="light"
+              //     size="sm"
+              //     className={`${action.className} rounded-lg`}
+              //     onPress={() => action.onClick(item)}
+              //   >
+              //     <action.icon className="w-5 h-5" />
+              //   </Button>
+              // </Tooltip>
             ))}
           </div>
         );
