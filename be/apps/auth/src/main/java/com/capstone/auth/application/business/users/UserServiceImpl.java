@@ -299,6 +299,12 @@ public class UserServiceImpl implements UserService {
     return getNameAndId(RoleName.COMPANY_LEADERSHIP);
   }
 
+  @Override
+  public List<NameAndIdResponse> getAllConstructionStaffs() {
+    log.info("Getting all construction staffs");
+    return getNameAndId(RoleName.CONSTRUCTION_DEPARTMENT_STAFF);
+  }
+
   private List<NameAndIdResponse> getNameAndId(@NonNull RoleName roleName) {
     var role = roleRepo.findRolesByName(roleName);
     var users = repo.findByRole(role);

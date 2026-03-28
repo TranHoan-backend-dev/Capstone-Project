@@ -1,0 +1,123 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam class {
+    BackgroundColor White
+    BorderColor #263238
+    ArrowColor #263238
+}
+
+package "Construction Service" #AliceBlue {
+    package "Adapter" as ConstAdapter {
+        class ReceiptController {
+            + createReceipt(CreateRequest): ResponseEntity<WrapperApiResponse>
+        }
+    }
+
+    package "UseCase" as ConstUseCase {
+        class ReceiptUseCase {
+            - receiptService: ReceiptService
+            + createReceipt(CreateRequest): ReceiptResponse
+        }
+    }
+
+    package "Application" as ConstApp {
+        interface ReceiptService {
+            + createReceipt(CreateRequest): ReceiptResponse
+        }
+        
+        class ReceiptServiceImpl {
+            - receiptRepo: ReceiptRepository
+            - ifRepo: InstallationFormRepository
+            - ceRepo: CostEstimateRepository
+            + createReceipt(CreateRequest): ReceiptResponse
+            - mapToResponse(Receipt): ReceiptResponse
+        }
+    }
+
+    package "Infrastructure" as ConstInfra {
+        interface ReceiptRepository {
+            + existsById(InstallationFormId): boolean
+            + save(Receipt): Receipt
+        }
+        
+        interface InstallationFormRepository {
+            + findById(InstallationFormId): Optional<InstallationForm>
+        }
+        
+        interface CostEstimateRepository {
+            + findByInstallationForm(InstallationForm): Optional<CostEstimate>
+        }
+    }
+
+    package "Domain" as ConstDomain {
+        class Receipt {
+            - id: InstallationFormId
+            - receiptNumber: String
+            - customerName: String
+            - address: String
+            - totalMoneyInDigits: Integer
+            - totalMoneyInCharacters: String
+            - isPaid: Boolean
+            - significance: ReceiptSignificance
+        }
+        
+        class InstallationForm {
+            - id: InstallationFormId
+            - customerName: String
+            - address: String
+        }
+        
+        class CostEstimate {
+            - estimationId: String
+            - significance: CostEstimateSignificance
+        }
+        
+        class ReceiptSignificance <<ValueObject>> {
+            - receiptCreator: String
+            - treasurer: String
+            + isReceiptFullySigned(): boolean
+        }
+    }
+}
+
+package "DTOs" #Ivory {
+    class CreateRequest <<Record>> {
+        + formCode: String
+        + formNumber: String
+        + receiptNumber: String
+        + totalMoneyInDigit: Integer
+        + totalMoneyInCharacters: String
+        + paymentDate: String
+        + isPaid: Boolean
+        + significanceOfReceiptCreator: String
+    }
+    
+    class ReceiptResponse <<Record>> {
+        + formCode: String
+        + formNumber: String
+        + receiptNumber: String
+        + isPaid: Boolean
+    }
+}
+
+' Relationships
+ReceiptController o-- ReceiptUseCase
+ReceiptUseCase o-- ReceiptService
+ReceiptService <|.. ReceiptServiceImpl
+ReceiptServiceImpl o-- ReceiptRepository
+ReceiptServiceImpl o-- InstallationFormRepository
+ReceiptServiceImpl o-- CostEstimateRepository
+
+Receipt o-- InstallationForm
+Receipt *-- ReceiptSignificance
+ReceiptServiceImpl ..> Receipt : creates
+
+ReceiptController ..> CreateRequest : uses
+ReceiptUseCase ..> CreateRequest : uses
+ReceiptServiceImpl ..> CreateRequest : uses
+ReceiptUseCase ..> ReceiptResponse : returns
+
+@enduml

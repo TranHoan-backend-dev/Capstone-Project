@@ -148,7 +148,7 @@ public class InstallationFormController {
   @GetMapping("/estimate/pending")
   @PreAuthorize("hasAnyAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> getPendingEstimateForms(Pageable pageable) {
-    var response = installationFormHandlingUseCase.findByEstimateStatus_Pending(pageable);
+    var response = installationFormHandlingUseCase.findByEstimateStatusPending(pageable);
     return Utils.returnOkResponse("Lấy danh sách thành công", response);
   }
 
@@ -156,7 +156,7 @@ public class InstallationFormController {
   @GetMapping("/registration/pending")
   @PreAuthorize("hasAnyAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> getPendingRegistrationForms(Pageable pageable) {
-    var response = installationFormHandlingUseCase.findByRegistrationStatus_Pending(pageable);
+    var response = installationFormHandlingUseCase.findByRegistrationStatusPending(pageable);
     return Utils.returnOkResponse("Lấy danh sách thành công", response);
   }
 

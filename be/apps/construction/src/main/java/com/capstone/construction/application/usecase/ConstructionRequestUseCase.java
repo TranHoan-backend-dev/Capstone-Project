@@ -46,7 +46,7 @@ public class ConstructionRequestUseCase {
   String QUEUE_NAME;
   // </editor-fold>
 
-  public void assignToConstructionCaptain(@NonNull AssignRequest request, String empId) {
+  public void createAndAssignToConstructionCaptain(@NonNull AssignRequest request, String empId) {
     constructionRequestService.createPendingRequest(
       empId, request.contractId(),
       request.formCode(), request.formNumber()

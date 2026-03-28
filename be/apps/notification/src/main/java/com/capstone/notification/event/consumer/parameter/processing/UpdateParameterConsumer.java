@@ -1,7 +1,7 @@
 package com.capstone.notification.event.consumer.parameter.processing;
 
-import com.capstone.notification.event.websocket.GeneralEventConsumer;
-import com.capstone.notification.event.websocket.Topic;
+import com.capstone.notification.event.consumer.GeneralEventConsumer;
+import com.capstone.notification.event.consumer.Topic;
 import com.capstone.notification.event.consumer.parameter.message.UpdateEventMessage;
 import com.capstone.notification.event.producer.MessageProducer;
 import org.jspecify.annotations.NonNull;

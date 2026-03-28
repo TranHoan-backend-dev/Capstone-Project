@@ -5,7 +5,7 @@ import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
 import com.capstone.notification.dto.request.CreateDepartmentNotificationRequest;
 import com.capstone.notification.dto.request.CreateNotificationRequest;
-import com.capstone.notification.event.websocket.Topic;
+import com.capstone.notification.event.consumer.Topic;
 import com.capstone.notification.service.boundary.NotificationService;
 import com.capstone.notification.dto.response.NotificationBatchResponse;
 import io.swagger.v3.oas.annotations.Operation;

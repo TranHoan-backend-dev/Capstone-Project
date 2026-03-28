@@ -1,9 +1,9 @@
 package com.capstone.notification.event.consumer.hamlet.processing;
 
 import com.capstone.notification.event.producer.MessageProducer;
-import com.capstone.notification.event.websocket.GeneralEventConsumer;
+import com.capstone.notification.event.consumer.GeneralEventConsumer;
 import com.capstone.notification.event.consumer.hamlet.message.DeleteEventMessage;
-import com.capstone.notification.event.websocket.Topic;
+import com.capstone.notification.event.consumer.Topic;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
