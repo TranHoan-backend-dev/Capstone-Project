@@ -1,4 +1,4 @@
-package com.capstone.common.utils;
+package com.capstone.common.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Pattern;

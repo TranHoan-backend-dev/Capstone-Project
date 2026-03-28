@@ -2,7 +2,7 @@ package com.capstone.construction.adapter;
 
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
-import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.common.utils.Utils;
 import com.capstone.construction.application.business.installationform.InstallationFormService;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;

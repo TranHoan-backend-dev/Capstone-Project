@@ -1,6 +1,6 @@
 package com.capstone.construction.application.business.installationform;
 
-import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
