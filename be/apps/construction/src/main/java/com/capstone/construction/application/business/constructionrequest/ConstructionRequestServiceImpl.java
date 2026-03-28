@@ -1,6 +1,5 @@
 package com.capstone.construction.application.business.constructionrequest;
 
-import com.capstone.common.annotation.AppLog;
 import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.common.enumerate.RoleName;
 import com.capstone.common.exception.NotExistingException;
@@ -17,10 +16,11 @@ import com.capstone.construction.infrastructure.utils.Message;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 
-@AppLog
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -32,6 +32,7 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
 
   @Override
   public ConstructionResponse createPendingRequest(String employeeId, String contractId, String formCode, String formNumber) {
+    log.info("Creating pending request");
     if (!customerService.checkExistenceOfContract(contractId)) {
       throw new IllegalArgumentException("Không tìm thấy hợp đồng");
     }
@@ -41,6 +42,7 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
     var installationForm = ifRepo.findById(new InstallationFormId(formCode, formNumber))
       .orElseThrow(() -> new IllegalArgumentException(String.format(SharedMessage.MES_24, formNumber, formCode)));
 
+    log.info("Creating pending request");
     var constructionRequest = ConstructionRequest.builder()
       .contractId(contractId)
       .installationForm(installationForm)
@@ -85,6 +87,7 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
   }
 
   private void validateEmployee(String employeeId) {
+    log.info("Validating employee " + employeeId);
     var status = employeeService.isEmployeeExisting(employeeId).data().toString();
     if (!Boolean.parseBoolean(status)) {
       throw new IllegalArgumentException("Không tìm thấy nhân viên với id " + employeeId);
