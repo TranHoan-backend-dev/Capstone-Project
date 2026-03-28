@@ -1,3 +1,4 @@
+// components/construction/pending-table.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -12,26 +13,24 @@ import {
   PendingConstructionItem,
   PendingConstructionResponse,
 } from "@/types";
+import AssignConstructionPopup from "./assign-construction-popup";
 
 interface PendingTableProps {
   filters?: FilterPendingConstructionRequest;
-  onApprove?: (id: string, formCode: string, formNumber: string) => void;
-  onReject?: (id: string) => void;
   refreshTrigger?: number;
+  onSuccess?: () => void;
 }
 
 export const PendingTable = ({
   filters,
-  onApprove,
-  onReject,
   refreshTrigger = 0,
+  onSuccess,
 }: PendingTableProps) => {
   const [data, setData] = useState<PendingConstructionItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [page, setPage] = useState(1);
   const [sort, setSort] = useState<{
     field: string;
     direction: "asc" | "desc";
@@ -40,72 +39,94 @@ export const PendingTable = ({
     direction: "desc",
   });
 
-  const [page, setPage] = useState(1);
+  // State cho popup giao thi công
+  const [showAssignPopup, setShowAssignPopup] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<{
+    formCode: string;
+    formNumber: string;
+    customerName: string;
+    customerId?: string;
+  } | null>(null);
+
   const pageSize = 10;
 
   useEffect(() => {
-    setLoading(true);
-
-    const fetchData = async () => {
-      try {
-        const params = new URLSearchParams({
-          page: String(page - 1),
-          size: String(pageSize),
-          sort: `${sort.field},${sort.direction}`,
-        });
-
-        const res = await authFetch(`/api/construction/constructions`);
-
-        if (!res.ok) {
-          console.error("Fetch failed", res.status);
-          return;
-        }
-
-        const json = await res.json();
-        const pageData = json?.data;
-        const items = pageData?.content ?? [];
-        setTotalItems(pageData?.page.totalElements ?? 0);
-        setTotalPages(pageData?.page.totalPages ?? 1);
-
-        const mapped = items.map(
-          (item: PendingConstructionResponse, index: number) => ({
-            id: item.formCode,
-            stt: (page - 1) * pageSize + index + 1,
-            formNumber: item.formNumber,
-            customerName: item.customerName,
-            phoneNumber: item.phoneNumber,
-            handoverByFullName: item.handoverByFullName,
-            address: item.address,
-            scheduleSurveyAt: item.scheduleSurveyAt,
-            status: item.status.construction,
-          }),
-        );
-        setData(mapped);
-      } catch (e) {
-        setData([]);
-        setTotalItems(0);
-        setTotalPages(1);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
-  }, [page, sort]);
+  }, [page, sort, refreshTrigger]);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({
+        page: String(page - 1),
+        size: String(pageSize),
+        sort: `${sort.field},${sort.direction}`,
+      });
+
+      const res = await authFetch(`/api/construction/constructions?${params}`);
+
+      if (!res.ok) {
+        console.error("Fetch failed", res.status);
+        return;
+      }
+
+      const json = await res.json();
+      const pageData = json?.data;
+      const items = pageData?.content ?? [];
+      setTotalItems(pageData?.page.totalElements ?? 0);
+      setTotalPages(pageData?.page.totalPages ?? 1);
+
+      const mapped = items.map(
+        (item: PendingConstructionResponse, index: number) => ({
+          id: item.formCode,
+          stt: (page - 1) * pageSize + index + 1,
+          formCode: item.formCode,
+          formNumber: item.formNumber,
+          customerName: item.customerName,
+          phoneNumber: item.phoneNumber,
+          handoverByFullName: item.handoverByFullName,
+          address: item.address,
+          scheduleSurveyAt: item.scheduleSurveyAt,
+          status: item.status.construction,
+        }),
+      );
+      setData(mapped);
+    } catch (e) {
+      console.error("Error fetching data:", e);
+      setData([]);
+      setTotalItems(0);
+      setTotalPages(1);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAssign = (item: PendingConstructionItem) => {
+    setSelectedOrder({
+      formCode: item.formCode,
+      formNumber: item.formNumber,
+      customerName: item.customerName,
+      constructionId: item.id, 
+      customerId: (item as any).customerId,
+    });
+    setShowAssignPopup(true);
+  };
+
+  const handleAssignSuccess = () => {
+    // Refresh danh sách sau khi giao thành công
+    fetchData();
+    if (onSuccess) {
+      onSuccess();
+    }
+  };
+
   const actionItems = [
     {
-      content: "Duyệt đơn",
+      content: "Giao thi công",
       icon: CheckApprovalIcon,
-      color: "success" as const,
-      className: "text-green-600 hover:bg-green-50",
-      onClick: (id: string) => console.log("Duyệt:", id),
-    },
-    {
-      content: "Từ chối đơn",
-      icon: CancelIcon,
-      color: "danger" as const,
-      className: "text-red-500 hover:bg-red-50",
-      onClick: (id: string) => console.log("Từ chối:", id),
+      color: "primary" as const,
+      className: "text-blue-600 hover:bg-blue-50",
+      onClick: (item: PendingConstructionItem) => handleAssign(item),
     },
   ];
 
@@ -132,7 +153,7 @@ export const PendingTable = ({
                   variant="light"
                   size="sm"
                   className={`${action.className} rounded-lg`}
-                  onPress={() => action.onClick(item.id)}
+                  onPress={() => action.onClick(item)}
                 >
                   <action.icon className="w-5 h-5" />
                 </Button>
@@ -147,19 +168,36 @@ export const PendingTable = ({
   };
 
   return (
-    <GenericDataTable
-      title="Danh sách đơn chờ"
-      columns={PENDING_CONSTRUCTION}
-      data={data}
-      isCollapsible
-      headerSummary={`${data.length}`}
-      renderCellAction={renderCell}
-      paginationProps={{
-        total: totalPages,
-        page: page,
-        onChange: setPage,
-        summary: `${data.length}`,
-      }}
-    />
+    <>
+      <GenericDataTable
+        title="Danh sách đơn chờ giao thi công"
+        columns={PENDING_CONSTRUCTION}
+        data={data}
+        isCollapsible
+        headerSummary={`${data.length}`}
+        renderCellAction={renderCell}
+        paginationProps={{
+          total: totalPages,
+          page: page,
+          onChange: setPage,
+          summary: `${data.length}`,
+        }}
+      />
+
+      {showAssignPopup && selectedOrder && (
+        <AssignConstructionPopup
+          isOpen={showAssignPopup}
+          onClose={() => {
+            setShowAssignPopup(false);
+            setSelectedOrder(null);
+          }}
+          onSuccess={handleAssignSuccess}
+          formCode={selectedOrder.formCode}
+          formNumber={selectedOrder.formNumber}
+          customerName={selectedOrder.customerName}
+          customerId={selectedOrder.customerId}
+        />
+      )}
+    </>
   );
 };

@@ -1,4 +1,3 @@
-// components/AssignConstructionPopup.tsx
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -38,20 +37,78 @@ export const AssignConstructionPopup = ({
   formNumber,
   customerName,
   customerId,
-  contractId,
+  contractId: propContractId,
 }: AssignConstructionPopupProps) => {
   const [selectedLeader, setSelectedLeader] = useState<Set<string>>(new Set());
   const [teamLeaders, setTeamLeaders] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [contractId, setContractId] = useState<string | undefined>(
+    propContractId,
+  );
+  const [fetchingContract, setFetchingContract] = useState(false);
 
-  // Fetch danh sách đội trưởng đội thi công
   useEffect(() => {
     if (isOpen) {
       fetchConstructionHead();
+      if (!propContractId && formCode && formNumber) {
+        fetchContractId();
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, formCode, formNumber, propContractId]);
+
+  const fetchContractId = async () => {
+    setFetchingContract(true);
+    setError(null);
+    try {
+      const res = await authFetch(
+        `/api/customer/contracts/ids?formCode=${encodeURIComponent(formCode)}&formNumber=${encodeURIComponent(formNumber)}`,
+      );
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(
+          errorData?.message || "Không thể lấy thông tin hợp đồng",
+        );
+      }
+
+      const json = await res.json();
+      console.log("API response:", json); // Debug log
+
+      // Parse đúng cấu trúc response từ backend
+      // Response có dạng: { status: 200, message: "...", data: ["HE171773"] }
+      let fetchedContractId = null;
+
+      if (json.data && Array.isArray(json.data) && json.data.length > 0) {
+        // Lấy phần tử đầu tiên của mảng data
+        fetchedContractId = json.data[0];
+      } else if (json.data && typeof json.data === "string") {
+        // Trường hợp data là string
+        fetchedContractId = json.data;
+      } else if (json.id) {
+        // Trường hợp có id trực tiếp
+        fetchedContractId = json.id;
+      }
+
+      console.log("Parsed contractId:", fetchedContractId); // Debug log
+
+      if (!fetchedContractId) {
+        throw new Error("Không tìm thấy hợp đồng cho đơn này");
+      }
+
+      setContractId(fetchedContractId);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Có lỗi xảy ra khi lấy thông tin hợp đồng",
+      );
+      console.error("Error fetching contract id:", err);
+    } finally {
+      setFetchingContract(false);
+    }
+  };
 
   const fetchConstructionHead = async () => {
     setLoading(true);
@@ -66,7 +123,6 @@ export const AssignConstructionPopup = ({
 
       setTeamLeaders(allEmployees);
 
-      // Nếu không có nhân viên nào được lọc, hiển thị thông báo
       if (allEmployees.length === 0) {
         setError("Không tìm thấy đội trưởng đội thi công");
       }
@@ -89,6 +145,11 @@ export const AssignConstructionPopup = ({
       return;
     }
 
+    if (!contractId) {
+      setError("Không tìm thấy thông tin hợp đồng, vui lòng thử lại");
+      return;
+    }
+
     const teamLeaderId = Array.from(selectedLeader)[0];
 
     setSubmitting(true);
@@ -105,7 +166,6 @@ export const AssignConstructionPopup = ({
           body: JSON.stringify({
             formCode: formCode,
             formNumber: formNumber,
-            customerId: customerId,
             contractId: contractId,
           }),
         },
@@ -130,6 +190,8 @@ export const AssignConstructionPopup = ({
     value: leader.id,
   }));
 
+  const isLoading = loading || fetchingContract;
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="md">
       <ModalContent>
@@ -145,7 +207,15 @@ export const AssignConstructionPopup = ({
               <p className="font-medium">{customerName}</p>
             </div>
 
-            {loading ? (
+            {/* Hiển thị trạng thái fetching contractId nếu cần */}
+            {fetchingContract && (
+              <div className="flex items-center gap-2 text-sm text-blue-600">
+                <Spinner size="sm" />
+                <span>Đang tải thông tin hợp đồng...</span>
+              </div>
+            )}
+
+            {isLoading && !fetchingContract ? (
               <div className="flex justify-center py-4">
                 <Spinner size="lg" />
               </div>
@@ -156,13 +226,25 @@ export const AssignConstructionPopup = ({
                 selectedKeys={selectedLeader}
                 onSelectionChange={handleSelectionChange}
                 isRequired
-                isDisabled={submitting || teamLeaders.length === 0}
+                isDisabled={
+                  submitting || teamLeaders.length === 0 || fetchingContract
+                }
               />
+            )}
+
+            {error && (
+              <div className="text-sm text-red-500 p-2 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                {error}
+              </div>
             )}
           </div>
         </ModalBody>
         <ModalFooter>
-          <Button variant="light" onPress={onClose} disabled={submitting}>
+          <Button
+            variant="light"
+            onPress={onClose}
+            disabled={submitting || fetchingContract}
+          >
             Hủy
           </Button>
           <Button
@@ -171,8 +253,10 @@ export const AssignConstructionPopup = ({
             isLoading={submitting}
             isDisabled={
               submitting ||
+              fetchingContract ||
               selectedLeader.size === 0 ||
-              teamLeaders.length === 0
+              teamLeaders.length === 0 ||
+              !contractId
             }
           >
             Xác nhận giao

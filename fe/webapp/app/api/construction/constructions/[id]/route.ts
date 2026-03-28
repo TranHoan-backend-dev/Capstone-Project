@@ -1,7 +1,4 @@
-import {
-  assignConstructionOrder,
-  updateHamlet,
-} from "@/services/construction.service";
+import { createAndAssignToConstructionCaptain } from "@/services/construction.service";
 import { getAccessToken } from "@/utils/getAccessToken";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -17,14 +14,13 @@ export async function PATCH(
     }
 
     const { id } = await params;
-    const { formCode, formNumbe, customerId, contractId } = await req.json();
+    const { formCode, formNumber, contractId } = await req.json();
 
-    const response = await assignConstructionOrder(
+    const response = await createAndAssignToConstructionCaptain(
       accessToken,
       id,
       formCode,
-      formNumbe,
-      customerId,
+      formNumber,
       contractId,
     );
 

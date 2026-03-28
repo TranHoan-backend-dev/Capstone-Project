@@ -1,6 +1,4 @@
-import {
-  CreateCustomerPayload,
-} from "@/types";
+import { CreateCustomerPayload } from "@/types";
 import { API_GATEWAY_URL } from "@/utils/constraints";
 import axios from "axios";
 
@@ -135,6 +133,27 @@ export const deleteContract = (accessToken: string, customerId: string) => {
   return axios.delete(`${API_GATEWAY_URL}/customer/contracts/${customerId}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
+export const getContractByFormCodeAndFormNumber = (
+  accessToken: string,
+  formCode: string,
+  formNumber: string,
+) => {
+  console.log("Calling backend API:", `${API_GATEWAY_URL}/customer/contracts/ids`);
+  console.log("Params:", { formCode, formNumber });
+  console.log("Token exists:", !!accessToken);
+  
+  return axios.get(`${API_GATEWAY_URL}/customer/contracts/ids`, {
+    params: { 
+      formCode, 
+      formNumber 
+    },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
     },
   });
 };

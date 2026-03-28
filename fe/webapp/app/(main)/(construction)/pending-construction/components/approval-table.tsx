@@ -1,39 +1,39 @@
-// components/approved-table.tsx
 "use client";
 
 import { Button, Tooltip, Spinner } from "@heroui/react";
 import React, { useEffect, useState } from "react";
 
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import { DeleteIcon, ViewIcon } from "@/config/chip-and-icon";
+import {
+  DeleteIcon,
+  ViewIcon,
+  CheckApprovalIcon,
+} from "@/config/chip-and-icon";
 import { authFetch } from "@/utils/authFetch";
 import { PendingConstructionItem, PendingConstructionResponse } from "@/types";
 import { PENDING_CONSTRUCTION } from "@/config/table-columns/construction/pending-construction-column";
 
 interface ApprovedRecord extends PendingConstructionItem {
   contractNo?: string;
+  constructionStatus?: string;
 }
 
 interface ApprovedTableProps {
   refreshTrigger?: number;
+  onApprove?: () => void;
 }
 
-export const ApprovedTable = ({ refreshTrigger = 0 }: ApprovedTableProps) => {
+export const ApprovedTable = ({
+  refreshTrigger = 0,
+  onApprove,
+}: ApprovedTableProps) => {
   const [data, setData] = useState<ApprovedRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const pageSize = 10;
   const [totalItems, setTotalItems] = useState(0);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [deleteLoading, setDeleteLoading] = useState(false);
-  const [sort, setSort] = useState<{
-    field: string;
-    direction: "asc" | "desc";
-  }>({
-    field: "",
-    direction: "desc",
-  });
+  const [approvingId, setApprovingId] = useState<string | null>(null);
+  const pageSize = 10;
 
   const columns = [
     { key: "formCode", label: "Mã đơn" },
@@ -41,6 +41,7 @@ export const ApprovedTable = ({ refreshTrigger = 0 }: ApprovedTableProps) => {
     { key: "customerName", label: "Tên công trình" },
     { key: "phoneNumber", label: "Điện thoại" },
     { key: "address", label: "Địa chỉ lắp đặt" },
+    { key: "constructedByFullName", label: "Nhân viên thi công" },
     { key: "registrationAt", label: "Ngày đăng ký" },
     { key: "actions", label: "Hành động", align: "center" as const },
   ];
@@ -53,7 +54,7 @@ export const ApprovedTable = ({ refreshTrigger = 0 }: ApprovedTableProps) => {
     setLoading(true);
     try {
       const res = await authFetch(
-        `/api/construction/constructions?page=${page - 1}&size=${pageSize}`,
+        `/api/construction/constructions?page=${page - 1}&size=${pageSize}&status=PENDING_FOR_APPROVED`,
       );
 
       if (!res.ok) {
@@ -68,21 +69,26 @@ export const ApprovedTable = ({ refreshTrigger = 0 }: ApprovedTableProps) => {
       setTotalPages(pageData?.page.totalPages ?? 1);
 
       const mapped = items.map(
-        (item: PendingConstructionResponse, index: number) => ({
+        (
+          item: PendingConstructionResponse & {
+            constructedByFullName?: string;
+          },
+          index: number,
+        ) => ({
           id: item.formCode,
           stt: (page - 1) * pageSize + index + 1,
+          formCode: item.formCode,
           formNumber: item.formNumber,
           customerName: item.customerName,
           phoneNumber: item.phoneNumber,
-          handoverByFullName: item.handoverByFullName,
           address: item.address,
-          scheduleSurveyAt: item.scheduleSurveyAt,
+          registrationAt: item.registrationAt,
+          constructedByFullName: item.constructedByFullName || "Chưa phân công",
           status: item.status.construction,
         }),
       );
 
       setData(mapped);
-      setTotalPages(json?.data?.page?.totalPages ?? 1);
     } catch (error) {
       console.error("Error fetching approved data:", error);
     } finally {
@@ -90,10 +96,42 @@ export const ApprovedTable = ({ refreshTrigger = 0 }: ApprovedTableProps) => {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("vi-VN");
+  const handleApprove = async (item: ApprovedRecord) => {
+    if (
+      !confirm(
+        `Bạn có chắc chắn muốn duyệt đơn thi công cho công trình "${item.customerName}"?`,
+      )
+    ) {
+      return;
+    }
+
+    setApprovingId(item.id);
+    try {
+      const response = await authFetch(
+        `/api/construction/review/${item.id}/true`,
+        {
+          method: "POST",
+        },
+      );
+
+      if (response.ok) {
+        await fetchApprovedData();
+        if (onApprove) {
+          onApprove();
+        }
+        // Có thể thêm toast notification ở đây
+        console.log("Duyệt đơn thành công");
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to approve:", errorData);
+        alert(errorData?.message || "Duyệt đơn thất bại");
+      }
+    } catch (error) {
+      console.error("Error approving:", error);
+      alert("Có lỗi xảy ra khi duyệt đơn");
+    } finally {
+      setApprovingId(null);
+    }
   };
 
   const handleDelete = async (id: string) => {
@@ -115,7 +153,6 @@ export const ApprovedTable = ({ refreshTrigger = 0 }: ApprovedTableProps) => {
   };
 
   const handleViewDetails = (item: ApprovedRecord) => {
-    // Navigate to details page
     console.log("View details:", item);
   };
 
@@ -129,6 +166,19 @@ export const ApprovedTable = ({ refreshTrigger = 0 }: ApprovedTableProps) => {
       case "customerName":
         return <span className="font-semibold">{item.customerName}</span>;
 
+      case "constructedByFullName":
+        return (
+          <span
+            className={
+              item.constructedByFullName === "Chưa phân công"
+                ? "text-orange-500"
+                : "text-green-600"
+            }
+          >
+            {item.constructedByFullName}
+          </span>
+        );
+
       case "actions":
         return (
           <div className="flex items-center justify-center gap-2">
@@ -141,6 +191,20 @@ export const ApprovedTable = ({ refreshTrigger = 0 }: ApprovedTableProps) => {
                 onPress={() => handleViewDetails(item)}
               >
                 <ViewIcon className="w-5 h-5" />
+              </Button>
+            </Tooltip>
+
+            <Tooltip content="Duyệt đơn" closeDelay={0}>
+              <Button
+                isIconOnly
+                variant="light"
+                size="sm"
+                className="text-green-600 hover:bg-green-50 rounded-lg"
+                onPress={() => handleApprove(item)}
+                isLoading={approvingId === item.id}
+                isDisabled={approvingId === item.id}
+              >
+                <CheckApprovalIcon className="w-5 h-5" />
               </Button>
             </Tooltip>
 
@@ -173,8 +237,8 @@ export const ApprovedTable = ({ refreshTrigger = 0 }: ApprovedTableProps) => {
 
   return (
     <GenericDataTable
-      title="Danh sách đơn cho phép thi công"
-      columns={PENDING_CONSTRUCTION}
+      title="Danh sách đơn chờ duyệt thi công"
+      columns={columns}
       data={data}
       isCollapsible
       renderCellAction={renderCell}

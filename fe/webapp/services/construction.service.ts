@@ -562,7 +562,6 @@ export const getAssignedForms = (
   );
 };
 
-
 export const getAllSettlements = (
   accessToken: string,
   page: number,
@@ -732,17 +731,16 @@ export const getAllConstruction = (
     },
   });
 
-export const assignConstructionOrder = (
+export const createAndAssignToConstructionCaptain = (
   accessToken: string,
   id: string,
   formCode: string,
-  formNumbe: string,
-  customerId: string,
+  formNumber: string,
   contractId: string,
 ) =>
   axios.patch(
     `${API_GATEWAY_URL}/construction/construction/${id}`,
-    { formCode, formNumbe, customerId, contractId },
+    { formCode, formNumber, contractId },
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
