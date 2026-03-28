@@ -508,6 +508,61 @@ export const assignInstallationForm = async (
   return res.data;
 };
 
+export const getPendingRegistrationForms = (
+  accessToken: string,
+  page: number,
+  size: number,
+  sort: string,
+) => {
+  return axios.get(
+    `${API_GATEWAY_URL}/construction/installation-forms/registration/pending`,
+    {
+      params: { page, size, sort },
+      headers: { Authorization: `Bearer ${accessToken}` },
+    },
+  );
+};
+
+export const getPendingEstimateForms = (
+  accessToken: string,
+  page: number,
+  size: number,
+  sort: string,
+) => {
+  return axios.get(
+    `${API_GATEWAY_URL}/construction/installation-forms/estimate/pending`,
+    {
+      params: { page, size, sort },
+      headers: { Authorization: `Bearer ${accessToken}` },
+    },
+  );
+};
+
+export const getReviewedEstimateForms = (accessToken: string) => {
+  return axios.get(
+    `${API_GATEWAY_URL}/construction/installation-forms/reviewed`,
+    {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    },
+  );
+};
+
+export const getAssignedForms = (
+  accessToken: string,
+  page: number,
+  size: number,
+  sort: string,
+) => {
+  return axios.get(
+    `${API_GATEWAY_URL}/construction/installation-forms/assigned`,
+    {
+      params: { page, size, sort },
+      headers: { Authorization: `Bearer ${accessToken}` },
+    },
+  );
+};
+
+
 export const getAllSettlements = (
   accessToken: string,
   page: number,
