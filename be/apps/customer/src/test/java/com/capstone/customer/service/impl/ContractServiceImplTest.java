@@ -21,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -45,17 +46,15 @@ class ContractServiceImplTest {
 
   private Pageable pageable;
   private WaterUsageContract contract;
-  private Customer customer;
-  private LocalDateTime now;
 
   @BeforeEach
   void setUp() {
     pageable = PageRequest.of(0, 10);
-    customer = mock(Customer.class);
+    var customer = mock(Customer.class);
     lenient().when(customer.getName()).thenReturn("Test Customer");
     lenient().when(customer.getCustomerId()).thenReturn("CUST001");
 
-    now = LocalDateTime.now();
+    var now = LocalDateTime.now();
     contract = mock(WaterUsageContract.class);
     lenient().when(contract.getContractId()).thenReturn("CON001");
     lenient().when(contract.getFormCode()).thenReturn("INST001");
@@ -253,7 +252,7 @@ class ContractServiceImplTest {
     var request = new ContractFilterRequest(null, null, null, null, null, null, null, "2023-01-01", null, null, null);
 
     // When & Then
-    assertThrows(java.time.format.DateTimeParseException.class, () -> contractService.getAllContracts(pageable, request));
+    assertThrows(DateTimeParseException.class, () -> contractService.getAllContracts(pageable, request));
   }
 
   @Test
@@ -263,6 +262,44 @@ class ContractServiceImplTest {
     var request = new ContractFilterRequest(null, null, null, null, null, null, null, null, "2023/12/31", null, null);
 
     // When & Then
-    assertThrows(java.time.format.DateTimeParseException.class, () -> contractService.getAllContracts(pageable, request));
+    assertThrows(java.time.format.DateTimeParseException.class,
+      () -> contractService.getAllContracts(pageable, request));
+  }
+
+  @Test
+  @DisplayName("Should return contract IDs by form code and number")
+  void should_ReturnContractIds_When_FormCodeAndNumberProvided() {
+    // Given
+    var formCode = "INST001";
+    var formNumber = "NUM001";
+    List<String> expectedIds = List.of("CON001", "CON002");
+    when(contractRepository.findContractIdsByFormCodeAndFormNumber(formCode, formNumber)).thenReturn(expectedIds);
+
+    // When
+    var result = contractService.findContractIdsByFormCodeAndFormNumber(formCode, formNumber);
+
+    // Then
+    assertThat(result).isNotNull();
+    assertThat(result).hasSize(2);
+    assertThat(result).containsExactly("CON001", "CON002");
+    verify(contractRepository).findContractIdsByFormCodeAndFormNumber(formCode, formNumber);
+  }
+
+  @Test
+  @DisplayName("Should return empty list when no contract matches form code and number")
+  void should_ReturnEmptyList_When_NoContractMatchesForm() {
+    // Given
+    var formCode = "NON_EXISTENT";
+    var formNumber = "000";
+    when(contractRepository.findContractIdsByFormCodeAndFormNumber(formCode, formNumber))
+      .thenReturn(Collections.emptyList());
+
+    // When
+    var result = contractService.findContractIdsByFormCodeAndFormNumber(formCode, formNumber);
+
+    // Then
+    assertThat(result).isNotNull();
+    assertThat(result).isEmpty();
+    verify(contractRepository).findContractIdsByFormCodeAndFormNumber(formCode, formNumber);
   }
 }

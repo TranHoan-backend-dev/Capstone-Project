@@ -107,6 +107,6 @@ public class UsersUseCase {
   }
 
   public List<NameAndIdResponse> getListOfConstructionStaffs() {
-    return userService.getAllLeaderShips();
+    return userService.getAllConstructionStaffs();
   }
 }
