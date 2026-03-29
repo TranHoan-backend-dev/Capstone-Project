@@ -75,7 +75,9 @@ public class ContractController {
   @GetMapping
   public ResponseEntity<WrapperApiResponse> getAllContracts(
       @PageableDefault @ParameterObject Pageable pageable,
-      @Parameter(description = "Thông tin lọc (từ khóa tìm kiếm, mã hợp đồng, mã form, số form, ID khách hàng, tên khách hàng, số điện thoại khách hàng, ngày bắt đầu, ngày kết thúc, đại diện, phụ lục)") @ParameterObject ContractFilterRequest request) {
+      @Parameter(description = "Thông tin lọc (từ khóa tìm kiếm, mã hợp đồng, mã form, số form, ID khách hàng, tên khách hàng, số điện thoại khách hàng, ngày bắt đầu, ngày kết thúc, đại diện, phụ lục)")
+      @ParameterObject ContractFilterRequest request
+  ) {
     log.info("REST request to get all contracts with pagination: {}", pageable);
     var response = contractService.getAllContracts(pageable, request);
     return Utils.returnOkResponse("Lấy danh sách hợp đồng thành công", response);
