@@ -6,3 +6,4 @@ fe/webapp/node_modules/
 .idea/
 **/.env
 **.log
+**.txt
