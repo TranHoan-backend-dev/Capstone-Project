@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import BaseModal from "@/components/ui/modal/BaseModal";
 import CustomButton from "@/components/ui/custom/CustomButton";
 import EstimateInfoCard from "./estimate-info-card";
@@ -47,6 +47,23 @@ const CreateSignatureModal = ({
     onOpenChange();
   };
 
+  // Lọc nhân viên khảo sát
+  const surveyStaffList = useMemo(() => {
+    return employees.filter((emp) => emp.departmentName === "Khảo sát");
+  }, [employees]);
+
+  // Lọc trưởng phòng kế hoạch - kỹ thuật
+  const planningHeadList = useMemo(() => {
+    return employees.filter(
+      (emp) => emp.departmentName === "Kế hoạch - Kỹ thuật",
+    );
+  }, [employees]);
+
+  // Lọc ban lãnh đạo
+  const leadershipList = useMemo(() => {
+    return employees.filter((emp) => emp.departmentName === "Ban lãnh đạo");
+  }, [employees]);
+
   return (
     <BaseModal
       isOpen={isOpen}
@@ -62,18 +79,18 @@ const CreateSignatureModal = ({
         />
 
         <div className="space-y-4">
-          <SignerSelector
-            label="Nhân viên khảo sát"
-            value={surveyStaffId}
-            employees={employees}
-            onChange={onSurveyStaffChange}
-            placeholder="-- Chọn nhân viên khảo sát --"
-          />
+          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+            <span className="font-medium">Nhân viên khảo sát:</span>
+            <span className="text-gray-700">
+              {surveyStaffList[0]?.fullName ||
+                "Chưa có thông tin"}
+            </span>
+          </div>
 
           <SignerSelector
             label="Trưởng phòng Kế hoạch - Kỹ thuật"
             value={planningHeadId}
-            employees={employees}
+            employees={planningHeadList}
             onChange={onPlanningHeadChange}
             placeholder="-- Chọn trưởng phòng --"
           />
@@ -81,7 +98,7 @@ const CreateSignatureModal = ({
           <SignerSelector
             label="Giám đốc"
             value={companyLeadershipId}
-            employees={employees}
+            employees={leadershipList}
             onChange={onCompanyLeadershipChange}
             placeholder="-- Chọn giám đốc --"
           />

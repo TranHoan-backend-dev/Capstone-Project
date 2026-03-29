@@ -94,7 +94,7 @@ export const MaterialCostCard = ({
             }
             size="sm"
             type="number"
-            step="0.01"
+            step="1"
           />
         );
       case "materialPrice":

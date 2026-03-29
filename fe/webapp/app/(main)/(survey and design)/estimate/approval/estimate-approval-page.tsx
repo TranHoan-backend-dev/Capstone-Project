@@ -87,18 +87,79 @@ const EstimateApprovalPage = () => {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const res = await authFetch("/api/auth/employees?size=1000");
-        const json = await res.json();
+        // Lấy thông tin nhân viên khảo sát từ profile (useProfile)
+        let surveyStaff = null;
 
-        const employees = json?.data?.content || [];
+        if (profile && profile.role === "survey_staff") {
+          surveyStaff = {
+            id: profile.id,
+            fullName: profile.fullname,
+            departmentName: "Khảo sát",
+          };
+          // Set surveyStaffId với id từ profile
+          setSurveyStaffId(profile.id);
+          console.log("Survey staff ID set from profile:", profile.id);
+        }
 
-        const mappedEmployees = employees.map((emp: any) => ({
-          id: emp.id,
-          fullName: emp.fullName,
-          departmentName: emp.departmentName,
-        }));
+        // Lấy planning head từ endpoint
+        let planningHeads = [];
+        try {
+          const planningRes = await authFetch("/api/auth/employees/pt-head");
+          const planningJson = await planningRes.json();
+          console.log("Planning head response:", planningJson);
 
-        setAllEmployees(mappedEmployees);
+          if (planningJson?.data && Array.isArray(planningJson.data)) {
+            planningHeads = planningJson.data.map((emp: any) => ({
+              id: emp.id,
+              fullName: emp.name,
+              departmentName: "Kế hoạch - Kỹ thuật",
+            }));
+          }
+        } catch (error) {
+          console.error("Error fetching planning head:", error);
+        }
+
+        // Lấy company leadership từ endpoint
+        let leaderships = [];
+        try {
+          const leadershipRes = await authFetch(
+            "/api/auth/employees/leadership",
+          );
+          const leadershipJson = await leadershipRes.json();
+          console.log("Leadership response:", leadershipJson);
+
+          if (leadershipJson?.data && Array.isArray(leadershipJson.data)) {
+            leaderships = leadershipJson.data.map((emp: any) => ({
+              id: emp.id,
+              fullName: emp.name,
+              departmentName: "Ban lãnh đạo",
+            }));
+          }
+        } catch (error) {
+          console.error("Error fetching company leadership:", error);
+        }
+
+        const employeesList = [];
+
+        if (surveyStaff) {
+          employeesList.push(surveyStaff);
+        }
+
+        employeesList.push(...planningHeads);
+        employeesList.push(...leaderships);
+
+        console.log("Employees loaded:", employeesList);
+        setAllEmployees(employeesList);
+
+        // Tự động set planning head mặc định nếu chỉ có 1
+        if (planningHeads.length === 1 && !planningHeadId) {
+          setPlanningHeadId(planningHeads[0].id);
+        }
+
+        // Tự động set leadership mặc định nếu chỉ có 1
+        if (leaderships.length === 1 && !companyLeadershipId) {
+          setCompanyLeadershipId(leaderships[0].id);
+        }
       } catch (error) {
         console.error("Error fetching employees:", error);
         setAllEmployees([]);
@@ -106,7 +167,7 @@ const EstimateApprovalPage = () => {
     };
 
     fetchEmployees();
-  }, []);
+  }, [profile]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -264,16 +325,27 @@ const EstimateApprovalPage = () => {
   };
   const handleCreateSignatureRequest = (item: EstimateOrder) => {
     setSelectedItemForSign(item);
-    setSurveyStaffId("");
     setPlanningHeadId("");
     setCompanyLeadershipId("");
     setIsCreateSignModalOpen(true);
   };
 
+  // Sửa lại handleConfirmCreateSignatureRequest
   const handleConfirmCreateSignatureRequest = async () => {
     if (!selectedItemForSign) return;
 
-    if (!surveyStaffId && !planningHeadId && !companyLeadershipId) {
+    // Lấy survey staff ID từ profile
+    let surveyStaffIdValue = "";
+    if (profile && profile.role === "survey_staff") {
+      surveyStaffIdValue = profile.id;
+      console.log("Survey staff ID from profile:", surveyStaffIdValue);
+    }
+
+    console.log("surveyStaffIdValue:", surveyStaffIdValue);
+    console.log("planningHeadId:", planningHeadId);
+    console.log("companyLeadershipId:", companyLeadershipId);
+
+    if (!surveyStaffIdValue && !planningHeadId && !companyLeadershipId) {
       CallToast({
         title: "Thất bại",
         message: "Vui lòng chọn ít nhất một người ký",
@@ -286,10 +358,12 @@ const EstimateApprovalPage = () => {
     try {
       const requestBody = {
         estId: selectedItemForSign.id,
-        surveyStaff: surveyStaffId || null,
+        surveyStaff: surveyStaffIdValue || null,
         plHead: planningHeadId || null,
         companyLeadership: companyLeadershipId || null,
       };
+
+      console.log("Request body being sent:", requestBody);
 
       const res = await authFetch(`/api/construction/estimates/sign`, {
         method: "POST",
@@ -313,6 +387,7 @@ const EstimateApprovalPage = () => {
       setRefetch((prev) => prev + 1);
       setIsCreateSignModalOpen(false);
     } catch (error: any) {
+      console.error("Error:", error);
       CallToast({
         title: "Thất bại",
         message: error.message || "Có lỗi xảy ra",

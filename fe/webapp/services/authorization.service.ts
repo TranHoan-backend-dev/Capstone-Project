@@ -30,16 +30,8 @@ export const getBusinessPageNamesOfEmployees = (
     },
   });
 
-export const getSurveyStaff = (
-  accessToken: string,
-  page: number,
-  size: number,
-) =>
-  axios.get(`${API_GATEWAY_URL}/auth/authorization/employee/survey-staff`, {
-    params: {
-      page,
-      size,
-    },
+export const getSurveyStaff = (accessToken: string) =>
+  axios.get(`${API_GATEWAY_URL}/auth/authorization/employees/survey-staff`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
@@ -47,6 +39,20 @@ export const getSurveyStaff = (
 
 export const getEmployeeById = (accessToken: string, id: string) =>
   axios.get(`${API_GATEWAY_URL}/auth/authorization/employees/${id}/name`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+export const getPlanningHead = (accessToken: string) =>
+  axios.get(`${API_GATEWAY_URL}/auth/authorization/employees/pt-head`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+export const getCompanyLeadership = (accessToken: string) =>
+  axios.get(`${API_GATEWAY_URL}/auth/authorization/employees/leadership`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },

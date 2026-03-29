@@ -13,7 +13,7 @@ export const numberToVietnamese = (num: number): string => {
   ];
   const scales = ["", "Nghìn", "Triệu", "Tỷ"];
 
-  if (num === 0) return "không";
+  if (num === 0) return "Không";
 
   const readBlock = (n: number) => {
     let str = "";
