@@ -13,6 +13,7 @@ export default function CustomerCard({ data }: any) {
       customerId: data.id,
       customerName: data.name,
       address: data.address,
+      stt: data.stt,
     });
   };
 
@@ -23,10 +24,8 @@ export default function CustomerCard({ data }: any) {
           {/* Header Row: ID and Status Badge */}
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-              <Icon name="database-outline" size={18} color="#757575" style={{ marginRight: 6 }} />
-              <Text style={{ color: '#1E88E5', fontWeight: '500', marginRight: 12 }}>{data.id}</Text>
-              <Text style={{ color: '#1E88E5', fontWeight: '500', marginRight: 4 }}>STT: {data.stt}</Text>
-              <Icon name="swap-vertical" size={18} color="#4CAF50" />
+              <Icon name="format-list-numbered" size={20} color="#1E88E5" style={{ marginRight: 8 }} />
+              <Text style={{ color: '#1E88E5', fontWeight: '700', fontSize: 16 }}>STT: {data.stt}</Text>
             </View>
 
             <Button

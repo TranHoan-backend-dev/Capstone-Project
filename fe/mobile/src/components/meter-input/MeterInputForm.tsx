@@ -9,18 +9,16 @@ import MeterInputStatusCard from './MeterInputStatusCard';
 import MeterInputIndexCard from './MeterInputIndexCard';
 import MeterInputActionButtons from './MeterInputActionButtons';
 import ImagePreviewModal from './ImagePreviewModal';
-// import { meterService, Usage } from '../../services/meterService';
-import { Usage } from '../../services/meterService';
+import { meterService, Usage } from '../../services/meterService';
 // import { storageService } from '../../services/storageService';
 import styles from './meterInput.styles';
 import { showToast } from '../../utils/toast';
-
-
 
 interface MeterInputFormProps {
   customerId?: string;
   customerName?: string;
   address?: string;
+  stt?: number;
   ocrResult?: {
     serial: string;
     currentIndex: number;
@@ -28,11 +26,11 @@ interface MeterInputFormProps {
   };
 }
 
-
 export default function MeterInputForm({
   customerId: initialCustomerId = '015281',
   customerName: initialCustomerName = 'Nguyễn Văn Tiến',
   address: initialAddress = '621, Trường Chinh, Phương Nam Định',
+  stt: initialStt = 1,
   ocrResult,
 }: MeterInputFormProps) {
 
@@ -40,7 +38,6 @@ export default function MeterInputForm({
   const [loading, setLoading] = React.useState(true);
   const [customerData, setCustomerData] = React.useState<any>(null);
   const [_usageHistory, setUsageHistory] = React.useState<Usage[]>([]);
-
 
   const [waterType, setWaterType] = useState('Sinh hoạt dân cư');
   const [meterStatus, setMeterStatus] = useState('binh-thuong');
@@ -50,38 +47,68 @@ export default function MeterInputForm({
   const [image, _setImage] = useState<string | null>(null);
   const [showImagePreview, setShowImagePreview] = useState(false);
 
-
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       
-      /* Comment out real fetch for development bypass
-      const [details, history, recentData] = await Promise.all([
-        meterService.getCustomerDetails(initialCustomerId),
-        meterService.getUsageHistory(initialCustomerId),
-        meterService.getRecentUsage(initialCustomerId)
+      // Khởi tạo các promise lấy dữ liệu đồng thời (chế độ silent để dùng mock nếu lỗi)
+      const [details, recentData, latestImage] = await Promise.all([
+        meterService.getCustomerDetails(initialCustomerId, { silent: true }).catch(e => {
+          console.warn('Failed to fetch details:', e.message);
+          return null;
+        }),
+        meterService.getRecentUsage(initialCustomerId, { silent: true }).catch(e => {
+          console.warn('Failed to fetch usage history:', e.message);
+          return null;
+        }),
+        meterService.getLatestImage(initialCustomerId, { silent: true }).catch(e => {
+          console.warn('Failed to fetch latest image:', e.message);
+          return null;
+        })
       ]);
 
-      setCustomerData(details);
-      
-      // Sử dụng recentData để hiển thị 3 tháng gần nhất và ảnh mới nhất
-      if (recentData && recentData.usagesList) {
+      // 1. Xử lý Customer Details (Gộp với mock nếu thiếu)
+      const finalDetails = {
+        customerId: initialCustomerId,
+        name: details?.fullName || initialCustomerName,
+        address: details?.address || initialAddress,
+        phoneNumber: details?.phoneNumber || '0987.654.321', // Mock
+        waterMeterId: details?.waterMeter?.serialNumber || 'WM-2024-TEST-001', // Mock
+        numberOfHouseholds: details?.numberOfHouseholds || 1, // Mock
+        householdRegistrationNumber: details?.numberOfPeople || 4, // Mock
+        waterPrice: details?.waterPrice || { name: 'Sinh hoạt dân cư' } // Mock
+      };
+      setCustomerData(finalDetails);
+      setWaterType(finalDetails.waterPrice?.name || 'Sinh hoạt dân cư');
+
+      // 2. Xử lý Usage History (Lấy 3 tháng gần nhất)
+      // Phần này KHÔNG dùng mock nếu API có trả về
+      if (recentData && recentData.usagesList && recentData.usagesList.length > 0) {
         setUsageHistory(recentData.usagesList);
-        if (recentData.usagesList.length > 0) {
-           const latest = recentData.usagesList[0]; // record mới nhất
-           setOldIndex(latest.index.toString());
-           if (latest.meterImageUrl) {
-             _setImage(latest.meterImageUrl);
-           }
+        
+        // Sắp xếp lấy bản ghi mới nhất làm chỉ số cũ (oldIndex)
+        const sortedUsages = [...recentData.usagesList].sort((a, b) => 
+          new Date(b.recordingDate).getTime() - new Date(a.recordingDate).getTime()
+        );
+        
+        const latestRecorded = sortedUsages[0];
+        setOldIndex(latestRecorded.index.toString());
+        
+        // Nếu record mới nhất có ảnh, ưu tiên hiển thị
+        if (latestRecorded.meterImageUrl) {
+          _setImage(latestRecorded.meterImageUrl);
         }
+      } else {
+        // Dự phòng tối thiểu nếu hoàn toàn trống
+        setOldIndex("0");
       }
 
-      if (details) {
-        setWaterType(details.waterPrice?.name || 'Sinh hoạt dân cư');
+      // 3. Xử lý Xem hình ảnh (Uư tiên lấy ảnh mới nhất từ API riêng nếu có)
+      if (latestImage) {
+        _setImage(latestImage);
       }
-      */
 
-      // --- MOCK DATA FOR DEVELOPMENT ---
+      /* --- MOCK DATA FOR DEVELOPMENT (Uncomment to use) ---
       const mockDetails = {
         customerId: initialCustomerId,
         name: initialCustomerName,
@@ -110,10 +137,11 @@ export default function MeterInputForm({
       setOldIndex(mockUsageHistory[0].index.toString());
       setWaterType('Sinh hoạt dân cư');
       _setImage(mockUsageHistory[0].meterImageUrl);
-      // ---------------------------------
+      ---------------------------------------------------- */
 
     } catch (error) {
       console.error('Error fetching meter data:', error);
+      showToast.error('Không thể tải dữ liệu khách hàng. Đang hiển thị dữ liệu mẫu.');
     } finally {
       setLoading(false);
     }
@@ -226,7 +254,7 @@ export default function MeterInputForm({
         <MeterInputInfoCard
           customerName={customerData?.name || initialCustomerName}
           customerId={customerData?.customerId || initialCustomerId}
-          stt={1}
+          stt={initialStt}
           address={customerData?.address || initialAddress}
           phone={customerData?.phoneNumber || "085..."}
           meterId={customerData?.waterMeterId || "..."}
