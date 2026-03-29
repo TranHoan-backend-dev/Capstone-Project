@@ -105,16 +105,23 @@ public class CostEstimateUseCase {
     return estSrv.getAllEstimates(pageable, request);
   }
 
-  public void assignStaffForSignCostEstimate(@NonNull AssignTheSignificanceRequest request) {
+  public void assignStaffForSignCostEstimate(@NonNull AssignTheSignificanceRequest request, String userId) {
     var status = estSrv.isExisting(request.estId());
     var status1 = empSrv.isEmployeeExisting(request.surveyStaff()).data().toString();
+    System.out.println("Kiem tra truong phong co ton tai hay k");
     var status2 = empSrv.isEmployeeExisting(request.plHead()).data().toString();
+    System.out.println("Kiem tra lanh dao co ton tai hay k");
     var status3 = empSrv.isEmployeeExisting(request.companyLeadership()).data().toString();
-
+    System.out.println("Lay ra role cua nguoi dung");
+    var currentUser = empSrv.getRoleOfEmployeeById(userId).data().toString();
+    System.out.println("Kiem tra xong");
     if (!status) {
       throw new NotExistingException(String.format(Message.PT_61, request.estId()));
     }
-    if (!Boolean.parseBoolean(status1) && !Boolean.parseBoolean(status2) && !Boolean.parseBoolean(status3)) {
+    if ((currentUser.equalsIgnoreCase(RoleName.SURVEY_STAFF.name()) && !Boolean.parseBoolean(status2) && !Boolean.parseBoolean(status3)) ||
+      (currentUser.equalsIgnoreCase(RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD.name()) && !Boolean.parseBoolean(status1) && !Boolean.parseBoolean(status3)) ||
+      (currentUser.equalsIgnoreCase(RoleName.COMPANY_LEADERSHIP.name()) && !Boolean.parseBoolean(status2) && !Boolean.parseBoolean(status1))
+    ) {
       throw new NotExistingException(Message.PT_59);
     }
 

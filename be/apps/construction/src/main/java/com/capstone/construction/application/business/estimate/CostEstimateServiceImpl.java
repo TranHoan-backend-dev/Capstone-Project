@@ -246,6 +246,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
 
   @Override
   public boolean isExisting(String id) {
+    log.info("isExisting with id: {}", id);
     return eRepo.existsById(id);
   }
 
