@@ -34,8 +34,8 @@ public class ContractController {
   private final ContractService contractService;
 
   @Operation(summary = "Tạo mới hợp đồng", description = "Tạo một hợp đồng sử dụng nước mới dựa trên thông tin yêu cầu.", responses = {
-    @ApiResponse(responseCode = "201", description = "Tạo hợp đồng thành công"),
-    @ApiResponse(responseCode = "400", description = "Dữ liệu đầu vào không hợp lệ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
+      @ApiResponse(responseCode = "201", description = "Tạo hợp đồng thành công"),
+      @ApiResponse(responseCode = "400", description = "Dữ liệu đầu vào không hợp lệ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PostMapping
   public ResponseEntity<WrapperApiResponse> createContract(@RequestBody @Valid CreateRequest request) {
@@ -46,55 +46,56 @@ public class ContractController {
   }
 
   @Operation(summary = "Xóa hợp đồng", description = "Xóa một hợp đồng khỏi hệ thống.", responses = {
-    @ApiResponse(responseCode = "200", description = "Xóa hợp đồng thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ContractResponse.class))),
-    @ApiResponse(responseCode = "404", description = "Không tìm thấy hợp đồng", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
+      @ApiResponse(responseCode = "200", description = "Xóa hợp đồng thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ContractResponse.class))),
+      @ApiResponse(responseCode = "404", description = "Không tìm thấy hợp đồng", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @DeleteMapping("/{id}")
   public ResponseEntity<WrapperApiResponse> deleteContract(
-    @PathVariable @Parameter(description = "Mã hợp đồng cần xóa", example = "HD001") String id
-  ) {
+      @PathVariable @Parameter(description = "Mã hợp đồng cần xóa", example = "HD001") String id) {
     log.info("REST request to delete contract: {}", id);
     contractService.deleteContract(id);
     return Utils.returnOkResponse("Xóa hợp đồng thành công", null);
   }
 
   @Operation(summary = "Lấy thông tin hợp đồng theo ID", description = "Truy xuất thông tin chi tiết của một hợp đồng cụ thể.", responses = {
-    @ApiResponse(responseCode = "200", description = "Lấy thông tin hợp đồng thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ContractResponse.class))),
-    @ApiResponse(responseCode = "404", description = "Không tìm thấy hợp đồng", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
+      @ApiResponse(responseCode = "200", description = "Lấy thông tin hợp đồng thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ContractResponse.class))),
+      @ApiResponse(responseCode = "404", description = "Không tìm thấy hợp đồng", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @GetMapping("/{id}")
   public ResponseEntity<WrapperApiResponse> getContractById(
-    @PathVariable @Parameter(description = "Mã hợp đồng cần lấy thông tin", example = "HD001") String id
-  ) {
+      @PathVariable @Parameter(description = "Mã hợp đồng cần lấy thông tin", example = "HD001") String id) {
     log.info("REST request to get contract: {}", id);
     var response = contractService.getContractById(id);
     return Utils.returnOkResponse("Lấy thông tin hợp đồng thành công", response);
   }
 
   @Operation(summary = "Lấy danh sách hợp đồng", description = "Truy xuất danh sách hợp đồng với các tiêu chí lọc và phân trang.", responses = {
-    @ApiResponse(responseCode = "200", description = "Lấy danh sách hợp đồng thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ContractResponse.class)))
+      @ApiResponse(responseCode = "200", description = "Lấy danh sách hợp đồng thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ContractResponse.class)))
   })
   @GetMapping
   public ResponseEntity<WrapperApiResponse> getAllContracts(
-    @PageableDefault @ParameterObject Pageable pageable,
-    @Parameter(description = "Thông tin lọc (từ khóa tìm kiếm, mã hợp đồng, mã form, số form, ID khách hàng, tên khách hàng, số điện thoại khách hàng, ngày bắt đầu, ngày kết thúc, đại diện, phụ lục)")
-    @ParameterObject ContractFilterRequest request
-  ) {
+      @PageableDefault @ParameterObject Pageable pageable,
+      @Parameter(description = "Thông tin lọc (từ khóa tìm kiếm, mã hợp đồng, mã form, số form, ID khách hàng, tên khách hàng, số điện thoại khách hàng, ngày bắt đầu, ngày kết thúc, đại diện, phụ lục)") @ParameterObject ContractFilterRequest request) {
     log.info("REST request to get all contracts with pagination: {}", pageable);
     var response = contractService.getAllContracts(pageable, request);
     return Utils.returnOkResponse("Lấy danh sách hợp đồng thành công", response);
   }
 
   @Operation(summary = "Lấy danh sách ID hợp đồng theo mã form và số form", description = "Truy xuất danh sách ID hợp đồng dựa trên mã form và số form.", responses = {
-    @ApiResponse(responseCode = "200", description = "Lấy danh sách ID hợp đồng thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)))
+      @ApiResponse(responseCode = "200", description = "Lấy danh sách ID hợp đồng thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)))
   })
   @GetMapping("/ids")
   public ResponseEntity<WrapperApiResponse> getContractIdsByForms(
-    @RequestParam @Parameter(description = "Mã form", example = "CN01") String formCode,
-    @RequestParam @Parameter(description = "Số form", example = "001/2024") String formNumber
-  ) {
+      @RequestParam @Parameter(description = "Mã form", example = "CN01") String formCode,
+      @RequestParam @Parameter(description = "Số form", example = "001/2024") String formNumber) {
     log.info("REST request to get contract IDs by formCode: {} and formNumber: {}", formCode, formNumber);
     var response = contractService.findContractIdsByFormCodeAndFormNumber(formCode, formNumber);
     return Utils.returnOkResponse("Lấy danh sách ID hợp đồng thành công", response);
+  }
+
+  @GetMapping("/exist")
+  public Boolean isExisting(@RequestParam String id) {
+    log.info("Check existence of contract: {}", id);
+    return contractService.isExist(id);
   }
 }

@@ -6,12 +6,15 @@ import com.capstone.construction.application.dto.request.settlement.SettlementFi
 import com.capstone.construction.application.dto.request.settlement.SettlementRequest;
 import com.capstone.construction.application.dto.request.settlement.SignificanceRequest;
 import com.capstone.construction.domain.model.Settlement;
-import com.capstone.construction.domain.model.utils.InstallationForm;
+import com.capstone.construction.domain.model.InstallationForm;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
 import com.capstone.construction.domain.model.utils.significance.SettlementSignificance;
 import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
 import com.capstone.construction.infrastructure.persistence.SettlementRepository;
 import com.capstone.construction.infrastructure.service.EmployeeService;
+import org.junit.jupiter.api.BeforeEach;
+import org.slf4j.Logger;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,6 +51,14 @@ class SettlementServiceImplTest {
 
   @InjectMocks
   SettlementServiceImpl settlementService;
+
+  @Mock
+  Logger log;
+
+  @BeforeEach
+  void setUp() {
+    ReflectionTestUtils.setField(settlementService, "log", log);
+  }
 
   @Test
   @DisplayName("Create settlement successfully")

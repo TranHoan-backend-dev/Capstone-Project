@@ -1,41 +1,17 @@
-@uri = http://localhost:9004/api/v1
-@keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
-@client_secret=
+### Variables
+@baseUrl = http://localhost:9004/api/v1
+@token = {{access_token}}
 
-### get token
-POST {{keycloak}}/token
-Content-Type: application/x-www-form-urlencoded
-Accept: application/json
+### TC01 - Giao đơn thi công thành công (Happy Path)
+PATCH {{baseUrl}}/construction/eae87df0-7f02-47b9-baa2-ac2bc9ea61fb
+Authorization: Bearer {{token}}
+Content-Type: application/json
 
-grant_type=password&
-client_id=&
-client_secret={{client_secret}}&
-username=&
-password=&
-scope=openid
-
-> {%
- client.global.set("access_token", response.body.access_token);
- client.global.set("refresh_token", response.body.refresh_token);
-%}
-
-### L - Get Construction Orders List (đơn chờ thi công)
-### 1. Happy Path - Get all construction orders (No param)
-GET {{uri}}/construction/construction
-Authorization: Bearer {{access_token}}
-
-> {%
-client.test("Status is 200", function() {
-  client.assert(response.status === 200);
-});
-client.test("Response has content", function() {
-  client.assert(response.body.data != null);
-});
-%}
-
-### 2. Happy Path - Pagination and Sort
-GET {{uri}}/construction/construction?page=0&size=10&sort=createdAt,desc
-Authorization: Bearer {{access_token}}
+{
+  "formCode": "c2eebc99-9c0b-4ef8-bb6d-6bb9bd380a13",
+  "formNumber": "FORM-2024-0003",
+  "contractId": "adsfasdvaerg"
+}
 
 > {%
 client.test("Status is 200", function() {
@@ -52,7 +28,6 @@ Content-Type: application/json
 {
   "formCode": "LĐN",
   "formNumber": "2024/001",
-  "customerId": "CUST-001",
   "contractId": "CONT-001"
 }
 

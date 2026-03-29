@@ -81,6 +81,6 @@ class ConstructionRequestUseCaseTest {
     useCase.getPaginatedConstructionRequest(Pageable.unpaged(), new BaseFilterRequest(null, null, null));
 
     // Assert
-    verify(ifSrv).getConstructionRequestsList(any(), any());
+    verify(constructionRequestService).getConstructionRequestsList(any(), any());
   }
 }

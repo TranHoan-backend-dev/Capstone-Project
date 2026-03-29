@@ -4,6 +4,7 @@ import com.capstone.common.annotation.AppLog;
 import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.common.utils.SharedMessage;
+import com.capstone.common.utils.Utils;
 import com.capstone.construction.application.business.estimate.CostEstimateService;
 import com.capstone.construction.application.dto.request.estimate.CreateRequest;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
@@ -34,8 +35,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 
 @AppLog
 @Service
@@ -92,32 +91,13 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   @Override
   public Page<InstallationFormListResponse> getInstallationForms(Pageable pageable, @NonNull BaseFilterRequest request) {
     log.info("Fetching paginated installation forms with pageable: {}", pageable);
-    var startDate = parseFrom(request.from());
-    var endDate = parseTo(request.to());
+    var startDate = Utils.parseFrom(request.from());
+    var endDate = Utils.parseTo(request.to());
 
     var result = (startDate != null || endDate != null || (request.keyword() != null && !request.keyword().isBlank())) ? ifRepo.findAll(
         InstallationFormRepository.search(request.keyword(), startDate, endDate, null, null),
         pageable) : ifRepo.findAllNotRejectedInstallationForms(pageable);
 
-    var content = result.getContent()
-        .stream()
-        .map(this::mapToResponse)
-        .toList();
-
-    return new PageImpl<>(content, pageable, result.getTotalElements());
-  }
-
-  @Override
-  public Page<InstallationFormListResponse> getConstructionRequestsList(Pageable pageable,
-      @NonNull BaseFilterRequest request) {
-    log.info("Fetching paginated construction request with pageable: {}", pageable);
-    var startDate = parseFrom(request.from());
-    var endDate = parseTo(request.to());
-    var specification = InstallationFormRepository.search(
-        request.keyword(), startDate, endDate,
-        ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING);
-
-    var result = ifRepo.findAll(specification, pageable);
     var content = result.getContent()
         .stream()
         .map(this::mapToResponse)
@@ -257,24 +237,25 @@ public class InstallationFormServiceImpl implements InstallationFormService {
     var unknown = "Trống";
 
     return new InstallationFormListResponse(
-        entity.getFormCode(),
-        entity.getFormNumber(),
-        entity.getCustomerName(),
-        entity.getAddress(),
-        entity.getPhoneNumber(),
-        entity.getScheduleSurveyAt() == null ? null : entity.getScheduleSurveyAt().toString(),
-        entity.getCreatedAt().toString(),
-        entity.getHandoverBy(),
-        (handOverByFullName != null && handOverByFullName.data() != null) ? handOverByFullName.data().toString()
-            : unknown,
-        entity.getCreatedBy(),
-        (creatorFullName != null && creatorFullName.data() != null) ? creatorFullName.data().toString() : unknown,
-        entity.getConstructedBy(),
-        (constructionEmployeeName != null && constructionEmployeeName.data() != null)
-            ? constructionEmployeeName.data().toString()
-            : unknown,
-        entity.getStatus(),
-        entity.getOverallWaterMeterId()
+      null,
+      entity.getFormCode(),
+      entity.getFormNumber(),
+      entity.getCustomerName(),
+      entity.getAddress(),
+      entity.getPhoneNumber(),
+      entity.getScheduleSurveyAt() == null ? null : entity.getScheduleSurveyAt().toString(),
+      entity.getCreatedAt().toString(),
+      entity.getHandoverBy(),
+      (handOverByFullName != null && handOverByFullName.data() != null) ? handOverByFullName.data().toString()
+        : unknown,
+      entity.getCreatedBy(),
+      (creatorFullName != null && creatorFullName.data() != null) ? creatorFullName.data().toString() : unknown,
+      entity.getConstructedBy(),
+      (constructionEmployeeName != null && constructionEmployeeName.data() != null)
+        ? constructionEmployeeName.data().toString()
+        : unknown,
+      entity.getStatus(),
+      entity.getOverallWaterMeterId()
     );
   }
 
@@ -294,23 +275,5 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       log.warn("Water meter not found: {}", id);
     }
     return exists;
-  }
-
-  private LocalDateTime parseFrom(String from) {
-    LocalDateTime startDate = null;
-
-    if (from != null) {
-      startDate = LocalDate.parse(from, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay();
-    }
-    return startDate;
-  }
-
-  private LocalDateTime parseTo(String to) {
-    LocalDateTime endDate = null;
-
-    if (to != null) {
-      endDate = LocalDate.parse(to, DateTimeFormatter.ISO_LOCAL_DATE).atTime(LocalTime.MAX);
-    }
-    return endDate;
   }
 }

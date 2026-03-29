@@ -13,6 +13,7 @@ import com.capstone.construction.infrastructure.utils.Message;
 import com.capstone.construction.infrastructure.persistence.*;
 import com.capstone.construction.infrastructure.service.*;
 import org.jspecify.annotations.NonNull;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.*;
 import java.util.*;
@@ -41,9 +43,21 @@ class InstallationFormServiceImplTest {
   private DeviceService owmSrv;
   @Mock
   private CostEstimateService costEstimateService;
+  @Mock
+  private CostEstimateRepository costEstimateRepo;
 
   @InjectMocks
   private InstallationFormServiceImpl service;
+
+  @BeforeEach
+  void setUp() {
+    ReflectionTestUtils.setField(service, "costEstimateRepo", costEstimateRepo);
+    ReflectionTestUtils.setField(service, "ifRepo", ifRepo);
+    ReflectionTestUtils.setField(service, "wsnRepo", wsnRepo);
+    ReflectionTestUtils.setField(service, "costEstimateService", costEstimateService);
+    ReflectionTestUtils.setField(service, "empSrv", empSrv);
+    ReflectionTestUtils.setField(service, "owmSrv", owmSrv);
+  }
 
   private static final String USER_ID = "EMP-001";
 
@@ -214,7 +228,7 @@ class InstallationFormServiceImplTest {
     var result = service.getInstallationForms(pageable, request);
 
     // Then
-    assertThat(result.getContent().get(0).handoverByFullName()).isEqualTo("Trống");
+    assertThat(result.getContent().getFirst().handoverByFullName()).isEqualTo("Trống");
   }
 
   @Test
@@ -231,7 +245,7 @@ class InstallationFormServiceImplTest {
     var result = service.getInstallationForms(pageable, request);
 
     // Then
-    assertThat(result.getContent().get(0).handoverByFullName()).isEqualTo("Trống");
+    assertThat(result.getContent().getFirst().handoverByFullName()).isEqualTo("Trống");
   }
 
   @Test
@@ -256,7 +270,8 @@ class InstallationFormServiceImplTest {
     var pageable = PageRequest.of(0, 10);
     var entity = createMockEntity();
     when(ifRepo.findByRegistrationStatus_Pending(pageable)).thenReturn(new PageImpl<>(List.of(entity)));
-    when(empSrv.getEmployeeNameById(any())).thenReturn(new WrapperApiResponse(200, "OK", "Staff", OffsetDateTime.now()));
+    when(empSrv.getEmployeeNameById(any()))
+      .thenReturn(new WrapperApiResponse(200, "OK", "Staff", OffsetDateTime.now()));
 
     // When
     var result = service.findByRegistrationStatusPending(pageable);
@@ -381,45 +396,6 @@ class InstallationFormServiceImplTest {
     // Then
     assertThat(result.getContent()).hasSize(1);
     verify(ifRepo).findAll(any(Specification.class), eq(pageable));
-  }
-
-  @Test
-  void should_GetConstructionRequestsList_When_ValidRequest() {
-    // Given
-    var pageable = PageRequest.of(0, 10);
-    var request = new BaseFilterRequest("keyword", "2024-01-01", "2024-01-31");
-    var entity = createMockEntity();
-
-    when(ifRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(new PageImpl<>(List.of(entity)));
-    when(empSrv.getEmployeeNameById(any())).thenReturn(new WrapperApiResponse(200, "OK", "Staff", OffsetDateTime.now()));
-
-    // When
-    var result = service.getConstructionRequestsList(pageable, request);
-
-    // Then
-    assertThat(result.getContent()).hasSize(1);
-    verify(ifRepo).findAll(any(Specification.class), eq(pageable));
-  }
-
-  @Test
-  void should_GetConstructionRequestsList_When_NoFilters() {
-    // Given
-    var pageable = PageRequest.of(0, 10);
-    var request = new BaseFilterRequest(null, null, null);
-    var entity = createMockEntity();
-
-    when(ifRepo.findByStatus_ContractAndStatus_Construction(ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING,
-      pageable))
-      .thenReturn(new PageImpl<>(List.of(entity)));
-    when(empSrv.getEmployeeNameById(any())).thenReturn(new WrapperApiResponse(200, "OK", "Staff", OffsetDateTime.now()));
-
-    // When
-    var result = service.getConstructionRequestsList(pageable, request);
-
-    // Then
-    assertThat(result.getContent()).hasSize(1);
-    verify(ifRepo).findByStatus_ContractAndStatus_Construction(ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING,
-      pageable);
   }
 
   @Test
