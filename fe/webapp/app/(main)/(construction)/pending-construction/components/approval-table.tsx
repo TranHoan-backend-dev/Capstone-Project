@@ -54,7 +54,7 @@ export const ApprovedTable = ({
     setLoading(true);
     try {
       const res = await authFetch(
-        `/api/construction/constructions?page=${page - 1}&size=${pageSize}&status=PENDING_FOR_APPROVED`,
+        `/api/construction/constructions?page=${page - 1}&size=${pageSize}`,
       );
 
       if (!res.ok) {

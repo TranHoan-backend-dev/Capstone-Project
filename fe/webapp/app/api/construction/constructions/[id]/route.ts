@@ -28,7 +28,7 @@ export async function PATCH(
   } catch (error: any) {
     return NextResponse.json(
       {
-        message: error.response?.data?.message || "Cập nhật thôn làng thất bại",
+        message: error.response?.data?.message || "Giao nhiệm vụ thất bại",
       },
       { status: error.response?.status || 500 },
     );

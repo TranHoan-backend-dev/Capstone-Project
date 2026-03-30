@@ -61,7 +61,7 @@ export const PendingTable = ({
       const params = new URLSearchParams({
         page: String(page - 1),
         size: String(pageSize),
-        sort: `${sort.field},${sort.direction}`,
+        // sort: `${sort.field},${sort.direction}`,
       });
 
       const res = await authFetch(`/api/construction/constructions?${params}`);
@@ -107,7 +107,7 @@ export const PendingTable = ({
       formCode: item.formCode,
       formNumber: item.formNumber,
       customerName: item.customerName,
-      constructionId: item.id,
+      // constructionId: item.id,
       customerId: (item as any).customerId,
     });
     setShowAssignPopup(true);
