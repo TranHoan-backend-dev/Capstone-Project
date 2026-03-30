@@ -25,6 +25,12 @@ public interface InstallationFormService {
 
   Page<InstallationFormListResponse> findByEstimateStatusPending(Pageable pageable);
 
+  Page<InstallationFormListResponse> findByEstimateStatusProcessing(Pageable pageable);
+
+  Page<InstallationFormListResponse> findByEstimateStatusApproved(Pageable pageable);
+
+  Page<InstallationFormListResponse> findByEstimateStatusRejected(Pageable pageable);
+
   Page<InstallationFormListResponse> findByRegistrationStatusPending(Pageable pageable);
 
   ReviewedInstallationFormsResponse getReviewedInstallationFormsList();

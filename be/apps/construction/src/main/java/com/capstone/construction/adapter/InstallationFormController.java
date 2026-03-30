@@ -153,6 +153,30 @@ public class InstallationFormController {
     return Utils.returnOkResponse("Lấy danh sách thành công", response);
   }
 
+  @Operation(summary = "Lấy danh sách đơn đang xử lý dự toán", description = "Lấy các đơn lắp đặt có trạng thái của estimate là PROCESSING")
+  @GetMapping("/estimate/processing")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> getProcessingEstimateForms(Pageable pageable) {
+    var response = installationFormHandlingUseCase.findByEstimateStatusProcessing(pageable);
+    return Utils.returnOkResponse("Lấy danh sách thành công", response);
+  }
+
+  @Operation(summary = "Lấy danh sách đơn đã duyệt dự toán", description = "Lấy các đơn lắp đặt có trạng thái của estimate là APPROVED")
+  @GetMapping("/estimate/approved")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> getApprovedEstimateForms(Pageable pageable) {
+    var response = installationFormHandlingUseCase.findByEstimateStatusApproved(pageable);
+    return Utils.returnOkResponse("Lấy danh sách thành công", response);
+  }
+
+  @Operation(summary = "Lấy danh sách đơn bị từ chối dự toán", description = "Lấy các đơn lắp đặt có trạng thái của estimate là REJECTED")
+  @GetMapping("/estimate/rejected")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> getRejectedEstimateForms(Pageable pageable) {
+    var response = installationFormHandlingUseCase.findByEstimateStatusRejected(pageable);
+    return Utils.returnOkResponse("Lấy danh sách thành công", response);
+  }
+
   @Operation(summary = "Lấy danh sách đơn chờ duyệt khảo sát", description = "Lấy các đơn lắp đặt mới có trạng thái registration là PENDING_FOR_APPROVAL")
   @GetMapping("/registration/pending")
   @PreAuthorize("hasAnyAuthority('IT_STAFF')")

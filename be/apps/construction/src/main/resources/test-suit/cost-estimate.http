@@ -214,3 +214,43 @@ Authorization: Bearer {{access_token}}
 Accept: application/json
 
 true
+
+### View reports of requests pending cost estimates
+GET http://localhost:9004/api/v1/installation-forms/estimate/pending?page=0&size=10
+Authorization: Bearer {{access_token}}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+### View reports of requests processing cost estimates
+GET http://localhost:9004/api/v1/installation-forms/estimate/processing?page=0&size=10
+Authorization: Bearer {{access_token}}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+### View reports of requests approved cost estimates
+GET http://localhost:9004/api/v1/installation-forms/estimate/approved?page=0&size=10
+Authorization: Bearer {{access_token}}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+### View reports of requests rejected cost estimates
+GET http://localhost:9004/api/v1/installation-forms/estimate/rejected?page=0&size=10
+Authorization: Bearer {{access_token}}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}

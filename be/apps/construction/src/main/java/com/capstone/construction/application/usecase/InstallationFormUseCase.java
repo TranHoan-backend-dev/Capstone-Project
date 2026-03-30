@@ -57,6 +57,18 @@ public class InstallationFormUseCase {
     return ifSrv.findByEstimateStatusPending(pageable);
   }
 
+  public Page<InstallationFormListResponse> findByEstimateStatusProcessing(Pageable pageable) {
+    return ifSrv.findByEstimateStatusProcessing(pageable);
+  }
+
+  public Page<InstallationFormListResponse> findByEstimateStatusApproved(Pageable pageable) {
+    return ifSrv.findByEstimateStatusApproved(pageable);
+  }
+
+  public Page<InstallationFormListResponse> findByEstimateStatusRejected(Pageable pageable) {
+    return ifSrv.findByEstimateStatusRejected(pageable);
+  }
+
   public Page<InstallationFormListResponse> findByRegistrationStatusPending(Pageable pageable) {
     return ifSrv.findByRegistrationStatusPending(pageable);
   }

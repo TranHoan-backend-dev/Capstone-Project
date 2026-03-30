@@ -174,6 +174,27 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   }
 
   @Override
+  public Page<InstallationFormListResponse> findByEstimateStatusProcessing(Pageable pageable) {
+    log.info("Fetching installation forms with estimate status PROCESSING");
+    var result = ifRepo.findByEstimateStatusProcessing(pageable);
+    return result.map(this::mapToResponse);
+  }
+
+  @Override
+  public Page<InstallationFormListResponse> findByEstimateStatusApproved(Pageable pageable) {
+    log.info("Fetching installation forms with estimate status APPROVED");
+    var result = ifRepo.findByEstimateStatusApproved(pageable);
+    return result.map(this::mapToResponse);
+  }
+
+  @Override
+  public Page<InstallationFormListResponse> findByEstimateStatusRejected(Pageable pageable) {
+    log.info("Fetching installation forms with estimate status REJECTED");
+    var result = ifRepo.findByEstimateStatusRejected(pageable);
+    return result.map(this::mapToResponse);
+  }
+
+  @Override
   public Page<InstallationFormListResponse> findByRegistrationStatusPending(Pageable pageable) {
     log.info("Fetching installation forms with registration status PENDING_FOR_APPROVAL");
     var result = ifRepo.findByRegistrationStatus_Pending(pageable);

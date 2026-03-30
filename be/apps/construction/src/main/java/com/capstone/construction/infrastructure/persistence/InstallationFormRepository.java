@@ -123,4 +123,13 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
     WHERE i.status->>'registration' <> 'REJECTED'
     """, nativeQuery = true)
   Page<InstallationForm> findAllNotRejectedInstallationForms(Pageable pageable);
+
+  @Query(value = "SELECT * FROM installation_form i WHERE i.status->>'estimate' = 'PROCESSING'", nativeQuery = true)
+  Page<InstallationForm> findByEstimateStatusProcessing(Pageable pageable);
+
+  @Query(value = "SELECT * FROM installation_form i WHERE i.status->>'estimate' = 'APPROVED'", nativeQuery = true)
+  Page<InstallationForm> findByEstimateStatusApproved(Pageable pageable);
+
+  @Query(value = "SELECT * FROM installation_form i WHERE i.status->>'estimate' = 'REJECTED'", nativeQuery = true)
+  Page<InstallationForm> findByEstimateStatusRejected(Pageable pageable);
 }
