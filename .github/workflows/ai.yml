@@ -6,11 +6,13 @@ on:
             ["main", "dev", "feat/**", "refactor/**", "style/**", "fix/**"]
         paths:
             - "be/apps/ai-service/**"
+            - .github/workflows/ai.yml
     pull_request:
         branches:
             - "dev"
         paths:
             - "be/apps/ai-service/**"
+            - .github/workflows/ai.yml
 
 permissions:
     contents: read
@@ -36,7 +38,7 @@ jobs:
                   if [ -f be/apps/ai-service/requirements.txt ]; then
                     pip install -r be/apps/ai-service/requirements.txt
                   fi
-              working-directory: .
+              working-directory: be/apps/ai-service
 
             - name: Lint with flake8
               run: |
