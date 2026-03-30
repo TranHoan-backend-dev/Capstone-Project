@@ -29,6 +29,7 @@ export const EstimateTable = ({
   onEstimateAction,
   onSignAction,
   onCreateSignatureRequest,
+  currentUserRole,
 }: EstimateTableProps) => {
   const renderCell = (item: EstimateOrder, columnKey: string) => {
     switch (columnKey) {
@@ -82,7 +83,7 @@ export const EstimateTable = ({
               </Tooltip>
             )}
 
-            {onCreateSignatureRequest && (
+            {onCreateSignatureRequest && currentUserRole === "survey_staff" && (
               <Tooltip color="primary" content="Tạo yêu cầu ký">
                 <EstimationIcon
                   className={BlueYellowIconColor}

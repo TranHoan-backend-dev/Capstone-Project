@@ -495,6 +495,8 @@ const EstimateApprovalPage = () => {
     return status === APPROVED_STATUS;
   }).length;
 
+  const currentUserRole = profile?.role;
+
   return (
     <>
       <FilterSection
@@ -546,6 +548,7 @@ const EstimateApprovalPage = () => {
             onEstimateAction={handleEstimate}
             onCreateSignatureRequest={handleCreateSignatureRequest}
             onSignAction={handleSignAction}
+            currentUserRole={currentUserRole}
           />
         </Tab>
         <Tab
@@ -573,6 +576,7 @@ const EstimateApprovalPage = () => {
             onEstimateAction={handleEstimate}
             onCreateSignatureRequest={handleCreateSignatureRequest}
             onSignAction={handleSignAction}
+            currentUserRole={currentUserRole}
           />
         </Tab>
       </Tabs>

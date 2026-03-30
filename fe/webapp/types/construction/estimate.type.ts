@@ -213,7 +213,7 @@ export interface UpdateEstimateRequest {
   }>;
 }
 
-export interface EstimateOrder {  
+export interface EstimateOrder {
   stt: string;
   id: number;
   code: string;
@@ -240,6 +240,7 @@ export interface EstimateTableProps {
   onSignAction?: (item: EstimateOrder) => void;
   activeTab?: "pending" | "approved" | "signing";
   onCreateSignatureRequest?: (item: EstimateOrder) => void;
+  currentUserRole?: string;
 }
 
 export interface ApprovalInputSectionProps {
