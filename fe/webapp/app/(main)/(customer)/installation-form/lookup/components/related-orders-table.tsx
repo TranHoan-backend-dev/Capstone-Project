@@ -197,13 +197,29 @@ export const RelatedOrdersTable = ({
 
     if (statusObj.contract !== "APPROVED") {
       return {
-        stage: "construction",
+        stage: "contract",
         status: mapStatus(statusObj.contract),
         canAssign: false,
       };
     }
 
+    if (statusObj.construction !== "APPROVED") {
+      return {
+        stage: "construction",
+        status: mapStatus(statusObj.construction),
+      };
+    }
+
+    if (statusObj.construction !== "APPROVED") {
+      return {
+        stage: "construction",
+        status: mapStatus(statusObj.construction),
+      };
+    }
+
     return {
+      stage: "construction",
+      status: "approved",
       stage: "contract",
       status: mapStatus(statusObj.construction),
       canAssign: isReadyForConstruction,

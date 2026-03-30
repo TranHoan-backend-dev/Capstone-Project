@@ -10,114 +10,7 @@ import React, { useState, useEffect } from "react";
 import { authFetch } from "@/utils/authFetch";
 import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
 import { LookupModal } from "@/components/ui/modal/LookupModal";
-
-// Hàm chuyển đổi số thành chữ (cần cài đặt chi tiết)
-const numberToVietnameseWords = (num: number): string => {
-  if (num === 0) return "Không đồng";
-
-  const units = [
-    "",
-    "Một",
-    "Hai",
-    "Ba",
-    "Bốn",
-    "Năm",
-    "Sáu",
-    "Bảy",
-    "Tám",
-    "Chín",
-  ];
-  const tens = [
-    "",
-    "Mười",
-    "Hai Mươi",
-    "Ba Mươi",
-    "Bốn Mươi",
-    "Năm Mươi",
-    "Sáu Mươi",
-    "Bảy Mươi",
-    "Tám Mươi",
-    "Chín Mươi",
-  ];
-  const hundreds = [
-    "",
-    "Một Trăm",
-    "Hai Trăm",
-    "Ba Trăm",
-    "Bốn Trăm",
-    "Năm Trăm",
-    "Sáu Trăm",
-    "Bảy Trăm",
-    "Tám Trăm",
-    "Chín Trăm",
-  ];
-
-  const convertBlock = (n: number): string => {
-    if (n === 0) return "";
-
-    const h = Math.floor(n / 100);
-    const t = Math.floor((n % 100) / 10);
-    const u = n % 10;
-
-    let result = "";
-    if (h > 0) {
-      result += hundreds[h] + " ";
-    }
-
-    if (t > 0) {
-      if (t === 1) {
-        result += "mười ";
-      } else {
-        result += tens[t] + " ";
-      }
-    }
-
-    if (u > 0) {
-      if (t > 1 || t === 0) {
-        if (u === 1 && t > 1) {
-          result += "mốt ";
-        } else if (u === 5 && t > 0) {
-          result += "lăm ";
-        } else {
-          result += units[u] + " ";
-        }
-      } else if (t === 1) {
-        result += units[u] + " ";
-      }
-    }
-
-    return result.trim();
-  };
-
-  if (num < 1000) {
-    return convertBlock(num) + " đồng";
-  }
-
-  const billions = Math.floor(num / 1000000000);
-  const millions = Math.floor((num % 1000000000) / 1000000);
-  const thousands = Math.floor((num % 1000000) / 1000);
-  const remainder = num % 1000;
-
-  let result = "";
-
-  if (billions > 0) {
-    result += convertBlock(billions) + " tỷ ";
-  }
-
-  if (millions > 0) {
-    result += convertBlock(millions) + " triệu ";
-  }
-
-  if (thousands > 0) {
-    result += convertBlock(thousands) + " nghìn ";
-  }
-
-  if (remainder > 0) {
-    result += convertBlock(remainder);
-  }
-
-  return result.trim() + " đồng";
-};
+import { numberToVietnamese } from "@/utils/numberToVietnamese";
 
 export const FeeForm = ({
   initialData,
@@ -189,7 +82,7 @@ export const FeeForm = ({
     setTotalMoneyInDigits(numValue);
 
     if (numValue > 0) {
-      const words = numberToVietnameseWords(numValue);
+      const words = numberToVietnamese(numValue);
       setTotalMoneyInCharacters(words);
     } else {
       setTotalMoneyInCharacters("");

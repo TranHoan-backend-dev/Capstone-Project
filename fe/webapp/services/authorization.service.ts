@@ -37,6 +37,27 @@ export const getSurveyStaff = (accessToken: string) =>
     },
   });
 
+export const getEmployeeById = (accessToken: string, id: string) =>
+  axios.get(`${API_GATEWAY_URL}/auth/authorization/employees/${id}/name`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+export const getPlanningHead = (accessToken: string) =>
+  axios.get(`${API_GATEWAY_URL}/auth/authorization/employees/pt-head`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+export const getCompanyLeadership = (accessToken: string) =>
+  axios.get(`${API_GATEWAY_URL}/auth/authorization/employees/leadership`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
 export const getConstructionHead = (accessToken: string) =>
   axios.get(
     `${API_GATEWAY_URL}/auth/authorization/employees/construction-head`,

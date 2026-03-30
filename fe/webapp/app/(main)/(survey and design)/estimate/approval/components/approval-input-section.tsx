@@ -2,17 +2,9 @@
 
 import React from "react";
 import { Card, CardBody } from "@heroui/react";
-import { DateValue } from "@heroui/react";
-
 import CustomDatePicker from "@/components/ui/custom/CustomDatePicker";
 import CustomTextarea from "@/components/ui/custom/CustomTextarea";
-
-interface ApprovalInputSectionProps {
-  approvalDate: DateValue | null | undefined;
-  approvalNote: string;
-  setApprovalDateAction: (date: DateValue | null | undefined) => void;
-  setApprovalNoteAction: (note: string) => void;
-}
+import { ApprovalInputSectionProps } from "@/types";
 
 export const ApprovalInputSection = ({
   approvalDate,

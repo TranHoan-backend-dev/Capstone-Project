@@ -45,35 +45,50 @@ export const resetPasswordService = async (
   return res.data;
 };
 
-export const getProfileEmployee = async (
-  accessToken: string,
-): Promise<EmployeeProfileData> => {
-  const response = await axios.get<ApiResponse<EmployeeProfileData>>(
-    `${API_GATEWAY_URL}/auth/me`,
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
-  );
+// export const getProfileEmployee = async (
+//   accessToken: string,
+// ): Promise<EmployeeProfileData> => {
+//   const response = await axios.get<ApiResponse<EmployeeProfileData>>(
+//     `${API_GATEWAY_URL}/auth/me`,
+//     {
+//       headers: {
+//         Authorization: `Bearer ${accessToken}`,
+//       },
+//     },
+//   );
 
+//   return response.data.data;
+// };
+export const getProfileEmployee = async (accessToken: string) => {
+  const response = await axios.get(`${API_GATEWAY_URL}/auth/me`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
   return response.data.data;
 };
-
-export const updateProfileEmployee = async (
-  payload: any,
-  accessToken: string,
-): Promise<any> => {
-  const response = await axios.patch<ApiResponse<any>>(
-    `${API_GATEWAY_URL}/auth/me`,
-    payload,
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
+// export const updateProfileEmployee = async (
+//   payload: any,
+//   accessToken: string,
+// ): Promise<any> => {
+//   const response = await axios.patch<ApiResponse<any>>(
+//     `${API_GATEWAY_URL}/auth/me`,
+//     payload,
+//     {
+//       headers: {
+//         Authorization: `Bearer ${accessToken}`,
+//         "Content-Type": "application/json",
+//       },
+//     },
+//   );
+//   return response.data.data;
+// };
+export const updateProfileEmployee = async (payload: any, accessToken: string) => {
+  const response = await axios.patch(`${API_GATEWAY_URL}/auth/me`, payload, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
     },
-  );
+  });
   return response.data.data;
 };
 

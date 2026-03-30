@@ -17,7 +17,6 @@ export async function POST(req: NextRequest) {
     try {
       await keycloakLogout(refreshToken);
     } catch (error) {
-      console.log(error);
       console.warn("Keycloak logout failed", error);
     }
   }

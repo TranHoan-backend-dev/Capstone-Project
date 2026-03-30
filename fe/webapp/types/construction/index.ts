@@ -11,4 +11,5 @@ export * from "./design-processing.type";
 export * from "./survey-assignment.type";
 export * from "./settlement.type";
 export * from "./fee-collection.type";
+export * from "./estimate.type";
 export * from "./pending-construction.type";

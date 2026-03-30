@@ -4,7 +4,6 @@ import { Metadata } from "next";
 import RunEstimationPage from "./run-estimation";
 
 import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
-
 export const metadata: Metadata = {
   title: "Chạy Dự Toán",
   description: "Màn hình lập dự toán kỹ thuật và chi phí vật tư",
@@ -22,7 +21,7 @@ const RunEstimation = () => {
       <CustomBreadcrumb items={breadcrumbItems} />
 
       <div className="pt-2 space-y-6">
-        <RunEstimationPage />
+        <RunEstimationPage  />
       </div>
     </>
   );

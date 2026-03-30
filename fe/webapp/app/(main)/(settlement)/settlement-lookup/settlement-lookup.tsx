@@ -11,18 +11,17 @@ import { useEmployeeProfile } from "@/hooks/useEmployeeProfile";
 import { formatDate2 } from "@/utils/format";
 import { SettlementFormModal } from "./components/settlement-form-modal";
 import { authFetch } from "@/utils/authFetch";
+import { useProfile } from "@/hooks/useLogin";
 
 const SettlementLookupPage = () => {
-  const { profile, loading: profileLoading } = useEmployeeProfile();
+  const { profile } = useProfile();
   const { isITStaff, loading: roleLoading } = useIsITStaff();
-  const loading = profileLoading || roleLoading;
   const [keyword, setKeyword] = useState("");
   const [reloadKey, setReloadKey] = useState(0);
   const [from, setFrom] = useState<DateValue | null | undefined>(null);
   const [to, setTo] = useState<DateValue | null | undefined>(null);
   const [keywordInput, setKeywordInput] = useState("");
   const [keywordSearch, setKeywordSearch] = useState("");
-  const [status, setStatus] = useState<string | undefined>();
 
   const handleSearch = () => {
     setKeywordSearch(keywordInput);
@@ -80,18 +79,6 @@ const SettlementLookupPage = () => {
 
     handleSuccess();
   };
-  if (loading) {
-    return (
-      <div className="flex items-center gap-2 text-sm text-default-500">
-        <Spinner size="sm" />
-        <span>Đang tải thông tin...</span>
-      </div>
-    );
-  }
-
-  if (!profile) {
-    return <p>Không thể tải danh sách quyết toán</p>;
-  }
 
   // if (!isITStaff) {
   //   return (
@@ -141,10 +128,8 @@ const SettlementLookupPage = () => {
         reloadKey={reloadKey}
         from={formatDate2(from)}
         to={formatDate2(to)}
-        status={status}
         onEdit={handleEdit}
         onDeleted={handleReload}
-        onFilterStatus={(s) => setStatus(s)}
       />
     </div>
   );
