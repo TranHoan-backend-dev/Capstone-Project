@@ -33,9 +33,14 @@ import {
   Button,
 } from "@heroui/react";
 import { CallToast } from "@/components/ui/CallToast";
+import CustomButton from "@/components/ui/custom/CustomButton";
 
 interface OrdersToDesignTableProps {
   data: DesignProcessingItem[];
+  page: number;
+  totalPages: number;
+  totalElements: number;
+  onPageChange: (page: number) => void;
   onApprove?: (item: DesignProcessingItem) => void;
 }
 
@@ -68,17 +73,13 @@ const statusMap = {
 } as const;
 
 export const OrdersToDesignTable = ({
-  data,
+  data,page,totalPages,totalElements,onPageChange,
   onApprove,
 }: OrdersToDesignTableProps) => {
   const [selectedDesign, setSelectedDesign] =
     useState<DesignProcessingItem | null>(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [page, setPage] = useState(1);
-  const rowsPerPage = 10;
-  const totalPages = Math.ceil(data.length / rowsPerPage);
-
   const [approveItem, setApproveItem] = useState<DesignProcessingItem | null>(
     null,
   );
@@ -294,8 +295,8 @@ export const OrdersToDesignTable = ({
         paginationProps={{
           total: totalPages,
           page: page,
-          onChange: setPage,
-          summary: `${data.length}`,
+          onChange: onPageChange,
+          summary: `${totalElements}`,
         }}
       />
 
@@ -317,16 +318,16 @@ export const OrdersToDesignTable = ({
           </ModalBody>
 
           <ModalFooter>
-            <Button
+            <CustomButton
               variant="light"
               onPress={() => setIsApproveModalOpen(false)}
             >
               Hủy
-            </Button>
+            </CustomButton>
 
-            <Button color="success" onPress={handleApproveConfirm}>
+            <CustomButton color="success" onPress={handleApproveConfirm}>
               Đồng ý
-            </Button>
+            </CustomButton>
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -344,13 +345,16 @@ export const OrdersToDesignTable = ({
           </ModalBody>
 
           <ModalFooter>
-            <Button variant="light" onPress={() => setIsRejectModalOpen(false)}>
+            <CustomButton
+              variant="light"
+              onPress={() => setIsRejectModalOpen(false)}
+            >
               Hủy
-            </Button>
+            </CustomButton>
 
-            <Button color="success" onPress={handleRejectConfirm}>
+            <CustomButton color="success" onPress={handleRejectConfirm}>
               Đồng ý
-            </Button>
+            </CustomButton>
           </ModalFooter>
         </ModalContent>
       </Modal>

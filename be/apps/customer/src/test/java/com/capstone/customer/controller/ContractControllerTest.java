@@ -1,6 +1,6 @@
 package com.capstone.customer.controller;
 
-import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.customer.dto.request.ContractFilterRequest;
 import com.capstone.customer.dto.request.contract.CreateRequest;
 import com.capstone.customer.dto.response.ContractResponse;
 import com.capstone.customer.service.boundary.ContractService;
@@ -25,7 +25,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -50,12 +49,14 @@ class ContractControllerTest {
   void setUp() {
     ReflectionTestUtils.setField(contractController, "log", log);
 
+    // CreateRequest has 5 fields: contractId, formCode, formNumber, representatives, appendix
     createRequest = new CreateRequest(
-      "HD001", "CUST001", "FORM001", "NUM001", Collections.emptyList(), Collections.emptyList()
+      "HD001", "FORM001", "NUM001", Collections.emptyList(), Collections.emptyList()
     );
 
+    // ContractResponse has 5 fields: contractId, createdAt, updatedAt, installationFormId, representatives
     mockResponse = new ContractResponse(
-      "HD001", LocalDateTime.now(), LocalDateTime.now(), "Customer Name", "CUST001", "FORM001", Collections.emptyList()
+      "HD001", LocalDateTime.now(), LocalDateTime.now(), "FORM001", Collections.emptyList()
     );
 
     pageable = PageRequest.of(0, 10);
@@ -82,7 +83,7 @@ class ContractControllerTest {
   @DisplayName("Should return OK when deleteContract is successful")
   void should_ReturnOk_When_DeleteContract() {
     // Arrange
-    String id = "HD001";
+    var id = "HD001";
     doNothing().when(contractService).deleteContract(id);
 
     // Act
@@ -100,7 +101,7 @@ class ContractControllerTest {
   @DisplayName("Should return OK when getContractById is successful")
   void should_ReturnOk_When_GetContractById() {
     // Arrange
-    String id = "HD001";
+    var id = "HD001";
     when(contractService.getContractById(id)).thenReturn(mockResponse);
 
     // Act
@@ -119,9 +120,10 @@ class ContractControllerTest {
   @DisplayName("Should return OK when getAllContracts is successful")
   void should_ReturnOk_When_GetAllContracts() {
     // Arrange
-    BaseFilterRequest filter = new BaseFilterRequest("HD", null, null);
+    // Use ContractFilterRequest instead of BaseFilterRequest
+    var filter = new ContractFilterRequest("HD", null, null, null, null, null, null, null, null, null, null);
     Page<ContractResponse> mockPage = new PageImpl<>(List.of(mockResponse));
-    when(contractService.getAllContracts(any(Pageable.class), any(BaseFilterRequest.class))).thenReturn(mockPage);
+    when(contractService.getAllContracts(any(Pageable.class), any(ContractFilterRequest.class))).thenReturn(mockPage);
 
     // Act
     var responseEntity = contractController.getAllContracts(pageable, filter);
@@ -133,5 +135,26 @@ class ContractControllerTest {
     assertThat(responseEntity.getBody().data()).isEqualTo(mockPage);
     verify(contractService).getAllContracts(pageable, filter);
     verify(log).info("REST request to get all contracts with pagination: {}", pageable);
+  }
+
+  @Test
+  @DisplayName("Should return OK when getContractIdsByForms is successful")
+  void should_ReturnOk_When_GetContractIdsByForms() {
+    // Arrange
+    var formCode = "FORM001";
+    var formNumber = "NUM001";
+    var mockIds = List.of("HD001", "HD002");
+    when(contractService.findContractIdsByFormCodeAndFormNumber(formCode, formNumber)).thenReturn(mockIds);
+
+    // Act
+    var responseEntity = contractController.getContractIdsByForms(formCode, formNumber);
+
+    // Assert
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(responseEntity.getBody()).isNotNull();
+    assertThat(responseEntity.getBody().message()).isEqualTo("Lấy danh sách ID hợp đồng thành công");
+    assertThat(responseEntity.getBody().data()).isEqualTo(mockIds);
+    verify(contractService).findContractIdsByFormCodeAndFormNumber(formCode, formNumber);
+    verify(log).info("REST request to get contract IDs by formCode: {} and formNumber: {}", formCode, formNumber);
   }
 }

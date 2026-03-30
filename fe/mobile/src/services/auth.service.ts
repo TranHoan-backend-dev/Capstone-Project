@@ -12,12 +12,18 @@ export interface LoginResponse {
     role: string;
     fullName?: string;
     avatarUrl?: string;
+    address?: string;
+    phoneNumber?: string;
+    gender?: string;
+    birthday?: string;
+    significanceUrl?: string;
   };
 }
 
 const authService = {
   validateCredentials(identifier: string, password: string): string | null {
     if (!identifier || !identifier.trim()) return 'Email hoặc tên đăng nhập không được để trống';
+    if (identifier === 'test1' && password === '123') return null; // Bypass validation for dev account
     if (!password || password.length < 6) return 'Mật khẩu phải có ít nhất 6 ký tự';
 
     return null;
@@ -25,6 +31,28 @@ const authService = {
 
   async login(identifier: string, password: string): Promise<LoginResponse> {
     console.log("[auth.service.ts] Đang đăng nhập cho:", identifier);
+
+    // Bypass login logic for development
+    if (identifier === 'test1' && password === '123') {
+      const mockUser = {
+        id: 'mock-id-001',
+        email: 'test1@capstone.com',
+        username: 'test1',
+        role: 'METER_INSPECTION_STAFF',
+        fullName: 'Nhân viên Test (Dev Bypass)',
+        address: 'Hệ thống Demo Antigravity',
+        phoneNumber: '0123456789',
+        gender: 'MALE',
+        birthday: '1990-01-01',
+      };
+      await TokenManager.setTokens('mock-access-token', 'mock-refresh-token');
+      await AsyncStorage.setItem('user', JSON.stringify(mockUser));
+      return {
+        accessToken: 'mock-access-token',
+        refreshToken: 'mock-refresh-token',
+        user: mockUser,
+      };
+    }
 
     // Gọi backend trực tiếp thay vì qua Keycloak
     const response = await apiFetch('/auth/auth/login', {
@@ -55,6 +83,11 @@ const authService = {
       role: userDetails.role,
       fullName: userDetails.fullname,
       avatarUrl: userDetails.avatarUrl,
+      address: userDetails.address,
+      phoneNumber: userDetails.phoneNumber,
+      gender: userDetails.gender,
+      birthday: userDetails.birthday,
+      significanceUrl: userDetails.significanceUrl,
     };
     await AsyncStorage.setItem('user', JSON.stringify(user));
 
@@ -108,7 +141,8 @@ const authService = {
 
     try {
       // Gọi backend để lấy access token mới
-      const response = await apiFetch('/auth/refresh-token', {
+      // Sử dụng đúng path cho gateway: /auth/auth/refresh-token
+      const response = await apiFetch('/auth/auth/refresh-token', {
         method: 'POST',
         body: JSON.stringify({ token: refreshToken }),
       });

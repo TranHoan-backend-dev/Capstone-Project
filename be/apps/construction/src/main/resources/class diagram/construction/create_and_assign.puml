@@ -1,0 +1,113 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam class {
+    BackgroundColor White
+    BorderColor #263238
+    ArrowColor #263238
+}
+
+package "Construction Service" #AliceBlue {
+    package "Adapter" as ConstAdapter {
+        class ConstructionController {
+            + createAndAssignConstructionOrder(String, AssignRequest): ResponseEntity
+        }
+    }
+
+    package "UseCase" as ConstUseCase {
+        class ConstructionRequestUseCase {
+            - constructionRequestService: ConstructionRequestService
+            - ifSrv: InstallationFormService
+            - messageProducer: MessageProducer
+            + createAndAssignToConstructionCaptain(AssignRequest, String): void
+        }
+    }
+
+    package "Application" as ConstApp {
+        interface ConstructionRequestService {
+            + createPendingRequest(String, String, String, String): ConstructionResponse
+        }
+        
+        interface InstallationFormService {
+            + assignInstallationForm(String, InstallationFormId, Boolean): void
+            + getByFormCodeAndFormNumber(String, String): InstallationFormListResponse
+        }
+    }
+
+    package "Infrastructure" as ConstInfra {
+        class MessageProducer {
+            - EXCHANGE_NAME: String
+            + send(String, Object): void
+        }
+    }
+}
+
+package "Notification Service" #HoneyDew {
+    package "Event Consumer" as NotifConsumer {
+        class AssignOrderConsumer {
+            + handle(AssignEventMessage): void
+            # buildMessage(AssignEventMessage): String
+        }
+    }
+    
+    package "DTOs" as NotifDTO {
+        class AssignEventMessage <<Record>> {
+            + pattern: String
+            + data: ApproveEventData
+        }
+        
+        class ApproveEventData <<Record>> {
+            + formCode: String
+            + formNumber: String
+            + empId: String
+            + status: Boolean
+        }
+    }
+}
+
+package "Auth Service" #GhostWhite {
+    package "Event Consumer" as AuthConsumer {
+        class NotificationConsumer {
+            + handle(NotificationCreatedEvent): void
+        }
+    }
+}
+
+package "DTOs & Events" #Ivory {
+    class AssignRequest {
+        + contractId: String
+        + formCode: String
+        + formNumber: String
+    }
+    
+    class AssignEvent <<Record>> {
+        + formCode: String
+        + formNumber: String
+        + empId: String
+        + status: Boolean
+    }
+}
+
+' Relationships
+ConstructionController o-- ConstructionRequestUseCase
+ConstructionRequestUseCase o-- ConstructionRequestService
+ConstructionRequestUseCase o-- InstallationFormService
+ConstructionRequestUseCase o-- MessageProducer
+
+ConstructionController ..> AssignRequest : uses
+ConstructionRequestUseCase ..> AssignRequest : uses
+ConstructionRequestUseCase ..> AssignEvent : produces
+
+' RabbitMQ Payload Wrapping Logic
+MessageProducer ..> AssignEvent : wraps as payload(pattern, data)
+
+AssignOrderConsumer ..> AssignEventMessage : consumes
+AssignEventMessage *-- ApproveEventData
+
+AssignOrderConsumer ..> "NotificationCreatedEvent" : produces
+
+NotificationConsumer ..> "NotificationCreatedEvent" : consumes
+
+@enduml

@@ -3,7 +3,7 @@ package com.capstone.construction.application.business.estimate;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.common.enumerate.RoleName;
-import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.common.utils.SharedConstant;
 import com.capstone.common.utils.SharedMessage;
 import com.capstone.common.request.BaseMaterial;
@@ -246,6 +246,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
 
   @Override
   public boolean isExisting(String id) {
+    log.info("isExisting with id: {}", id);
     return eRepo.existsById(id);
   }
 
@@ -272,7 +273,6 @@ public class CostEstimateServiceImpl implements CostEstimateService {
       m.jobContent(),
       m.note(),
       m.unitName(),
-      m.reductionCoefficient() != null ? m.reductionCoefficient().toString() : null,
       m.mass() != null ? m.mass().toString() : null,
       m.materialCost(),
       m.laborPrice(),
@@ -328,7 +328,6 @@ public class CostEstimateServiceImpl implements CostEstimateService {
         defaultMaterial.jobContent(),
         defaultMaterial.note(),
         defaultMaterial.unitName(),
-        defaultMaterial.reductionCoefficient().toString(),
         defaultMaterial.mass().toString(),
         defaultMaterial.materialCost(),
         defaultMaterial.laborPrice(),

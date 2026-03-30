@@ -1,9 +1,11 @@
 package com.capstone.construction.application.business.constructionrequest;
 
-import com.capstone.common.annotation.AppLog;
+import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.common.enumerate.RoleName;
 import com.capstone.common.exception.NotExistingException;
+import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.common.utils.SharedMessage;
+import com.capstone.common.utils.Utils;
 import com.capstone.construction.application.dto.response.construction.ConstructionResponse;
 import com.capstone.construction.domain.model.ConstructionRequest;
 import com.capstone.construction.domain.model.InstallationForm;
@@ -16,10 +18,14 @@ import com.capstone.construction.infrastructure.utils.Message;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-@AppLog
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -31,11 +37,9 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
 
   @Override
   public ConstructionResponse createPendingRequest(String employeeId, String contractId, String formCode, String formNumber) {
-    if (!customerService.checkExistenceOfCustomer(employeeId)) {
-      throw new IllegalArgumentException("Customer with id " + employeeId + " does not exist");
-    }
+    log.info("Creating pending request");
     if (!customerService.checkExistenceOfContract(contractId)) {
-      throw new IllegalArgumentException("Contract with id " + contractId + " does not exist");
+      throw new IllegalArgumentException("Không tìm thấy hợp đồng");
     }
 
     validateEmployee(employeeId);
@@ -43,6 +47,7 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
     var installationForm = ifRepo.findById(new InstallationFormId(formCode, formNumber))
       .orElseThrow(() -> new IllegalArgumentException(String.format(SharedMessage.MES_24, formNumber, formCode)));
 
+    log.info("Creating pending request");
     var constructionRequest = ConstructionRequest.builder()
       .contractId(contractId)
       .installationForm(installationForm)
@@ -52,7 +57,7 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
 
   @Override
   public void updatePendingRequest(String id, String employeeId) {
-    var request = getRequest(id);
+    var request = getConstructionRequest(id);
 
     validateEmployee(employeeId);
 
@@ -63,8 +68,11 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
 
   @Override
   public void approveTheConstruction(String id, Boolean approved) {
-    var request = getRequest(id);
-    request.setIsApproved(approved);
+    var request = getConstructionRequest(id);
+    var installationForm = request.getInstallationForm();
+    var status = installationForm.getStatus();
+    status.setConstruction(ProcessingStatus.APPROVED);
+    ifRepo.save(installationForm);
   }
 
   @Override
@@ -78,15 +86,38 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
     return convert(repository.findByInstallationForm(installationForm));
   }
 
-  private ConstructionRequest getRequest(String id) {
+  @Override
+  public Page<ConstructionResponse> getConstructionRequestsList(Pageable pageable,
+                                                                @NonNull BaseFilterRequest request) {
+    log.info("Fetching paginated construction request with pageable: {}", pageable);
+    var startDate = Utils.parseFrom(request.from());
+    var endDate = Utils.parseTo(request.to());
+    var specification = InstallationFormRepository.search(
+      request.keyword(), startDate, endDate,
+      ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING);
+
+    var response = (startDate != null || endDate != null || (request.keyword() != null && !request.keyword().isBlank()))
+      ? ifRepo.findAll(specification, pageable)
+      : ifRepo.findByStatus_ContractAndStatus_Construction(ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING,
+      pageable);
+    var result = response.getContent()
+      .stream()
+      .map(this::mapToResponse)
+      .toList();
+
+    return new PageImpl<>(result, pageable, response.getTotalElements());
+  }
+
+  private ConstructionRequest getConstructionRequest(String id) {
     return repository.findById(id)
       .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy đơn chờ thi công"));
   }
 
   private void validateEmployee(String employeeId) {
+    log.info("Validating employee {}", employeeId);
     var status = employeeService.isEmployeeExisting(employeeId).data().toString();
     if (!Boolean.parseBoolean(status)) {
-      throw new IllegalArgumentException("Employee with id " + employeeId + " does not exist");
+      throw new IllegalArgumentException("Không tìm thấy nhân viên với id " + employeeId);
     }
     var role = employeeService.getRoleOfEmployeeById(employeeId).data().toString();
     if (!RoleName.CONSTRUCTION_DEPARTMENT_STAFF.name().equalsIgnoreCase(role)) {
@@ -96,13 +127,20 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
   }
 
   private ConstructionResponse convert(@NonNull ConstructionRequest request) {
+    var installationForm = request.getInstallationForm();
+    var isApproved = installationForm.getStatus().getConstruction().equals(ProcessingStatus.APPROVED);
     return ConstructionResponse.builder()
       .id(request.getId())
       .contractId(request.getContractId())
-      .formCode(request.getInstallationForm().getFormCode())
-      .formNumber(request.getInstallationForm().getFormNumber())
-      .isApproved(request.getIsApproved().toString())
+      .formCode(installationForm.getFormCode())
+      .formNumber(installationForm.getFormNumber())
+      .isApproved(String.valueOf(isApproved))
       .createdAt(request.getCreatedAt().toString())
       .build();
+  }
+
+  private @NonNull ConstructionResponse mapToResponse(@NonNull InstallationForm entity) {
+    var constructionRequest = repository.findByInstallationForm(entity);
+    return convert(constructionRequest);
   }
 }

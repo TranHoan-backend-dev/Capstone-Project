@@ -2,12 +2,12 @@ package com.capstone.construction.application.usecase;
 
 import com.capstone.common.enumerate.RoleName;
 import com.capstone.construction.application.business.installationform.InstallationFormService;
-import com.capstone.common.utils.BaseFilterRequest;
-import com.capstone.construction.application.dto.request.estimate.CreateRequest;
+import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import com.capstone.construction.application.dto.response.installationform.NewInstallationFormResponse;
+import com.capstone.construction.application.dto.response.installationform.ReviewedInstallationFormsResponse;
 import com.capstone.construction.application.event.producer.order.AssignEvent;
 import com.capstone.construction.application.event.producer.order.CreatedEvent;
 import com.capstone.construction.application.event.producer.MessageProducer;
@@ -25,7 +25,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Component
@@ -34,7 +33,6 @@ import java.util.Objects;
 public class InstallationFormUseCase {
   final InstallationFormService ifSrv;
   final MessageProducer messageProducer;
-  final CostEstimateUseCase costEstimateUseCase;
   final EmployeeService empSrv;
 
   // <editor-fold> desc="constant"
@@ -53,6 +51,22 @@ public class InstallationFormUseCase {
 
   public Page<InstallationFormListResponse> getPaginatedInstallationForms(Pageable pageable, BaseFilterRequest request) {
     return ifSrv.getInstallationForms(pageable, request);
+  }
+
+  public Page<InstallationFormListResponse> findByEstimateStatusPending(Pageable pageable) {
+    return ifSrv.findByEstimateStatusPending(pageable);
+  }
+
+  public Page<InstallationFormListResponse> findByRegistrationStatusPending(Pageable pageable) {
+    return ifSrv.findByRegistrationStatusPending(pageable);
+  }
+
+  public ReviewedInstallationFormsResponse getReviewedInstallationFormsList() {
+    return ifSrv.getReviewedInstallationFormsList();
+  }
+
+  public Page<InstallationFormListResponse> findByHandoverByIsNotNull(Pageable pageable) {
+    return ifSrv.findByHandoverByIsNotNull(pageable);
   }
 
   @Transactional(rollbackFor = Exception.class)
@@ -96,22 +110,8 @@ public class InstallationFormUseCase {
     messageProducer.send(routingKey, event);
   }
 
-  public void approveInstallationForm(String userId, ApproveRequest request) {
-    ifSrv.approveInstallationForm(userId, request);
-
-    var installationForm = ifSrv.getByFormCodeAndFormNumber(request.formCode(), request.formNumber());
-
-    if (request.status()) {
-      costEstimateUseCase.createEstimate(new CreateRequest(
-        installationForm.customerName(),
-        installationForm.address(),
-        LocalDateTime.parse(installationForm.registrationAt()),
-        installationForm.creator(),
-        request.formCode(),
-        request.formNumber(),
-        installationForm.overallWaterMeterId()
-      ));
-    }
+  public void reviewInstallationForm(String userId, ApproveRequest request) {
+    ifSrv.reviewInstallationForm(userId, request);
   }
 
   private String getCreatorName(String creator) {

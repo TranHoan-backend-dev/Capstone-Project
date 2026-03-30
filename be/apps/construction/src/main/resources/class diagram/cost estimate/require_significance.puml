@@ -1,0 +1,151 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam class {
+    BackgroundColor White
+    BorderColor #263238
+    ArrowColor #263238
+}
+
+package "Construction Service" #AliceBlue {
+    package "Adapter" as ConstAdapter {
+        class CostEstimateController {
+            + requireSignificances(AssignTheSignificanceRequest): ResponseEntity<WrapperApiResponse>
+        }
+        
+        interface EmployeeService <<FeignClient>> {
+            + isEmployeeExisting(String): WrapperApiResponse
+        }
+    }
+
+    package "UseCase" as ConstUseCase {
+        class CostEstimateUseCase {
+            - estSrv: CostEstimateService
+            - empSrv: EmployeeService
+            - messageProducer: MessageProducer
+            + assignStaffForSignCostEstimate(AssignTheSignificanceRequest): void
+        }
+    }
+
+    package "Application" as ConstApp {
+        interface CostEstimateService {
+            + isExisting(String): boolean
+        }
+        
+        class CostEstimateServiceImpl {
+            - eRepo: CostEstimateRepository
+            + isExisting(String): boolean
+        }
+    }
+
+    package "Domain" as ConstDomain {
+        class CostEstimate {
+            - estimationId: String
+            - customerName: String
+            - installationForm: InstallationForm
+            - significance: CostEstimateSignificance
+        }
+        
+        class CostEstimateSignificance <<ValueObject>> {
+            - surveyStaff: String
+            - planningTechnicalHead: String
+            - companyLeaderShip: String
+            + isCostEstimateFullySigned(): boolean
+        }
+    }
+
+    package "Infrastructure" as ConstInfra {
+        interface CostEstimateRepository {
+            + existsById(String): boolean
+        }
+        
+        interface MessageProducer {
+            + send(String, Object): void
+        }
+    }
+}
+
+package "Notification Service" #HoneyDew {
+    package "Event Consumer" as NotifConsumer {
+        abstract class GeneralEventConsumer<T> {
+            - producer: MessageProducer
+            # notificationService: NotificationService
+            # messagingTemplate: SimpMessagingTemplate
+            # handle(T, List<String>, String, String): void
+            {abstract} # buildMessage(T): String
+        }
+        
+        class RequireSignificanceConsumer {
+            + handle(RequireSignificanceEvent): void
+        }
+    }
+    
+    package "Infrastructure" as NotifInfra {
+        class SimpMessagingTemplate <<WebSocket>> {
+            + convertAndSend(String, Object): void
+        }
+    }
+}
+
+package "Auth Service" #GhostWhite {
+    package "Adapter" as AuthAdapter {
+        class AuthorizationController {
+            + checkAuthorExisting(String): ResponseEntity<WrapperApiResponse>
+        }
+    }
+    
+    package "Event Consumer" as AuthConsumer {
+        class NotificationConsumer {
+            - userRepository: UserRepository
+            - individualNotificationRepository: IndividualNotificationRepository
+            + handle(NotificationCreatedEvent): void
+        }
+    }
+}
+
+package "DTOs & Events" #Ivory {
+    class AssignTheSignificanceRequest {
+        + estId: String
+        + surveyStaff: String
+        + plHead: String
+        + companyLeadership: String
+    }
+    
+    class RequireSignificanceEvent {
+        + estId: String
+        + surveyStaff: String
+        + plHead: String
+        + companyLeadership: String
+    }
+    
+    class NotificationCreatedEvent {
+        + notificationId: String
+        + topics: List<String>
+    }
+}
+
+' Relationships
+CostEstimateController o-- CostEstimateUseCase
+CostEstimateUseCase o-- CostEstimateService
+CostEstimateUseCase o-- EmployeeService
+CostEstimateUseCase o-- MessageProducer
+CostEstimateService <|.. CostEstimateServiceImpl
+CostEstimateServiceImpl o-- CostEstimateRepository
+CostEstimate *-- CostEstimateSignificance
+
+CostEstimateController ..> AssignTheSignificanceRequest : uses
+CostEstimateUseCase ..> AssignTheSignificanceRequest : uses
+CostEstimateUseCase ..> RequireSignificanceEvent : produces
+
+RequireSignificanceConsumer --|> GeneralEventConsumer
+RequireSignificanceConsumer ..> RequireSignificanceEvent : consumes
+GeneralEventConsumer o-- SimpMessagingTemplate
+GeneralEventConsumer ..> NotificationCreatedEvent : produces
+
+NotificationConsumer ..> NotificationCreatedEvent : consumes
+
+EmployeeService ..> AuthorizationController : calls (Feign)
+
+@enduml

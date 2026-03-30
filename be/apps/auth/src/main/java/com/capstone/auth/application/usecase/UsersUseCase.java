@@ -6,6 +6,7 @@ import com.capstone.auth.application.dto.request.users.FilterUsersRequest;
 import com.capstone.auth.application.dto.request.UpdateBusinessPageNamesRequest;
 import com.capstone.auth.application.dto.request.users.UpdateRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
+import com.capstone.auth.application.dto.response.NameAndIdResponse;
 import com.capstone.auth.application.event.producer.MessageProducer;
 import com.capstone.auth.application.event.producer.message.AccountDeleteEvent;
 import com.capstone.auth.application.event.producer.message.AccountUpdateEvent;
@@ -91,5 +92,21 @@ public class UsersUseCase {
       response.departmentName(),
       response.email(),
       DELETE_SUBJECT, DELETE_TEMPLATE));
+  }
+
+  public List<NameAndIdResponse> getListOfPtHeads() {
+    return userService.getAllPtHeads();
+  }
+
+  public List<NameAndIdResponse> getListOfConstructionHeads() {
+    return userService.getAllConstructionHeads();
+  }
+
+  public List<NameAndIdResponse> getListOfCompanyLeaderShips() {
+    return userService.getAllLeaderShips();
+  }
+
+  public List<NameAndIdResponse> getListOfConstructionStaffs() {
+    return userService.getAllConstructionStaffs();
   }
 }

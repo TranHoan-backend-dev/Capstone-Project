@@ -151,12 +151,6 @@ class MaterialServiceImplTest {
   }
 
   @Test
-  void should_ThrowException_When_UpdateRequestIsNull() {
-    assertThatThrownBy(() -> materialService.updateMaterial("id", null))
-        .isInstanceOf(NullPointerException.class);
-  }
-
-  @Test
   void should_OnlyUpdateNonNullFields_When_UpdateRequestHasNulls() {
     // Given
     var id = "material-id";

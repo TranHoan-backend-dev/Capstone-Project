@@ -65,8 +65,8 @@ class BillServiceImplTest {
     billStack.push(billMock);
 
     when(customerMock.getCustomerId()).thenReturn(customerId);
-    when(customerMock.getBill()).thenReturn(billStack);
-    
+    when(customerMock.getBills()).thenReturn(billStack);
+
     when(billMock.getCustomer()).thenReturn(customerMock);
     when(billMock.getBillId()).thenReturn("BILL_001");
     when(billMock.getBillName()).thenReturn("Bill Name");
@@ -83,7 +83,7 @@ class BillServiceImplTest {
     when(deviceResponse.data()).thenReturn(usages);
 
     when(deviceService.getUsageBatch(anyList())).thenReturn(deviceResponse);
-    
+
     CustomerResponse customerResponse = mock(CustomerResponse.class);
     when(customerService.getCustomerById(customerId)).thenReturn(customerResponse);
 

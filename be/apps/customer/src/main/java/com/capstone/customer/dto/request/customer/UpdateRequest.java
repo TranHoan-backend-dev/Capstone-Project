@@ -104,5 +104,9 @@ public record UpdateRequest(
   String waterPriceId,
 
   @Schema(description = "", example = "WM001")
-  String waterMeterId) {
+  String waterMeterId,
+
+  @Schema(description = "Id cua hop dong")
+  String contractId
+) {
 }

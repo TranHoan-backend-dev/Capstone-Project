@@ -4,6 +4,7 @@ import com.capstone.common.config.feign.FeignAuthInterceptor;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(
@@ -17,4 +18,7 @@ public interface ConstructionService {
 
   @GetMapping("/roadmaps/exist/{id}")
   Boolean isExistingRoadmap(@PathVariable String id);
+
+  @PostMapping("/installation-forms/contract-status")
+  void updateContractStatus(@RequestParam String formCode, @RequestParam String formNumber);
 }

@@ -1,0 +1,94 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam class {
+    BackgroundColor White
+    BorderColor #263238
+    ArrowColor #263238
+}
+
+package "Construction Service" #AliceBlue {
+    package "Adapter" as ConstAdapter {
+        class SettlementController {
+            + requireSignificances(AssignTheSignificanceRequest): ResponseEntity
+        }
+        
+        interface EmployeeService <<FeignClient>> {
+            + isEmployeeExisting(String): WrapperApiResponse
+        }
+    }
+
+    package "UseCase" as ConstUseCase {
+        class SettlementUseCase {
+            - settlementService: SettlementService
+            - messageProducer: MessageProducer
+            - employeeService: EmployeeService
+            + assignStaffForSignCostEstimate(AssignTheSignificanceRequest): void
+        }
+    }
+
+    package "Application" as ConstApp {
+        interface SettlementService {
+            + isExistingSettlement(String): boolean
+        }
+    }
+
+    package "Infrastructure" as ConstInfra {
+        class MessageProducer {
+            + send(String, Object): void
+        }
+    }
+}
+
+package "Notification Service" #HoneyDew {
+    package "Event Consumer" as NotifConsumer {
+        class RequireSignificanceConsumerForSettlement {
+            + handle(RequireSignificanceEvent): void
+            # buildMessage(RequireSignificanceEvent): String
+        }
+    }
+}
+
+package "Auth Service" #GhostWhite {
+    package "Adapter" as AuthAdapter {
+        class AuthorizationController {
+            + checkAuthorExisting(String): ResponseEntity
+        }
+    }
+}
+
+package "DTOs & Events" #Ivory {
+    class AssignTheSignificanceRequest <<Record>> {
+        + settlementId: String
+        + surveyStaff: String
+        + plHead: String
+        + companyLeadership: String
+        + constructionPresident: String
+    }
+    
+    class RequireSignificanceEvent <<Record>> {
+        + settlementId: String
+        + surveyStaff: String
+        + plHead: String
+        + companyLeadership: String
+        + constructionPresident: String
+    }
+}
+
+' Relationships
+SettlementController o-- SettlementUseCase
+SettlementUseCase o-- SettlementService
+SettlementUseCase o-- MessageProducer
+SettlementUseCase o-- EmployeeService
+
+SettlementController ..> AssignTheSignificanceRequest : uses
+SettlementUseCase ..> AssignTheSignificanceRequest : uses
+SettlementUseCase ..> RequireSignificanceEvent : produces
+
+RequireSignificanceConsumerForSettlement ..> RequireSignificanceEvent : consumes
+
+EmployeeService ..> AuthorizationController : calls (Feign)
+
+@enduml

@@ -65,6 +65,61 @@ const CustomerListScreen = () => {
       });
 
       setCustomers(joinedData);
+      // Mock data
+      // const mockCustomers = [
+      //   {
+      //     customerId: 'KH001',
+      //     name: 'Nguyễn Văn An',
+      //     address: '123 Đường ABC, Phường 1, Quận 1, TP.HCM',
+      //     displayStatus: 'Đã ghi',
+      //     latestUsage: {
+      //       recordingDate: new Date().toISOString(),
+      //       index: 150,
+      //       mass: 12,
+      //       price: '150.000',
+      //     }
+      //   },
+      //   {
+      //     customerId: 'KH002',
+      //     name: 'Trần Thị Bình',
+      //     address: '456 Đường DEF, Phường 2, Quận 3, TP.HCM',
+      //     displayStatus: 'Chưa ghi',
+      //     latestUsage: null
+      //   },
+      //   {
+      //     customerId: 'KH003',
+      //     name: 'Lê Văn Cường',
+      //     address: '789 Đường GHI, Phường 5, Quận Gò Vấp, TP.HCM',
+      //     displayStatus: 'Đã ghi (Chờ duyệt)',
+      //     latestUsage: {
+      //       recordingDate: new Date().toISOString(),
+      //       index: 210,
+      //       mass: 18,
+      //       price: '210.000',
+      //     }
+      //   },
+      //   {
+      //     customerId: 'KH004',
+      //     name: 'Phạm Minh Đức',
+      //     address: '101 Đường JKL, Quận Bình Thạnh, TP.HCM',
+      //     displayStatus: 'Chưa ghi',
+      //     latestUsage: null
+      //   },
+      //   {
+      //     customerId: 'KH005',
+      //     name: 'Hoàng Anh Tuấn',
+      //     address: '202 Đường MNO, Quận Tân Bình, TP.HCM',
+      //     displayStatus: 'Đã ghi',
+      //     latestUsage: {
+      //       recordingDate: new Date().toISOString(),
+      //       index: 345,
+      //       mass: 25,
+      //       price: '345.000',
+      //     }
+      //   }
+      // ];
+
+      // setCustomers(mockCustomers);
     } catch (error) {
       console.error('Failed to fetch customers or usages:', error);
     } finally {

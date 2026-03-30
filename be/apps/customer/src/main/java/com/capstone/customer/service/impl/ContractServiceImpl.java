@@ -1,13 +1,11 @@
 package com.capstone.customer.service.impl;
 
 import com.capstone.common.annotation.AppLog;
-import com.capstone.common.utils.SharedConstant;
 import com.capstone.customer.dto.request.ContractFilterRequest;
 import com.capstone.customer.dto.request.contract.CreateRequest;
 import com.capstone.customer.dto.response.ContractResponse;
 import com.capstone.customer.model.WaterUsageContract;
 import com.capstone.customer.repository.ContractRepository;
-import com.capstone.customer.repository.CustomerRepository;
 import com.capstone.customer.service.boundary.ConstructionService;
 import com.capstone.customer.service.boundary.ContractService;
 import com.capstone.customer.utils.Message;
@@ -15,16 +13,14 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @AppLog
 @Service
@@ -32,29 +28,24 @@ import java.time.format.DateTimeFormatter;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ContractServiceImpl implements ContractService {
   ContractRepository contractRepository;
-  CustomerRepository customerRepository;
   ConstructionService cSrv;
   @NonFinal
   Logger log;
 
   @Override
   @Transactional(rollbackFor = Exception.class)
-  public ContractResponse createContract(CreateRequest request) {
+  public ContractResponse createContract(@NonNull CreateRequest request) {
     log.info("Creating contract with ID: {}", request.contractId());
     var status = cSrv.checkExistence(request.formCode(), request.formNumber());
     if (!status) {
       throw new IllegalArgumentException(Message.ENT_16);
     }
 
-    var contract = WaterUsageContract.create(builder -> builder
-      .id(request.contractId())
+    var contract = WaterUsageContract.builder()
+      .contractId(request.contractId())
       .formNumber(request.formNumber())
-      .formCode(request.formCode()));
-    if (request.customerId() != null) {
-      var customer = customerRepository.findById(request.customerId())
-        .orElseThrow(() -> new IllegalArgumentException("Customer not found with ID: " + request.customerId()));
-      contract.setCustomer(customer);
-    }
+      .formCode(request.formCode())
+      .build();
     if (request.representatives() != null && !request.representatives().isEmpty()) {
       contract.setRepresentative(request.representatives());
     }
@@ -63,6 +54,10 @@ public class ContractServiceImpl implements ContractService {
     }
 
     var saved = contractRepository.save(contract);
+
+    // Update contract status in installation form
+    cSrv.updateContractStatus(request.formCode(), request.formNumber());
+
     return mapToResponse(saved);
   }
 
@@ -97,27 +92,23 @@ public class ContractServiceImpl implements ContractService {
     return result.map(this::mapToResponse);
   }
 
-  private LocalDateTime parseFrom(String from) {
-    if (from == null || from.isBlank()) {
-      return null;
-    }
-    return LocalDate.parse(from, DateTimeFormatter.ofPattern(SharedConstant.DATE_PATTERN)).atStartOfDay();
+  @Override
+  public List<String> findContractIdsByFormCodeAndFormNumber(String formCode, String formNumber) {
+    log.info("Fetching contract IDs by formCode: {} and formNumber: {}", formCode, formNumber);
+    return contractRepository.findContractIdsByFormCodeAndFormNumber(formCode, formNumber);
   }
 
-  private LocalDateTime parseTo(String to) {
-    if (to == null || to.isBlank()) {
-      return null;
-    }
-    return LocalDate.parse(to, DateTimeFormatter.ofPattern(SharedConstant.DATE_PATTERN)).atTime(LocalTime.MAX);
+  @Override
+  public Boolean isExist(String id) {
+    log.info("Is exist with id: {}", id);
+    return contractRepository.existsById(id);
   }
 
-  private ContractResponse mapToResponse(WaterUsageContract contract) {
+  private @NonNull ContractResponse mapToResponse(@NonNull WaterUsageContract contract) {
     return new ContractResponse(
       contract.getContractId(),
       contract.getCreatedAt(),
       contract.getUpdatedAt(),
-      contract.getCustomer().getName(),
-      contract.getCustomer().getCustomerId(),
       contract.getFormCode(),
       contract.getRepresentative());
   }

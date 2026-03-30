@@ -37,7 +37,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/authorization")
 @RequiredArgsConstructor
-@PreAuthorize("hasAuthority('IT_STAFF')")
 @Tag(name = "Authorization", description = "Các endpoints để quản lý ủy quyền và truy xuất thông tin nhân viên. Được xử lý bởi tài khoản có role là IT_STAFF")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthorizationController {
@@ -46,6 +45,7 @@ public class AuthorizationController {
   ProfileUseCase profileUseCase;
   @NonFinal
   Logger log;
+  private final static String EMPLOYEE_PREFIX = "/employees";
 
   // <editor-fold> desc="employee"
   @Operation(summary = "Lấy tất cả nhân viên", description = """
@@ -61,10 +61,11 @@ public class AuthorizationController {
     @ApiResponse(responseCode = "403", description = "Bị cấm - Người dùng không có vai trò 'IT_STAFF' bắt buộc", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "500", description = "Lỗi máy chủ nội bộ - Đã xảy ra lỗi không mong muốn", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
-  @GetMapping("/employees")
+  @PreAuthorize("hasAuthority('IT_STAFF')")
+  @GetMapping(EMPLOYEE_PREFIX)
   public ResponseEntity<WrapperApiResponse> getAllEmployees(
     @ParameterObject Pageable pageable,
-    @Parameter(description = "") FilterUsersRequest request
+    @Parameter FilterUsersRequest request
   ) {
     log.info("Getting all employees with page index {} and page size {}", pageable.getPageNumber(),
       pageable.getPageSize());
@@ -73,8 +74,9 @@ public class AuthorizationController {
       usersUseCase.getPaginatedListOfEmployees(pageable, request));
   }
 
-  @GetMapping("/employees/{id}/name")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF')")
+  @GetMapping(EMPLOYEE_PREFIX + "/{id}/name")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF', " +
+    "'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP')")
   public ResponseEntity<WrapperApiResponse> getEmployeeNameById(
     @PathVariable @NotBlank @NotEmpty @NotNull String id
   ) {
@@ -95,8 +97,8 @@ public class AuthorizationController {
     @ApiResponse(responseCode = "403", description = "Truy cập bị từ chối - Không đủ quyền hạn", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "500", description = "Lỗi hệ thống", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
-  @GetMapping("/employees/{authorId}")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF')")
+  @GetMapping(EMPLOYEE_PREFIX + "/{authorId}")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF', 'SURVEY_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD')")
   public ResponseEntity<WrapperApiResponse> checkAuthorExisting(
     @Parameter(description = "ID của nhân viên cần kiểm tra", required = true)
     @PathVariable String authorId
@@ -116,7 +118,7 @@ public class AuthorizationController {
     @ApiResponse(responseCode = "404", description = "Không tìm thấy nhân viên", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "500", description = "Lỗi hệ thống", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
-  @PutMapping("/employees/{id}")
+  @PutMapping(EMPLOYEE_PREFIX + "/{id}")
   @PreAuthorize("hasAuthority('IT_STAFF')")
   public ResponseEntity<?> updateEmployee(
     @PathVariable @NotBlank @NotEmpty @NotNull String id,
@@ -139,7 +141,7 @@ public class AuthorizationController {
     @ApiResponse(responseCode = "500", description = "Lỗi hệ thống", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PreAuthorize("hasAuthority('IT_STAFF')")
-  @DeleteMapping("/employees/{id}")
+  @DeleteMapping(EMPLOYEE_PREFIX + "/{id}")
   public ResponseEntity<?> deleteEmployee(@PathVariable @NotBlank @NotEmpty @NotNull String id) {
     log.info("Deleting employee: {}", id);
     usersUseCase.deleteEmployee(id);
@@ -147,7 +149,7 @@ public class AuthorizationController {
   }
 
   @Operation(hidden = true)
-  @GetMapping("/employees/role/{id}")
+  @GetMapping(EMPLOYEE_PREFIX + "/role/{id}")
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'SURVEY_STAFF')")
   public ResponseEntity<?> getRoleOfEmployeeById(@PathVariable String id) {
     log.info("Getting role of employee by id: {}", id);
@@ -155,7 +157,7 @@ public class AuthorizationController {
   }
 
   @Operation(hidden = true)
-  @GetMapping("/employees/significance/{id}")
+  @GetMapping(EMPLOYEE_PREFIX + "/significance/{id}")
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'SURVEY_STAFF')")
   public String getElectronicSignificance(@PathVariable String id) {
     log.info("Get significance of employee: {}", id);
@@ -163,14 +165,47 @@ public class AuthorizationController {
   }
 
   @Operation(description = "Lay ra toan bo nhan vien khao sat")
-  @GetMapping("/employee/survey-staff")
+  @GetMapping(EMPLOYEE_PREFIX + "/survey-staff")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF')")
   public ResponseEntity<?> getAllSurveyStaffs() {
     log.info("Get all survey staffs");
     var response = userService.getAllSurveyStaffs();
     log.info("Get all survey staffs: {}", response);
     return Utils.returnOkResponse("Lay toan bo nhan vien khao sat thanh cong", response);
   }
-// </editor-fold>
+
+  @Operation
+  @GetMapping(EMPLOYEE_PREFIX + "/pt-head")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD')")
+  public ResponseEntity<?> getPlanningTechnicalDepartmentHeads() {
+    log.info("Get planning technical department heads");
+    return Utils.returnOkResponse("", usersUseCase.getListOfPtHeads());
+  }
+
+  @Operation
+  @GetMapping(EMPLOYEE_PREFIX + "/construction-head")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD')")
+  public ResponseEntity<?> getConstructionHeads() {
+    log.info("Get planning construction heads");
+    return Utils.returnOkResponse("", usersUseCase.getListOfConstructionHeads());
+  }
+
+  @Operation
+  @GetMapping(EMPLOYEE_PREFIX + "/leadership")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_HEAD')")
+  public ResponseEntity<?> getLeaderships() {
+    log.info("Get planning leaderships");
+    return Utils.returnOkResponse("", usersUseCase.getListOfCompanyLeaderShips());
+  }
+
+  @Operation
+  @GetMapping(EMPLOYEE_PREFIX + "/construction-staff")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD')")
+  public ResponseEntity<?> getConstructionStaffs() {
+    log.info("Get construction staffs");
+    return Utils.returnOkResponse("", usersUseCase.getListOfConstructionStaffs());
+  }
+  // </editor-fold>
 
   // <editor-fold> desc="business pages"
   @Operation(summary = "Lấy các trang web nghiệp vụ được ủy quyền cho nhân viên", description = """
@@ -185,7 +220,8 @@ public class AuthorizationController {
     @ApiResponse(responseCode = "404", description = "Không tìm thấy nhân viên", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "500", description = "Lỗi máy chủ nội bộ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
-  @GetMapping("/employees/{empId}/pages")
+  @PreAuthorize("hasAuthority('IT_STAFF')")
+  @GetMapping(EMPLOYEE_PREFIX + "/{empId}/pages")
   public ResponseEntity<WrapperApiResponse> getBusinessPageNamesOfEmployees(
     @Parameter(description = "ID của nhân viên", required = true)
     @PathVariable String empId
@@ -213,7 +249,8 @@ public class AuthorizationController {
     @ApiResponse(responseCode = "403", description = "Bị cấm - Người dùng không có vai trò 'IT_STAFF' bắt buộc", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "500", description = "Lỗi máy chủ nội bộ - Đã xảy ra lỗi không mong muốn trong quá trình cập nhật", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
-  @PutMapping("employees/pages")
+  @PreAuthorize("hasAuthority('IT_STAFF')")
+  @PutMapping(EMPLOYEE_PREFIX + "/pages")
   public ResponseEntity<WrapperApiResponse> updateBusinessPageNamesOfEmployee(
     @Parameter(description = "Danh sách các yêu cầu cập nhật chứa ID nhân viên và bộ ID trang được ủy quyền mới của họ.", required = true)
     @RequestBody List<UpdateBusinessPageNamesRequest> request
@@ -227,7 +264,7 @@ public class AuthorizationController {
 
   // <editor-fold> desc="job"
   @Operation(hidden = true)
-  @GetMapping("/employees/jobs/{jobId}/assigned")
+  @GetMapping(EMPLOYEE_PREFIX + "/jobs/{jobId}/assigned")
   @PreAuthorize("hasAuthority('IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> isJobAssigned(@PathVariable String jobId) {
     log.info("Checking if job {} is assigned to any employee", jobId);
