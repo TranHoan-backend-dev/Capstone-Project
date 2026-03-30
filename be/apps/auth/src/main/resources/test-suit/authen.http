@@ -19,7 +19,7 @@ scope = openid
 %}
 
 ### login
-POST http://14.225.198.198:8000/auth/auth/login
+POST http://localhost:9003/api/v1/auth/login
 Content-Type: application/json
 
 {

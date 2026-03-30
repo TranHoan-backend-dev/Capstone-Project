@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cảnh báo đăng nhập từ thiết bị mới</title>
+    <%- include('components/base-styles.ejs') %>
+        <style>
+            .email-header {
+                background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            }
+
+            .security-box {
+                background-color: #fef2f2;
+                border-left: 4px solid #ef4444;
+                padding: 20px;
+                margin: 30px 0;
+                border-radius: 8px;
+            }
+
+            .security-box p {
+                margin: 0;
+                color: #991b1b;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+
+            .security-box strong {
+                display: block;
+                margin-bottom: 5px;
+                color: #b91c1c;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .info-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 20px 0;
+            }
+
+            .info-table th {
+                text-align: left;
+                color: #718096;
+                font-weight: 500;
+                padding: 8px 0;
+                width: 140px;
+            }
+
+            .info-table td {
+                color: #2d3748;
+                font-weight: 600;
+                padding: 8px 0;
+            }
+        </style>
+</head>
+
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <h1>CẢNH BÁO BẢO MẬT</h1>
+        </div>
+        <div class="email-body">
+            <div class="greeting">Xin chào <%= name %>,</div>
+            <p class="message">
+                Chúng tôi phát hiện một phiên đăng nhập mới vào tài khoản của bạn từ một <strong>thiết bị lạ hoặc trình duyệt mới</strong>.
+            </p>
+
+            <table class="info-table">
+                <tr>
+                    <th>Thiết bị:</th>
+                    <td><%= deviceName %></td>
+                </tr>
+                <tr>
+                    <th>Thời gian:</th>
+                    <td><%= loginTime %></td>
+                </tr>
+                <tr>
+                    <th>Địa chỉ IP:</th>
+                    <td><%= ipAddress %></td>
+                </tr>
+            </table>
+
+            <div class="security-box">
+                <p><strong>BẠN KHÔNG THỰC HIỆN ĐĂNG NHẬP NÀY?</strong></p>
+                <p>Nếu không phải bạn vừa thực hiện hành động này, vui lòng thay đổi mật khẩu ngay lập tức hoặc liên hệ với <strong>Ban Quản trị</strong> để được trợ giúp bảo mật tài khoản.</p>
+            </div>
+
+            <p class="message" style="margin-top: 30px;">
+                Cảm ơn bạn đã tin dùng dịch vụ của chúng tôi.
+            </p>
+
+            <p class="message">
+                Trân trọng,<br>
+                <strong>Đội ngũ Quản trị Hệ thống</strong>
+            </p>
+        </div>
+        <%- include('components/footer.html') %>
+    </div>
+</body>
+
+</html>

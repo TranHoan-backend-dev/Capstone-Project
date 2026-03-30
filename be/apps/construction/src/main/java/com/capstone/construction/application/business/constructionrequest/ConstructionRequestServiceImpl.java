@@ -47,6 +47,12 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
     var installationForm = ifRepo.findById(new InstallationFormId(formCode, formNumber))
       .orElseThrow(() -> new IllegalArgumentException(String.format(SharedMessage.MES_24, formNumber, formCode)));
 
+    var status = installationForm.getStatus();
+    var contractStatus = status.getContract();
+    if (!contractStatus.name().equalsIgnoreCase(ProcessingStatus.APPROVED.name())) {
+      throw new IllegalArgumentException("Đơn chờ này chưa được lập hợp đồng, chưa thể giao thi công được");
+    }
+
     log.info("Creating pending request");
     var constructionRequest = ConstructionRequest.builder()
       .contractId(contractId)

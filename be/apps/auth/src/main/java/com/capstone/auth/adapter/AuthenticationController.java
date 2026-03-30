@@ -21,6 +21,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -150,9 +151,18 @@ public class AuthenticationController {
     @ApiResponse(responseCode = "500", description = "Lỗi máy chủ nội bộ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PostMapping("/login")
-  public ResponseEntity<?> login(@RequestBody CredentialsRequest request) {
+  public ResponseEntity<?> login(@RequestBody CredentialsRequest request, HttpServletRequest httpRequest) {
     log.info("Login request comes to endpoint: {}", request);
-    var response = authUC.login(request.username(), request.password());
+
+    // Nếu request body không có device info, lấy từ headers
+    var deviceInfo = request.deviceInfo() != null ? request.deviceInfo() : httpRequest.getHeader("User-Agent");
+    log.info("Device info: {}", deviceInfo);
+    var ipAddress = request.ipAddress() != null ? request.ipAddress() : httpRequest.getRemoteAddr();
+    log.info("Ip address: {}", ipAddress);
+    var deviceId = request.deviceId(); // client side nên gửi deviceId
+    log.info("Device id: {}", deviceId);
+
+    var response = authUC.login(request.username(), request.password(), deviceId, deviceInfo, ipAddress);
     return Utils.returnOkResponse("Đăng nhập thành công", response);
   }
 

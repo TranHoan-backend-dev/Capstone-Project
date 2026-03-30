@@ -2,6 +2,7 @@ package com.capstone.auth.application.usecase;
 
 import com.capstone.auth.application.business.dto.UserDTO;
 import com.capstone.auth.application.business.profile.ProfileService;
+import com.capstone.auth.application.business.device.DeviceService;
 import com.capstone.auth.application.business.roles.RoleService;
 import com.capstone.auth.application.business.users.UserService;
 import com.capstone.auth.application.business.dto.ProfileDTO;
@@ -53,6 +54,7 @@ public class AuthUseCase {
   KeycloakService keycloakService;
   NetworkService netWorkService;
   OrganizationService organizationService;
+  DeviceService deviceService;
 
   // <editor-fold> desc="creating new account"
   @NonFinal
@@ -102,7 +104,7 @@ public class AuthUseCase {
   @NonFinal
   String adminClientSecret;
 
-  public TokenResponse login(String username, String password) {
+  public TokenResponse login(String username, String password, String deviceId, String deviceInfo, String ipAddress) {
     if (!uSrv.checkExistence(username)) {
       throw new NotExistingException(Message.SE_04);
     }
@@ -124,6 +126,9 @@ public class AuthUseCase {
       .password(password)
       .scope("openid")
       .build());
+
+    // Check device login
+    deviceService.checkLoginDevice(user.userId(), user.email(), profile.fullname(), deviceId, deviceInfo, ipAddress);
 
     return new TokenResponse(returnUserProfile(profile, user), token);
   }
