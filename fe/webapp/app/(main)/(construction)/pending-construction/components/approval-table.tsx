@@ -63,7 +63,7 @@ export const ApprovedTable = ({
     setLoading(true);
     try {
       const res = await authFetch(
-        `/api/construction/constructions?page=${page - 1}&size=${pageSize}&isApproved=false`,
+        `/api/construction/constructions?page=${page - 1}&size=${pageSize}`,
       );
 
       if (!res.ok) {
@@ -171,7 +171,7 @@ export const ApprovedTable = ({
     setProcessingId(item.id);
     try {
       const response = await authFetch(
-        `/api/construction/review/${item.id}/${status}`,
+        `/api/construction/constructions/review/${item.id}/${status}`,
         {
           method: "POST",
           headers: {

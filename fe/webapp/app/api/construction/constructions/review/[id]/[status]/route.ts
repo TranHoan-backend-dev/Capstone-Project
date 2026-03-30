@@ -5,7 +5,7 @@ import { reviewConstruction } from "@/services/construction.service";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string; status: boolean }> },
+  { params }: { params: Promise<{ id: string; status: string }> },
 ) {
   try {
     const accessToken = getAccessToken(req);
@@ -14,8 +14,8 @@ export async function POST(
     if (!accessToken) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
-
-    const response = await reviewConstruction(accessToken, id, status);
+    const isApproved = status === 'true';
+    const response = await reviewConstruction(accessToken, id, isApproved);
 
     return NextResponse.json(
       {
