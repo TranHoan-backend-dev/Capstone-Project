@@ -368,7 +368,7 @@ export const FeeForm = ({
         isOpen={showFormModal}
         onClose={() => setShowFormModal(false)}
         title="Chọn đơn lắp đặt"
-        api="/api/construction/installation-forms/reviewed"
+        api="/api/construction/installation-forms"
         columns={[
           { key: "stt", label: "STT" },
           { key: "formNumber", label: "Số đơn" },
