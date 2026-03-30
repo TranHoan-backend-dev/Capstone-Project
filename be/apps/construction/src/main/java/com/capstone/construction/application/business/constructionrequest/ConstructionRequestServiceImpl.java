@@ -6,6 +6,7 @@ import com.capstone.common.exception.NotExistingException;
 import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.common.utils.SharedMessage;
 import com.capstone.common.utils.Utils;
+import com.capstone.construction.application.business.installationform.InstallationFormService;
 import com.capstone.construction.application.dto.response.construction.ConstructionResponse;
 import com.capstone.construction.domain.model.ConstructionRequest;
 import com.capstone.construction.domain.model.InstallationForm;
@@ -34,6 +35,7 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
   CustomerService customerService;
   InstallationFormRepository ifRepo;
   EmployeeService employeeService;
+  InstallationFormService installationFormService;
 
   @Override
   public ConstructionResponse createPendingRequest(String employeeId, String contractId, String formCode, String formNumber) {
@@ -134,12 +136,12 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
 
   private ConstructionResponse convert(@NonNull ConstructionRequest request) {
     var installationForm = request.getInstallationForm();
-    var isApproved = installationForm.getStatus().getConstruction().equals(ProcessingStatus.APPROVED);
+    var iff = installationFormService.getByFormCodeAndFormNumber(installationForm.getFormCode(), installationForm.getFormNumber());
+    var isApproved = iff.status().getConstruction().equals(ProcessingStatus.APPROVED);
     return ConstructionResponse.builder()
       .id(request.getId())
       .contractId(request.getContractId())
-      .formCode(installationForm.getFormCode())
-      .formNumber(installationForm.getFormNumber())
+      .installationForm(iff)
       .isApproved(String.valueOf(isApproved))
       .createdAt(request.getCreatedAt().toString())
       .build();

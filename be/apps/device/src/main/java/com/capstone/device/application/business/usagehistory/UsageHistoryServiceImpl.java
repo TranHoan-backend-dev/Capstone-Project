@@ -11,6 +11,7 @@ import com.capstone.device.domain.model.utils.Usage;
 import com.capstone.device.infrastructure.persistence.UsageHistoryRepository;
 import com.capstone.device.infrastructure.persistence.WaterMeterRepository;
 import com.capstone.device.infrastructure.persistence.WaterPriceRepository;
+import com.capstone.device.infrastructure.service.AIService;
 import com.capstone.device.infrastructure.service.CustomerService;
 import com.capstone.device.infrastructure.service.GcsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -41,11 +43,14 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
   WaterChargeCalculator waterChargeCalculator;
   ObjectMapper objectMapper;
   GcsService gcsService;
+  AIService aiService;
 
   @Override
   @Transactional
-  public UsageResponse addWaterIndexOfThisMonth(String imageUrl, String serial, BigDecimal index,
-                                                @NonNull LocalDate recordingDate) {
+  public UsageResponse addWaterIndexOfThisMonth(
+    String imageUrl, String serial, BigDecimal index,
+    @NonNull LocalDate recordingDate, MultipartFile file
+  ) {
     log.info("addWaterIndexOfThisMonth");
     var meter = waterMeterRepository.findById(serial)
       .orElseThrow(() -> new NotExistingException("Không tìm thấy thiết bị: " + serial));
@@ -54,6 +59,8 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
       .meter(meter)
       .usages(new ArrayList<>())
       .build());
+
+    aiService.sendWaterMeterImage(file);
 
     var monthStr = recordingDate.format(DateTimeFormatter.ofPattern("yyyy-MM"));
     var newUsage = Usage.builder()
@@ -135,7 +142,7 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
 
   @Override
   @Transactional
-  public UsageResponse updateUsageDetails(String serial, LocalDate recordingDate, BigDecimal index, String imageUrl) {
+  public UsageResponse updateUsageDetails(String serial, @NonNull LocalDate recordingDate, BigDecimal index, String imageUrl) {
     var meter = waterMeterRepository.findById(serial)
       .orElseThrow(() -> new NotExistingException("Không tìm thấy thiết bị mang serial: " + serial));
     var history = repository.findByMeter(meter)

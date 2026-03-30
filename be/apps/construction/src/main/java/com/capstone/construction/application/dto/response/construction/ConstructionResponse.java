@@ -1,13 +1,13 @@
 package com.capstone.construction.application.dto.response.construction;
 
+import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import lombok.Builder;
 
 @Builder
 public record ConstructionResponse(
   String id,
   String contractId,
-  String formCode,
-  String formNumber,
+  InstallationFormListResponse installationForm,
   String isApproved,
   String createdAt
 ) {
