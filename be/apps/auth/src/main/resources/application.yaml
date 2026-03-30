@@ -29,6 +29,7 @@ rabbit-mq-config:
   update_account_routing_key: update-account
   verify_otp_routing_key: verify-otp
   update_password_routing_key: update-password
+  new_device_login_routing_key: new-device-login
 management:
   health:
     rabbit:
@@ -85,3 +86,6 @@ sending_mail:
   change_password:
     subject: 'Cập nhật mật khẩu'
     template: password-update
+  new_device_login:
+    subject: 'Cảnh báo đăng nhập từ thiết bị mới'
+    template: new-device-login

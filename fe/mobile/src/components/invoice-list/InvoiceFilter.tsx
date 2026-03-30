@@ -38,7 +38,7 @@ export default function InvoiceFilter({ value, onChange }: any) {
         mode="outlined"
         icon="chevron-down"
         onPress={() => setVisible(true)}
-        style={style.filterButton}
+        style={[style.filterButton, { backgroundColor: '#fff' }]}
         contentStyle={style.filterButtonContent}
       >
         {value}

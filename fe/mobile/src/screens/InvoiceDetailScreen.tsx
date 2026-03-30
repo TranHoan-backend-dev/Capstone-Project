@@ -32,39 +32,55 @@ export default function InvoiceDetailScreen({ navigation, route }: Props) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showReceipt, setShowReceipt] = useState(false);
   const [showImage, setShowImage] = useState(false);
-  const [_invoiceData, _setInvoiceData] = useState<any>(null);
+  const [invoiceData, setInvoiceData] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    /* Comment out real fetch for development bypass
     const fetchInvoice = async () => {
       try {
+        setLoading(true);
         const customerId = route.params?.customerId || '015281';
         const recentData = await meterService.getRecentUsage(customerId);
+        
         if (recentData && recentData.usagesList && recentData.usagesList.length > 0) {
           const latest = recentData.usagesList[0];
-          _setInvoiceData({
+          const previous = recentData.usagesList.length > 1 ? recentData.usagesList[1] : null;
+          
+          setInvoiceData({
             customerId: recentData.customerId,
             status: latest.isPaid ? 'collected' : 'pending',
             khoaKy: latest.recordingDate.substring(0, 7), // YYYY-MM
-            soHD: latest.index, 
-            soHDMoi: latest.index, 
+            soHD: previous ? previous.index : (latest.index - latest.mass), // Mock previous index if missing
+            soHDMoi: latest.index,
             m3: latest.mass,
             tienThu: latest.price,
-            tienNo: 0,
+            // Mock data starts below
+            tienNo: 0, // Mock: Tiền nợ hiện chưa có API trả về
             ngayThu: latest.recordingDate,
-            nvThu: latest.paymentMethod || 'N/A',
+            nvThu: latest.paymentMethod || 'Payoo', // Mock: mặc định Payoo nếu null
+            // Mock data ends above
             imageUrl: latest.meterImageUrl
           });
+        } else {
+          setInvoiceData(MOCK_INVOICES[0]);
         }
       } catch (error) {
         console.error('Fetch invoice failed:', error);
+        setInvoiceData(MOCK_INVOICES[0]);
+      } finally {
+        setLoading(false);
       }
     };
     fetchInvoice();
-    */
   }, [route.params?.customerId]);
 
-  const invoice = MOCK_INVOICES[currentIndex];
+  const invoice = invoiceData || MOCK_INVOICES[currentIndex];
+
+  useEffect(() => {
+    if (loading) {
+      // Logic for loading state if needed
+    }
+  }, [loading]);
 
   const handleNext = () => {
     if (currentIndex < MOCK_INVOICES.length - 1) {
@@ -77,6 +93,14 @@ export default function InvoiceDetailScreen({ navigation, route }: Props) {
       setCurrentIndex(currentIndex - 1);
     }
   };
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
+        <Text>Đang tải thông tin hoá đơn...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: '#fff' }}>
@@ -92,7 +116,7 @@ export default function InvoiceDetailScreen({ navigation, route }: Props) {
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
               <Icon name="account-circle" size={24} color="#fff" />
               <Text style={{ fontSize: 16, fontWeight: '500', color: '#fff' }}>
-                {route.params?.customerName || 'Nguyễn Văn Tiến'}
+                {route.params?.customerName || 'N/A'}
               </Text>
             </View>
             <Icon name="dots-horizontal-circle-outline" size={24} color="#fff" />
@@ -100,12 +124,8 @@ export default function InvoiceDetailScreen({ navigation, route }: Props) {
 
           <View style={{ padding: 12, backgroundColor: '#fff' }}>
             <View style={{ flexDirection: 'row', marginBottom: 12 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-                <Icon name="card-account-details-outline" size={20} color="#1E88E5" style={{ marginRight: 8 }} />
-                <Text style={{ fontSize: 14, color: '#333' }}>Mã KH</Text>
-                <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#D32F2F', marginLeft: 16 }}>015281</Text>
-              </View>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Icon name="card-account-details-outline" size={20} color="#1E88E5" style={{ marginRight: 8 }} />
                 <Text style={{ fontSize: 14, color: '#333' }}>STT</Text>
                 <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#1E88E5', marginLeft: 16 }}>1</Text>
               </View>
@@ -115,14 +135,16 @@ export default function InvoiceDetailScreen({ navigation, route }: Props) {
               <Icon name="map-marker-outline" size={20} color="#1E88E5" style={{ marginRight: 8 }} />
               <Text style={{ fontSize: 14, color: '#333', marginRight: 8 }}>Địa chỉ</Text>
               <Text style={{ fontSize: 13, color: '#333', flex: 1 }}>
-                621 Trường Chinh, Phường Nam Định, Tỉnh Ninh Bình
+                {route.params?.address || 'N/A'}
               </Text>
             </View>
 
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Icon name="phone-outline" size={20} color="#1E88E5" style={{ marginRight: 8 }} />
               <Text style={{ fontSize: 14, color: '#333', marginRight: 8 }}>Điện thoại</Text>
-              <Text style={{ fontSize: 14, color: '#333', flex: 1, textAlign: 'right' }}>0854423286</Text>
+              <Text style={{ fontSize: 14, color: '#333', flex: 1, textAlign: 'right' }}>
+                {route.params?.phone || 'N/A'}
+              </Text>
             </View>
           </View>
         </View>

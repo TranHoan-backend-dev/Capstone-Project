@@ -5,6 +5,7 @@ import {
   AccountCreationContext,
   DeleteAccountContext,
   MailInformation,
+  NewDeviceLoginContext,
   OtpContext,
   UpdateAccountContext, UpdatePasswordContext
 } from '../../../infrastructure/model/mail.entity';
@@ -129,6 +130,33 @@ export class ConsumerController {
 
     const context: UpdatePasswordContext = {
       fullName: data.fullName,
+    }
+
+    Logger.log('Info: ', info);
+    Logger.log('Context: ', context);
+
+    await this.service.sendNormalEmail(info, context);
+
+    Logger.log('Email sent successfully');
+  }
+
+  @EventPattern('new-device-login')
+  async sendNewDeviceLoginEvent(@Payload() data: any) {
+    Logger.log('New device login event request received');
+    Logger.log(data);
+
+    if (!data.name || !data.deviceName) {
+      Logger.log('Fields cannot be missing');
+      return;
+    }
+
+    const info = this.createMailTemplate(data)
+
+    const context: NewDeviceLoginContext = {
+      name: data.name,
+      deviceName: data.deviceName,
+      loginTime: data.loginTime,
+      ipAddress: data.ipAddress,
     }
 
     Logger.log('Info: ', info);

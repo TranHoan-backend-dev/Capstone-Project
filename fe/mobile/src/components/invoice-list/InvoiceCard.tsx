@@ -23,11 +23,6 @@ export default function InvoiceCard({ invoice }: any) {
     <Card style={[style.card, { backgroundColor: '#fff', elevation: 1, borderBottomWidth: 1, borderBottomColor: '#eee' }]}>
       <TouchableOpacity onPress={handlePress} style={{ padding: 12 }}>
         <View style={style.cardHeader}>
-          <View style={style.row}>
-            <Icon name="format-list-bulleted" size={20} color="#666" />
-            <Text style={[style.invoiceCode, { color: '#1E88E5' }]}>{invoice.id}</Text>
-          </View>
-
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Icon name="cash-multiple" size={20} color="#4CAF50" style={{ marginRight: 4 }} />
             <Text style={{ color: '#1E88E5', fontWeight: '500' }}>Thu tiền</Text>

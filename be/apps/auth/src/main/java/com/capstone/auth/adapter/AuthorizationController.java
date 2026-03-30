@@ -76,7 +76,8 @@ public class AuthorizationController {
 
   @GetMapping(EMPLOYEE_PREFIX + "/{id}/name")
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF', " +
-    "'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP')")
+    "'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'FINANCE_DEPARTMENT', " +
+    "'CONSTRUCTION_DEPARTMENT_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD')")
   public ResponseEntity<WrapperApiResponse> getEmployeeNameById(
     @PathVariable @NotBlank @NotEmpty @NotNull String id
   ) {
@@ -150,7 +151,7 @@ public class AuthorizationController {
 
   @Operation(hidden = true)
   @GetMapping(EMPLOYEE_PREFIX + "/role/{id}")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'SURVEY_STAFF')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF')")
   public ResponseEntity<?> getRoleOfEmployeeById(@PathVariable String id) {
     log.info("Getting role of employee by id: {}", id);
     return Utils.returnOkResponse("", userService.getRoleOfEmployee(id));
