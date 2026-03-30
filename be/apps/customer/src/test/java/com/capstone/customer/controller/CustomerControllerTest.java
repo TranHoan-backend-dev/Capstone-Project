@@ -2,6 +2,7 @@ package com.capstone.customer.controller;
 
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.customer.dto.request.customer.CreateRequest;
+import com.capstone.customer.dto.request.customer.CustomerFilterRequest;
 import com.capstone.customer.dto.request.customer.UpdateRequest;
 import com.capstone.customer.dto.response.CustomerResponse;
 import com.capstone.customer.dto.request.customer.CustomerFilterRequest;
@@ -142,8 +143,27 @@ class CustomerControllerTest {
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(Objects.requireNonNull(response.getBody()).data()).isEqualTo(page);
     assertThat(response.getBody().message()).isEqualTo("Lấy danh sách khách hàng thành công");
+    
+    verify(customerService).getAllCustomers(pageable, null);
+  }
 
-    verify(customerService).getAllCustomers(eq(pageable), any());
+  @Test
+  @DisplayName("should_ReturnOk_When_GetAllCustomersWithSearch_IsSuccessful")
+  void should_ReturnOk_When_GetAllCustomersWithSearch_IsSuccessful() {
+    Pageable pageable = PageRequest.of(0, 10);
+    CustomerFilterRequest filter = new CustomerFilterRequest(
+      "test", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null
+    );
+    Page<CustomerResponse> page = new PageImpl<>(List.of(customerResponse));
+    when(customerService.getAllCustomers(pageable, filter)).thenReturn(page);
+
+    ResponseEntity<WrapperApiResponse> response = customerController.getAllCustomers(pageable, filter);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(response.getBody().data()).isEqualTo(page);
+    assertThat(response.getBody().message()).isEqualTo("Lấy danh sách khách hàng thành công");
+
+    verify(customerService).getAllCustomers(pageable, filter);
   }
 
   @Test

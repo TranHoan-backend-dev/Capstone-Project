@@ -88,10 +88,10 @@ export const SettlementDetailModal = ({
 
                 <div className="border-t border-gray-200 my-4" />
 
-                <InfoRow
+                {/* <InfoRow
                   label="Người lập chiết tính"
                   value={data.creator || "Chưa cập nhật"}
-                />
+                /> */}
                 <InfoRow
                   icon={
                     <InformationCircleIcon className="w-4 h-4 text-gray-400" />

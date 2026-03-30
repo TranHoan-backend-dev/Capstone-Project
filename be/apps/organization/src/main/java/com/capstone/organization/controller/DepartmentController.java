@@ -33,7 +33,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/departments")
-@PreAuthorize("hasAuthority('IT_STAFF')")
+@PreAuthorize("hasAnyAuthority('IT_STAFF')")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Tag(name = "Department", description = "Các endpoint quản lý phòng ban")
 public class DepartmentController {
@@ -126,6 +126,7 @@ public class DepartmentController {
 
   @Operation(hidden = true)
   @GetMapping("/name/{id}")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD')")
   public String getDepartmentName(@PathVariable String id) {
     log.info("Get department name {}", id);
     var name = departmentService.getName(id);

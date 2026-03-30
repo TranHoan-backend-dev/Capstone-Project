@@ -157,7 +157,7 @@ export const SurveyAssignmentTable = ({
           total: totalPages,
           page: page,
           onChange: onPageChange,
-          summary: `${(page - 1) * 10 + 1}-${Math.min(page * 10, total)} của ${total}`,
+          summary: `${data.length}`,
         }}
         renderCellAction={renderCell}
       />
