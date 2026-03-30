@@ -13,6 +13,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -23,7 +24,8 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
   JpaSpecificationExecutor<InstallationForm> {
   boolean existsById_FormNumberAndId_FormCode(String formNumber, String formCode);
 
-  Page<InstallationForm> findByStatus_ContractAndStatus_Construction(@NonNull ProcessingStatus statusContract, @NonNull ProcessingStatus statusConstruction, Pageable pageable);
+  @Query(value = "SELECT * FROM installation_form i WHERE i.status->>'contract' = :statusContract AND i.status->>'construction' = :statusConstruction", nativeQuery = true)
+  Page<InstallationForm> findByStatusContractAndStatusConstruction(@Param("statusContract") String statusContract, @Param("statusConstruction") String statusConstruction, Pageable pageable);
 
   // build dynamic WHERE clause
 

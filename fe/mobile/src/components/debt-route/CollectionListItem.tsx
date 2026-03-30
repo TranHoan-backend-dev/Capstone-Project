@@ -33,7 +33,7 @@ const formatNumber = (num: number | string) => {
 export default function CollectionListItem({ item }: CollectionListItemProps) {
   const navigation = useNavigation<any>();
   const goToCustomerList = () => {
-    navigation.navigate('InvoiceList');
+    navigation.navigate('InvoiceList', { roadmapId: item.id });
   };
 
   return (
@@ -46,18 +46,13 @@ export default function CollectionListItem({ item }: CollectionListItemProps) {
       <View style={{ marginBottom: 12 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Icon name="format-list-bulleted" size={20} color="#1E88E5" style={{ marginRight: 8 }} />
-            <Text style={{ color: '#1E88E5', fontWeight: '500', fontSize: 16 }}>{item.id}</Text>
+            <Icon name="book-outline" size={20} color="#8D6E63" style={{ marginRight: 8 }} />
+            <Text style={{ color: '#1E88E5', fontWeight: '500', fontSize: 16 }}>{item.meterId}</Text>
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Icon name="format-list-checks" size={18} color="#4CAF50" style={{ marginRight: 4 }} />
             <Text style={{ color: '#1E88E5', fontSize: 13 }}>Danh sách hoá đơn</Text>
           </View>
-        </View>
-
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Icon name="book-outline" size={20} color="#8D6E63" style={{ marginRight: 8 }} />
-          <Text style={{ color: '#1E88E5', fontWeight: '500', fontSize: 16 }}>{item.meterId}</Text>
         </View>
       </View>
 
