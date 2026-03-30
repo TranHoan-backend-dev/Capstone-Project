@@ -62,3 +62,5 @@ rabbit-mq-config:
   actions:
     - update
     - delete
+ai-service:
+  url: http://localhost:8081

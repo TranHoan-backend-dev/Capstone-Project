@@ -8,9 +8,10 @@ import java.util.Collection;
 import java.util.List;
 
 import com.capstone.device.application.dto.response.pricetype.PendingReviewResponse;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface UsageHistoryService {
-  UsageResponse addWaterIndexOfThisMonth(String imageUrl, String serial, BigDecimal index, LocalDate recordingDate);
+  UsageResponse addWaterIndexOfThisMonth(String imageUrl, String serial, BigDecimal index, LocalDate recordingDate, MultipartFile file);
 
   void updatePaymentStatus(String serial, String method);
 
