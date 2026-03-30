@@ -19,8 +19,6 @@ interface AssignConstructionPopupProps {
   onSuccess: () => void;
   formCode: string;
   formNumber: string;
-  customerName: string;
-  customerId?: string;
   contractId?: string;
 }
 
@@ -37,8 +35,6 @@ export const AssignConstructionPopup = ({
   onSuccess,
   formCode,
   formNumber,
-  customerName,
-  customerId,
   contractId: propContractId,
 }: AssignConstructionPopupProps) => {
   const [selectedLeader, setSelectedLeader] = useState<Set<string>>(new Set());
@@ -54,6 +50,10 @@ export const AssignConstructionPopup = ({
   useEffect(() => {
     if (isOpen) {
       fetchConstructionStaff();
+      // Nếu chưa có contractId, có thể fetch từ API
+      if (!propContractId && formCode) {
+        fetchContractByFormCode();
+      }
     }
   }, [isOpen, formCode, formNumber, propContractId]);
 
@@ -84,6 +84,24 @@ export const AssignConstructionPopup = ({
     }
   };
 
+  const fetchContractByFormCode = async () => {
+    setFetchingContract(true);
+    try {
+      // API để lấy contractId từ formCode
+      const res = await authFetch(
+        `/api/construction/contract/by-form-code/${formCode}`,
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setContractId(data?.contractId || data?.id);
+      }
+    } catch (err) {
+      console.error("Error fetching contract:", err);
+    } finally {
+      setFetchingContract(false);
+    }
+  };
+
   const handleSelectionChange = (keys: Set<string>) => {
     setSelectedLeader(keys);
     setError(null);
@@ -95,7 +113,7 @@ export const AssignConstructionPopup = ({
       return;
     }
 
-    if (!contractId) {
+    if (!contractId && !formCode) {
       setError("Không tìm thấy thông tin hợp đồng, vui lòng thử lại");
       return;
     }
@@ -110,19 +128,30 @@ export const AssignConstructionPopup = ({
         teamLeaderId,
         formCode,
         formNumber,
-        customerId,
         contractId,
       });
 
-      const res = await authFetch(
-        `/api/customer/construction/pending-requests/${id}/${empld}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
+      // Sửa lại endpoint - sử dụng formCode hoặc contractId
+      let endpoint = "";
+      if (contractId) {
+        endpoint = `/api/customer/construction/pending-requests/${contractId}/assign`;
+      } else if (formCode) {
+        endpoint = `/api/customer/construction/pending-requests/by-form-code/${formCode}/assign`;
+      } else {
+        throw new Error("Không có thông tin để giao thi công");
+      }
+
+      const res = await authFetch(endpoint, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({
+          teamLeaderId,
+          formCode,
+          formNumber,
+        }),
+      });
 
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
@@ -160,16 +189,19 @@ export const AssignConstructionPopup = ({
                 <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                   <p className="text-sm text-gray-500 mb-1">Mã đơn</p>
                   <p className="font-medium text-gray-900 dark:text-gray-100">
-                    {formNumber}
+                    {formNumber || formCode}
                   </p>
                 </div>
 
-                <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                  <p className="text-sm text-gray-500 mb-1">Tên công trình</p>
-                  <p className="font-medium text-gray-900 dark:text-gray-100">
-                    {customerName}
-                  </p>
-                </div>
+                {/* Hiển thị contractId nếu có */}
+                {contractId && (
+                  <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <p className="text-sm text-gray-500 mb-1">Mã hợp đồng</p>
+                    <p className="font-medium text-gray-900 dark:text-gray-100">
+                      {contractId}
+                    </p>
+                  </div>
+                )}
 
                 {/* Danh sách nhân viên */}
                 {isLoading && !fetchingContract ? (
@@ -218,7 +250,7 @@ export const AssignConstructionPopup = ({
                   fetchingContract ||
                   selectedLeader.size === 0 ||
                   teamLeaders.length === 0 ||
-                  !contractId
+                  (!contractId && !formCode)
                 }
               >
                 Xác nhận giao

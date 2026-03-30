@@ -10,12 +10,21 @@ import {
   CheckApprovalIcon,
 } from "@/config/chip-and-icon";
 import { authFetch } from "@/utils/authFetch";
-import { PendingConstructionItem, PendingConstructionResponse } from "@/types";
-import { PENDING_CONSTRUCTION } from "@/config/table-columns/construction/pending-construction-column";
+import { useProfile } from "@/hooks/useLogin";
 
-interface ApprovedRecord extends PendingConstructionItem {
-  contractNo?: string;
-  constructionStatus?: string;
+interface ApprovedRecord {
+  id: string;
+  contractId: string;
+  formCode: string;
+  formNumber: string;
+  createdAt: string;
+  isApproved: string;
+  customerName?: string;
+  phoneNumber?: string;
+  address?: string;
+  constructedByFullName?: string;
+  registrationAt?: string;
+  status?: string;
 }
 
 interface ApprovedTableProps {
@@ -27,6 +36,7 @@ export const ApprovedTable = ({
   refreshTrigger = 0,
   onApprove,
 }: ApprovedTableProps) => {
+  const { profile, loading: profileLoading, hasRole } = useProfile();
   const [data, setData] = useState<ApprovedRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -35,26 +45,31 @@ export const ApprovedTable = ({
   const [approvingId, setApprovingId] = useState<string | null>(null);
   const pageSize = 10;
 
+  // Kiểm tra quyền truy cập - chỉ survey_staff
+  const canView = hasRole("survey_staff");
+
   const columns = [
     { key: "formCode", label: "Mã đơn" },
-    { key: "contractNo", label: "Số hợp đồng" },
+    { key: "contractId", label: "Số hợp đồng" },
     { key: "customerName", label: "Tên công trình" },
     { key: "phoneNumber", label: "Điện thoại" },
     { key: "address", label: "Địa chỉ lắp đặt" },
     { key: "constructedByFullName", label: "Nhân viên thi công" },
-    { key: "registrationAt", label: "Ngày đăng ký" },
+    { key: "createdAt", label: "Ngày tạo" },
     { key: "actions", label: "Hành động", align: "center" as const },
   ];
 
   useEffect(() => {
-    fetchApprovedData();
-  }, [page, refreshTrigger]);
+    if (canView) {
+      fetchApprovedData();
+    }
+  }, [page, refreshTrigger, canView]);
 
   const fetchApprovedData = async () => {
     setLoading(true);
     try {
       const res = await authFetch(
-        `/api/construction/constructions?page=${page - 1}&size=${pageSize}`,
+        `/api/construction/constructions?page=${page - 1}&size=${pageSize}&isApproved=false`,
       );
 
       if (!res.ok) {
@@ -63,36 +78,59 @@ export const ApprovedTable = ({
       }
 
       const json = await res.json();
-      const pageData = json?.data;
-      const items = pageData?.content ?? [];
-      setTotalItems(pageData?.page.totalElements ?? 0);
-      setTotalPages(pageData?.page.totalPages ?? 1);
 
-      const mapped = items.map(
-        (
-          item: PendingConstructionResponse & {
-            constructedByFullName?: string;
-          },
-          index: number,
-        ) => ({
-          id: item.formCode,
-          stt: (page - 1) * pageSize + index + 1,
-          formCode: item.formCode,
-          formNumber: item.formNumber,
-          customerName: item.customerName,
-          phoneNumber: item.phoneNumber,
-          address: item.address,
-          registrationAt: item.registrationAt,
-          constructedByFullName: item.constructedByFullName || "Chưa phân công",
-          status: item.status.construction,
-        }),
-      );
+      let items = [];
+      let totalElements = 0;
+      let totalPagesCount = 1;
+
+      if (Array.isArray(json)) {
+        items = json;
+        totalElements = items.length;
+        totalPagesCount = Math.ceil(totalElements / pageSize);
+      } else if (json?.data?.content) {
+        items = json.data.content;
+        totalElements = json.data.page?.totalElements || 0;
+        totalPagesCount = json.data.page?.totalPages || 1;
+      } else if (json?.data && Array.isArray(json.data)) {
+        items = json.data;
+        totalElements = items.length;
+        totalPagesCount = Math.ceil(totalElements / pageSize);
+      }
+
+      setTotalItems(totalElements);
+      setTotalPages(totalPagesCount);
+
+      const mapped = items.map((item: any, index: number) => ({
+        id: item.id,
+        stt: (page - 1) * pageSize + index + 1,
+        contractId: item.contractId || item.contractNo || "",
+        formCode: item.formCode,
+        formNumber: item.formNumber,
+        customerName: item.customerName || "Chưa có thông tin",
+        phoneNumber: item.phoneNumber || "",
+        address: item.address || "",
+        createdAt: formatDate(item.createdAt),
+        registrationAt: item.registrationAt,
+        constructedByFullName: item.constructedByFullName || "Chưa phân công",
+        status: item.status?.construction || item.isApproved,
+        isApproved: item.isApproved,
+      }));
 
       setData(mapped);
     } catch (error) {
       console.error("Error fetching approved data:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "";
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString("vi-VN");
+    } catch {
+      return dateString;
     }
   };
 
@@ -111,6 +149,10 @@ export const ApprovedTable = ({
         `/api/construction/review/${item.id}/true`,
         {
           method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ isApproved: true }),
         },
       );
 
@@ -119,10 +161,9 @@ export const ApprovedTable = ({
         if (onApprove) {
           onApprove();
         }
-        // Có thể thêm toast notification ở đây
         console.log("Duyệt đơn thành công");
       } else {
-        const errorData = await response.json();
+        const errorData = await response.json().catch(() => ({}));
         console.error("Failed to approve:", errorData);
         alert(errorData?.message || "Duyệt đơn thất bại");
       }
@@ -144,11 +185,14 @@ export const ApprovedTable = ({
 
       if (response.ok) {
         await fetchApprovedData();
+        console.log("Xóa đơn thành công");
       } else {
         console.error("Failed to delete");
+        alert("Xóa đơn thất bại");
       }
     } catch (error) {
       console.error("Error deleting:", error);
+      alert("Có lỗi xảy ra khi xóa đơn");
     }
   };
 
@@ -162,6 +206,9 @@ export const ApprovedTable = ({
         return (
           <span className="font-medium text-blue-600">{item.formCode}</span>
         );
+
+      case "contractId":
+        return <span className="font-medium">{item.contractId || "--"}</span>;
 
       case "customerName":
         return <span className="font-semibold">{item.customerName}</span>;
@@ -179,6 +226,9 @@ export const ApprovedTable = ({
           </span>
         );
 
+      case "createdAt":
+        return <span className="text-gray-600">{item.createdAt || "--"}</span>;
+
       case "actions":
         return (
           <div className="flex items-center justify-center gap-2">
@@ -194,19 +244,21 @@ export const ApprovedTable = ({
               </Button>
             </Tooltip>
 
-            <Tooltip content="Duyệt đơn" closeDelay={0}>
-              <Button
-                isIconOnly
-                variant="light"
-                size="sm"
-                className="text-green-600 hover:bg-green-50 rounded-lg"
-                onPress={() => handleApprove(item)}
-                isLoading={approvingId === item.id}
-                isDisabled={approvingId === item.id}
-              >
-                <CheckApprovalIcon className="w-5 h-5" />
-              </Button>
-            </Tooltip>
+            {item.isApproved !== "true" && (
+              <Tooltip content="Duyệt đơn" closeDelay={0}>
+                <Button
+                  isIconOnly
+                  variant="light"
+                  size="sm"
+                  className="text-green-600 hover:bg-green-50 rounded-lg"
+                  onPress={() => handleApprove(item)}
+                  isLoading={approvingId === item.id}
+                  isDisabled={approvingId === item.id}
+                >
+                  <CheckApprovalIcon className="w-5 h-5" />
+                </Button>
+              </Tooltip>
+            )}
 
             <Tooltip content="Xóa" closeDelay={0}>
               <Button
@@ -214,7 +266,7 @@ export const ApprovedTable = ({
                 variant="light"
                 size="sm"
                 className="text-red-500 hover:bg-red-50 rounded-lg"
-                onPress={() => handleDelete(item.formCode)}
+                onPress={() => handleDelete(item.id)}
               >
                 <DeleteIcon className="w-5 h-5" />
               </Button>
@@ -227,7 +279,8 @@ export const ApprovedTable = ({
     }
   };
 
-  if (loading && data.length === 0) {
+  // Hiển thị khi đang kiểm tra profile
+  if (profileLoading) {
     return (
       <div className="flex justify-center items-center py-12">
         <Spinner size="lg" />

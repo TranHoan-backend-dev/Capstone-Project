@@ -1,11 +1,6 @@
 import axiosBase from "@/lib/axios/axios-base";
 import axios from "axios";
 import { API_GATEWAY_URL } from "@/utils/constraints";
-import {
-  ApiResponse,
-  EmployeeProfileData,
-  EmployeeProfileUpdatePayload,
-} from "@/types";
 
 export const signinService = (username: string, password: string) =>
   axios.post(

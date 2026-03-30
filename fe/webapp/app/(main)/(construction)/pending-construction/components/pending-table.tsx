@@ -1,17 +1,14 @@
-// components/construction/pending-table.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Button, Tooltip } from "@heroui/react";
-
+import { Tooltip, Spinner, Chip } from "@heroui/react";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import { CancelIcon, CheckApprovalIcon, PencilIcon } from "@/config/chip-and-icon";
-import { PENDING_CONSTRUCTION } from "@/config/table-columns/construction/pending-construction-column";
+import { CheckApprovalIcon } from "@/config/chip-and-icon";
 import { authFetch } from "@/utils/authFetch";
+import { useProfile } from "@/hooks/useLogin";
 import {
   FilterPendingConstructionRequest,
   PendingConstructionItem,
-  PendingConstructionResponse,
 } from "@/types";
 import AssignConstructionPopup from "./assign-construction-popup";
 import CustomButton from "@/components/ui/custom/CustomButton";
@@ -22,11 +19,21 @@ interface PendingTableProps {
   onSuccess?: () => void;
 }
 
+interface BackendConstructionData {
+  id: string;
+  contractId: string;
+  formCode: string;
+  formNumber: string;
+  createdAt: string;
+  isApproved: string;
+}
+
 export const PendingTable = ({
   filters,
   refreshTrigger = 0,
   onSuccess,
 }: PendingTableProps) => {
+  const { profile, loading: profileLoading, hasRole } = useProfile();
   const [data, setData] = useState<PendingConstructionItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
@@ -40,20 +47,35 @@ export const PendingTable = ({
     direction: "desc",
   });
 
-  // State cho popup giao thi công
   const [showAssignPopup, setShowAssignPopup] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<{
     formCode: string;
     formNumber: string;
-    customerName: string;
-    customerId?: string;
+    contractId: string;
+    id: string;
   } | null>(null);
 
   const pageSize = 10;
 
+  const canView = hasRole([
+    "construction_department_head",
+    "construction_department_staff",
+  ]);
+
+  // Giữ nguyên columns như cũ
+  const columns = [
+    { key: "stt", label: "STT" },
+    { key: "contractId", label: "Số hợp đồng" },
+    { key: "formCode", label: "Mã đơn" },
+    { key: "status", label: "Trạng thái" },
+    { key: "actions", label: "Hành động", align: "center" as const },
+  ];
+
   useEffect(() => {
-    fetchData();
-  }, [page, sort, refreshTrigger]);
+    if (canView) {
+      fetchData();
+    }
+  }, [page, sort, refreshTrigger, filters, canView]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -61,36 +83,69 @@ export const PendingTable = ({
       const params = new URLSearchParams({
         page: String(page - 1),
         size: String(pageSize),
-        // sort: `${sort.field},${sort.direction}`,
       });
+
+      // Add filters if needed
+      if (filters) {
+        // Add filter params here if needed
+      }
+
+      params.append("isApproved", "false");
 
       const res = await authFetch(`/api/construction/constructions?${params}`);
 
       if (!res.ok) {
         console.error("Fetch failed", res.status);
+        setData([]);
+        setTotalItems(0);
+        setTotalPages(1);
         return;
       }
 
       const json = await res.json();
-      const pageData = json?.data;
-      const items = pageData?.content ?? [];
-      setTotalItems(pageData?.page.totalElements ?? 0);
-      setTotalPages(pageData?.page.totalPages ?? 1);
 
+      let items: BackendConstructionData[] = [];
+      let totalElements = 0;
+      let totalPagesCount = 1;
+
+      // Handle different response structures
+      if (json?.data?.content && Array.isArray(json.data.content)) {
+        items = json.data.content;
+        totalElements = json.data.page?.totalElements || 0;
+        totalPagesCount = json.data.page?.totalPages || 1;
+      } else if (Array.isArray(json)) {
+        items = json;
+        totalElements = items.length;
+        totalPagesCount = Math.ceil(totalElements / pageSize);
+      } else if (json?.data && Array.isArray(json.data)) {
+        items = json.data;
+        totalElements = items.length;
+        totalPagesCount = Math.ceil(totalElements / pageSize);
+      } else if (json?.content && Array.isArray(json.content)) {
+        items = json.content;
+        totalElements = json.totalElements || items.length;
+        totalPagesCount = json.totalPages || 1;
+      }
+
+      setTotalItems(totalElements);
+      setTotalPages(totalPagesCount);
+
+      // Map the data with proper fields
       const mapped = items.map(
-        (item: PendingConstructionResponse, index: number) => ({
-          id: item.formCode,
+        (item: BackendConstructionData, index: number) => ({
+          id: item.id,
           stt: (page - 1) * pageSize + index + 1,
           formCode: item.formCode,
           formNumber: item.formNumber,
-          customerName: item.customerName,
-          phoneNumber: item.phoneNumber,
-          handoverByFullName: item.handoverByFullName,
-          address: item.address,
-          scheduleSurveyAt: item.scheduleSurveyAt,
-          status: item.status.construction,
+          contractId: item.contractId || "",
+          customerName: (item as any).customerName || "Chưa có thông tin",
+          customerId: (item as any).customerId,
+          createdAt: formatDate(item.createdAt),
+          isApproved: item.isApproved,
+          status: item.isApproved === "false" ? "Chờ xử lý" : "Đã duyệt",
         }),
       );
+
       setData(mapped);
     } catch (e) {
       console.error("Error fetching data:", e);
@@ -102,97 +157,90 @@ export const PendingTable = ({
     }
   };
 
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return "";
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString("vi-VN");
+    } catch {
+      return dateString;
+    }
+  };
+
   const handleAssign = (item: PendingConstructionItem) => {
     setSelectedOrder({
+      id: item.id,
       formCode: item.formCode,
       formNumber: item.formNumber,
-      customerName: item.customerName,
-      // constructionId: item.id,
-      customerId: (item as any).customerId,
+      contractId: item.contractId,
     });
     setShowAssignPopup(true);
   };
 
   const handleAssignSuccess = () => {
-    // Refresh danh sách sau khi giao thành công
     fetchData();
     if (onSuccess) {
       onSuccess();
     }
   };
 
-  const actionItems = [
-    {
-      content: "Giao thi công",
-      icon: CheckApprovalIcon,
-      color: "primary" as const,
-      className: "text-blue-600 hover:bg-blue-50",
-      onClick: (item: PendingConstructionItem) => handleAssign(item),
-    },
-  ];
-
   const renderCell = (item: PendingConstructionItem, columnKey: string) => {
     switch (columnKey) {
       case "stt":
         return <span className="font-medium text-blue-600">{item.stt}</span>;
 
-      case "formNumber":
-        return <span className="font-semibold">{item.formNumber}</span>;
+      case "formCode":
+        return (
+          <span className="font-semibold text-blue-600">{item.formCode}</span>
+        );
+
+      case "contractId":
+        return <span className="text-gray-700">{item.contractId || "--"}</span>;
 
       case "actions":
         return (
           <div className="flex items-center justify-center gap-2">
-            {actionItems.map((action, idx) => (
-              <Tooltip closeDelay={0} color="primary" content="Giao thi công">
-                <CustomButton
-                  isIconOnly
-                  className="bg-transparent text-primary-500 data-[hover=true]:bg-primary-50"
-                  size="lg"
-                  variant="light"
-                  onPress={() => action.onClick(item)}
-                >
-                  <PencilIcon className="w-5 h-5" />
-                </CustomButton>
-              </Tooltip>
-              // <Tooltip
-              //   key={idx}
-              //   content={action.content}
-              //   closeDelay={0}
-              //   color={action.color}
-              // >
-              //   <Button
-              //     isIconOnly
-              //     variant="light"
-              //     size="sm"
-              //     className={`${action.className} rounded-lg`}
-              //     onPress={() => action.onClick(item)}
-              //   >
-              //     <action.icon className="w-5 h-5" />
-              //   </Button>
-              // </Tooltip>
-            ))}
+            <Tooltip content="Giao thi công" closeDelay={0}>
+              <CustomButton
+                isIconOnly
+                className="bg-transparent text-primary-500 data-[hover=true]:bg-primary-50"
+                size="lg"
+                variant="light"
+                onPress={() => handleAssign(item)}
+              >
+                <CheckApprovalIcon className="w-5 h-5" />
+              </CustomButton>
+            </Tooltip>
           </div>
         );
 
       default:
-        return (item as any)[columnKey];
+        return (item as any)[columnKey] || "--";
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center py-8">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
 
   return (
     <>
       <GenericDataTable
         title="Danh sách đơn chờ giao thi công"
-        columns={PENDING_CONSTRUCTION}
+        columns={columns}
         data={data}
         isCollapsible
-        headerSummary={`${data.length}`}
+        headerSummary={`${data.length} / ${totalItems}`}
         renderCellAction={renderCell}
         paginationProps={{
           total: totalPages,
           page: page,
           onChange: setPage,
-          summary: `${data.length}`,
+          summary: `${data.length} / ${totalItems}`,
         }}
       />
 
@@ -206,8 +254,7 @@ export const PendingTable = ({
           onSuccess={handleAssignSuccess}
           formCode={selectedOrder.formCode}
           formNumber={selectedOrder.formNumber}
-          customerName={selectedOrder.customerName}
-          customerId={selectedOrder.customerId}
+          contractId={selectedOrder.contractId}
         />
       )}
     </>
