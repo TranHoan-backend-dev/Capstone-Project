@@ -12,6 +12,7 @@ import {
 } from "@heroui/react";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
 import { authFetch } from "@/utils/authFetch";
+import { CallToast } from "@/components/ui/CallToast";
 
 interface AssignConstructionPopupProps {
   isOpen: boolean;
@@ -74,24 +75,18 @@ export const AssignConstructionPopup = ({
       }
 
       const json = await res.json();
-      console.log("API response:", json); // Debug log
 
-      // Parse đúng cấu trúc response từ backend
-      // Response có dạng: { status: 200, message: "...", data: ["HE171773"] }
       let fetchedContractId = null;
 
       if (json.data && Array.isArray(json.data) && json.data.length > 0) {
-        // Lấy phần tử đầu tiên của mảng data
         fetchedContractId = json.data[0];
       } else if (json.data && typeof json.data === "string") {
-        // Trường hợp data là string
         fetchedContractId = json.data;
       } else if (json.id) {
-        // Trường hợp có id trực tiếp
         fetchedContractId = json.id;
       }
 
-      console.log("Parsed contractId:", fetchedContractId); // Debug log
+      console.log("Parsed contractId:", fetchedContractId);
 
       if (!fetchedContractId) {
         throw new Error("Không tìm thấy hợp đồng cho đơn này");
@@ -175,7 +170,11 @@ export const AssignConstructionPopup = ({
         const errorData = await res.json().catch(() => ({}));
         throw new Error(errorData?.message || "Giao thi công thất bại");
       }
-
+      CallToast({
+        title: "Thành công",
+        message: "Giao nhiệm vụ thi công thành công!",
+        color: "success",
+      });
       onSuccess();
       onClose();
     } catch (err) {
