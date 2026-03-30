@@ -146,7 +146,9 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
   }
 
   private @NonNull ConstructionResponse mapToResponse(@NonNull InstallationForm entity) {
+    log.info("Handle the installationForm with formNumber: {}", entity.getFormNumber());
     var constructionRequest = repository.findByInstallationForm(entity);
+    log.info("Handle the construction request with id: {}", constructionRequest.getId());
     return convert(constructionRequest);
   }
 }
