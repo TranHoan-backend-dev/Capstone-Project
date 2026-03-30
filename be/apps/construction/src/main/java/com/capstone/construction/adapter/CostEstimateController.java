@@ -4,6 +4,7 @@ import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.common.utils.Utils;
+import com.capstone.construction.application.dto.request.estimate.EstimateFilterRequest;
 import com.capstone.construction.application.dto.request.estimate.AssignTheSignificanceRequest;
 import com.capstone.construction.application.dto.request.estimate.SignRequest;
 import com.capstone.construction.application.dto.request.estimate.UpdateRequest;
@@ -92,10 +93,10 @@ public class CostEstimateController {
   @Operation(summary = "", description = "", responses = {
     @ApiResponse(responseCode = "200", description = "", content = @Content(schema = @Schema(implementation = CostEstimateResponse.class)))
   })
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'SURVEY_STAFF')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'SURVEY_STAFF', 'COMPANY_LEADERSHIP')")
   public ResponseEntity<WrapperApiResponse> getAllEstimates(
-    @PageableDefault @Parameter(description = "") Pageable pageable,
-    @Parameter(description = "Thông tin lọc (từ khóa, khoảng thời gian)") BaseFilterRequest request
+    @PageableDefault @Parameter(description = "Pagination parameters") Pageable pageable,
+    @Parameter(description = "Thông tin lọc (từ khóa, khoảng thời gian)") EstimateFilterRequest request
   ) {
     log.info("REST request to get all cost estimates");
     var response = estimateUseCase.getAllEstimates(pageable, request);
@@ -113,9 +114,13 @@ public class CostEstimateController {
     @ApiResponse(responseCode = "404", description = "Không tìm thấy dự toán hoặc nhân viên", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD')")
-  public ResponseEntity<WrapperApiResponse> requireSignificances(@RequestBody @Valid AssignTheSignificanceRequest request) {
+  public ResponseEntity<WrapperApiResponse> requireSignificances(
+    @RequestBody @Valid AssignTheSignificanceRequest request,
+    @AuthenticationPrincipal Jwt jwt
+  ) {
     log.info("REST request to sign cost estimate: {}", request);
-    estimateUseCase.assignStaffForSignCostEstimate(request);
+    var id = jwt.getSubject();
+    estimateUseCase.assignStaffForSignCostEstimate(request, id);
     return Utils.returnOkResponse("Yêu cầu ký duyệt dự toán thành công", null);
   }
 

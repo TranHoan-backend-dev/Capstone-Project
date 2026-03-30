@@ -22,7 +22,6 @@ const SettlementLookupPage = () => {
   const [to, setTo] = useState<DateValue | null | undefined>(null);
   const [keywordInput, setKeywordInput] = useState("");
   const [keywordSearch, setKeywordSearch] = useState("");
-  const [status, setStatus] = useState<string | undefined>();
 
   const handleSearch = () => {
     setKeywordSearch(keywordInput);
@@ -132,10 +131,8 @@ const SettlementLookupPage = () => {
         reloadKey={reloadKey}
         from={formatDate2(from)}
         to={formatDate2(to)}
-        status={status}
         onEdit={handleEdit}
         onDeleted={handleReload}
-        onFilterStatus={(s) => setStatus(s)}
       />
     </div>
   );

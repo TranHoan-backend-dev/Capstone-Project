@@ -143,6 +143,7 @@ export const RelatedOrdersTable = ({
         return "pending";
     }
   };
+
   const getStageAndStatus = (statusObj: any) => {
     if (!statusObj) {
       return { stage: "registration", status: "pending" };
@@ -164,14 +165,21 @@ export const RelatedOrdersTable = ({
 
     if (statusObj.contract !== "APPROVED") {
       return {
-        stage: "construction",
+        stage: "contract",
         status: mapStatus(statusObj.contract),
       };
     }
 
+    if (statusObj.construction !== "APPROVED") {
+      return {
+        stage: "construction",
+        status: mapStatus(statusObj.construction),
+      };
+    }
+
     return {
-      stage: "contract",
-      status: mapStatus(statusObj.construction),
+      stage: "construction",
+      status: "approved",
     };
   };
 

@@ -1,11 +1,6 @@
 import axiosBase from "@/lib/axios/axios-base";
 import axios from "axios";
 import { API_GATEWAY_URL } from "@/utils/constraints";
-import {
-  ApiResponse,
-  EmployeeProfileData,
-  EmployeeProfileUpdatePayload,
-} from "@/types";
 
 export const signinService = (username: string, password: string) =>
   axios.post(
@@ -52,21 +47,28 @@ export const getProfileEmployee = async (accessToken: string) => {
     },
   });
 };
-
-export const updateProfileEmployee = async (
-  payload: any,
-  accessToken: string,
-): Promise<any> => {
-  const response = await axios.patch<ApiResponse<any>>(
-    `${API_GATEWAY_URL}/auth/me`,
-    payload,
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
+// export const updateProfileEmployee = async (
+//   payload: any,
+//   accessToken: string,
+// ): Promise<any> => {
+//   const response = await axios.patch<ApiResponse<any>>(
+//     `${API_GATEWAY_URL}/auth/me`,
+//     payload,
+//     {
+//       headers: {
+//         Authorization: `Bearer ${accessToken}`,
+//         "Content-Type": "application/json",
+//       },
+//     },
+//   );
+//   return response.data.data;
+// };
+export const updateProfileEmployee = async (payload: any, accessToken: string) => {
+  const response = await axios.patch(`${API_GATEWAY_URL}/auth/me`, payload, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
     },
-  );
+  });
   return response.data.data;
 };
 

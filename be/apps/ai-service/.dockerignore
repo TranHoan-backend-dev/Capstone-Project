@@ -1,0 +1,17 @@
+.venv
+.idea
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+debug_crops
+log_output
+output
+inference_results
+test.jpg
+test2.jpg
+test3.png
+test4.jpg
+test5.jpg
+test6.jpg
+test7.png

@@ -46,6 +46,7 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
   @Transactional
   public UsageResponse addWaterIndexOfThisMonth(String imageUrl, String serial, BigDecimal index,
                                                 @NonNull LocalDate recordingDate) {
+    log.info("addWaterIndexOfThisMonth");
     var meter = waterMeterRepository.findById(serial)
       .orElseThrow(() -> new NotExistingException("Không tìm thấy thiết bị: " + serial));
     var history = repository.findByMeter(meter).orElseGet(() -> UsageHistory.builder()
@@ -101,10 +102,12 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
     log.info("Get usage history for customer {}", customerId);
 
     var customerInfo = getCustomerInfo(customerId);
+    log.info("CustomerInfo: {}", customerInfo);
     var waterMeterId = customerInfo.waterMeterId();
     if (waterMeterId == null) {
       throw new NotExistingException("Khách hàng chưa được gán đồng hồ nước: " + customerId);
     }
+    log.info("WaterMeterId: {}", waterMeterId);
 
     var meter = waterMeterRepository.findById(waterMeterId)
       .orElseThrow(() -> new NotExistingException("Không tìm thấy đồng hồ nước của khách hàng!"));
@@ -254,7 +257,7 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
 
         u.setMass(mass);
         u.setPrice(calculatedPrice);
-        
+
         // Resolve Signed URL for Mobile display
         u.setMeterImageUrl(resolveSignedUrl(u.getMeterImageUrl()));
 

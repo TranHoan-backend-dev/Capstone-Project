@@ -132,9 +132,6 @@ export const GenericDataTable = <T extends { id: string | number }>({
         <div
           className={`transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? "opacity-100 max-h-[5000px] visible" : "opacity-0 max-h-0 invisible"}`}
         >
-          {topContent && (
-            <div className="p-6 pt-2 border-b border-divider">{topContent}</div>
-          )}
           {(search || topContent) && (
             <div className="p-6 pt-2 border-b border-divider flex gap-4 items-center">
               {search && (
@@ -189,8 +186,6 @@ export const GenericDataTable = <T extends { id: string | number }>({
                   !isLoading ? "Không có dữ liệu để hiển thị." : null
                 }
                 items={isLoading ? [] : data}
-                isLoading={isLoading}
-                loadingContent={<Spinner label="Loading..." />}
                 className="flex items-center justify-center"
               >
                 {isLoading

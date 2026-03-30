@@ -11,58 +11,41 @@ import {
   BlueYellowIconColor,
   RejectIcon,
   RedIconColor,
-  ViewIcon,
   TitleDarkColor,
+  PencilIcon,
 } from "@/config/chip-and-icon";
-
-export interface EstimateOrder {
-  id: number;
-  code: string;
-  designProfileName: string;
-  phone: string;
-  installationAddress: string;
-  totalAmount: string; // Formatted string or number
-  createdDate: string;
-  creator: string;
-  status: "pending" | "approved" | "rejected";
-}
-
-interface EstimateTableProps {
-  data: EstimateOrder[];
-  activeTab: string; // "pending" or "approved"
-  onApproveAction: (item: EstimateOrder) => void;
-  onRejectAction: (item: EstimateOrder) => void;
-  onViewAction: (item: EstimateOrder) => void;
-  onEstimateAction: (item: EstimateOrder) => void;
-}
-
+import { ESTIMATE_APPROVAL_COLUMN } from "@/config/table-columns";
+import { EstimateOrder, EstimateTableProps } from "@/types";
 export const EstimateTable = ({
   data,
+  loading = false,
+  page,
+  totalPages,
+  totalItems,
+  onPageChange,
   onApproveAction,
   onRejectAction,
   onViewAction,
   onEstimateAction,
+  onSignAction,
+  onCreateSignatureRequest,
+  currentUserRole,
 }: EstimateTableProps) => {
-  const columns = [
-    { key: "stt", label: "STT", align: "center", width: "50px" },
-    { key: "code", label: "Mã đơn", align: "start" },
-    { key: "designProfileName", label: "Tên hồ sơ thiết kế", align: "start" },
-    { key: "phone", label: "Điện thoại", align: "start" },
-    { key: "installationAddress", label: "Địa chỉ lắp đặt", align: "start" },
-    { key: "totalAmount", label: "Tổng tiền", align: "end" },
-    { key: "createdDate", label: "Ngày lập", align: "center" },
-    { key: "creator", label: "Người lập", align: "start" },
-    { key: "actions", label: "Hành động", align: "center" },
-  ] as const;
-
   const renderCell = (item: EstimateOrder, columnKey: string) => {
     switch (columnKey) {
       case "stt":
-        return <span>{item.id}</span>; // Using ID as STT for simplicity
+        return <span>{item.stt}</span>;
       case "code":
         return (
           <span
-            className={`font-bold text-blue-600 hover:underline hover:text-blue-800 ${TitleDarkColor}`}
+            className={`font-bold text-blue-600 hover:underline hover:text-blue-800 cursor-pointer ${TitleDarkColor}`}
+            onClick={(e) => {
+              if (e.ctrlKey || e.metaKey) {
+                onEstimateAction?.(item);
+              } else {
+                onEstimateAction?.(item);
+              }
+            }}
           >
             {item.code}
           </span>
@@ -82,30 +65,40 @@ export const EstimateTable = ({
       case "actions":
         return (
           <div className="flex items-center justify-center gap-2">
-            <Tooltip color="success" content="Duyệt">
-              <ApprovalIcon
-                className={GreenIconColor}
-                onClick={() => onApproveAction(item)}
-              />
-            </Tooltip>
-            <Tooltip color="danger" content="Từ chối">
-              <RejectIcon
-                className={RedIconColor}
-                onClick={() => onRejectAction(item)}
-              />
-            </Tooltip>
-            <Tooltip color="primary" content="Dự toán">
-              <EstimationIcon
-                className={BlueYellowIconColor}
-                onClick={() => onEstimateAction(item)}
-              />
-            </Tooltip>
-            <Tooltip color="primary" content="Xem">
-              <ViewIcon
-                className={BlueYellowIconColor}
-                onClick={() => onViewAction(item)}
-              />
-            </Tooltip>
+            {onApproveAction && item.status === "processing" && (
+              <Tooltip color="success" content="Duyệt dự toán">
+                <ApprovalIcon
+                  className={GreenIconColor}
+                  onClick={() => onApproveAction(item)}
+                />
+              </Tooltip>
+            )}
+
+            {onRejectAction && item.status === "processing" && (
+              <Tooltip color="danger" content="Từ chối dự toán">
+                <RejectIcon
+                  className={RedIconColor}
+                  onClick={() => onRejectAction(item)}
+                />
+              </Tooltip>
+            )}
+
+            {onCreateSignatureRequest && currentUserRole === "survey_staff" && (
+              <Tooltip color="primary" content="Tạo yêu cầu ký">
+                <EstimationIcon
+                  className={BlueYellowIconColor}
+                  onClick={() => onCreateSignatureRequest(item)}
+                />
+              </Tooltip>
+            )}
+            {onSignAction && item.status === "approved" && (
+              <Tooltip color="primary" content="Kí duyệt">
+                <PencilIcon
+                  className={BlueYellowIconColor}
+                  onClick={() => onSignAction(item)}
+                />
+              </Tooltip>
+            )}
           </div>
         );
       default:
@@ -116,20 +109,22 @@ export const EstimateTable = ({
 
   return (
     <GenericDataTable
-      columns={columns as any}
+      title=""
+      isLoading={loading}
+      headerSummary={`${totalItems}`}
+      columns={ESTIMATE_APPROVAL_COLUMN as any}
       data={data}
-      headerSummary={data.length.toString()}
-      isCollapsible={false}
-      paginationProps={{
-        total: Math.ceil(data.length / 5),
-        page: 1,
-        summary: `1-5 trong tổng số ${data.length}`,
-      }}
+      isCollapsible
       renderCellAction={renderCell}
       tableProps={{
         selectionMode: "none",
       }}
-      title=""
+      paginationProps={{
+        total: totalPages,
+        page: page,
+        onChange: onPageChange,
+        summary: `${data.length}`,
+      }}
     />
   );
 };

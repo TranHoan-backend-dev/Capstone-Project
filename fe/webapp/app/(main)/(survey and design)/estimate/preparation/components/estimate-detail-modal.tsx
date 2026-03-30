@@ -1,15 +1,43 @@
 "use client";
 
+import React, { useEffect, useState } from "react";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
-import React from "react";
 
 import { ModalHeader } from "@/components/popup-status/modal-header";
 import { InfoRow } from "@/components/popup-status/info-row";
 import { PriceBox } from "@/components/popup-status/price-box";
 import { NoteField } from "@/components/popup-status/note-field";
+import { numberToVietnamese } from "@/utils/numberToVietnamese";
+export const statusLabelMap: Record<string, string> = {
+  PENDING: "Chờ xử lý",
+  WAITING_FOR_SIGNATURE: "Chờ ký duyệt",
+  PARTIALLY_SIGNED: "Đang ký",
+  APPROVED: "Đã ký duyệt",
+  REJECTED: "Bị từ chối",
+};
 
 export const EstimateDetailModal = ({ isOpen, onClose, data }: any) => {
   if (!isOpen) return null;
+  const [creatorName, setCreatorName] = useState("Đang tải...");
+
+  useEffect(() => {
+    const fetchCreator = async () => {
+      if (!data?.creator) return;
+
+      try {
+        const res = await fetch(`/api/auth/employees/${data.creator}/name`);
+        const json = await res.json();
+
+        const emp = json?.data;
+
+        setCreatorName(emp);
+      } catch (err) {
+        setCreatorName("Không lấy được");
+      }
+    };
+
+    fetchCreator();
+  }, [data?.creatorId]);
 
   return (
     <>
@@ -43,26 +71,25 @@ export const EstimateDetailModal = ({ isOpen, onClose, data }: any) => {
               value={
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 text-green-700 rounded-md">
                   <span className="w-1.5 h-1.5 bg-green-600 rounded-full" />
-                  {data.status}
+                  {statusLabelMap[data.status] ?? data.status}
                 </span>
               }
             />
 
             <div className="border-t border-gray-200 my-4" />
 
-            <InfoRow label="Người lập chiết tính" value={data.creator} />
+            <InfoRow label="Người lập chiết tính" value={creatorName} />
             <InfoRow
               icon={<InformationCircleIcon className="w-4 h-4 text-gray-400" />}
               label="Ngày lập chiết tính"
               value={data.createDate}
             />
 
-            <InfoRow label="Người duyệt chiết tính" value={data.approver} />
-            <InfoRow
+            {/* <InfoRow
               icon={<InformationCircleIcon className="w-4 h-4 text-gray-400" />}
               label="Ngày duyệt chiết tính"
               value={data.approveDate}
-            />
+            /> */}
 
             <div className="border-t border-gray-200 my-4" />
 
@@ -70,7 +97,7 @@ export const EstimateDetailModal = ({ isOpen, onClose, data }: any) => {
               label="Tổng giá trị công trình"
               value={
                 <PriceBox
-                  text="Một trăm hai mươi lăm triệu năm trăm nghìn đồng"
+                  text={numberToVietnamese(data.totalPrice) + " đồng"}
                   value={data.totalPrice}
                 />
               }

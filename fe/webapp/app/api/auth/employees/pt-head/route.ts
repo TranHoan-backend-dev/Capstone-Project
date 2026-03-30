@@ -1,4 +1,4 @@
-import { getPtHead, getSurveyStaff } from "@/services/authorization.service";
+import { getPlanningHead } from "@/services/authorization.service";
 import { getAccessToken } from "@/utils/getAccessToken";
 import { NextRequest } from "next/dist/server/web/spec-extension/request";
 import { NextResponse } from "next/server";
@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const response = await getPtHead(accessToken);
+    const response = await getPlanningHead(accessToken);
 
     return NextResponse.json(response.data);
   } catch (error: any) {

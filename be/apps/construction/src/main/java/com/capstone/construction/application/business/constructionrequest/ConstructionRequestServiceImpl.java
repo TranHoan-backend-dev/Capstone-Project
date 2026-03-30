@@ -47,6 +47,12 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
     var installationForm = ifRepo.findById(new InstallationFormId(formCode, formNumber))
       .orElseThrow(() -> new IllegalArgumentException(String.format(SharedMessage.MES_24, formNumber, formCode)));
 
+    var status = installationForm.getStatus();
+    var contractStatus = status.getContract();
+    if (!contractStatus.name().equalsIgnoreCase(ProcessingStatus.APPROVED.name())) {
+      throw new IllegalArgumentException("Đơn chờ này chưa được lập hợp đồng, chưa thể giao thi công được");
+    }
+
     log.info("Creating pending request");
     var constructionRequest = ConstructionRequest.builder()
       .contractId(contractId)
@@ -98,7 +104,7 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
 
     var response = (startDate != null || endDate != null || (request.keyword() != null && !request.keyword().isBlank()))
       ? ifRepo.findAll(specification, pageable)
-      : ifRepo.findByStatus_ContractAndStatus_Construction(ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING,
+      : ifRepo.findByStatusContractAndStatusConstruction(ProcessingStatus.APPROVED.name(), ProcessingStatus.PROCESSING.name(),
       pageable);
     var result = response.getContent()
       .stream()

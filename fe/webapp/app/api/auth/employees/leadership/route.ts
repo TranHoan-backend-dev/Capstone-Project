@@ -1,8 +1,4 @@
-import {
-  getLeaderShip,
-  getPtHead,
-  getSurveyStaff,
-} from "@/services/authorization.service";
+import { getCompanyLeadership } from "@/services/authorization.service";
 import { getAccessToken } from "@/utils/getAccessToken";
 import { NextRequest } from "next/dist/server/web/spec-extension/request";
 import { NextResponse } from "next/server";
@@ -15,7 +11,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const response = await getLeaderShip(accessToken);
+    const response = await getCompanyLeadership(accessToken);
 
     return NextResponse.json(response.data);
   } catch (error: any) {

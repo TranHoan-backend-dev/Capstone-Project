@@ -34,6 +34,8 @@ export const SettlementFormModal = ({
   initialData,
   onSubmit,
 }: SettlementFormModalProps) => {
+  const [showFormModal, setShowFormModal] = useState(false);
+  const [displayForm, setDisplayForm] = useState("");
   const [form, setForm] = useState({
     formCode: "",
     formNumber: "",
@@ -48,7 +50,6 @@ export const SettlementFormModal = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showFormModal, setShowFormModal] = useState(false); // State cho modal lookup
 
-  // Fill data khi update
   useEffect(() => {
     if (mode === "update" && initialData) {
       setForm({
@@ -60,8 +61,12 @@ export const SettlementFormModal = ({
         note: initialData.note || "",
         registrationAt: initialData.registrationAt || "",
       });
+
+      setDisplayForm(initialData.formNumber);
     } else if (mode === "create") {
       setForm({
+        formCode: "",
+        formNumber: "",
         formCode: "",
         formNumber: "",
         jobContent: "",
@@ -70,6 +75,8 @@ export const SettlementFormModal = ({
         note: "",
         registrationAt: "",
       });
+
+      setDisplayForm("");
     }
   }, [initialData, mode]);
 
@@ -107,7 +114,7 @@ export const SettlementFormModal = ({
       ...prev,
       [field]: value,
     }));
-    // Clear error khi người dùng bắt đầu sửa
+
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: "" }));
     }
@@ -120,7 +127,10 @@ export const SettlementFormModal = ({
       setLoading(true);
 
       const payload = {
-        ...form,
+        formCode: form.formCode,
+        formNumber: form.formNumber,
+        jobContent: form.jobContent,
+        address: form.address,
         connectionFee: Number(form.connectionFee),
         registrationAt: form.registrationAt + "T00:00:00",
       };

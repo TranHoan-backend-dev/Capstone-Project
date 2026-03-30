@@ -94,13 +94,14 @@ export interface SettlementRequest {
 export interface SettlementResponse {
   settlementId: string;
   jobContent: string;
+  formNumber: string;
   address: string;
   connectionFee: number;
   createdAt: string;
   formCode: string;
-  formNumber: string;
   note: string;
   registrationAt: string;
+  // status: string[];
   significance: any;
   status: SettlementStatus;
   updatedAt: string;

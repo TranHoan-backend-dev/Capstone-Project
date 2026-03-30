@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import DeviceInfo from 'react-native-device-info';
 import { apiFetch } from './api';
 import { TokenManager } from './token';
 
@@ -55,11 +56,13 @@ const authService = {
     }
 
     // Gọi backend trực tiếp thay vì qua Keycloak
+    const deviceId = await DeviceInfo.getUniqueId();
     const response = await apiFetch('/auth/auth/login', {
       method: 'POST',
       body: JSON.stringify({
         username: identifier,
         password: password,
+        deviceId: deviceId,
       }),
     });
 

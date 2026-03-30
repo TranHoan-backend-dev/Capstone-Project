@@ -20,8 +20,8 @@ export default function MeterRouteCard({ data }: any) {
         <Card.Content>
           <View style={styles.cardHeader}>
             <View style={[styles.routeIdContainer, { flexDirection: 'row', alignItems: 'center' }]}>
-              <MaterialCommunityIcons name="database-outline" size={20} color="#757575" style={{ marginRight: 8 }} />
-              <Text style={[styles.routeId, { color: '#1E88E5' }]}>{data.id}</Text>
+              <MaterialCommunityIcons name="map-marker-outline" size={20} color="#1E88E5" style={{ marginRight: 8 }} />
+              <Text style={[styles.routeId, { color: '#1E88E5', fontWeight: 'bold' }]}>{data.type}</Text>
             </View>
 
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -30,9 +30,9 @@ export default function MeterRouteCard({ data }: any) {
             </View>
           </View>
 
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-            <MaterialCommunityIcons name="book-outline" size={20} color="#757575" style={{ marginRight: 8 }} />
-            <Text style={{ color: '#1E88E5', fontWeight: '500' }}>{data.type}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+            <MaterialCommunityIcons name="book-outline" size={22} color="#757575" style={{ marginRight: 8 }} />
+            <Text style={{ color: '#333', fontWeight: '700', fontSize: 16, flex: 1 }}>{data.name}</Text>
           </View>
 
           <View style={styles.statsGrid}>
