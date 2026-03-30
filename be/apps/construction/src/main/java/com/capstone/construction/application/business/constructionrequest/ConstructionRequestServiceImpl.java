@@ -98,7 +98,7 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
 
     var response = (startDate != null || endDate != null || (request.keyword() != null && !request.keyword().isBlank()))
       ? ifRepo.findAll(specification, pageable)
-      : ifRepo.findByStatusContractAndStatusConstruction(ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING,
+      : ifRepo.findByStatusContractAndStatusConstruction(ProcessingStatus.APPROVED.name(), ProcessingStatus.PROCESSING.name(),
       pageable);
     var result = response.getContent()
       .stream()

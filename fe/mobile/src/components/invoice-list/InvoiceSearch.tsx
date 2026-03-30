@@ -8,7 +8,7 @@ export default function InvoiceSearch({ value, onChange }: any) {
       placeholder="Nhập mã, tên, điện thoại, địa chỉ"
       value={value}
       onChangeText={onChange}
-      style={style.searchbar}
+      style={[style.searchbar, { backgroundColor: '#fff' }]}
     />
   );
 }
