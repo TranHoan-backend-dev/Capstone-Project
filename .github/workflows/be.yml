@@ -6,13 +6,11 @@ on:
     paths:
       - be/apps/**
       - .github/workflows/be.yml
-      - be/apps/ai-service/**
   pull_request:
     branches: ["dev"]
     paths:
       - be/apps/**
       - .github/workflows/be.yml
-      - be/apps/ai-service/**
 
 permissions:
   contents: read
@@ -121,9 +119,6 @@ jobs:
           # Build Node.js email-service
           docker build --target runner -t ghcr.io/$REPO_LOWER/email:latest -f apps/Dockerfile .
 
-          # Build AI service
-          docker build -t ghcr.io/$REPO_LOWER/ai-service:latest -f apps/ai-service/Dockerfile apps/ai-service
-
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -145,45 +140,9 @@ jobs:
             image
             notification
             organization
-            ai-service
           )
 
           for service in "${services[@]}"
           do
             docker push ghcr.io/$REPO_LOWER/$service:latest
           done
-  python-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-          cache: "pip"
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          if [ -f be/apps/ai-service/requirements.txt ]; then
-            pip install -r be/apps/ai-service/requirements.txt
-          fi
-        working-directory: .
-
-      - name: Lint with flake8
-        run: |
-          # stop the build if there are Python syntax errors or undefined names
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-        working-directory: be/apps/ai-service
-
-      - name: Test with pytest
-        run: |
-          if [ -d tests ]; then
-            pytest
-          else
-            echo "No tests directory found, skipping pytest."
-          fi
-        working-directory: be/apps/ai-service
