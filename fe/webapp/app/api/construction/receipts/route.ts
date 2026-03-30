@@ -66,8 +66,6 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    console.log("Creating receipt with payload:", body);
-
     const response = await createReceipt(accessToken, body);
 
     return NextResponse.json(response.data, { status: response.status });
@@ -98,13 +96,10 @@ export async function PUT(req: NextRequest) {
     }
 
     const body = await req.json();
-    console.log("Updating receipt with payload:", body);
-
     const response = await updateReceipt(accessToken, body);
 
     return NextResponse.json(response.data, { status: response.status });
   } catch (error: any) {
-    console.error("Update error:", error);
     return NextResponse.json(
       {
         message:

@@ -4,9 +4,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
-    console.log("API called with URL:", req.url);
-    console.log("FormCode:", req.nextUrl.searchParams.get("formCode"));
-    console.log("FormNumber:", req.nextUrl.searchParams.get("formNumber"));
     const accessToken = getAccessToken(req);
 
     if (!accessToken) {

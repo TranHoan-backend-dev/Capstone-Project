@@ -3,30 +3,19 @@
 import React, { useEffect, useState } from "react";
 import { Tooltip, Spinner, Chip } from "@heroui/react";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import { CheckApprovalIcon } from "@/config/chip-and-icon";
+import { PencilIcon } from "@/config/chip-and-icon";
 import { authFetch } from "@/utils/authFetch";
 import { useProfile } from "@/hooks/useLogin";
 import {
-  FilterPendingConstructionRequest,
+  BackendConstructionData,
   PendingConstructionItem,
+  PendingTableProps,
 } from "@/types";
 import AssignConstructionPopup from "./assign-construction-popup";
 import CustomButton from "@/components/ui/custom/CustomButton";
-
-interface PendingTableProps {
-  filters?: FilterPendingConstructionRequest;
-  refreshTrigger?: number;
-  onSuccess?: () => void;
-}
-
-interface BackendConstructionData {
-  id: string;
-  contractId: string;
-  formCode: string;
-  formNumber: string;
-  createdAt: string;
-  isApproved: string;
-}
+import { PENDING_TABLE_COLUMNS } from "@/config/table-columns";
+import { getStatusColor, getStatusText } from "@/utils/statusHelper";
+import { CallToast } from "@/components/ui/CallToast";
 
 export const PendingTable = ({
   filters,
@@ -34,7 +23,7 @@ export const PendingTable = ({
   onSuccess,
 }: PendingTableProps) => {
   const { profile, loading: profileLoading, hasRole } = useProfile();
-  const [data, setData] = useState<PendingConstructionItem[]>([]);
+  const [data, setData] = useState<BackendConstructionData[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -62,14 +51,7 @@ export const PendingTable = ({
     "construction_department_staff",
   ]);
 
-  // Giữ nguyên columns như cũ
-  const columns = [
-    { key: "stt", label: "STT" },
-    { key: "contractId", label: "Số hợp đồng" },
-    { key: "formCode", label: "Mã đơn" },
-    { key: "status", label: "Trạng thái" },
-    { key: "actions", label: "Hành động", align: "center" as const },
-  ];
+  const canAssign = hasRole("construction_department_head");
 
   useEffect(() => {
     if (canView) {
@@ -85,9 +67,14 @@ export const PendingTable = ({
         size: String(pageSize),
       });
 
-      // Add filters if needed
-      if (filters) {
-        // Add filter params here if needed
+      if (filters?.keyword) {
+        params.append("keyword", filters.keyword);
+      }
+      if (filters?.fromDate) {
+        params.append("fromDate", filters.fromDate);
+      }
+      if (filters?.toDate) {
+        params.append("toDate", filters.toDate);
       }
 
       params.append("isApproved", "false");
@@ -96,6 +83,11 @@ export const PendingTable = ({
 
       if (!res.ok) {
         console.error("Fetch failed", res.status);
+        CallToast({
+          title: "Lỗi",
+          message: "Không thể tải danh sách đơn chờ thi công",
+          color: "danger",
+        });
         setData([]);
         setTotalItems(0);
         setTotalPages(1);
@@ -103,52 +95,48 @@ export const PendingTable = ({
       }
 
       const json = await res.json();
+      const pageData = json?.data;
+      const items = pageData?.content ?? [];
+      setTotalItems(pageData?.page?.totalElements ?? 0);
+      setTotalPages(pageData?.page?.totalPages ?? 1);
 
-      let items: BackendConstructionData[] = [];
-      let totalElements = 0;
-      let totalPagesCount = 1;
-
-      // Handle different response structures
-      if (json?.data?.content && Array.isArray(json.data.content)) {
-        items = json.data.content;
-        totalElements = json.data.page?.totalElements || 0;
-        totalPagesCount = json.data.page?.totalPages || 1;
-      } else if (Array.isArray(json)) {
-        items = json;
-        totalElements = items.length;
-        totalPagesCount = Math.ceil(totalElements / pageSize);
-      } else if (json?.data && Array.isArray(json.data)) {
-        items = json.data;
-        totalElements = items.length;
-        totalPagesCount = Math.ceil(totalElements / pageSize);
-      } else if (json?.content && Array.isArray(json.content)) {
-        items = json.content;
-        totalElements = json.totalElements || items.length;
-        totalPagesCount = json.totalPages || 1;
-      }
-
-      setTotalItems(totalElements);
-      setTotalPages(totalPagesCount);
-
-      // Map the data with proper fields
       const mapped = items.map(
-        (item: BackendConstructionData, index: number) => ({
-          id: item.id,
-          stt: (page - 1) * pageSize + index + 1,
-          formCode: item.formCode,
-          formNumber: item.formNumber,
-          contractId: item.contractId || "",
-          customerName: (item as any).customerName || "Chưa có thông tin",
-          customerId: (item as any).customerId,
-          createdAt: formatDate(item.createdAt),
-          isApproved: item.isApproved,
-          status: item.isApproved === "false" ? "Chờ xử lý" : "Đã duyệt",
-        }),
+        (item: BackendConstructionData, index: number) => {
+          const constructionStatus =
+            item.installationForm?.status?.construction;
+          return {
+            id: item.id,
+            stt: (page - 1) * pageSize + index + 1,
+            formCode: item.installationForm?.formCode || "",
+            formNumber: item.installationForm?.formNumber || "",
+            contractId: item.contractId || "",
+            customerName:
+              item.installationForm?.customerName || "Chưa có thông tin",
+            phoneNumber: item.installationForm?.phoneNumber || "",
+            address: item.installationForm?.address || "",
+            constructedByFullName:
+              item.installationForm?.constructedByFullName || "Chưa phân công",
+            createdAt: formatDate(item.createdAt),
+            registrationAt: formatDate(item.installationForm?.registrationAt),
+            scheduleSurveyAt: formatDate(
+              item.installationForm?.scheduleSurveyAt,
+            ),
+            isApproved: item.isApproved,
+            rawStatus: constructionStatus,
+            statusText: getStatusText(constructionStatus),
+            statusColor: getStatusColor(constructionStatus),
+          };
+        },
       );
 
       setData(mapped);
     } catch (e) {
       console.error("Error fetching data:", e);
+      CallToast({
+        title: "Lỗi",
+        message: "Có lỗi xảy ra khi tải dữ liệu",
+        color: "danger",
+      });
       setData([]);
       setTotalItems(0);
       setTotalPages(1);
@@ -182,9 +170,14 @@ export const PendingTable = ({
     if (onSuccess) {
       onSuccess();
     }
+    CallToast({
+      title: "Thành công",
+      message: "Giao thi công thành công",
+      color: "success",
+    });
   };
 
-  const renderCell = (item: PendingConstructionItem, columnKey: string) => {
+  const renderCell = (item: any, columnKey: string) => {
     switch (columnKey) {
       case "stt":
         return <span className="font-medium text-blue-600">{item.stt}</span>;
@@ -197,7 +190,50 @@ export const PendingTable = ({
       case "contractId":
         return <span className="text-gray-700">{item.contractId || "--"}</span>;
 
+      case "customerName":
+        return <span className="font-medium">{item.customerName}</span>;
+
+      case "phoneNumber":
+        return <span>{item.phoneNumber || "--"}</span>;
+
+      case "address":
+        return (
+          <span className="max-w-[200px] truncate block" title={item.address}>
+            {item.address || "--"}
+          </span>
+        );
+
+      case "constructedByFullName":
+        return (
+          <span
+            className={
+              item.constructedByFullName === "Chưa phân công"
+                ? "text-orange-500"
+                : "text-green-600"
+            }
+          >
+            {item.constructedByFullName}
+          </span>
+        );
+
+      case "status":
+        return (
+          <Chip color={item.statusColor} variant="flat" size="sm">
+            {item.statusText}
+          </Chip>
+        );
+
       case "actions":
+        if (!canAssign) return null;
+
+        if (item.rawStatus !== "PENDING_FOR_APPROVAL") {
+          return (
+            <div className="flex items-center justify-center">
+              <span className="text-gray-400 text-sm">Không thể giao</span>
+            </div>
+          );
+        }
+
         return (
           <div className="flex items-center justify-center gap-2">
             <Tooltip content="Giao thi công" closeDelay={0}>
@@ -208,7 +244,7 @@ export const PendingTable = ({
                 variant="light"
                 onPress={() => handleAssign(item)}
               >
-                <CheckApprovalIcon className="w-5 h-5" />
+                <PencilIcon className="w-5 h-5" />
               </CustomButton>
             </Tooltip>
           </div>
@@ -231,16 +267,16 @@ export const PendingTable = ({
     <>
       <GenericDataTable
         title="Danh sách đơn chờ giao thi công"
-        columns={columns}
+        columns={PENDING_TABLE_COLUMNS}
         data={data}
         isCollapsible
-        headerSummary={`${data.length} / ${totalItems}`}
+        headerSummary={`${totalItems}`}
         renderCellAction={renderCell}
         paginationProps={{
           total: totalPages,
           page: page,
           onChange: setPage,
-          summary: `${data.length} / ${totalItems}`,
+          summary: `${data.length}`,
         }}
       />
 
@@ -252,6 +288,7 @@ export const PendingTable = ({
             setSelectedOrder(null);
           }}
           onSuccess={handleAssignSuccess}
+          id={selectedOrder.id}
           formCode={selectedOrder.formCode}
           formNumber={selectedOrder.formNumber}
           contractId={selectedOrder.contractId}

@@ -179,17 +179,14 @@ export const FeeForm = ({
             currentUser?.significanceUrl || "System",
         };
       } else {
-        // CẬP NHẬT: Thêm tất cả các field có thể cập nhật
         payload = {
           ...payload,
-          // Các field cơ bản
           receiptNumber: receiptNumber,
           customerName: customerName,
           address: address,
           paymentDate: formattedPaymentDate,
           isPaid: isPaid,
 
-          // Các field bổ sung - đảm bảo không bỏ sót
           attach: attach || null,
           paymentReason: paymentReason,
           totalMoneyInDigit: totalMoneyInDigits,
@@ -197,9 +194,6 @@ export const FeeForm = ({
           significanceOfTreasurer: currentUser?.significanceUrl,
         };
       }
-
-      console.log("Sending payload:", payload);
-
       const response = await authFetch(url, {
         method,
         headers: { "Content-Type": "application/json" },

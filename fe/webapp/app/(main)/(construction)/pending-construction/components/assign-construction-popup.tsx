@@ -20,6 +20,7 @@ interface AssignConstructionPopupProps {
   formCode: string;
   formNumber: string;
   contractId?: string;
+  id: string;
 }
 
 interface Employee {
@@ -33,11 +34,14 @@ export const AssignConstructionPopup = ({
   isOpen,
   onClose,
   onSuccess,
+  id,
   formCode,
   formNumber,
   contractId: propContractId,
 }: AssignConstructionPopupProps) => {
-  const [selectedLeader, setSelectedLeader] = useState<Set<string>>(new Set());
+  const [selectedConstructionStaff, setSelectedConstructionStaff] = useState<
+    Set<string>
+  >(new Set());
   const [teamLeaders, setTeamLeaders] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -68,8 +72,6 @@ export const AssignConstructionPopup = ({
 
       const json = await res.json();
       const allEmployees = json?.data || json || [];
-
-      console.log("Employees list:", allEmployees);
 
       setTeamLeaders(allEmployees);
 
@@ -103,12 +105,12 @@ export const AssignConstructionPopup = ({
   };
 
   const handleSelectionChange = (keys: Set<string>) => {
-    setSelectedLeader(keys);
+    setSelectedConstructionStaff(keys);
     setError(null);
   };
 
   const handleSubmit = async () => {
-    if (selectedLeader.size === 0) {
+    if (selectedConstructionStaff.size === 0) {
       setError("Vui lòng chọn đội trưởng đội thi công");
       return;
     }
@@ -118,25 +120,15 @@ export const AssignConstructionPopup = ({
       return;
     }
 
-    const teamLeaderId = Array.from(selectedLeader)[0];
+    const constructionStaffId = Array.from(selectedConstructionStaff)[0];
 
     setSubmitting(true);
     setError(null);
 
     try {
-      console.log("Submitting assignment:", {
-        teamLeaderId,
-        formCode,
-        formNumber,
-        contractId,
-      });
-
-      // Sửa lại endpoint - sử dụng formCode hoặc contractId
       let endpoint = "";
       if (contractId) {
-        endpoint = `/api/customer/construction/pending-requests/${contractId}/assign`;
-      } else if (formCode) {
-        endpoint = `/api/customer/construction/pending-requests/by-form-code/${formCode}/assign`;
+        endpoint = `/api/construction/constructions/pending-requests/${id}/${constructionStaffId}`;
       } else {
         throw new Error("Không có thông tin để giao thi công");
       }
@@ -146,11 +138,6 @@ export const AssignConstructionPopup = ({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          teamLeaderId,
-          formCode,
-          formNumber,
-        }),
       });
 
       if (!res.ok) {
@@ -193,7 +180,6 @@ export const AssignConstructionPopup = ({
                   </p>
                 </div>
 
-                {/* Hiển thị contractId nếu có */}
                 {contractId && (
                   <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                     <p className="text-sm text-gray-500 mb-1">Mã hợp đồng</p>
@@ -203,7 +189,6 @@ export const AssignConstructionPopup = ({
                   </div>
                 )}
 
-                {/* Danh sách nhân viên */}
                 {isLoading && !fetchingContract ? (
                   <div className="flex justify-center py-8">
                     <Spinner
@@ -215,7 +200,7 @@ export const AssignConstructionPopup = ({
                   <CustomSelect
                     label="Chọn đội trưởng đội thi công"
                     options={selectOptions}
-                    selectedKeys={selectedLeader}
+                    selectedKeys={selectedConstructionStaff}
                     onSelectionChange={handleSelectionChange}
                     isRequired
                     isDisabled={
@@ -224,7 +209,6 @@ export const AssignConstructionPopup = ({
                   />
                 )}
 
-                {/* Hiển thị lỗi */}
                 {error && (
                   <div className="text-sm text-red-500 p-2 bg-red-50 dark:bg-red-900/20 rounded-lg">
                     <span className="font-medium">Lỗi: </span>
@@ -248,7 +232,7 @@ export const AssignConstructionPopup = ({
                 isDisabled={
                   submitting ||
                   fetchingContract ||
-                  selectedLeader.size === 0 ||
+                  selectedConstructionStaff.size === 0 ||
                   teamLeaders.length === 0 ||
                   (!contractId && !formCode)
                 }

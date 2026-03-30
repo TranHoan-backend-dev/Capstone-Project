@@ -87,26 +87,20 @@ const EstimateApprovalPage = () => {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        // Lấy thông tin nhân viên khảo sát từ profile (useProfile)
         let surveyStaff = null;
-
         if (profile && profile.role === "survey_staff") {
           surveyStaff = {
             id: profile.id,
             fullName: profile.fullname,
             departmentName: "Khảo sát",
           };
-          // Set surveyStaffId với id từ profile
           setSurveyStaffId(profile.id);
-          console.log("Survey staff ID set from profile:", profile.id);
         }
 
-        // Lấy planning head từ endpoint
         let planningHeads = [];
         try {
           const planningRes = await authFetch("/api/auth/employees/pt-head");
           const planningJson = await planningRes.json();
-          console.log("Planning head response:", planningJson);
 
           if (planningJson?.data && Array.isArray(planningJson.data)) {
             planningHeads = planningJson.data.map((emp: any) => ({
@@ -119,14 +113,12 @@ const EstimateApprovalPage = () => {
           console.error("Error fetching planning head:", error);
         }
 
-        // Lấy company leadership từ endpoint
         let leaderships = [];
         try {
           const leadershipRes = await authFetch(
             "/api/auth/employees/leadership",
           );
           const leadershipJson = await leadershipRes.json();
-          console.log("Leadership response:", leadershipJson);
 
           if (leadershipJson?.data && Array.isArray(leadershipJson.data)) {
             leaderships = leadershipJson.data.map((emp: any) => ({
@@ -148,15 +140,12 @@ const EstimateApprovalPage = () => {
         employeesList.push(...planningHeads);
         employeesList.push(...leaderships);
 
-        console.log("Employees loaded:", employeesList);
         setAllEmployees(employeesList);
 
-        // Tự động set planning head mặc định nếu chỉ có 1
         if (planningHeads.length === 1 && !planningHeadId) {
           setPlanningHeadId(planningHeads[0].id);
         }
 
-        // Tự động set leadership mặc định nếu chỉ có 1
         if (leaderships.length === 1 && !companyLeadershipId) {
           setCompanyLeadershipId(leaderships[0].id);
         }
@@ -338,12 +327,7 @@ const EstimateApprovalPage = () => {
     let surveyStaffIdValue = "";
     if (profile && profile.role === "survey_staff") {
       surveyStaffIdValue = profile.id;
-      console.log("Survey staff ID from profile:", surveyStaffIdValue);
     }
-
-    console.log("surveyStaffIdValue:", surveyStaffIdValue);
-    console.log("planningHeadId:", planningHeadId);
-    console.log("companyLeadershipId:", companyLeadershipId);
 
     if (!surveyStaffIdValue && !planningHeadId && !companyLeadershipId) {
       CallToast({
@@ -362,8 +346,6 @@ const EstimateApprovalPage = () => {
         plHead: planningHeadId || null,
         companyLeadership: companyLeadershipId || null,
       };
-
-      console.log("Request body being sent:", requestBody);
 
       const res = await authFetch(`/api/construction/estimates/sign`, {
         method: "POST",

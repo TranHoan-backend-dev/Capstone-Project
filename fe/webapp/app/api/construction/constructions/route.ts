@@ -14,15 +14,16 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const page = Number(searchParams.get("page") ?? 0);
     const size = Number(searchParams.get("size") ?? 10);
-    // const sort = searchParams.get("sort") || "name,desc";
     const keyword = searchParams.get("keyword") || undefined;
-
+    const fromDate = searchParams.get("fromDate") || undefined;
+    const toDate = searchParams.get("toDate") || undefined; 
     const response = await getAllConstruction(
       accessToken,
       page,
       size,
-      // sort,
       keyword,
+      fromDate, 
+      toDate,
     );
 
     return NextResponse.json(response.data);

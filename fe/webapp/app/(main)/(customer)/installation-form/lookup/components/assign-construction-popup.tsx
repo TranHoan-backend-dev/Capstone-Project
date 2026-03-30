@@ -86,8 +86,6 @@ export const AssignConstructionPopup = ({
         fetchedContractId = json.id;
       }
 
-      console.log("Parsed contractId:", fetchedContractId);
-
       if (!fetchedContractId) {
         throw new Error("Không tìm thấy hợp đồng cho đơn này");
       }

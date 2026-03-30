@@ -2,10 +2,7 @@
 
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { SearchIcon } from "@/components/ui/Icons";
-import CustomSelect from "@/components/ui/custom/CustomSelect";
 import CustomInput from "@/components/ui/custom/CustomInput";
-import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
-import CustomTextarea from "@/components/ui/custom/CustomTextarea";
 import { FilterPendingConstructionRequest } from "@/types";
 import { useState } from "react";
 import CustomButton from "@/components/ui/custom/CustomButton";
@@ -71,7 +68,7 @@ export const ConstructionProcessor = ({
         </h3>
         <div className="flex items-end gap-4">
           <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <SearchInputWithButton
+            <CustomInput
               label="Từ khóa"
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
@@ -92,7 +89,7 @@ export const ConstructionProcessor = ({
         </div>
       </section>
 
-      <section className="space-y-4">
+      {/* <section className="space-y-4">
         <h3 className="text-base font-bold text-gray-800 dark:text-white">
           Thông tin duyệt đơn
         </h3>
@@ -103,7 +100,7 @@ export const ConstructionProcessor = ({
             value={approvalDate}
             onChange={(e) => setApprovalDate(e.target.value)}
           />
-          {/* <CustomSelect
+          <CustomSelect
             label="Đội trưởng thi công"
             value={teamLeader}
             onChange={(e) => setTeamLeader(e.target.value)}
@@ -113,8 +110,8 @@ export const ConstructionProcessor = ({
               { label: "Đội 2 - Trần Văn B", value: "team2" },
               { label: "Đội 3 - Lê Văn C", value: "team3" },
             ]}
-          /> */}
-          {/* <CustomSelect
+          />
+          <CustomSelect
             label="Đơn vị thi công"
             value={constructionUnit}
             onChange={(e) => setConstructionUnit(e.target.value)}
@@ -124,7 +121,7 @@ export const ConstructionProcessor = ({
               { label: "Đơn vị thi công số 2", value: "unit2" },
               { label: "Đơn vị thi công số 3", value: "unit3" },
             ]}
-          /> */}
+          />
         </div>
         <CustomTextarea
           label="Nội dung"
@@ -132,7 +129,7 @@ export const ConstructionProcessor = ({
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
-      </section>
+      </section> */}
     </GenericSearchFilter>
   );
 };

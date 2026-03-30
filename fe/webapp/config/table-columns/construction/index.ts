@@ -9,3 +9,4 @@ export * from "./survey-assignment-column";
 export * from "./settlement-column";
 export * from "./fee-collection-column";
 export * from "./estimate_column";
+export * from "./construction-pending-column";

@@ -14,11 +14,10 @@ export default function PendingConstructionPage() {
   const [filters, setFilters] = useState<FilterPendingConstructionRequest>({});
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  // Kiểm tra role
   const isConstructionHead = hasRole("construction_department_head");
   const isConstructionStaff = hasRole("construction_department_staff");
   const isSurveyStaff = hasRole("survey_staff");
-  const canView = isConstructionHead || isConstructionStaff;
+  const canView = isConstructionHead || isConstructionStaff || isSurveyStaff;
 
   const handleFilterChange = (newFilters: FilterPendingConstructionRequest) => {
     setFilters(newFilters);
@@ -32,16 +31,6 @@ export default function PendingConstructionPage() {
     setRefreshTrigger((prev) => prev + 1);
   };
 
-  // Hiển thị loading
-  if (profileLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <Spinner size="lg" />
-      </div>
-    );
-  }
-
-  // Kiểm tra quyền truy cập
   if (!canView) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -59,16 +48,14 @@ export default function PendingConstructionPage() {
 
   return (
     <div className="space-y-6">
+      <ConstructionProcessor onFilterChange={handleFilterChange} />
       {(isConstructionHead || isConstructionStaff) && (
-        <ConstructionProcessor onFilterChange={handleFilterChange} />
+        <PendingTable
+          filters={filters}
+          onSuccess={handleApprove}
+          refreshTrigger={refreshTrigger}
+        />
       )}
-
-      {/* PendingTable - đơn chờ xử lý */}
-      <PendingTable
-        filters={filters}
-        onSuccess={handleApprove}
-        refreshTrigger={refreshTrigger}
-      />
       {isSurveyStaff && <ApprovedTable refreshTrigger={refreshTrigger} />}
     </div>
   );
