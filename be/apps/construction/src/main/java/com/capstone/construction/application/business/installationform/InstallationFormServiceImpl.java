@@ -241,10 +241,10 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   private @NonNull InstallationFormListResponse mapToResponse(@NonNull InstallationForm entity) {
     log.info("Get staff who will handle this request");
     var creatorFullName = empSrv.getEmployeeNameById(entity.getCreatedBy());
-    log.info("Creator: {}", creatorFullName);
-    var handOverByFullName = entity.getHandoverBy() != null ? empSrv.getEmployeeNameById(entity.getHandoverBy()) : null;
+    var handoverByFullName = entity.getHandoverBy() != null ? empSrv.getEmployeeNameById(entity.getHandoverBy()) : null;
     var constructionEmployeeName = entity.getConstructedBy() != null ? empSrv.getEmployeeNameById(entity.getConstructedBy()) : null;
     var unknown = "Trống";
+    log.info("Creator: {}, handover: {}, construction captain: {}", creatorFullName, handoverByFullName, constructionEmployeeName);
 
     return new InstallationFormListResponse(
       null,
@@ -256,7 +256,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       entity.getScheduleSurveyAt() == null ? null : entity.getScheduleSurveyAt().toString(),
       entity.getCreatedAt().toString(),
       entity.getHandoverBy(),
-      (handOverByFullName != null && handOverByFullName.data() != null) ? handOverByFullName.data().toString()
+      (handoverByFullName != null && handoverByFullName.data() != null) ? handoverByFullName.data().toString()
         : unknown,
       entity.getCreatedBy(),
       (creatorFullName != null && creatorFullName.data() != null) ? creatorFullName.data().toString() : unknown,
