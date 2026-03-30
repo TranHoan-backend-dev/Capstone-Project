@@ -192,7 +192,7 @@ public class InstallationFormController {
   })
   @PostMapping("/contract-status")
   @PatchMapping("/contract-status")
-  @PreAuthorize("hasAnyAuthority('INSTALLATION_FORM_MANAGER', 'IT_STAFF')")
+  @PreAuthorize("hasAnyAuthority('ORDER_RECEIVING_STAFF', 'IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> updateContractStatus(
     @RequestParam String formCode,
     @RequestParam String formNumber
