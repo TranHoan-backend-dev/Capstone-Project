@@ -2,11 +2,8 @@ import {
   getProfileEmployee,
   updateProfileEmployee,
 } from "@/services/auth.service";
-import { keycloakRefreshToken } from "@/services/keycloak.service";
 import { getAccessToken } from "@/utils/getAccessToken";
-import { getRefreshToken } from "@/utils/getRefreshToken";
 import { validateProfile } from "@/utils/profileValidation";
-import { setAuthCookies } from "@/utils/setAuthCookies";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -21,35 +18,28 @@ export async function GET(req: NextRequest) {
     }
 
     try {
+      // Gọi API đến backend của bạn (không qua Keycloak)
       const profile = await getProfileEmployee(accessToken);
       return NextResponse.json(profile);
     } catch (error: any) {
+      // Xử lý lỗi 401 từ backend
       if (error?.response?.status === 401) {
-        const refreshToken = getRefreshToken(req);
-
-        if (refreshToken) {
-          try {
-            const tokenRes = await keycloakRefreshToken(refreshToken);
-
-            const profile = await getProfileEmployee(tokenRes.access_token);
-
-            const response = NextResponse.json(profile);
-            setAuthCookies(response, tokenRes);
-
-            return response;
-          } catch (refreshError) {
-            return NextResponse.json(
-              { message: "Refresh token expired" },
-              { status: 401 },
-            );
-          }
-        }
+        // Token hết hạn hoặc không hợp lệ
+        return NextResponse.json(
+          { message: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" },
+          { status: 401 },
+        );
       }
 
+      // Các lỗi khác
       throw error;
     }
   } catch (error) {
-    return NextResponse.json({ message: "Lỗi hệ thống" }, { status: 500 });
+    console.error("Error fetching profile:", error);
+    return NextResponse.json(
+      { message: "Lỗi hệ thống, vui lòng thử lại sau" },
+      { status: 500 },
+    );
   }
 }
 
@@ -74,8 +64,8 @@ export async function PATCH(req: NextRequest) {
         { status: 400 },
       );
     }
-    const validationError = validateProfile(payload);
 
+    const validationError = validateProfile(payload);
     if (validationError) {
       return NextResponse.json({ message: validationError }, { status: 400 });
     }
@@ -88,16 +78,37 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
-    const updateProfile = await updateProfileEmployee(payload, accessToken);
+    const updatedProfile = await updateProfileEmployee(payload, accessToken);
     return NextResponse.json({
       status: 200,
       message: "Cập nhật thành công",
-      data: updateProfile,
+      data: updatedProfile,
     });
-  } catch (error) {
+  } catch (error: any) {
+    console.error("Error updating profile:", error);
+
+    // Xử lý lỗi từ backend
+    if (error?.response?.status === 401) {
+      return NextResponse.json(
+        { message: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" },
+        { status: 401 },
+      );
+    }
+
+    if (error?.response?.status === 403) {
+      return NextResponse.json(
+        { message: "Bạn không có quyền thực hiện hành động này" },
+        { status: 403 },
+      );
+    }
+
     return NextResponse.json(
-      { message: "Không thể cập nhật thông tin người dùng" },
-      { status: 500 },
+      {
+        message:
+          error?.response?.data?.message ||
+          "Không thể cập nhật thông tin người dùng",
+      },
+      { status: error?.response?.status || 500 },
     );
   }
 }

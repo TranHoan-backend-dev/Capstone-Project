@@ -1,12 +1,14 @@
 export const ROLES = {
   IT_STAFF: "it_staff",
-  PLANNING_TECH_STAFF: "planning_technical_department_staff",
-  PLANNING_TECH_HEAD: "planning_technical_department_head",
-  CONSTRUCTION_STAFF: "construction_department_staff",
-  CONSTRUCTION_HEAD: "construction_department_head",
-  SALES_STAFF: "sales_department_staff",
-  SALES_HEAD: "sales_department_head",
-  FINANCE: "finance_department",
+  PLANNING_TECHNICAL_DEPARTMENT_HEAD: "planning_technical_department_head",
+  SURVEY_STAFF: "survey_staff",
+  ORDER_RECEIVING_STAFF: "order_receiving_staff",
+  FINANCE_DEPARTMENT: "finance_department",
+  CONSTRUCTION_DEPARTMENT_HEAD: "construction_department_head",
+  CONSTRUCTION_DEPARTMENT_STAFF: "construction_department_staff",
+  BUSINESS_DEPARTMENT_HEAD: "business_department_head",
+  METER_INSPECTION_STAFF: "meter_inspection_staff",
+  COMPANY_LEADERSHIP: "company_leadership",
 } as const;
 
-export type Role = typeof ROLES[keyof typeof ROLES];
+export type Role = (typeof ROLES)[keyof typeof ROLES];
