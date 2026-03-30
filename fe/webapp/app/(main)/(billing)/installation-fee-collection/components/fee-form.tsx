@@ -364,7 +364,7 @@ export const FeeForm = ({
 
       {/* Modal chọn đơn lắp đặt */}
       <LookupModal
-        dataKey="approved"
+        dataKey="content"
         isOpen={showFormModal}
         onClose={() => setShowFormModal(false)}
         title="Chọn đơn lắp đặt"
