@@ -6,13 +6,13 @@ on:
     paths:
       - be/apps/**
       - .github/workflows/be.yml
-      - be/ai_module/**
+      - be/apps/ai-service/**
   pull_request:
     branches: ["dev"]
     paths:
       - be/apps/**
       - .github/workflows/be.yml
-      - be/ai_module/**
+      - be/apps/ai-service/**
 
 permissions:
   contents: read
@@ -121,6 +121,9 @@ jobs:
           # Build Node.js email-service
           docker build --target runner -t ghcr.io/$REPO_LOWER/email:latest -f apps/Dockerfile .
 
+          # Build AI service
+          docker build -t ghcr.io/$REPO_LOWER/ai-service:latest -f apps/ai-service/Dockerfile apps/ai-service
+
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -142,6 +145,7 @@ jobs:
             image
             notification
             organization
+            ai-service
           )
 
           for service in "${services[@]}"
@@ -162,8 +166,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          if [ -f be/ai_module/requirements.txt ]; then
-            pip install -r be/ai_module/requirements.txt
+          if [ -f be/apps/ai-service/requirements.txt ]; then
+            pip install -r be/apps/ai-service/requirements.txt
           fi
         working-directory: .
 
@@ -173,7 +177,7 @@ jobs:
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-        working-directory: be/ai_module
+        working-directory: be/apps/ai-service
 
       - name: Test with pytest
         run: |
@@ -182,4 +186,4 @@ jobs:
           else
             echo "No tests directory found, skipping pytest."
           fi
-        working-directory: be/ai_module
+        working-directory: be/apps/ai-service

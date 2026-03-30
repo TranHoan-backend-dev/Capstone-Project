@@ -1,4 +1,0 @@
-pika
-python-dotenv
-flake8
-pytest
