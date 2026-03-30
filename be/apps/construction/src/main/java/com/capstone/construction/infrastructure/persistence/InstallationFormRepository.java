@@ -23,6 +23,8 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
   JpaSpecificationExecutor<InstallationForm> {
   boolean existsById_FormNumberAndId_FormCode(String formNumber, String formCode);
 
+  Page<InstallationForm> findByStatusContractAndStatusConstruction(@NonNull ProcessingStatus statusContract, @NonNull ProcessingStatus statusConstruction, Pageable pageable);
+
   // build dynamic WHERE clause
 
   /**

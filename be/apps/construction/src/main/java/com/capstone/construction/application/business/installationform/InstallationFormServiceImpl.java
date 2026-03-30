@@ -60,32 +60,43 @@ public class InstallationFormServiceImpl implements InstallationFormService {
     }
 
     var entity = InstallationForm.create(builder -> builder
-        .formCode(request.formCode())
-        .formNumber(request.formNumber())
-        .customerName(request.customerName())
-        .address(request.address())
-        .customerType(request.customerType())
-        .citizenIdentificationNumber(request.citizenIdentificationNumber())
-        .citizenIdentificationProvideDate(request.citizenIdentificationProvideDate())
-        .citizenIdentificationProvideLocation(request.citizenIdentificationProvideLocation())
-        .phoneNumber(request.phoneNumber())
-        .taxCode(request.taxCode())
-        .bankAccountNumber(request.bankAccountNumber())
-        .bankAccountProviderLocation(request.bankAccountProviderLocation())
-        .usageTarget(request.usageTarget())
-        .householdRegistrationNumber(request.householdRegistrationNumber())
-        .citizenIdentificationProvideLocation(request.citizenIdentificationProvideLocation())
-        .network(wsnRepo.findById(request.networkId()).orElseThrow(() -> new IllegalArgumentException("Network not found: " + request.networkId())))
-        .overallWaterMeterId(request.overallWaterMeterId())
-        .build());
+      .formCode(request.formCode())
+      .formNumber(request.formNumber())
+      .customerName(request.customerName())
+      .address(request.address())
+      .customerType(request.customerType())
+      .citizenIdentificationNumber(request.citizenIdentificationNumber())
+      .citizenIdentificationProvideDate(request.citizenIdentificationProvideDate())
+      .citizenIdentificationProvideLocation(request.citizenIdentificationProvideLocation())
+      .phoneNumber(request.phoneNumber())
+      .taxCode(request.taxCode())
+      .bankAccountNumber(request.bankAccountNumber())
+      .bankAccountProviderLocation(request.bankAccountProviderLocation())
+      .usageTarget(request.usageTarget())
+      .receivedFormAt(LocalDate.parse(request.receivedFormAt()))
+      .scheduleSurveyAt(LocalDate.parse(request.scheduleSurveyAt()))
+      .numberOfHousehold(request.numberOfHousehold())
+      .citizenIdentificationProvideLocation(request.citizenIdentificationProvideLocation())
+      .householdRegistrationNumber(request.householdRegistrationNumber())
+      .network(getNetwork(request.networkId()))
+      .createdBy(userId)
+      .overallWaterMeterId(request.overallWaterMeterId()));
+    if (request.representative() != null) {
+      entity.setRepresentative(request.representative());
+    }
+    if (request.taxCode() != null) {
+      entity.setTaxCode(request.taxCode());
+    }
 
-    ifRepo.save(entity);
+    var saved = ifRepo.save(entity);
+    log.info("Installation form created successfully: {}", saved.getFormNumber());
+
     return new NewInstallationFormResponse(
-        entity.getFormNumber(),
-        entity.getCustomerName(),
-        entity.getFormCode(),
-        entity.getCreatedBy(),
-        entity.getCreatedAt());
+      saved.getFormNumber(),
+      saved.getCustomerName(),
+      saved.getFormCode(),
+      saved.getCreatedBy(),
+      saved.getCreatedAt());
   }
 
   @Override
@@ -95,13 +106,13 @@ public class InstallationFormServiceImpl implements InstallationFormService {
     var endDate = Utils.parseTo(request.to());
 
     var result = (startDate != null || endDate != null || (request.keyword() != null && !request.keyword().isBlank())) ? ifRepo.findAll(
-        InstallationFormRepository.search(request.keyword(), startDate, endDate, null, null),
-        pageable) : ifRepo.findAllNotRejectedInstallationForms(pageable);
+      InstallationFormRepository.search(request.keyword(), startDate, endDate, null, null),
+      pageable) : ifRepo.findAllNotRejectedInstallationForms(pageable);
 
     var content = result.getContent()
-        .stream()
-        .map(this::mapToResponse)
-        .toList();
+      .stream()
+      .map(this::mapToResponse)
+      .toList();
 
     return new PageImpl<>(content, pageable, result.getTotalElements());
   }
@@ -120,7 +131,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       requestStatus.setEstimate(ProcessingStatus.PROCESSING);
     } else {
       if (request.status()) {
-        // nvks duyet don
+        // nvks duyệt đơn
         var requestStatus = order.getStatus();
         requestStatus.setRegistration(ProcessingStatus.APPROVED);
         requestStatus.setEstimate(ProcessingStatus.PENDING_FOR_APPROVAL);
@@ -140,7 +151,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
           order.getOverallWaterMeterId()
         ));
       } else {
-        // nvks huy don
+        // nvks hủy đơn
         var status = order.getStatus();
         status.setRegistration(ProcessingStatus.REJECTED);
       }
@@ -152,7 +163,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   public InstallationFormListResponse getByFormCodeAndFormNumber(String formCode, String formNumber) {
     log.info("Fetching installation form with form number: {}", formNumber);
     var result = ifRepo.findById(new InstallationFormId(formCode, formNumber))
-        .orElseThrow(() -> new IllegalArgumentException(Message.PT_36));
+      .orElseThrow(() -> new IllegalArgumentException(Message.PT_36));
     return mapToResponse(result);
   }
 
