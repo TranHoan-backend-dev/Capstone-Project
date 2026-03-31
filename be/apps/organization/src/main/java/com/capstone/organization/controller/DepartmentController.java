@@ -126,7 +126,7 @@ public class DepartmentController {
 
   @Operation(hidden = true)
   @GetMapping("/name/{id}")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF')")
   public String getDepartmentName(@PathVariable String id) {
     log.info("Get department name {}", id);
     var name = departmentService.getName(id);

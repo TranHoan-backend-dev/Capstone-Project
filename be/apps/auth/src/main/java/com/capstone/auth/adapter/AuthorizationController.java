@@ -151,7 +151,7 @@ public class AuthorizationController {
 
   @Operation(hidden = true)
   @GetMapping(EMPLOYEE_PREFIX + "/role/{id}")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD','CONSTRUCTION_DEPARTMENT_STAFF')")
   public ResponseEntity<?> getRoleOfEmployeeById(@PathVariable String id) {
     log.info("Getting role of employee by id: {}", id);
     return Utils.returnOkResponse("", userService.getRoleOfEmployee(id));

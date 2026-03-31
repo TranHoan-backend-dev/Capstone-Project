@@ -1,8 +1,8 @@
+// components/LoginForm.tsx
 "use client";
 
 import { Form, Link } from "@heroui/react";
 import { useRouter } from "next/navigation";
-
 import PasswordInput from "@/components/ui/PasswordInput";
 import CustomButton from "@/components/ui/custom/CustomButton";
 import CustomInput from "@/components/ui/custom/CustomInput";
@@ -10,6 +10,7 @@ import { ArrowRightStartIcon, AvatarIcon } from "@/config/chip-and-icon";
 import { useState } from "react";
 import { CallToast } from "@/components/ui/CallToast";
 import { z } from "zod";
+import { getDeviceId } from "@/services/auth.service";
 
 const loginSchema = z.object({
   username: z.string().trim().min(1, "Vui lòng nhập email hoặc tên đăng nhập"),
@@ -17,6 +18,7 @@ const loginSchema = z.object({
 });
 
 export type LoginFormData = z.infer<typeof loginSchema>;
+
 const LoginForm = () => {
   const router = useRouter();
   const [formData, setFormData] = useState<LoginFormData>({
@@ -27,7 +29,8 @@ const LoginForm = () => {
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (loading) return
+    if (loading) return;
+
     const result = loginSchema.safeParse(formData);
 
     if (!result.success) {
@@ -43,10 +46,16 @@ const LoginForm = () => {
 
     setLoading(true);
     try {
+      const deviceId = getDeviceId();
+
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          deviceId,
+          deviceInfo: navigator.userAgent,
+        }),
       });
 
       if (!res.ok) {
@@ -60,6 +69,7 @@ const LoginForm = () => {
         localStorage.setItem("user", JSON.stringify(data.userDetails));
       }
 
+      // Hiển thị thông báo nếu là thiết bị mới (BE sẽ trả về message phù hợp)
       CallToast({
         title: "Thành công",
         message: "Đăng nhập thành công!",
