@@ -132,7 +132,7 @@ export const ResultsTable = ({
 
   // Kiểm tra role hiện tại
   const canManageSettlements = useMemo(() => {
-    return currentUser?.role === "construction_department_staff";
+    return currentUser?.role === "construction_department_staff" || currentUser?.role === "it_staff";
   }, [currentUser]);
 
   const canSignSettlements = useMemo(() => {
