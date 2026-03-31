@@ -1,0 +1,357 @@
+openapi: 3.0.3
+info:
+  title: YOLO Paddle OCR API
+  version: 1.0.0
+  description: |
+    AI service for water meter reading recognition.
+
+    The service receives a meter image, detects meter-related regions with YOLOv5,
+    applies PaddleOCR on the detected regions, and returns OCR results in JSON format.
+
+    This specification is intended for backend and mobile integration.
+
+servers:
+  - url: http://127.0.0.1:8010
+    description: Local development server
+  - url: http://127.0.0.1:8000
+    description: Default local server
+
+tags:
+  - name: service
+    description: Endpoints for service discovery and health checking.
+  - name: prediction
+    description: Endpoints for uploading images and receiving OCR results.
+
+paths:
+  /:
+    get:
+      operationId: getServiceInfo
+      tags:
+        - service
+      summary: Service information
+      description: Returns basic information about the AI service and available routes.
+      responses:
+        "200":
+          description: Service information returned successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RootResponse"
+              example:
+                service: YOLO Paddle OCR API
+                version: 1.0.0
+                status: running
+                docs_url: /docs
+                health_url: /health
+                predict_url: /predict
+
+  /health:
+    get:
+      operationId: getHealthStatus
+      tags:
+        - service
+      summary: Health check
+      description: Returns the health status of the AI service.
+      responses:
+        "200":
+          description: Service is alive.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+              example:
+                status: ok
+
+  /predict:
+    post:
+      operationId: predictMeterImage
+      tags:
+        - prediction
+      summary: Predict meter reading from an uploaded image
+      description: |
+        Accepts a single image file as multipart/form-data, runs YOLOv5 detection
+        and PaddleOCR, then returns detected regions with OCR outputs.
+
+        Integration rules:
+        - The request must contain a multipart form field named `file`
+        - Clients should read `results` by `label`, not by array index
+        - `Current_pointer_reading_region.text` is the main meter reading value
+        - `Serial_number_region.text` is the serial number value
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PredictRequest"
+            encoding:
+              file:
+                contentType: image/jpeg, image/png
+      responses:
+        "200":
+          description: Prediction completed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PredictResponse"
+              example:
+                filename: test.jpg
+                results:
+                  - box: [179, 328, 808, 948]
+                    label: meter
+                    text: ""
+                    conf: 0.9744331240653992
+                    raw_texts: []
+                  - box: [306, 379, 672, 481]
+                    label: Serial_number_region
+                    text: "217858315"
+                    yolo_conf: 0.8412966132164001
+                    ocr_conf: 0.996
+                    heuristic: 0.75
+                    final_conf: 0.902
+                    raw_texts:
+                      - ["217858315", 0.9964125156402588]
+                  - box: [272, 492, 684, 565]
+                    label: Current_pointer_reading_region
+                    text: "0008879"
+                    yolo_conf: 0.6725512146949768
+                    ocr_conf: 0.96
+                    heuristic: 0.75
+                    final_conf: 0.81
+                    raw_texts:
+                      - ["0008879", 0.9597879648208618]
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+components:
+  schemas:
+    RootResponse:
+      type: object
+      required:
+        - service
+        - version
+        - status
+        - docs_url
+        - health_url
+        - predict_url
+      properties:
+        service:
+          type: string
+          description: Service name.
+          example: YOLO Paddle OCR API
+        version:
+          type: string
+          description: Service version.
+          example: 1.0.0
+        status:
+          type: string
+          description: Current runtime status of the service.
+          example: running
+        docs_url:
+          type: string
+          description: Relative URL to Swagger UI.
+          example: /docs
+        health_url:
+          type: string
+          description: Relative URL to health check endpoint.
+          example: /health
+        predict_url:
+          type: string
+          description: Relative URL to prediction endpoint.
+          example: /predict
+
+    HealthResponse:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          description: Health status value.
+          example: ok
+
+    PredictRequest:
+      type: object
+      required:
+        - file
+      properties:
+        file:
+          type: string
+          format: binary
+          description: Meter image file to be processed.
+
+    PredictResponse:
+      type: object
+      required:
+        - filename
+        - results
+      properties:
+        filename:
+          type: string
+          description: Original uploaded filename.
+          example: test.jpg
+        results:
+          type: array
+          description: |
+            List of detected regions. Consumers must identify business values by the
+            `label` field instead of relying on array order.
+          items:
+            $ref: "#/components/schemas/PredictionItem"
+
+    PredictionItem:
+      type: object
+      required:
+        - box
+        - label
+        - text
+        - raw_texts
+      properties:
+        box:
+          type: array
+          description: Bounding box coordinates on the original image in format [x1, y1, x2, y2].
+          minItems: 4
+          maxItems: 4
+          items:
+            type: integer
+          example: [272, 492, 684, 565]
+        label:
+          type: string
+          description: Detected region type.
+          enum:
+            - meter
+            - Serial_number_region
+            - Current_pointer_reading_region
+        text:
+          type: string
+          description: Final OCR text after post-processing.
+          example: "0008879"
+        conf:
+          type: number
+          format: float
+          nullable: true
+          description: |
+            Simple confidence field used mainly for detections that do not use OCR confidence fusion,
+            typically the `meter` region.
+          example: 0.9744331240653992
+        yolo_conf:
+          type: number
+          format: float
+          nullable: true
+          description: YOLO detection confidence.
+          example: 0.6725512146949768
+        ocr_conf:
+          type: number
+          format: float
+          nullable: true
+          description: Highest OCR confidence returned by PaddleOCR.
+          example: 0.96
+        heuristic:
+          type: number
+          format: float
+          nullable: true
+          description: Internal heuristic score used during confidence fusion.
+          example: 0.75
+        final_conf:
+          type: number
+          format: float
+          nullable: true
+          description: Final confidence score after combining YOLO, OCR, and heuristic scores.
+          example: 0.81
+        raw_texts:
+          type: array
+          description: Raw OCR outputs before post-processing.
+          items:
+            $ref: "#/components/schemas/RawTextCandidate"
+          example:
+            - ["0008879", 0.9597879648208618]
+
+    RawTextCandidate:
+      type: array
+      minItems: 2
+      maxItems: 2
+      description: |
+        Raw OCR candidate before post-processing, formatted as `[text, confidence]`.
+      items:
+        oneOf:
+          - type: string
+          - type: number
+            format: float
+      example: ["0008879", 0.9597879648208618]
+
+    ErrorResponse:
+      type: object
+      required:
+        - detail
+      properties:
+        detail:
+          type: string
+          description: Human-readable error message.
+          example: Missing uploaded file
+
+    ValidationError:
+      type: object
+      required:
+        - loc
+        - msg
+        - type
+      properties:
+        loc:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - type: integer
+        msg:
+          type: string
+        type:
+          type: string
+
+    HTTPValidationError:
+      type: object
+      required:
+        - detail
+      properties:
+        detail:
+          type: array
+          items:
+            $ref: "#/components/schemas/ValidationError"
+
+  responses:
+    BadRequest:
+      description: Request is invalid, file is empty, or the image cannot be decoded.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          examples:
+            missing_file:
+              summary: Missing file
+              value:
+                detail: Missing uploaded file
+            empty_file:
+              summary: Empty file
+              value:
+                detail: Uploaded file is empty
+            decode_error:
+              summary: Cannot decode image
+              value:
+                detail: Cannot decode uploaded image
+
+    ValidationError:
+      description: Request does not match the expected multipart/form-data schema.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/HTTPValidationError"
+
+    InternalServerError:
+      description: Internal error while loading models or performing OCR inference.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            detail: Internal Server Error
