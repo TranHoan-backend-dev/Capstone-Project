@@ -6,7 +6,9 @@ import { IS_PRODUCTION } from "@/constants/auth.constants";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { username, password } = body;
+    const { username, password, deviceId, deviceInfo } = body;
+
+    console.log("Login request body:", { username, deviceId, deviceInfo });
 
     if (!username || !password) {
       return NextResponse.json(
@@ -17,34 +19,59 @@ export async function POST(req: NextRequest) {
 
     let backendData;
     try {
-      const backendRes = await signinService(username, password);
-
+      const backendRes = await signinService(
+        username,
+        password,
+        deviceId,
+        deviceInfo,
+      );
       backendData = backendRes.data;
       if (!backendData) {
         throw new Error("No data from backend");
       }
     } catch (backendError: any) {
+      console.error("Backend error details:", {
+        status: backendError.response?.status,
+        data: backendError.response?.data,
+        message: backendError.message,
+      });
+
       if (axios.isAxiosError(backendError)) {
         const status = backendError.response?.status;
-        const message = backendError.response?.data?.message;
+        const responseData = backendError.response?.data;
+
+        console.log("Backend response:", responseData);
 
         if (status === 403) {
           return NextResponse.json(
-            { message: "Tài khoản đã bị khóa hoặc vô hiệu hóa" },
+            {
+              message:
+                responseData?.message ||
+                "Tài khoản đã bị khóa hoặc vô hiệu hóa",
+            },
             { status: 403 },
           );
         }
 
         if (status === 400) {
           return NextResponse.json(
-            { message: "Thông tin tài khoản không hợp lệ" },
+            {
+              message:
+                responseData?.message || "Thông tin tài khoản không hợp lệ",
+            },
             { status: 400 },
           );
         }
 
         if (status === 401) {
+          // Trả về message chi tiết từ backend
           return NextResponse.json(
-            { message: "Sai tên đăng nhập hoặc mật khẩu" },
+            {
+              message:
+                responseData?.message || "Sai tên đăng nhập hoặc mật khẩu",
+              needVerification: responseData?.needVerification || false,
+              sessionId: responseData?.sessionId || null,
+            },
             { status: 401 },
           );
         }
@@ -52,6 +79,7 @@ export async function POST(req: NextRequest) {
 
       throw backendError;
     }
+
     const tokenResponse = backendData.data?.token;
     const res = NextResponse.json(backendData.data);
 
@@ -85,12 +113,14 @@ export async function POST(req: NextRequest) {
 
     return res;
   } catch (error: any) {
+    console.error("Login error:", error);
     let message = "Đăng nhập thất bại";
     let status = 401;
 
     if (axios.isAxiosError(error)) {
       if (error.response?.status === 401) {
-        message = "Sai tên đăng nhập hoặc mật khẩu";
+        message =
+          error.response?.data?.message || "Sai tên đăng nhập hoặc mật khẩu";
       } else if (error.response?.status === 500) {
         message = "Lỗi hệ thống, vui lòng thử lại sau";
         status = 500;
