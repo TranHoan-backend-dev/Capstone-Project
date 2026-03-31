@@ -81,7 +81,7 @@ public class ConstructionController {
     @ApiResponse(responseCode = "404", description = "Không tìm thấy đơn chờ thi công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PatchMapping("/pending-requests/{id}/{empId}")
-  @PreAuthorize("hasAnyAuthority('ORDER_RECEIVING_STAFF', 'IT_STAFF')")
+  @PreAuthorize("hasAnyAuthority('ORDER_RECEIVING_STAFF', 'IT_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD')")
   public ResponseEntity<WrapperApiResponse> updateConstructionPendingRequest(
     @Parameter(description = "ID của đơn chờ thi công") @PathVariable String id,
     @Parameter(description = "ID của đội trưởng đội thi công") @PathVariable String empId
