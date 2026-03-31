@@ -1,6 +1,4 @@
-import {
-  CreateCustomerPayload,
-} from "@/types";
+import { CreateCustomerPayload } from "@/types";
 import { API_GATEWAY_URL } from "@/utils/constraints";
 import axios from "axios";
 
@@ -135,6 +133,23 @@ export const deleteContract = (accessToken: string, customerId: string) => {
   return axios.delete(`${API_GATEWAY_URL}/customer/contracts/${customerId}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
+export const getContractByFormCodeAndFormNumber = (
+  accessToken: string,
+  formCode: string,
+  formNumber: string,
+) => {
+  return axios.get(`${API_GATEWAY_URL}/customer/contracts/ids`, {
+    params: {
+      formCode,
+      formNumber,
+    },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
     },
   });
 };

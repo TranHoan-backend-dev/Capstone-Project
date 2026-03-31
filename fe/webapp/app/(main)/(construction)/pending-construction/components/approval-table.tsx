@@ -1,75 +1,321 @@
 "use client";
 
-import { Button, Tooltip } from "@heroui/react";
-import React from "react";
+import { Button, Tooltip, Spinner, Chip } from "@heroui/react";
+import React, { useEffect, useState } from "react";
 
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import { DeleteIcon } from "@/config/chip-and-icon";
+import { ApprovalIcon, RejectIcon } from "@/config/chip-and-icon";
+import { authFetch } from "@/utils/authFetch";
+import { useProfile } from "@/hooks/useLogin";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from "@heroui/react";
+import { BackendConstructionData } from "@/types";
+import { PENDING_TABLE_COLUMNS } from "@/config/table-columns";
+import { getStatusColor, getStatusText } from "@/utils/statusHelper";
+import { CallToast } from "@/components/ui/CallToast";
 
-interface ApprovedRecord {
-  id: string;
-  contractNo: string;
-  project: string;
-  phone: string;
-  address: string;
-  date: string;
+interface ApprovedTableProps {
+  refreshTrigger?: number;
+  onApprove?: () => void;
 }
 
-export const ApprovedTable = () => {
-  const columns = [
-    { key: "id", label: "Mã đơn" },
-    { key: "contractNo", label: "Số hợp đồng" },
-    { key: "project", label: "Tên công trình" },
-    { key: "phone", label: "Điện thoại" },
-    { key: "address", label: "Địa chỉ lắp đặt" },
-    { key: "date", label: "Ngày đăng ký" },
-    { key: "actions", label: "Hành động", align: "center" as const },
-  ];
+export const ApprovedTable = ({
+  refreshTrigger = 0,
+  onApprove,
+}: ApprovedTableProps) => {
+  const { profile, loading: profileLoading, hasRole } = useProfile();
+  const [data, setData] = useState<BackendConstructionData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [processingId, setProcessingId] = useState<string | null>(null);
 
-  const actionItems = [
-    {
-      content: "Xóa",
-      icon: DeleteIcon,
-      className: "text-red-500 hover:bg-red-50",
-      onClick: (id: string) => console.log("Xóa:", id),
-    },
-  ];
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    type: "approve" | "reject";
+    item: BackendConstructionData | null;
+    message: string;
+  }>({
+    isOpen: false,
+    type: "approve",
+    item: null,
+    message: "",
+  });
 
-  const mockData: ApprovedRecord[] = [
-    {
-      id: "TC-2024-006",
-      contractNo: "HD-2024-156",
-      project: "Nhà ở gia đình Anh Minh",
-      phone: "0901 234 567",
-      address: "12 Trần Hưng Đạo, P.5, Q.5, TP.HCM",
-      date: "10/12/2024",
-    },
-  ];
+  const pageSize = 10;
 
-  const renderCell = (item: ApprovedRecord, columnKey: string) => {
+  const canView = hasRole("survey_staff");
+  const canApprove = hasRole("survey_staff");
+
+  useEffect(() => {
+    if (canView) {
+      fetchApprovedData();
+    }
+  }, [page, refreshTrigger, canView]);
+
+  const fetchApprovedData = async () => {
+    setLoading(true);
+    try {
+      const res = await authFetch(
+        `/api/construction/constructions?page=${page - 1}&size=${pageSize}`,
+      );
+
+      if (!res.ok) {
+        console.error("Failed to fetch approved data");
+        CallToast({
+          title: "Lỗi",
+          message: "Không thể tải dữ liệu",
+          color: "danger",
+        });
+        return;
+      }
+
+      const json = await res.json();
+      const pageData = json?.data;
+      const items = pageData?.content ?? [];
+      setTotalItems(pageData?.page?.totalElements ?? 0);
+      setTotalPages(pageData?.page?.totalPages ?? 1);
+
+      const mapped = items.map(
+        (item: BackendConstructionData, index: number) => ({
+          ...item,
+          stt: (page - 1) * pageSize + index + 1,
+          contractId: item.contractId || "",
+          formCode: item.installationForm?.formCode || "",
+          formNumber: item.installationForm?.formNumber || "",
+          customerName:
+            item.installationForm?.customerName || "Chưa có thông tin",
+          phoneNumber: item.installationForm?.phoneNumber || "",
+          address: item.installationForm?.address || "",
+          createdAt: formatDate(item.createdAt),
+          registrationAt: item.installationForm?.registrationAt,
+          constructedByFullName:
+            item.installationForm?.constructedByFullName || "Chưa phân công",
+          statusText: getStatusText(
+            item.installationForm?.status?.construction,
+          ),
+          statusColor: getStatusColor(
+            item.installationForm?.status?.construction,
+          ),
+          rawStatus: item.installationForm?.status?.construction,
+          isApproved: item.isApproved,
+          installationForm: item.installationForm,
+        }),
+      );
+
+      setData(mapped);
+    } catch (error) {
+      console.error("Error fetching approved data:", error);
+      CallToast({
+        title: "Lỗi",
+        message: "Không thể tải dữ liệu",
+        color: "danger",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "";
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString("vi-VN");
+    } catch {
+      return dateString;
+    }
+  };
+
+  const openConfirmModal = (
+    type: "approve" | "reject",
+    item: BackendConstructionData,
+  ) => {
+    const customerName =
+      item.installationForm?.customerName || "công trình này";
+    const message =
+      type === "approve"
+        ? `Bạn có chắc chắn muốn DUYỆT đơn thi công cho công trình "${customerName}"?`
+        : `Bạn có chắc chắn muốn TỪ CHỐI đơn thi công cho công trình "${customerName}"?`;
+
+    setConfirmModal({
+      isOpen: true,
+      type,
+      item,
+      message,
+    });
+  };
+
+  const handleConfirm = async () => {
+    const { type, item } = confirmModal;
+    if (!item) return;
+
+    if (type === "approve") {
+      await handleReview(item, true);
+    } else {
+      await handleReview(item, false);
+    }
+
+    setConfirmModal({ ...confirmModal, isOpen: false });
+  };
+
+  const handleReview = async (
+    item: BackendConstructionData,
+    status: boolean,
+  ) => {
+    setProcessingId(item.id);
+    try {
+      const response = await authFetch(
+        `/api/construction/constructions/review/${item.id}/${status}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      if (response.ok) {
+        await fetchApprovedData();
+        if (onApprove) {
+          onApprove();
+        }
+        const message = status
+          ? "Duyệt đơn thi công thành công"
+          : "Từ chối đơn thi công thành công";
+        CallToast({
+          title: "Thành công",
+          message: message,
+          color: "success",
+        });
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        const message = status
+          ? errorData?.message || "Duyệt đơn thất bại"
+          : errorData?.message || "Từ chối đơn thất bại";
+        CallToast({
+          title: "Lỗi",
+          message: message,
+          color: "danger",
+        });
+      }
+    } catch (error) {
+      console.error("Error reviewing:", error);
+      const message = status
+        ? "Có lỗi xảy ra khi duyệt đơn"
+        : "Có lỗi xảy ra khi từ chối đơn";
+      CallToast({
+        title: "Lỗi",
+        message: message,
+        color: "danger",
+      });
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const renderCell = (item: any, columnKey: string) => {
     switch (columnKey) {
-      case "id":
-        return <span className="font-medium text-blue-600">{item.id}</span>;
+      case "formCode":
+        return (
+          <span className="font-medium text-blue-600">
+            {item.installationForm?.formCode}
+          </span>
+        );
 
-      case "project":
-        return <span className="font-semibold">{item.project}</span>;
+      case "contractId":
+        return <span className="font-medium">{item.contractId || "--"}</span>;
+
+      case "customerName":
+        return (
+          <span className="font-semibold">
+            {item.installationForm?.customerName || "Chưa có thông tin"}
+          </span>
+        );
+
+      case "phoneNumber":
+        return <span>{item.installationForm?.phoneNumber || "--"}</span>;
+
+      case "address":
+        return (
+          <span
+            className="max-w-[200px] truncate block"
+            title={item.installationForm?.address}
+          >
+            {item.installationForm?.address || "--"}
+          </span>
+        );
+
+      case "constructedByFullName":
+        const constructedByName = item.installationForm?.constructedByFullName;
+        return (
+          <span
+            className={
+              constructedByName === "Chưa phân công" || !constructedByName
+                ? "text-orange-500"
+                : "text-green-600"
+            }
+          >
+            {constructedByName || "Chưa phân công"}
+          </span>
+        );
+
+      case "status":
+        return (
+          <Chip color={item.statusColor} variant="flat" size="sm">
+            {item.statusText}
+          </Chip>
+        );
+
+      case "createdAt":
+        return <span className="text-gray-600">{item.createdAt || "--"}</span>;
 
       case "actions":
+        if (!canApprove) return null;
+
+        // Chỉ hiển thị nút duyệt/từ chối khi status là PENDING_FOR_APPROVAL
+        if (item.rawStatus !== "PENDING_FOR_APPROVAL") {
+          return (
+            <div className="flex items-center justify-center">
+              <span className="text-gray-400 text-sm">Không thể thao tác</span>
+            </div>
+          );
+        }
+
         return (
           <div className="flex items-center justify-center gap-2">
-            {actionItems.map((action, idx) => (
-              <Tooltip key={idx} content={action.content} closeDelay={0}>
-                <Button
-                  isIconOnly
-                  variant="light"
-                  size="sm"
-                  className={`${action.className} rounded-lg`}
-                  onPress={() => action.onClick(item.id)}
-                >
-                  <action.icon className="w-5 h-5" />
-                </Button>
-              </Tooltip>
-            ))}
+            <Tooltip content="Duyệt đơn" closeDelay={0}>
+              <Button
+                isIconOnly
+                variant="light"
+                size="sm"
+                className="text-green-600 hover:bg-green-50 rounded-lg"
+                onPress={() => openConfirmModal("approve", item)}
+                isLoading={processingId === item.id}
+                isDisabled={processingId === item.id}
+              >
+                <ApprovalIcon className="w-5 h-5" />
+              </Button>
+            </Tooltip>
+
+            <Tooltip content="Từ chối" closeDelay={0}>
+              <Button
+                isIconOnly
+                variant="light"
+                size="sm"
+                className="text-red-600 hover:bg-red-50 rounded-lg"
+                onPress={() => openConfirmModal("reject", item)}
+                isLoading={processingId === item.id}
+                isDisabled={processingId === item.id}
+              >
+                <RejectIcon className="w-5 h-5" />
+              </Button>
+            </Tooltip>
           </div>
         );
 
@@ -78,19 +324,59 @@ export const ApprovedTable = () => {
     }
   };
 
+  if (profileLoading) {
+    return (
+      <div className="flex justify-center items-center py-12">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
+
   return (
-    <GenericDataTable
-      title="Danh sách đơn cho phép thi công"
-      columns={columns}
-      data={mockData}
-      isCollapsible
-      renderCellAction={renderCell}
-      headerSummary={`${mockData.length}`}
-      paginationProps={{
-        total: mockData.length,
-        page: 1,
-        summary: `${mockData.length}`,
-      }}
-    />
+    <>
+      <GenericDataTable
+        title="Danh sách đơn chờ duyệt thi công"
+        columns={PENDING_TABLE_COLUMNS}
+        data={data}
+        isCollapsible
+        renderCellAction={renderCell}
+        paginationProps={{
+          total: totalPages,
+          page: page,
+          onChange: setPage,
+          summary: `${data.length} / ${totalItems}`,
+        }}
+      />
+
+      <Modal
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal({ ...confirmModal, isOpen: false })}
+      >
+        <ModalContent>
+          <ModalHeader className="flex flex-col gap-1">
+            Xác nhận {confirmModal.type === "approve" ? "duyệt" : "từ chối"} đơn
+          </ModalHeader>
+          <ModalBody>
+            <p>{confirmModal.message}</p>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              variant="light"
+              onPress={() =>
+                setConfirmModal({ ...confirmModal, isOpen: false })
+              }
+            >
+              Hủy
+            </Button>
+            <Button
+              color={confirmModal.type === "approve" ? "primary" : "danger"}
+              onPress={handleConfirm}
+            >
+              {confirmModal.type === "approve" ? "Duyệt" : "Từ chối"}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };

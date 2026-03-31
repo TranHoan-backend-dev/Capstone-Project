@@ -1,6 +1,27 @@
 import { API_GATEWAY_URL } from "@/utils/constraints";
 import axios from "axios";
 
+export interface GetNotificationsParams {
+  page?: number;
+  size?: number;
+  sort?: string;
+}
+
+export interface NotificationResponseDto {
+  notificationId: string;
+  title: string;
+  message: string;
+  link?: string;
+  status: boolean; // false = unread, true = read
+  createdAt: string;
+}
+
+export interface NotificationBatchResponseDto {
+  items: NotificationResponseDto[];
+  requestedSize: number;
+  totalFound: number;
+}
+
 export interface Notification {
   id: string;
   sender: string;
@@ -9,10 +30,16 @@ export interface Notification {
   time: string;
   isRead: boolean;
   avatar: string;
-  type: "message" | "system" | "sign-request" | "billing";
+  type: "message" | "system" | "sign-request" | "billing" | "device_login" | "security";
   action?: {
     type: string;
     id: string;
+  };
+  metadata?: {
+    deviceInfo?: string;
+    ipAddress?: string;
+    loginTime?: string;
+    location?: string;
   };
 }
 
@@ -157,10 +184,13 @@ function formatTime(isoDate: string): string {
  */
 function parseType(
   apiType: string,
-): "message" | "system" | "sign-request" | "billing" {
+): "message" | "system" | "sign-request" | "billing" | "device_login" | "security" {
   if (apiType.includes("sign")) return "sign-request";
   if (apiType.includes("billing") || apiType.includes("payment"))
     return "billing";
   if (apiType.includes("message")) return "message";
+  if (apiType.includes("device") || apiType.includes("login"))
+    return "device_login";
+  if (apiType.includes("security")) return "security";
   return "system";
 }

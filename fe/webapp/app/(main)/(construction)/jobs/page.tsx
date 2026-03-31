@@ -5,9 +5,9 @@ import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
 import NetworksPage from "./job-page";
 
 export const metadata: Metadata = {
-  title: "Quản lý Chi nhánh cấp nước",
+  title: "Quản lý Công việc",
   description:
-    "Thông tin chi tiết danh sách chi nhánh cấp nước của Công ty Cổ Phần Nước Nam Định - NAWACO",
+    "Thông tin chi tiết danh sách công việc của Công ty Cổ Phần Nước Nam Định - NAWACO",
 };
 
 const Jobs = () => {
@@ -16,7 +16,7 @@ const Jobs = () => {
       <CustomBreadcrumb
         items={[
           { label: "Trang chủ", href: "/home" },
-          { label: "Quản lý Chi nhánh cấp nước", isCurrent: true },
+          { label: "Quản lý Công việc", isCurrent: true },
         ]}
       />
 

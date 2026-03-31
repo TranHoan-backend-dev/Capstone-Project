@@ -9,6 +9,7 @@ import { MaterialGroupFilter, MaterialGroupItem } from "@/types";
 import { Modal, ModalContent } from "@heroui/react";
 import { MaterialsGroupTable } from "./components/materials-group-table";
 import { MaterialsGroupForm } from "./components/materials-group-form";
+import { useProfile } from "@/hooks/useLogin";
 
 const MaterialsGroupPage = () => {
   const [filter, setFilter] = useState<MaterialGroupFilter>({});
@@ -17,7 +18,7 @@ const MaterialsGroupPage = () => {
   const [editingItem, setEditingItem] = useState<MaterialGroupItem | null>(
     null,
   );
-  const { profile, loading } = useEmployeeProfile();
+  const { profile, loading } = useProfile();
   const handleReload = () => setReloadKey((prev) => prev + 1);
   const handleAddNew = () => {
     setEditingItem(null);

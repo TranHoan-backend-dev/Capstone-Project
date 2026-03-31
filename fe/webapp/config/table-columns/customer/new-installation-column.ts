@@ -29,5 +29,5 @@ export const NEW_INSTALLATION_LOOKUP_COLUMN = [
     sortable: false,
   },
   { key: "status", label: "Trạng thái", align: "center" as const },
-  // { key: "actions", label: "Hoạt động", align: "center" as const },
+  { key: "actions", label: "Hoạt động", align: "center" as const },
 ];

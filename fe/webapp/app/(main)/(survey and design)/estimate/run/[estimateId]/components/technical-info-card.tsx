@@ -184,7 +184,6 @@ export const TechnicalInfoCard = ({
   const handleSave = async (isFinished: boolean) => {
     try {
       setIsUploading(true);
-      console.log("Materials before save:", materials);
       let designImageBase64 = undefined;
       if (designImageFile instanceof File) {
         designImageBase64 = await fileToBase64(designImageFile);

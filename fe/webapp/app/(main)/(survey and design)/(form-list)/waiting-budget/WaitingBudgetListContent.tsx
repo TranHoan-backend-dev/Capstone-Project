@@ -10,6 +10,7 @@ import { ReportHeader } from "@/components/reports/ReportHeader";
 import { SearchToolbar } from "@/components/reports/SearchToolbar";
 import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
 import { siteConfig } from "@/config/site";
+import { columnsWaitingBudget } from "@/config/table-columns/report/report-column";
 
 const WaitingBudgetListContent = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -55,14 +56,14 @@ const WaitingBudgetListContent = () => {
           <SearchToolbar
             onSearch={setSearchQuery}
             data={data}
-            columns={siteConfig.columnsWaitingBudget}
+            columns={columnsWaitingBudget}
             reportTitle="Danh sách đơn chờ lập dự toán"
           />
 
           <ReportHeader title="DANH SÁCH ĐƠN CHỜ LẬP DỰ TOÁN" />
 
           <DataTable
-            columns={siteConfig.columnsWaitingBudget}
+            columns={columnsWaitingBudget}
             data={data}
             searchQuery={searchQuery}
           />

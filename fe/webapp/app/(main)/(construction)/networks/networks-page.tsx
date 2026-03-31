@@ -10,9 +10,10 @@ import { FilterSection } from "./components/filter-section";
 import { NetworkForm } from "./components/network-form";
 import { Modal, ModalContent } from "@heroui/react";
 import { NetworksFilter, NetworksItem } from "@/types";
+import { useProfile } from "@/hooks/useLogin";
 
 const NetworksPage = () => {
-  const { profile, loading: profileLoading } = useEmployeeProfile();
+  const { profile, loading: profileLoading } = useProfile();
   const { isITStaff, loading: roleLoading } = useIsITStaff();
   const loading = profileLoading || roleLoading;
   const [keyword, setKeyword] = useState<NetworksFilter>({

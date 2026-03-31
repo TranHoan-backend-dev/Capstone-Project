@@ -1,4 +1,4 @@
-﻿openapi: 3.0.3
+openapi: 3.0.3
 info:
   title: YOLO Paddle OCR API
   version: 1.0.0
@@ -13,7 +13,7 @@ info:
 servers:
   - url: http://127.0.0.1:8010
     description: Local development server
-  - url: http://127.0.0.1:8001
+  - url: http://127.0.0.1:8000
     description: Default local server
 
 tags:
