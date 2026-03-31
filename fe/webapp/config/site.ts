@@ -178,7 +178,7 @@ export const siteConfig = {
       items: [
         {
           key: "new-installation-form",
-          label: "Đơn lắp đặt mới",
+          label: "Tạo đơn lắp đặt mới",
           href: "/installation-form/new",
           roles: ["it_staff", "order_receiving_staff"],
         },
@@ -202,7 +202,7 @@ export const siteConfig = {
         },
         {
           key: "new-customers-import",
-          label: "Nhập khách hàng mới",
+          label: "Tạo khách hàng mới",
           href: "/customers/import",
           roles: ["it_staff", "order_receiving_staff"],
         },

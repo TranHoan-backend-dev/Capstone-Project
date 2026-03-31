@@ -1,3 +1,4 @@
+// Header.tsx - Phiên bản đã sửa
 "use client";
 
 import {
@@ -24,7 +25,6 @@ import NotificationDropdown from "./NotificationDropdown";
 import { CallToast } from "../ui/CallToast";
 import axios from "axios";
 import { useProfile } from "@/hooks/useLogin";
-import { useEmployeeProfile } from "@/hooks/useEmployeeProfile";
 import { filterNavItems, siteConfig } from "@/config/site";
 
 export interface SubMenuItemChild {
@@ -45,12 +45,6 @@ export interface MenuItem {
   label: string;
   href?: string;
   items?: SubMenuItem[];
-}
-
-interface NavigationProps {
-  menuItems: MenuItem[];
-  fullname?: string;
-  onUserMenuAction?: (key: string) => void;
 }
 
 const Header = () => {
@@ -85,10 +79,6 @@ const Header = () => {
     }
 
     return false;
-  };
-
-  const isLinkActive = (href?: string) => {
-    return href && pathname === href;
   };
 
   const handleMenuClick = (key: string) => {
@@ -138,121 +128,132 @@ const Header = () => {
           </NavbarBrand>
         </NavbarContent>
 
-        <NavbarContent className="hidden md:flex flex-1 gap-8" justify="start">
-          <NavbarBrand className="px-4">
-            <Bars3Icon className="w-8 h-8 text-primary" />
-            <span className="text-xl font-bold ml-2">CMSN</span>
-          </NavbarBrand>
-
-          <div className="hidden md:flex items-center gap-6 font-bold">
-            {filteredMenu.map((item) => {
-              const isActive = isMenuItemActive(item);
-
-              if (item.items && item.items.length > 0) {
-                return (
-                  <div key={item.key} onClick={() => handleMenuClick(item.key)}>
-                    <NestedDropdown item={item} />
-                  </div>
-                );
-              } else {
-                return (
-                  <Link
-                    key={item.key}
-                    className={`text-sm px-3 py-2 whitespace-nowrap rounded transition-colors cursor-pointer ${
-                      isActive
-                        ? "bg-primary-100 text-primary-800 dark:text-white font-medium"
-                        : "text-foreground-700 hover:bg-default-100"
-                    }`}
-                    href={item.href || "#"}
-                    onClick={() => handleMenuClick(item.key)}
-                  >
-                    {item.label}
-                  </Link>
-                );
-              }
-            })}
+        {/* Desktop navigation - SỬA LẠI PHẦN NÀY */}
+        <div className="hidden md:flex items-center w-full">
+          {/* Logo section - fixed width */}
+          <div className="flex-shrink-0 px-4">
+            <div className="flex items-center">
+              <Bars3Icon className="w-8 h-8 text-primary" />
+              <span className="text-xl font-bold ml-2">CMSN</span>
+            </div>
           </div>
-        </NavbarContent>
 
-        <NavbarContent as="div" className="flex-none gap-4" justify="end">
-          {profile?.fullname && (
-            <>
-              <ThemeSwitch />
-              <NotificationDropdown />
+          {/* Menu section - auto width, left aligned */}
+          <div className="flex-1 flex items-center">
+            <div className="flex items-center gap-2 font-bold">
+              {filteredMenu.map((item) => {
+                const isActive = isMenuItemActive(item);
 
-              <Dropdown placement="bottom-end">
-                <DropdownTrigger>
-                  <div className="flex items-center gap-2 px-2 py-2 cursor-pointer rounded-lg transition-colors hover:bg-default-100">
-                    <Tooltip
-                      className="max-w-xs"
-                      content={profile.fullname}
-                      delay={500}
-                      placement="bottom"
+                if (item.items && item.items.length > 0) {
+                  return (
+                    <div
+                      key={item.key}
+                      onClick={() => handleMenuClick(item.key)}
                     >
-                      <span className="hidden md:block text-sm font-bold max-w-[120px] truncate">
-                        {profile.fullname}
-                      </span>
-                    </Tooltip>
+                      <NestedDropdown item={item} />
+                    </div>
+                  );
+                } else {
+                  return (
+                    <Link
+                      key={item.key}
+                      className={`text-sm px-4 py-2 whitespace-nowrap rounded-lg transition-colors cursor-pointer ${
+                        isActive
+                          ? "bg-primary-100 text-primary-800 dark:text-white font-medium"
+                          : "text-foreground-700 hover:bg-default-100"
+                      }`}
+                      href={item.href || "#"}
+                      onClick={() => handleMenuClick(item.key)}
+                    >
+                      {item.label}
+                    </Link>
+                  );
+                }
+              })}
+            </div>
+          </div>
 
-                    <Avatar
-                      src={profile.avatarUrl}
-                      name={profile.fullname}
-                      size="sm"
-                      className="bg-primary-100 text-primary-600"
-                      fallback={
-                        <span className="font-semibold">
-                          {profile.fullname.charAt(0).toUpperCase()}
+          {/* Right section - fixed width for user menu */}
+          <div className="flex-shrink-0 flex items-center gap-4">
+            {profile?.fullname && (
+              <>
+                <ThemeSwitch />
+                <NotificationDropdown />
+
+                <Dropdown placement="bottom-end">
+                  <DropdownTrigger>
+                    <div className="flex items-center gap-2 px-2 py-2 cursor-pointer rounded-lg transition-colors hover:bg-default-100">
+                      <Tooltip
+                        className="max-w-xs"
+                        content={profile.fullname}
+                        delay={500}
+                        placement="bottom"
+                      >
+                        <span className="hidden md:block text-sm font-bold max-w-[120px] truncate">
+                          {profile.fullname}
                         </span>
-                      }
-                    />
-                  </div>
-                </DropdownTrigger>
+                      </Tooltip>
 
-                <DropdownMenu
-                  aria-label="User menu"
-                  variant="flat"
-                  onAction={(key) => {
-                    if (key === "logout") handleLogout();
-                  }}
-                >
-                  <DropdownItem
-                    key="profile"
-                    as={Link}
-                    className={`${
-                      pathname === "/profile-employee"
-                        ? "bg-primary-100 text-primary-800 dark:text-primary-200"
-                        : ""
-                    }`}
-                    href="/profile-employee"
-                  >
-                    Thông tin cá nhân
-                  </DropdownItem>
+                      <Avatar
+                        src={profile.avatarUrl}
+                        name={profile.fullname}
+                        size="sm"
+                        className="bg-primary-100 text-primary-600"
+                        fallback={
+                          <span className="font-semibold">
+                            {profile.fullname.charAt(0).toUpperCase()}
+                          </span>
+                        }
+                      />
+                    </div>
+                  </DropdownTrigger>
 
-                  <DropdownItem
-                    key="change-password"
-                    as={Link}
-                    className={`${
-                      pathname === "/change-password"
-                        ? "bg-primary-100 text-primary-800 dark:text-primary-200"
-                        : ""
-                    }`}
-                    href="/change-password"
+                  <DropdownMenu
+                    aria-label="User menu"
+                    variant="flat"
+                    onAction={(key) => {
+                      if (key === "logout") handleLogout();
+                    }}
                   >
-                    Đổi mật khẩu
-                  </DropdownItem>
+                    <DropdownItem
+                      key="profile"
+                      as={Link}
+                      className={`${
+                        pathname === "/profile-employee"
+                          ? "bg-primary-100 text-primary-800 dark:text-primary-200"
+                          : ""
+                      }`}
+                      href="/profile-employee"
+                    >
+                      Thông tin cá nhân
+                    </DropdownItem>
 
-                  <DropdownItem
-                    key="logout"
-                    className="text-danger"
-                    color="danger"
-                  >
-                    Đăng xuất
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-            </>
-          )}
-        </NavbarContent>
+                    <DropdownItem
+                      key="change-password"
+                      as={Link}
+                      className={`${
+                        pathname === "/change-password"
+                          ? "bg-primary-100 text-primary-800 dark:text-primary-200"
+                          : ""
+                      }`}
+                      href="/change-password"
+                    >
+                      Đổi mật khẩu
+                    </DropdownItem>
+
+                    <DropdownItem
+                      key="logout"
+                      className="text-danger"
+                      color="danger"
+                    >
+                      Đăng xuất
+                    </DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+              </>
+            )}
+          </div>
+        </div>
       </HeroUINavbar>
 
       <Sidebar
