@@ -40,7 +40,7 @@ public class UsageHistory {
     // Remove old usage for same month/year if exists
     usages.removeIf(u -> u.getRecordingDate().getMonth() == usage.getRecordingDate().getMonth() &&
       u.getRecordingDate().getYear() == usage.getRecordingDate().getYear());
-    usages.add(usage);
+    usages.addLast(usage);
   }
 }
 

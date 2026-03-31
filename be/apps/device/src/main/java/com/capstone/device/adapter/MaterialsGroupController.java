@@ -3,7 +3,7 @@ package com.capstone.device.adapter;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
-import com.capstone.device.application.dto.response.MaterialsGroupResponse;
+import com.capstone.device.application.dto.response.material.MaterialsGroupResponse;
 import com.capstone.device.application.usecase.MaterialsGroupUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

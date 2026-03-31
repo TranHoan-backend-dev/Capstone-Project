@@ -354,6 +354,12 @@ public class UserServiceImpl implements UserService {
   private @NonNull EmployeeResponse mapToEmployeeResponse(@NonNull Users user) {
     var profile = profileRepo.findById(user.getUserId())
       .orElseThrow(() -> new NotExistingException(String.format(Message.SE_15, user.getUserId())));
+    var organization = organizationService.getDepartmentName(user.getDepartmentId());
+    log.info("Department: {}", organization);
+    var network = networkService.getNameById(user.getWaterSupplyNetworkId());
+    log.info("Network: {}", network);
+    var page = bpService.getPagesByEmployeeId(user.getUserId()).toString();
+    log.info("Page: {}", page);
     return new EmployeeResponse(
       user.getUserId(),
       null,

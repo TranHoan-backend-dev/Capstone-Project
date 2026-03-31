@@ -1,6 +1,6 @@
 package com.capstone.device.application.business.history;
 
-import com.capstone.device.application.dto.response.DeviceManagementHistoryResponse;
+import com.capstone.device.application.dto.response.device.DeviceManagementHistoryResponse;
 import com.capstone.device.application.usecase.DeviceManagementHistoryUseCase;
 import com.capstone.device.infrastructure.persistence.DeviceManagementHistoryRepository;
 import lombok.AccessLevel;

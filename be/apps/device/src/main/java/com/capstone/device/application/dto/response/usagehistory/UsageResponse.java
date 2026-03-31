@@ -1,5 +1,6 @@
-package com.capstone.device.application.dto.response.pricetype;
+package com.capstone.device.application.dto.response.usagehistory;
 
+import com.capstone.device.application.dto.response.pricetype.PriceTypeResponse;
 import com.capstone.device.domain.model.utils.Usage;
 import lombok.Builder;
 

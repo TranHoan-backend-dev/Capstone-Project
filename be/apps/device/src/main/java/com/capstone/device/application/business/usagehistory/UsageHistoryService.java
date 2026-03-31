@@ -1,6 +1,7 @@
 package com.capstone.device.application.business.usagehistory;
 
-import com.capstone.device.application.dto.response.pricetype.UsageResponse;
+import com.capstone.device.application.dto.response.usagehistory.AnalysisResponse;
+import com.capstone.device.application.dto.response.usagehistory.UsageResponse;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -11,7 +12,9 @@ import com.capstone.device.application.dto.response.pricetype.PendingReviewRespo
 import org.springframework.web.multipart.MultipartFile;
 
 public interface UsageHistoryService {
-  UsageResponse addWaterIndexOfThisMonth(String imageUrl, String serial, BigDecimal index, LocalDate recordingDate, MultipartFile file);
+  UsageResponse addWaterIndexOfThisMonth(String imageUrl, String serial, BigDecimal index, LocalDate recordingDate);
+
+  AnalysisResponse extractDataFromTheMeterImage(MultipartFile file);
 
   void updatePaymentStatus(String serial, String method);
 

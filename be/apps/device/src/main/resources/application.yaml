@@ -1,6 +1,11 @@
 spring:
   application:
     name: device
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT_INTERNAL:6379}
+      timeout: 2000
   profiles:
     active: dev
   jpa:
@@ -18,6 +23,10 @@ spring:
       connection-timeout: 2000 # Cho ket noi toi da 3s
       max-lifetime: 600000 # Ket noi song toi da 30p
       idle-timeout: 30000 # Dong idle sau 30s neu khong su dung
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 management:
   endpoints:
     web:
@@ -63,4 +72,4 @@ rabbit-mq-config:
     - update
     - delete
 ai-service:
-  url: http://localhost:8081
+  url: http://127.0.0.1:8001

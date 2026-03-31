@@ -1,4 +1,4 @@
-package com.capstone.device.application.dto.response;
+package com.capstone.device.application.dto.response.device;
 
 import java.time.LocalDateTime;
 

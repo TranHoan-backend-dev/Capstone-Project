@@ -13,8 +13,9 @@ public record AIResponse(
 ) {
   public record AIResponseData(
     List<Integer> box,
-    String label,
-    String text,
+    LabelType label, // Loai vung duoc phat hien
+    String text, //
+    Double conf,
     @JsonProperty("yolo_conf")
     Double yoloConf,
     @JsonProperty("ocr_conf")
@@ -23,8 +24,16 @@ public record AIResponse(
     @JsonProperty("final_conf")
     Double finalConf,
     @JsonProperty("raw_texts")
-    List<List<Object>> rawTexts
+    List<List<Object>> rawTexts // ket qua tho truoc khi duoc xu ly hau ky
   ) {
 
+  }
+  public enum LabelType {
+    @JsonProperty("meter")
+    METER,
+    @JsonProperty("Serial_number_region")
+    SERIAL_NUMBER_REGION,
+    @JsonProperty("Current_pointer_reading_region")
+    CURRENT_POINTER_READING_REGION
   }
 }

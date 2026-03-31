@@ -2,7 +2,7 @@
 @keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
 @client_secret=
 @customerId = 00a6ec02-3652-46fd-8c62-c5d01c7b3148
-@serial = WM-2024-001
+@serial = 00000000-0000-0000-0000-A00000000001
 
 ### get token
 POST {{keycloak}}/token
@@ -86,10 +86,10 @@ Content-Disposition: form-data; name="recordingDate"
 
 2024-03-01
 --WebAppBoundary
-Content-Disposition: form-data; name="image"; filename="meter-image.jpg"
-Content-Type: image/jpeg
+Content-Disposition: form-data; name="image"; filename="img_1.png"
+Content-Type: image/png
 
-mock data
+< ./img_1.png
 --WebAppBoundary--
 
 ### Case 2: Cập nhật thất bại - Thiếu chỉ số (index)

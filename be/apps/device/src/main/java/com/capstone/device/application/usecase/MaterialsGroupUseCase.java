@@ -2,7 +2,7 @@ package com.capstone.device.application.usecase;
 
 import com.capstone.common.annotation.AppLog;
 import com.capstone.device.application.business.material.group.MaterialsGroupService;
-import com.capstone.device.application.dto.response.MaterialsGroupResponse;
+import com.capstone.device.application.dto.response.material.MaterialsGroupResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

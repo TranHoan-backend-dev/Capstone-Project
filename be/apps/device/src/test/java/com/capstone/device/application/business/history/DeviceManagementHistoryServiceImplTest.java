@@ -1,6 +1,6 @@
 package com.capstone.device.application.business.history;
 
-import com.capstone.device.application.dto.response.DeviceManagementHistoryProjection;
+import com.capstone.device.application.dto.response.device.DeviceManagementHistoryProjection;
 import com.capstone.device.infrastructure.persistence.DeviceManagementHistoryRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
