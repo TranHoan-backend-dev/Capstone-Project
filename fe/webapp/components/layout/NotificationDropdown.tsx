@@ -33,7 +33,13 @@ interface Notification {
   time: string;
   isRead: boolean;
   avatar: string;
-  type: "device_login" | "message" | "system" | "billing" | "security" | "sign-request";
+  type:
+    | "device_login"
+    | "message"
+    | "system"
+    | "billing"
+    | "security"
+    | "sign-request";
   metadata?: {
     deviceInfo?: string;
     ipAddress?: string;
@@ -51,138 +57,6 @@ const NotificationDropdown = () => {
   const [totalFound, setTotalFound] = useState(0);
   const [hasError, setHasError] = useState(false);
   const [isConnected] = useState(true);
-
-  /**
-   * Convert backend notification to UI format
-   */
-  const mapNotificationToUI = (dto: NotificationResponseDto): Notification => {
-    return {
-      id: dto.notificationId,
-      sender: dto.title,
-      message: dto.message,
-      time: formatRelativeTime(dto.createdAt),
-      isRead: dto.status,
-      avatar: "",
-      type: "system",
-    };
-  };
-  /**
-   * Fetch notifications từ API
-   */
-  const fetchNotifications = async (
-    page: number = 0,
-    append: boolean = false,
-  ) => {
-    try {
-      if (page === 0) {
-        setIsInitialLoading(true);
-      } else {
-        setIsLoadingMore(true);
-      }
-      setHasError(false);
-
-      const response = await fetch(
-        `/api/notification?page=${page}&size=20&sort=createdAt,desc`,
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch notifications");
-      }
-
-      const result = await response.json();
-      const notificationData = result.data as {
-        items: NotificationResponseDto[];
-        requestedSize: number;
-        totalFound: number;
-      };
-
-      const uiNotifications = notificationData.items.map(mapNotificationToUI);
-
-      if (append) {
-        setNotifications((prev) => [...prev, ...uiNotifications]);
-      } else {
-        setNotifications(uiNotifications);
-      }
-
-      setTotalFound(notificationData.totalFound);
-      setCurrentPage(page);
-    } catch (error) {
-      console.error("Error fetching notifications:", error);
-      setHasError(true);
-    } finally {
-      setIsInitialLoading(false);
-      setIsLoadingMore(false);
-    }
-  };
-  /**
-   * Initial load
-   */
-  useEffect(() => {
-    fetchNotifications(0);
-    
-    // Polling mỗi 30 giây để lấy thông báo mới
-    const interval = setInterval(() => {
-      fetchNotifications(0, false);
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const handleMarkAsRead = async (notificationId: string) => {
-    try {
-      await fetch("/api/notifications/mark-read", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ notificationId }),
-      });
-
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === notificationId ? { ...n, isRead: true } : n)),
-      );
-    } catch (error) {
-      console.error("Error marking as read:", error);
-    }
-  };
-
-  const handleMarkAllAsRead = async () => {
-    try {
-      await fetch("/api/notifications/mark-all-read", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
-
-      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
-    } catch (error) {
-      console.error("Error marking all as read:", error);
-    }
-  };
-
-  const handleDeleteNotification = async (notificationId: string) => {
-    try {
-      await fetch(`/api/notifications/${notificationId}`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-      });
-
-      setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
-    } catch (error) {
-      console.error("Error deleting notification:", error);
-    }
-  };
-
-  const handleScroll = (e: React.UIEvent<HTMLElement>) => {
-    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
-
-    if (
-      scrollHeight - scrollTop <= clientHeight + 10 &&
-      !isLoadingMore &&
-      !isInitialLoading &&
-      filter === "all" &&
-      currentPage * 20 < totalFound
-    ) {
-      fetchNotifications(currentPage + 1, true);
-    }
-  };
 
   // Lấy background color theo loại thông báo
   const getNotificationBgColor = (type: Notification["type"]) => {
@@ -264,9 +138,6 @@ const NotificationDropdown = () => {
     }
   };
 
-  /**
-   * Format message để hiển thị đẹp hơn
-   */
   const formatMessage = (notification: Notification) => {
     if (notification.type === "device_login" && notification.metadata) {
       return (
@@ -283,7 +154,7 @@ const NotificationDropdown = () => {
           </p>
           {notification.metadata.location && (
             <p className="text-[11px] text-default-400 mt-1">
-              📍 {notification.metadata.location} •{" "}
+              {notification.metadata.location} •{" "}
               {notification.metadata.deviceInfo}
             </p>
           )}
@@ -303,7 +174,7 @@ const NotificationDropdown = () => {
         {notification.message}
       </p>
     );
-  }
+  };
 
   return (
     <Dropdown className="p-0" placement="bottom-end">
@@ -364,15 +235,7 @@ const NotificationDropdown = () => {
                 </div>
                 <div className="flex gap-1">
                   {unreadCount > 0 && (
-                    <Button
-                      size="sm"
-                      variant="light"
-                      className="text-xs"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleMarkAllAsRead();
-                      }}
-                    >
+                    <Button size="sm" variant="light" className="text-xs">
                       Đọc tất cả
                     </Button>
                   )}
@@ -440,7 +303,11 @@ const NotificationDropdown = () => {
             className="p-0 hover:bg-transparent cursor-default focus:bg-transparent"
             textValue="Notifications list"
           >
-            <ScrollShadow hideScrollBar className="max-h-[520px] w-full" onScroll={handleScroll}>
+            <ScrollShadow
+              hideScrollBar
+              className="max-h-[520px] w-full"
+              onScroll={() => {}}
+            >
               <div className="flex flex-col py-2 px-2">
                 {isInitialLoading ? (
                   // Loading skeletons
@@ -476,7 +343,7 @@ const NotificationDropdown = () => {
                         className={`flex items-center gap-3 px-3 py-3 cursor-pointer transition-all rounded-xl relative group hover:bg-default-50 mb-1 ${
                           !n.isRead ? "bg-primary-50" : ""
                         }`}
-                        onClick={() => !n.isRead && handleMarkAsRead(n.id)}
+                        onClick={() => {}}
                       >
                         <div className="relative shrink-0">
                           <Avatar
@@ -509,10 +376,7 @@ const NotificationDropdown = () => {
                         </div>
                         <div
                           className="opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteNotification(n.id);
-                          }}
+                          onClick={(e) => {}}
                         >
                           <Button
                             isIconOnly

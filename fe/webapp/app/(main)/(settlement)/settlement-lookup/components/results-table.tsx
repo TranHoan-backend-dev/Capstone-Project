@@ -21,7 +21,7 @@ import {
   XCircleIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
-import { useSettlementUpdates } from "@/hooks/useWebSocketRefresh";
+
 import { sendSignRequestNotification } from "@/utils/notification-helper";
 import { getAccessTokenFromCookie } from "@/utils/token-helper";
 import { useRouter } from "next/navigation";
@@ -77,10 +77,6 @@ export const ResultsTable = ({
   });
   const router = useRouter();
 
-  useSettlementUpdates(() => {
-    console.log("Settlement updated, refreshing data...");
-    setRefreshTrigger((prev) => prev + 1);
-  });
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedSettlementDetail, setSelectedSettlementDetail] = useState<
     SettlementDetail | undefined
