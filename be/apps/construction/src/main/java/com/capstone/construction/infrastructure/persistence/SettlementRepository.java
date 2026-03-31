@@ -6,6 +6,8 @@ import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -14,8 +16,17 @@ import java.util.List;
 @Repository
 public interface SettlementRepository extends JpaRepository<Settlement, String>, JpaSpecificationExecutor<Settlement> {
 
+    @Query("SELECT DISTINCT s FROM Settlement s LEFT JOIN FETCH s.installationForm")
+    List<Settlement> findAllWithInstallationForm();
+
+    @Query("SELECT DISTINCT s FROM Settlement s LEFT JOIN FETCH s.installationForm WHERE s.settlementId = :id")
+    java.util.Optional<Settlement> findByIdWithInstallationForm(@Param("id") String id);
+
     static Specification<Settlement> filter(SettlementFilterRequest filterRequest) {
         return (root, query, cb) -> {
+            // Join installationForm to avoid null
+            root.join("installationForm", jakarta.persistence.criteria.JoinType.LEFT);
+
             List<Predicate> predicates = new ArrayList<>();
 
             // Search across multiple fields (jobContent, address, note)

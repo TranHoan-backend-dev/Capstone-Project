@@ -903,3 +903,48 @@ export const reviewConstruction = (
 //     },
 //   );
 // };
+
+export const requestSignSettlement = (
+  accessToken: string,
+  settlementId: string,
+  surveyStaff: string,
+  plHead: string,
+  companyLeadership: string,
+  // constructionPresident: string,
+) => {
+  return axios.post(
+    `${API_GATEWAY_URL}/construction/settlements/sign`,
+    {
+      settlementId,
+      surveyStaff,
+      plHead,
+      companyLeadership,
+      // constructionPresident,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    },
+  );
+};
+
+export const signSettlement = (
+  accessToken: string,
+  setlementId: string,
+  url?: string,
+) => {
+  return axios.post(
+    `${API_GATEWAY_URL}/construction/settlements/sign/${setlementId}`,
+    {
+      url,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    },
+  );
+};

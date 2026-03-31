@@ -21,16 +21,16 @@ export async function GET(req: NextRequest) {
     const size = Number(searchParams.get("size") ?? 10);
     const sort = searchParams.get("sort") || ",desc";
 
-    const keyword = searchParams.get("keyword");
+    const search = searchParams.get("search");
     const fromDate = searchParams.get("fromDate");
     const toDate = searchParams.get("toDate");
     const status = searchParams.get("status");
 
-    const hasFilter = keyword || fromDate || toDate || status;
+    const hasFilter = search || fromDate || toDate || status;
 
     if (hasFilter) {
       const filterRequest = {
-        search: keyword || null,
+        search: search || null,
         status: status ? [status] : null,
         registrationFrom: fromDate || null,
         registrationTo: toDate || null,
@@ -77,7 +77,6 @@ export async function GET(req: NextRequest) {
     );
   }
 }
-
 export async function POST(req: NextRequest) {
   try {
     const accessToken = getAccessToken(req);
@@ -87,7 +86,13 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const response = await createSettlement(accessToken, body);
+
+    const payload = {
+      ...body,
+      status: Array.isArray(body.status) ? body.status : [body.status],
+    };
+
+    const response = await createSettlement(accessToken, payload);
 
     return NextResponse.json(
       {

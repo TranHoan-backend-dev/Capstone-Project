@@ -157,20 +157,6 @@ export const siteConfig = {
       ],
     },
 
-    // Hợp đồng
-    {
-      key: "contract",
-      label: "Hợp đồng",
-      items: [
-        {
-          key: "new-contract",
-          label: "Lập hợp đồng cấp nước mới",
-          href: "/water-supply-contract",
-          roles: ["it_staff", "order_receiving_staff"],
-        },
-      ],
-    },
-
     // Khách hàng
     {
       key: "customer",
@@ -339,11 +325,33 @@ export const siteConfig = {
           key: "settlement-lookup",
           label: "Tra cứu quyết toán",
           href: "/settlement-lookup",
-          roles: ["it_staff", "finance_department"],
+          roles: [
+            "it_staff",
+            "finance_department",
+            "construction_department_staff",
+            "construction_department_head",
+            "survey_staff",
+            "company_leadership",
+            "planning_technical_department_head",
+          ],
         },
       ],
     },
 
+    // Hợp đồng
+    {
+      key: "contract",
+      label: "Hợp đồng",
+      items: [
+        {
+          key: "new-contract",
+          label: "Lập hợp đồng cấp nước mới",
+          href: "/water-supply-contract",
+          roles: ["it_staff", "order_receiving_staff"],
+        },
+      ],
+    },
+    
     // Ghi chỉ số & Hóa đơn
     {
       key: "billing",

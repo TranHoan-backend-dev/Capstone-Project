@@ -4,7 +4,6 @@ public record RequireSignificanceEvent(
   String settlementId,
   String surveyStaff,
   String plHead,
-  String companyLeadership,
-  String constructionPresident
+  String companyLeadership
 ) {
 }
