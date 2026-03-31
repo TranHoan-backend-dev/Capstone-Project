@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dropdown,
   DropdownTrigger,
@@ -16,6 +16,9 @@ import {
   BellIcon,
   CheckCircleIcon,
   EllipsisHorizontalIcon,
+  ComputerDesktopIcon,
+  ShieldCheckIcon,
+  CurrencyDollarIcon,
 } from "@heroicons/react/24/outline";
 
 interface Notification {
@@ -25,69 +28,166 @@ interface Notification {
   time: string;
   isRead: boolean;
   avatar: string;
-  type: "message" | "system" | "billing";
+  type: "device_login" | "message" | "system" | "billing" | "security";
+  metadata?: {
+    deviceInfo?: string;
+    ipAddress?: string;
+    loginTime?: string;
+    location?: string;
+  };
 }
 
 const NotificationDropdown = () => {
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: "1",
-      sender: "Hệ thống",
-      message: "Đơn hàng 01025120007 của bạn đã được thanh toán thành công.",
-      time: "2 phút trước",
-      isRead: false,
-      avatar: "",
-      type: "system",
-    },
-    {
-      id: "2",
-      sender: "Trần Thị Nguyệt",
-      message: "Đã gửi một yêu cầu khảo sát thiết kế mới.",
-      time: "1 giờ trước",
-      isRead: false,
-      avatar: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
-      type: "message",
-    },
-    {
-      id: "3",
-      sender: "Phòng Kế toán",
-      message: "Thông báo chốt số nước tháng 12/2025.",
-      time: "3 giờ trước",
-      isRead: true,
-      avatar: "",
-      type: "billing",
-    },
-    {
-      id: "4",
-      sender: "Nguyễn Văn Vũ",
-      message: "Bạn có một tin nhắn mới về bản vẽ thiết kế.",
-      time: "Hôm qua",
-      isRead: true,
-      avatar: "https://i.pravatar.cc/150?u=a04258114e29026302d",
-      type: "message",
-    },
-    {
-      id: "5",
-      sender: "Hệ thống",
-      message: "Bảo trì hệ thống vào lúc 00:00 ngày 30/12/2025.",
-      time: "2 ngày trước",
-      isRead: true,
-      avatar: "",
-      type: "system",
-    },
-    {
-      id: "6",
-      sender: "Hoàng Thế Quý",
-      message: "Yêu cầu hỗ trợ thay đổi địa chỉ lắp đặt.",
-      time: "3 ngày trước",
-      isRead: true,
-      avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704d",
-      type: "message",
-    },
-  ]);
-
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [filter, setFilter] = useState<"all" | "unread">("all");
   const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(1);
+
+  // Fetch notifications từ API
+  const fetchNotifications = async (pageNum: number = 1, append: boolean = false) => {
+    try {
+      setIsLoading(true);
+      const response = await fetch(`/api/notifications?page=${pageNum}&limit=10`);
+      const data = await response.json();
+      
+      if (response.ok) {
+        const newNotifications = data.notifications || [];
+        if (append) {
+          setNotifications(prev => [...prev, ...newNotifications]);
+        } else {
+          setNotifications(newNotifications);
+        }
+      }
+    } catch (error) {
+      console.error("Lỗi lấy thông báo:", error);
+      // Fallback to mock data nếu API chưa có
+      setNotifications(getMockNotifications());
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Mock data cho development
+  const getMockNotifications = (): Notification[] => {
+    return [
+      {
+        id: "1",
+        sender: "Hệ thống bảo mật",
+        message: "Đăng nhập từ thiết bị mới: Chrome trên Windows 11",
+        time: "2 phút trước",
+        isRead: false,
+        avatar: "",
+        type: "device_login",
+        metadata: {
+          deviceInfo: "Chrome 120.0, Windows 11",
+          ipAddress: "192.168.1.100",
+          loginTime: new Date().toLocaleString(),
+          location: "Hà Nội, Việt Nam"
+        }
+      },
+      {
+        id: "2",
+        sender: "Hệ thống",
+        message: "Đơn hàng 01025120007 của bạn đã được thanh toán thành công.",
+        time: "2 phút trước",
+        isRead: false,
+        avatar: "",
+        type: "system",
+      },
+      {
+        id: "3",
+        sender: "Cảnh báo bảo mật",
+        message: "Phát hiện đăng nhập từ thiết bị lạ tại TP. Hồ Chí Minh",
+        time: "1 giờ trước",
+        isRead: false,
+        avatar: "",
+        type: "security",
+        metadata: {
+          deviceInfo: "Safari trên iPhone 14",
+          ipAddress: "183.81.123.45",
+          loginTime: "1 giờ trước",
+          location: "TP. Hồ Chí Minh"
+        }
+      },
+      {
+        id: "4",
+        sender: "Trần Thị Nguyệt",
+        message: "Đã gửi một yêu cầu khảo sát thiết kế mới.",
+        time: "1 giờ trước",
+        isRead: false,
+        avatar: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
+        type: "message",
+      },
+      {
+        id: "5",
+        sender: "Phòng Kế toán",
+        message: "Thông báo chốt số nước tháng 12/2025.",
+        time: "3 giờ trước",
+        isRead: true,
+        avatar: "",
+        type: "billing",
+      },
+      {
+        id: "6",
+        sender: "Hệ thống",
+        message: "Đăng nhập thành công từ thiết bị đã tin cậy",
+        time: "Hôm qua",
+        isRead: true,
+        avatar: "",
+        type: "device_login",
+        metadata: {
+          deviceInfo: "Firefox trên macOS",
+          ipAddress: "10.0.0.105",
+          loginTime: "Hôm qua",
+          location: "Đà Nẵng"
+        }
+      },
+    ];
+  };
+
+  useEffect(() => {
+    fetchNotifications(1, false);
+    // Polling mỗi 30 giây để lấy thông báo mới
+    const interval = setInterval(() => {
+      fetchNotifications(1, false);
+    }, 30000);
+    
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleMarkAsRead = async (notificationId: string) => {
+    try {
+      await fetch("/api/notifications/mark-read", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ notificationId }),
+      });
+      
+      // Update local state
+      setNotifications(prev =>
+        prev.map(n =>
+          n.id === notificationId ? { ...n, isRead: true } : n
+        )
+      );
+    } catch (error) {
+      console.error("Lỗi đánh dấu đã đọc:", error);
+    }
+  };
+
+  const handleMarkAllAsRead = async () => {
+    try {
+      await fetch("/api/notifications/mark-all-read", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      
+      setNotifications(prev =>
+        prev.map(n => ({ ...n, isRead: true }))
+      );
+    } catch (error) {
+      console.error("Lỗi đánh dấu tất cả:", error);
+    }
+  };
 
   const filteredNotifications =
     filter === "all" ? notifications : notifications.filter((n) => !n.isRead);
@@ -102,25 +202,67 @@ const NotificationDropdown = () => {
       !isLoading &&
       filter === "all"
     ) {
-      setIsLoading(true);
-      setTimeout(() => {
-        const newBatch: Notification[] = [
-          {
-            id: Math.random().toString(),
-            sender: "Hệ thống",
-            message:
-              "Thông báo lịch sử về hoạt động trước đây đã được lưu trữ.",
-            time: "1 tuần trước",
-            isRead: true,
-            avatar: "",
-            type: "system",
-          },
-        ];
-
-        setNotifications((prev) => [...prev, ...newBatch]);
-        setIsLoading(false);
-      }, 800);
+      // Load more
+      setPage(prev => prev + 1);
+      fetchNotifications(page + 1, true);
     }
+  };
+
+  // Lấy icon theo loại thông báo
+  const getNotificationIcon = (type: string) => {
+    switch (type) {
+      case "device_login":
+        return <ComputerDesktopIcon className="w-3.5 h-3.5 text-blue-600" />;
+      case "security":
+        return <ShieldCheckIcon className="w-3.5 h-3.5 text-red-600" />;
+      case "billing":
+        return <CurrencyDollarIcon className="w-3.5 h-3.5 text-green-600" />;
+      default:
+        return <CheckCircleIcon className="w-3.5 h-3.5 text-orange-600" />;
+    }
+  };
+
+  // Lấy màu nền cho icon theo loại
+  const getIconBgColor = (type: string) => {
+    switch (type) {
+      case "device_login":
+        return "bg-blue-100";
+      case "security":
+        return "bg-red-100";
+      case "billing":
+        return "bg-green-100";
+      default:
+        return "bg-orange-100";
+    }
+  };
+
+  // Format message để hiển thị đẹp hơn
+  const formatMessage = (notification: Notification) => {
+    if (notification.type === "device_login" && notification.metadata) {
+      return (
+        <div>
+          <p className="text-[14px] leading-[1.3]">
+            <span className="font-bold text-foreground">{notification.sender}</span>
+            {" "}
+            <span className={!notification.isRead ? "font-bold" : "font-medium"}>
+              {notification.message}
+            </span>
+          </p>
+          {notification.metadata.location && (
+            <p className="text-[11px] text-default-400 mt-1">
+              📍 {notification.metadata.location} • {notification.metadata.deviceInfo}
+            </p>
+          )}
+        </div>
+      );
+    }
+    
+    return (
+      <p className={`text-[14px] leading-[1.3] ${!notification.isRead ? "font-bold text-foreground" : "text-default-600 font-medium"}`}>
+        <span className="text-foreground">{notification.sender}</span>{" "}
+        {notification.message}
+      </p>
+    );
   };
 
   return (
@@ -137,7 +279,7 @@ const NotificationDropdown = () => {
               unreadCount === 0 ? "hidden" : "border-2 border-background"
             }
             color="danger"
-            content={unreadCount > 0 ? unreadCount : null}
+            content={unreadCount > 99 ? "99+" : unreadCount}
             shape="circle"
             size="sm"
           >
@@ -167,15 +309,30 @@ const NotificationDropdown = () => {
                 <span className="text-2xl font-black text-foreground tracking-tight">
                   Thông báo
                 </span>
-                <Button
-                  isIconOnly
-                  className="hover:bg-default-100"
-                  radius="full"
-                  size="sm"
-                  variant="light"
-                >
-                  <EllipsisHorizontalIcon className="w-6 h-6 text-default-600" />
-                </Button>
+                <div className="flex gap-1">
+                  {unreadCount > 0 && (
+                    <Button
+                      size="sm"
+                      variant="light"
+                      className="text-xs"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleMarkAllAsRead();
+                      }}
+                    >
+                      Đọc tất cả
+                    </Button>
+                  )}
+                  <Button
+                    isIconOnly
+                    className="hover:bg-default-100"
+                    radius="full"
+                    size="sm"
+                    variant="light"
+                  >
+                    <EllipsisHorizontalIcon className="w-6 h-6 text-default-600" />
+                  </Button>
+                </div>
               </div>
               <div className="flex gap-2">
                 <Button
@@ -199,6 +356,11 @@ const NotificationDropdown = () => {
                   }}
                 >
                   Chưa đọc
+                  {unreadCount > 0 && (
+                    <span className="ml-1 text-xs bg-primary text-white px-1.5 py-0.5 rounded-full">
+                      {unreadCount}
+                    </span>
+                  )}
                 </Button>
               </div>
             </div>
@@ -226,36 +388,29 @@ const NotificationDropdown = () => {
                 {filteredNotifications.map((n) => (
                   <div
                     key={n.id}
-                    className={`flex items-center gap-3 px-3 py-3 cursor-pointer transition-all rounded-xl relative group hover:bg-default-50 mb-1`}
+                    className={`flex items-start gap-3 px-3 py-3 cursor-pointer transition-all rounded-xl relative group hover:bg-default-50 mb-1`}
+                    onClick={() => handleMarkAsRead(n.id)}
                   >
                     <div className="relative shrink-0">
                       <Avatar
                         className={
                           !n.avatar
-                            ? "bg-primary-50 text-primary font-bold"
+                            ? `${getIconBgColor(n.type)} text-foreground font-bold`
                             : "border border-divider"
                         }
+                        icon={!n.avatar ? getNotificationIcon(n.type) : undefined}
                         name={n.sender}
                         size="lg"
                         src={n.avatar}
                       />
-                      <div
-                        className={`absolute -bottom-1 -right-1 rounded-full p-1 border-2 border-background ${n.type === "system" ? "bg-blue-600" : n.type === "billing" ? "bg-green-600" : "bg-orange-600"}`}
-                      >
-                        {n.type === "message" ? (
-                          <div className="w-2.5 h-2.5 bg-white rounded-full" />
-                        ) : (
-                          <CheckCircleIcon className="w-2.5 h-2.5 text-white" />
-                        )}
-                      </div>
+                      {(n.type === "device_login" || n.type === "security") && (
+                        <div className="absolute -bottom-1 -right-1 rounded-full p-1 bg-red-500 border-2 border-background">
+                          <ShieldCheckIcon className="w-2.5 h-2.5 text-white" />
+                        </div>
+                      )}
                     </div>
                     <div className="flex-1 min-w-0 pr-4">
-                      <p
-                        className={`text-[14px] leading-[1.3] ${!n.isRead ? "font-bold text-foreground" : "text-default-600 font-medium"}`}
-                      >
-                        <span className="text-foreground">{n.sender}</span>{" "}
-                        {n.message}
-                      </p>
+                      {formatMessage(n)}
                       <p
                         className={`text-[12px] mt-1 ${!n.isRead ? "text-primary font-bold" : "text-default-400 font-medium"}`}
                       >
@@ -264,7 +419,7 @@ const NotificationDropdown = () => {
                     </div>
                     {!n.isRead && (
                       <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                        <div className="w-3 h-3 bg-primary rounded-full" />
+                        <div className="w-3 h-3 bg-primary rounded-full animate-pulse" />
                       </div>
                     )}
                   </div>
@@ -276,7 +431,7 @@ const NotificationDropdown = () => {
                       Không có thông báo mới
                     </p>
                     <p className="text-sm">
-                      Khi có bình luận hoặc tin nhắn, bạn sẽ thấy ở đây.
+                      Khi có đăng nhập từ thiết bị lạ hoặc tin nhắn mới, bạn sẽ thấy ở đây.
                     </p>
                   </div>
                 )}
@@ -301,7 +456,7 @@ const NotificationDropdown = () => {
             key="view-all"
             className="p-0 text-center text-sm font-bold text-primary hover:text-primary-600 hover:bg-primary-50/50 rounded-xl transition-colors"
           >
-            <span className="block py-2.5">Xem tất cả</span>
+            <span className="block py-2.5">Xem tất cả thông báo</span>
           </DropdownItem>
         </DropdownSection>
       </DropdownMenu>
