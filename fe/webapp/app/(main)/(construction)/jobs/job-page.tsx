@@ -58,7 +58,6 @@ const JobPage = () => {
     return <p>Không thể tải danh sách công việc</p>;
   }
 
-  // Chỉ IT_STAFF mới được truy cập trang này
   if (!isITStaff) {
     return (
       <div className="flex items-center justify-center min-h-screen">

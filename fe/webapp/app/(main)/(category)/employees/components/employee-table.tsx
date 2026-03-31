@@ -54,13 +54,13 @@ export const EmployeeTable = ({
         }
 
         const res = await authFetch(
-          `/api/organization/departments?${params.toString()}`,
+          `/api/auth/employees?${params.toString()}`,
         );
 
         if (!res.ok) {
           CallToast({
             title: "Lỗi",
-            message: "Không thể tải danh sách phòng ban",
+            message: "Không thể tải danh sách nhân viên",
             color: "danger",
           });
           return;
