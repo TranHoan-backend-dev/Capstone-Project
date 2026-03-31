@@ -9,6 +9,7 @@ import { Card, CardBody } from "@heroui/react";
 import { BusinessPageFormProps } from "@/types";
 import { authFetch } from "@/utils/authFetch";
 import { useEmployeeProfile } from "@/hooks/useEmployeeProfile";
+import { useProfile } from "@/hooks/useLogin";
 
 export const BusinessPageForm = ({
   initialData,
@@ -20,7 +21,7 @@ export const BusinessPageForm = ({
   const [name, setName] = useState(initialData?.name || "");
   const [phone, setPhone] = useState(initialData?.phone || "");
   const [submitLoading, setSubmitLoading] = useState(false);
-  const { profile } = useEmployeeProfile();
+  const { profile } = useProfile();
 
   useEffect(() => {
     setName(initialData?.name || "");

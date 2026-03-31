@@ -9,6 +9,7 @@ import { StatusBar } from "./status-bar";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import {
   DeleteIcon,
+  PencilIcon,
   RedIconColor,
   TitleDarkColor,
 } from "@/config/chip-and-icon";
@@ -19,6 +20,8 @@ import {
 import { NEW_INSTALLATION_LOOKUP_COLUMN } from "@/config/table-columns";
 import { authFetch } from "@/utils/authFetch";
 import { formatDate1 } from "@/utils/format";
+import { AssignConstructionPopup } from "./assign-construction-popup";
+import CustomButton from "@/components/ui/custom/CustomButton";
 
 interface ResultsTableProps {
   keyword?: string;
@@ -44,7 +47,17 @@ export const RelatedOrdersTable = ({
     field: "",
     direction: "desc",
   });
-
+  const [assignPopup, setAssignPopup] = useState<{
+    isOpen: boolean;
+    formCode: string;
+    formNumber: string;
+    customerName: string;
+  }>({
+    isOpen: false,
+    formCode: "",
+    formNumber: "",
+    customerName: "",
+  });
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
@@ -79,7 +92,7 @@ export const RelatedOrdersTable = ({
 
         const mapped = items.map(
           (item: NewInstallationLookupResponse, index: number) => {
-            const { stage, status } = getStageAndStatus(item.status);
+            const { stage, status, canAssign } = getStageAndStatus(item.status);
             return {
               id: item.formCode,
               stt: (page - 1) * pageSize + index + 1,
@@ -89,6 +102,8 @@ export const RelatedOrdersTable = ({
               address: item.address,
               stage: stage.toLowerCase(),
               status: status?.toLowerCase() ?? "pending",
+              canAssign: canAssign,
+              rawStatus: item.status,
             };
           },
         );
@@ -128,6 +143,14 @@ export const RelatedOrdersTable = ({
       color: "danger" as const,
     },
   ];
+  const handleOpenAssignPopup = (item: any) => {
+    setAssignPopup({
+      isOpen: true,
+      formCode: item.id,
+      formNumber: item.formNumber,
+      customerName: item.customerName,
+    });
+  };
 
   const mapStatus = (status: string) => {
     switch (status) {
@@ -146,13 +169,21 @@ export const RelatedOrdersTable = ({
 
   const getStageAndStatus = (statusObj: any) => {
     if (!statusObj) {
-      return { stage: "registration", status: "pending" };
+      return { stage: "registration", status: "pending", canAssign: false };
     }
+
+    // Kiểm tra điều kiện để hiển thị icon giao thi công
+    const isReadyForConstruction =
+      statusObj.registration === "APPROVED" &&
+      statusObj.estimate === "APPROVED" &&
+      statusObj.contract === "APPROVED" &&
+      statusObj.construction === "PROCESSING";
 
     if (statusObj.registration !== "APPROVED") {
       return {
         stage: "registration",
         status: mapStatus(statusObj.registration),
+        canAssign: false,
       };
     }
 
@@ -160,6 +191,7 @@ export const RelatedOrdersTable = ({
       return {
         stage: "estimate",
         status: mapStatus(statusObj.estimate),
+        canAssign: false,
       };
     }
 
@@ -167,6 +199,7 @@ export const RelatedOrdersTable = ({
       return {
         stage: "contract",
         status: mapStatus(statusObj.contract),
+        canAssign: false,
       };
     }
 
@@ -174,12 +207,16 @@ export const RelatedOrdersTable = ({
       return {
         stage: "construction",
         status: mapStatus(statusObj.construction),
+        canAssign: true,
       };
     }
 
     return {
       stage: "construction",
       status: "approved",
+      // stage: "contract",
+      // status: mapStatus(statusObj.construction),
+      canAssign: isReadyForConstruction,
     };
   };
 
@@ -216,7 +253,20 @@ export const RelatedOrdersTable = ({
       case "actions":
         return (
           <div className="flex items-center gap-2 justify-center">
-            {actionButtons.map((action, idx) => (
+            {item.canAssign && (
+              <Tooltip closeDelay={0} color="primary" content="Giao thi công">
+                <CustomButton
+                  isIconOnly
+                  className="bg-transparent text-primary-500 data-[hover=true]:bg-primary-50"
+                  size="lg"
+                  variant="light"
+                  onPress={() => handleOpenAssignPopup(item)}
+                >
+                  <PencilIcon className="w-5 h-5" />
+                </CustomButton>
+              </Tooltip>
+            )}
+            {/* {actionButtons.map((action, idx) => (
               <Tooltip
                 key={idx}
                 closeDelay={0}
@@ -232,7 +282,7 @@ export const RelatedOrdersTable = ({
                   <action.icon className="w-5 h-5" />
                 </Button>
               </Tooltip>
-            ))}
+            ))} */}
           </div>
         );
       default:
@@ -241,21 +291,40 @@ export const RelatedOrdersTable = ({
   };
 
   return (
-    <GenericDataTable
-      isLoading={loading}
-      title="Danh sách đơn"
-      columns={NEW_INSTALLATION_LOOKUP_COLUMN}
-      isCollapsible
-      data={data}
-      renderCellAction={renderCell}
-      headerSummary={`${totalItems}`}
-      paginationProps={{
-        total: totalPages,
-        page: page,
-        onChange: setPage,
-        summary: `${data.length}`,
-      }}
-      onSortChange={handleSortChange}
-    />
+    <>
+      <GenericDataTable
+        isLoading={loading}
+        title="Danh sách đơn"
+        columns={NEW_INSTALLATION_LOOKUP_COLUMN}
+        isCollapsible
+        data={data}
+        renderCellAction={renderCell}
+        headerSummary={`${totalItems}`}
+        paginationProps={{
+          total: totalPages,
+          page: page,
+          onChange: setPage,
+          summary: `${data.length}`,
+        }}
+        onSortChange={handleSortChange}
+      />
+      <AssignConstructionPopup
+        isOpen={assignPopup.isOpen}
+        onClose={() =>
+          setAssignPopup({
+            isOpen: false,
+            formCode: "",
+            formNumber: "",
+            customerName: "",
+          })
+        }
+        onSuccess={() => {
+          setPage(1);
+        }}
+        formCode={assignPopup.formCode}
+        formNumber={assignPopup.formNumber}
+        customerName={assignPopup.customerName}
+      />
+    </>
   );
 };

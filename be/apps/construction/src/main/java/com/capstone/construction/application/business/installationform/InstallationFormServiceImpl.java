@@ -76,6 +76,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       .receivedFormAt(LocalDate.parse(request.receivedFormAt()))
       .scheduleSurveyAt(LocalDate.parse(request.scheduleSurveyAt()))
       .numberOfHousehold(request.numberOfHousehold())
+      .citizenIdentificationProvideLocation(request.citizenIdentificationProvideLocation())
       .householdRegistrationNumber(request.householdRegistrationNumber())
       .network(getNetwork(request.networkId()))
       .createdBy(userId)

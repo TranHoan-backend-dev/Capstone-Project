@@ -563,7 +563,6 @@ export const getAssignedForms = (
   );
 };
 
-
 export const getAllSettlements = (
   accessToken: string,
   page: number,
@@ -819,3 +818,88 @@ export const signEstimate = (
       },
     },
   );
+
+export const getAllConstruction = (
+  accessToken: string,
+  page: number,
+  size: number,
+  keyword?: string | null,
+  fromDate?: string,
+  toDate?: string,
+) =>
+  axios.get(`${API_GATEWAY_URL}/construction/construction`, {
+    params: {
+      page,
+      size,
+      keyword,
+      fromDate,
+      toDate,
+    },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+export const createAndAssignToConstructionCaptain = (
+  accessToken: string,
+  id: string,
+  formCode: string,
+  formNumber: string,
+  contractId: string,
+) =>
+  axios.patch(
+    `${API_GATEWAY_URL}/construction/construction/${id}`,
+    { formCode, formNumber, contractId },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+
+export const updateConstructionStaff = (
+  accessToken: string,
+  id: string,
+  empId: string,
+) => {
+  return axios.patch(
+    `${API_GATEWAY_URL}/construction/construction/pending-requests/${id}/${empId}`, // Fixed URL
+    null,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+};
+
+export const reviewConstruction = (
+  accessToken: string,
+  id: string,
+  status: boolean,
+) => {
+  return axios.post(
+    `${API_GATEWAY_URL}/construction/construction/review/${id}/${status}`,
+    null,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+};
+
+// export const reviewConstruction = (
+//   accessToken: string,
+//   id: string,
+//   status: string,
+// ) => {
+//   return axios.post(
+//     `${API_GATEWAY_URL}/construction/construction/review/${id}/${status}`,
+//     {
+//       headers: {
+//         Authorization: `Bearer ${accessToken}`,
+//       },
+//     },
+//   );
+// };

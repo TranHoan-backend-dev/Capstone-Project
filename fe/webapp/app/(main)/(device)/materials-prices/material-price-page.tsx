@@ -9,6 +9,7 @@ import { FilterSection } from "./components/filter-section";
 import { MaterialPriceFilter, MaterialPriceItem } from "@/types";
 import { MaterialPriceForm } from "./components/material-price-form";
 import { Modal, ModalContent } from "@heroui/react";
+import { useProfile } from "@/hooks/useLogin";
 
 const MaterialPricePage = () => {
   const [filter, setFilter] = useState<MaterialPriceFilter>({});
@@ -17,7 +18,7 @@ const MaterialPricePage = () => {
   const [editingItem, setEditingItem] = useState<MaterialPriceItem | null>(
     null,
   );
-  const { profile, loading } = useEmployeeProfile();
+  const { profile, loading } = useProfile();
   const handleReload = () => setReloadKey((prev) => prev + 1);
   const handleAddNew = () => {
     setEditingItem(null);

@@ -1,7 +1,7 @@
-import { useEmployeeProfile } from "./useEmployeeProfile";
+import { useProfile } from "./useLogin";
 
 export const useHasRole = (requiredRole: string) => {
-  const { profile, loading } = useEmployeeProfile();
+  const { profile, loading } = useProfile();
 
   const hasRole = profile?.role === requiredRole;
 
@@ -9,7 +9,7 @@ export const useHasRole = (requiredRole: string) => {
 };
 
 export const useHasAnyRole = (requiredRoles: string[]) => {
-  const { profile, loading } = useEmployeeProfile();
+  const { profile, loading } = useProfile();
 
   const hasRole = profile?.role ? requiredRoles.includes(profile.role) : false;
 

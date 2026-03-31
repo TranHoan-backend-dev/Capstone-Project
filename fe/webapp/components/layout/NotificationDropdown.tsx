@@ -11,6 +11,7 @@ import {
   Avatar,
   ScrollShadow,
   Button,
+  Skeleton,
 } from "@heroui/react";
 import {
   BellIcon,
@@ -20,6 +21,16 @@ import {
   ShieldCheckIcon,
   CurrencyDollarIcon,
 } from "@heroicons/react/24/outline";
+import { formatRelativeTime } from "@/utils/notification-helper";
+
+interface NotificationResponseDto {
+  notificationId: string;
+  title: string;
+  message: string;
+  link?: string;
+  status: boolean; // false = unread, true = read
+  createdAt: string;
+}
 
 interface Notification {
   id: string;
@@ -42,31 +53,80 @@ const NotificationDropdown = () => {
   const [filter, setFilter] = useState<"all" | "unread">("all");
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalFound, setTotalFound] = useState(0);
+  const [hasError, setHasError] = useState(false);
 
   // Fetch notifications từ API
-  const fetchNotifications = async (pageNum: number = 1, append: boolean = false) => {
+  // const fetchNotifications = async (pageNum: number = 1, append: boolean = false) => {
+  //   try {
+  //     setIsLoading(true);
+  //     const response = await fetch(`/api/notifications?page=${pageNum}&limit=10`);
+  //     const data = await response.json();
+
+  //     if (response.ok) {
+  //       const newNotifications = data.notifications || [];
+  //       if (append) {
+  //         setNotifications(prev => [...prev, ...newNotifications]);
+  //       } else {
+  //         setNotifications(newNotifications);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("Lỗi lấy thông báo:", error);
+  //     // Fallback to mock data nếu API chưa có
+  //     setNotifications(getMockNotifications());
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+  const fetchNotifications = async (
+    page: number = 0,
+    append: boolean = false,
+  ) => {
     try {
-      setIsLoading(true);
-      const response = await fetch(`/api/notifications?page=${pageNum}&limit=10`);
-      const data = await response.json();
-      
-      if (response.ok) {
-        const newNotifications = data.notifications || [];
-        if (append) {
-          setNotifications(prev => [...prev, ...newNotifications]);
-        } else {
-          setNotifications(newNotifications);
-        }
+      if (page === 0) {
+        setIsInitialLoading(true);
+      } else {
+        setIsLoadingMore(true);
       }
+      setHasError(false);
+
+      const response = await fetch(
+        `/api/notification?page=${page}&size=20&sort=createdAt,desc`,
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch notifications");
+      }
+
+      const result = await response.json();
+      const notificationData = result.data as {
+        items: NotificationResponseDto[];
+        requestedSize: number;
+        totalFound: number;
+      };
+
+      const uiNotifications = notificationData.items.map(mapNotificationToUI);
+
+      if (append) {
+        setNotifications((prev) => [...prev, ...uiNotifications]);
+      } else {
+        setNotifications(uiNotifications);
+      }
+
+      setTotalFound(notificationData.totalFound);
+      setCurrentPage(page);
     } catch (error) {
-      console.error("Lỗi lấy thông báo:", error);
-      // Fallback to mock data nếu API chưa có
-      setNotifications(getMockNotifications());
+      console.error("Error fetching notifications:", error);
+      setHasError(true);
     } finally {
-      setIsLoading(false);
+      setIsInitialLoading(false);
+      setIsLoadingMore(false);
     }
   };
-
   // Mock data cho development
   const getMockNotifications = (): Notification[] => {
     return [
@@ -82,8 +142,8 @@ const NotificationDropdown = () => {
           deviceInfo: "Chrome 120.0, Windows 11",
           ipAddress: "192.168.1.100",
           loginTime: new Date().toLocaleString(),
-          location: "Hà Nội, Việt Nam"
-        }
+          location: "Hà Nội, Việt Nam",
+        },
       },
       {
         id: "2",
@@ -106,8 +166,8 @@ const NotificationDropdown = () => {
           deviceInfo: "Safari trên iPhone 14",
           ipAddress: "183.81.123.45",
           loginTime: "1 giờ trước",
-          location: "TP. Hồ Chí Minh"
-        }
+          location: "TP. Hồ Chí Minh",
+        },
       },
       {
         id: "4",
@@ -139,8 +199,8 @@ const NotificationDropdown = () => {
           deviceInfo: "Firefox trên macOS",
           ipAddress: "10.0.0.105",
           loginTime: "Hôm qua",
-          location: "Đà Nẵng"
-        }
+          location: "Đà Nẵng",
+        },
       },
     ];
   };
@@ -151,7 +211,7 @@ const NotificationDropdown = () => {
     const interval = setInterval(() => {
       fetchNotifications(1, false);
     }, 30000);
-    
+
     return () => clearInterval(interval);
   }, []);
 
@@ -162,12 +222,10 @@ const NotificationDropdown = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ notificationId }),
       });
-      
+
       // Update local state
-      setNotifications(prev =>
-        prev.map(n =>
-          n.id === notificationId ? { ...n, isRead: true } : n
-        )
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === notificationId ? { ...n, isRead: true } : n)),
       );
     } catch (error) {
       console.error("Lỗi đánh dấu đã đọc:", error);
@@ -180,14 +238,33 @@ const NotificationDropdown = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });
-      
-      setNotifications(prev =>
-        prev.map(n => ({ ...n, isRead: true }))
-      );
+
+      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
     } catch (error) {
       console.error("Lỗi đánh dấu tất cả:", error);
     }
   };
+  /**
+   * Convert backend notification to UI format
+   */
+  const mapNotificationToUI = (dto: NotificationResponseDto): Notification => {
+    return {
+      id: dto.notificationId,
+      sender: dto.title, // Use title as sender
+      message: dto.message,
+      time: formatRelativeTime(dto.createdAt),
+      isRead: dto.status, // true = read, so isRead = status
+      avatar: "", // No avatar from backend
+      type: "system", // All notifications from backend are system type
+    };
+  };
+
+  /**
+   * Initial load
+   */
+  useEffect(() => {
+    fetchNotifications(0);
+  }, []);
 
   const filteredNotifications =
     filter === "all" ? notifications : notifications.filter((n) => !n.isRead);
@@ -199,11 +276,12 @@ const NotificationDropdown = () => {
 
     if (
       scrollHeight - scrollTop <= clientHeight + 10 &&
-      !isLoading &&
+      !isLoadingMore &&
+      !isInitialLoading &&
       filter === "all"
     ) {
       // Load more
-      setPage(prev => prev + 1);
+      setPage((prev) => prev + 1);
       fetchNotifications(page + 1, true);
     }
   };
@@ -242,27 +320,40 @@ const NotificationDropdown = () => {
       return (
         <div>
           <p className="text-[14px] leading-[1.3]">
-            <span className="font-bold text-foreground">{notification.sender}</span>
-            {" "}
-            <span className={!notification.isRead ? "font-bold" : "font-medium"}>
+            <span className="font-bold text-foreground">
+              {notification.sender}
+            </span>{" "}
+            <span
+              className={!notification.isRead ? "font-bold" : "font-medium"}
+            >
               {notification.message}
             </span>
           </p>
           {notification.metadata.location && (
             <p className="text-[11px] text-default-400 mt-1">
-              📍 {notification.metadata.location} • {notification.metadata.deviceInfo}
+              📍 {notification.metadata.location} •{" "}
+              {notification.metadata.deviceInfo}
             </p>
           )}
         </div>
       );
     }
-    
+
     return (
-      <p className={`text-[14px] leading-[1.3] ${!notification.isRead ? "font-bold text-foreground" : "text-default-600 font-medium"}`}>
+      <p
+        className={`text-[14px] leading-[1.3] ${!notification.isRead ? "font-bold text-foreground" : "text-default-600 font-medium"}`}
+      >
         <span className="text-foreground">{notification.sender}</span>{" "}
         {notification.message}
       </p>
     );
+    // Check if there are more notifications to load
+    const nextPage = currentPage + 1;
+    const totalPages = Math.ceil(totalFound / 20);
+
+    if (nextPage < totalPages) {
+      fetchNotifications(nextPage, true); // Append mode
+    }
   };
 
   return (
@@ -385,60 +476,86 @@ const NotificationDropdown = () => {
               onScroll={handleScroll}
             >
               <div className="flex flex-col py-2 px-2">
-                {filteredNotifications.map((n) => (
-                  <div
-                    key={n.id}
-                    className={`flex items-start gap-3 px-3 py-3 cursor-pointer transition-all rounded-xl relative group hover:bg-default-50 mb-1`}
-                    onClick={() => handleMarkAsRead(n.id)}
-                  >
-                    <div className="relative shrink-0">
-                      <Avatar
-                        className={
-                          !n.avatar
-                            ? `${getIconBgColor(n.type)} text-foreground font-bold`
-                            : "border border-divider"
-                        }
-                        icon={!n.avatar ? getNotificationIcon(n.type) : undefined}
-                        name={n.sender}
-                        size="lg"
-                        src={n.avatar}
-                      />
-                      {(n.type === "device_login" || n.type === "security") && (
-                        <div className="absolute -bottom-1 -right-1 rounded-full p-1 bg-red-500 border-2 border-background">
-                          <ShieldCheckIcon className="w-2.5 h-2.5 text-white" />
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0 pr-4">
-                      {formatMessage(n)}
-                      <p
-                        className={`text-[12px] mt-1 ${!n.isRead ? "text-primary font-bold" : "text-default-400 font-medium"}`}
-                      >
-                        {n.time}
-                      </p>
-                    </div>
-                    {!n.isRead && (
-                      <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                        <div className="w-3 h-3 bg-primary rounded-full animate-pulse" />
+                {isInitialLoading ? (
+                  // Loading skeletons
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <div
+                      key={`skeleton-${i}`}
+                      className="flex items-center gap-3 px-3 py-3 mb-1"
+                    >
+                      <Skeleton className="w-12 h-12 rounded-full" />
+                      <div className="flex-1 space-y-1">
+                        <Skeleton className="w-3/4 h-4 rounded" />
+                        <Skeleton className="w-1/2 h-3 rounded" />
                       </div>
-                    )}
-                  </div>
-                ))}
-                {filteredNotifications.length === 0 && (
+                    </div>
+                  ))
+                ) : filteredNotifications.length === 0 ? (
+                  // Empty state
                   <div className="py-20 text-center text-default-400 px-4">
                     <BellIcon className="w-12 h-12 mx-auto opacity-20 mb-3" />
                     <p className="font-bold text-default-500">
                       Không có thông báo mới
                     </p>
                     <p className="text-sm">
-                      Khi có đăng nhập từ thiết bị lạ hoặc tin nhắn mới, bạn sẽ thấy ở đây.
+                      Khi có bình luận hoặc tin nhắn, bạn sẽ thấy ở đây.
                     </p>
                   </div>
-                )}
-                {isLoading && (
-                  <div className="p-6 text-center">
-                    <div className="inline-block w-6 h-6 border-[3px] border-primary border-t-transparent rounded-full animate-spin" />
-                  </div>
+                ) : (
+                  // Notification list
+                  <>
+                    {filteredNotifications.map((n) => (
+                      <div
+                        key={n.id}
+                        className={`flex items-center gap-3 px-3 py-3 cursor-pointer transition-all rounded-xl relative group hover:bg-default-50 mb-1`}
+                      >
+                        <div className="relative shrink-0">
+                          <Avatar
+                            className={
+                              !n.avatar
+                                ? "bg-primary-50 text-primary font-bold"
+                                : "border border-divider"
+                            }
+                            name={n.sender}
+                            size="lg"
+                            src={n.avatar}
+                          />
+                          <div
+                            className={`absolute -bottom-1 -right-1 rounded-full p-1 border-2 border-background ${n.type === "system" ? "bg-blue-600" : n.type === "billing" ? "bg-green-600" : "bg-orange-600"}`}
+                          >
+                            {n.type === "message" ? (
+                              <div className="w-2.5 h-2.5 bg-white rounded-full" />
+                            ) : (
+                              <CheckCircleIcon className="w-2.5 h-2.5 text-white" />
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex-1 min-w-0 pr-4">
+                          <p
+                            className={`text-[14px] leading-[1.3] ${!n.isRead ? "font-bold text-foreground" : "text-default-600 font-medium"}`}
+                          >
+                            <span className="text-foreground">{n.sender}</span>{" "}
+                            {n.message}
+                          </p>
+                          <p
+                            className={`text-[12px] mt-1 ${!n.isRead ? "text-primary font-bold" : "text-default-400 font-medium"}`}
+                          >
+                            {n.time}
+                          </p>
+                        </div>
+                        {!n.isRead && (
+                          <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                            <div className="w-3 h-3 bg-primary rounded-full" />
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                    {isLoadingMore && (
+                      <div className="p-6 text-center">
+                        <div className="inline-block w-6 h-6 border-[3px] border-primary border-t-transparent rounded-full animate-spin" />
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </ScrollShadow>
@@ -463,5 +580,4 @@ const NotificationDropdown = () => {
     </Dropdown>
   );
 };
-
 export default NotificationDropdown;

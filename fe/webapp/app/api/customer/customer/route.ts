@@ -104,20 +104,10 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    console.log("Request body:", body); // Log để debug
-
     const response = await createCustomer(accessToken, body);
 
     return NextResponse.json(response.data, { status: 201 });
   } catch (error: any) {
-    // Log chi tiết lỗi
-    console.error("API Error:", {
-      message: error.message,
-      response: error.response?.data,
-      status: error.response?.status,
-    });
-
-    // Trả về lỗi chi tiết hơn
     return NextResponse.json(
       {
         message:

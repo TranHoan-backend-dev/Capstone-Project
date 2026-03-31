@@ -102,11 +102,11 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
     var endDate = Utils.parseTo(request.to());
     var specification = InstallationFormRepository.search(
       request.keyword(), startDate, endDate,
-      ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING);
+      ProcessingStatus.APPROVED, ProcessingStatus.PENDING_FOR_APPROVAL);
 
     var response = (startDate != null || endDate != null || (request.keyword() != null && !request.keyword().isBlank()))
       ? ifRepo.findAll(specification, pageable)
-      : ifRepo.findByStatusContractAndStatusConstruction(ProcessingStatus.APPROVED.name(), ProcessingStatus.PROCESSING.name(),
+      : ifRepo.findByStatusContractAndStatusConstruction(ProcessingStatus.APPROVED.name(), ProcessingStatus.PENDING_FOR_APPROVAL.name(),
       pageable);
     var result = response.getContent()
       .stream()

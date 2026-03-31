@@ -9,13 +9,14 @@ import { HamletTable } from "./components/hamlet-table";
 import { HamletFilter, HamletItem } from "@/types";
 import { Modal, ModalContent } from "@heroui/react";
 import { useEmployeeProfile } from "@/hooks/useEmployeeProfile";
+import { useProfile } from "@/hooks/useLogin";
 
 const HamletPage = () => {
   const [filter, setFilter] = useState<HamletFilter>({});
   const [showAddForm, setShowAddForm] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
   const [editingItem, setEditingItem] = useState<HamletItem | null>(null);
-  const { profile, loading } = useEmployeeProfile();
+  const { profile, loading } = useProfile();
 
   const handleReload = () => setReloadKey((prev) => prev + 1);
   const handleAddNew = () => {

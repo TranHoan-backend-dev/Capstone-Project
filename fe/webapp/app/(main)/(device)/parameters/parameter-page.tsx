@@ -9,13 +9,14 @@ import { ParameterForm } from "./components/parameter-form";
 import { ParameterItem } from "@/types";
 import { Modal, ModalContent } from "@heroui/react";
 import { useEmployeeProfile } from "@/hooks/useEmployeeProfile";
+import { useProfile } from "@/hooks/useLogin";
 
 const ParameterPage = () => {
   const [filter, setFilter] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
   const [editingItem, setEditingItem] = useState<ParameterItem | null>(null);
-  const { profile, loading } = useEmployeeProfile();
+  const { profile, loading } = useProfile();
 
   const handleReload = () => setReloadKey((prev) => prev + 1);
 
