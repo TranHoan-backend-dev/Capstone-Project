@@ -29,3 +29,10 @@ export type UpdateAccountContext = {
 export type UpdatePasswordContext = {
   fullName: string,
 }
+
+export type NewDeviceLoginContext = {
+  name: string,
+  deviceName: string,
+  loginTime: string,
+  ipAddress: string,
+}

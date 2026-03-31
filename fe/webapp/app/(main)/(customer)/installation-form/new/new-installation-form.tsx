@@ -19,6 +19,7 @@ import {
   validateRequiredFields,
 } from "@/utils/validation";
 import { CallToast } from "@/components/ui/CallToast";
+import { authFetch } from "@/utils/authFetch";
 
 const NewInstallationForm = () => {
   const [keyword, setKeyword] = useState("");
@@ -153,7 +154,7 @@ const NewInstallationForm = () => {
             : "",
       };
 
-      const res = await fetch("/api/construction/installation-forms", {
+      const res = await authFetch("/api/construction/installation-forms", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

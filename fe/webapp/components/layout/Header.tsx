@@ -24,6 +24,8 @@ import NotificationDropdown from "./NotificationDropdown";
 import { CallToast } from "../ui/CallToast";
 import axios from "axios";
 import { useProfile } from "@/hooks/useLogin";
+import { useEmployeeProfile } from "@/hooks/useEmployeeProfile";
+import { filterNavItems, siteConfig } from "@/config/site";
 
 export interface SubMenuItemChild {
   key: string;
@@ -51,12 +53,15 @@ interface NavigationProps {
   onUserMenuAction?: (key: string) => void;
 }
 
-const Header = ({ menuItems }: NavigationProps) => {
+const Header = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const { profile } = useProfile();
+  const filteredMenu = profile?.role
+    ? filterNavItems(siteConfig.navItems, profile?.role)
+    : [];
 
   const isMenuItemActive = (item: MenuItem) => {
     if (item.href && pathname === item.href) {
@@ -140,7 +145,7 @@ const Header = ({ menuItems }: NavigationProps) => {
           </NavbarBrand>
 
           <div className="hidden md:flex items-center gap-6 font-bold">
-            {menuItems.map((item) => {
+            {filteredMenu.map((item) => {
               const isActive = isMenuItemActive(item);
 
               if (item.items && item.items.length > 0) {
@@ -252,7 +257,7 @@ const Header = ({ menuItems }: NavigationProps) => {
 
       <Sidebar
         isOpen={sidebarOpen}
-        menuItems={menuItems}
+        menuItems={filteredMenu}
         onClose={() => setSidebarOpen(false)}
       />
     </>

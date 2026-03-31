@@ -31,6 +31,9 @@ node_modules
 /libpeerconnection.log
 npm-debug.log
 yarn-error.log
+venv/
+__pycache__/
+*.pyc
 testem.log
 /typings
 
@@ -48,3 +51,5 @@ build/
 .env
 
 error.log
+
+**.iml

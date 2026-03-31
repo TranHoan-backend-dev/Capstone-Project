@@ -86,6 +86,7 @@ export interface SettlementRequest {
 }
 
 export interface SettlementResponse {
+  formNumber: string;
   address: string;
   connectionFee: number;
   createdAt: string;
@@ -93,8 +94,7 @@ export interface SettlementResponse {
   note: string;
   registrationAt: string;
   settlementId: string;
-  status: string;
+  status: string[];
   updatedAt: string;
   formCode: string;
-  formNumber: string;
 }

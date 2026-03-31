@@ -165,3 +165,7 @@ client.test("Status is 400", function() {
   client.assert(response.status === 400);
 });
 %}
+
+###
+GET {{baseUrl}}/construction
+Authorization: Bearer {{access_token}}

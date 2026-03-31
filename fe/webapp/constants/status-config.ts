@@ -3,8 +3,8 @@ import type { OrderStatus, OrderStage } from "@/types";
 export const STAGES: { key: OrderStage; label: string }[] = [
   { key: "registration", label: "Đăng ký" },
   { key: "estimate", label: "Dự toán" },
-  { key: "construction", label: "Thi công" },
   { key: "contract", label: "Hợp đồng" },
+  { key: "construction", label: "Thi công" },
 ];
 
 export const STATUS_LABEL: Record<OrderStatus, string> = {

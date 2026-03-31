@@ -8,6 +8,7 @@ import com.capstone.construction.application.business.estimate.CostEstimateServi
 import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.construction.application.dto.request.estimate.AssignTheSignificanceRequest;
 import com.capstone.construction.application.dto.request.estimate.CreateRequest;
+import com.capstone.construction.application.dto.request.estimate.EstimateFilterRequest;
 import com.capstone.construction.application.dto.request.estimate.SignRequest;
 import com.capstone.construction.application.dto.request.estimate.UpdateRequest;
 import com.capstone.construction.application.dto.response.estimate.CostEstimateResponse;
@@ -101,7 +102,7 @@ public class CostEstimateUseCase {
     return estSrv.getEstimateById(id);
   }
 
-  public PageResponse<CostEstimateResponse> getAllEstimates(Pageable pageable, BaseFilterRequest request) {
+  public PageResponse<CostEstimateResponse> getAllEstimates(Pageable pageable, EstimateFilterRequest request) {
     return estSrv.getAllEstimates(pageable, request);
   }
 

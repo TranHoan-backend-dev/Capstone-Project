@@ -72,15 +72,15 @@ public class ConstructionRequestUseCase {
   public void approveTheConstruction(String id, Boolean approved) {
     constructionRequestService.approveTheConstruction(id, approved);
     var constructionRequest = constructionRequestService.getById(id);
-    var installationForm = ifSrv.getByFormCodeAndFormNumber(constructionRequest.formCode(), constructionRequest.formNumber());
+    var installationForm = ifSrv.getByFormCodeAndFormNumber(constructionRequest.installationForm().formCode(), constructionRequest.installationForm().formNumber());
     var constructedBy = installationForm.constructedBy();
 
     if (approved) {
       // neu duoc phe duyet, gui su kien cho nhan vien Xay lap khac de ho lap quyet toan
       var routingKey = QUEUE_NAME + CONSTRUCTION_REQUEST_PREFIX + APPROVED_ACTION;
       messageProducer.send(routingKey, new ApprovedEvent(
-        constructionRequest.formCode(),
-        constructionRequest.formNumber(),
+        constructionRequest.installationForm().formCode(),
+        constructionRequest.installationForm().formNumber(),
         employeeService.getEmployeeNameById(constructedBy).data().toString()
       ));
     }
