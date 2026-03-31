@@ -157,20 +157,6 @@ export const siteConfig = {
       ],
     },
 
-    // Hợp đồng
-    {
-      key: "contract",
-      label: "Hợp đồng",
-      items: [
-        {
-          key: "new-contract",
-          label: "Lập hợp đồng cấp nước mới",
-          href: "/water-supply-contract",
-          roles: ["it_staff", "order_receiving_staff"],
-        },
-      ],
-    },
-
     // Khách hàng
     {
       key: "customer",
@@ -352,6 +338,20 @@ export const siteConfig = {
       ],
     },
 
+    // Hợp đồng
+    {
+      key: "contract",
+      label: "Hợp đồng",
+      items: [
+        {
+          key: "new-contract",
+          label: "Lập hợp đồng cấp nước mới",
+          href: "/water-supply-contract",
+          roles: ["it_staff", "order_receiving_staff"],
+        },
+      ],
+    },
+    
     // Ghi chỉ số & Hóa đơn
     {
       key: "billing",
