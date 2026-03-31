@@ -9,6 +9,7 @@ import { DepartmentTable } from "./components/department-table";
 import { DepartmentFilter, DepartmentItem } from "@/types";
 import { Modal, ModalContent } from "@heroui/react";
 import { useEmployeeProfile } from "@/hooks/useEmployeeProfile";
+import { useProfile } from "@/hooks/useLogin";
 
 const DepartmentPage = () => {
   const [filter, setFilter] = useState<DepartmentFilter>({
@@ -17,7 +18,7 @@ const DepartmentPage = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
   const [editingItem, setEditingItem] = useState<DepartmentItem | null>(null);
-  const { profile, loading } = useEmployeeProfile();
+  const { profile, loading } = useProfile();
 
   const handleReload = () => setReloadKey((prev) => prev + 1);
   const handleAddNew = () => {

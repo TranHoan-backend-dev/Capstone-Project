@@ -9,13 +9,14 @@ import { LateralForm } from "./components/lateral-form";
 import { LateralFilter, LateralItem } from "@/types";
 import { Modal, ModalContent } from "@heroui/react";
 import { useEmployeeProfile } from "@/hooks/useEmployeeProfile";
+import { useProfile } from "@/hooks/useLogin";
 
 const LateralPage = () => {
   const [filter, setFilter] = useState<LateralFilter>({});
   const [showAddForm, setShowAddForm] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
   const [editingItem, setEditingItem] = useState<LateralItem | null>(null);
-  const { profile, loading } = useEmployeeProfile();
+  const { profile, loading } = useProfile();
 
   const handleReload = () => setReloadKey((prev) => prev + 1);
   const handleAddNew = () => {

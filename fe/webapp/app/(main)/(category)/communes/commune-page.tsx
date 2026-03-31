@@ -9,6 +9,7 @@ import { CommuneForm } from "./components/commune-form";
 import { CommuneFilter, CommuneItem } from "@/types";
 import { Modal, ModalContent } from "@heroui/react";
 import { useEmployeeProfile } from "@/hooks/useEmployeeProfile";
+import { useProfile } from "@/hooks/useLogin";
 
 const CommunePage = () => {
   const [keyword, setKeyword] = useState<CommuneFilter>({
@@ -19,7 +20,7 @@ const CommunePage = () => {
   const [reloadKey, setReloadKey] = useState(0);
   const [editingItem, setEditingItem] = useState<CommuneItem | null>(null);
   const handleReload = () => setReloadKey((prev) => prev + 1);
-  const { profile, loading } = useEmployeeProfile();
+  const { profile, loading } = useProfile();
 
   const handleAddNew = () => {
     setEditingItem(null);

@@ -10,10 +10,11 @@ import { Modal, ModalContent } from "@heroui/react";
 import { JobFilter, JobItem } from "@/types";
 import { JobForm } from "./components/job-form";
 import { JobsTable } from "./components/job-table";
+import { useProfile } from "@/hooks/useLogin";
 
 
 const JobPage = () => {
-  const { profile, loading: profileLoading } = useEmployeeProfile();
+  const { profile, loading: profileLoading } = useProfile();
   const { isITStaff, loading: roleLoading } = useIsITStaff();
   const loading = profileLoading || roleLoading;
   const [keyword, setKeyword] = useState<JobFilter>({

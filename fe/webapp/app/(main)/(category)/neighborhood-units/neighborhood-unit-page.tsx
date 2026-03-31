@@ -9,6 +9,7 @@ import { NeighborhoodUnitForm } from "./components/neighborhood-unit-form";
 import { NeighborhoodUnitTable } from "./components/neighborhood-unit-table";
 import { Modal, ModalContent } from "@heroui/react";
 import { useEmployeeProfile } from "@/hooks/useEmployeeProfile";
+import { useProfile } from "@/hooks/useLogin";
 
 const NeighborhoodUnitPage = () => {
   const [filter, setFilter] = useState<NeighborhoodUnitFilter>({});
@@ -17,7 +18,7 @@ const NeighborhoodUnitPage = () => {
   const [editingItem, setEditingItem] = useState<NeighborhoodUnitItem | null>(
     null,
   );
-  const { profile, loading } = useEmployeeProfile();
+  const { profile, loading } = useProfile();
 
   const handleReload = () => setReloadKey((prev) => prev + 1);
   const handleAddNew = () => {

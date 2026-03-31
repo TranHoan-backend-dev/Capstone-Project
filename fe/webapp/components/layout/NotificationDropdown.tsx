@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dropdown,
   DropdownTrigger,
@@ -11,12 +11,23 @@ import {
   Avatar,
   ScrollShadow,
   Button,
+  Skeleton,
 } from "@heroui/react";
 import {
   BellIcon,
   CheckCircleIcon,
   EllipsisHorizontalIcon,
 } from "@heroicons/react/24/outline";
+import { formatRelativeTime } from "@/utils/notification-helper";
+
+interface NotificationResponseDto {
+  notificationId: string;
+  title: string;
+  message: string;
+  link?: string;
+  status: boolean; // false = unread, true = read
+  createdAt: string;
+}
 
 interface Notification {
   id: string;
@@ -29,65 +40,81 @@ interface Notification {
 }
 
 const NotificationDropdown = () => {
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: "1",
-      sender: "Hệ thống",
-      message: "Đơn hàng 01025120007 của bạn đã được thanh toán thành công.",
-      time: "2 phút trước",
-      isRead: false,
-      avatar: "",
-      type: "system",
-    },
-    {
-      id: "2",
-      sender: "Trần Thị Nguyệt",
-      message: "Đã gửi một yêu cầu khảo sát thiết kế mới.",
-      time: "1 giờ trước",
-      isRead: false,
-      avatar: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
-      type: "message",
-    },
-    {
-      id: "3",
-      sender: "Phòng Kế toán",
-      message: "Thông báo chốt số nước tháng 12/2025.",
-      time: "3 giờ trước",
-      isRead: true,
-      avatar: "",
-      type: "billing",
-    },
-    {
-      id: "4",
-      sender: "Nguyễn Văn Vũ",
-      message: "Bạn có một tin nhắn mới về bản vẽ thiết kế.",
-      time: "Hôm qua",
-      isRead: true,
-      avatar: "https://i.pravatar.cc/150?u=a04258114e29026302d",
-      type: "message",
-    },
-    {
-      id: "5",
-      sender: "Hệ thống",
-      message: "Bảo trì hệ thống vào lúc 00:00 ngày 30/12/2025.",
-      time: "2 ngày trước",
-      isRead: true,
-      avatar: "",
-      type: "system",
-    },
-    {
-      id: "6",
-      sender: "Hoàng Thế Quý",
-      message: "Yêu cầu hỗ trợ thay đổi địa chỉ lắp đặt.",
-      time: "3 ngày trước",
-      isRead: true,
-      avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704d",
-      type: "message",
-    },
-  ]);
-
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "unread">("all");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalFound, setTotalFound] = useState(0);
+  const [hasError, setHasError] = useState(false);
+
+  /**
+   * Convert backend notification to UI format
+   */
+  const mapNotificationToUI = (dto: NotificationResponseDto): Notification => {
+    return {
+      id: dto.notificationId,
+      sender: dto.title, // Use title as sender
+      message: dto.message,
+      time: formatRelativeTime(dto.createdAt),
+      isRead: dto.status, // true = read, so isRead = status
+      avatar: "", // No avatar from backend
+      type: "system", // All notifications from backend are system type
+    };
+  };
+
+  /**
+   * Fetch notifications from API
+   */
+  const fetchNotifications = async (page: number = 0, append: boolean = false) => {
+    try {
+      if (page === 0) {
+        setIsInitialLoading(true);
+      } else {
+        setIsLoadingMore(true);
+      }
+      setHasError(false);
+
+      const response = await fetch(
+        `/api/notification?page=${page}&size=20&sort=createdAt,desc`
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch notifications");
+      }
+
+      const result = await response.json();
+      const notificationData = result.data as {
+        items: NotificationResponseDto[];
+        requestedSize: number;
+        totalFound: number;
+      };
+
+      const uiNotifications = notificationData.items.map(mapNotificationToUI);
+
+      if (append) {
+        setNotifications((prev) => [...prev, ...uiNotifications]);
+      } else {
+        setNotifications(uiNotifications);
+      }
+
+      setTotalFound(notificationData.totalFound);
+      setCurrentPage(page);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      setHasError(true);
+    } finally {
+      setIsInitialLoading(false);
+      setIsLoadingMore(false);
+    }
+  };
+
+  /**
+   * Initial load
+   */
+  useEffect(() => {
+    fetchNotifications(0);
+  }, []);
 
   const filteredNotifications =
     filter === "all" ? notifications : notifications.filter((n) => !n.isRead);
@@ -99,27 +126,17 @@ const NotificationDropdown = () => {
 
     if (
       scrollHeight - scrollTop <= clientHeight + 10 &&
-      !isLoading &&
+      !isLoadingMore &&
+      !isInitialLoading &&
       filter === "all"
     ) {
-      setIsLoading(true);
-      setTimeout(() => {
-        const newBatch: Notification[] = [
-          {
-            id: Math.random().toString(),
-            sender: "Hệ thống",
-            message:
-              "Thông báo lịch sử về hoạt động trước đây đã được lưu trữ.",
-            time: "1 tuần trước",
-            isRead: true,
-            avatar: "",
-            type: "system",
-          },
-        ];
+      // Check if there are more notifications to load
+      const nextPage = currentPage + 1;
+      const totalPages = Math.ceil(totalFound / 20);
 
-        setNotifications((prev) => [...prev, ...newBatch]);
-        setIsLoading(false);
-      }, 800);
+      if (nextPage < totalPages) {
+        fetchNotifications(nextPage, true); // Append mode
+      }
     }
   };
 
@@ -223,53 +240,22 @@ const NotificationDropdown = () => {
               onScroll={handleScroll}
             >
               <div className="flex flex-col py-2 px-2">
-                {filteredNotifications.map((n) => (
-                  <div
-                    key={n.id}
-                    className={`flex items-center gap-3 px-3 py-3 cursor-pointer transition-all rounded-xl relative group hover:bg-default-50 mb-1`}
-                  >
-                    <div className="relative shrink-0">
-                      <Avatar
-                        className={
-                          !n.avatar
-                            ? "bg-primary-50 text-primary font-bold"
-                            : "border border-divider"
-                        }
-                        name={n.sender}
-                        size="lg"
-                        src={n.avatar}
-                      />
-                      <div
-                        className={`absolute -bottom-1 -right-1 rounded-full p-1 border-2 border-background ${n.type === "system" ? "bg-blue-600" : n.type === "billing" ? "bg-green-600" : "bg-orange-600"}`}
-                      >
-                        {n.type === "message" ? (
-                          <div className="w-2.5 h-2.5 bg-white rounded-full" />
-                        ) : (
-                          <CheckCircleIcon className="w-2.5 h-2.5 text-white" />
-                        )}
+                {isInitialLoading ? (
+                  // Loading skeletons
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <div
+                      key={`skeleton-${i}`}
+                      className="flex items-center gap-3 px-3 py-3 mb-1"
+                    >
+                      <Skeleton className="w-12 h-12 rounded-full" />
+                      <div className="flex-1 space-y-1">
+                        <Skeleton className="w-3/4 h-4 rounded" />
+                        <Skeleton className="w-1/2 h-3 rounded" />
                       </div>
                     </div>
-                    <div className="flex-1 min-w-0 pr-4">
-                      <p
-                        className={`text-[14px] leading-[1.3] ${!n.isRead ? "font-bold text-foreground" : "text-default-600 font-medium"}`}
-                      >
-                        <span className="text-foreground">{n.sender}</span>{" "}
-                        {n.message}
-                      </p>
-                      <p
-                        className={`text-[12px] mt-1 ${!n.isRead ? "text-primary font-bold" : "text-default-400 font-medium"}`}
-                      >
-                        {n.time}
-                      </p>
-                    </div>
-                    {!n.isRead && (
-                      <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                        <div className="w-3 h-3 bg-primary rounded-full" />
-                      </div>
-                    )}
-                  </div>
-                ))}
-                {filteredNotifications.length === 0 && (
+                  ))
+                ) : filteredNotifications.length === 0 ? (
+                  // Empty state
                   <div className="py-20 text-center text-default-400 px-4">
                     <BellIcon className="w-12 h-12 mx-auto opacity-20 mb-3" />
                     <p className="font-bold text-default-500">
@@ -279,11 +265,61 @@ const NotificationDropdown = () => {
                       Khi có bình luận hoặc tin nhắn, bạn sẽ thấy ở đây.
                     </p>
                   </div>
-                )}
-                {isLoading && (
-                  <div className="p-6 text-center">
-                    <div className="inline-block w-6 h-6 border-[3px] border-primary border-t-transparent rounded-full animate-spin" />
-                  </div>
+                ) : (
+                  // Notification list
+                  <>
+                    {filteredNotifications.map((n) => (
+                      <div
+                        key={n.id}
+                        className={`flex items-center gap-3 px-3 py-3 cursor-pointer transition-all rounded-xl relative group hover:bg-default-50 mb-1`}
+                      >
+                        <div className="relative shrink-0">
+                          <Avatar
+                            className={
+                              !n.avatar
+                                ? "bg-primary-50 text-primary font-bold"
+                                : "border border-divider"
+                            }
+                            name={n.sender}
+                            size="lg"
+                            src={n.avatar}
+                          />
+                          <div
+                            className={`absolute -bottom-1 -right-1 rounded-full p-1 border-2 border-background ${n.type === "system" ? "bg-blue-600" : n.type === "billing" ? "bg-green-600" : "bg-orange-600"}`}
+                          >
+                            {n.type === "message" ? (
+                              <div className="w-2.5 h-2.5 bg-white rounded-full" />
+                            ) : (
+                              <CheckCircleIcon className="w-2.5 h-2.5 text-white" />
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex-1 min-w-0 pr-4">
+                          <p
+                            className={`text-[14px] leading-[1.3] ${!n.isRead ? "font-bold text-foreground" : "text-default-600 font-medium"}`}
+                          >
+                            <span className="text-foreground">{n.sender}</span>{" "}
+                            {n.message}
+                          </p>
+                          <p
+                            className={`text-[12px] mt-1 ${!n.isRead ? "text-primary font-bold" : "text-default-400 font-medium"}`}
+                          >
+                            {n.time}
+                          </p>
+                        </div>
+                        {!n.isRead && (
+                          <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                            <div className="w-3 h-3 bg-primary rounded-full" />
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                    {isLoadingMore && (
+                      <div className="p-6 text-center">
+                        <div className="inline-block w-6 h-6 border-[3px] border-primary border-t-transparent rounded-full animate-spin" />
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </ScrollShadow>
