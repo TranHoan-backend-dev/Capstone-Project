@@ -133,7 +133,8 @@ const AssigningSurveyPage = () => {
         <SurveyAssignmentTable
           data={filteredData}
           page={page}
-          total={totalItems}
+          totalItem={totalItems}
+          totalPage={totalPages}
           onPageChange={setPage}
           keyword={keyword}
           reloadKey={reloadKey}

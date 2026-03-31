@@ -7,7 +7,7 @@ import PendingConstructionPage from "./pending-construction-page";
 const PendingConstruction = () => {
   const breadcrumbs = [
     { label: "Trang chủ", href: "/home" },
-    { label: "Kiểm Tra Chỉ Số Đồng Hồ Nước", isCurrent: true },
+    { label: "Quản lý công trình thi công", isCurrent: true },
   ];
 
   return (

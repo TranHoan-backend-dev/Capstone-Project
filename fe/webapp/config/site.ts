@@ -234,11 +234,7 @@ export const siteConfig = {
           key: "design-processing",
           label: "Xử lý đơn chờ thiết kế & Thiết kế",
           href: "/design-processing",
-          roles: [
-            "it_staff",
-            "survey_staff",
-            "planning_technical_department_head",
-          ],
+          roles: ["it_staff", "survey_staff"],
         },
         {
           key: "assigning-survey",
@@ -250,11 +246,7 @@ export const siteConfig = {
           key: "estimate-preparation",
           label: "Lập dự toán",
           href: "/estimate/preparation",
-          roles: [
-            "it_staff",
-            "survey_staff",
-            "planning_technical_department_head",
-          ],
+          roles: ["it_staff", "survey_staff"],
         },
         {
           key: "estimate-approval",
@@ -271,11 +263,7 @@ export const siteConfig = {
           key: "run-estimate",
           label: "Chạy dự toán",
           href: "/estimate/run",
-          roles: [
-            "it_staff",
-            "survey_staff",
-            "planning_technical_department_head",
-          ],
+          roles: ["it_staff", "survey_staff"],
         },
         // {
         //   key: "estimate-lookup",
@@ -351,7 +339,7 @@ export const siteConfig = {
         },
       ],
     },
-    
+
     // Ghi chỉ số & Hóa đơn
     {
       key: "billing",

@@ -19,7 +19,7 @@ export async function POST(
 
     return NextResponse.json(
       {
-        message: "Cập nhật nhân viên thi công thành công",
+        message: "Cập nhật trạng thái công trình thành công",
         data: response.data,
       },
       { status: 200 },
@@ -29,7 +29,7 @@ export async function POST(
       {
         message:
           error.response?.data?.message ||
-          "Cập nhật nhân viên thi công thất bại",
+          "Cập nhật trạng thái công trình thất bại",
         error: error.response?.data || null,
       },
       { status: error.response?.status || 500 },

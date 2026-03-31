@@ -237,7 +237,6 @@ export const FeeForm = ({
         </div>
 
         <div className="px-6 py-5">
-          {/* Form Code - Ẩn vì là ID */}
           <CustomInput
             label="Mã đơn"
             value={formCode}
@@ -247,9 +246,7 @@ export const FeeForm = ({
           />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {/* Cột trái */}
             <div className="space-y-5">
-              {/* Form Number - Sử dụng SearchInputWithButton */}
               <SearchInputWithButton
                 label="Số đơn"
                 value={formNumber}
@@ -356,7 +353,6 @@ export const FeeForm = ({
         </div>
       </CardBody>
 
-      {/* Modal chọn đơn lắp đặt */}
       <LookupModal
         dataKey="content"
         isOpen={showFormModal}
