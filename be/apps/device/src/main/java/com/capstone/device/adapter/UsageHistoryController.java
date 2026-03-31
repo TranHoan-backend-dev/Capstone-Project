@@ -2,7 +2,8 @@ package com.capstone.device.adapter;
 
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
-import com.capstone.device.application.dto.request.UsageHistoryRequest;
+import com.capstone.device.application.dto.request.history.AnalysisRequest;
+import com.capstone.device.application.dto.request.history.UsageHistoryRequest;
 import com.capstone.device.application.usecase.UsageHistoryUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -41,6 +42,7 @@ public class UsageHistoryController {
     @ApiResponse(responseCode = "404", description = "Không tìm thấy thiết bị")
   })
   @PostMapping(value = "/{serial}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'BUSINESS_DEPARTMENT_HEAD', 'METER_INSPECTION_STAFF')")
   public ResponseEntity<WrapperApiResponse> updateWaterIndexThisMonth(
     @Parameter(description = "Mã Serial của thiết bị", example = "WM-2024-001") @PathVariable String serial,
     @ModelAttribute @Valid UsageHistoryRequest request
@@ -48,6 +50,23 @@ public class UsageHistoryController {
     log.info("Updating usage history for serial {}", serial);
     var response = useCase.updateWaterIndex(request, serial);
     return Utils.returnOkResponse("Cập nhật chỉ số nước thành công", response);
+  }
+
+  @Operation(summary = "Phân tích ảnh chụp đồng hồ với AI", description = "")
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "Cập nhật thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Dữ liệu không hợp lệ hoặc chỉ số mới thấp hơn kỳ trước"),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy thiết bị")
+  })
+  @PostMapping(value = "/analyze/{serial}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'BUSINESS_DEPARTMENT_HEAD', 'METER_INSPECTION_STAFF')")
+  public ResponseEntity<WrapperApiResponse> analysisTheMeterImage(
+    @Parameter(description = "Mã Serial của thiết bị", example = "WM-2024-001") @PathVariable String serial,
+    @ModelAttribute @Valid AnalysisRequest request
+  ) {
+    log.info("Updating usage history for serial {}", serial);
+    var response = useCase.analysisTheMeterImage(request, serial);
+    return Utils.returnOkResponse("Phân tích thành công", response);
   }
 
   @Operation(summary = "Cập nhật trạng thái thanh toán", description = "Đánh dấu là đã thanh toán cho bản ghi có ngày đo mới nhất của thiết bị")

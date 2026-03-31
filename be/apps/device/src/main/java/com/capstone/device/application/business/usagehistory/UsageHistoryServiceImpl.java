@@ -1,9 +1,12 @@
 package com.capstone.device.application.business.usagehistory;
 
 import com.capstone.common.exception.NotExistingException;
+import com.capstone.common.utils.SharedConstant;
+import com.capstone.device.application.dto.response.AIResponse;
 import com.capstone.device.application.dto.response.pricetype.PendingReviewResponse;
 import com.capstone.device.application.dto.response.pricetype.PriceTypeResponse;
-import com.capstone.device.application.dto.response.pricetype.UsageResponse;
+import com.capstone.device.application.dto.response.usagehistory.AnalysisResponse;
+import com.capstone.device.application.dto.response.usagehistory.UsageResponse;
 import com.capstone.device.application.dto.response.customer.CustomerWaterPriceRefResponse;
 import com.capstone.device.domain.model.UsageHistory;
 import com.capstone.device.domain.model.WaterPrice;
@@ -25,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -49,20 +51,32 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
   @Transactional
   public UsageResponse addWaterIndexOfThisMonth(
     String imageUrl, String serial, BigDecimal index,
-    @NonNull LocalDate recordingDate, MultipartFile file
+    @NonNull LocalDate recordingDate
   ) {
     log.info("addWaterIndexOfThisMonth");
     var meter = waterMeterRepository.findById(serial)
       .orElseThrow(() -> new NotExistingException("Không tìm thấy thiết bị: " + serial));
+    // tim lich su tieu thu bang dong ho nuoc. Neu dong ho nuoc nay moi duoc su dung thi tao moi
     var history = repository.findByMeter(meter).orElseGet(() -> UsageHistory.builder()
       .usageHistory(serial)
       .meter(meter)
       .usages(new ArrayList<>())
       .build());
 
-    aiService.sendWaterMeterImage(file);
+    // So sanh voi chi so gan nhat trong lich su
+    if (!history.getUsages().isEmpty()) {
+      var latestUsage = history.getUsages().stream()
+        .max(Comparator.comparing(Usage::getRecordingDate))
+        .orElse(null);
+      log.info("Lich su su dung nuoc thang gan day nhat: {}", latestUsage);
 
-    var monthStr = recordingDate.format(DateTimeFormatter.ofPattern("yyyy-MM"));
+      if (latestUsage != null && latestUsage.getIndex().compareTo(index) > 0) {
+        throw new IllegalArgumentException("Chi so nuoc thang nay khong the it hon thang truoc (" + latestUsage.getIndex() + ")");
+      }
+    }
+    log.info("Chi so dong ho nuoc thang nay: {}", index);
+
+    var monthStr = recordingDate.format(DateTimeFormatter.ofPattern(SharedConstant.DATE_PATTERN));
     var newUsage = Usage.builder()
       .id(monthStr)
       .recordingDate(recordingDate)
@@ -71,21 +85,35 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
       .status("PENDING")
       .isPaid(false)
       .build();
+    log.info("Lich su su dung nuoc thang nay: {}", newUsage);
 
     history.addOrUpdateUsage(newUsage);
-    history = repository.save(history);
+//    history = repository.save(history);
 
-    try {
-      var customerId = customerService.getCustomerIdByMeterId(serial);
-      if (customerId != null) {
-        var customerInfo = getCustomerInfo(customerId);
-        var waterPrice = resolveWaterPrice(customerInfo.waterPriceId());
-        return mapToResponse(history, customerId, customerInfo.name(), waterPrice);
-      }
-    } catch (Exception e) {
-      log.warn("Lỗi khi kết nối tới dịch vụ khách hàng: " + e.getMessage());
+    var customerId = customerService.getCustomerIdByMeterId(serial);
+    if (customerId == null) {
+      throw new IllegalArgumentException("Dong ho nuoc nay khong co khach hang nao su dung");
     }
-    return null;
+
+    var customerInfo = getCustomerInfo(customerId);
+    var waterPrice = resolveWaterPrice(customerInfo.waterPriceId());
+    return mapToResponse(history, customerId, customerInfo.name(), waterPrice);
+  }
+
+  @Override
+  public AnalysisResponse extractDataFromTheMeterImage(@NonNull MultipartFile file) {
+    log.info("Sending image to AI: {} ({} bytes)", file.getOriginalFilename(), file.getSize());
+    var response = aiService.sendWaterMeterImage(file);
+
+    var serial = extractTheMeterSerial(response.results());
+    var index = extractTheMeterIndex(response.results());
+    log.info("detectedSerial: {}", serial);
+    log.info("detectedIndex: {}", index);
+
+    return AnalysisResponse.builder()
+      .serial(serial)
+      .index(index)
+      .build();
   }
 
   @Override
@@ -148,7 +176,7 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
     var history = repository.findByMeter(meter)
       .orElseThrow(() -> new NotExistingException("Không tìm thấy lịch sử sử dụng cho serial: " + serial));
 
-    var monthStr = recordingDate.format(DateTimeFormatter.ofPattern("yyyy-MM"));
+    var monthStr = recordingDate.format(DateTimeFormatter.ofPattern(SharedConstant.DATE_PATTERN));
     var newUsage = Usage.builder()
       .id(monthStr)
       .recordingDate(recordingDate)
@@ -336,5 +364,21 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
       log.error("Failed to resolve signed URL for {}: {}", storedUrl, e.getMessage());
     }
     return storedUrl;
+  }
+
+  private String extractTheMeterSerial(@NonNull List<AIResponse.AIResponseData> input) {
+    return input.stream()
+      .filter(r -> r.label().equals(AIResponse.LabelType.SERIAL_NUMBER_REGION))
+      .map(AIResponse.AIResponseData::text)
+      .findFirst()
+      .orElse(null);
+  }
+
+  private String extractTheMeterIndex(@NonNull List<AIResponse.AIResponseData> input) {
+    return input.stream()
+      .filter(i -> i.label().equals(AIResponse.LabelType.CURRENT_POINTER_READING_REGION))
+      .map(AIResponse.AIResponseData::text)
+      .findFirst()
+      .orElse(null);
   }
 }

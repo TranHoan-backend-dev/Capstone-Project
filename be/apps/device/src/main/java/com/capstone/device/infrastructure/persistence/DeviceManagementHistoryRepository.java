@@ -1,9 +1,8 @@
 package com.capstone.device.infrastructure.persistence;
 
-import com.capstone.device.application.dto.response.DeviceManagementHistoryProjection;
+import com.capstone.device.application.dto.response.device.DeviceManagementHistoryProjection;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
@@ -46,11 +45,11 @@ public class DeviceManagementHistoryRepository {
           ORDER BY operation_time DESC
         """;
 
-    Query query = entityManager.createNativeQuery(sql);
+    var query = entityManager.createNativeQuery(sql);
     List<Object[]> results = query.getResultList();
 
     List<DeviceManagementHistoryProjection> projections = new ArrayList<>();
-    for (Object[] row : results) {
+    for (var row : results) {
       projections.add(new DeviceManagementHistoryProjection() {
         @Override
         public String getEntityName() {

@@ -1,6 +1,6 @@
 package com.capstone.device.application.business.material.group;
 
-import com.capstone.device.application.dto.response.MaterialsGroupResponse;
+import com.capstone.device.application.dto.response.material.MaterialsGroupResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

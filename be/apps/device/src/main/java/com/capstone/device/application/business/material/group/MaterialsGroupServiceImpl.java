@@ -1,7 +1,7 @@
 package com.capstone.device.application.business.material.group;
 
 import com.capstone.common.annotation.AppLog;
-import com.capstone.device.application.dto.response.MaterialsGroupResponse;
+import com.capstone.device.application.dto.response.material.MaterialsGroupResponse;
 import com.capstone.device.domain.model.MaterialsGroup;
 import com.capstone.device.infrastructure.persistence.MaterialsGroupRepository;
 import lombok.AccessLevel;
@@ -28,14 +28,14 @@ public class MaterialsGroupServiceImpl implements MaterialsGroupService {
   @Override
   public Page<MaterialsGroupResponse> getPaginatedGroups(Pageable pageable, String filterName) {
     log.info("getPaginatedGroups using filter: {}", filterName);
-    var result = filterName == null || filterName.isBlank() 
+    var result = filterName == null || filterName.isBlank()
         ? repository.findAll(pageable)
         : repository.findByNameContainsIgnoreCase(filterName, pageable);
-    
+
     var content = result.getContent().stream()
         .map(this::mapToResponse)
         .toList();
-        
+
     return new PageImpl<>(content, pageable, result.getTotalElements());
   }
 

@@ -76,7 +76,7 @@ client.test("Status is 400", function() {
 
 
 ### TC05 - Cập nhật nhân viên cho đơn chờ thi công thành công (200)
-PATCH {{baseUrl}}/construction/pending-requests/REQ-001/EMP-STF-002
+PATCH {{baseUrl}}/construction/pending-requests/7a8192a3-7000-4aaa-9bbb-cccccccc0001/eae87df0-7f02-47b9-baa2-ac2bc9ea61fb
 Authorization: Bearer {{token}}
 
 > {%
