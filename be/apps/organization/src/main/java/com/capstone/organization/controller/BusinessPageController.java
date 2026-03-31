@@ -88,7 +88,7 @@ public class BusinessPageController {
   }
 
   @GetMapping("/e")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF')")
   @Operation(summary = "Tra cứu tên trang nghiệp vụ theo ID", description = """
     Truy xuất danh sách tên trang nghiệp vụ tương ứng với danh sách ID trang được cung cấp (phân cách bằng dấu phẩy).
 
