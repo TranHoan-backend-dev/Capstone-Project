@@ -1,16 +1,18 @@
 from __future__ import annotations
 
-from cProfile import label
 from typing import Dict, List
-import re
-import cv2
 import os
+import re
+
+import cv2
 
 from config.settings import Settings
 from detector.yolo_detector import YOLODetector
 from ocr.paddle_engine import OCREngine
-from ocr.text_postprocess import join_texts
-from app_utils.image_crop import crop_regions
+
+
+METER_LABELS = {"meter", "Meter_region"}
+TEXT_WINDOW_LABELS = {"Current_pointer_reading_region", "Serial_number_region"}
 
 
 def _boxes_overlap(box1, box2):
@@ -19,48 +21,106 @@ def _boxes_overlap(box1, box2):
     return not (x2a < x1b or x2b < x1a or y2a < y1b or y2b < y1a)
 
 
-def _extract_numbers(text: str) -> str:
-    # Normalize common OCR mistakes
+def _normalize_ocr_text(text: str) -> str:
     text = text.upper()
-    text = text.replace('O', '0')
-    text = text.replace('S', '5')
-    text = text.replace('B', '8')
+    text = text.replace("O", "0")
+    text = text.replace("S", "5")
+    text = text.replace("B", "8")
+    return text
 
-    # Extract digits only
-    numbers = ''.join(re.findall(r'\d', text))
 
-    # Extract only digits
-    return numbers
+def _extract_numbers(text: str) -> str:
+    return "".join(re.findall(r"\d", _normalize_ocr_text(text)))
+
+
+def _expected_digit_range(label: str) -> tuple[int, int]:
+    if label == "Serial_number_region":
+        return 6, 10
+    if label == "Current_pointer_reading_region":
+        return 5, 8
+    return 1, 64
+
+
+def _select_numeric_joined(label: str, texts) -> str:
+    if not texts:
+        return ""
+
+    min_len, max_len = _expected_digit_range(label)
+    full_candidates = []
+    fragments = []
+
+    for raw_text, conf in texts:
+        digits = _extract_numbers(raw_text)
+        if not digits:
+            continue
+
+        if min_len <= len(digits) <= max_len and conf >= 0.6:
+            # Prefer complete numeric candidates that already look valid.
+            score = conf + (len(digits) * 0.1)
+            full_candidates.append((score, digits))
+
+        # Keep shorter chunks too so they can be stitched back together.
+        if conf >= 0.65 or len(digits) >= 3:
+            fragments.append(digits)
+
+    if full_candidates:
+        full_candidates.sort(key=lambda item: item[0], reverse=True)
+        return full_candidates[0][1]
+
+    merged = "".join(fragments)
+    if merged:
+        if len(merged) <= max_len + 2:
+            return merged
+        return max(fragments, key=len)
+
+    return ""
+
+
+def _score_text_variant(label: str, texts) -> float:
+    if not texts:
+        return -1.0
+
+    joined = _select_numeric_joined(label, texts)
+    score = get_ocr_conf(texts)
+    has_alpha = any(re.search(r"[A-Z]", _normalize_ocr_text(text)) for text, _ in texts)
+    min_len, max_len = _expected_digit_range(label)
+
+    if joined:
+        if min_len <= len(joined) <= max_len:
+            score += 1.0
+        else:
+            score += min(len(joined), max_len) * 0.05
+
+    if has_alpha:
+        score -= 0.25
+
+    return score
 
 
 def get_ocr_conf(texts):
     if not texts:
         return 0.0
-    return max([conf for _, conf in texts])
+    return max(conf for _, conf in texts)
+
 
 def get_heuristic_score(label, texts, joined, box, meter_box):
     score = 0.0
 
-    # 1. Có chữ hay không (đối với reading thì không cần chữ, nhưng đối với serial number thì nên có chữ để tăng độ tin cậy, nếu toàn số thì có thể là nhầm với reading) -> nếu có chữ thì tăng điểm
-    has_alpha = any(re.search(r'[A-Z]', t.upper()) for t, _ in texts)
+    has_alpha = any(re.search(r"[A-Z]", _normalize_ocr_text(text)) for text, _ in texts)
     if not has_alpha:
         score += 0.25
 
-    # 2. Nếu serial number mà có toàn số và độ dài hợp lý (8-10) thì tăng điểm, nếu reading mà có toàn số và độ dài hợp lý (5-8) thì tăng điểm, nếu có chữ thì giảm điểm (có thể nhầm với serial number) -> nếu có chữ thì giảm điểm, nếu có toàn số và độ dài hợp lý thì tăng điểm
     if label == "Serial_number_region":
-        if re.fullmatch(r'\d{8,10}', joined):
+        if re.fullmatch(r"\d{6,10}", joined):
             score += 0.25
     elif label == "Current_pointer_reading_region":
-        if re.fullmatch(r'\d{5,8}', joined):
+        if re.fullmatch(r"\d{5,8}", joined):
             score += 0.25
 
-    # 3. Crop vùng đugs
-    if meter_box:
-        if _boxes_overlap(box, meter_box):
-            score += 0.25
+    if meter_box and _boxes_overlap(box, meter_box):
+        score += 0.25
 
-    # 4. Số lượng text thô OCR ra được (nếu quá nhiều text thì có thể là sai) -> nếu chỉ OCR ra được 1-2 text có độ tin cậy cao thì tăng điểm, nếu nhiều hơn thì giảm điểm
-    valid_texts = [t for t, conf in texts if conf > 0.8]
+    valid_texts = [text for text, conf in texts if conf > 0.8]
     if len(valid_texts) <= 2:
         score += 0.25
 
@@ -77,6 +137,7 @@ class OCRPipeline:
             iou=self.settings.yolo_iou,
             device=self.settings.yolo_device,
             img_size=self.settings.yolo_img_size,
+            quantize=self.settings.yolo_quantize,
         )
 
         self.ocr = OCREngine(
@@ -85,155 +146,148 @@ class OCRPipeline:
             use_det=self.settings.ocr_use_det,
         )
 
+    def process_batch(self, images) -> List[List[Dict[str, object]]]:
+        return [self.process(image) for image in images]
+
+    def _read_text_with_variants(self, label: str, crop):
+        variants = [crop]
+
+        if label in TEXT_WINDOW_LABELS:
+            gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
+            variants.append(cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR))
+
+            height, width = crop.shape[:2]
+            if height > width * 1.2:
+                rotated_variants = []
+                for variant in variants:
+                    rotated_variants.append(cv2.rotate(variant, cv2.ROTATE_90_CLOCKWISE))
+                    rotated_variants.append(cv2.rotate(variant, cv2.ROTATE_90_COUNTERCLOCKWISE))
+                variants.extend(rotated_variants)
+
+        best_crop = crop
+        best_texts = []
+        best_score = -1.0
+
+        for variant in variants:
+            texts = self.ocr.read_text(variant)
+            score = _score_text_variant(label, texts)
+            if score > best_score:
+                best_crop = variant
+                best_texts = texts
+                best_score = score
+
+        return best_crop, best_texts
+
     def process(self, image) -> List[Dict[str, object]]:
         detections = self.detector.detect(image)
 
         detections = sorted(
             detections,
-            key=lambda d: (d["box"][2] - d["box"][0]) * (d["box"][3] - d["box"][1]),
-            reverse=True
+            key=lambda detection: (
+                (detection["box"][2] - detection["box"][0])
+                * (detection["box"][3] - detection["box"][1])
+            ),
+            reverse=True,
         )
 
-        # Find meter: class 0 with largest area
         meter_box = None
         max_area = 0
-        for det in detections:
-            if det['label'] == "meter":
-                x1, y1, x2, y2 = det['box']
+        for detection in detections:
+            if detection["label"] in METER_LABELS:
+                x1, y1, x2, y2 = detection["box"]
                 area = (x2 - x1) * (y2 - y1)
                 if area > max_area:
                     max_area = area
-                    meter_box = det['box']
+                    meter_box = detection["box"]
 
         results: List[Dict[str, object]] = []
 
         for detection in detections:
-            box = detection['box']
-            cls = detection['class']
-            conf = detection['conf']
-            label = detection['label']
+            box = detection["box"]
+            conf = detection["conf"]
+            label = detection["label"]
 
-            if label == "Meter_region":
-                # Meter, no OCR
-                results.append({
-                    "box": box,
-                    "label": "meter",
-                    "text": "",
-                    "conf": conf,
-                    "raw_texts": [], #raw_texts lÃ  Ä‘á»ƒ lÆ°u káº¿t quáº£ OCR thÃ´, nhÆ°ng vá»›i meter thÃ¬ khÃ´ng cáº§n nÃªn Ä‘á»ƒ trá»‘ng
-                })
+            if label in METER_LABELS:
+                results.append(
+                    {
+                        "box": box,
+                        "label": "meter",
+                        "text": "",
+                        "conf": conf,
+                        "raw_texts": [],
+                    }
+                )
                 continue
 
-            # Check if overlaps with meter
             if meter_box and not _boxes_overlap(box, meter_box):
                 continue
 
             x1, y1, x2, y2 = box
-            w = x2 - x1
-            h = y2 - y1
-            if w < self.settings.crop_min_width or h < self.settings.crop_min_height:
+            width = x2 - x1
+            height = y2 - y1
+            if width < self.settings.crop_min_width or height < self.settings.crop_min_height:
                 continue
 
-            img_h, img_w = image.shape[:2]
-
-            # âŒ bá» box quÃ¡ to (trÃ¡nh láº¥y cáº£ Ä‘á»“ng há»“)
-            if (w * h) > 0.5 * img_w * img_h:
+            image_height, image_width = image.shape[:2]
+            if (width * height) > 0.5 * image_width * image_height:
                 continue
 
-            
+            if label in TEXT_WINDOW_LABELS:
+                pad = max(2, min(4, int(min(width, height) * 0.03)))
+            else:
+                pad = 10
 
-
-            # thÃªm padding cho crop
-            pad = 10 # pad lÃ  sá»‘ pixel thÃªm vÃ o má»—i bÃªn cá»§a box Ä‘á»ƒ trÃ¡nh cáº¯t sÃ¡t quÃ¡, cÃ³ thá»ƒ Ä‘iá»u chá»‰nh náº¿u cáº§n
             x1 = max(x1 - pad, 0)
             y1 = max(y1 - pad, 0)
             x2 = min(image.shape[1], x2 + pad)
             y2 = min(image.shape[0], y2 + pad)
 
-            crop = image[y1:y2, x1:x2] 
-
-            # resize for OCR
+            crop = image[y1:y2, x1:x2]
             crop = cv2.resize(crop, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
-            gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
-            if label == "reading":
-                _, gray = cv2.threshold(gray, 120, 255, cv2.THRESH_BINARY)
+            crop, texts = self._read_text_with_variants(label, crop)
 
-            crop = cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)
-            
-            # Debug: Save crop for inspection
             debug_dir = "debug_crops"
             os.makedirs(debug_dir, exist_ok=True)
             crop_path = os.path.join(debug_dir, f"{label}_{conf:.2f}.jpg")
             cv2.imwrite(crop_path, crop)
-            print(f"Saved crop to {crop_path} (size: {w}x{h})")
-
-            texts = self.ocr.read_text(crop)
+            print(f"Saved crop to {crop_path} (size: {width}x{height})")
 
             joined = ""
             if texts:
-                if label == "Current_pointer_reading_region":
-                    filtered_texts = []
-                    for t, ocr_conf in texts:
-                        if ocr_conf > 0.8:
-                            # âŒ bá» náº¿u cÃ³ chá»¯
-                            if re.search(r'[A-Z]', t.upper()):
-                                continue
-                            filtered_texts.append(t)
-
-                    joined = " ".join(filtered_texts)
-
-                elif label == "Serial_number_region":
-                    filtered_texts = []
-                    for t, ocr_conf in texts:
-                        if ocr_conf > 0.8:
-                            # âœ… chá»‰ giá»¯ náº¿u toÃ n sá»‘ (khÃ´ng chá»¯, khÃ´ng kÃ½ tá»± Ä‘áº·c biá»‡t)
-                            if re.fullmatch(r'\d+', t):
-                                filtered_texts.append(t)
-
-                    joined = " ".join(filtered_texts)
-
+                if label in TEXT_WINDOW_LABELS:
+                    joined = _select_numeric_joined(label, texts)
                 else:
-                    filtered_texts = [t[0] for t in texts if t[1] > 0.8]
+                    filtered_texts = [text for text, text_conf in texts if text_conf > 0.8]
                     joined = " ".join(filtered_texts)
 
-            
-            
-            if label in ["Serial_number_region"]: # reading
+            if label == "Serial_number_region":
                 joined = _extract_numbers(joined)
-                
 
             print(f"Detected {label} with conf {conf}: '{joined}'")
 
             ocr_conf = get_ocr_conf(texts)
-
             heuristic = get_heuristic_score(
                 label=label,
                 texts=texts,
                 joined=joined,
                 box=box,
-                meter_box=meter_box
+                meter_box=meter_box,
             )
 
-            final_conf = (
-                conf * 0.45 +
-                ocr_conf * 0.45 +
-                heuristic * 0.10
-            )
-
-            # clamp vá» [0,1]
+            final_conf = (conf * 0.45) + (ocr_conf * 0.45) + (heuristic * 0.10)
             final_conf = max(0, min(1, final_conf))
 
-            results.append({
-                "box": box,
-                "label": label,
-                "text": joined,
-                
-                "yolo_conf": conf,                 # YOLO
-                "ocr_conf": round(ocr_conf, 3),
-                "heuristic": round(heuristic, 3),
-                "final_conf": round(final_conf, 3),
-
-                "raw_texts": texts,
-            })
+            results.append(
+                {
+                    "box": box,
+                    "label": label,
+                    "text": joined,
+                    "yolo_conf": conf,
+                    "ocr_conf": round(ocr_conf, 3),
+                    "heuristic": round(heuristic, 3),
+                    "final_conf": round(final_conf, 3),
+                    "raw_texts": texts,
+                }
+            )
 
         return results
