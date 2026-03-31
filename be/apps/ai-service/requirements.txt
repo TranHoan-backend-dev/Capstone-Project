@@ -7,3 +7,5 @@ paddlepaddle==2.6.2
 paddleocr==2.8.1
 torch>=2.0,<3.0
 ultralytics>=8.2,<9.0
+pandas
+seaborn
