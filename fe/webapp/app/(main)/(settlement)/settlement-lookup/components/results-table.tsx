@@ -19,6 +19,7 @@ import {
   PencilSquareIcon,
   CheckCircleIcon,
   XCircleIcon,
+  TrashIcon,
 } from "@heroicons/react/24/outline";
 import { useSettlementUpdates } from "@/hooks/useWebSocketRefresh";
 import { sendSignRequestNotification } from "@/utils/notification-helper";
@@ -36,7 +37,7 @@ import { CallToast } from "@/components/ui/CallToast";
 import { ConfirmDialog } from "@/components/ui/modal/ConfirmDialog";
 import CustomButton from "@/components/ui/custom/CustomButton";
 import { useProfile } from "@/hooks/useLogin";
-import { formatDate1 } from "@/utils/format";
+import { formatDate1, formatVND } from "@/utils/format";
 import { getRoleVietnamese } from "@/utils/getRoleVietnamese";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
 
@@ -129,6 +130,20 @@ export const ResultsTable = ({
       }
     : null;
 
+  // Kiểm tra role hiện tại
+  const canManageSettlements = useMemo(() => {
+    return currentUser?.role === "construction_department_staff";
+  }, [currentUser]);
+
+  const canSignSettlements = useMemo(() => {
+    const role = currentUser?.role;
+    return (
+      role === "survey_staff" ||
+      role === "planning_teachnical_head" ||
+      role === "company_leadership"
+    );
+  }, [currentUser]);
+
   useEffect(() => {
     const fetchEmployeesByRole = async () => {
       try {
@@ -197,7 +212,7 @@ export const ResultsTable = ({
           jobContent: item.jobContent,
           address: item.address,
           registrationAt: formatDate1(item.registrationAt),
-          connectionFee: item.connectionFee,
+          connectionFee: formatVND(item.connectionFee),
           note: item.note,
           status: item.status,
         }));
@@ -400,9 +415,13 @@ export const ResultsTable = ({
     setPage(1);
   }, [keyword]);
 
+  // Xây dựng action items dựa trên role
   const actionItems = useMemo(() => {
-    return [
-      {
+    const items = [];
+
+    // Chỉ construction_department_staff mới thấy nút tạo yêu cầu ký, sửa, xóa
+    if (canManageSettlements) {
+      items.push({
         content: "Tạo yêu cầu ký",
         icon: ApprovalIcon,
         className: "text-green-600 hover:bg-green-50",
@@ -410,17 +429,9 @@ export const ResultsTable = ({
           const found = data.find((i) => i.id === id);
           if (found) handleCreateSignatureRequest(found);
         },
-      },
-      {
-        content: "Ký duyệt",
-        icon: PencilSquareIcon,
-        className: "text-blue-600 hover:bg-blue-50",
-        onClick: (id: string) => {
-          const found = data.find((i) => i.id === id);
-          if (found) handleSignAction(found);
-        },
-      },
-      {
+      });
+
+      items.push({
         content: "Chỉnh sửa",
         icon: EditIcon,
         className: "text-amber-500 hover:bg-amber-50",
@@ -428,22 +439,34 @@ export const ResultsTable = ({
           const found = data.find((i) => i.id === id);
           if (found) onEdit(found);
         },
-      },
-      // {
-      //   content: "Tạo phiếu thu",
-      //   icon: CalculatorIcon,
-      //   className: "text-green-600 hover:bg-green-50",
-      //   onClick: (id: string) => {
-      //     const found = data.find((i) => i.id === id);
-      //     if (found) {
-      //       router.push(
-      //         `/installation-fee-collection?formCode=${found.formCode}&formNumber=${found.formNumber}`,
-      //       );
-      //     }
-      //   },
-      // },
-    ];
-  }, [data, onEdit]);
+      });
+
+      // Thêm nút xóa
+      items.push({
+        content: "Xóa",
+        icon: TrashIcon,
+        className: "text-red-600 hover:bg-red-50",
+        onClick: (id: string) => {
+          setDeleteId(id);
+        },
+      });
+    }
+
+    // Các role survey_staff, planning_teachnical_head, company_leadership chỉ thấy nút ký
+    if (canSignSettlements) {
+      items.push({
+        content: "Ký duyệt",
+        icon: PencilSquareIcon,
+        className: "text-blue-600 hover:bg-blue-50",
+        onClick: (id: string) => {
+          const found = data.find((i) => i.id === id);
+          if (found) handleSignAction(found);
+        },
+      });
+    }
+
+    return items;
+  }, [data, onEdit, canManageSettlements, canSignSettlements]);
 
   const renderCell = (item: SettlementItem, columnKey: string) => {
     switch (columnKey) {
