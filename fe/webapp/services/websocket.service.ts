@@ -17,7 +17,20 @@ class WebSocketService {
   private isManualClose = false;
 
   constructor() {
-    this.url = SOCKET_URL || "ws://localhost:8080/ws";
+    // Convert HTTP URLs to WebSocket URLs
+    let baseUrl = SOCKET_URL || "http://localhost:9999/ws";
+    
+    if (baseUrl.startsWith("http://")) {
+      this.url = baseUrl.replace("http://", "ws://");
+    } else if (baseUrl.startsWith("https://")) {
+      this.url = baseUrl.replace("https://", "wss://");
+    } else if (baseUrl.startsWith("ws://") || baseUrl.startsWith("wss://")) {
+      this.url = baseUrl;
+    } else {
+      this.url = `ws://${baseUrl}`;
+    }
+
+    console.log("🔌 WebSocket Service initialized with URL:", this.url);
   }
 
   /**
@@ -26,8 +39,17 @@ class WebSocketService {
   public connect(accessToken: string): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
+        if (!accessToken) {
+          const error = "❌ No access token provided to WebSocket.connect()";
+          console.error(error);
+          reject(new Error(error));
+          return;
+        }
+
         // Thêm token vào URL
         const wsUrl = `${this.url}?token=${accessToken}`;
+        console.log("🔗 Attempting to connect to WebSocket:", this.url);
+        
         this.ws = new WebSocket(wsUrl);
         this.isManualClose = false;
 
@@ -58,6 +80,7 @@ class WebSocketService {
           }
         };
       } catch (error) {
+        console.error("❌ WebSocket connection error:", error);
         reject(error);
       }
     });

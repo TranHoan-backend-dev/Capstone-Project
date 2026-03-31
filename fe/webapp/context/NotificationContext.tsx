@@ -14,7 +14,6 @@ import {
   NotificationResponse,
 } from "@/services/notification.service";
 import { useProfile } from "@/hooks/useLogin";
-import { getAccessToken } from "@/utils/getAccessToken";
 import { useServerInsertedHTML } from "next/navigation";
 
 interface NotificationContextType {
@@ -66,17 +65,22 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
     const initWebSocket = async () => {
       try {
         // Lấy access token từ cookies
-        // Tạm thời sử dụng một placeholder, sẽ được cập nhật khi có request
         const accessToken = getAccessTokenFromCookie();
 
         if (!accessToken) {
-          console.warn("No access token found");
+          console.error(
+            "❌ No access token found in cookies. User not authenticated?"
+          );
+          console.log("📍 Available cookies:", document.cookie);
           setLoading(false);
           return;
         }
 
+        console.log("✅ Access token found, connecting to WebSocket...");
+        
         await websocketService.connect(accessToken);
         setIsConnected(true);
+        console.log("✅ WebSocket connected successfully");
 
         // Subscribe tới thông báo ký duyệt
         websocketService.subscribe(
@@ -93,7 +97,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
         // Lấy thông báo ban đầu
         await refreshNotifications();
       } catch (error) {
-        console.error("Failed to initialize WebSocket:", error);
+        console.error("❌ Failed to initialize WebSocket:", error);
         setIsConnected(false);
         setLoading(false);
       }
