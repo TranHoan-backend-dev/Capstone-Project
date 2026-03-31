@@ -86,9 +86,8 @@ public class SettlementUseCase {
         var status = employeeService.isEmployeeExisting(request.companyLeadership()).data().toString();
         var status1 = employeeService.isEmployeeExisting(request.surveyStaff()).data().toString();
         var status2 = employeeService.isEmployeeExisting(request.plHead()).data().toString();
-        var status3 = employeeService.isEmployeeExisting(request.constructionPresident()).data().toString();
 
-        if (!Boolean.parseBoolean(status) || !Boolean.parseBoolean(status1) || !Boolean.parseBoolean(status2) || !Boolean.parseBoolean(status3)) {
+        if (!Boolean.parseBoolean(status) || !Boolean.parseBoolean(status1) || !Boolean.parseBoolean(status2)) {
             throw new NotExistingException(Message.PT_59);
         }
         if (!settlementService.isExistingSettlement(request.settlementId())) {
@@ -99,8 +98,7 @@ public class SettlementUseCase {
                 request.settlementId(),
                 request.surveyStaff(),
                 request.plHead(),
-                request.companyLeadership(),
-                request.constructionPresident()
+                request.companyLeadership()
         ));
     }
 }

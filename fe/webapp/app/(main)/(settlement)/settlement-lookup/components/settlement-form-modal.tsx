@@ -48,7 +48,6 @@ export const SettlementFormModal = ({
 
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [showFormModal, setShowFormModal] = useState(false); // State cho modal lookup
 
   useEffect(() => {
     if (mode === "update" && initialData) {
@@ -65,8 +64,6 @@ export const SettlementFormModal = ({
       setDisplayForm(initialData.formNumber);
     } else if (mode === "create") {
       setForm({
-        formCode: "",
-        formNumber: "",
         formCode: "",
         formNumber: "",
         jobContent: "",
@@ -133,6 +130,7 @@ export const SettlementFormModal = ({
         address: form.address,
         connectionFee: Number(form.connectionFee),
         registrationAt: form.registrationAt + "T00:00:00",
+        note: form.note,
       };
 
       await onSubmit(payload);
@@ -162,7 +160,6 @@ export const SettlementFormModal = ({
           </ModalHeader>
 
           <ModalBody className="gap-4">
-            {/* Ẩn input Mã form (formCode) */}
             {form.formCode && <input type="hidden" value={form.formCode} />}
 
             <SearchInputWithButton
@@ -172,7 +169,6 @@ export const SettlementFormModal = ({
               onChange={(e) => {
                 handleChange("formNumber", e.target.value);
                 if (!e.target.value) {
-                  // Xóa dữ liệu liên quan khi xóa số đơn
                   handleChange("formCode", "");
                   handleChange("address", "");
                   handleChange("jobContent", "");
@@ -191,7 +187,7 @@ export const SettlementFormModal = ({
               isInvalid={!!errors.jobContent}
               errorMessage={errors.jobContent}
               variant="bordered"
-              isDisabled={!form.formNumber} // Disable nếu chưa chọn số đơn
+              isDisabled={!form.formNumber}
             />
 
             <CustomInput
@@ -202,7 +198,7 @@ export const SettlementFormModal = ({
               isInvalid={!!errors.address}
               errorMessage={errors.address}
               variant="bordered"
-              isDisabled={!form.formNumber} // Disable nếu chưa chọn số đơn
+              isDisabled={!form.formNumber}
             />
 
             <CustomInput
@@ -268,12 +264,9 @@ export const SettlementFormModal = ({
           address: item.address,
         })}
         onSelect={(item) => {
-          // Cập nhật dữ liệu khi chọn từ lookup
           handleChange("formCode", item.id);
           handleChange("formNumber", item.formNumber);
           handleChange("address", item.address);
-          // Có thể cập nhật thêm jobContent từ dữ liệu lookup nếu có
-          // handleChange("jobContent", item.jobContent || "");
           setShowFormModal(false);
         }}
       />

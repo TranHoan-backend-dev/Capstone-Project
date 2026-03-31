@@ -2,33 +2,23 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import {
-  Chip,
   Link,
   Tooltip,
-  Button,
   Spinner,
   Card,
   CardBody,
-  Select,
-  SelectItem,
   Modal,
   ModalContent,
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Avatar,
   Divider,
   Badge,
 } from "@heroui/react";
 import {
-  CalculatorIcon,
   PencilSquareIcon,
-  TrashIcon,
-  DocumentTextIcon,
-  UserGroupIcon,
   CheckCircleIcon,
   XCircleIcon,
-  ClockIcon,
 } from "@heroicons/react/24/outline";
 import { useSettlementUpdates } from "@/hooks/useWebSocketRefresh";
 import { sendSignRequestNotification } from "@/utils/notification-helper";
@@ -38,13 +28,12 @@ import { SettlementDetailModal } from "./settlement-detail-modal";
 import { SettlementDocumentModal } from "./settlement-document-modal";
 
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import { DeleteIcon, EditIcon, ApprovalIcon } from "@/config/chip-and-icon";
+import { EditIcon, ApprovalIcon } from "@/config/chip-and-icon";
 import { SettlementItem, SettlementDetail, SettlementResponse } from "@/types";
 import { authFetch } from "@/utils/authFetch";
 import { SETLEMENT_LOOKUP_COLUMN } from "@/config/table-columns";
 import { CallToast } from "@/components/ui/CallToast";
 import { ConfirmDialog } from "@/components/ui/modal/ConfirmDialog";
-import BaseModal from "@/components/ui/modal/BaseModal";
 import CustomButton from "@/components/ui/custom/CustomButton";
 import { useProfile } from "@/hooks/useLogin";
 import { formatDate1 } from "@/utils/format";
@@ -61,34 +50,6 @@ interface ResultsTableProps {
   onDeleted: () => void;
   onFilterStatus?: (status: string) => void;
 }
-
-// Component hiển thị trạng thái với màu sắc đẹp
-const StatusChip = ({ status }: { status: string }) => {
-  const statusConfig: Record<string, { color: any; icon: any; label: string }> =
-    {
-      PENDING: { color: "warning", icon: ClockIcon, label: "Chờ duyệt" },
-      APPROVED: { color: "success", icon: CheckCircleIcon, label: "Đã duyệt" },
-      REJECTED: { color: "danger", icon: XCircleIcon, label: "Từ chối" },
-      DRAFT: { color: "default", icon: DocumentTextIcon, label: "Nháp" },
-    };
-
-  const config = statusConfig[status] || statusConfig.PENDING;
-  const Icon = config.icon;
-
-  return (
-    <Chip
-      color={config.color}
-      variant="flat"
-      startContent={<Icon className="w-4 h-4" />}
-      classNames={{
-        base: "gap-1",
-        content: "font-medium",
-      }}
-    >
-      {config.label}
-    </Chip>
-  );
-};
 
 export const ResultsTable = ({
   keyword,
@@ -115,7 +76,6 @@ export const ResultsTable = ({
   });
   const router = useRouter();
 
-  // Auto-refresh data khi có settlement updates từ WebSocket
   useSettlementUpdates(() => {
     console.log("Settlement updated, refreshing data...");
     setRefreshTrigger((prev) => prev + 1);
@@ -137,22 +97,18 @@ export const ResultsTable = ({
     null,
   );
 
-  // State cho modal tạo yêu cầu ký duyệt
   const [isCreateSignModalOpen, setIsCreateSignModalOpen] = useState(false);
   const [selectedItemForSign, setSelectedItemForSign] =
     useState<SettlementItem | null>(null);
   const [surveyStaffId, setSurveyStaffId] = useState("");
   const [planningHeadId, setPlanningHeadId] = useState("");
   const [companyLeadershipId, setCompanyLeadershipId] = useState("");
-  // const [constructionPresidentId, setConstructionPresidentId] = useState("");
 
-  // State cho modal ký duyệt
   const [isSignModalOpen, setIsSignModalOpen] = useState(false);
   const [selectedItemForSigning, setSelectedItemForSigning] =
     useState<SettlementItem | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Separate employees by role using 4 different endpoints
   const [surveyStaff, setSurveyStaff] = useState<
     { id: string; fullName: string }[]
   >([]);
@@ -162,9 +118,6 @@ export const ResultsTable = ({
   const [companyLeadership, setCompanyLeadership] = useState<
     { id: string; name: string }[]
   >([]);
-  // const [constructionPresident, setConstructionPresident] = useState<
-  //   { id: string; name: string }[]
-  // >([]);
 
   const { profile } = useProfile();
   const currentUser = profile
@@ -176,39 +129,26 @@ export const ResultsTable = ({
       }
     : null;
 
-  // Fetch employees from 4 different endpoints
   useEffect(() => {
     const fetchEmployeesByRole = async () => {
       try {
-        // Fetch survey staff
         const surveyRes = await authFetch("/api/auth/employees/survey-staff");
         if (surveyRes.ok) {
           const surveyJson = await surveyRes.json();
           setSurveyStaff(surveyJson?.data || []);
         }
 
-        // Fetch planning head
         const planningRes = await authFetch("/api/auth/employees/pt-head");
         if (planningRes.ok) {
           const planningJson = await planningRes.json();
           setPlanningHead(planningJson?.data || []);
         }
 
-        // Fetch company leadership
         const leadershipRes = await authFetch("/api/auth/employees/leadership");
         if (leadershipRes.ok) {
           const leadershipJson = await leadershipRes.json();
           setCompanyLeadership(leadershipJson?.data || []);
         }
-
-        // // Fetch construction head
-        // const constructionRes = await authFetch(
-        //   "/api/auth/employees/construction-head",
-        // );
-        // if (constructionRes.ok) {
-        //   const constructionJson = await constructionRes.json();
-        //   setConstructionPresident(constructionJson?.data || []);
-        // }
       } catch (error) {
         console.error("Error fetching employees:", error);
       }
@@ -217,7 +157,6 @@ export const ResultsTable = ({
     fetchEmployeesByRole();
   }, []);
 
-  // Fetch data
   useEffect(() => {
     setLoading(true);
     const fetchData = async () => {
@@ -324,7 +263,6 @@ export const ResultsTable = ({
     setSurveyStaffId("");
     setPlanningHeadId("");
     setCompanyLeadershipId("");
-    // setConstructionPresidentId("");
     setIsCreateSignModalOpen(true);
   };
 
@@ -346,7 +284,6 @@ export const ResultsTable = ({
         surveyStaff: surveyStaffId || null,
         plHead: planningHeadId || null,
         companyLeadership: companyLeadershipId || null,
-        // constructionPresident: constructionPresidentId || null,
       };
 
       const res = await authFetch(`/api/construction/settlements/sign`, {
@@ -360,7 +297,6 @@ export const ResultsTable = ({
         throw new Error(err.message || "Tạo yêu cầu ký thất bại");
       }
 
-      // Gửi notification cho những user được chỉ định ký
       const recipientIds = [
         surveyStaffId,
         planningHeadId,
@@ -378,11 +314,9 @@ export const ResultsTable = ({
               selectedItemForSign.formNumber,
               currentUser?.fullname || "Admin",
             );
-            console.log("Notification sent to signers:", recipientIds);
           }
         } catch (notificationError) {
           console.error("Failed to send notification:", notificationError);
-          // Notification error không bao gồm API error, chỉ log warning
         }
       }
 
@@ -495,19 +429,19 @@ export const ResultsTable = ({
           if (found) onEdit(found);
         },
       },
-      {
-        content: "Tạo phiếu thu",
-        icon: CalculatorIcon,
-        className: "text-green-600 hover:bg-green-50",
-        onClick: (id: string) => {
-          const found = data.find((i) => i.id === id);
-          if (found) {
-            router.push(
-              `/installation-fee-collection?formCode=${found.formCode}&formNumber=${found.formNumber}`,
-            );
-          }
-        },
-      },
+      // {
+      //   content: "Tạo phiếu thu",
+      //   icon: CalculatorIcon,
+      //   className: "text-green-600 hover:bg-green-50",
+      //   onClick: (id: string) => {
+      //     const found = data.find((i) => i.id === id);
+      //     if (found) {
+      //       router.push(
+      //         `/installation-fee-collection?formCode=${found.formCode}&formNumber=${found.formNumber}`,
+      //       );
+      //     }
+      //   },
+      // },
     ];
   }, [data, onEdit]);
 
@@ -602,7 +536,6 @@ export const ResultsTable = ({
         selectedFormNumber={selectedFormNumber || ""}
       />
 
-      {/* Modal tạo yêu cầu ký duyệt - Thiết kế lại với HeroUI */}
       <Modal
         isOpen={isCreateSignModalOpen}
         onOpenChange={() => setIsCreateSignModalOpen(false)}
@@ -620,7 +553,6 @@ export const ResultsTable = ({
                 </p>
               </ModalHeader>
               <ModalBody className="py-4">
-                {/* Thông tin quyết toán */}
                 <Card className="bg-primary-50 dark:bg-primary-900/20 border border-primary-200">
                   <CardBody className="gap-3">
                     <div className="grid grid-cols-2 gap-4">
@@ -662,8 +594,6 @@ export const ResultsTable = ({
                 </Card>
 
                 <Divider className="my-2" />
-
-                {/* Chọn người ký */}
                 <div className="space-y-4">
                   <p className="text-sm font-semibold text-default-700">
                     Chọn người ký duyệt
@@ -709,21 +639,6 @@ export const ResultsTable = ({
                       setCompanyLeadershipId(selectedKey);
                     }}
                   />
-
-                  {/* <CustomSelect
-                    label="Giám đốc chi nhánh Xây lắp"
-                    options={constructionPresident.map((emp) => ({
-                      label: emp.name,
-                      value: emp.id,
-                    }))}
-                    selectedKeys={
-                      constructionPresidentId ? [constructionPresidentId] : []
-                    }
-                    onSelectionChange={(keys) => {
-                      const selectedKey = Array.from(keys)[0]?.toString() || "";
-                      setConstructionPresidentId(selectedKey);
-                    }}
-                  /> */}
                 </div>
               </ModalBody>
               <ModalFooter>

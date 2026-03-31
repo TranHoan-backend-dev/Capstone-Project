@@ -87,7 +87,6 @@ const EstimateApprovalPage = () => {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        // Lấy thông tin nhân viên khảo sát từ profile (useProfile)
         let surveyStaff = null;
 
         if (profile && profile.role === "survey_staff") {
@@ -96,12 +95,10 @@ const EstimateApprovalPage = () => {
             fullName: profile.fullname,
             departmentName: "Khảo sát",
           };
-          // Set surveyStaffId với id từ profile
           setSurveyStaffId(profile.id);
           console.log("Survey staff ID set from profile:", profile.id);
         }
 
-        // Lấy planning head từ endpoint
         let planningHeads = [];
         try {
           const planningRes = await authFetch("/api/auth/employees/pt-head");
