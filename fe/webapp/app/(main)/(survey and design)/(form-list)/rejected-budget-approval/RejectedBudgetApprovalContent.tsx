@@ -10,6 +10,7 @@ import { ReportHeader } from "@/components/reports/ReportHeader";
 import { SearchToolbar } from "@/components/reports/SearchToolbar";
 import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
 import { siteConfig } from "@/config/site";
+import { columnsReviewedBudget } from "@/config/table-columns/report/report-column";
 
 const RejectedBudgetApprovalContent = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -55,14 +56,14 @@ const RejectedBudgetApprovalContent = () => {
           <SearchToolbar
             onSearch={setSearchQuery}
             data={data}
-            columns={siteConfig.columnsReviewedBudget}
+            columns={columnsReviewedBudget}
             reportTitle="Danh sách đơn từ chối duyệt dự toán"
           />
 
           <ReportHeader title="DANH SÁCH ĐƠN TỪ CHỐI DUYỆT CHIẾT TÍNH KHU VỰC THÀNH PHỐ NAM ĐỊNH" />
 
           <DataTable
-            columns={siteConfig.columnsReviewedBudget}
+            columns={columnsReviewedBudget}
             data={data}
             searchQuery={searchQuery}
           />

@@ -10,6 +10,7 @@ import { ReportHeader } from "@/components/reports/ReportHeader";
 import { SearchToolbar } from "@/components/reports/SearchToolbar";
 import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
 import { siteConfig } from "@/config/site";
+import { columnsReviewedBudget } from "@/config/table-columns/report/report-column";
 
 const ReviewedBudgetListContent = () => {
   const [searchQueryApproved, setSearchQueryApproved] = useState("");
@@ -60,12 +61,12 @@ const ReviewedBudgetListContent = () => {
           <SearchToolbar
             onSearch={setSearchQueryApproved}
             data={data.approved}
-            columns={siteConfig.columnsReviewedBudget}
+            columns={columnsReviewedBudget}
             reportTitle="DANH SÁCH ĐƠN ĐÃ PHÊ DUYỆT DỰ TOÁN"
           />
           <ReportHeader title="DANH SÁCH ĐƠN ĐÃ PHÊ DUYỆT DỰ TOÁN" />
           <DataTable
-            columns={siteConfig.columnsReviewedBudget}
+            columns={columnsReviewedBudget}
             data={data.approved}
             searchQuery={searchQueryApproved}
           />
@@ -76,12 +77,12 @@ const ReviewedBudgetListContent = () => {
           <SearchToolbar
             onSearch={setSearchQueryRejected}
             data={data.rejected}
-            columns={siteConfig.columnsReviewedBudget}
+            columns={columnsReviewedBudget}
             reportTitle="DANH SÁCH ĐƠN TỪ CHỐI DUYỆT DỰ TOÁN"
           />
           <ReportHeader title="DANH SÁCH ĐƠN TỪ CHỐI DUYỆT DỰ TOÁN" />
           <DataTable
-            columns={siteConfig.columnsReviewedBudget}
+            columns={columnsReviewedBudget}
             data={data.rejected}
             searchQuery={searchQueryRejected}
           />

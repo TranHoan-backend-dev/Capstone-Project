@@ -10,6 +10,7 @@ import { ReportHeader } from "@/components/reports/ReportHeader";
 import { SearchToolbar } from "@/components/reports/SearchToolbar";
 import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
 import { siteConfig } from "@/config/site";
+import { columnsAssignedSurvay } from "@/config/table-columns/report/report-column";
 
 const AssignedSurveyListContent = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -55,14 +56,14 @@ const AssignedSurveyListContent = () => {
           <SearchToolbar
             onSearch={setSearchQuery}
             data={data}
-            columns={siteConfig.columnsAssignedSurvay}
+            columns={columnsAssignedSurvay}
             reportTitle="Danh sách đơn đã phân công khảo sát"
           />
 
           <ReportHeader title="DANH SÁCH ĐƠN ĐÃ PHÂN CÔNG KHẢO SÁT" />
 
           <DataTable
-            columns={siteConfig.columnsAssignedSurvay}
+            columns={columnsAssignedSurvay}
             data={data}
             searchQuery={searchQuery}
           />
