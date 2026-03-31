@@ -112,7 +112,7 @@ public class SettlementController {
     @ApiResponse(responseCode = "404", description = "Không tìm thấy bản quyết toán"),
     @ApiResponse(responseCode = "403", description = "Không có quyền thực hiện hành động này")
   })
-  @PreAuthorize("hasAnyAuthority('PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'SURVEY_STAFF')")
+  @PreAuthorize("hasAnyAuthority('PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'SURVEY_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD','CONSTRUCTION_DEPARTMENT_STAFF')")
   public ResponseEntity<WrapperApiResponse> sign(
     @AuthenticationPrincipal Jwt jwt,
     @RequestBody SignificanceRequest request,
