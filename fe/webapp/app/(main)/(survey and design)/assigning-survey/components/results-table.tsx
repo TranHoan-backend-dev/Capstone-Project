@@ -16,7 +16,8 @@ import { CallToast } from "@/components/ui/CallToast";
 interface Props {
   data: SurveyAssignmentItem[];
   page: number;
-  total: number;
+  totalItem: number;
+  totalPage: number;
   onPageChange: (page: number) => void;
   keyword: string;
   reloadKey: number;
@@ -27,7 +28,8 @@ export const SurveyAssignmentTable = ({
   data,
   keyword,
   page,
-  total,
+  totalItem,
+  totalPage,
   onPageChange,
   reloadKey,
   setReloadKey,
@@ -38,7 +40,6 @@ export const SurveyAssignmentTable = ({
   const [showEmployeeModal, setShowEmployeeModal] = useState(false);
   const [currentRow, setCurrentRow] = useState<string | null>(null);
   const pageSize = 10;
-  const totalPages = Math.ceil(total / pageSize);
 
   const handleOpenModal = (rowId: string) => {
     setCurrentRow(rowId);
@@ -153,11 +154,12 @@ export const SurveyAssignmentTable = ({
         data={data}
         hideHeader={true}
         isCollapsible={false}
+        headerSummary={`${data.length}`}
         paginationProps={{
-          total: totalPages,
+          total: totalPage,
           page: page,
           onChange: onPageChange,
-          summary: `${data.length}`,
+          summary: `${totalItem}`,
         }}
         renderCellAction={renderCell}
       />

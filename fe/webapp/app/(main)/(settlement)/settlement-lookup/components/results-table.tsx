@@ -135,7 +135,7 @@ export const ResultsTable = ({
     const role = currentUser?.role;
     return (
       role === "survey_staff" ||
-      role === "planning_teachnical_head" ||
+      role === "planning_technical_department_head" ||
       role === "company_leadership"
     );
   }, [currentUser]);

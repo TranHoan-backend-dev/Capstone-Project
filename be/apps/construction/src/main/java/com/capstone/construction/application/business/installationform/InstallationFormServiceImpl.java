@@ -216,6 +216,8 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       form.setHandoverBy(id);
     } else {
       form.setConstructedBy(id);
+      var s = form.getStatus();
+      s.setConstruction(ProcessingStatus.PENDING_FOR_APPROVAL);
     }
     ifRepo.save(form);
   }
