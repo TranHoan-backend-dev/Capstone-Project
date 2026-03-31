@@ -46,17 +46,18 @@ class ConstructionRequestServiceImplTest {
     var formCode = "LDN";
     var formNumber = "001";
 
-    when(customerService.checkExistenceOfCustomer(empId)).thenReturn(true);
     when(customerService.checkExistenceOfContract(contractId)).thenReturn(true);
-    when(employeeService.isEmployeeExisting(empId)).thenReturn(new WrapperApiResponse(200, "OK", true, OffsetDateTime.now()));
-    when(employeeService.getRoleOfEmployeeById(empId)).thenReturn(new WrapperApiResponse(200, "OK", RoleName.CONSTRUCTION_DEPARTMENT_STAFF.name(), OffsetDateTime.now()));
+    when(employeeService.isEmployeeExisting(empId))
+      .thenReturn(new WrapperApiResponse(200, "OK", true, OffsetDateTime.now()));
+    when(employeeService.getRoleOfEmployeeById(empId)).thenReturn(
+      new WrapperApiResponse(200, "OK", RoleName.CONSTRUCTION_DEPARTMENT_STAFF.name(), OffsetDateTime.now()));
 
-    InstallationForm form = new InstallationForm();
+    var form = new InstallationForm();
     form.setFormCode(formCode);
     form.setFormNumber(formNumber);
     when(ifRepo.findById(new InstallationFormId(formCode, formNumber))).thenReturn(Optional.of(form));
 
-    ConstructionRequest request = ConstructionRequest.builder()
+    var request = ConstructionRequest.builder()
       .id("REQ1")
       .contractId(contractId)
       .installationForm(form)
@@ -75,7 +76,6 @@ class ConstructionRequestServiceImplTest {
 
   @Test
   void should_ThrowException_When_ContractNotFound() {
-    when(customerService.checkExistenceOfCustomer(anyString())).thenReturn(true);
     when(customerService.checkExistenceOfContract(anyString())).thenReturn(false);
     assertThrows(IllegalArgumentException.class, () -> service.createPendingRequest("E1", "C1", "F", "N"));
   }
@@ -90,8 +90,10 @@ class ConstructionRequestServiceImplTest {
 
     when(repository.findById(id)).thenReturn(Optional.of(request));
     when(request.getInstallationForm()).thenReturn(form);
-    when(employeeService.isEmployeeExisting(empId)).thenReturn(new WrapperApiResponse(200, "OK", true, OffsetDateTime.now()));
-    when(employeeService.getRoleOfEmployeeById(empId)).thenReturn(new WrapperApiResponse(200, "OK", RoleName.CONSTRUCTION_DEPARTMENT_STAFF.name(), OffsetDateTime.now()));
+    when(employeeService.isEmployeeExisting(empId))
+      .thenReturn(new WrapperApiResponse(200, "OK", true, OffsetDateTime.now()));
+    when(employeeService.getRoleOfEmployeeById(empId)).thenReturn(
+      new WrapperApiResponse(200, "OK", RoleName.CONSTRUCTION_DEPARTMENT_STAFF.name(), OffsetDateTime.now()));
 
     // Act
     service.updatePendingRequest(id, empId);
@@ -106,7 +108,8 @@ class ConstructionRequestServiceImplTest {
     var id = "REQ1";
     var empId = "EMP1";
     when(repository.findById(id)).thenReturn(Optional.of(mock(ConstructionRequest.class)));
-    when(employeeService.isEmployeeExisting(empId)).thenReturn(new WrapperApiResponse(200, "OK", false, OffsetDateTime.now()));
+    when(employeeService.isEmployeeExisting(empId))
+      .thenReturn(new WrapperApiResponse(200, "OK", false, OffsetDateTime.now()));
 
     assertThrows(IllegalArgumentException.class, () -> service.updatePendingRequest(id, empId));
   }
@@ -116,8 +119,10 @@ class ConstructionRequestServiceImplTest {
     var id = "REQ1";
     var empId = "EMP1";
     when(repository.findById(id)).thenReturn(Optional.of(mock(ConstructionRequest.class)));
-    when(employeeService.isEmployeeExisting(empId)).thenReturn(new WrapperApiResponse(200, "OK", true, OffsetDateTime.now()));
-    when(employeeService.getRoleOfEmployeeById(empId)).thenReturn(new WrapperApiResponse(200, "OK", RoleName.ORDER_RECEIVING_STAFF.name(), OffsetDateTime.now()));
+    when(employeeService.isEmployeeExisting(empId))
+      .thenReturn(new WrapperApiResponse(200, "OK", true, OffsetDateTime.now()));
+    when(employeeService.getRoleOfEmployeeById(empId))
+      .thenReturn(new WrapperApiResponse(200, "OK", RoleName.ORDER_RECEIVING_STAFF.name(), OffsetDateTime.now()));
 
     assertThrows(IllegalArgumentException.class, () -> service.updatePendingRequest(id, empId));
   }

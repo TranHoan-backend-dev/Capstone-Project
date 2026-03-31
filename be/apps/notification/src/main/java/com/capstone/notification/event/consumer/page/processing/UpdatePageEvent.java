@@ -2,8 +2,8 @@ package com.capstone.notification.event.consumer.page.processing;
 
 import com.capstone.notification.event.consumer.page.message.UpdateEventMessage;
 import com.capstone.notification.event.producer.MessageProducer;
-import com.capstone.notification.event.websocket.GeneralEventConsumer;
-import com.capstone.notification.event.websocket.Topic;
+import com.capstone.notification.event.consumer.GeneralEventConsumer;
+import com.capstone.notification.event.consumer.Topic;
 import org.jspecify.annotations.NonNull;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;

@@ -10,6 +10,7 @@ import {
   SettlementFilterRequest,
   SettlementRequest,
 } from "@/types/construction/settlement.type";
+import { UpdateEstimateRequest } from "@/types";
 import { API_GATEWAY_URL } from "@/utils/constraints";
 import axios from "axios";
 
@@ -508,17 +509,72 @@ export const assignInstallationForm = async (
   return res.data;
 };
 
-export const getAllSettlements = (
+export const getPendingRegistrationForms = (
   accessToken: string,
   page: number,
   size: number,
   sort: string,
+) => {
+  return axios.get(
+    `${API_GATEWAY_URL}/construction/installation-forms/registration/pending`,
+    {
+      params: { page, size, sort },
+      headers: { Authorization: `Bearer ${accessToken}` },
+    },
+  );
+};
+
+export const getPendingEstimateForms = (
+  accessToken: string,
+  page: number,
+  size: number,
+  sort: string,
+) => {
+  return axios.get(
+    `${API_GATEWAY_URL}/construction/installation-forms/estimate/pending`,
+    {
+      params: { page, size, sort },
+      headers: { Authorization: `Bearer ${accessToken}` },
+    },
+  );
+};
+
+export const getReviewedEstimateForms = (accessToken: string) => {
+  return axios.get(
+    `${API_GATEWAY_URL}/construction/installation-forms/reviewed`,
+    {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    },
+  );
+};
+
+export const getAssignedForms = (
+  accessToken: string,
+  page: number,
+  size: number,
+  sort: string,
+) => {
+  return axios.get(
+    `${API_GATEWAY_URL}/construction/installation-forms/assigned`,
+    {
+      params: { page, size, sort },
+      headers: { Authorization: `Bearer ${accessToken}` },
+    },
+  );
+};
+
+
+export const getAllSettlements = (
+  accessToken: string,
+  page: number,
+  size: number,
+  // sort: string,
 ) =>
   axios.get(`${API_GATEWAY_URL}/construction/settlements`, {
     params: {
       page,
       size,
-      sort,
+      // sort,
     },
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -530,14 +586,14 @@ export const filterSettlements = async (
   filterRequest: any,
   page: number,
   size: number,
-  sort: string,
+  // sort: string,
 ) =>
   axios.get(`${API_GATEWAY_URL}/construction/settlements/filter`, {
     params: {
       ...filterRequest,
       page,
       size,
-      sort,
+      // sort,
       status: filterRequest.status?.[0],
     },
     headers: {
@@ -663,3 +719,103 @@ export const getDetailReceipt = (
     },
   );
 };
+
+export const getAllEstimates = (
+  accessToken: string,
+  page: number,
+  size: number,
+  sort: string,
+  keyword?: string | null,
+  from?: string,
+  to?: string,
+) =>
+  axios.get(`${API_GATEWAY_URL}/construction/estimates`, {
+    params: {
+      page,
+      size,
+      sort,
+      keyword,
+      from,
+      to,
+    },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+export const getEstimateById = (accessToken: string, estimateId: string) =>
+  axios.get(`${API_GATEWAY_URL}/construction/estimates/${estimateId}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+export const updateEstimate = (
+  accessToken: string,
+  estimateId: string,
+  data: UpdateEstimateRequest,
+) =>
+  axios.put(`${API_GATEWAY_URL}/construction/estimates/${estimateId}`, data, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+export const approveEstimate = (
+  accessToken: string,
+  estimateId: string,
+  status: string,
+) =>
+  axios.patch(
+    `${API_GATEWAY_URL}/construction/estimates/${estimateId}`,
+    status,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    },
+  );
+
+export const requestEstimateSignature = (
+  accessToken: string,
+  estId: string,
+  surveyStaff: string,
+  plHead: string,
+  companyLeadership: string,
+) =>
+  axios.post(
+    `${API_GATEWAY_URL}/construction/estimates/sign`,
+    {
+      estId,
+      surveyStaff,
+      plHead,
+      companyLeadership,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    },
+  );
+
+export const signEstimate = (
+  accessToken: string,
+  estimateId: string,
+  electronicSignUrl: string,
+) =>
+  axios.patch(
+    `${API_GATEWAY_URL}/construction/estimates/sign`,
+    {
+      estimateId,
+      electronicSignUrl,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    },
+  );

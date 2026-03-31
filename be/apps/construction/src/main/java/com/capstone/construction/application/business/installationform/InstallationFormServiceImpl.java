@@ -2,14 +2,16 @@ package com.capstone.construction.application.business.installationform;
 
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.enumerate.ProcessingStatus;
-import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.common.utils.SharedMessage;
+import com.capstone.common.utils.Utils;
 import com.capstone.construction.application.business.estimate.CostEstimateService;
 import com.capstone.construction.application.dto.request.estimate.CreateRequest;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import com.capstone.construction.application.dto.response.installationform.NewInstallationFormResponse;
+import com.capstone.construction.application.dto.response.installationform.ReviewedInstallationFormsResponse;
 import com.capstone.construction.domain.model.InstallationForm;
 import com.capstone.construction.domain.model.WaterSupplyNetwork;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
@@ -33,8 +35,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 
 @AppLog
 @Service
@@ -101,8 +101,8 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   @Override
   public Page<InstallationFormListResponse> getInstallationForms(Pageable pageable, @NonNull BaseFilterRequest request) {
     log.info("Fetching paginated installation forms with pageable: {}", pageable);
-    var startDate = parseFrom(request.from());
-    var endDate = parseTo(request.to());
+    var startDate = Utils.parseFrom(request.from());
+    var endDate = Utils.parseTo(request.to());
 
     var result = (startDate != null || endDate != null || (request.keyword() != null && !request.keyword().isBlank())) ? ifRepo.findAll(
       InstallationFormRepository.search(request.keyword(), startDate, endDate, null, null),
@@ -117,30 +117,8 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   }
 
   @Override
-  public Page<InstallationFormListResponse> getConstructionRequestsList(Pageable pageable,
-                                                                        @NonNull BaseFilterRequest request) {
-    log.info("Fetching paginated construction request with pageable: {}", pageable);
-    var startDate = parseFrom(request.from());
-    var endDate = parseTo(request.to());
-    var specification = InstallationFormRepository.search(
-      request.keyword(), startDate, endDate,
-      ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING);
-
-    var response = (startDate != null || endDate != null || (request.keyword() != null && !request.keyword().isBlank()))
-      ? ifRepo.findAll(specification, pageable)
-      : ifRepo.findByStatus_ContractAndStatus_Construction(ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING,
-      pageable);
-    var result = response.getContent()
-      .stream()
-      .map(this::mapToResponse)
-      .toList();
-
-    return new PageImpl<>(result, pageable, response.getTotalElements());
-  }
-
-  @Override
   @Transactional(rollbackFor = Exception.class)
-  public void approveInstallationForm(String userId, @NonNull ApproveRequest request) {
+  public void reviewInstallationForm(String userId, @NonNull ApproveRequest request) {
     log.info("Approving and assigning installation form with number: {}", request.formNumber());
     var order = ifRepo.findById(new InstallationFormId(request.formCode(), request.formNumber()))
       .orElseThrow(() -> new IllegalArgumentException(String.format(SharedMessage.MES_24, request.formNumber(), request.formCode())));
@@ -189,6 +167,41 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   }
 
   @Override
+  public Page<InstallationFormListResponse> findByEstimateStatusPending(Pageable pageable) {
+    log.info("Fetching installation forms with estimate status PENDING_FOR_APPROVAL");
+    var result = ifRepo.findByEstimateStatus_Pending(pageable);
+    return result.map(this::mapToResponse);
+  }
+
+  @Override
+  public Page<InstallationFormListResponse> findByRegistrationStatusPending(Pageable pageable) {
+    log.info("Fetching installation forms with registration status PENDING_FOR_APPROVAL");
+    var result = ifRepo.findByRegistrationStatus_Pending(pageable);
+    return result.map(this::mapToResponse);
+  }
+
+  @Override
+  public ReviewedInstallationFormsResponse getReviewedInstallationFormsList() {
+    log.info("Fetching installation forms with estimate status APPROVED and REJECTED");
+    var approved = ifRepo.findByEstimateStatus(ProcessingStatus.APPROVED.name())
+      .stream()
+      .map(this::mapToResponse)
+      .toList();
+    var rejected = ifRepo.findByEstimateStatus(ProcessingStatus.REJECTED.name())
+      .stream()
+      .map(this::mapToResponse)
+      .toList();
+    return new ReviewedInstallationFormsResponse(approved, rejected);
+  }
+
+  @Override
+  public Page<InstallationFormListResponse> findByHandoverByIsNotNull(Pageable pageable) {
+    log.info("Fetching installation forms that have been assigned to survey staff");
+    var result = ifRepo.findByHandoverByIsNotNull(pageable);
+    return result.map(this::mapToResponse);
+  }
+
+  @Override
   public Boolean checkAnyFormsBelongedToNetwork(String id) {
     log.info("Checking if installation form with id: {}", id);
     return ifRepo.existsByNetwork_BranchId(id);
@@ -213,15 +226,28 @@ public class InstallationFormServiceImpl implements InstallationFormService {
     return status;
   }
 
+  @Override
+  @Transactional(rollbackFor = Exception.class)
+  public void updateContractStatus(String formCode, String formNumber) {
+    log.info("Updating contract status for formCode: {} and formNumber: {}", formCode, formNumber);
+    var installationForm = ifRepo.findById(new InstallationFormId(formCode, formNumber))
+      .orElseThrow(() -> new IllegalArgumentException(Message.PT_36));
+
+    // Update contract status to APPROVED
+    installationForm.getStatus().setContract(ProcessingStatus.APPROVED);
+    ifRepo.save(installationForm);
+  }
+
   private @NonNull InstallationFormListResponse mapToResponse(@NonNull InstallationForm entity) {
     log.info("Get staff who will handle this request");
     var creatorFullName = empSrv.getEmployeeNameById(entity.getCreatedBy());
-    log.info("Creator: {}", creatorFullName);
-    var handOverByFullName = entity.getHandoverBy() != null ? empSrv.getEmployeeNameById(entity.getHandoverBy()) : null;
+    var handoverByFullName = entity.getHandoverBy() != null ? empSrv.getEmployeeNameById(entity.getHandoverBy()) : null;
     var constructionEmployeeName = entity.getConstructedBy() != null ? empSrv.getEmployeeNameById(entity.getConstructedBy()) : null;
     var unknown = "Trống";
+    log.info("Creator: {}, handover: {}, construction captain: {}", creatorFullName, handoverByFullName, constructionEmployeeName);
 
     return new InstallationFormListResponse(
+      null,
       entity.getFormCode(),
       entity.getFormNumber(),
       entity.getCustomerName(),
@@ -230,7 +256,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       entity.getScheduleSurveyAt() == null ? null : entity.getScheduleSurveyAt().toString(),
       entity.getCreatedAt().toString(),
       entity.getHandoverBy(),
-      (handOverByFullName != null && handOverByFullName.data() != null) ? handOverByFullName.data().toString()
+      (handoverByFullName != null && handoverByFullName.data() != null) ? handoverByFullName.data().toString()
         : unknown,
       entity.getCreatedBy(),
       (creatorFullName != null && creatorFullName.data() != null) ? creatorFullName.data().toString() : unknown,
@@ -259,23 +285,5 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       log.warn("Water meter not found: {}", id);
     }
     return exists;
-  }
-
-  private LocalDateTime parseFrom(String from) {
-    LocalDateTime startDate = null;
-
-    if (from != null) {
-      startDate = LocalDate.parse(from, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay();
-    }
-    return startDate;
-  }
-
-  private LocalDateTime parseTo(String to) {
-    LocalDateTime endDate = null;
-
-    if (to != null) {
-      endDate = LocalDate.parse(to, DateTimeFormatter.ISO_LOCAL_DATE).atTime(LocalTime.MAX);
-    }
-    return endDate;
   }
 }

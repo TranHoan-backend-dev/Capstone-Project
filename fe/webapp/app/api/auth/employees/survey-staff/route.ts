@@ -11,11 +11,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const { searchParams } = new URL(req.url);
-    const page = Number(searchParams.get("page") ?? 0);
-    const size = Number(searchParams.get("size") ?? 10);
-
-    const response = await getSurveyStaff(accessToken, page, size);
+    const response = await getSurveyStaff(accessToken);
 
     return NextResponse.json(response.data);
   } catch (error: any) {

@@ -43,11 +43,19 @@ export default function MeterInputInfoCard({
             <Icon name="card-account-details-outline" size={20} color="#1E88E5" style={{ marginRight: 8 }} />
             <Text style={styles.label}>Mã KH</Text>
           </View>
+          <View style={[styles.valueCol, { flex: 2.5 }]}>
+            <Text style={[styles.value, { color: '#EF4444', fontWeight: 'bold', flex: 1 }]} numberOfLines={2}>{customerId}</Text>
+          </View>
+        </View>
+        <Divider />
+
+        <View style={styles.row}>
+          <View style={styles.labelCol}>
+            <Icon name="numeric" size={20} color="#1E88E5" style={{ marginRight: 8 }} />
+            <Text style={styles.label}>STT</Text>
+          </View>
           <View style={styles.valueCol}>
-            <Text style={[styles.value, { color: '#EF4444', fontWeight: 'bold' }]}>{customerId}</Text>
-            <View style={{ flex: 1 }} />
-            <Text style={{ color: '#333' }}>STT</Text>
-            <Text style={[styles.value, { color: '#1E88E5', fontWeight: 'bold', marginLeft: 8 }]}>{stt}</Text>
+            <Text style={[styles.value, { color: '#1E88E5', fontWeight: 'bold' }]}>{stt}</Text>
           </View>
         </View>
         <Divider />

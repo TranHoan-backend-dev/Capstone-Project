@@ -85,10 +85,10 @@ public class Users {
     this.username = username;
   }
 
-  public void setElectronicSigningUrl(String value) {
-    requireNonNullAndNotEmpty(value, Message.PT_14);
-    this.electronicSigningUrl = value;
-  }
+//  public void setElectronicSigningUrl(String value) {
+//    requireNonNullAndNotEmpty(value, Message.PT_14);
+//    this.electronicSigningUrl = value;
+//  }
 
   public void setRole(Roles role) {
     Objects.requireNonNull(role, Message.PT_03);
@@ -112,9 +112,9 @@ public class Users {
     }
   }
 
-  public boolean isAccountNonLocked() {
-    return isLocked;
-  }
+//  public boolean isAccountNonLocked() {
+//    return isLocked;
+//  }
 
   public static Users create(@NonNull Consumer<UsersBuilder> builder) {
     var instance = new UsersBuilder();
@@ -165,20 +165,20 @@ public class Users {
       return this;
     }
 
-    public UsersBuilder lockedReason(String lockedReason) {
-      instance.setLockedReason(lockedReason);
-      return this;
-    }
-
-    public UsersBuilder lockedAt(LocalDateTime lockedAt) {
-      instance.setLockedAt(lockedAt);
-      return this;
-    }
-
-    public UsersBuilder electronicSigningUrl(String electronicSigningUrl) {
-      instance.setElectronicSigningUrl(electronicSigningUrl);
-      return this;
-    }
+//    public UsersBuilder lockedReason(String lockedReason) {
+//      instance.setLockedReason(lockedReason);
+//      return this;
+//    }
+//
+//    public UsersBuilder lockedAt(LocalDateTime lockedAt) {
+//      instance.setLockedAt(lockedAt);
+//      return this;
+//    }
+//
+//    public UsersBuilder electronicSigningUrl(String electronicSigningUrl) {
+//      instance.setElectronicSigningUrl(electronicSigningUrl);
+//      return this;
+//    }
 
     public Users build() {
       return instance;

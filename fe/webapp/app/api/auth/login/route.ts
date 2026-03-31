@@ -87,7 +87,6 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     let message = "Đăng nhập thất bại";
     let status = 401;
-    console.error("Login error:", error);
 
     if (axios.isAxiosError(error)) {
       if (error.response?.status === 401) {

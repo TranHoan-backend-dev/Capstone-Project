@@ -105,4 +105,8 @@ public class UsersUseCase {
   public List<NameAndIdResponse> getListOfCompanyLeaderShips() {
     return userService.getAllLeaderShips();
   }
+
+  public List<NameAndIdResponse> getListOfConstructionStaffs() {
+    return userService.getAllConstructionStaffs();
+  }
 }

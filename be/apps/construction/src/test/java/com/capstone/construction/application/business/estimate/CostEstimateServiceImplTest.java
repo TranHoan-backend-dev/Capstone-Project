@@ -1,7 +1,7 @@
 package com.capstone.construction.application.business.estimate;
 
 import com.capstone.common.enumerate.ProcessingStatus;
-import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.construction.application.dto.request.estimate.CreateRequest;
 import com.capstone.construction.application.dto.request.estimate.UpdateRequest;
 import com.capstone.construction.domain.model.CostEstimate;
@@ -72,8 +72,7 @@ class CostEstimateServiceImplTest {
       "user-123",
       formCode,
       formNumber,
-      "METER-123"
-    );
+      "METER-123");
 
     updateRequest = new UpdateRequest(
       new UpdateRequest.GeneralInformation(
@@ -93,11 +92,9 @@ class CostEstimateServiceImplTest {
         120,
         null,
         "SN123-UPDATED",
-        "METER-123-UPDATED"
-      ),
+        "METER-123-UPDATED"),
       Collections.emptyList(),
-      true
-    );
+      true);
 
     installationForm = new InstallationForm();
     installationForm.setFormCode(formCode);
@@ -261,4 +258,3 @@ class CostEstimateServiceImplTest {
     verify(eRepo).findAll(pageable);
   }
 }
-

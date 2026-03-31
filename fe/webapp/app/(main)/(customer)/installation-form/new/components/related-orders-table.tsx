@@ -15,6 +15,7 @@ import {
 import { INSTALLATION_FORM_NEW_COLUMN } from "@/config/table-columns";
 import { NewInstallationFormItem, NewInstallationFormResponse } from "@/types";
 import { formatDate1 } from "@/utils/format";
+import { authFetch } from "@/utils/authFetch";
 
 interface Props {
   keyword: string;
@@ -53,7 +54,7 @@ export const RelatedOrdersTable = ({ keyword, reloadKey }: Props) => {
           params.append("keyword", trimmedKeyword);
         }
 
-        const res = await fetch(
+        const res = await authFetch(
           `/api/construction/installation-forms?${params.toString()}`,
         );
 

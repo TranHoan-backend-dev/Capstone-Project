@@ -1,6 +1,6 @@
 package com.capstone.customer.service.impl;
 
-import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.customer.dto.request.ContractFilterRequest;
 import com.capstone.customer.dto.request.contract.CreateRequest;
 import com.capstone.customer.dto.response.ContractResponse;
 import com.capstone.customer.model.Customer;
@@ -21,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -45,53 +46,41 @@ class ContractServiceImplTest {
 
   private Pageable pageable;
   private WaterUsageContract contract;
-  private Customer customer;
-  private LocalDateTime now;
 
   @BeforeEach
   void setUp() {
     pageable = PageRequest.of(0, 10);
-    customer = mock(Customer.class);
-    when(customer.getName()).thenReturn("Test Customer");
-    when(customer.getCustomerId()).thenReturn("CUST001");
+    var customer = mock(Customer.class);
+    lenient().when(customer.getName()).thenReturn("Test Customer");
+    lenient().when(customer.getCustomerId()).thenReturn("CUST001");
 
-    now = LocalDateTime.now();
+    var now = LocalDateTime.now();
     contract = mock(WaterUsageContract.class);
     lenient().when(contract.getContractId()).thenReturn("CON001");
-    lenient().when(contract.getCustomer()).thenReturn(customer);
     lenient().when(contract.getFormCode()).thenReturn("INST001");
+    lenient().when(contract.getFormNumber()).thenReturn("NUM001");
     lenient().when(contract.getCreatedAt()).thenReturn(now);
     lenient().when(contract.getUpdatedAt()).thenReturn(now);
     lenient().when(contract.getRepresentative()).thenReturn(Collections.emptyList());
+    lenient().when(contract.getAppendix()).thenReturn(Collections.emptyList());
   }
 
-//  @Test
-//  @DisplayName("Should create contract successfully")
-//  void should_CreateContract_When_InputIsValid() {
-//    // Given
-//    var request = new CreateRequest("CON001", "CUST001", "INST001", Collections.emptyList());
-//    when(customerRepository.findById("CUST001")).thenReturn(Optional.of(customer));
-//    when(contractRepository.save(any(WaterUsageContract.class))).thenReturn(contract);
-//
-//    // When
-//    var result = contractService.createContract(request);
-//
-//    // Then
-//    assertThat(result).isNotNull();
-//    assertThat(result.contractId()).isEqualTo("CON001");
-//    verify(contractRepository).save(any(WaterUsageContract.class));
-//  }
+  @Test
+  @DisplayName("Should create contract successfully")
+  void should_CreateContract_When_InputIsValid() {
+    // Given
+    // CreateRequest: contractId, formCode, formNumber, representatives, appendix
+    var request = new CreateRequest("CON001", "INST001", "NUM001", Collections.emptyList(), Collections.emptyList());
+    when(contractRepository.save(any(WaterUsageContract.class))).thenReturn(contract);
 
-//  @Test
-//  @DisplayName("Should throw exception when creating contract with non-existent customer")
-//  void should_ThrowException_When_CreateContractWithInvalidCustomer() {
-//    // Given
-//    var request = new CreateRequest("CON001", "INVALID", "INST001", Collections.emptyList());
-//    when(customerRepository.findById("INVALID")).thenReturn(Optional.empty());
-//
-//    // When & Then
-//    assertThrows(IllegalArgumentException.class, () -> contractService.createContract(request));
-//  }
+    // When
+    var result = contractService.createContract(request);
+
+    // Then
+    assertThat(result).isNotNull();
+    assertThat(result.contractId()).isEqualTo("CON001");
+    verify(contractRepository).save(any(WaterUsageContract.class));
+  }
 
   @Test
   @DisplayName("Should delete contract successfully")
@@ -162,7 +151,7 @@ class ContractServiceImplTest {
   @DisplayName("Should return all contracts without filter when request is empty")
   void should_ReturnAllContracts_When_RequestIsEmpty() {
     // Given
-    var request = new BaseFilterRequest(null, null, null);
+    var request = new ContractFilterRequest(null, null, null, null, null, null, null, null, null, null, null);
     Page<WaterUsageContract> contractPage = new PageImpl<>(List.of(contract));
     when(contractRepository.findAll(eq(pageable))).thenReturn(contractPage);
 
@@ -178,7 +167,7 @@ class ContractServiceImplTest {
   @DisplayName("Should return all contracts without filter when filter fields are blank/null")
   void should_ReturnAllContracts_When_FilterFieldsAreBlank() {
     // Given
-    var request = new BaseFilterRequest("  ", "", "  ");
+    var request = new ContractFilterRequest("  ", "", "  ", null, null, null, null, null, null, null, null);
     Page<WaterUsageContract> contractPage = new PageImpl<>(List.of(contract));
     when(contractRepository.findAll(eq(pageable))).thenReturn(contractPage);
 
@@ -194,7 +183,7 @@ class ContractServiceImplTest {
   @DisplayName("Should return filtered contracts when keyword is provided")
   void should_ReturnFilteredContracts_When_KeywordIsProvided() {
     // Given
-    var request = new BaseFilterRequest("search", null, null);
+    var request = new ContractFilterRequest("search", null, null, null, null, null, null, null, null, null, null);
     Page<WaterUsageContract> contractPage = new PageImpl<>(List.of(contract));
     when(contractRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(contractPage);
 
@@ -210,7 +199,8 @@ class ContractServiceImplTest {
   @DisplayName("Should return filtered contracts when startDate is provided")
   void should_ReturnFilteredContracts_When_StartDateIsProvided() {
     // Given
-    var request = new BaseFilterRequest(null, "01-01-2023", null);
+    // from is 8th parameter
+    var request = new ContractFilterRequest(null, null, null, null, null, null, null, "01-01-2023 00:00:00", null, null, null);
     Page<WaterUsageContract> contractPage = new PageImpl<>(List.of(contract));
     when(contractRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(contractPage);
 
@@ -226,7 +216,8 @@ class ContractServiceImplTest {
   @DisplayName("Should return filtered contracts when endDate is provided")
   void should_ReturnFilteredContracts_When_EndDateIsProvided() {
     // Given
-    var request = new BaseFilterRequest(null, null, "31-12-2023");
+    // to is 9th parameter
+    var request = new ContractFilterRequest(null, null, null, null, null, null, null, null, "31-12-2023 23:59:59", null, null);
     Page<WaterUsageContract> contractPage = new PageImpl<>(List.of(contract));
     when(contractRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(contractPage);
 
@@ -242,7 +233,7 @@ class ContractServiceImplTest {
   @DisplayName("Should return all contracts without filter when all criteria provided")
   void should_ReturnFilteredContracts_When_AllCriteriaProvided() {
     // Given
-    var request = new BaseFilterRequest("search", "01-01-2023", "30-12-2023");
+    var request = new ContractFilterRequest("search", null, null, null, null, null, null, "01-01-2023 00:00:00", "30-12-2023 23:59:59", null, null);
     Page<WaterUsageContract> contractPage = new PageImpl<>(List.of(contract));
     when(contractRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(contractPage);
 
@@ -258,49 +249,57 @@ class ContractServiceImplTest {
   @DisplayName("Should throw exception when date format is invalid in 'from'")
   void should_ThrowException_When_FromDateFormatIsInvalid() {
     // Given
-    var request = new BaseFilterRequest(null, "2023-01-01", null);
+    var request = new ContractFilterRequest(null, null, null, null, null, null, null, "2023-01-01", null, null, null);
 
     // When & Then
-    assertThrows(java.time.format.DateTimeParseException.class, () -> contractService.getAllContracts(pageable, request));
+    assertThrows(DateTimeParseException.class, () -> contractService.getAllContracts(pageable, request));
   }
 
   @Test
   @DisplayName("Should throw exception when date format is invalid in 'to'")
   void should_ThrowException_When_ToDateFormatIsInvalid() {
     // Given
-    var request = new BaseFilterRequest(null, null, "2023/12/31");
+    var request = new ContractFilterRequest(null, null, null, null, null, null, null, null, "2023/12/31", null, null);
 
     // When & Then
-    assertThrows(java.time.format.DateTimeParseException.class, () -> contractService.getAllContracts(pageable, request));
+    assertThrows(java.time.format.DateTimeParseException.class,
+      () -> contractService.getAllContracts(pageable, request));
   }
 
   @Test
-  @DisplayName("Should return filtered contracts when only 'from' date is provided")
-  void should_ReturnFilteredContracts_When_OnlyFromIsProvided() {
+  @DisplayName("Should return contract IDs by form code and number")
+  void should_ReturnContractIds_When_FormCodeAndNumberProvided() {
     // Given
-    var request = new BaseFilterRequest(null, "01-01-2023", null);
-    Page<WaterUsageContract> contractPage = new PageImpl<>(List.of(contract));
-    when(contractRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(contractPage);
+    var formCode = "INST001";
+    var formNumber = "NUM001";
+    List<String> expectedIds = List.of("CON001", "CON002");
+    when(contractRepository.findContractIdsByFormCodeAndFormNumber(formCode, formNumber)).thenReturn(expectedIds);
 
     // When
-    contractService.getAllContracts(pageable, request);
+    var result = contractService.findContractIdsByFormCodeAndFormNumber(formCode, formNumber);
 
     // Then
-    verify(contractRepository).findAll(any(Specification.class), eq(pageable));
+    assertThat(result).isNotNull();
+    assertThat(result).hasSize(2);
+    assertThat(result).containsExactly("CON001", "CON002");
+    verify(contractRepository).findContractIdsByFormCodeAndFormNumber(formCode, formNumber);
   }
 
   @Test
-  @DisplayName("Should return filtered contracts when only 'to' date is provided")
-  void should_ReturnFilteredContracts_When_OnlyToIsProvided() {
+  @DisplayName("Should return empty list when no contract matches form code and number")
+  void should_ReturnEmptyList_When_NoContractMatchesForm() {
     // Given
-    var request = new BaseFilterRequest(null, null, "31-12-2023");
-    Page<WaterUsageContract> contractPage = new PageImpl<>(List.of(contract));
-    when(contractRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(contractPage);
+    var formCode = "NON_EXISTENT";
+    var formNumber = "000";
+    when(contractRepository.findContractIdsByFormCodeAndFormNumber(formCode, formNumber))
+      .thenReturn(Collections.emptyList());
 
     // When
-    contractService.getAllContracts(pageable, request);
+    var result = contractService.findContractIdsByFormCodeAndFormNumber(formCode, formNumber);
 
     // Then
-    verify(contractRepository).findAll(any(Specification.class), eq(pageable));
+    assertThat(result).isNotNull();
+    assertThat(result).isEmpty();
+    verify(contractRepository).findContractIdsByFormCodeAndFormNumber(formCode, formNumber);
   }
 }

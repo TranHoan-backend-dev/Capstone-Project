@@ -51,8 +51,7 @@ public class ContractController {
   })
   @DeleteMapping("/{id}")
   public ResponseEntity<WrapperApiResponse> deleteContract(
-    @PathVariable @Parameter(description = "Mã hợp đồng cần xóa", example = "HD001") String id
-  ) {
+    @PathVariable @Parameter(description = "Mã hợp đồng cần xóa", example = "HD001") String id) {
     log.info("REST request to delete contract: {}", id);
     contractService.deleteContract(id);
     return Utils.returnOkResponse("Xóa hợp đồng thành công", null);
@@ -64,8 +63,7 @@ public class ContractController {
   })
   @GetMapping("/{id}")
   public ResponseEntity<WrapperApiResponse> getContractById(
-    @PathVariable @Parameter(description = "Mã hợp đồng cần lấy thông tin", example = "HD001") String id
-  ) {
+    @PathVariable @Parameter(description = "Mã hợp đồng cần lấy thông tin", example = "HD001") String id) {
     log.info("REST request to get contract: {}", id);
     var response = contractService.getContractById(id);
     return Utils.returnOkResponse("Lấy thông tin hợp đồng thành công", response);
@@ -83,5 +81,23 @@ public class ContractController {
     log.info("REST request to get all contracts with pagination: {}", pageable);
     var response = contractService.getAllContracts(pageable, request);
     return Utils.returnOkResponse("Lấy danh sách hợp đồng thành công", response);
+  }
+
+  @Operation(summary = "Lấy danh sách ID hợp đồng theo mã form và số form", description = "Truy xuất danh sách ID hợp đồng dựa trên mã form và số form.", responses = {
+    @ApiResponse(responseCode = "200", description = "Lấy danh sách ID hợp đồng thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)))
+  })
+  @GetMapping("/ids")
+  public ResponseEntity<WrapperApiResponse> getContractIdsByForms(
+    @RequestParam @Parameter(description = "Mã form", example = "CN01") String formCode,
+    @RequestParam @Parameter(description = "Số form", example = "001/2024") String formNumber) {
+    log.info("REST request to get contract IDs by formCode: {} and formNumber: {}", formCode, formNumber);
+    var response = contractService.findContractIdsByFormCodeAndFormNumber(formCode, formNumber);
+    return Utils.returnOkResponse("Lấy danh sách ID hợp đồng thành công", response);
+  }
+
+  @GetMapping("/exist")
+  public Boolean isExisting(@RequestParam String id) {
+    log.info("Check existence of contract: {}", id);
+    return contractService.isExist(id);
   }
 }

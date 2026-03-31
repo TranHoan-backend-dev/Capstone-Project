@@ -4,7 +4,7 @@ import React from "react";
 
 interface ReportHeaderProps {
   title: string;
-  dateRange: string;
+  dateRange?: string;
 }
 
 export const ReportHeader = ({ title, dateRange }: ReportHeaderProps) => {
@@ -16,9 +16,11 @@ export const ReportHeader = ({ title, dateRange }: ReportHeaderProps) => {
       <h3 className="text-lg md:text-xl font-bold uppercase text-gray-900 dark:text-white transition-colors">
         {title}
       </h3>
-      <p className="text-xs md:text-sm text-gray-600 dark:text-white/100 italic">
-        {dateRange}
-      </p>
+      {dateRange && (
+        <p className="text-xs md:text-sm text-gray-600 dark:text-white/100 italic">
+          {dateRange}
+        </p>
+      )}
     </div>
   );
 };

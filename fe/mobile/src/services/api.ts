@@ -7,18 +7,32 @@ const BASE_URL = CONFIG.API_BASE_URL;
 // Global variables for single refresh promise management
 let isRefreshing = false;
 let refreshPromise: Promise<string | null> | null = null;
+let logoutHandler: (() => void) | null = null;
 
-export const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
+/**
+ * Register a callback to be called when the session has expired and refresh fails.
+ * This allows the AuthContext to reset its state.
+ */
+export const setLogoutHandler = (handler: () => void) => {
+  logoutHandler = handler;
+};
+
+export interface ApiOptions extends RequestInit {
+  silent?: boolean;
+}
+
+export const apiFetch = async (endpoint: string, options: ApiOptions = {}) => {
+  const { silent, ...fetchOptions } = options;
   try {
     console.log('hehe')
     const accessToken = await TokenManager.getAccessToken();
 
-    const isFormData = options.body instanceof FormData;
+    const isFormData = fetchOptions.body instanceof FormData;
 
     // Build initial headers (Authorization and Content-Type)
     const headers: Record<string, string> = {
       ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
-      ...((options.headers as Record<string, string>) || {}),
+      ...((fetchOptions.headers as Record<string, string>) || {}),
     };
 
     if (accessToken) {
@@ -28,10 +42,10 @@ export const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
       console.log('[API Debug] NO Access Token found!');
     }
 
-    console.log(`[API Request] ${options.method || 'GET'} ${BASE_URL}${endpoint}`);
+    console.log(`[API Request] ${fetchOptions.method || 'GET'} ${BASE_URL}${endpoint}`);
 
     let response = await fetch(`${BASE_URL}${endpoint}`, {
-      ...options,
+      ...fetchOptions,
       headers,
     });
 
@@ -46,7 +60,6 @@ export const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
             const refreshToken = await TokenManager.getRefreshToken();
             if (!refreshToken) return null;
 
-            // Use correct endpoint mapping (likely /auth/auth/refresh-token based on context)
             const refreshResponse = await fetch(`${BASE_URL}/auth/auth/refresh-token`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -69,25 +82,25 @@ export const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
             return null;
           } finally {
             isRefreshing = false;
-            refreshPromise = null;
           }
         })();
       }
 
       const newAccessToken = await refreshPromise;
+      if (!isRefreshing) refreshPromise = null;
 
       if (newAccessToken) {
         console.log('[API] Retrying original request with new token...');
         headers.Authorization = `Bearer ${newAccessToken}`;
-
-        // Retry the original request with new token
         response = await fetch(`${BASE_URL}${endpoint}`, {
-          ...options,
+          ...fetchOptions,
           headers,
         });
       } else {
-        // Refresh failed, clear session and throw error
+        // Refresh failed, clear session and force logout
+        console.log('[API] Token refresh failed permanently. Logging out...');
         await TokenManager.logout();
+        if (logoutHandler) logoutHandler();
         throw new Error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
       }
     }
@@ -101,7 +114,7 @@ export const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
         console.error('[API] Parse error data failed:', e.message);
       }
 
-      if (!endpoint.includes('/auth/login')) {
+      if (!silent && !endpoint.includes('/auth/login')) {
         showToast.error(errorMessage);
       }
       throw new Error(errorMessage);
@@ -110,12 +123,12 @@ export const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
     const data = await response.json();
     return data;
   } catch (error: any) {
-    if (error.message === 'Network request failed') {
-      showToast.error('Không thể kết nối máy chủ. Vui lòng kiểm tra mạng (Wifi/4G).');
-    } else if (error.message.includes('Phiên đăng nhập')) {
-      // Skip toast if session expired error which already might show a message or redirect to login
-    } else if (!error.message.includes('Lỗi') && !endpoint.includes('login')) {
-      showToast.error('Có lỗi xảy ra, vui lòng thử lại sau.');
+    if (!silent) {
+      if (error.message === 'Network request failed') {
+        showToast.error('Không thể kết nối máy chủ. Vui lòng kiểm tra mạng.');
+      } else if (!error.message.includes('Phiên đăng nhập') && !error.message.includes('Lỗi') && !endpoint.includes('login')) {
+        showToast.error('Có lỗi xảy ra, vui lòng thử lại sau.');
+      }
     }
     throw error;
   }

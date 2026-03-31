@@ -133,6 +133,9 @@ public class WaterSupplyNetworkController {
 
   @Operation(hidden = true)
   @GetMapping("/name/{id}")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'SURVEY_STAFF', " +
+    "'ORDER_RECEIVING_STAFF', 'FINANCE_DEPARTMENT', 'CONSTRUCTION_DEPARTMENT_HEAD','CONSTRUCTION_DEPARTMENT_STAFF', " +
+    "'BUSINESS_DEPARTMENT_HEAD', 'METER_INSPECTION_STAFF', 'COMPANY_LEADERSHIP')")
   public String getName(@PathVariable String id) {
     log.info("REST request to get name: {}", id);
     var name = service.getName(id);

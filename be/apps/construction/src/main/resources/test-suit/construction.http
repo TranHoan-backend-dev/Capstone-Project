@@ -1,17 +1,16 @@
 ### Variables
-@baseUrl = http://localhost:8080
-@token = {{your_auth_token}}
+@baseUrl = http://localhost:9004/api/v1
+@token = {{access_token}}
 
 ### TC01 - Giao đơn thi công thành công (Happy Path)
-PATCH {{baseUrl}}/construction/EMP-STF-001
+PATCH {{baseUrl}}/construction/eae87df0-7f02-47b9-baa2-ac2bc9ea61fb
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "formCode": "LĐN",
-  "formNumber": "2024/001",
-  "customerId": "CUST-001",
-  "contractId": "CONT-001"
+  "formCode": "c2eebc99-9c0b-4ef8-bb6d-6bb9bd380a13",
+  "formNumber": "FORM-2024-0003",
+  "contractId": "adsfasdvaerg"
 }
 
 > {%
@@ -29,7 +28,6 @@ Content-Type: application/json
 {
   "formCode": "LĐN",
   "formNumber": "2024/001",
-  "customerId": "CUST-001",
   "contractId": "CONT-001"
 }
 
@@ -167,3 +165,7 @@ client.test("Status is 400", function() {
   client.assert(response.status === 400);
 });
 %}
+
+###
+GET {{baseUrl}}/construction
+Authorization: Bearer {{access_token}}

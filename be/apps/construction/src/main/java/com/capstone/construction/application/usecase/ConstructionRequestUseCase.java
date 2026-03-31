@@ -1,10 +1,10 @@
 package com.capstone.construction.application.usecase;
 
-import com.capstone.common.utils.BaseFilterRequest;
+import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.construction.application.business.constructionrequest.ConstructionRequestService;
 import com.capstone.construction.application.business.installationform.InstallationFormService;
 import com.capstone.construction.application.dto.request.construction.AssignRequest;
-import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
+import com.capstone.construction.application.dto.response.construction.ConstructionResponse;
 import com.capstone.construction.application.event.producer.MessageProducer;
 import com.capstone.construction.application.event.producer.order.AssignEvent;
 import com.capstone.construction.application.event.producer.receipt.ApprovedEvent;
@@ -46,7 +46,7 @@ public class ConstructionRequestUseCase {
   String QUEUE_NAME;
   // </editor-fold>
 
-  public void assignToConstructionCaptain(@NonNull AssignRequest request, String empId) {
+  public void createAndAssignToConstructionCaptain(@NonNull AssignRequest request, String empId) {
     constructionRequestService.createPendingRequest(
       empId, request.contractId(),
       request.formCode(), request.formNumber()
@@ -64,23 +64,23 @@ public class ConstructionRequestUseCase {
     messageProducer.send(routingKey, event);
   }
 
-  public Page<InstallationFormListResponse> getPaginatedConstructionRequest(Pageable pageable, BaseFilterRequest request) {
-    return ifSrv.getConstructionRequestsList(pageable, request);
+  public Page<ConstructionResponse> getPaginatedConstructionRequest(Pageable pageable, BaseFilterRequest request) {
+    return constructionRequestService.getConstructionRequestsList(pageable, request);
   }
 
   @Transactional(rollbackFor = Exception.class)
   public void approveTheConstruction(String id, Boolean approved) {
     constructionRequestService.approveTheConstruction(id, approved);
     var constructionRequest = constructionRequestService.getById(id);
-    var installationForm = ifSrv.getByFormCodeAndFormNumber(constructionRequest.formCode(), constructionRequest.formNumber());
+    var installationForm = ifSrv.getByFormCodeAndFormNumber(constructionRequest.installationForm().formCode(), constructionRequest.installationForm().formNumber());
     var constructedBy = installationForm.constructedBy();
 
     if (approved) {
       // neu duoc phe duyet, gui su kien cho nhan vien Xay lap khac de ho lap quyet toan
       var routingKey = QUEUE_NAME + CONSTRUCTION_REQUEST_PREFIX + APPROVED_ACTION;
       messageProducer.send(routingKey, new ApprovedEvent(
-        constructionRequest.formCode(),
-        constructionRequest.formNumber(),
+        constructionRequest.installationForm().formCode(),
+        constructionRequest.installationForm().formNumber(),
         employeeService.getEmployeeNameById(constructedBy).data().toString()
       ));
     }

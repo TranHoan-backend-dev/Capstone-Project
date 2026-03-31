@@ -13,6 +13,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -23,7 +24,8 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
   JpaSpecificationExecutor<InstallationForm> {
   boolean existsById_FormNumberAndId_FormCode(String formNumber, String formCode);
 
-  Page<InstallationForm> findByStatus_ContractAndStatus_Construction(@NonNull ProcessingStatus statusContract, @NonNull ProcessingStatus statusConstruction, Pageable pageable);
+  @Query(value = "SELECT * FROM installation_form i WHERE i.status->>'contract' = :statusContract AND i.status->>'construction' = :statusConstruction", nativeQuery = true)
+  Page<InstallationForm> findByStatusContractAndStatusConstruction(@Param("statusContract") String statusContract, @Param("statusConstruction") String statusConstruction, Pageable pageable);
 
   // build dynamic WHERE clause
 
@@ -102,6 +104,18 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
   }
 
   Boolean existsByNetwork_BranchId(String id);
+
+  @Query(value = "SELECT * FROM installation_form i WHERE i.status->>'estimate' = 'PENDING_FOR_APPROVAL'", nativeQuery = true)
+  Page<InstallationForm> findByEstimateStatus_Pending(Pageable pageable);
+
+  @Query(value = "SELECT * FROM installation_form i WHERE i.status->>'registration' = 'PENDING_FOR_APPROVAL' AND i.handover_by IS NULL", nativeQuery = true)
+  Page<InstallationForm> findByRegistrationStatus_Pending(Pageable pageable);
+
+  @Query(value = "SELECT * FROM installation_form i WHERE i.status->>'estimate' = :status", nativeQuery = true)
+  List<InstallationForm> findByEstimateStatus(String status);
+
+  @Query(value = "SELECT * FROM installation_form i WHERE i.handover_by IS NOT NULL AND i.status->>'registration' = 'PENDING_FOR_APPROVAL'", nativeQuery = true)
+  Page<InstallationForm> findByHandoverByIsNotNull(Pageable pageable);
 
   @Query(value = """
     SELECT *

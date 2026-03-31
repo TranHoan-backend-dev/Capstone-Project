@@ -1,7 +1,7 @@
 @uri = http://localhost:9006/api/v1/usage
 @keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
 @client_secret=
-@customerId = CUST-2024-001
+@customerId = 00a6ec02-3652-46fd-8c62-c5d01c7b3148
 @serial = WM-2024-001
 
 ### get token

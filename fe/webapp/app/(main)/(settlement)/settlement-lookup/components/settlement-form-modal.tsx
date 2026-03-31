@@ -16,6 +16,8 @@ import {
 } from "@heroui/react";
 import CustomDatePicker from "@/components/ui/custom/CustomDatePicker";
 import CustomInput from "@/components/ui/custom/CustomInput";
+import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
+import { LookupModal } from "@/components/ui/modal/LookupModal";
 
 interface SettlementFormModalProps {
   isOpen: boolean;
@@ -32,38 +34,46 @@ export const SettlementFormModal = ({
   initialData,
   onSubmit,
 }: SettlementFormModalProps) => {
+  const [showFormModal, setShowFormModal] = useState(false);
+  const [displayForm, setDisplayForm] = useState("");
   const [form, setForm] = useState({
+    formCode: "",
+    formNumber: "",
     jobContent: "",
     address: "",
     connectionFee: "",
     note: "",
-    status: "",
     registrationAt: "",
   });
 
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Fill data khi update
   useEffect(() => {
     if (mode === "update" && initialData) {
       setForm({
+        formCode: initialData.formCode,
+        formNumber: initialData.formNumber,
         jobContent: initialData.jobContent || "",
         address: initialData.address || "",
         connectionFee: initialData.connectionFee || "",
         note: initialData.note || "",
-        status: initialData.status || "",
         registrationAt: initialData.registrationAt || "",
       });
+
+      setDisplayForm(initialData.formNumber);
     } else if (mode === "create") {
       setForm({
+        formCode: "",
+        formNumber: "",
         jobContent: "",
         address: "",
         connectionFee: "",
         note: "",
-        status: "PENDING_FOR_APPROVAL",
         registrationAt: "",
       });
+
+      setDisplayForm("");
     }
   }, [initialData, mode]);
 
@@ -97,7 +107,7 @@ export const SettlementFormModal = ({
       ...prev,
       [field]: value,
     }));
-    // Clear error khi người dùng bắt đầu sửa
+
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: "" }));
     }
@@ -110,10 +120,13 @@ export const SettlementFormModal = ({
       setLoading(true);
 
       const payload = {
-        ...form,
+        formCode: form.formCode,
+        formNumber: form.formNumber,
+        jobContent: form.jobContent,
+        address: form.address,
         connectionFee: Number(form.connectionFee),
-        status: mode === "create" ? "PENDING_FOR_APPROVAL" : form.status,
-        registrationAt: form.registrationAt + "T00:00:00",
+        note: form.note,
+        registrationAt: form.registrationAt,
       };
 
       await onSubmit(payload);
@@ -123,6 +136,26 @@ export const SettlementFormModal = ({
     } finally {
       setLoading(false);
     }
+  };
+
+  const isAllApproved = (status: any) => {
+    return (
+      status?.registration === "APPROVED" &&
+      status?.estimate === "APPROVED" &&
+      status?.contract === "APPROVED" &&
+      status?.construction === "APPROVED"
+    );
+  };
+
+  const handleSelectForm = (item: any) => {
+    setForm((prev) => ({
+      ...prev,
+      formCode: item.formCode,
+      formNumber: item.formNumber,
+    }));
+
+    setDisplayForm(item.formNumber);
+    setShowFormModal(false);
   };
 
   const statusOptions = [
@@ -144,6 +177,33 @@ export const SettlementFormModal = ({
         </ModalHeader>
 
         <ModalBody className="gap-4">
+          <SearchInputWithButton
+            label="Mã hồ sơ"
+            value={displayForm}
+            onValueChange={() => {}}
+            onSearch={() => setShowFormModal(true)}
+          />
+          <LookupModal
+            dataKey="content"
+            isOpen={showFormModal}
+            onClose={() => setShowFormModal(false)}
+            title="Chọn biểu mẫu đủ điều kiện quyết toán"
+            api="/api/construction/installation-forms"
+            searchKey="keyword"
+            columns={[
+              { key: "stt", label: "STT" },
+              { key: "formCode", label: "Mã form" },
+              { key: "formNumber", label: "Số form" },
+            ]}
+            mapData={(item: any, index: number) => ({
+              stt: index + 1,
+              id: item.formCode,
+              formNumber: item.formNumber,
+              formCode: item.formCode,
+              disabled: !isAllApproved(item.status),
+            })}
+            onSelect={(item) => handleSelectForm(item)}
+          />
           <CustomInput
             label="Nội dung công việc"
             placeholder="Nhập nội dung công việc"
@@ -192,20 +252,6 @@ export const SettlementFormModal = ({
             errorMessage={errors.registrationAt}
             variant="bordered"
           />
-          {mode === "update" && (
-            <Select
-              label="Trạng thái"
-              selectedKeys={[form.status]}
-              onSelectionChange={(keys) =>
-                handleChange("status", Array.from(keys)[0])
-              }
-            >
-              <SelectItem key="PENDING_FOR_APPROVAL">Chờ duyệt</SelectItem>
-              <SelectItem key="PROCESSING">Đang xử lý</SelectItem>
-              <SelectItem key="APPROVED">Đã duyệt</SelectItem>
-              <SelectItem key="REJECTED">Từ chối</SelectItem>
-            </Select>
-          )}
           <Textarea
             label="Ghi chú"
             placeholder="Nhập ghi chú (nếu có)"

@@ -4,7 +4,7 @@ import com.capstone.notification.dto.request.CreateDepartmentNotificationRequest
 import com.capstone.notification.dto.request.CreateNotificationRequest;
 import com.capstone.notification.dto.response.NotificationResponse;
 import com.capstone.notification.dto.response.NotificationBatchResponse;
-import com.capstone.notification.event.websocket.Topic;
+import com.capstone.notification.event.consumer.Topic;
 import com.capstone.notification.service.boundary.NotificationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
