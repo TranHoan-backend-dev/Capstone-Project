@@ -98,6 +98,11 @@ public class CostEstimateServiceImpl implements CostEstimateService {
     if (installationForm.getStatus().getEstimate().name().equals(ProcessingStatus.APPROVED.name())) {
       throw new IllegalArgumentException("Dự toán đã được duyệt, không được phép chỉnh sửa");
     }
+    if (installationForm.getStatus().getEstimate().name().equals(ProcessingStatus.REJECTED.name())) {
+      var status = installationForm.getStatus();
+      status.setEstimate(ProcessingStatus.PROCESSING);
+      ifRepo.save(installationForm);
+    }
 
     var generalInformation = request.generalInformation();
 
