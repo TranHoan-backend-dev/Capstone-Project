@@ -3,7 +3,7 @@ import { useProfile } from "./useLogin";
 export const useHasRole = (requiredRole: string) => {
   const { profile, loading } = useProfile();
 
-  const hasRole = profile?.role === requiredRole;
+  const hasRole = profile?.role?.toUpperCase() === requiredRole;
 
   return { hasRole, loading };
 };
@@ -11,7 +11,7 @@ export const useHasRole = (requiredRole: string) => {
 export const useHasAnyRole = (requiredRoles: string[]) => {
   const { profile, loading } = useProfile();
 
-  const hasRole = profile?.role ? requiredRoles.includes(profile.role) : false;
+  const hasRole = profile?.role ? requiredRoles.includes(profile.role?.toUpperCase()) : false;
 
   return { hasRole, loading };
 };

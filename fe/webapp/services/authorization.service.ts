@@ -24,7 +24,7 @@ export const getBusinessPageNamesOfEmployees = (
   accessToken: string,
   empId: string,
 ) =>
-  axios.get(`${API_GATEWAY_URL}/auth/authorization/${empId}/pages`, {
+  axios.get(`${API_GATEWAY_URL}/auth/authorization/employees/${empId}/pages`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
