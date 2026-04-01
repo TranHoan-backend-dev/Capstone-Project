@@ -7,6 +7,7 @@ import lombok.*;
 import java.io.Serializable;
 import java.util.Objects;
 
+@Builder
 @Embeddable
 @Getter
 @Setter
@@ -15,10 +16,10 @@ import java.util.Objects;
 public class InstallationFormId implements Serializable {
 
   @Column(name = "form_code")
-  private String formCode;
+  private Long formCode;
 
   @Column(name = "form_number", length = 36)
-  private String formNumber;
+  private Long formNumber;
 
   @Override
   public boolean equals(Object o) {

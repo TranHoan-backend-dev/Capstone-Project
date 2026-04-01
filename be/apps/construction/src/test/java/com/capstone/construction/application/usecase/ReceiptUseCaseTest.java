@@ -46,7 +46,7 @@ class ReceiptUseCaseTest {
     var sig = ReceiptSignificance.builder().receiptCreator("S1").treasurer("S2").build();
 
     mockResponse = new ReceiptResponse(
-      "LD", "2024001", "BL001", "Customer", "Address", LocalDate.now(), true,
+      "1001", "1", "BL001", "Customer", "Address", LocalDate.now(), true,
       "Payment Reason", "1000", "One Thousand", "Attach", sig,
       LocalDateTime.now(), LocalDateTime.now()
     );
@@ -56,7 +56,7 @@ class ReceiptUseCaseTest {
   @DisplayName("Create receipt should save and NOT publish event")
   void createReceipt_ShouldReturnResponse() {
     var request = new CreateRequest(
-      "LD", "2024001", "BL001",
+      1001L, 1L, "BL001",
       "Reason", "1000", "One Thousand", "Attach",
       LocalDate.now(), true, "S"
     );
@@ -73,7 +73,7 @@ class ReceiptUseCaseTest {
   @Test
   @DisplayName("Update receipt should return response and publish event when fully signed")
   void updateReceipt_ShouldReturnResponseAndPublishEvent() {
-    var request = new UpdateRequest("LD", "2024001", "BL001", "C", "A", LocalDate.now(), true, "S2");
+    var request = new UpdateRequest(1001L, 1L, "BL001", "C", "A", LocalDate.now(), true, "S2");
     when(receiptService.updateReceipt(request)).thenReturn(mockResponse);
 
     var result = receiptUseCase.updateReceipt(request);
@@ -86,19 +86,16 @@ class ReceiptUseCaseTest {
   @Test
   @DisplayName("Delete receipt successfully")
   void deleteReceipt_ShouldInvokeService() {
-    receiptUseCase.deleteReceipt("LD", "2024001");
-
-    verify(receiptService).deleteReceipt("LD", "2024001");
+    receiptUseCase.deleteReceipt(1001L, 1L);
+    verify(receiptService).deleteReceipt(1001L, 1L);
   }
 
   @Test
   @DisplayName("Get receipt successfully")
   void getReceipt_ShouldReturnResponse() {
-    when(receiptService.getReceipt("LD", "2024001")).thenReturn(mockResponse);
-
-    var result = receiptUseCase.getReceipt("LD", "2024001");
-
+    when(receiptService.getReceipt(1001L, 1L)).thenReturn(mockResponse);
+    var result = receiptUseCase.getReceipt(1001L, 1L);
     assertThat(result).isNotNull();
-    verify(receiptService).getReceipt("LD", "2024001");
+    verify(receiptService).getReceipt(1001L, 1L);
   }
 }

@@ -73,8 +73,8 @@ class WaterSupplyNetworkControllerTest {
 
     // When & Then
     assertThatThrownBy(() -> networkController.createNetwork(request))
-        .isExactlyInstanceOf(RuntimeException.class)
-        .hasMessage("Unexpected Error");
+      .isExactlyInstanceOf(RuntimeException.class)
+      .hasMessage("Unexpected Error");
 
     verify(networkUseCase).createNetwork(request);
   }
@@ -145,10 +145,10 @@ class WaterSupplyNetworkControllerTest {
     var pageable = PageRequest.of(0, 10);
     var keyword = "test";
     var networkList = List.of(
-        new WaterSupplyNetworkResponse("uuid-1", "Network 1", LocalDateTime.now()),
-        new WaterSupplyNetworkResponse("uuid-2", "Network 2", LocalDateTime.now()));
+      new WaterSupplyNetworkResponse("uuid-1", "Network 1", LocalDateTime.now()),
+      new WaterSupplyNetworkResponse("uuid-2", "Network 2", LocalDateTime.now()));
     var expectedResponse = new PageResponse<>(
-        networkList, 0, 10, 2, 1, true);
+      networkList, 0, 10, 2, 1, true);
 
     when(networkUseCase.getAllNetworks(pageable, keyword)).thenReturn(expectedResponse);
 
@@ -174,7 +174,7 @@ class WaterSupplyNetworkControllerTest {
     var pageable = PageRequest.of(0, 10);
     String keyword = null;
     var expectedResponse = new PageResponse<WaterSupplyNetworkResponse>(
-        Collections.emptyList(), 0, 10, 0, 0, true);
+      Collections.emptyList(), 0, 10, 0, 0, true);
 
     when(networkUseCase.getAllNetworks(pageable, keyword)).thenReturn(expectedResponse);
 
@@ -204,7 +204,7 @@ class WaterSupplyNetworkControllerTest {
 
     // When & Then
     assertThatThrownBy(() -> networkController.getAllNetworks(pageable, keyword))
-        .isExactlyInstanceOf(RuntimeException.class);
+      .isExactlyInstanceOf(RuntimeException.class);
 
     verify(networkUseCase).getAllNetworks(pageable, keyword);
   }

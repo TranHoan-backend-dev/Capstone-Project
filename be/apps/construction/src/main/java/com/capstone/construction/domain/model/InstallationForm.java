@@ -16,13 +16,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 import com.capstone.construction.infrastructure.utils.Message;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-import org.jspecify.annotations.NonNull;
 
+@Builder
 @Table
 @Getter
 @Entity
@@ -32,6 +31,7 @@ import org.jspecify.annotations.NonNull;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InstallationForm {
   @EmbeddedId
+  @Builder.Default
   InstallationFormId id = new InstallationFormId();
 
   // <editor-fold> desc="thông tin chung của đơn"
@@ -123,16 +123,16 @@ public class InstallationForm {
     this.updatedAt = LocalDateTime.now();
   }
 
-  public String getFormNumber() {
+  public Long getFormNumber() {
     return id.getFormNumber();
   }
 
-  public String getFormCode() {
+  public Long getFormCode() {
     return id.getFormCode();
   }
 
-  public void setFormNumber(String formNumber) {
-    requireNonNullAndNotEmpty(formNumber, SharedMessage.MES_20);
+  public void setFormNumber(Long formNumber) {
+    Objects.requireNonNull(formNumber, SharedMessage.MES_20);
     this.id.setFormNumber(formNumber);
   }
 
@@ -251,8 +251,8 @@ public class InstallationForm {
     this.customerType = value;
   }
 
-  public void setFormCode(String value) {
-    requireNonNullAndNotEmpty(value, SharedMessage.MES_21);
+  public void setFormCode(Long value) {
+    Objects.requireNonNull(value, SharedMessage.MES_21);
     this.id.setFormCode(value);
   }
 
@@ -260,135 +260,6 @@ public class InstallationForm {
     Objects.requireNonNull(value, message);
     if (value.trim().isEmpty()) {
       throw new IllegalArgumentException(message);
-    }
-  }
-
-  public static InstallationForm create(@NonNull Consumer<InstallationFormBuilder> builder) {
-    var instance = new InstallationFormBuilder();
-    builder.accept(instance);
-    return instance.build();
-  }
-
-  public static class InstallationFormBuilder {
-    private final InstallationForm instance = new InstallationForm();
-
-    public InstallationFormBuilder formNumber(String formNumber) {
-      instance.setFormNumber(formNumber);
-      return this;
-    }
-
-    public InstallationFormBuilder formCode(String value) {
-      instance.setFormCode(value);
-      return this;
-    }
-
-    public InstallationFormBuilder customerType(CustomerType value) {
-      instance.setCustomerType(value);
-      return this;
-    }
-
-    public InstallationFormBuilder customerName(String customerName) {
-      instance.setCustomerName(customerName);
-      return this;
-    }
-
-    public InstallationFormBuilder constructedBy(String value) {
-      instance.setConstructedBy(value);
-      return this;
-    }
-
-    public InstallationFormBuilder representative(List<Representative> representative) {
-      instance.setRepresentative(representative);
-      return this;
-    }
-
-    public InstallationFormBuilder citizenIdentificationNumber(String citizenIdentificationNumber) {
-      instance.setCitizenIdentificationNumber(citizenIdentificationNumber);
-      return this;
-    }
-
-    public InstallationFormBuilder citizenIdentificationProvideDate(String citizenIdentificationProvideDate) {
-      instance.setCitizenIdentificationProvideDate(citizenIdentificationProvideDate);
-      return this;
-    }
-
-    public InstallationFormBuilder citizenIdentificationProvideLocation(String citizenIdentificationProvideLocation) {
-      instance.setCitizenIdentificationProvideLocation(citizenIdentificationProvideLocation);
-      return this;
-    }
-
-    public InstallationFormBuilder phoneNumber(String phoneNumber) {
-      instance.setPhoneNumber(phoneNumber);
-      return this;
-    }
-
-    public InstallationFormBuilder taxCode(String taxCode) {
-      instance.setTaxCode(taxCode);
-      return this;
-    }
-
-    public InstallationFormBuilder bankAccountNumber(String bankAccountNumber) {
-      instance.setBankAccountNumber(bankAccountNumber);
-      return this;
-    }
-
-    public InstallationFormBuilder bankAccountProviderLocation(String bankAccountProviderLocation) {
-      instance.setBankAccountProviderLocation(bankAccountProviderLocation);
-      return this;
-    }
-
-    public InstallationFormBuilder usageTarget(UsageTarget usageTarget) {
-      instance.setUsageTarget(usageTarget);
-      return this;
-    }
-
-    public InstallationFormBuilder receivedFormAt(LocalDate receivedFormAt) {
-      instance.setReceivedFormAt(receivedFormAt);
-      return this;
-    }
-
-    public InstallationFormBuilder scheduleSurveyAt(LocalDate scheduleSurveyAt) {
-      instance.setScheduleSurveyAt(scheduleSurveyAt);
-      return this;
-    }
-
-    public InstallationFormBuilder numberOfHousehold(Integer numberOfHousehold) {
-      instance.setNumberOfHousehold(numberOfHousehold);
-      return this;
-    }
-
-    public InstallationFormBuilder householdRegistrationNumber(Integer householdRegistrationNumber) {
-      instance.setHouseholdRegistrationNumber(householdRegistrationNumber);
-      return this;
-    }
-
-    public InstallationFormBuilder network(WaterSupplyNetwork network) {
-      instance.setNetwork(network);
-      return this;
-    }
-
-    public InstallationFormBuilder createdBy(String createdBy) {
-      instance.setCreatedBy(createdBy);
-      return this;
-    }
-
-    public InstallationFormBuilder handoverBy(String handoverBy) {
-      instance.setHandoverBy(handoverBy);
-      return this;
-    }
-
-    public InstallationFormBuilder overallWaterMeterId(String overallWaterMeterId) {
-      instance.setOverallWaterMeterId(overallWaterMeterId);
-      return this;
-    }
-
-    public InstallationFormBuilder address(String address) {
-      instance.setAddress(address);
-      return this;
-    }
-
-    public InstallationForm build() {
-      return instance;
     }
   }
 }

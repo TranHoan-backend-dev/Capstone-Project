@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public abstract class BaseEvent {
   protected String customerName;
-  protected String formCode;
-  protected String formNumber;
+  protected Long formCode;
+  protected Long formNumber;
   protected String surveyStaffName;
 }

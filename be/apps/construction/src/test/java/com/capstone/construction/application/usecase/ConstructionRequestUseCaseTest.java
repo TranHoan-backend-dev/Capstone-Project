@@ -46,17 +46,17 @@ class ConstructionRequestUseCaseTest {
   void should_AssignSuccessfully_When_ValidInput() {
     // Arrange
     var empId = "EMP001";
-    var request = new AssignRequest("LDN", "001", "CON1");
+    var request = new AssignRequest(1001L, 1L, "CON1");
 
     // ConstructionRequestUseCase itself doesn't validate the role.
     // If we want to simulate role validation failure, we need to mock the service behavior.
-    when(ifSrv.getByFormCodeAndFormNumber(anyString(), anyString())).thenReturn(mock(InstallationFormListResponse.class));
+    when(ifSrv.getByFormCodeAndFormNumber(anyLong(), anyLong())).thenReturn(mock(InstallationFormListResponse.class));
 
     // Act
     useCase.createAndAssignToConstructionCaptain(request, empId);
 
     // Assert
-    verify(constructionRequestService).createPendingRequest(eq(empId), eq("CON1"), eq("LDN"), eq("001"));
+    verify(constructionRequestService).createPendingRequest(eq(empId), eq("CON1"), eq(1001L), eq(1L));
     verify(ifSrv).assignInstallationForm(eq(empId), any(), eq(false));
     verify(messageProducer).send(anyString(), any());
   }
@@ -65,11 +65,11 @@ class ConstructionRequestUseCaseTest {
   void should_ThrowException_When_ServiceThrows() {
     // Arrange
     var empId = "EMP001";
-    var request = new AssignRequest("LDN", "001", "CON1");
+    var request = new AssignRequest(1001L, 1L, "CON1");
 
     // Simulating Service layer throwing an error
     doThrow(new IllegalArgumentException("Role invalid"))
-      .when(constructionRequestService).createPendingRequest(anyString(), anyString(), anyString(), anyString());
+      .when(constructionRequestService).createPendingRequest(anyString(), anyString(), anyLong(), anyLong());
 
     // Act & Assert
     assertThrows(IllegalArgumentException.class, () -> useCase.createAndAssignToConstructionCaptain(request, empId));

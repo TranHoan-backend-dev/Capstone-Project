@@ -69,8 +69,8 @@ class SettlementUseCaseTest {
   @Test
   @DisplayName("Create settlement successfully")
   void createSettlement_ShouldReturnResponse() {
-    var request = new SettlementRequest("CODE-001", "FORM-001", "Job", "Addr", BigDecimal.ZERO, "Note", LocalDate.now());
-    var response1 = new SettlementResponse("id", "Job", "Addr", BigDecimal.ZERO, "Note", null, null, LocalDate.now(), "CODE-001", "FORM-001", null, null);
+    var request = new SettlementRequest(1001L, 1L, "Job", "Addr", BigDecimal.ZERO, "Note", LocalDate.now());
+    var response1 = new SettlementResponse("id", "Job", "Addr", BigDecimal.ZERO, "Note", null, null, LocalDate.now(), "1001", "1", null, null);
     var installationForm = mock(InstallationForm.class);
     var constructionRequest = mock(ConstructionResponse.class);
 
@@ -88,8 +88,8 @@ class SettlementUseCaseTest {
   @DisplayName("Update settlement successfully")
   void updateSettlement_ShouldReturnResponse() {
     var id = "id123";
-    var request = new SettlementRequest("CODE-001", "FORM-001", "Job", "Addr", BigDecimal.ZERO, "Note", LocalDate.now());
-    var response2 = new SettlementResponse(id, "Job", "Addr", BigDecimal.ZERO, "Note", null, null, LocalDate.now(), "CODE-001", "FORM-001", null, null);
+    var request = new SettlementRequest(1001L, 1L, "Job", "Addr", BigDecimal.ZERO, "Note", LocalDate.now());
+    var response2 = new SettlementResponse(id, "Job", "Addr", BigDecimal.ZERO, "Note", null, null, LocalDate.now(), "1001", "1", null, null);
     when(settlementService.updateSettlement(id, request)).thenReturn(response2);
     var result2 = settlementUseCase.updateSettlement(id, request);
     assertThat(result2).isEqualTo(response2);
@@ -100,7 +100,7 @@ class SettlementUseCaseTest {
   @DisplayName("Get settlement by id successfully")
   void getSettlementById_ShouldReturnResponse() {
     var id = "id123";
-    var response3 = new SettlementResponse(id, "Job", "Addr", BigDecimal.ZERO, "Note", null, null, LocalDate.now(), "CODE-001", "FORM-001", null, null);
+    var response3 = new SettlementResponse(id, "Job", "Addr", BigDecimal.ZERO, "Note", null, null, LocalDate.now(), "1001", "1", null, null);
     when(settlementService.getSettlementById(id)).thenReturn(response3);
     var result3 = settlementUseCase.getSettlementById(id);
     assertThat(result3).isEqualTo(response3);

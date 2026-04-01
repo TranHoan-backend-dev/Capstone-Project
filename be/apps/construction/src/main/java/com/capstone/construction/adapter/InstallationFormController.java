@@ -76,6 +76,12 @@ public class InstallationFormController {
     return Utils.returnCreatedResponse("Tạo đơn lắp đặt thành công");
   }
 
+  @GetMapping("/last-code")
+  public ResponseEntity<WrapperApiResponse> getLastFormCode() {
+    log.info("Received request to get the last form code");
+    return Utils.returnOkResponse("Lấy ra mã đơn và số đơn gần nhất thành công", installationFormService.getLastFormCode());
+  }
+
   @Operation(summary = "Phê duyệt hoặc từ chối đơn lắp đặt", description = """
     API này cho phép cấp nhân viên khảo sát thực hiện phê duyệt hoặc từ chối một đơn yêu cầu lắp đặt nước.
     """, responses = {
@@ -180,8 +186,8 @@ public class InstallationFormController {
   @Operation(hidden = true)
   @GetMapping("/exist")
   public boolean isExisting(
-    @RequestParam String formCode,
-    @RequestParam String formNumber
+    @RequestParam Long formCode,
+    @RequestParam Long formNumber
   ) {
     return installationFormService.isInstallationFormExisting(formNumber, formCode);
   }
@@ -194,8 +200,8 @@ public class InstallationFormController {
   @PatchMapping("/contract-status")
   @PreAuthorize("hasAnyAuthority('ORDER_RECEIVING_STAFF', 'IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> updateContractStatus(
-    @RequestParam String formCode,
-    @RequestParam String formNumber
+    @RequestParam Long formCode,
+    @RequestParam Long formNumber
   ) {
     log.info("Updating contract status for formCode: {} and formNumber: {}", formCode, formNumber);
     installationFormService.updateContractStatus(formCode, formNumber);

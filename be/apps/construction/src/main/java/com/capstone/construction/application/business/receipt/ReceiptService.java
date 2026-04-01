@@ -9,13 +9,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface ReceiptService {
-    ReceiptResponse createReceipt(CreateRequest request);
+  ReceiptResponse createReceipt(CreateRequest request);
 
-    ReceiptResponse updateReceipt(UpdateRequest request);
+  ReceiptResponse updateReceipt(UpdateRequest request);
 
-    void deleteReceipt(String formCode, String formNumber);
+  void deleteReceipt(Long formCode, Long formNumber);
 
-    ReceiptResponse getReceipt(String formCode, String formNumber);
+  ReceiptResponse getReceipt(Long formCode, Long formNumber);
 
-    Page<ReceiptListResponse> getReceipts(ReceiptFilterRequest filter, Pageable pageable);
+  Page<ReceiptListResponse> getReceipts(ReceiptFilterRequest filter, Pageable pageable);
 }

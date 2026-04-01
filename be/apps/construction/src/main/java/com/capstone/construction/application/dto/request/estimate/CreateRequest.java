@@ -25,12 +25,12 @@ public record CreateRequest(
   String createBy,
 
   @NotBlank(message = SharedMessage.MES_21)
-  @NotEmpty(message = SharedMessage.MES_21)
-  String formCode,
+  @NotNull(message = SharedMessage.MES_21)
+  Long formCode,
 
   @NotBlank(message = SharedMessage.MES_20)
-  @NotEmpty(message = SharedMessage.MES_20)
-  String formNumber,
+  @NotNull(message = SharedMessage.MES_20)
+  Long formNumber,
 
   String overallWaterMeterId
 ) {
