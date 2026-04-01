@@ -192,6 +192,12 @@ export const siteConfig = {
           href: "/customers/import",
           roles: ["it_staff", "order_receiving_staff"],
         },
+        {
+          key: "new-contract",
+          label: "Lập hợp đồng cấp nước mới",
+          href: "/water-supply-contract",
+          roles: ["it_staff", "order_receiving_staff"],
+        },
       ],
     },
 
@@ -322,20 +328,6 @@ export const siteConfig = {
             "company_leadership",
             "planning_technical_department_head",
           ],
-        },
-      ],
-    },
-
-    // Hợp đồng
-    {
-      key: "contract",
-      label: "Hợp đồng",
-      items: [
-        {
-          key: "new-contract",
-          label: "Lập hợp đồng cấp nước mới",
-          href: "/water-supply-contract",
-          roles: ["it_staff", "order_receiving_staff"],
         },
       ],
     },

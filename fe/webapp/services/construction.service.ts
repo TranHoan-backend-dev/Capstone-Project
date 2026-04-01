@@ -460,6 +460,16 @@ export const getInstallationForms = (
   });
 };
 
+export const getInstallationFormById = async (
+  accessToken: string,
+  formId: string,
+) =>
+  axios.get(`${API_GATEWAY_URL}/construction/installation-forms/${formId}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
 export const createNewInstallationForm = (
   accessToken: string,
   payload: NewInstallationFormPayload,

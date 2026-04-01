@@ -406,7 +406,6 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
               <div className="flex gap-3">
                 <CustomButton
                   color="success"
-                  className="font-medium"
                   startContent={
                     loading ? (
                       <Spinner size="sm" color="white" />
@@ -414,6 +413,7 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
                       <SaveDocumentCheckIcon className="w-5 h-5" />
                     )
                   }
+                  className="font-medium text-white hover:bg-success-600 disabled:bg-success-300 disabled:text-white/50"
                   onClick={handleSubmit}
                   isDisabled={loading}
                 >
