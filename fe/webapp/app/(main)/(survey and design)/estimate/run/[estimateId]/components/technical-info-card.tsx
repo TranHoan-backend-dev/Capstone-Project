@@ -10,6 +10,7 @@ import {
   SaveDocumentCheckIcon,
   DocumentMagnifyGlassIcon,
   TitleDarkColor,
+  DocumentCheckedIcon,
 } from "@/config/chip-and-icon";
 import CustomButton from "@/components/ui/custom/CustomButton";
 import CustomTextarea from "@/components/ui/custom/CustomTextarea";
@@ -323,7 +324,11 @@ export const TechnicalInfoCard = ({
               onPress={() => fileInputRef.current?.click()}
               className="text-white font-bold px-6 shadow-md shadow-success/20"
               color="success"
-              startContent={<DocumentMagnifyGlassIcon className="w-4 h-4" />}
+              startContent={
+                isUploading ? undefined : (
+                  <DocumentMagnifyGlassIcon className="w-4 h-4" />
+                )
+              }
               isDisabled={isUploading}
             >
               {designImageFile ? "Đã chọn ảnh mới" : "Ảnh cụm đồng hồ"}
@@ -338,7 +343,7 @@ export const TechnicalInfoCard = ({
                     : designImageUrl &&
                       `Đã có ảnh: ${designImageUrl.split("/").pop()?.slice(0, 30)}...`}
                 </div>
-                <Button
+                <CustomButton
                   isIconOnly
                   size="sm"
                   variant="light"
@@ -347,7 +352,7 @@ export const TechnicalInfoCard = ({
                   className="min-w-unit-8 w-8 h-8"
                 >
                   <DeleteIcon className="w-4 h-4" />
-                </Button>
+                </CustomButton>
               </div>
             )}
 
@@ -355,19 +360,28 @@ export const TechnicalInfoCard = ({
               onPress={() => handleSave(false)}
               className="font-bold px-6 shadow-md shadow-primary/20"
               color="primary"
-              startContent={<SaveDocumentCheckIcon className="w-4 h-4" />}
+              startContent={
+                isUploading ? undefined : (
+                  <SaveDocumentCheckIcon className="w-4 h-4" />
+                )
+              }
               isDisabled={isUploading}
             >
-              {isUploading ? "Đang lưu..." : "Lưu bản nháp"}
+              {isUploading ? "Đang lưu..." : "Lưu"}
             </CustomButton>
 
             <CustomButton
               onPress={() => handleSave(true)}
               className="text-white font-bold px-6 shadow-md shadow-success/20"
               color="success"
+              startContent={
+                isUploading ? undefined : (
+                  <DocumentCheckedIcon className="w-4 h-4" />
+                )
+              }
               isDisabled={isUploading}
             >
-              {isUploading ? "Đang lưu..." : "Hoàn thành"}
+              {isUploading ? "Đang lưu..." : "Gửi"}
             </CustomButton>
           </>
         </div>

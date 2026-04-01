@@ -1,14 +1,14 @@
 export const ESTIMATE_COLUMN = [
-  { key: "stt", label: "STT", width: "40px" },
+  { key: "stt", label: "STT", width: "20px" },
   // { key: "code", label: "Mã vật tư", sortable: true },
   { key: "description", label: "Nội dung công việc" },
-  { key: "note", label: "Ghi chú", width: "160px" },
+  { key: "note", label: "Ghi chú", width: "360px" },
   { key: "unit", label: "ĐVT" },
   { key: "quantity", label: "Khối lượng", align: "center" as const },
-  { key: "materialPrice", label: "Đơn giá vật tư", align: "end" as const },
-  { key: "laborPrice", label: "Đơn giá nhân công", align: "end" as const },
-  { key: "materialTotal", label: "Thành tiền vật tư", align: "end" as const },
-  { key: "laborTotal", label: "Thành tiền nhân công", align: "end" as const },
+  { key: "materialPrice", label: "Đơn giá vật tư", width: "120px", align: "end" as const },
+  { key: "laborPrice", label: "Đơn giá nhân công", width: "120px", align: "end" as const },
+  { key: "materialTotal", label: "Thành tiền vật tư", width: "120px", align: "end" as const },
+  { key: "laborTotal", label: "Thành tiền nhân công", width: "120px", align: "end" as const },
   { key: "actions", label: "Hoạt động", align: "center" as const },
 ];
 
