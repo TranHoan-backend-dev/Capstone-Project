@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Button } from "@heroui/react";
-
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import CustomInput from "@/components/ui/custom/CustomInput";
 import {
@@ -30,6 +28,16 @@ interface TechnicalInfoCardProps {
   materials: MaterialEstimateItem[];
 }
 
+interface Parameter {
+  id: string;
+  name: string;
+  value: string;
+  creatorName: string;
+  updatorName: string;
+  createAt: string;
+  updateAt: string;
+}
+
 export const TechnicalInfoCard = ({
   estimateData,
   setEstimateData,
@@ -38,7 +46,6 @@ export const TechnicalInfoCard = ({
 }: TechnicalInfoCardProps) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  // State cho từng field
   const [customerName, setCustomerName] = useState("");
   const [address, setAddress] = useState("");
   const [note, setNote] = useState("");
@@ -75,8 +82,76 @@ export const TechnicalInfoCard = ({
   const [waterMeterSerial, setWaterMeterSerial] = useState("");
   const [displayWaterMeter, setDisplayWaterMeter] = useState("");
 
+  const [defaultParameters, setDefaultParameters] = useState<Parameter[]>([]);
+  const [isLoadingDefaults, setIsLoadingDefaults] = useState(false);
+
   const isEstimateApproved =
     estimateData?.generalInformation?.status?.estimate === "APPROVED";
+  const fetchDefaultParameters = async () => {
+    try {
+      setIsLoadingDefaults(true);
+      const response = await authFetch("/api/device/parameters");
+      const result = await response.json();
+
+      if (result.data?.content) {
+        setDefaultParameters(result.data.content);
+
+        if (
+          !estimateData?.generalInformation ||
+          Object.keys(estimateData.generalInformation).length === 0
+        ) {
+          applyDefaultCoefficients(result.data.content);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch default parameters:", error);
+    } finally {
+      setIsLoadingDefaults(false);
+    }
+  };
+
+  const applyDefaultCoefficients = (parameters: Parameter[]) => {
+    const laborParam = parameters.find((p) => p.name === "Hệ số nhân công");
+    const generalCostParam = parameters.find(
+      (p) => p.name === "Hệ số chi phí chung",
+    );
+    const precalculatedTaxParam = parameters.find(
+      (p) => p.name === "Hệ số thuế tính trước",
+    );
+    const constructionMachineryParam = parameters.find(
+      (p) => p.name === "Hệ số máy thi công",
+    );
+    const vatParam = parameters.find((p) => p.name === "Hệ số thuế GTGT (VAT)");
+    const designParam = parameters.find((p) => p.name === "Hệ số thiết kế");
+
+    if (laborParam && laborParam.value) {
+      setLaborCoefficient(laborParam.value);
+    }
+    if (generalCostParam && generalCostParam.value) {
+      setGeneralCostCoefficient(generalCostParam.value);
+    }
+    if (precalculatedTaxParam && precalculatedTaxParam.value) {
+      setPrecalculatedTaxCoefficient(precalculatedTaxParam.value);
+    }
+    if (constructionMachineryParam && constructionMachineryParam.value) {
+      setConstructionMachineryCoefficient(constructionMachineryParam.value);
+    }
+    if (vatParam && vatParam.value) {
+      setVatCoefficient(vatParam.value);
+    }
+    if (designParam && designParam.value) {
+      setDesignCoefficient(designParam.value);
+    }
+  };
+
+  const isNewEstimate = () => {
+    return (
+      !estimateData?.generalInformation ||
+      Object.keys(estimateData.generalInformation).length === 0 ||
+      (!estimateData.generalInformation.customerName &&
+        !estimateData.generalInformation.address)
+    );
+  };
 
   useEffect(() => {
     const fetchOverallMeters = async () => {
@@ -92,6 +167,7 @@ export const TechnicalInfoCard = ({
     };
 
     fetchOverallMeters();
+    fetchDefaultParameters();
   }, []);
 
   useEffect(() => {
@@ -138,23 +214,57 @@ export const TechnicalInfoCard = ({
       setSurveyFee(info.surveyFee?.toString() || "");
       setSurveyEffort(info.surveyEffort?.toString() || "");
       setInstallationFee(info.installationFee?.toString() || "");
-      setLaborCoefficient(info.laborCoefficient?.toString() || "");
-      setGeneralCostCoefficient(info.generalCostCoefficient?.toString() || "");
-      setPrecalculatedTaxCoefficient(
-        info.precalculatedTaxCoefficient?.toString() || "",
-      );
-      setConstructionMachineryCoefficient(
-        info.constructionMachineryCoefficient?.toString() || "",
-      );
-      setVatCoefficient(info.vatCoefficient?.toString() || "");
-      setDesignCoefficient(info.designCoefficient?.toString() || "");
+      if (
+        info.laborCoefficient !== undefined &&
+        info.laborCoefficient !== null
+      ) {
+        setLaborCoefficient(info.laborCoefficient.toString());
+      } else if (isNewEstimate() && defaultParameters.length > 0) {
+      }
+
+      if (
+        info.generalCostCoefficient !== undefined &&
+        info.generalCostCoefficient !== null
+      ) {
+        setGeneralCostCoefficient(info.generalCostCoefficient.toString());
+      }
+
+      if (
+        info.precalculatedTaxCoefficient !== undefined &&
+        info.precalculatedTaxCoefficient !== null
+      ) {
+        setPrecalculatedTaxCoefficient(
+          info.precalculatedTaxCoefficient.toString(),
+        );
+      }
+
+      if (
+        info.constructionMachineryCoefficient !== undefined &&
+        info.constructionMachineryCoefficient !== null
+      ) {
+        setConstructionMachineryCoefficient(
+          info.constructionMachineryCoefficient.toString(),
+        );
+      }
+
+      if (info.vatCoefficient !== undefined && info.vatCoefficient !== null) {
+        setVatCoefficient(info.vatCoefficient.toString());
+      }
+
+      if (
+        info.designCoefficient !== undefined &&
+        info.designCoefficient !== null
+      ) {
+        setDesignCoefficient(info.designCoefficient.toString());
+      }
+
       setDesignFee(info.designFee?.toString() || "");
       setWaterMeterSerial(info.waterMeterSerial || "");
       setOverallWaterMeterId(info.overallWaterMeterId || "");
       setDesignImageUrl(info.designImageUrl || "");
       setIsImageDeleted(false);
     }
-  }, [estimateData]);
+  }, [estimateData, defaultParameters]);
 
   const fileToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -298,7 +408,7 @@ export const TechnicalInfoCard = ({
                 const file = e.target.files?.[0];
                 if (!file) return;
                 setDesignImageFile(file);
-                setIsImageDeleted(false); // Reset trạng thái xóa khi chọn ảnh mới
+                setIsImageDeleted(false);
                 const previewUrl = URL.createObjectURL(file);
               }}
             />
