@@ -194,7 +194,7 @@ const Header = () => {
                         delay={500}
                         placement="bottom"
                       >
-                        <span className="hidden md:block text-sm font-bold max-w-[120px] truncate">
+                        <span className="hidden md:block text-sm font-bold">
                           {profile.fullname}
                         </span>
                       </Tooltip>
