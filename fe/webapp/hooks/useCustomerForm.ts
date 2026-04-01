@@ -1,13 +1,11 @@
-// hooks/useCustomerForm.ts
 import { useState, useEffect } from "react";
 import { CreateCustomerPayload } from "@/types/customer";
 
 const initialFormData: CreateCustomerPayload = {
-  // Customer Info
   name: "",
   email: "",
   phoneNumber: "",
-  address: "", // ← This field was missing
+  address: "", 
   type: "FAMILY",
   isBigCustomer: false,
   usageTarget: "DOMESTIC",
@@ -23,14 +21,12 @@ const initialFormData: CreateCustomerPayload = {
   bankAccountName: "",
   isActive: true,
   roadmapId: "",
-  
-  // Form Info
+
   formNumber: "",
   formCode: "",
   waterPriceId: "",
   waterMeterId: "",
 
-  // Additional Info
   isFree: false,
   isSale: false,
   m3Sale: "0",
@@ -41,6 +37,8 @@ const initialFormData: CreateCustomerPayload = {
   budgetRelationshipCode: "",
   passportCode: "",
   connectionPoint: "",
+  taxCode: "",
+  citizenIdentificationProvideLocation: "",
 };
 
 export const useCustomerForm = (
