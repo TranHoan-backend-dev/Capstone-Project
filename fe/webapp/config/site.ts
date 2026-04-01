@@ -244,7 +244,7 @@ export const siteConfig = {
         },
         {
           key: "estimate-preparation",
-          label: "Lập dự toán",
+          label: "Danh sách dự toán",
           href: "/estimate/preparation",
           roles: ["it_staff", "survey_staff"],
         },
@@ -261,7 +261,7 @@ export const siteConfig = {
         },
         {
           key: "run-estimate",
-          label: "Chạy dự toán",
+          label: "Tạo dự toán",
           href: "/estimate/run",
           roles: ["it_staff", "survey_staff"],
         },
