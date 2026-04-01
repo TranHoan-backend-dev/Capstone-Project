@@ -86,7 +86,17 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post("/api/auth/logout");
+      await axios.post(
+        "/api/auth/logout",
+        {},
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
       localStorage.removeItem("user");
       CallToast({
         title: "Thành công",
