@@ -144,6 +144,12 @@ export interface EstimateGeneralInformation {
     formCode: string;
     formNumber: string;
   };
+  status: {
+    registration: string;
+    estimate: string;
+    contract: string;
+    construction: string;
+  };
 }
 
 export interface MaterialItem {

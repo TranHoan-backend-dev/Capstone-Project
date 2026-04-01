@@ -197,6 +197,14 @@ export const deleteRoadmap = (accessToken: string, id: string) => {
   });
 };
 
+export const getRoadmapById = (accessToken: string, id: string) => {
+  return axios.get(`${API_GATEWAY_URL}/construction/roadmaps/${id}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
 export const getAllCommunes = (
   accessToken: string,
   page: number,

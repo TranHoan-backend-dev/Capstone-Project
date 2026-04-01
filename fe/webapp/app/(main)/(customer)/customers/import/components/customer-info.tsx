@@ -76,9 +76,9 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
             `/api/construction/roadmaps/${formData.roadmapId}`,
           );
           const result = await response.json();
-          if (result.data.content) {
+          if (result.data) {
             setDisplayRoadmap(
-              `${result.data.lateralName} - ${result.data.networkName}`,
+              `${result.data.name} - ${result.data.lateralName} - ${result.data.networkName}`,
             );
           }
         } catch (error) {
@@ -334,7 +334,6 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
           onValueChange={() => {}}
           onSearch={() => setShowRoadmapModal(true)}
         />
-
         <LookupModal
           enableSearch={false}
           dataKey="content"
@@ -344,12 +343,14 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
           api="/api/construction/roadmaps"
           columns={[
             { key: "stt", label: "STT" },
-            { key: "lateralName", label: "Tên lộ trình" },
+            { key: "name", label: "Tên lộ trình" },
+            { key: "lateralName", label: "Nhánh tổng" },
             { key: "networkName", label: "Chi nhánh" },
           ]}
           mapData={(item: any, index: number) => ({
             stt: index + 1,
             id: item.roadmapId,
+            name: item.name,
             lateralName: item.lateralName,
             networkName: item.networkName,
           })}

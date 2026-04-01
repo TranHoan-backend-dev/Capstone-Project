@@ -310,7 +310,8 @@ public class CustomerServiceImpl implements CustomerService {
       customer.getWaterPriceId(),
       waterPrice,
       customer.getWaterMeterId(),
-      customer.getAddress()
+      customer.getAddress(),
+      customer.getRoadmapId()
     );
   }
 
