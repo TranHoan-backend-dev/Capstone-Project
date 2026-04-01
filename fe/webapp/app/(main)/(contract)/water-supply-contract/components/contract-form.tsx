@@ -43,6 +43,7 @@ interface InstallationForm {
   email?: string;
   citizenIdentificationNumber?: string;
   overallWaterMeterId?: string;
+  representatives?: Array<{ name: string; position: string | null }>;
 }
 
 export const ContractForm = ({ onSuccess }: ContractFormProps) => {
@@ -70,6 +71,20 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
       formCode: selected.formCode,
       formNumber: selected.formNumber,
       customerId: selected.customerId,
+      representatives:
+        selected.representatives && selected.representatives.length > 0
+          ? selected.representatives.map((rep: any) => ({
+              name: rep.name || "",
+              position: rep.position || "Chủ công trình",
+            }))
+          : selected.customerName
+            ? [
+                {
+                  name: selected.customerName,
+                  position: "Chủ công trình",
+                },
+              ]
+            : [],
     }));
     setShowFormModal(false);
   };
@@ -232,9 +247,6 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
                 errorMessage={errors.contractId}
                 isRequired
                 isInvalid={!!errors.contractId}
-                startContent={
-                  <DocumentIcon className="w-4 h-4 text-gray-400" />
-                }
               />
             </div>
 
@@ -330,13 +342,31 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
                     Thêm người đại diện
                   </CustomButton>
                 </div>
-
+                {selectedForm?.representatives &&
+                  selectedForm.representatives.length > 0 && (
+                    <div className="mb-4 p-3 bg-primary-50 dark:bg-primary-900/20 rounded-lg">
+                      <p className="text-sm font-medium text-primary mb-2">
+                        Người đại diện từ đơn cấp nước:
+                      </p>
+                      {selectedForm.representatives.map((rep, idx) => (
+                        <div key={idx} className="text-sm text-default-700">
+                          <span className="font-medium">{rep.name}</span>
+                          {rep.position && (
+                            <span className="text-default-500">
+                              {" "}
+                              - {rep.position}
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 {(formData.representatives || []).length === 0 ? (
                   <div className="text-center py-8 text-gray-500 border-2 border-dashed rounded-lg">
-                    <UserIcon className="w-12 h-12 mx-auto mb-2 text-gray-300" />
                     <p>Chưa có người đại diện</p>
                     <p className="text-sm">
-                      Nhấn "Thêm người đại diện" để thêm
+                      Nhấn "Thêm người đại diện" để thêm hoặc chọn từ đơn cấp
+                      nước
                     </p>
                   </div>
                 ) : (
@@ -344,7 +374,7 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
                     {(formData.representatives || []).map((rep, index) => (
                       <div
                         key={index}
-                        className="flex gap-3 items-start rounded-lg"
+                        className="flex gap-3 items-start p-3 bg-default-50 rounded-lg"
                       >
                         <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
                           <CustomInput
@@ -356,9 +386,6 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
                                 "name",
                                 e.target.value,
                               )
-                            }
-                            startContent={
-                              <UserIcon className="w-4 h-4 text-gray-400" />
                             }
                           />
                           <CustomInput
@@ -396,10 +423,11 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
             <div>
               <Textarea
                 label="Nội dung phụ lục"
-                placeholder="Nhập nội dung phụ lục hợp đồng (nếu có)..."
+                placeholder="Nhập nội dung phụ lục hợp đồng..."
                 value={getAppendixValue()}
                 onChange={(e) => handleAppendixChange(e.target.value)}
                 minRows={4}
+                className="resize-none"
               />
             </div>
             <div className="flex justify-end items-end">
@@ -459,6 +487,7 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
           email: item.email,
           citizenIdentificationNumber: item.citizenIdentificationNumber,
           overallWaterMeterId: item.overallWaterMeterId,
+          representatives: item.representatives,
         })}
         onSelect={handleSelectForm}
       />

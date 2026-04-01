@@ -268,7 +268,18 @@ public class InstallationFormServiceImpl implements InstallationFormService {
         ? constructionEmployeeName.data().toString()
         : unknown,
       entity.getStatus(),
-      entity.getOverallWaterMeterId()
+      entity.getOverallWaterMeterId(),
+      entity.getTaxCode(),
+      entity.getBankAccountNumber(),
+      entity.getBankAccountProviderLocation(),
+      entity.getCitizenIdentificationNumber(),
+      entity.getCitizenIdentificationProvideDate() == null ? null : entity.getCitizenIdentificationProvideDate().toString(),
+      entity.getCitizenIdentificationProvideLocation(),
+      entity.getNumberOfHousehold(),
+      entity.getHouseholdRegistrationNumber(),
+      entity.getUsageTarget(),
+      entity.getCustomerType(),
+      entity.getRepresentative()
     );
   }
 

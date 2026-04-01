@@ -168,12 +168,12 @@ export interface CreateCustomerPayload {
   bankAccountProviderLocation: string;
   bankAccountName: string;
   isActive: boolean;
-
+  taxCode: string;
+  citizenIdentificationProvideLocation: string;
   formNumber: string;
   formCode: string;
   waterPriceId: string;
   waterMeterId: string;
-
   isFree: boolean;
   isSale: boolean;
   m3Sale: string;
