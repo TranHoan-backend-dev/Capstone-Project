@@ -10,6 +10,7 @@ import { useState } from "react";
 import { CallToast } from "@/components/ui/CallToast";
 import { z } from "zod";
 import { getDeviceId } from "@/services/auth.service";
+import { getRoleBasedRoute } from "@/utils/getRoleBasedRoute";
 
 const loginSchema = z.object({
   username: z.string().trim().min(1, "Vui lòng nhập email hoặc tên đăng nhập"),
@@ -68,14 +69,16 @@ const LoginForm = () => {
         localStorage.setItem("user", JSON.stringify(data.userDetails));
       }
 
-      // Hiển thị thông báo nếu là thiết bị mới (BE sẽ trả về message phù hợp)
       CallToast({
         title: "Thành công",
         message: "Đăng nhập thành công!",
         color: "success",
       });
 
-      router.push("/home");
+      // Redirect dựa trên role của user
+      const userRole = data.userDetails?.role.toUpperCase();
+      const redirectPath = getRoleBasedRoute(userRole);
+      router.push(redirectPath);
     } catch (err: any) {
       CallToast({
         title: "Thất bại",
