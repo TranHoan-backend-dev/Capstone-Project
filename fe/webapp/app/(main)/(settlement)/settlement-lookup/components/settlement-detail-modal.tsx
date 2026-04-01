@@ -76,16 +76,6 @@ export const SettlementDetailModal = ({
                   value={formatDate(data.createDate)}
                 />
 
-                <InfoRow
-                  label="Trạng thái"
-                  value={
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 text-green-700 rounded-md">
-                      <span className="w-1.5 h-1.5 bg-green-600 rounded-full" />
-                      {data.status}
-                    </span>
-                  }
-                />
-
                 <div className="border-t border-gray-200 my-4" />
 
                 {/* <InfoRow

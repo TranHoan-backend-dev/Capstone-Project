@@ -1,4 +1,22 @@
-export const DocumentHeader = () => {
+"use client";
+
+interface DocumentHeaderProps {
+  code?: string;
+  date?: Date;
+}
+
+export const DocumentHeader = ({
+  code = "Chưa có mã",
+  date = new Date(),
+}: DocumentHeaderProps) => {
+  const formattedDate = new Intl.DateTimeFormat("vi-VN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(date);
+
+  const [day, month, year] = formattedDate.split("/");
+
   return (
     <div className="grid grid-cols-2 gap-8 mb-6 text-xs">
       <div>
@@ -6,7 +24,7 @@ export const DocumentHeader = () => {
           CÔNG TY CỔ PHẦN CẤP NƯỚC NAM ĐỊNH
         </div>
         <div className="mt-3">
-          <span className="font-semibold">Mã đơn:</span> 01021110027
+          <span className="font-semibold">Mã đơn:</span> {code}
         </div>
       </div>
 
@@ -18,7 +36,7 @@ export const DocumentHeader = () => {
           Độc lập - Tự do - Hạnh phúc
         </div>
         <div className="italic mt-6">
-          TP Nam Định, Ngày 05 tháng 11 năm 2021
+          TP Nam Định, Ngày {day} tháng {month} năm {year}
         </div>
       </div>
     </div>

@@ -12,6 +12,7 @@ import { formatDate2 } from "@/utils/format";
 import { SettlementFormModal } from "./components/settlement-form-modal";
 import { authFetch } from "@/utils/authFetch";
 import { useProfile } from "@/hooks/useLogin";
+import { CallToast } from "@/components/ui/CallToast";
 
 const SettlementLookupPage = () => {
   const { profile } = useProfile();
@@ -51,46 +52,79 @@ const SettlementLookupPage = () => {
   };
   
   const handleCreate = async (payload: any) => {
-    const res = await authFetch("/api/construction/settlements", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
+    try {
+      const res = await authFetch("/api/construction/settlements", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
-    if (!res.ok) throw new Error("Tạo thất bại");
-
-    handleSuccess();
+      if (!res.ok) {
+        const errorData = await res.json();
+        const errorMessage =
+          errorData?.message || errorData?.error?.message || "Tạo thất bại";
+        throw new Error(errorMessage);
+      }
+      CallToast({
+        title: "Thanh công",
+        message: "Tạo quyết toán thành công",
+        color: "success",
+      });
+      handleSuccess();
+    } catch (error: any) {
+      CallToast({
+        title: "Lỗi",
+        message: error.message || "Tạo quyết toán thất bại",
+        color: "danger",
+      });
+      throw error;
+    }
   };
 
   const handleUpdate = async (payload: any) => {
     if (!editingItem?.id) return;
 
-    const res = await authFetch(
-      `/api/construction/settlements/${editingItem.id}`,
-      {
-        method: "PUT",
-        body: JSON.stringify(payload),
-      },
-    );
+    try {
+      const res = await authFetch(
+        `/api/construction/settlements/${editingItem.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        },
+      );
 
-    if (!res.ok) throw new Error("Cập nhật thất bại");
-
-    handleSuccess();
+      if (!res.ok) {
+        const errorData = await res.json();
+        const errorMessage =
+          errorData?.message ||
+          errorData?.error?.message ||
+          "Cập nhật thất bại";
+        throw new Error(errorMessage);
+      }
+      CallToast({
+        title: "Thanh công",
+        message: "Cập nhật quyết toán thành công",
+        color: "success",
+      });
+      handleSuccess();
+    } catch (error: any) {
+      CallToast({
+        title: "Lỗi",
+        message: error.message || "Cập nhật quyết toán thất bại",
+        color: "danger",
+      });
+      throw error;
+    }
   };
 
-  // if (!isITStaff) {
-  //   return (
-  //     <div className="flex items-center justify-center min-h-screen">
-  //       <div className="text-center">
-  //         <h1 className="text-2xl font-bold text-danger mb-4">
-  //           Truy cập bị từ chối
-  //         </h1>
-  //       </div>
-  //     </div>
-  //   );
-  // }
+  if (!profile) {
+    return <p>Không thể tải danh sách quyết toán</p>;
+  }
 
   return (
     <div className="space-y-4">

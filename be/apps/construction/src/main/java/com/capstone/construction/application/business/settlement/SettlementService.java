@@ -8,17 +8,17 @@ import com.capstone.construction.application.dto.response.PageResponse;
 import org.springframework.data.domain.Pageable;
 
 public interface SettlementService {
-  SettlementResponse createSettlement(SettlementRequest request);
+    SettlementResponse createSettlement(SettlementRequest request);
 
-  SettlementResponse updateSettlement(String id, SettlementRequest request);
+    SettlementResponse updateSettlement(String id, SettlementRequest request);
 
-  SettlementResponse getSettlementById(String id);
+    SettlementResponse getSettlementById(String id);
 
-  PageResponse<SettlementResponse> getAllSettlements(Pageable pageable);
+    PageResponse<SettlementResponse> getAllSettlements(Pageable pageable);
 
-  PageResponse<SettlementResponse> filterSettlements(SettlementFilterRequest filterRequest, Pageable pageable);
+    PageResponse<SettlementResponse> filterSettlements(SettlementFilterRequest filterRequest, Pageable pageable);
 
   boolean signSettlement(String userId, String id, SignificanceRequest significance);
 
-  boolean isExistingSettlement(String id);
+    boolean isExistingSettlement(String id);
 }

@@ -157,20 +157,6 @@ export const siteConfig = {
       ],
     },
 
-    // Hợp đồng
-    {
-      key: "contract",
-      label: "Hợp đồng",
-      items: [
-        {
-          key: "new-contract",
-          label: "Lập hợp đồng cấp nước mới",
-          href: "/water-supply-contract",
-          roles: ["it_staff", "order_receiving_staff"],
-        },
-      ],
-    },
-
     // Khách hàng
     {
       key: "customer",
@@ -248,11 +234,7 @@ export const siteConfig = {
           key: "design-processing",
           label: "Xử lý đơn chờ thiết kế & Thiết kế",
           href: "/design-processing",
-          roles: [
-            "it_staff",
-            "survey_staff",
-            "planning_technical_department_head",
-          ],
+          roles: ["it_staff", "survey_staff"],
         },
         {
           key: "assigning-survey",
@@ -264,11 +246,7 @@ export const siteConfig = {
           key: "estimate-preparation",
           label: "Lập dự toán",
           href: "/estimate/preparation",
-          roles: [
-            "it_staff",
-            "survey_staff",
-            "planning_technical_department_head",
-          ],
+          roles: ["it_staff", "survey_staff"],
         },
         {
           key: "estimate-approval",
@@ -285,11 +263,7 @@ export const siteConfig = {
           key: "run-estimate",
           label: "Chạy dự toán",
           href: "/estimate/run",
-          roles: [
-            "it_staff",
-            "survey_staff",
-            "planning_technical_department_head",
-          ],
+          roles: ["it_staff", "survey_staff"],
         },
         // {
         //   key: "estimate-lookup",
@@ -339,7 +313,29 @@ export const siteConfig = {
           key: "settlement-lookup",
           label: "Tra cứu quyết toán",
           href: "/settlement-lookup",
-          roles: ["it_staff", "finance_department"],
+          roles: [
+            "it_staff",
+            "finance_department",
+            "construction_department_staff",
+            "construction_department_head",
+            "survey_staff",
+            "company_leadership",
+            "planning_technical_department_head",
+          ],
+        },
+      ],
+    },
+
+    // Hợp đồng
+    {
+      key: "contract",
+      label: "Hợp đồng",
+      items: [
+        {
+          key: "new-contract",
+          label: "Lập hợp đồng cấp nước mới",
+          href: "/water-supply-contract",
+          roles: ["it_staff", "order_receiving_staff"],
         },
       ],
     },

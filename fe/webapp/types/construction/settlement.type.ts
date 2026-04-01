@@ -1,16 +1,23 @@
+export interface SettlementStatus {
+  registration: string;
+  estimate: string;
+  contract: string;
+  construction: string;
+}
+
 export interface SettlementItem {
   stt: string;
   id: string;
+  formCode: string;
+  formNumber: string;
   jobContent: string;
   connectionFee: string;
   address: string;
   registrationAt: string;
-  status: "PROCESSING" | "PENDING_FOR_APPROVAL" | "APPROVED" | "REJECTED";
+  status: SettlementStatus;
   note?: string;
   createdAt?: string;
   updatedAt?: string;
-  formCode: string;
-  formNumber: string;
 }
 
 export interface SettlementDetail extends SettlementItem {
@@ -74,27 +81,28 @@ export interface SettlementFilterRequest {
 }
 
 export interface SettlementRequest {
-  constructionId?: string;
-  customerName: string;
-  phone: string;
+  formCode: string;
+  formNumber: string;
+  jobContent: string;
   address: string;
-  registerDate: string;
+  connectionFee: number;
   note?: string;
-  materials?: Omit<SettlementMaterial, "id">[];
-  laborCosts?: Omit<SettlementLaborCost, "id">[];
-  connectionFees?: Omit<SettlementConnectionFee, "id">[];
+  registrationAt: string;
+  status: string[];
 }
 
 export interface SettlementResponse {
+  settlementId: string;
+  jobContent: string;
   formNumber: string;
   address: string;
   connectionFee: number;
   createdAt: string;
-  jobContent: string;
+  formCode: string;
   note: string;
   registrationAt: string;
-  settlementId: string;
-  status: string[];
+  // status: string[];
+  significance: any;
+  status: SettlementStatus;
   updatedAt: string;
-  formCode: string;
 }

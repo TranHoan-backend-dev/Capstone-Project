@@ -1,4 +1,3 @@
-// Header.tsx - Phiên bản đã sửa
 "use client";
 
 import {
@@ -13,7 +12,7 @@ import {
   Tooltip,
 } from "@heroui/react";
 import Link from "next/link";
-import { Bars3Icon, ChevronDownIcon } from "@heroicons/react/24/solid";
+import { Bars3Icon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 
@@ -128,9 +127,7 @@ const Header = () => {
           </NavbarBrand>
         </NavbarContent>
 
-        {/* Desktop navigation - SỬA LẠI PHẦN NÀY */}
         <div className="hidden md:flex items-center w-full">
-          {/* Logo section - fixed width */}
           <div className="flex-shrink-0 px-4">
             <div className="flex items-center">
               <Bars3Icon className="w-8 h-8 text-primary" />
@@ -138,7 +135,6 @@ const Header = () => {
             </div>
           </div>
 
-          {/* Menu section - auto width, left aligned */}
           <div className="flex-1 flex items-center">
             <div className="flex items-center gap-2 font-bold">
               {filteredMenu.map((item) => {
@@ -173,7 +169,6 @@ const Header = () => {
             </div>
           </div>
 
-          {/* Right section - fixed width for user menu */}
           <div className="flex-shrink-0 flex items-center gap-4">
             {profile?.fullname && (
               <>
