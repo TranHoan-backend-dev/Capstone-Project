@@ -75,25 +75,9 @@ export const TechnicalInfoCard = ({
   const [waterMeterSerial, setWaterMeterSerial] = useState("");
   const [displayWaterMeter, setDisplayWaterMeter] = useState("");
 
-  // useEffect(() => {
-  //   const fetchOverallWaterMeterDetails = async () => {
-  //     if (overallWaterMeterId && !displayOverallWaterMeter) {
-  //       try {
-  //         const response = await authFetch(
-  //           `/api/device/water-meters/overall/${overallWaterMeterId}`,
-  //         );
-  //         const result = await response.json();
-  //         if (result.data) {
-  //           setDisplayOverallWaterMeter(`${result.data.name}`);
-  //         }
-  //       } catch (error) {
-  //         console.error("Failed to fetch water meter overall:", error);
-  //       }
-  //     }
-  //   };
+  const isEstimateApproved =
+    estimateData?.generalInformation?.status?.estimate === "APPROVED";
 
-  //   fetchOverallWaterMeterDetails();
-  // }, [overallWaterMeterId, displayOverallWaterMeter]);
   useEffect(() => {
     const fetchOverallMeters = async () => {
       try {
@@ -109,6 +93,7 @@ export const TechnicalInfoCard = ({
 
     fetchOverallMeters();
   }, []);
+
   useEffect(() => {
     const fetchWaterMeterDetails = async () => {
       if (waterMeterSerial && !displayWaterMeter) {
@@ -143,7 +128,6 @@ export const TechnicalInfoCard = ({
     }
   }, [overallWaterMeterId, overallMeters]);
 
-  // Load dữ liệu từ estimateData vào state
   useEffect(() => {
     if (estimateData?.generalInformation) {
       const info = estimateData.generalInformation;
@@ -172,7 +156,6 @@ export const TechnicalInfoCard = ({
     }
   }, [estimateData]);
 
-  // Hàm chuyển đổi file sang base64
   const fileToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -329,7 +312,7 @@ export const TechnicalInfoCard = ({
                   <DocumentMagnifyGlassIcon className="w-4 h-4" />
                 )
               }
-              isDisabled={isUploading}
+              isDisabled={isUploading || isEstimateApproved}
             >
               {designImageFile ? "Đã chọn ảnh mới" : "Ảnh cụm đồng hồ"}
             </CustomButton>
@@ -365,7 +348,7 @@ export const TechnicalInfoCard = ({
                   <SaveDocumentCheckIcon className="w-4 h-4" />
                 )
               }
-              isDisabled={isUploading}
+              isDisabled={isUploading || isEstimateApproved}
             >
               {isUploading ? "Đang lưu..." : "Lưu"}
             </CustomButton>
@@ -379,7 +362,7 @@ export const TechnicalInfoCard = ({
                   <DocumentCheckedIcon className="w-4 h-4" />
                 )
               }
-              isDisabled={isUploading}
+              isDisabled={isUploading || isEstimateApproved}
             >
               {isUploading ? "Đang lưu..." : "Gửi"}
             </CustomButton>
