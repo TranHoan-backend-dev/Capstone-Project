@@ -1,6 +1,6 @@
 "use client";
 
-import { Image } from "@heroui/react";
+import Image from "next/image";
 import logo from "@/public/logo.png";
 
 const LeftSide = () => {
@@ -9,9 +9,9 @@ const LeftSide = () => {
       <div className="mb-6 md:mb-8">
         <div className="w-24 h-24 md:w-36 md:h-36 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-4 border-white/30 mx-auto">
           <Image
-            src={logo.src}
+            src={logo}
             alt="Logo"
-            className="w-full h-full object-cover rounded-full"
+            className="object-cover rounded-full"
           />
         </div>
       </div>
