@@ -29,7 +29,7 @@ import { SettlementDetailModal } from "./settlement-detail-modal";
 import { SettlementDocumentModal } from "./settlement-document-modal";
 
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import { EditIcon, ApprovalIcon } from "@/config/chip-and-icon";
+import { EditIcon, ApprovalIcon, PencilIcon } from "@/config/chip-and-icon";
 import { SettlementItem, SettlementDetail, SettlementResponse } from "@/types";
 import { authFetch } from "@/utils/authFetch";
 import { SETLEMENT_LOOKUP_COLUMN } from "@/config/table-columns";
@@ -128,7 +128,10 @@ export const ResultsTable = ({
 
   // Kiểm tra role hiện tại
   const canManageSettlements = useMemo(() => {
-    return currentUser?.role === "construction_department_staff" || currentUser?.role === "it_staff";
+    return (
+      currentUser?.role === "construction_department_staff" ||
+      currentUser?.role === "it_staff"
+    );
   }, [currentUser]);
 
   const canSignSettlements = useMemo(() => {
@@ -782,9 +785,10 @@ export const ResultsTable = ({
                   onPress={handleConfirmSign}
                   isLoading={isProcessing}
                   isDisabled={!currentUser?.significanceUrl}
+                  className="text-white hover:bg-success-600 disabled:bg-success-300 disabled:text-white/50"
                   startContent={
                     !isProcessing ? (
-                      <CheckCircleIcon className="w-4 h-4" />
+                      <PencilIcon className="w-4 h-4" />
                     ) : undefined
                   }
                 >
