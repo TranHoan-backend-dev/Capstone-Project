@@ -36,6 +36,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.capstone.auth.application.business.profile.ProfileService;
+
 @AppLog
 @Service
 @RequiredArgsConstructor
@@ -44,6 +46,7 @@ public class UserServiceImpl implements UserService {
   UserRepository repo;
   BusinessPagesOfEmployeeRepository bpRepo;
   ProfileRepository profileRepo;
+  ProfileService pSrv;
   EmployeeJobRepository employeeJobRepo;
   NetworkService networkService;
   OrganizationService organizationService;
@@ -58,8 +61,7 @@ public class UserServiceImpl implements UserService {
   @Transactional(rollbackFor = Exception.class) // rollback neu co loi
   public void createEmployee(
     String userId, String username, String email, Roles role, @NonNull List<String> jobIds,
-    String departmentId, String waterSupplyNetworkId, String fullName, String phone
-  ) {
+    String departmentId, String waterSupplyNetworkId, String fullName, String phone) {
     log.info("UsersService is handling the request");
 
     var user = Users.create(builder -> builder
@@ -77,16 +79,14 @@ public class UserServiceImpl implements UserService {
     var profile = Profile.create(builder -> builder
       .fullname(fullName)
       .users(entity)
-      .phoneNumber(phone)
-    );
+      .phoneNumber(phone));
 
     var p = profileRepo.save(profile);
     log.info("New profile's information: {}", p);
     jobIds.forEach(jid -> {
       var job = employeeJobRepo.save(EmployeeJob.create(builder -> builder
         .users(entity)
-        .id(new EmployeeJobId(entity.getUserId(), jid))
-      ));
+        .id(new EmployeeJobId(entity.getUserId(), jid))));
       log.info("New employee's job: {}", job);
     });
   }
@@ -139,17 +139,17 @@ public class UserServiceImpl implements UserService {
   public Page<EmployeeResponse> getAllEmployeesWithStatus(Pageable pageable, FilterUsersRequest request) {
     log.info("Getting all active employees with activate status: {}", request);
     Page<Users> usersList;
-//    var usersList = request.isEnabled() == null ? repo.findAll(pageable)
-//      : repo.findByIsEnabledTrueAndIsLockedFalse(pageable);
-//
-//    if (request.username() != null) {
-//      content = content.stream()
-//        .filter(c -> c
-//          .username().toLowerCase()
-//          .contains(request.username().toLowerCase()))
-//        .toList();
-//    }
-//    log.info("Found {} employees", content.size());
+    // var usersList = request.isEnabled() == null ? repo.findAll(pageable)
+    // : repo.findByIsEnabledTrueAndIsLockedFalse(pageable);
+    //
+    // if (request.username() != null) {
+    // content = content.stream()
+    // .filter(c -> c
+    // .username().toLowerCase()
+    // .contains(request.username().toLowerCase()))
+    // .toList();
+    // }
+    // log.info("Found {} employees", content.size());
 
     if (request != null) {
       if (request.isEnabled() != null && request.username() == null) {
@@ -157,7 +157,8 @@ public class UserServiceImpl implements UserService {
       } else if (request.username() != null && request.isEnabled() == null) {
         usersList = repo.findByUsernameContainsIgnoreCase(request.username(), pageable);
       } else if (request.isEnabled() != null) {
-        usersList = repo.findByIsEnabledTrueAndIsLockedFalseOrUsernameContainingIgnoreCase(request.username(), pageable);
+        usersList = repo.findByIsEnabledTrueAndIsLockedFalseOrUsernameContainingIgnoreCase(request.username(),
+          pageable);
       } else {
         usersList = repo.findAll(pageable);
       }
@@ -196,14 +197,16 @@ public class UserServiceImpl implements UserService {
       .orElseThrow(() -> new NotExistingException("Không tìm thấy hồ sơ người dùng với id " + id));
 
     if (request.name() != null && !request.name().isBlank()) {
-      profile.setFullname(request.name());
+      // profile.setFullname(request.name());
+      pSrv.updateProfile(profile);
     }
     if (request.phone() != null && !request.phone().isBlank()) {
       profile.setPhoneNumber(request.phone());
     }
     if (request.isActive() != null) {
       user.setIsEnabled(request.isActive());
-      // TODO: dùng keycloak để xác định session đăng nhập của người dùng, sau đó gửi thông báo và email cho họ
+      // TODO: dùng keycloak để xác định session đăng nhập của người dùng, sau đó gửi
+      // thông báo và email cho họ
     }
     if (request.departmentId() != null && !request.departmentId().isBlank()) {
       var status = organizationService.checkDepartmentExistence(request.departmentId());
@@ -240,8 +243,7 @@ public class UserServiceImpl implements UserService {
       var role = rolesList.getFirst();
       role.getUsers().removeIf(u -> u
         .getUserId()
-        .equals(emp.getUserId())
-      );
+        .equals(emp.getUserId()));
       roleRepo.save(role);
     }
 
@@ -309,7 +311,7 @@ public class UserServiceImpl implements UserService {
     var role = roleRepo.findRolesByName(roleName);
     var users = repo.findByRole(role);
     return users.stream().map(user -> {
-      var name = profileRepo.findFullNameByProfileId(user.getUserId());
+      var name = pSrv.getFullName(user.getUserId());
       return NameAndIdResponse.builder()
         .id(user.getUserId())
         .name(name)
@@ -363,11 +365,10 @@ public class UserServiceImpl implements UserService {
     return new EmployeeResponse(
       user.getUserId(),
       null,
-      profile.getFullname(),
+      pSrv.getFullName(user.getUserId()),
       organizationService.getDepartmentName(user.getDepartmentId()),
       networkService.getNameById(user.getWaterSupplyNetworkId()),
       bpService.getPagesByEmployeeId(user.getUserId()).toString(),
-      user.getEmail()
-    );
+      user.getEmail());
   }
 }
