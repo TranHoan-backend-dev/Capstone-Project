@@ -17,6 +17,7 @@ import {
 import { EstimateItem, EstimateResponse, EstimateStatus } from "@/types";
 import { ESTIMATE_PREPARATION_COLUMN } from "@/config/table-columns";
 import { formatDate } from "@/utils/format";
+import { calculateTotalAmount } from "@/utils/calculateTotalAmount";
 
 interface ResultsTableProps {
   keyword?: string;
@@ -126,15 +127,8 @@ export const ResultsTable = ({ keyword, from, to }: ResultsTableProps) => {
 
         const mapped: EstimateItem[] = items.map((item: any) => {
           const info = item.generalInformation;
-
-          const totalPrice = (item.material || []).reduce(
-            (sum: number, m: any) =>
-              sum +
-              Number(m.totalMaterialPrice || 0) +
-              Number(m.totalLaborPrice || 0),
-            0,
-          );
-
+          const form = info.installationFormId;
+          
           return {
             id: info.estimationId,
             formCode: info.installationFormId?.formCode,
@@ -145,7 +139,7 @@ export const ResultsTable = ({ keyword, from, to }: ResultsTableProps) => {
             address: info.address,
             registerDate: new Date(info.createdAt).toLocaleDateString("vi-VN"),
             status: info.status.estimate,
-            totalPrice,
+            totalPrice: calculateTotalAmount(item.material, info),
           };
         });
         // const mapped: EstimateItem[] = items.map((item: any) => {

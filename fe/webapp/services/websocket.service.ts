@@ -30,7 +30,7 @@ class WebSocketService {
       this.url = `ws://${baseUrl}`;
     }
 
-    console.log("🔌 WebSocket Service initialized with URL:", this.url);
+    console.log("WebSocket Service initialized with URL:", this.url);
   }
 
   /**
@@ -40,7 +40,7 @@ class WebSocketService {
     return new Promise((resolve, reject) => {
       try {
         if (!accessToken) {
-          const error = "❌ No access token provided to WebSocket.connect()";
+          const error = "No access token provided to WebSocket.connect()";
           console.error(error);
           reject(new Error(error));
           return;
@@ -48,13 +48,13 @@ class WebSocketService {
 
         // Thêm token vào URL
         const wsUrl = `${this.url}?token=${accessToken}`;
-        console.log("🔗 Attempting to connect to WebSocket:", this.url);
+        console.log("Attempting to connect to WebSocket:", this.url);
         
         this.ws = new WebSocket(wsUrl);
         this.isManualClose = false;
 
         this.ws.onopen = () => {
-          console.log("✅ WebSocket connected");
+          console.log("WebSocket connected");
           this.reconnectAttempts = 0;
           resolve();
         };
@@ -69,18 +69,18 @@ class WebSocketService {
         };
 
         this.ws.onerror = (error) => {
-          console.error("❌ WebSocket error:", error);
+          console.error("WebSocket error:", error);
           reject(error);
         };
 
         this.ws.onclose = () => {
-          console.log("⚠️  WebSocket disconnected");
+          console.log("WebSocket disconnected");
           if (!this.isManualClose) {
             this.attemptReconnect(accessToken);
           }
         };
       } catch (error) {
-        console.error("❌ WebSocket connection error:", error);
+        console.error("WebSocket connection error:", error);
         reject(error);
       }
     });
@@ -146,13 +146,13 @@ class WebSocketService {
    */
   private attemptReconnect(accessToken: string): void {
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-      console.error("❌ Max reconnect attempts reached");
+      console.error("Max reconnect attempts reached");
       return;
     }
 
     this.reconnectAttempts++;
     const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
-    console.log(`🔄 Attempting to reconnect in ${delay}ms (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
+    console.log(`Attempting to reconnect in ${delay}ms (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
 
     setTimeout(() => {
       this.connect(accessToken).catch((error) => {

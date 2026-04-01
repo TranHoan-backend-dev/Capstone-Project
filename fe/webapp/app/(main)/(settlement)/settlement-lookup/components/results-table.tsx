@@ -233,7 +233,9 @@ export const ResultsTable = ({
       );
       if (!res.ok) throw new Error("Failed to fetch");
       const json = await res.json();
-      setSelectedSettlementDetail(json?.data);
+      const settlementData = json?.data?.data;
+      setSelectedSettlementDetail(settlementData);
+
       setIsDetailModalOpen(true);
     } catch (error: any) {
       CallToast({
@@ -414,11 +416,9 @@ export const ResultsTable = ({
     setPage(1);
   }, [keyword]);
 
-  // Xây dựng action items dựa trên role
   const actionItems = useMemo(() => {
     const items = [];
 
-    // Chỉ construction_department_staff mới thấy nút tạo yêu cầu ký, sửa, xóa
     if (canManageSettlements) {
       items.push({
         content: "Tạo yêu cầu ký",
@@ -440,7 +440,6 @@ export const ResultsTable = ({
         },
       });
 
-      // Thêm nút xóa
       items.push({
         content: "Xóa",
         icon: TrashIcon,
@@ -451,7 +450,6 @@ export const ResultsTable = ({
       });
     }
 
-    // Các role survey_staff, planning_teachnical_head, company_leadership chỉ thấy nút ký
     if (canSignSettlements) {
       items.push({
         content: "Ký duyệt",

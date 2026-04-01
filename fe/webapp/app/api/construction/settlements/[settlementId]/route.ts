@@ -24,7 +24,7 @@ export async function GET(
     return NextResponse.json(
       {
         message: "Lấy thông tin quyết toán thành công",
-        data: response.data,
+        data: response.data,  
       },
       { status: 200 },
     );

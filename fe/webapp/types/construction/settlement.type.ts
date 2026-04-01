@@ -20,17 +20,29 @@ export interface SettlementItem {
   updatedAt?: string;
 }
 
-export interface SettlementDetail extends SettlementItem {
-  creator: string;
-  createDate: string;
-  approver: string;
-  approveDate: string;
-  totalPrice: string;
-  totalPriceNumber?: number;
+export interface SettlementDetail {
+  settlementId: string;
+  formCode: string;
+  formNumber: string;
+  jobContent: string;
+  address: string;
+  registrationAt: string;
+  connectionFee: number;
   note: string;
-  materials?: SettlementMaterial[];
-  laborCosts?: SettlementLaborCost[];
-  connectionFees?: SettlementConnectionFee[];
+  createdAt: string;
+  updatedAt: string;
+  significance: {
+    surveyStaff: string;
+    ptHead: string;
+    president: string;
+    constructionPresident: string;
+  };
+  status: {
+    registration: string;
+    estimate: string;
+    contract: string;
+    construction: string;
+  };
 }
 
 export interface SettlementMaterial {

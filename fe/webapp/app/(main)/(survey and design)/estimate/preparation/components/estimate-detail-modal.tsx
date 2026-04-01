@@ -48,23 +48,19 @@ export const EstimateDetailModal = ({ isOpen, onClose, data }: any) => {
           className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col"
           onClick={(e) => e.stopPropagation()}
         >
-          <ModalHeader title="Thông tin chiết tính" onClose={onClose} />
+          <ModalHeader title="Thông tin dự toán" onClose={onClose} />
 
           <div className="flex-1 overflow-y-auto px-6 py-6 space-y-4">
             <InfoRow
               label="Mã đơn đăng ký"
               value={
-                <span className="text-blue-600 font-medium">{data.code}</span>
+                <span className="text-black-600 font-medium">{data.code}</span>
               }
             />
 
             <InfoRow label="Địa chỉ lắp đặt" value={data.address} />
 
-            <InfoRow
-              icon={<InformationCircleIcon className="w-4 h-4 text-gray-400" />}
-              label="Ngày đăng ký"
-              value={data.registerDate}
-            />
+            <InfoRow label="Ngày đăng ký" value={data.registerDate} />
 
             <InfoRow
               label="Trạng thái"
@@ -79,11 +75,7 @@ export const EstimateDetailModal = ({ isOpen, onClose, data }: any) => {
             <div className="border-t border-gray-200 my-4" />
 
             <InfoRow label="Người lập chiết tính" value={creatorName} />
-            <InfoRow
-              icon={<InformationCircleIcon className="w-4 h-4 text-gray-400" />}
-              label="Ngày lập chiết tính"
-              value={data.createDate}
-            />
+            <InfoRow label="Ngày lập chiết tính" value={data.createDate} />
 
             {/* <InfoRow
               icon={<InformationCircleIcon className="w-4 h-4 text-gray-400" />}
