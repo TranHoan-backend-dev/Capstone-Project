@@ -1,4 +1,3 @@
-// components/LoginForm.tsx
 "use client";
 
 import { Form, Link } from "@heroui/react";
@@ -101,7 +100,7 @@ const LoginForm = () => {
                 "text-sm font-medium text-gray-700 dark:text-zinc-400 font-bold",
               input: "text-gray-900 dark:text-white",
               inputWrapper:
-                "border border-gray-300 dark:border-zinc-800 bg-white dark:bg-zinc-800/50 hover:border-gray-400 dark:hover:border-zinc-700 h-12",
+                "border border-gray-300 dark:border-zinc-800 bg-white dark:bg-zinc-800/50 hover:border-gray-400 dark:hover:border-zinc-700",
             }}
             endContent={
               <div className="flex items-center h-full">
@@ -120,7 +119,7 @@ const LoginForm = () => {
                 "text-sm font-medium text-gray-700 dark:text-zinc-400 font-bold",
               input: "text-gray-900 dark:text-white",
               inputWrapper:
-                "border border-gray-300 dark:border-zinc-800 bg-white dark:bg-zinc-800/50 hover:border-gray-400 dark:hover:border-zinc-700 h-12",
+                "border border-gray-300 dark:border-zinc-800 bg-white dark:bg-zinc-800/50 hover:border-gray-400 dark:hover:border-zinc-700",
             }}
             label="Nhập mật khẩu"
             value={formData.password}
