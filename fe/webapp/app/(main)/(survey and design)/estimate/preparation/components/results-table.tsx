@@ -93,7 +93,8 @@ export const ResultsTable = ({ keyword, from, to }: ResultsTableProps) => {
       approver: "Chưa có",
       approveDate: "",
       totalPrice: item.totalPrice,
-      note: item.note,
+      note: item.note || "",
+      significance: item.significance,
     };
   };
 
@@ -129,7 +130,7 @@ export const ResultsTable = ({ keyword, from, to }: ResultsTableProps) => {
         const mapped: EstimateItem[] = items.map((item: any) => {
           const info = item.generalInformation;
           const form = info.installationFormId;
-          
+
           return {
             id: info.estimationId,
             formCode: info.installationFormId?.formCode,
@@ -141,6 +142,7 @@ export const ResultsTable = ({ keyword, from, to }: ResultsTableProps) => {
             registerDate: new Date(info.createdAt).toLocaleDateString("vi-VN"),
             status: info.status.estimate,
             totalPrice: calculateTotalAmount(item.material, info),
+            significance: info.significance,
           };
         });
         // const mapped: EstimateItem[] = items.map((item: any) => {

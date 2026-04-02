@@ -11,7 +11,13 @@ import java.util.List;
 public record CostEstimateResponse(
   GeneralInformation generalInformation,
   List<BaseMaterial> material
-) {
+) { 
+  public record Significance(
+    String companyLeaderShip,
+    String surveyStaff,
+    String planningTechnicalHead
+  ) {
+  }
   public record GeneralInformation(
     String estimationId,
     String customerName,
@@ -36,7 +42,8 @@ public record CostEstimateResponse(
     String waterMeterSerial,
     String overallWaterMeterId,
     InstallationFormId installationFormId,
-    FormProcessingStatus status
+    FormProcessingStatus status,
+    Significance significance
   ) {
 
   }

@@ -19,6 +19,11 @@ export interface EstimateItem {
   status: string;
   createBy: string;
   totalPrice: string;
+  significance?: {
+    surveyStaff?: string;
+    planningTechnicalHead?: string;
+    companyLeaderShip?: string;
+  };
 }
 
 export interface MaterialEstimateItem {

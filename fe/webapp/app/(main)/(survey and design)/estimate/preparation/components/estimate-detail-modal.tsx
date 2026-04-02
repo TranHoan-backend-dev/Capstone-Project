@@ -17,6 +17,7 @@ export const statusLabelMap: Record<string, string> = {
   PARTIALLY_SIGNED: "Đang ký",
   APPROVED: "Đã duyệt",
   REJECTED: "Bị từ chối",
+  PENDING_FOR_APPROVAL: "Chờ lập dự toán",
 };
 
 export const statusColorMap: Record<
@@ -53,6 +54,17 @@ export const statusColorMap: Record<
     text: "text-red-700",
     dot: "bg-red-600",
   },
+  PENDING_FOR_APPROVAL: {
+    bg: "bg-yellow-50",
+    text: "text-yellow-700",
+    dot: "bg-yellow-600",
+  },
+};
+
+const roleNameMap: Record<string, string> = {
+  survey_staff: "Nhân viên khảo sát",
+  planning_technical_head: "Trưởng phòng Kế hoạch Kỹ thuật",
+  company_leader: "Lãnh đạo công ty",
 };
 
 export const EstimateDetailModal = ({ isOpen, onClose, data }: any) => {
@@ -76,13 +88,20 @@ export const EstimateDetailModal = ({ isOpen, onClose, data }: any) => {
     };
 
     fetchCreator();
-  }, [data?.creatorId]);
+  }, [data?.creator]);
+
+  const getSignerDisplayName = (roleValue?: string) => {
+    if (!roleValue || roleValue === "") return "Chưa có thông tin";
+    return roleNameMap[roleValue] || roleValue;
+  };
 
   const statusColors = statusColorMap[data.status] || {
     bg: "bg-gray-50",
     text: "text-gray-700",
     dot: "bg-gray-600",
   };
+
+  const significance = data?.significance;
 
   return (
     <>
@@ -137,6 +156,49 @@ export const EstimateDetailModal = ({ isOpen, onClose, data }: any) => {
                 />
               }
             />
+
+            {/* Thêm phần thông tin ký duyệt */}
+            <div className="border-t border-gray-200 my-4" />
+
+            <div className="space-y-2">
+              <h4 className="font-semibold text-gray-700">
+                Thông tin ký duyệt
+              </h4>
+
+              <InfoRow
+                label="Nhân viên khảo sát"
+                value={
+                  <div className="flex items-center gap-2">
+                    <span>
+                      {significance?.surveyStaff || "Chưa có thông tin"}
+                    </span>
+                  </div>
+                }
+              />
+
+              <InfoRow
+                label="Trưởng phòng Kế hoạch Kỹ thuật"
+                value={
+                  <div className="flex items-center gap-2">
+                    <span>
+                      {significance.planningTechnicalHead ||
+                        "Chưa có thông tin"}
+                    </span>
+                  </div>
+                }
+              />
+
+              <InfoRow
+                label="Lãnh đạo công ty"
+                value={
+                  <div className="flex items-center gap-2">
+                    {significance.companyLeaderShip || "Chưa có thông tin"}
+                  </div>
+                }
+              />
+            </div>
+
+            <div className="border-t border-gray-200 my-4" />
 
             <InfoRow label="Ghi chú" value={<NoteField value={data.note} />} />
           </div>

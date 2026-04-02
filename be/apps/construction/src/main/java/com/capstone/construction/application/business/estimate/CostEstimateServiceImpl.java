@@ -393,7 +393,11 @@ public class CostEstimateServiceImpl implements CostEstimateService {
         estimate.getWaterMeterSerial(),
         estimate.getOverallWaterMeterId(),
         estimate.getInstallationForm().getId(),
-        estimate.getInstallationForm().getStatus()
+        estimate.getInstallationForm().getStatus(),
+        estimate.getSignificance() != null ? new CostEstimateResponse.Significance(
+          estimate.getSignificance().getCompanyLeaderShip(),
+          estimate.getSignificance().getSurveyStaff(),
+          estimate.getSignificance().getPlanningTechnicalHead()) : null
       ),
       material);
   }
