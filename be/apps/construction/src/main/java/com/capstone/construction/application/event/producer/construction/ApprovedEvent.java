@@ -1,8 +1,7 @@
-package com.capstone.construction.application.event.producer.receipt;
+package com.capstone.construction.application.event.producer.construction;
 
-public record ApprovedEvent(
-  String formCode,
-  String formNumber,
-  String constructionCaptain
-) {
+public class ApprovedEvent extends BaseEvent {
+  public ApprovedEvent(String formCode, String formNumber, String constructionCaptain) {
+    super(formCode, formNumber, constructionCaptain);
+  }
 }

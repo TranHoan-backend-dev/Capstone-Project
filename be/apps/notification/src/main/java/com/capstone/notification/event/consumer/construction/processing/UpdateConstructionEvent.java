@@ -14,8 +14,8 @@ import java.util.List;
 
 @Slf4j
 @Component
-public class UpdateEvent extends GeneralEventConsumer<UpdateMessage> {
-  public UpdateEvent(MessageProducer producer) {
+public class UpdateConstructionEvent extends GeneralEventConsumer<UpdateMessage> {
+  public UpdateConstructionEvent(MessageProducer producer) {
     super(producer);
   }
 

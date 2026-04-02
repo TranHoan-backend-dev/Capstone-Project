@@ -5,9 +5,11 @@ import com.capstone.construction.application.business.constructionrequest.Constr
 import com.capstone.construction.application.business.installationform.InstallationFormService;
 import com.capstone.construction.application.dto.request.construction.AssignRequest;
 import com.capstone.construction.application.dto.response.construction.ConstructionResponse;
+import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import com.capstone.construction.application.event.producer.MessageProducer;
+import com.capstone.construction.application.event.producer.construction.UpdateEvent;
 import com.capstone.construction.application.event.producer.order.AssignEvent;
-import com.capstone.construction.application.event.producer.receipt.ApprovedEvent;
+import com.capstone.construction.application.event.producer.construction.ApprovedEvent;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
 import com.capstone.construction.infrastructure.service.EmployeeService;
 import lombok.AccessLevel;
@@ -30,14 +32,14 @@ public class ConstructionRequestUseCase {
   final EmployeeService employeeService;
 
   // <editor-fold> desc="constant"
-  @Value(".${rabbit-mq-config.entities[5]}.")
-  String INSTALLATION_FORM_PREFIX;
-
   @Value(".${rabbit-mq-config.entities[9]}.")
   String CONSTRUCTION_REQUEST_PREFIX;
 
   @Value("${rabbit-mq-config.actions[4]}")
   String ASSIGN_ACTION;
+
+  @Value("${rabbit-mq-config.actions[0]}")
+  String UPDATE_ACTION;
 
   @Value("${rabbit-mq-config.actions[3]}")
   String APPROVED_ACTION;
@@ -54,14 +56,27 @@ public class ConstructionRequestUseCase {
     ifSrv.assignInstallationForm(empId, new InstallationFormId(request.formCode(), request.formNumber()), false);
     var form = ifSrv.getByFormCodeAndFormNumber(request.formCode(), request.formNumber());
 
-    var routingKey = QUEUE_NAME + INSTALLATION_FORM_PREFIX + ASSIGN_ACTION;
+    var routingKey = QUEUE_NAME + CONSTRUCTION_REQUEST_PREFIX + ASSIGN_ACTION;
     var event = new AssignEvent(
       form.formCode(),
       form.formNumber(),
-      empId,
-      false
+      empId
     );
     messageProducer.send(routingKey, event);
+  }
+
+  public void updateConstructionRequest(String id, String employeeId) {
+    constructionRequestService.updatePendingRequest(id, employeeId);
+
+    var installationForm = installationForm(id);
+    var constructedBy = installationForm.constructedBy();
+
+    var routingKey = QUEUE_NAME + CONSTRUCTION_REQUEST_PREFIX + UPDATE_ACTION;
+    messageProducer.send(routingKey, new UpdateEvent(
+      installationForm.formCode(),
+      installationForm.formNumber(),
+      employeeService.getEmployeeNameById(constructedBy).data().toString()
+    ));
   }
 
   public Page<ConstructionResponse> getPaginatedConstructionRequest(Pageable pageable, BaseFilterRequest request) {
@@ -71,20 +86,24 @@ public class ConstructionRequestUseCase {
   @Transactional(rollbackFor = Exception.class)
   public void approveTheConstruction(String id, Boolean approved) {
     constructionRequestService.approveTheConstruction(id, approved);
-    var constructionRequest = constructionRequestService.getById(id);
-    var formCode = constructionRequest.installationForm().formCode();
-    var formNumber = constructionRequest.installationForm().formNumber();
-    var installationForm = ifSrv.getByFormCodeAndFormNumber(formCode, formNumber);
+    var installationForm = installationForm(id);
     var constructedBy = installationForm.constructedBy();
 
     if (approved) {
       // neu duoc phe duyet, gui su kien cho nhan vien Xay lap khac de ho lap quyet toan
       var routingKey = QUEUE_NAME + CONSTRUCTION_REQUEST_PREFIX + APPROVED_ACTION;
       messageProducer.send(routingKey, new ApprovedEvent(
-        constructionRequest.installationForm().formCode(),
-        constructionRequest.installationForm().formNumber(),
+        installationForm.formCode(),
+        installationForm.formNumber(),
         employeeService.getEmployeeNameById(constructedBy).data().toString()
       ));
     }
+  }
+
+  private InstallationFormListResponse installationForm(String id) {
+    var constructionRequest = constructionRequestService.getById(id);
+    var formCode = constructionRequest.installationForm().formCode();
+    var formNumber = constructionRequest.installationForm().formNumber();
+    return ifSrv.getByFormCodeAndFormNumber(formCode, formNumber);
   }
 }

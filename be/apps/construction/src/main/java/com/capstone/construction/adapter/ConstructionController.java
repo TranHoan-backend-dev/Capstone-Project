@@ -32,7 +32,6 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Construction", description = "Quản lý đơn chờ thi công")
 public class ConstructionController {
   ConstructionRequestUseCase useCase;
-  ConstructionRequestService constructionRequestService;
   @NonFinal
   Logger log;
 
@@ -87,7 +86,7 @@ public class ConstructionController {
     @Parameter(description = "ID của đội trưởng đội thi công") @PathVariable String empId
   ) {
     log.info("Received request to update pending construction request: {}", id);
-    constructionRequestService.updatePendingRequest(id, empId);
+    useCase.updateConstructionRequest(id, empId);
     return Utils.returnOkResponse("Cập nhật đơn chờ thi công thành công", null);
   }
 
