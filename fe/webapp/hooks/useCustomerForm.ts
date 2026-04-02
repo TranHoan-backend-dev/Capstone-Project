@@ -38,7 +38,6 @@ const initialFormData: CreateCustomerPayload = {
   passportCode: "",
   connectionPoint: "Nhà máy nước NAWACO",
   taxCode: "",
-  citizenIdentificationProvideLocation: "",
 };
 
 export const useCustomerForm = (
