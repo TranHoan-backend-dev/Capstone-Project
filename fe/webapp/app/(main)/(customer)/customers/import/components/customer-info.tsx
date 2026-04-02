@@ -127,7 +127,7 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
 
       if (selectedForm.citizenIdentificationProvideLocation) {
         onUpdate(
-          "citizenIdentificationProvideLocation",
+          "citizenIdentificationProvideAt",
           selectedForm.citizenIdentificationProvideLocation,
         );
       }
@@ -310,9 +310,9 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
         />
         <CustomInput
           label="Nơi cấp CCCD"
-          value={formData.citizenIdentificationProvideLocation}
+          value={formData.citizenIdentificationProvideAt}
           onValueChange={(value) =>
-            onUpdate("citizenIdentificationProvideLocation", value)
+            onUpdate("citizenIdentificationProvideAt", value)
           }
         />
         <CustomInput
