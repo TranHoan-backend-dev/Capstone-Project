@@ -79,7 +79,7 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
     var request = getConstructionRequest(id);
     var installationForm = request.getInstallationForm();
     var status = installationForm.getStatus();
-    status.setConstruction(ProcessingStatus.APPROVED);
+    status.setConstruction(approved ? ProcessingStatus.APPROVED : ProcessingStatus.PENDING_FOR_APPROVAL);
     ifRepo.save(installationForm);
   }
 

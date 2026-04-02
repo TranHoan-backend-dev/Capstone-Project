@@ -104,8 +104,7 @@ public class InstallationFormUseCase {
     var event = new AssignEvent(
       form.formCode(),
       form.formNumber(),
-      empId,
-      true
+      empId
     );
     messageProducer.send(routingKey, event);
   }
