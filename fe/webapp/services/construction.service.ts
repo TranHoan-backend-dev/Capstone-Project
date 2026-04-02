@@ -812,7 +812,7 @@ export const updateEstimate = (
   axios.put(`${API_GATEWAY_URL}/construction/estimates/${estimateId}`, data, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "multipart/form-data; boundary=WebAppBoundary",
+      // "Content-Type": "multipart/form-data; boundary=WebAppBoundary",
       // KHÔNG set Content-Type - axios sẽ tự set multipart/form-data với boundary
     },
   });

@@ -109,6 +109,15 @@ export const TechnicalInfoCard = ({
     }
   };
 
+  const [previewImageUrl, setPreviewImageUrl] = useState<string>("");
+  useEffect(() => {
+    return () => {
+      if (previewImageUrl) {
+        URL.revokeObjectURL(previewImageUrl);
+      }
+    };
+  }, [previewImageUrl]);
+
   const applyDefaultCoefficients = (parameters: Parameter[]) => {
     const laborParam = parameters.find((p) => p.name === "Hệ số nhân công");
     const generalCostParam = parameters.find(
@@ -274,26 +283,26 @@ export const TechnicalInfoCard = ({
     });
   };
 
-//   const updateEstimate = async (id, updateData, files) => {
-//   const formData = new FormData();
+  //   const updateEstimate = async (id, updateData, files) => {
+  //   const formData = new FormData();
 
-//   // Thêm các trường metadata (Object -> từng field)
-//   // Ví dụ updateData = { name: "Dự toán A", status: "DRAFT" }
-//   Object.keys(updateData).forEach(key => {
-//     formData.append(key, updateData[key]);
-//   });
+  //   // Thêm các trường metadata (Object -> từng field)
+  //   // Ví dụ updateData = { name: "Dự toán A", status: "DRAFT" }
+  //   Object.keys(updateData).forEach(key => {
+  //     formData.append(key, updateData[key]);
+  //   });
 
-//   // Thêm file (nếu có)
-//   if (files) {
-//     files.forEach(file => formData.append('files', file));
-//   }
+  //   // Thêm file (nếu có)
+  //   if (files) {
+  //     files.forEach(file => formData.append('files', file));
+  //   }
 
-//   return axios.put(`/api/construction/${id}`, formData, {
-//     headers: {
-//       'Content-Type': 'multipart/form-data'
-//     }
-//   });
-// };
+  //   return axios.put(`/api/construction/${id}`, formData, {
+  //     headers: {
+  //       'Content-Type': 'multipart/form-data'
+  //     }
+  //   });
+  // };
 
   const handleSave = async (isFinished: boolean) => {
     try {
@@ -301,62 +310,116 @@ export const TechnicalInfoCard = ({
 
       const formData = new FormData();
 
-      // Create the general information object
-      const generalInformation = {
-        estimationId: estimateId,
-        customerName: customerName || "",
-        address: address || "",
-        note: note || "",
-        contractFee: contractFee ? Number(contractFee) : 0,
-        surveyFee: surveyFee ? Number(surveyFee) : 0,
-        surveyEffort: surveyEffort ? Number(surveyEffort) : 0,
-        installationFee: installationFee ? Number(installationFee) : 0,
-        laborCoefficient: laborCoefficient ? Number(laborCoefficient) : 0,
-        generalCostCoefficient: generalCostCoefficient
-          ? Number(generalCostCoefficient)
-          : 0,
-        precalculatedTaxCoefficient: precalculatedTaxCoefficient
-          ? Number(precalculatedTaxCoefficient)
-          : 0,
-        constructionMachineryCoefficient: constructionMachineryCoefficient
-          ? Number(constructionMachineryCoefficient)
-          : 0,
-        vatCoefficient: vatCoefficient ? Number(vatCoefficient) : 0,
-        designCoefficient: designCoefficient ? Number(designCoefficient) : 0,
-        designFee: designFee ? Number(designFee) : 0,
-        waterMeterSerial: waterMeterSerial || "",
-        overallWaterMeterId: overallWaterMeterId || "",
-      };
-
-      // Append data as JSON strings
-      formData.append("generalInformation", JSON.stringify(generalInformation));
-
-      // Append materials
-      const safeNumber = (v: any) => (isNaN(Number(v)) ? 0 : Number(v));
-      const materialPayload = materials.map((m) => ({
-        materialCode: m.id,
-        jobContent: m.description,
-        note: m.note,
-        unit: m.unit,
-        mass: String(safeNumber(m.quantity)),
-        materialCost: String(safeNumber(m.materialPrice)),
-        laborPrice: String(safeNumber(m.laborPrice)),
-        totalMaterialPrice: String(m.materialTotal),
-        totalLaborPrice: String(m.laborTotal),
-      }));
-
-      formData.append("material", JSON.stringify(materialPayload));
-      formData.append("isFinished", String(isFinished));
-
-      // Append image file directly if exists
+      // Gửi từng field của generalInformation - KHÔNG gửi dưới dạng JSON string
+      formData.append("generalInformation.customerName", customerName || "");
+      formData.append("generalInformation.address", address || "");
+      formData.append("generalInformation.note", note || "");
+      formData.append(
+        "generalInformation.contractFee",
+        String(contractFee ? Number(contractFee) : 0),
+      );
+      formData.append(
+        "generalInformation.surveyFee",
+        String(surveyFee ? Number(surveyFee) : 0),
+      );
+      formData.append(
+        "generalInformation.surveyEffort",
+        String(surveyEffort ? Number(surveyEffort) : 0),
+      );
+      formData.append(
+        "generalInformation.installationFee",
+        String(installationFee ? Number(installationFee) : 0),
+      );
+      formData.append(
+        "generalInformation.laborCoefficient",
+        String(laborCoefficient ? Number(laborCoefficient) : 0),
+      );
+      formData.append(
+        "generalInformation.generalCostCoefficient",
+        String(generalCostCoefficient ? Number(generalCostCoefficient) : 0),
+      );
+      formData.append(
+        "generalInformation.precalculatedTaxCoefficient",
+        String(
+          precalculatedTaxCoefficient ? Number(precalculatedTaxCoefficient) : 0,
+        ),
+      );
+      formData.append(
+        "generalInformation.constructionMachineryCoefficient",
+        String(
+          constructionMachineryCoefficient
+            ? Number(constructionMachineryCoefficient)
+            : 0,
+        ),
+      );
+      formData.append(
+        "generalInformation.vatCoefficient",
+        String(vatCoefficient ? Number(vatCoefficient) : 0),
+      );
+      formData.append(
+        "generalInformation.designCoefficient",
+        String(designCoefficient ? Number(designCoefficient) : 0),
+      );
+      formData.append(
+        "generalInformation.designFee",
+        String(designFee ? Number(designFee) : 0),
+      );
+      formData.append(
+        "generalInformation.waterMeterSerial",
+        waterMeterSerial || "",
+      );
+      formData.append(
+        "generalInformation.overallWaterMeterId",
+        overallWaterMeterId || "",
+      );
       if (designImageFile instanceof File) {
-        formData.append("designImage", designImageFile);
+        formData.append("generalInformation.designImage", designImageFile);
+        console.log("Appending designImage file:", designImageFile.name);
       }
+      // Gửi materials - mỗi item là một object riêng
+      const safeNumber = (v: any) => (isNaN(Number(v)) ? 0 : Number(v));
+      materials.forEach((m, index) => {
+        formData.append(`material[${index}].materialCode`, m.id || "");
+        formData.append(`material[${index}].jobContent`, m.description || "");
+        formData.append(`material[${index}].note`, m.note || "");
+        formData.append(`material[${index}].unit`, m.unit || "");
+        formData.append(
+          `material[${index}].mass`,
+          String(safeNumber(m.quantity)),
+        );
+        formData.append(
+          `material[${index}].materialCost`,
+          String(safeNumber(m.materialPrice)),
+        );
+        formData.append(
+          `material[${index}].laborPrice`,
+          String(safeNumber(m.laborPrice)),
+        );
+        formData.append(
+          `material[${index}].totalMaterialPrice`,
+          String(m.materialTotal || 0),
+        );
+        formData.append(
+          `material[${index}].totalLaborPrice`,
+          String(m.laborTotal || 0),
+        );
+      });
 
-      // Don't set Content-Type header - let browser set it with boundary
+      // Thêm isFinished flag
+      formData.append("isFinished", String(isFinished));
+      // if (designImageFile instanceof File) {
+      //   formData.append("designImage", designImageFile);
+      //   console.log(
+      //     "Appending file:",
+      //     designImageFile.name,
+      //     designImageFile.size,
+      //   );
+      // }
+
+      // Gọi API - KHÔNG set Content-Type header
       const res = await authFetch(`/api/construction/estimates/${estimateId}`, {
         method: "PUT",
-        body: formData, // Remove Content-Type header
+        body: formData,
       });
 
       const json = await res.json();
@@ -366,20 +429,18 @@ export const TechnicalInfoCard = ({
           json?.error?.message || json?.message || "Có lỗi xảy ra",
         );
       }
-      if (!res.ok) {
-        CallToast({
-          title: "Thất bại",
-          message: json?.error?.message || "Lưu thất bại",
-          color: "danger",
-        });
-        return;
-      }
 
+      // Cập nhật lại data
       setEstimateData(json.data);
 
+      // Reset file state sau khi upload thành công
       if (designImageFile) {
         setDesignImageFile(null);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
       }
+      setIsImageDeleted(false);
 
       CallToast({
         title: "Thành công",
@@ -387,6 +448,7 @@ export const TechnicalInfoCard = ({
         color: "success",
       });
     } catch (error) {
+      console.error("Save error:", error);
       CallToast({
         title: "Thất bại",
         message:
@@ -410,32 +472,46 @@ export const TechnicalInfoCard = ({
     setShowOverallModal(false);
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setDesignImageFile(file);
+    setIsImageDeleted(false);
+
+    // Tạo preview URL
+    if (previewImageUrl) {
+      URL.revokeObjectURL(previewImageUrl);
+    }
+    const previewUrl = URL.createObjectURL(file);
+    setPreviewImageUrl(previewUrl);
+  };
+
+  // Sửa lại handleRemoveImage
   const handleRemoveImage = () => {
     setDesignImageFile(null);
     setDesignImageUrl("");
     setIsImageDeleted(true);
+    if (previewImageUrl) {
+      URL.revokeObjectURL(previewImageUrl);
+      setPreviewImageUrl("");
+    }
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
   };
-
   return (
     <GenericSearchFilter
       actions={
-        <div className="flex flex-wrap gap-3 pt-6 border-t border-divider">
-          <>
+        <div className="pt-6 border-t border-divider">
+          {/* Hàng 1: Upload ảnh */}
+          <div className="mb-4">
             <input
               type="file"
               ref={fileInputRef}
               hidden
               accept="image/*"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (!file) return;
-                setDesignImageFile(file);
-                setIsImageDeleted(false);
-                const previewUrl = URL.createObjectURL(file);
-              }}
+              onChange={handleFileChange}
             />
 
             <CustomButton
@@ -451,29 +527,49 @@ export const TechnicalInfoCard = ({
             >
               {designImageFile ? "Đã chọn ảnh mới" : "Ảnh cụm đồng hồ"}
             </CustomButton>
+          </div>
 
-            {/* Hiển thị trạng thái ảnh */}
-            {(designImageUrl || designImageFile) && !isImageDeleted && (
-              <div className="flex items-center gap-2">
-                <div className="text-sm text-green-600">
-                  {designImageFile
-                    ? `Đã chọn ảnh mới: ${designImageFile.name}`
-                    : designImageUrl &&
-                      `Đã có ảnh: ${designImageUrl.split("/").pop()?.slice(0, 30)}...`}
+          {/* Hiển thị trạng thái và preview ảnh */}
+          {(designImageUrl || previewImageUrl || designImageFile) &&
+            !isImageDeleted && (
+              <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                <div className="flex flex-wrap items-center gap-3 mb-2">
+                  <div className="text-sm text-green-600">
+                    {designImageFile
+                      ? `Đã chọn ảnh mới: ${designImageFile.name}`
+                      : designImageUrl &&
+                        `Đã có ảnh: ${designImageUrl.split("/").pop()?.slice(0, 30)}...`}
+                  </div>
+                  <CustomButton
+                    isIconOnly
+                    size="sm"
+                    variant="light"
+                    color="danger"
+                    onPress={handleRemoveImage}
+                    className="min-w-unit-8 w-8 h-8"
+                  >
+                    <DeleteIcon className="w-4 h-4" />
+                  </CustomButton>
                 </div>
-                <CustomButton
-                  isIconOnly
-                  size="sm"
-                  variant="light"
-                  color="danger"
-                  onPress={handleRemoveImage}
-                  className="min-w-unit-8 w-8 h-8"
-                >
-                  <DeleteIcon className="w-4 h-4" />
-                </CustomButton>
+
+                {/* Preview ảnh */}
+                {(previewImageUrl || designImageUrl) && (
+                  <div>
+                    <img
+                      src={previewImageUrl || designImageUrl}
+                      alt="Preview ảnh cụm đồng hồ"
+                      className="max-w-full md:max-w-xs max-h-48 object-cover rounded-lg border shadow-sm"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      {previewImageUrl ? "Ảnh mới (chưa lưu)" : "Ảnh hiện tại"}
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 
+          {/* Hàng 2: Các nút action */}
+          <div className="flex flex-wrap gap-3">
             <CustomButton
               onPress={() => handleSave(false)}
               className="font-bold px-6 shadow-md shadow-primary/20"
@@ -501,7 +597,7 @@ export const TechnicalInfoCard = ({
             >
               {isUploading ? "Đang lưu..." : "Gửi"}
             </CustomButton>
-          </>
+          </div>
         </div>
       }
       gridClassName="grid grid-cols-1 lg:grid-cols-3 gap-12"

@@ -56,6 +56,7 @@ public class CostEstimateController {
   ) {
     
     log.info("REST request to update cost estimate with id: {}", id);
+    log.info(request.generalInformation().designImage().getName());
     var response = estimateUseCase.updateEstimate(id, request);
     return Utils.returnOkResponse("Cập nhật dự toán chi phí thành công", response);
   }
