@@ -52,7 +52,7 @@ public class CostEstimateController {
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF')")
   public ResponseEntity<WrapperApiResponse> updateEstimate(
     @PathVariable @Parameter(description = "ID của dự toán", required = true) String id,
-    @RequestBody @Valid UpdateRequest request
+    @ModelAttribute @Valid UpdateRequest request
   ) {
     log.info("REST request to update cost estimate with id: {}", id);
     var response = estimateUseCase.updateEstimate(id, request);
