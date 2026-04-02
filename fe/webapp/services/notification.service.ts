@@ -1,4 +1,4 @@
-import { API_GATEWAY_URL } from "@/utils/constraints";
+import { API_GATEWAY_URL, SOCKET_URL } from "@/utils/constraints";
 import axios from "axios";
 
 export interface GetNotificationsParams {
@@ -30,7 +30,13 @@ export interface Notification {
   time: string;
   isRead: boolean;
   avatar: string;
-  type: "message" | "system" | "sign-request" | "billing" | "device_login" | "security";
+  type:
+    | "device_login"
+    | "message"
+    | "system"
+    | "billing"
+    | "security"
+    | "sign-request";
   action?: {
     type: string;
     id: string;
@@ -40,6 +46,12 @@ export interface Notification {
     ipAddress?: string;
     loginTime?: string;
     location?: string;
+    estimateId?: string;
+    status?: string;
+    estimateNumber?: string;
+    projectName?: string;
+    estimateAmount?: number;
+    [key: string]: any;
   };
 }
 
@@ -69,7 +81,7 @@ export const notificationService = {
     page: number = 0,
     size: number = 20,
   ) => {
-    return axios.get(`${API_GATEWAY_URL}/notifications`, {
+    return axios.get(`${SOCKET_URL}/n/ws`, {
       params: { page, size },
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -81,7 +93,7 @@ export const notificationService = {
    * Lấy thông báo chưa đọc
    */
   getUnreadNotifications: async (accessToken: string) => {
-    return axios.get(`${API_GATEWAY_URL}/notifications/unread`, {
+    return axios.get(`${SOCKET_URL}/n/unread`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -93,7 +105,7 @@ export const notificationService = {
    */
   markAsRead: async (accessToken: string, notificationId: string) => {
     return axios.patch(
-      `${API_GATEWAY_URL}/notifications/${notificationId}/read`,
+      `${SOCKET_URL}/n/${notificationId}/read`,
       {},
       {
         headers: {
@@ -108,7 +120,7 @@ export const notificationService = {
    */
   markAllAsRead: async (accessToken: string) => {
     return axios.patch(
-      `${API_GATEWAY_URL}/notifications/read-all`,
+      `${SOCKET_URL}/n/read-all`,
       {},
       {
         headers: {
@@ -122,14 +134,11 @@ export const notificationService = {
    * Xóa thông báo
    */
   deleteNotification: async (accessToken: string, notificationId: string) => {
-    return axios.delete(
-      `${API_GATEWAY_URL}/notifications/${notificationId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
+    return axios.delete(`${SOCKET_URL}/n/${notificationId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
       },
-    );
+    });
   },
 
   /**
@@ -184,7 +193,13 @@ function formatTime(isoDate: string): string {
  */
 function parseType(
   apiType: string,
-): "message" | "system" | "sign-request" | "billing" | "device_login" | "security" {
+):
+  | "message"
+  | "system"
+  | "sign-request"
+  | "billing"
+  | "device_login"
+  | "security" {
   if (apiType.includes("sign")) return "sign-request";
   if (apiType.includes("billing") || apiType.includes("payment"))
     return "billing";
