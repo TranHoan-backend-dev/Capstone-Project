@@ -38,7 +38,7 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
   InstallationFormService installationFormService;
 
   @Override
-  public ConstructionResponse createPendingRequest(String employeeId, String contractId, Long formCode, Long formNumber) {
+  public ConstructionResponse createPendingRequest(String employeeId, String contractId, String formCode, String formNumber) {
     log.info("Creating pending request");
     if (!customerService.checkExistenceOfContract(contractId)) {
       throw new IllegalArgumentException("Không tìm thấy hợp đồng");

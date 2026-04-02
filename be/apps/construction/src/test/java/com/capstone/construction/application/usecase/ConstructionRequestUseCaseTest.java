@@ -6,7 +6,6 @@ import com.capstone.construction.application.business.installationform.Installat
 import com.capstone.construction.application.dto.request.construction.AssignRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import com.capstone.construction.application.event.producer.MessageProducer;
-import com.capstone.construction.infrastructure.service.EmployeeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,8 +28,6 @@ class ConstructionRequestUseCaseTest {
   InstallationFormService ifSrv;
   @Mock
   MessageProducer messageProducer;
-  @Mock
-  EmployeeService empSrv;
 
   @InjectMocks
   ConstructionRequestUseCase useCase;
@@ -50,13 +47,13 @@ class ConstructionRequestUseCaseTest {
 
     // ConstructionRequestUseCase itself doesn't validate the role.
     // If we want to simulate role validation failure, we need to mock the service behavior.
-    when(ifSrv.getByFormCodeAndFormNumber(anyLong(), anyLong())).thenReturn(mock(InstallationFormListResponse.class));
+    when(ifSrv.getByFormCodeAndFormNumber(anyString(), anyString())).thenReturn(mock(InstallationFormListResponse.class));
 
     // Act
     useCase.createAndAssignToConstructionCaptain(request, empId);
 
     // Assert
-    verify(constructionRequestService).createPendingRequest(eq(empId), eq("CON1"), eq(1001L), eq(1L));
+    verify(constructionRequestService).createPendingRequest(eq(empId), eq("CON1"), eq("1001"), eq("1"));
     verify(ifSrv).assignInstallationForm(eq(empId), any(), eq(false));
     verify(messageProducer).send(anyString(), any());
   }
@@ -69,7 +66,7 @@ class ConstructionRequestUseCaseTest {
 
     // Simulating Service layer throwing an error
     doThrow(new IllegalArgumentException("Role invalid"))
-      .when(constructionRequestService).createPendingRequest(anyString(), anyString(), anyLong(), anyLong());
+      .when(constructionRequestService).createPendingRequest(anyString(), anyString(), anyString(), anyString());
 
     // Act & Assert
     assertThrows(IllegalArgumentException.class, () -> useCase.createAndAssignToConstructionCaptain(request, empId));

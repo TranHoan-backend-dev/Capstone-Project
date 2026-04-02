@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Tag(name = "Quyết toán", description = "API quản lý và xử lý quyết toán công trình xây lắp")
 public class SettlementController {
-    private final SettlementUseCase settlementUseCase;
+  private final SettlementUseCase settlementUseCase;
 
   @PostMapping
   @Operation(summary = "Tạo mới một bản quyết toán công trình", description = """
@@ -125,21 +125,21 @@ public class SettlementController {
     return Utils.returnOkResponse("Ký quyết toán thành công", null);
   }
 
-    @PostMapping("/sign")
-    @Operation(summary = "Yêu cầu các bên liên quan ký duyệt quyết toán", description = """
-        Gửi yêu cầu ký duyệt quyết toán đến các bộ phận liên quan: Nhân viên khảo sát, Trưởng phòng Kế hoạch Kỹ thuật, Tổng giám đốc và Giám đốc chi nhánh Xây lắp.<br/>
-        Luồng này sẽ kích hoạt thông báo đến các nhân viên được chỉ định.
-        Người thực hiện phải có quyền tương ứng (CONSTRUCTION_DEPARTMENT_HEAD, CONSTRUCTION_DEPARTMENT_STAFF, hoặc IT_STAFF).
-        """, responses = {
-        @ApiResponse(responseCode = "200", description = "Gửi yêu cầu ký duyệt thành công"),
-        @ApiResponse(responseCode = "400", description = "Dữ liệu yêu cầu không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
-        @ApiResponse(responseCode = "404", description = "Không tìm thấy quyết toán hoặc nhân viên", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
-    })
-    @PreAuthorize("hasAnyAuthority('IT_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF')")
-    public ResponseEntity<WrapperApiResponse> requireSignificances(
-            @RequestBody @Valid @Parameter(description = "Thông tin phân công các nhân viên thực hiện ký duyệt", required = true) AssignTheSignificanceRequest request) {
-        log.info("REST request to sign cost estimate: {}", request);
-        settlementUseCase.assignStaffForSignCostEstimate(request);
-        return Utils.returnOkResponse("Yêu cầu ký duyệt quyết toán thành công", null);
-    }
+  @PostMapping("/sign")
+  @Operation(summary = "Yêu cầu các bên liên quan ký duyệt quyết toán", description = """
+    Gửi yêu cầu ký duyệt quyết toán đến các bộ phận liên quan: Nhân viên khảo sát, Trưởng phòng Kế hoạch Kỹ thuật, Tổng giám đốc và Giám đốc chi nhánh Xây lắp.<br/>
+    Luồng này sẽ kích hoạt thông báo đến các nhân viên được chỉ định.
+    Người thực hiện phải có quyền tương ứng (CONSTRUCTION_DEPARTMENT_HEAD, CONSTRUCTION_DEPARTMENT_STAFF, hoặc IT_STAFF).
+    """, responses = {
+    @ApiResponse(responseCode = "200", description = "Gửi yêu cầu ký duyệt thành công"),
+    @ApiResponse(responseCode = "400", description = "Dữ liệu yêu cầu không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy quyết toán hoặc nhân viên", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
+  })
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> requireSignificances(
+    @RequestBody @Valid @Parameter(description = "Thông tin phân công các nhân viên thực hiện ký duyệt", required = true) AssignTheSignificanceRequest request) {
+    log.info("REST request to sign cost estimate: {}", request);
+    settlementUseCase.assignStaffForSignCostEstimate(request);
+    return Utils.returnOkResponse("Yêu cầu ký duyệt quyết toán thành công", null);
+  }
 }

@@ -2,7 +2,6 @@ package com.capstone.construction.domain.model;
 
 import com.capstone.common.enumerate.CustomerType;
 import com.capstone.common.enumerate.ProcessingStatus;
-import com.capstone.common.utils.SharedConstant;
 import com.capstone.common.utils.SharedMessage;
 import com.capstone.construction.domain.model.utils.FormProcessingStatus;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
@@ -123,15 +122,15 @@ public class InstallationForm {
     this.updatedAt = LocalDateTime.now();
   }
 
-  public Long getFormNumber() {
+  public String getFormNumber() {
     return id.getFormNumber();
   }
 
-  public Long getFormCode() {
+  public String getFormCode() {
     return id.getFormCode();
   }
 
-  public void setFormNumber(Long formNumber) {
+  public void setFormNumber(String formNumber) {
     Objects.requireNonNull(formNumber, SharedMessage.MES_20);
     this.id.setFormNumber(formNumber);
   }
@@ -156,79 +155,14 @@ public class InstallationForm {
     this.representative = representative;
   }
 
-  public void setCitizenIdentificationNumber(String citizenIdentificationNumber) {
-    requireNonNullAndNotEmpty(citizenIdentificationNumber, SharedMessage.MES_10);
-    this.citizenIdentificationNumber = citizenIdentificationNumber;
-  }
-
-  public void setCitizenIdentificationProvideDate(String citizenIdentificationProvideDate) {
-    requireNonNullAndNotEmpty(citizenIdentificationProvideDate,
-      Message.PT_30);
-    this.citizenIdentificationProvideDate = citizenIdentificationProvideDate;
-  }
-
-  public void setCitizenIdentificationProvideLocation(String citizenIdentificationProvideLocation) {
-    requireNonNullAndNotEmpty(citizenIdentificationProvideLocation,
-      SharedMessage.MES_16);
-    this.citizenIdentificationProvideLocation = citizenIdentificationProvideLocation;
-  }
-
-  public void setPhoneNumber(String phoneNumber) {
-    requireNonNullAndNotEmpty(phoneNumber, SharedMessage.MES_03);
-    if (!phoneNumber.matches(SharedConstant.PHONE_PATTERN)) {
-      throw new IllegalArgumentException(SharedMessage.MES_04);
-    }
-    this.phoneNumber = phoneNumber;
-  }
-
   public void setTaxCode(String taxCode) {
     requireNonNullAndNotEmpty(taxCode, Message.PT_31);
     this.taxCode = taxCode;
   }
 
-  public void setBankAccountNumber(String bankAccountNumber) {
-    requireNonNullAndNotEmpty(bankAccountNumber, SharedMessage.MES_13);
-    this.bankAccountNumber = bankAccountNumber;
-  }
-
-  public void setBankAccountProviderLocation(String bankAccountProviderLocation) {
-    requireNonNullAndNotEmpty(bankAccountProviderLocation, SharedMessage.MES_17);
-    this.bankAccountProviderLocation = bankAccountProviderLocation;
-  }
-
-  public void setUsageTarget(UsageTarget usageTarget) {
-    Objects.requireNonNull(usageTarget, Message.PT_32);
-    this.usageTarget = usageTarget;
-  }
-
-  public void setReceivedFormAt(LocalDate receivedFormAt) {
-    Objects.requireNonNull(receivedFormAt, Message.PT_33);
-    this.receivedFormAt = receivedFormAt;
-  }
-
-  public void setScheduleSurveyAt(LocalDate scheduleSurveyAt) {
-    Objects.requireNonNull(scheduleSurveyAt, Message.PT_51);
-    this.scheduleSurveyAt = scheduleSurveyAt;
-  }
-
-  public void setNumberOfHousehold(Integer numberOfHousehold) {
-    Objects.requireNonNull(numberOfHousehold, SharedMessage.MES_11);
-    this.numberOfHousehold = numberOfHousehold;
-  }
-
-  public void setHouseholdRegistrationNumber(Integer householdRegistrationNumber) {
-    Objects.requireNonNull(householdRegistrationNumber, SharedMessage.MES_12);
-    this.householdRegistrationNumber = householdRegistrationNumber;
-  }
-
   public void setNetwork(WaterSupplyNetwork network) {
     Objects.requireNonNull(network, Message.PT_34);
     this.network = network;
-  }
-
-  public void setCreatedBy(String value) {
-    requireNonNullAndNotEmpty(value, Message.PT_36);
-    this.createdBy = value;
   }
 
   public void setHandoverBy(String value) {
@@ -246,12 +180,7 @@ public class InstallationForm {
     this.address = address;
   }
 
-  public void setCustomerType(CustomerType value) {
-    Objects.requireNonNull(value, Message.PT_06);
-    this.customerType = value;
-  }
-
-  public void setFormCode(Long value) {
+  public void setFormCode(String value) {
     Objects.requireNonNull(value, SharedMessage.MES_21);
     this.id.setFormCode(value);
   }

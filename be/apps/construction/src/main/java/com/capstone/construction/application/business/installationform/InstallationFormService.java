@@ -14,13 +14,13 @@ import org.springframework.data.domain.Pageable;
 public interface InstallationFormService {
   NewInstallationFormResponse createNewInstallationForm(String userId, NewOrderRequest request);
 
-  boolean isInstallationFormExisting(Long formNumber, Long formCode);
+  boolean isInstallationFormExisting(String formNumber, String formCode);
 
   Page<InstallationFormListResponse> getInstallationForms(Pageable pageable, BaseFilterRequest request);
 
   void reviewInstallationForm(String userId, ApproveRequest request);
 
-  InstallationFormListResponse getByFormCodeAndFormNumber(Long formCode, Long formNumber);
+  InstallationFormListResponse getByFormCodeAndFormNumber(String formCode, String formNumber);
 
   Boolean checkAnyFormsBelongedToNetwork(String id);
 
@@ -38,7 +38,7 @@ public interface InstallationFormService {
    * @param formCode   form code of the installation form
    * @param formNumber form number of the installation form
    */
-  void updateContractStatus(Long formCode, Long formNumber);
+  void updateContractStatus(String formCode, String formNumber);
 
   /**
    * @param id

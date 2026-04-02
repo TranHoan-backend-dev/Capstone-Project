@@ -114,7 +114,7 @@ public class ReceiptServiceImpl implements ReceiptService {
 
   @Override
   @Transactional
-  public void deleteReceipt(Long formCode, Long formNumber) {
+  public void deleteReceipt(String formCode, String formNumber) {
     log.info("Deleting receipt for form: {}/{}", formCode, formNumber);
     var formId = new InstallationFormId(formCode, formNumber);
     if (!receiptRepo.existsById(formId)) {
@@ -143,8 +143,8 @@ public class ReceiptServiceImpl implements ReceiptService {
 
   private @NonNull ReceiptListResponse mapToListResponse(@NonNull Receipt receipt) {
     return new ReceiptListResponse(
-      receipt.getInstallationFormId().getFormCode().toString(),
-      receipt.getInstallationFormId().getFormNumber().toString(),
+      receipt.getInstallationFormId().getFormCode(),
+      receipt.getInstallationFormId().getFormNumber(),
       receipt.getReceiptNumber(),
       receipt.getCustomerName(),
       receipt.getAddress(),
@@ -155,7 +155,7 @@ public class ReceiptServiceImpl implements ReceiptService {
   }
 
   @Override
-  public ReceiptResponse getReceipt(Long formCode, Long formNumber) {
+  public ReceiptResponse getReceipt(String formCode, String formNumber) {
     log.info("Fetching receipt for form: {}/{}", formCode, formNumber);
     return receiptRepo.findById(new InstallationFormId(formCode, formNumber))
       .map(this::mapToResponse)
@@ -164,8 +164,8 @@ public class ReceiptServiceImpl implements ReceiptService {
 
   private @NonNull ReceiptResponse mapToResponse(@NonNull Receipt receipt) {
     return new ReceiptResponse(
-      receipt.getInstallationFormId().getFormCode().toString(),
-      receipt.getInstallationFormId().getFormNumber().toString(),
+      receipt.getInstallationFormId().getFormCode(),
+      receipt.getInstallationFormId().getFormNumber(),
       receipt.getReceiptNumber(),
       receipt.getCustomerName(),
       receipt.getAddress(),

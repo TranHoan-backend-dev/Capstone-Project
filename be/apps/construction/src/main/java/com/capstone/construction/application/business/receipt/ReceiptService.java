@@ -13,9 +13,9 @@ public interface ReceiptService {
 
   ReceiptResponse updateReceipt(UpdateRequest request);
 
-  void deleteReceipt(Long formCode, Long formNumber);
+  void deleteReceipt(String formCode, String formNumber);
 
-  ReceiptResponse getReceipt(Long formCode, Long formNumber);
+  ReceiptResponse getReceipt(String formCode, String formNumber);
 
   Page<ReceiptListResponse> getReceipts(ReceiptFilterRequest filter, Pageable pageable);
 }

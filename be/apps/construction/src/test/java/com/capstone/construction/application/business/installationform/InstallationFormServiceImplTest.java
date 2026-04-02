@@ -86,7 +86,7 @@ class InstallationFormServiceImplTest {
   void should_CreateNewInstallationForm_When_NoRepresentative() {
     // Given
     var request = new NewOrderRequest(
-      1001L, 2024001L, "Name", "Address", "123456789012", "2020-01-01", "Loc", "0901234567",
+      "1001", "2024001", "Name", "Address", "123456789012", "2020-01-01", "Loc", "0901234567",
       "TAX01", "BANK01", "LOC", UsageTarget.INSTITUTIONAL, CustomerType.FAMILY,
       "2024-01-01", "2024-01-05", 1, 1, null, "net1", "meter1");
     var network = mock(WaterSupplyNetwork.class);
@@ -337,8 +337,8 @@ class InstallationFormServiceImplTest {
   @Test
   void should_ReturnTrue_When_FormExistsByNumberOrCode() {
     // When
-    when(ifRepo.existsById_FormNumberAndId_FormCode(1L, 1001L)).thenReturn(true);
-    var result = service.isInstallationFormExisting(1L, 1001L);
+    when(ifRepo.existsById_FormNumberAndId_FormCode("1001", "2024001")).thenReturn(true);
+    var result = service.isInstallationFormExisting("1001", "2024001");
 
     // Then
     assertThat(result).isTrue();
@@ -347,8 +347,8 @@ class InstallationFormServiceImplTest {
   @Test
   void should_ReturnFalse_When_FormDoesNotExist() {
     // When
-    when(ifRepo.existsById_FormNumberAndId_FormCode(1L, 1001L)).thenReturn(false);
-    var result = service.isInstallationFormExisting(1L, 1001L);
+    when(ifRepo.existsById_FormNumberAndId_FormCode("1001", "2024001")).thenReturn(false);
+    var result = service.isInstallationFormExisting("1001", "2024001");
 
     // Then
     assertThat(result).isFalse();
@@ -402,14 +402,14 @@ class InstallationFormServiceImplTest {
   void should_ApproveAndAssign_When_StatusIsTrue() {
     // Given
     // Order: formNumber, formCode, status
-    var request = new ApproveRequest(1L, 1001L, true);
+    var request = new ApproveRequest("1001", "2024001", true);
     var entity = createMockEntity();
     var status = new FormProcessingStatus(ProcessingStatus.PENDING_FOR_APPROVAL, ProcessingStatus.PROCESSING,
       ProcessingStatus.PROCESSING, ProcessingStatus.PROCESSING);
     when(entity.getStatus()).thenReturn(status);
 
     // InstallationFormId: formCode, formNumber
-    when(ifRepo.findById(new InstallationFormId(1001L, 1L))).thenReturn(Optional.of(entity));
+    when(ifRepo.findById(new InstallationFormId("1001", "2024001"))).thenReturn(Optional.of(entity));
 
     // When
     service.reviewInstallationForm(USER_ID, request);
@@ -424,13 +424,13 @@ class InstallationFormServiceImplTest {
   @Test
   void should_Reject_When_StatusIsFalse() {
     // Given
-    var request = new ApproveRequest(1L, 1001L, false);
+    var request = new ApproveRequest("1001", "2024001", false);
     var entity = createMockEntity();
     var status = new FormProcessingStatus(ProcessingStatus.PENDING_FOR_APPROVAL, ProcessingStatus.PROCESSING,
       ProcessingStatus.PROCESSING, ProcessingStatus.PROCESSING);
     when(entity.getStatus()).thenReturn(status);
 
-    when(ifRepo.findById(new InstallationFormId(1001L, 1L))).thenReturn(Optional.of(entity));
+    when(ifRepo.findById(new InstallationFormId("1001", "2024001"))).thenReturn(Optional.of(entity));
 
     // When
     service.reviewInstallationForm(USER_ID, request);
@@ -443,8 +443,8 @@ class InstallationFormServiceImplTest {
   @Test
   void should_ThrowException_When_FormNotFoundInApprove() {
     // Given
-    var request = new ApproveRequest(1L, 1001L, true);
-    when(ifRepo.findById(new InstallationFormId(1001L, 1L))).thenReturn(Optional.empty());
+    var request = new ApproveRequest("1001", "2024001", true);
+    when(ifRepo.findById(new InstallationFormId("1001", "2024001"))).thenReturn(Optional.empty());
 
     // When & Then
     assertThatThrownBy(() -> service.reviewInstallationForm(USER_ID, request))
@@ -455,11 +455,11 @@ class InstallationFormServiceImplTest {
   void should_GetByFormCodeAndNumber_When_Exists() {
     // Given
     var entity = createMockEntity();
-    when(ifRepo.findById(new InstallationFormId(1001L, 1L))).thenReturn(Optional.of(entity));
+    when(ifRepo.findById(new InstallationFormId("1001", "2024001"))).thenReturn(Optional.of(entity));
     when(empSrv.getEmployeeNameById(any())).thenReturn(new WrapperApiResponse(200, "OK", "Staff", OffsetDateTime.now()));
 
     // When
-    var result = service.getByFormCodeAndFormNumber(1001L, 1L);
+    var result = service.getByFormCodeAndFormNumber("1001", "2024001");
 
     // Then
     assertThat(result).isNotNull();
@@ -469,8 +469,8 @@ class InstallationFormServiceImplTest {
   @Test
   void should_ThrowException_When_NotFoundInGetByCodeAndNumber() {
     // When & Then
-    when(ifRepo.findById(new InstallationFormId(1L, 1L))).thenReturn(Optional.empty());
-    assertThatThrownBy(() -> service.getByFormCodeAndFormNumber(1L, 1L))
+    when(ifRepo.findById(new InstallationFormId("1001", "2024001"))).thenReturn(Optional.empty());
+    assertThatThrownBy(() -> service.getByFormCodeAndFormNumber("1001", "2024001"))
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessage(Message.PT_36);
   }
@@ -478,7 +478,7 @@ class InstallationFormServiceImplTest {
   // Helper methods
   private @NonNull NewOrderRequest createValidNewOrderRequest() {
     return new NewOrderRequest(
-      1001L, 1L, "Customer Name", "123 Address", "123456789012", "2000-01-01", "Hanoi",
+      "1001", "2024001", "Customer Name", "123 Address", "123456789012", "2000-01-01", "Hanoi",
       "0912345678", "TAX-001", "BANK-001", "Hanoi", UsageTarget.COMMERCIAL, CustomerType.COMPANY,
       "2024-01-01", "2024-01-05", 4, 1, new ArrayList<>(), "NET-001", "METER-001");
   }
@@ -495,8 +495,8 @@ class InstallationFormServiceImplTest {
 
   private @NonNull InstallationForm createMockEntity() {
     var entity = mock(InstallationForm.class);
-    when(entity.getFormCode()).thenReturn(1001L);
-    when(entity.getFormNumber()).thenReturn(1L);
+    when(entity.getFormCode()).thenReturn("1001");
+    when(entity.getFormNumber()).thenReturn("2024001");
     when(entity.getCustomerName()).thenReturn("Customer");
     when(entity.getAddress()).thenReturn("Address");
     when(entity.getPhoneNumber()).thenReturn("0912345678");

@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface ConstructionRequestService {
-  ConstructionResponse createPendingRequest(String employeeId, String contractId, Long formCode, Long formNumber);
+  ConstructionResponse createPendingRequest(String employeeId, String contractId, String formCode, String formNumber);
 
   void updatePendingRequest(String id, String employeeId);
 

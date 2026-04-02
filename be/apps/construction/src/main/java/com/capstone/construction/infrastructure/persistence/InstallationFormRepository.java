@@ -22,10 +22,11 @@ import java.util.*;
 @Repository
 public interface InstallationFormRepository extends JpaRepository<InstallationForm, InstallationFormId>,
   JpaSpecificationExecutor<InstallationForm> {
-  boolean existsById_FormNumberAndId_FormCode(Long formNumber, Long formCode);
+  boolean existsById_FormNumberAndId_FormCode(String formNumber, String formCode);
 
   @Query(value = "SELECT * FROM installation_form i WHERE i.status->>'contract' = :statusContract AND i.status->>'construction' = :statusConstruction", nativeQuery = true)
-  Page<InstallationForm> findByStatusContractAndStatusConstruction(@Param("statusContract") String statusContract, @Param("statusConstruction") String statusConstruction, Pageable pageable);
+  Page<InstallationForm> findByStatusContractAndStatusConstruction(@Param("statusContract") String statusContract,
+                                                                   @Param("statusConstruction") String statusConstruction, Pageable pageable);
 
   // build dynamic WHERE clause
 
@@ -35,8 +36,12 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
    * - query -> object dai dien cho query<br/>
    * - cb (CriteriaBuilder) -> tao dieu kien (Predicate)
    *
-   * @param keyword tu khoa, tim kiem theo cac truong address, customerName, citizenIdentificationNumber, citizenIdentificationProvideLocation,
-   *                phoneNumber, taxCode, bankAccountNumber, bankAccountProviderLocation, usageTarget, householdRegistrationNumber,
+   * @param keyword tu khoa, tim kiem theo cac truong address, customerName,
+   *                citizenIdentificationNumber,
+   *                citizenIdentificationProvideLocation,
+   *                phoneNumber, taxCode, bankAccountNumber,
+   *                bankAccountProviderLocation, usageTarget,
+   *                householdRegistrationNumber,
    *                customerType
    * @param start   thoi gian bat dau loc. Tinh theo createdAt
    * @param end     thoi gian ket thuc loc. Tinh theo createdAt
@@ -44,8 +49,7 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
    */
   static @NonNull Specification<InstallationForm> search(
     String keyword, LocalDateTime start, LocalDateTime end,
-    ProcessingStatus statusEstimate, ProcessingStatus statusConstruction
-  ) {
+    ProcessingStatus statusEstimate, ProcessingStatus statusConstruction) {
     return (root, query, cb) -> {
       // tao danh sach cac dieu kien
       List<Predicate> predicates = new ArrayList<>();
@@ -60,11 +64,10 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
           "phoneNumber", "taxCode", "bankAccountNumber", "bankAccountProviderLocation",
           "usageTarget", "householdRegistrationNumber", "customerType");
 
-        list.forEach(field ->
-          orPredicates.add(cb.like(
-            cb.function(SharedConstant.UNACCENT, String.class, cb.lower(cb.function("concat", String.class, cb.literal(""), root.get(field)))),
-            cb.function(SharedConstant.UNACCENT, String.class, cb.literal(lowerCaseKeyword))
-          )));
+        list.forEach(field -> orPredicates.add(cb.like(
+          cb.function(SharedConstant.UNACCENT, String.class,
+            cb.lower(cb.function("concat", String.class, cb.literal(""), root.get(field)))),
+          cb.function(SharedConstant.UNACCENT, String.class, cb.literal(lowerCaseKeyword)))));
 
         // gop 2 dieu kien tren bang OR
         predicates.add(cb.or(orPredicates.toArray(new Predicate[0])));
@@ -78,20 +81,16 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
         predicates.add(cb.lessThanOrEqualTo(root.get("createdAt"), end));
       }
 
-      Expression<String> estimate =
-        cb.function(
-          "jsonb_extract_path_text",
-          String.class,
-          root.get("status"),
-          cb.literal("estimate")
-        );
-      Expression<String> construction =
-        cb.function(
-          "jsonb_extract_path_text",
-          String.class,
-          root.get("status"),
-          cb.literal("construction")
-        );
+      Expression<String> estimate = cb.function(
+        "jsonb_extract_path_text",
+        String.class,
+        root.get("status"),
+        cb.literal("estimate"));
+      Expression<String> construction = cb.function(
+        "jsonb_extract_path_text",
+        String.class,
+        root.get("status"),
+        cb.literal("construction"));
 
       if (statusConstruction != null && statusEstimate != null) {
         predicates.add(cb.equal(estimate, statusEstimate.name()));
@@ -124,6 +123,5 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
     """, nativeQuery = true)
   Page<InstallationForm> findAllNotRejectedInstallationForms(Pageable pageable);
 
-  @Query("SELECT MAX(id) FROM InstallationForm")
-  InstallationFormId findLastFormCode();
+  Optional<InstallationForm> findFirstByOrderByCreatedAtDesc();
 }

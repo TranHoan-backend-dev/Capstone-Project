@@ -96,22 +96,25 @@ public class InstallationFormServiceImpl implements InstallationFormService {
     log.info("Installation form created successfully: {}", saved.getFormNumber());
 
     return new NewInstallationFormResponse(
-      saved.getFormNumber().toString(),
+      saved.getFormNumber(),
       saved.getCustomerName(),
-      saved.getFormCode().toString(),
+      saved.getFormCode(),
       saved.getCreatedBy(),
       saved.getCreatedAt());
   }
 
   @Override
-  public Page<InstallationFormListResponse> getInstallationForms(Pageable pageable, @NonNull BaseFilterRequest request) {
+  public Page<InstallationFormListResponse> getInstallationForms(Pageable pageable,
+                                                                 @NonNull BaseFilterRequest request) {
     log.info("Fetching paginated installation forms with pageable: {}", pageable);
     var startDate = Utils.parseFrom(request.from());
     var endDate = Utils.parseTo(request.to());
 
-    var result = (startDate != null || endDate != null || (request.keyword() != null && !request.keyword().isBlank())) ? ifRepo.findAll(
+    var result = (startDate != null || endDate != null || (request.keyword() != null && !request.keyword().isBlank()))
+      ? ifRepo.findAll(
       InstallationFormRepository.search(request.keyword(), startDate, endDate, null, null),
-      pageable) : ifRepo.findAllNotRejectedInstallationForms(pageable);
+      pageable)
+      : ifRepo.findAllNotRejectedInstallationForms(pageable);
 
     var content = result.getContent()
       .stream()
@@ -126,7 +129,8 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   public void reviewInstallationForm(String userId, @NonNull ApproveRequest request) {
     log.info("Approving and assigning installation form with number: {}", request.formNumber());
     var order = ifRepo.findById(new InstallationFormId(request.formCode(), request.formNumber()))
-      .orElseThrow(() -> new IllegalArgumentException(String.format(SharedMessage.MES_24, request.formNumber(), request.formCode())));
+      .orElseThrow(() -> new IllegalArgumentException(
+        String.format(SharedMessage.MES_24, request.formNumber(), request.formCode())));
 
     // nvks chuyen tu don da duyet => don chua duyet
     if (request.status() == null) {
@@ -152,8 +156,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
           userId,
           order.getFormCode(),
           order.getFormNumber(),
-          order.getOverallWaterMeterId()
-        ));
+          order.getOverallWaterMeterId()));
       } else {
         // nvks hủy đơn
         var status = order.getStatus();
@@ -164,7 +167,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   }
 
   @Override
-  public InstallationFormListResponse getByFormCodeAndFormNumber(Long formCode, Long formNumber) {
+  public InstallationFormListResponse getByFormCodeAndFormNumber(String formCode, String formNumber) {
     log.info("Fetching installation form with form number: {}", formNumber);
     var result = ifRepo.findById(new InstallationFormId(formCode, formNumber))
       .orElseThrow(() -> new IllegalArgumentException(Message.PT_36));
@@ -229,16 +232,22 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   @Override
   public OrderIdResponse getLastFormCode() {
     log.info("Fetching installation form with last form code");
-    var result = ifRepo.findLastFormCode();
-    log.info("Last form code: {}, form number: {}", result.getFormCode(), result.getFormNumber());
-    return OrderIdResponse.builder()
-      .formCode(result.getFormCode())
-      .formNumber(result.getFormNumber())
-      .build();
+    return ifRepo.findFirstByOrderByCreatedAtDesc()
+      .map(result -> {
+        log.info("Last form code: {}, form number: {}", result.getFormCode(), result.getFormNumber());
+        return OrderIdResponse.builder()
+          .formCode(result.getFormCode())
+          .formNumber(result.getFormNumber())
+          .build();
+      })
+      .orElseGet(() -> {
+        log.warn("No installation forms found");
+        return OrderIdResponse.builder().build();
+      });
   }
 
   @Override
-  public boolean isInstallationFormExisting(Long formNumber, Long formCode) {
+  public boolean isInstallationFormExisting(String formNumber, String formCode) {
     var status = ifRepo.existsById_FormNumberAndId_FormCode(formNumber, formCode);
     log.info("Installation form with form number: {} and form code {} is exist: {}", formNumber, formCode, status);
     return status;
@@ -246,7 +255,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
 
   @Override
   @Transactional(rollbackFor = Exception.class)
-  public void updateContractStatus(Long formCode, Long formNumber) {
+  public void updateContractStatus(String formCode, String formNumber) {
     log.info("Updating contract status for formCode: {} and formNumber: {}", formCode, formNumber);
     var installationForm = ifRepo.findById(new InstallationFormId(formCode, formNumber))
       .orElseThrow(() -> new IllegalArgumentException(Message.PT_36));
@@ -260,14 +269,17 @@ public class InstallationFormServiceImpl implements InstallationFormService {
     log.info("Get staff who will handle this request");
     var creatorFullName = empSrv.getEmployeeNameById(entity.getCreatedBy());
     var handoverByFullName = entity.getHandoverBy() != null ? empSrv.getEmployeeNameById(entity.getHandoverBy()) : null;
-    var constructionEmployeeName = entity.getConstructedBy() != null ? empSrv.getEmployeeNameById(entity.getConstructedBy()) : null;
+    var constructionEmployeeName = entity.getConstructedBy() != null
+      ? empSrv.getEmployeeNameById(entity.getConstructedBy())
+      : null;
     var unknown = "Trống";
-    log.info("Creator: {}, handover: {}, construction captain: {}", creatorFullName, handoverByFullName, constructionEmployeeName);
+    log.info("Creator: {}, handover: {}, construction captain: {}", creatorFullName, handoverByFullName,
+      constructionEmployeeName);
 
     return new InstallationFormListResponse(
       null,
-      entity.getFormCode().toString(),
-      entity.getFormNumber().toString(),
+      entity.getFormCode(),
+      entity.getFormNumber(),
       entity.getCustomerName(),
       entity.getAddress(),
       entity.getPhoneNumber(),

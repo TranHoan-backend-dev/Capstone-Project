@@ -69,7 +69,7 @@ class SettlementUseCaseTest {
   @Test
   @DisplayName("Create settlement successfully")
   void createSettlement_ShouldReturnResponse() {
-    var request = new SettlementRequest(1001L, 1L, "Job", "Addr", BigDecimal.ZERO, "Note", LocalDate.now());
+    var request = new SettlementRequest("1", "1001", "Job", "Addr", BigDecimal.ZERO, "Note", LocalDate.now());
     var response1 = new SettlementResponse("id", "Job", "Addr", BigDecimal.ZERO, "Note", null, null, LocalDate.now(), "1001", "1", null, null);
     var installationForm = mock(InstallationForm.class);
     var constructionRequest = mock(ConstructionResponse.class);
@@ -88,7 +88,7 @@ class SettlementUseCaseTest {
   @DisplayName("Update settlement successfully")
   void updateSettlement_ShouldReturnResponse() {
     var id = "id123";
-    var request = new SettlementRequest(1001L, 1L, "Job", "Addr", BigDecimal.ZERO, "Note", LocalDate.now());
+    var request = new SettlementRequest("1", "1001", "Job", "Addr", BigDecimal.ZERO, "Note", LocalDate.now());
     var response2 = new SettlementResponse(id, "Job", "Addr", BigDecimal.ZERO, "Note", null, null, LocalDate.now(), "1001", "1", null, null);
     when(settlementService.updateSettlement(id, request)).thenReturn(response2);
     var result2 = settlementUseCase.updateSettlement(id, request);

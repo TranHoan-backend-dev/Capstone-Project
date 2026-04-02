@@ -56,7 +56,7 @@ class ReceiptUseCaseTest {
   @DisplayName("Create receipt should save and NOT publish event")
   void createReceipt_ShouldReturnResponse() {
     var request = new CreateRequest(
-      1001L, 1L, "BL001",
+      "1", "1001", "BL001",
       "Reason", "1000", "One Thousand", "Attach",
       LocalDate.now(), true, "S"
     );

@@ -74,7 +74,7 @@ public class ConstructionRequestUseCase {
     var constructionRequest = constructionRequestService.getById(id);
     var formCode = constructionRequest.installationForm().formCode();
     var formNumber = constructionRequest.installationForm().formNumber();
-    var installationForm = ifSrv.getByFormCodeAndFormNumber(Long.parseLong(formCode), Long.parseLong(formNumber));
+    var installationForm = ifSrv.getByFormCodeAndFormNumber(formCode, formNumber);
     var constructedBy = installationForm.constructedBy();
 
     if (approved) {

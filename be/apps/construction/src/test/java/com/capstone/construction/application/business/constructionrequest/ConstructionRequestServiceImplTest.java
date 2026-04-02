@@ -43,8 +43,8 @@ class ConstructionRequestServiceImplTest {
     // Arrange
     var empId = "EMP1";
     var contractId = "CON1";
-    var formCode = 1001L;
-    var formNumber = 1L;
+    var formCode = "1001";
+    var formNumber = "1";
 
     when(customerService.checkExistenceOfContract(contractId)).thenReturn(true);
     when(employeeService.isEmployeeExisting(empId))
@@ -77,7 +77,7 @@ class ConstructionRequestServiceImplTest {
   @Test
   void should_ThrowException_When_ContractNotFound() {
     when(customerService.checkExistenceOfContract(anyString())).thenReturn(false);
-    assertThrows(IllegalArgumentException.class, () -> service.createPendingRequest("E1", "C1", 1L, 1L));
+    assertThrows(IllegalArgumentException.class, () -> service.createPendingRequest("E1", "C1", "1001", "1"));
   }
 
   @Test

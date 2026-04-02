@@ -3,7 +3,6 @@ package com.capstone.construction.application.business.estimate;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.common.enumerate.RoleName;
-import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.common.utils.SharedConstant;
 import com.capstone.common.utils.SharedMessage;
 import com.capstone.common.request.BaseMaterial;
@@ -204,7 +203,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
         startDate,
         endDate),
       pageable) : eRepo.findAll(pageable);
-    
+
     // Create filter map with all non-null parameters
     Map<String, Object> filters = new HashMap<>();
 

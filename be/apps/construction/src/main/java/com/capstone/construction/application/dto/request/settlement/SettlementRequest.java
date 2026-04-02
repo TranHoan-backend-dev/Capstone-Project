@@ -1,5 +1,6 @@
 package com.capstone.construction.application.dto.request.settlement;
 
+import com.capstone.common.utils.SharedMessage;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
@@ -11,11 +12,13 @@ import java.time.LocalDate;
 
 @Schema(description = "Yêu cầu tạo hoặc cập nhật thông tin quyết toán công trình")
 public record SettlementRequest(
-  @NotNull
-  Long formCode,
+  @NotBlank(message = SharedMessage.MES_21)
+  @NotEmpty(message = SharedMessage.MES_21)
+  String formCode,
 
-  @NotNull
-  Long formNumber,
+  @NotBlank(message = SharedMessage.MES_20)
+  @NotEmpty(message = SharedMessage.MES_20)
+  String formNumber,
 
   @Schema(description = "Nội dung công việc", example = "Lắp đặt hệ thống cấp nước D110")
   @NotBlank(message = "Nội dung công việc là bắt buộc")
