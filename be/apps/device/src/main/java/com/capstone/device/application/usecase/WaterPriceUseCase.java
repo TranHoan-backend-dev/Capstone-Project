@@ -5,8 +5,9 @@ import com.capstone.device.application.dto.request.price.CreateRequest;
 import com.capstone.device.application.dto.request.price.UpdateRequest;
 import com.capstone.device.application.dto.response.water.WaterPriceResponse;
 import com.capstone.device.application.event.producer.MessageProducer;
-import com.capstone.device.application.event.producer.waterprices.DeleteEvent;
-import com.capstone.device.application.event.producer.waterprices.UpdateEvent;
+// import com.capstone.device.application.event.producer.waterprices.DeleteEvent;
+// import com.capstone.device.application.event.producer.waterprices.UpdateEvent;
+import com.capstone.device.application.event.producer.waterprices.WaterPriceEvent;
 import com.capstone.device.infrastructure.util.Message;
 import com.capstone.device.infrastructure.service.CustomerService;
 import lombok.AccessLevel;
@@ -49,11 +50,28 @@ public class WaterPriceUseCase {
     var old = waterPriceService.getWaterPriceById(id);
     var n = waterPriceService.updateWaterPrice(id, request);
 
-    producer.send(UPDATE_ROUTING_KEY, new UpdateEvent(
-        old.usageTarget(), old.tax(), old.environmentPrice(), old.applicationPeriod(),
-        old.expirationDate(), old.description(),
-        n.usageTarget(), n.tax(), n.environmentPrice(), n.applicationPeriod(),
-        n.expirationDate(), n.description()));
+    // producer.send(UPDATE_ROUTING_KEY, new UpdateEvent(
+    // old.usageTarget(), old.tax(), old.environmentPrice(),
+    // old.applicationPeriod(),
+    // old.expirationDate(), old.description(),
+    // n.usageTarget(), n.tax(), n.environmentPrice(), n.applicationPeriod(),
+    // n.expirationDate(), n.description()));
+    producer.send(UPDATE_ROUTING_KEY, WaterPriceEvent.builder()
+      .oldUserTarget(old.usageTarget())
+      .oldTax(old.tax())
+      .oldEnvironmentPrice(old.environmentPrice())
+      .oldApplicationPeriod(old.applicationPeriod())
+      .oldExpirationDate(old.expirationDate())
+      .oldDescription(old.description())
+      .newUserTarget(n.usageTarget())
+      .newTax(n.tax())
+      .newEnvironmentPrice(n.environmentPrice())
+      .newApplicationPeriod(n.applicationPeriod())
+      .newExpirationDate(n.expirationDate())
+      .newDescription(n.description())
+      .action("UPDATE")
+      .build());
+
     return n;
   }
 
@@ -67,9 +85,19 @@ public class WaterPriceUseCase {
     var old = waterPriceService.getWaterPriceById(id);
     waterPriceService.deleteWaterPrice(id);
 
-    producer.send(DELETE_ROUTING_KEY, new DeleteEvent(
-        old.usageTarget(), old.tax(), old.environmentPrice(), old.applicationPeriod(),
-        old.expirationDate(), old.description()));
+    // producer.send(DELETE_ROUTING_KEY, new DeleteEvent(
+    // old.usageTarget(), old.tax(), old.environmentPrice(),
+    // old.applicationPeriod(),
+    // old.expirationDate(), old.description()));
+    producer.send(DELETE_ROUTING_KEY, WaterPriceEvent.builder()
+      .oldUserTarget(old.usageTarget())
+      .oldTax(old.tax())
+      .oldEnvironmentPrice(old.environmentPrice())
+      .oldApplicationPeriod(old.applicationPeriod())
+      .oldExpirationDate(old.expirationDate())
+      .oldDescription(old.description())
+      .action("DELETE")
+      .build());
   }
 
   public WaterPriceResponse getWaterPriceById(@NonNull String id) {
