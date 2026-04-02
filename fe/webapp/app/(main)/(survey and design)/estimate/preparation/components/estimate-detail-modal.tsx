@@ -8,6 +8,7 @@ import { PriceBox } from "@/components/popup-status/price-box";
 import { NoteField } from "@/components/popup-status/note-field";
 import { numberToVietnamese } from "@/utils/numberToVietnamese";
 import { Chip } from "@heroui/react";
+import { authFetch } from "@/utils/authFetch";
 
 export const statusLabelMap: Record<string, string> = {
   PENDING: "Chờ xử lý",
@@ -63,7 +64,7 @@ export const EstimateDetailModal = ({ isOpen, onClose, data }: any) => {
       if (!data?.creator) return;
 
       try {
-        const res = await fetch(`/api/auth/employees/${data.creator}/name`);
+        const res = await authFetch(`/api/auth/employees/${data.creator}/name`);
         const json = await res.json();
 
         const emp = json?.data;

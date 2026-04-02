@@ -49,7 +49,7 @@ export const BusinessPageTable = ({
         if (isActive !== undefined && isActive !== null) {
           params.append("isActive", String(isActive));
         }
-        const res = await fetch(
+        const res = await authFetch(
           `/api/organization/business-pages?${params.toString()}`,
         );
 

@@ -7,6 +7,7 @@ import { TechnicalInfoCard } from "./components/technical-info-card";
 import { MaterialCostCard } from "./components/material-cost-card";
 import { EstimateResponse, MaterialEstimateItem } from "@/types";
 import { TotalCostDisplay } from "./components/total-cost-display ";
+import { authFetch } from "@/utils/authFetch";
 
 const RunEstimationPage = () => {
   const params = useParams();
@@ -20,7 +21,7 @@ const RunEstimationPage = () => {
     const fetchEstimate = async () => {
       if (!estimateId) return;
       try {
-        const res = await fetch(`/api/construction/estimates/${estimateId}`);
+        const res = await authFetch(`/api/construction/estimates/${estimateId}`);
         if (!res.ok) return;
         const json = await res.json();
         setEstimateData(json.data);

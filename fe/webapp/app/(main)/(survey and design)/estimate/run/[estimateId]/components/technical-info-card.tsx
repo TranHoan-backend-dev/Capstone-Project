@@ -325,7 +325,7 @@ export const TechnicalInfoCard = ({
         isFinished: isFinished,
       };
 
-      const res = await fetch(`/api/construction/estimates/${estimateId}`, {
+      const res = await authFetch(`/api/construction/estimates/${estimateId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

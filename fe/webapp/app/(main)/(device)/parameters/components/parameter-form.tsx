@@ -7,6 +7,7 @@ import CustomInput from "@/components/ui/custom/CustomInput";
 import { CheckApprovalIcon } from "@/config/chip-and-icon";
 import { Card, CardBody } from "@heroui/react";
 import { ParameterFormProps } from "@/types";
+import { authFetch } from "@/utils/authFetch";
 
 export const ParameterForm = ({
   initialData,
@@ -55,7 +56,7 @@ export const ParameterForm = ({
         payload.value = numericValue;
       }
 
-      const response = await fetch(url, {
+      const response = await authFetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

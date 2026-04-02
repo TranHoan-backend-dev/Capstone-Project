@@ -18,6 +18,7 @@ import { EstimateItem, EstimateResponse, EstimateStatus } from "@/types";
 import { ESTIMATE_PREPARATION_COLUMN } from "@/config/table-columns";
 import { formatDate } from "@/utils/format";
 import { calculateTotalAmount } from "@/utils/calculateTotalAmount";
+import { authFetch } from "@/utils/authFetch";
 
 interface ResultsTableProps {
   keyword?: string;
@@ -109,7 +110,7 @@ export const ResultsTable = ({ keyword, from, to }: ResultsTableProps) => {
         if (from) params.append("from", from);
         if (to) params.append("to", to);
 
-        const res = await fetch(
+        const res = await authFetch(
           `/api/construction/estimates?${params.toString()}`,
         );
 

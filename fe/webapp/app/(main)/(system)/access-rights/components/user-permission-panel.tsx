@@ -14,6 +14,7 @@ import {
 import { CheckIcon } from "@heroicons/react/24/outline";
 import { CheckApprovalIcon } from "@/config/chip-and-icon";
 import CustomButton from "@/components/ui/custom/CustomButton";
+import { authFetch } from "@/utils/authFetch";
 
 interface UserPermissionPanelProps {
   empId: string;
@@ -62,7 +63,7 @@ export const UserPermissionPanel = ({
     const fetchPermissions = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/auth/employees/${empId}/pages`);
+        const res = await authFetch(`/api/auth/employees/${empId}/pages`);
 
         if (!res.ok) {
           console.error("Fetch permission failed");

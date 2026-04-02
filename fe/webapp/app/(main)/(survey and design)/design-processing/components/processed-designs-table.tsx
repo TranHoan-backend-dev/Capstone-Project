@@ -20,6 +20,7 @@ import {
   RedIconColor,
   BlueYellowIconColor,
   TitleDarkColor,
+  ApprovalIcon,
 } from "@/config/chip-and-icon";
 import { PROCESSED_DESIGN_COLUMN } from "@/config/table-columns";
 import { DesignProcessingItem } from "@/types";
@@ -180,7 +181,7 @@ export const ProcessedDesignsTable = ({
               Hủy
             </CustomButton>
 
-            <CustomButton color="success" onPress={handleRejectConfirm}>
+            <CustomButton color="success" onPress={handleRejectConfirm} className="text-white" startContent={<ApprovalIcon className="w-4 h-4" />}>
               Đồng ý
             </CustomButton>
           </ModalFooter>

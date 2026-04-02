@@ -24,6 +24,7 @@ import CreateSignatureModal from "./components/create-signature-modal";
 import SignModal from "./components/sign-modal";
 import { calculateTotalAmount } from "@/utils/calculateTotalAmount";
 import { EstimateOrder } from "@/types";
+import CustomButton from "@/components/ui/custom/CustomButton";
 
 const PENDING_STATUSES = ["pending", "processing", "pending_for_approval"];
 const APPROVED_STATUS = "approved";
@@ -616,15 +617,15 @@ const EstimateApprovalPage = () => {
                 </p>
               </ModalBody>
               <ModalFooter>
-                <Button
+                <CustomButton
                   color="danger"
                   variant="light"
                   onPress={onClose}
                   disabled={isProcessing}
                 >
                   Hủy
-                </Button>
-                <Button
+                </CustomButton>
+                <CustomButton
                   color={
                     confirmAction?.type === "approve" ? "success" : "danger"
                   }
@@ -632,7 +633,7 @@ const EstimateApprovalPage = () => {
                   isLoading={isProcessing}
                 >
                   {confirmAction?.type === "approve" ? "Duyệt" : "Từ chối"}
-                </Button>
+                </CustomButton>
               </ModalFooter>
             </>
           )}

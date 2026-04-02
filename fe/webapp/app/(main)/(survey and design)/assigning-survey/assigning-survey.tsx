@@ -9,6 +9,7 @@ import SurveyTabs from "./components/survey-tabs";
 import { FilterSection } from "@/components/ui/FilterSection";
 import { SurveyAssignmentFormResponse, SurveyAssignmentItem } from "@/types";
 import { formatDate1, formatDateValueToString } from "@/utils/format";
+import { authFetch } from "@/utils/authFetch";
 
 const AssigningSurveyPage = () => {
   const [reloadKey, setReloadKey] = useState(0);
@@ -51,7 +52,7 @@ const AssigningSurveyPage = () => {
         if (to) {
           params.append("to", formatDateValueToString(to));
         }
-        const res = await fetch(
+        const res = await authFetch(
           `/api/construction/installation-forms?${params.toString()}`,
         );
 
