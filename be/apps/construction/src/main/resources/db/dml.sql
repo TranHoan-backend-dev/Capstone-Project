@@ -116,6 +116,51 @@ VALUES (80000001001, '123 Le Loi, District 1, HCMC', '190312345678', 'Techcomban
          "estimate": "PROCESSING",
          "construction": "PROCESSING",
          "registration": "PROCESSING"
+       }', NULL, NULL),
+       (80000001011, '808 Le Loi, District 1, HCMC', '190312345688', 'Techcombank HCMC',
+        '079090000011', '2020-01-11', 'CA TPHCM', '2024-01-11 10:00:00', 'd35fa80e-0289-4b23-96db-0c43adde4fe2',
+        'Nguyen Van K', 20240011, 1123456, 4, 'METER-011', '0901234577', '2024-01-11 09:00:00',
+        '2024-01-11 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
+         "contract": "PROCESSING",
+         "estimate": "PROCESSING",
+         "construction": "PROCESSING",
+         "registration": "PROCESSING"
+       }', NULL, NULL),
+       (80000001012, '909 Nguyen Hue, District 1, HCMC', '190312345689', 'Vietcombank HCMC',
+        '079090000012', '2020-01-12', 'CA TPHCM', '2024-01-12 10:00:00', 'd35fa80e-0289-4b23-96db-0c43adde4fe2',
+        'Tran Thi L', 20240012, 1223456, 3, 'METER-012', '0901234578', '2024-01-12 09:00:00',
+        '2024-01-12 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
+         "contract": "PROCESSING",
+         "estimate": "PROCESSING",
+         "construction": "PROCESSING",
+         "registration": "PROCESSING"
+       }', NULL, NULL),
+       (80000001013, '111 Hai Ba Trung, District 3, HCMC', '190312345690', 'ACB HCMC',
+        '079090000013', '2020-01-13', 'CA TPHCM', '2024-01-13 10:00:00', 'd35fa80e-0289-4b23-96db-0c43adde4fe2',
+        'Le Van M', 20240013, 1323456, 5, 'METER-013', '0901234579', '2024-01-13 09:00:00',
+        '2024-01-13 10:00:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
+         "contract": "PROCESSING",
+         "estimate": "PROCESSING",
+         "construction": "PROCESSING",
+         "registration": "PROCESSING"
+       }', NULL, NULL),
+       (80000001014, '222 Dien Bien Phu, Binh Thanh, HCMC', '190312345691', 'BIDV HCMC',
+        '079090000014', '2020-01-14', 'CA TPHCM', '2024-01-14 10:00:00', 'd35fa80e-0289-4b23-96db-0c43adde4fe2',
+        'Pham Thi N', 20240014, 1423456, 2, 'METER-014', '0901234580', '2024-01-14 09:00:00',
+        '2024-01-14 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
+         "contract": "PROCESSING",
+         "estimate": "PROCESSING",
+         "construction": "PROCESSING",
+         "registration": "PROCESSING"
+       }', NULL, NULL),
+       (80000001015, '333 Nguyen Thi Minh Khai, District 1, HCMC', '190312345692', 'VPBank HCMC',
+        '079090000015', '2020-01-15', 'CA TPHCM', '2024-01-15 10:00:00', 'd35fa80e-0289-4b23-96db-0c43adde4fe2',
+        'Hoang Thi O', 20240015, 1523456, 3, 'METER-015', '0901234581', '2024-01-15 09:00:00',
+        '2024-01-15 10:00:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
+         "contract": "PROCESSING",
+         "estimate": "PROCESSING",
+         "construction": "PROCESSING",
+         "registration": "PROCESSING"
        }', NULL, NULL);
 
 INSERT INTO water_supply_network (branch_id, created_at, name, updated_at)
@@ -323,9 +368,9 @@ VALUES ('5e6f7081-4000-4eee-9fff-eeee4eee0001', now(), '108-111-112e', now(), '4
         '550e8400-e29b-41d4-a716-446655440001'),
        ('5e6f7081-4000-4eee-9fff-eeee4eee0020', now(), '197-198', now(), '4d5e6f70-3000-4ddd-9eee-dddd4ddd0002',
         '550e8400-e29b-41d4-a716-446655440001'),
-       ('5e6f7081-4000-4eee-9fff-eeeeeeee0021', now(), '172a', now(), '4d5e6f70-3000-4ddd-9eee-dddddddd0001',
+       ('5e6f7081-4000-4eee-9fff-eeeeeeee0021', now(), '172a', now(), '4d5e6f70-3000-4ddd-9eee-dddd4ddd0001',
         '550e8400-e29b-41d4-a716-446655440001'),
-       ('RM_001', now(), 'Lộ trình Test 001', now(), '4d5e6f70-3000-4ddd-9eee-dddddddd0001',
+       ('RM_001', now(), 'Lộ trình Test 001', now(), '4d5e6f70-3000-4ddd-9eee-dddd4ddd0001',
         '550e8400-e29b-41d4-a716-446655440001');
 
 INSERT INTO settlement (settlement_id, address, connection_fee, created_at,
