@@ -16,10 +16,10 @@ import java.util.Objects;
 public class InstallationFormId implements Serializable {
 
   @Column(name = "form_code")
-  private Long formCode;
+  private String formCode;
 
   @Column(name = "form_number", length = 36)
-  private Long formNumber;
+  private String formNumber;
 
   @Override
   public boolean equals(Object o) {

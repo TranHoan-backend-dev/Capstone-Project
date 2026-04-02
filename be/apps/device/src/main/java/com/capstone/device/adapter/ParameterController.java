@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/params")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@Tag(name = "Tham số hệ thống", description = "API quản lý các tham số cấu hình hệ thống")
+@Tag(name = "Tham số hệ thống", description = "API quản lý các tham số trong hệ thống. Chủ yếu phục vụ dự toán và quyết toán")
 public class ParameterController {
   @NonFinal
   Logger log;

@@ -9,11 +9,13 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public record CreateRequest(
-  @NotNull(message = SharedMessage.MES_21)
-  Long formCode,
+  @NotBlank(message = SharedMessage.MES_21)
+  @NotEmpty(message = SharedMessage.MES_21)
+  String formCode,
 
-  @NotNull(message = SharedMessage.MES_20)
-  Long formNumber,
+  @NotBlank(message = SharedMessage.MES_20)
+  @NotEmpty(message = SharedMessage.MES_20)
+  String formNumber,
 
   @NotBlank(message = "Số biên lai không được để trống")
   @NotEmpty(message = "Số biên lai không được để trống")

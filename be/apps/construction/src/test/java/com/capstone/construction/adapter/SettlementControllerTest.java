@@ -53,7 +53,7 @@ class SettlementControllerTest {
     ReflectionTestUtils.setField(settlementController, "log", log);
 
     settlementRequest = new SettlementRequest(
-      1001L, 1L, "Job Content", "Address", BigDecimal.TEN, "Note", LocalDate.now()
+      "1001", "1", "Job Content", "Address", BigDecimal.TEN, "Note", LocalDate.now()
     );
 
     mockResponse = new SettlementResponse(

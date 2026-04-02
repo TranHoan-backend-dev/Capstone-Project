@@ -3,6 +3,7 @@ package com.capstone.construction.application.business.estimate;
 import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.construction.application.dto.request.estimate.CreateRequest;
+import com.capstone.construction.application.dto.request.estimate.EstimateFilterRequest;
 import com.capstone.construction.application.dto.request.estimate.UpdateRequest;
 import com.capstone.construction.domain.model.CostEstimate;
 import com.capstone.construction.domain.model.InstallationForm;
@@ -60,8 +61,8 @@ class CostEstimateServiceImplTest {
   private CostEstimate costEstimate;
   private InstallationForm installationForm;
   private final String estimateId = "estimate-123";
-  private final Long formCode = 1001L;
-  private final Long formNumber = 1L;
+  private final String formCode = "1001";
+  private final String formNumber = "1001";
 
   @BeforeEach
   void setUp() {
@@ -227,7 +228,7 @@ class CostEstimateServiceImplTest {
   void should_GetAllEstimates_WithFilter() {
     // Arrange
     var pageable = PageRequest.of(0, 10);
-    var filter = new BaseFilterRequest("Keyword", "01-01-2023", "31-12-2023");
+    var filter = new EstimateFilterRequest("Keyword", "01-01-2023", "31-12-2023");
     Page<CostEstimate> page = new PageImpl<>(List.of(costEstimate));
 
     when(eRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(page);

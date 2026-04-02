@@ -46,7 +46,7 @@ class ReceiptServiceImplTest {
 
   @BeforeEach
   void setUp() {
-    formId = new InstallationFormId(1L, 1001L);
+    formId = new InstallationFormId("1001", "2024001");
     form = new InstallationForm();
     form.setCustomerName("Customer Name");
     form.setAddress("Customer Address");
@@ -54,7 +54,7 @@ class ReceiptServiceImplTest {
 
     // CreateRequest(formCode, formNumber, receiptNumber, paymentReason, totalMoneyInDigit, totalMoneyInCharacters, attach, paymentDate, isPaid, significanceOfReceiptCreator)
     createRequest = new CreateRequest(
-      1L, 1001L, "BL001",
+      "1", "1001", "BL001",
       "Payment Reason", "1000", "One Thousand", "http://attach",
       LocalDate.now(), true, "http://creator-sign"
     );

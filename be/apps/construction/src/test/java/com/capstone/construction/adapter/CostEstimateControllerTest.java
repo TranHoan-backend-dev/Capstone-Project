@@ -62,7 +62,7 @@ class CostEstimateControllerTest {
       new CostEstimateResponse.GeneralInformation(
         "id", "Customer", "Address", "Note", 1000, 100, 1, 1000, 1, 1, 1, 1, 1, 1, 100, "url",
         LocalDateTime.now(), LocalDateTime.now(), LocalDate.now(), "user", "SN", "METER",
-        new InstallationFormId(1001L, 1L),
+        new InstallationFormId("1001", "1"),
         new FormProcessingStatus(
           ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING, ProcessingStatus.PROCESSING,
           ProcessingStatus.PROCESSING)),

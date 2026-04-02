@@ -63,18 +63,18 @@ class SettlementServiceImplTest {
   @Test
   @DisplayName("Create settlement successfully")
   void createSettlement_ShouldSaveAndReturnResponse() {
-    var request = new SettlementRequest(1001L, 1L, "Job", "Addr", BigDecimal.TEN, "Note", LocalDate.now());
+    var request = new SettlementRequest("1", "1001", "Job", "Addr", BigDecimal.TEN, "Note", LocalDate.now());
     var form = mock(InstallationForm.class);
-    when(form.getFormCode()).thenReturn(1001L);
-    when(form.getFormNumber()).thenReturn(1L);
+    when(form.getFormCode()).thenReturn("1001");
+    when(form.getFormNumber()).thenReturn("1");
 
     var settlement = Settlement.create(b -> b
-        .jobContent(request.jobContent())
-        .address(request.address())
-        .connectionFee(request.connectionFee())
-        .note(request.note())
-        .installationForm(form)
-        .registrationAt(request.registrationAt()));
+      .jobContent(request.jobContent())
+      .address(request.address())
+      .connectionFee(request.connectionFee())
+      .note(request.note())
+      .installationForm(form)
+      .registrationAt(request.registrationAt()));
 
     when(formRepository.findById(any(InstallationFormId.class))).thenReturn(Optional.of(form));
     when(settlementRepository.save(any(Settlement.class))).thenReturn(settlement);
@@ -89,10 +89,10 @@ class SettlementServiceImplTest {
   @DisplayName("Update settlement successfully")
   void updateSettlement_ShouldUpdateAndReturnResponse() {
     var id = "id123";
-    var request = new SettlementRequest(1001L, 1L, "New Job", "New Addr", BigDecimal.ONE, "New Note", LocalDate.now());
+    var request = new SettlementRequest("1", "1001", "New Job", "New Addr", BigDecimal.ONE, "New Note", LocalDate.now());
     var form = mock(InstallationForm.class);
-    when(form.getFormCode()).thenReturn(1001L);
-    when(form.getFormNumber()).thenReturn(1L);
+    when(form.getFormCode()).thenReturn("1001");
+    when(form.getFormNumber()).thenReturn("1");
 
     var existing = Settlement.create(b -> b.jobContent("Old").address("Old").connectionFee(BigDecimal.ZERO).note("Old").installationForm(form).registrationAt(LocalDate.now()));
 
@@ -111,7 +111,7 @@ class SettlementServiceImplTest {
     when(settlementRepository.findById(anyString())).thenReturn(Optional.empty());
 
     assertThatThrownBy(() -> settlementService.updateSettlement("id", mock(SettlementRequest.class)))
-        .isInstanceOf(IllegalArgumentException.class);
+      .isInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
@@ -119,8 +119,8 @@ class SettlementServiceImplTest {
   void getSettlementById_ShouldReturnResponse() {
     var id = "id123";
     var form = mock(InstallationForm.class);
-    when(form.getFormCode()).thenReturn(1001L);
-    when(form.getFormNumber()).thenReturn(1L);
+    when(form.getFormCode()).thenReturn("1001");
+    when(form.getFormNumber()).thenReturn("1");
 
     var existing = Settlement.create(b -> b.jobContent("Job").address("Addr").connectionFee(BigDecimal.ZERO).note("Note").installationForm(form).registrationAt(LocalDate.now()));
 

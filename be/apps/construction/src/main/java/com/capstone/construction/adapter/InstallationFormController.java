@@ -77,6 +77,7 @@ public class InstallationFormController {
   }
 
   @GetMapping("/last-code")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF')")
   public ResponseEntity<WrapperApiResponse> getLastFormCode() {
     log.info("Received request to get the last form code");
     return Utils.returnOkResponse("Lấy ra mã đơn và số đơn gần nhất thành công", installationFormService.getLastFormCode());
@@ -186,8 +187,8 @@ public class InstallationFormController {
   @Operation(hidden = true)
   @GetMapping("/exist")
   public boolean isExisting(
-    @RequestParam Long formCode,
-    @RequestParam Long formNumber
+    @RequestParam String formCode,
+    @RequestParam String formNumber
   ) {
     return installationFormService.isInstallationFormExisting(formNumber, formCode);
   }
@@ -200,8 +201,8 @@ public class InstallationFormController {
   @PatchMapping("/contract-status")
   @PreAuthorize("hasAnyAuthority('ORDER_RECEIVING_STAFF', 'IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> updateContractStatus(
-    @RequestParam Long formCode,
-    @RequestParam Long formNumber
+    @RequestParam String formCode,
+    @RequestParam String formNumber
   ) {
     log.info("Updating contract status for formCode: {} and formNumber: {}", formCode, formNumber);
     installationFormService.updateContractStatus(formCode, formNumber);
@@ -210,8 +211,8 @@ public class InstallationFormController {
 
   @GetMapping("/details/{formCode}/{formNumber}")
   public ResponseEntity<WrapperApiResponse> getDetails(
-    @PathVariable Long formCode,
-    @PathVariable Long formNumber
+    @PathVariable String formCode,
+    @PathVariable String formNumber
   ) {
     log.info("Getting details of formCode: {} and formNumber: {}", formCode, formNumber);
     var response = installationFormService.getByFormCodeAndFormNumber(formCode, formNumber);

@@ -4,7 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record OrderIdResponse(
-  Long formCode,
-  Long formNumber
+  String formCode,
+  String formNumber
 ) {
 }

@@ -2,7 +2,6 @@ package com.capstone.construction.adapter;
 
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
-import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.common.utils.Utils;
 import com.capstone.construction.application.dto.request.estimate.EstimateFilterRequest;
 import com.capstone.construction.application.dto.request.estimate.AssignTheSignificanceRequest;
@@ -24,6 +23,7 @@ import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -40,7 +40,7 @@ public class CostEstimateController {
   Logger log;
   final CostEstimateUseCase estimateUseCase;
 
-  @PutMapping("/{id}")
+  @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @Operation(summary = "Cập nhật dự toán", description = """
     Cập nhật thông tin dự toán hiện có theo ID.<br/>
     Nhân viên khảo sát có thể hoàn tất dự toán hoặc lưu bản nháp.
@@ -82,7 +82,7 @@ public class CostEstimateController {
   })
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'SURVEY_STAFF')")
   public ResponseEntity<WrapperApiResponse> getEstimateById(
-    @PathVariable @Parameter(description = "", required = true) String id
+    @PathVariable @Parameter(required = true) String id
   ) {
     log.info("REST request to get cost estimate with id: {}", id);
     var response = estimateUseCase.getEstimateById(id);

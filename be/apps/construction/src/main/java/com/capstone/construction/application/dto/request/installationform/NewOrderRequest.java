@@ -16,12 +16,14 @@ import java.util.List;
 
 public record NewOrderRequest(
   @Schema(description = "Mã biểu mẫu", example = "8465165167")
-  @NotNull(message = SharedMessage.MES_21)
-  Long formCode,
+  @NotBlank(message = SharedMessage.MES_21)
+  @NotEmpty(message = SharedMessage.MES_21)
+  String formCode,
 
   @Schema(description = "Số hồ sơ duy nhất để định danh yêu cầu lắp đặt", example = "0026987662")
-  @NotNull(message = SharedMessage.MES_20)
-  Long formNumber,
+  @NotBlank(message = SharedMessage.MES_20)
+  @NotEmpty(message = SharedMessage.MES_20)
+  String formNumber,
 
   @Schema(description = "Họ và tên khách hàng (hoặc tên đơn vị)", example = "Nguyễn Văn A")
   @NotBlank(message = Message.PT_14) String customerName,
