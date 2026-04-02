@@ -207,4 +207,15 @@ public class InstallationFormController {
     installationFormService.updateContractStatus(formCode, formNumber);
     return Utils.returnOkResponse("Cập nhật trạng thái hợp đồng thành công", null);
   }
+
+  @GetMapping("/details/{formCode}/{formNumber}")
+  public ResponseEntity<WrapperApiResponse> getDetails(
+    @PathVariable Long formCode,
+    @PathVariable Long formNumber
+  ) {
+    log.info("Getting details of formCode: {} and formNumber: {}", formCode, formNumber);
+    var response = installationFormService.getByFormCodeAndFormNumber(formCode, formNumber);
+    log.info("Response: {}", response);
+    return Utils.returnOkResponse("Get details successfully", response);
+  }
 }
