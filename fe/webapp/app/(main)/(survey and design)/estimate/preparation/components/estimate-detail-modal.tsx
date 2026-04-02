@@ -2,18 +2,56 @@
 
 import React, { useEffect, useState } from "react";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
-
 import { ModalHeader } from "@/components/popup-status/modal-header";
 import { InfoRow } from "@/components/popup-status/info-row";
 import { PriceBox } from "@/components/popup-status/price-box";
 import { NoteField } from "@/components/popup-status/note-field";
 import { numberToVietnamese } from "@/utils/numberToVietnamese";
+import { Chip } from "@heroui/react";
+
 export const statusLabelMap: Record<string, string> = {
   PENDING: "Chờ xử lý",
+  PROCESSING: "Đang xử lý",
   WAITING_FOR_SIGNATURE: "Chờ ký duyệt",
   PARTIALLY_SIGNED: "Đang ký",
-  APPROVED: "Đã ký duyệt",
+  APPROVED: "Đã duyệt",
   REJECTED: "Bị từ chối",
+};
+
+export const statusColorMap: Record<
+  string,
+  { bg: string; text: string; dot: string }
+> = {
+  PENDING: {
+    bg: "bg-yellow-50",
+    text: "text-yellow-700",
+    dot: "bg-yellow-600",
+  },
+  PROCESSING: {
+    bg: "bg-blue-50",
+    text: "text-blue-700",
+    dot: "bg-blue-600",
+  },
+  WAITING_FOR_SIGNATURE: {
+    bg: "bg-purple-50",
+    text: "text-purple-700",
+    dot: "bg-purple-600",
+  },
+  PARTIALLY_SIGNED: {
+    bg: "bg-indigo-50",
+    text: "text-indigo-700",
+    dot: "bg-indigo-600",
+  },
+  APPROVED: {
+    bg: "bg-green-50",
+    text: "text-green-700",
+    dot: "bg-green-600",
+  },
+  REJECTED: {
+    bg: "bg-red-50",
+    text: "text-red-700",
+    dot: "bg-red-600",
+  },
 };
 
 export const EstimateDetailModal = ({ isOpen, onClose, data }: any) => {
@@ -38,6 +76,12 @@ export const EstimateDetailModal = ({ isOpen, onClose, data }: any) => {
 
     fetchCreator();
   }, [data?.creatorId]);
+
+  const statusColors = statusColorMap[data.status] || {
+    bg: "bg-gray-50",
+    text: "text-gray-700",
+    dot: "bg-gray-600",
+  };
 
   return (
     <>
@@ -65,10 +109,14 @@ export const EstimateDetailModal = ({ isOpen, onClose, data }: any) => {
             <InfoRow
               label="Trạng thái"
               value={
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 text-green-700 rounded-md">
-                  <span className="w-1.5 h-1.5 bg-green-600 rounded-full" />
+                <Chip
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 ${statusColors.bg} ${statusColors.text} rounded-md`}
+                >
+                  <span
+                    className={`w-1.5 h-1.5 ${statusColors.dot} rounded-full`}
+                  />
                   {statusLabelMap[data.status] ?? data.status}
-                </span>
+                </Chip>
               }
             />
 
@@ -76,12 +124,6 @@ export const EstimateDetailModal = ({ isOpen, onClose, data }: any) => {
 
             <InfoRow label="Người lập chiết tính" value={creatorName} />
             <InfoRow label="Ngày lập chiết tính" value={data.createDate} />
-
-            {/* <InfoRow
-              icon={<InformationCircleIcon className="w-4 h-4 text-gray-400" />}
-              label="Ngày duyệt chiết tính"
-              value={data.approveDate}
-            /> */}
 
             <div className="border-t border-gray-200 my-4" />
 

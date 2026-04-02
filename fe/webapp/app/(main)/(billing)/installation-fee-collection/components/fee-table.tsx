@@ -217,7 +217,7 @@ export const FeeTable = ({
   const renderCell = (item: FeeCollectionItem, columnKey: string) => {
     switch (columnKey) {
       case "stt":
-        return <span className="text-blue-600 font-bold">{item.stt}</span>;
+        return <span className="text-black-600 font-bold">{item.stt}</span>;
       case "formNumber":
         return (
           <button
@@ -226,6 +226,18 @@ export const FeeTable = ({
           >
             {item.formNumber}
           </button>
+        );
+      case "paymentDate":
+        return (
+          <span className="text-default-600">
+            {formatDate1(item.paymentDate)}
+          </span>
+        );
+      case "createAt":
+        return (
+          <span className="text-default-600">
+            {formatDate1(item.createdAt)}
+          </span>
         );
       case "isPaid":
         return (

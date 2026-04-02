@@ -269,7 +269,7 @@ export const siteConfig = {
           key: "run-estimate",
           label: "Tạo dự toán",
           href: "/estimate/run",
-          roles: ["it_staff", "survey_staff"],
+          roles: ["it_staff"],
         },
         // {
         //   key: "estimate-lookup",

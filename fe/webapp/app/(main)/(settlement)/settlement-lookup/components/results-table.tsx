@@ -210,8 +210,8 @@ export const ResultsTable = ({
           formNumber: item.formNumber,
           jobContent: item.jobContent,
           address: item.address,
-          registrationAt: formatDate1(item.registrationAt),
-          connectionFee: formatVND(item.connectionFee),
+          registrationAt: item.registrationAt,
+          connectionFee: item.connectionFee,
           note: item.note,
           status: item.status,
         }));
@@ -477,6 +477,18 @@ export const ResultsTable = ({
           >
             {item.formNumber}
           </Link>
+        );
+      case "connectionFee":
+        return (
+          <span className="text-black-600 font-bold">
+            {formatVND(item.connectionFee)}
+          </span>
+        );
+      case "registrationAt":
+        return (
+          <span className="text-default-600">
+            {formatDate1(item.registrationAt)}
+          </span>
         );
       case "actions":
         return (
