@@ -28,7 +28,7 @@ INSERT INTO installation_form (form_code, address, bank_account_number, bank_acc
                                phone_number, received_form_at, updated_at, usage_target, customer_type, handover_by,
                                representative, schedule_survey_at, status, tax_code, water_supply_network_id)
 VALUES (80000001001, '123 Le Loi, District 1, HCMC', '190312345678', 'Techcombank HCMC',
-        '079090000001', '2020-01-01', 'CA TPHCM', '2024-01-01 10:00:00', 'c8357517-3149-41b4-9b2c-881d5a40840a',
+        '079090000001', '2020-01-01', 'CA TPHCM', '2024-01-01 10:00:00', 'd35fa80e-0289-4b23-96db-0c43adde4fe2',
         'Nguyen Van A', 20240001, 123456, 4, 'METER-001', '0901234567', '2024-01-01 09:00:00',
         '2024-01-01 10:00:00', 'DOMESTIC', 'COMPANY', NULL, NULL, NULL, '{
     "contract": "PROCESSING",
@@ -37,7 +37,7 @@ VALUES (80000001001, '123 Le Loi, District 1, HCMC', '190312345678', 'Techcomban
     "registration": "PROCESSING"
   }', NULL, NULL),
        (80000001002, '456 Nguyen Hue, District 1, HCMC', '190312345679', 'Vietcombank HCMC',
-        '079090000002', '2020-01-02', 'CA TPHCM', '2024-01-02 10:00:00', 'c8357517-3149-41b4-9b2c-881d5a40840a',
+        '079090000002', '2020-01-02', 'CA TPHCM', '2024-01-02 10:00:00', 'd35fa80e-0289-4b23-96db-0c43adde4fe2',
         'Tran Thi B', 20240002, 223456, 3, 'METER-002', '0901234568', '2024-01-02 09:00:00',
         '2024-01-02 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "PROCESSING",
@@ -46,7 +46,7 @@ VALUES (80000001001, '123 Le Loi, District 1, HCMC', '190312345678', 'Techcomban
          "registration": "PROCESSING"
        }', NULL, NULL),
        (80000001003, '789 Hai Ba Trung, District 3, HCMC', '190312345680', 'ACB HCMC',
-        '079090000003', '2020-01-03', 'CA TPHCM', '2024-01-03 10:00:00', 'c8357517-3149-41b4-9b2c-881d5a40840a',
+        '079090000003', '2020-01-03', 'CA TPHCM', '2024-01-03 10:00:00', 'd35fa80e-0289-4b23-96db-0c43adde4fe2',
         'Le Van C', 20240003, 323456, 5, 'METER-003', '0901234569', '2024-01-03 09:00:00',
         '2024-01-03 10:00:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
          "contract": "PROCESSING",
@@ -55,7 +55,7 @@ VALUES (80000001001, '123 Le Loi, District 1, HCMC', '190312345678', 'Techcomban
          "registration": "PROCESSING"
        }', NULL, NULL),
        (80000001004, '101 Dien Bien Phu, Binh Thanh, HCMC', '190312345681', 'BIDV HCMC',
-        '079090000004', '2020-01-04', 'CA TPHCM', '2024-01-04 10:00:00', 'c8357517-3149-41b4-9b2c-881d5a40840a',
+        '079090000004', '2020-01-04', 'CA TPHCM', '2024-01-04 10:00:00', 'd35fa80e-0289-4b23-96db-0c43adde4fe2',
         'Pham Thi D', 20240004, 423456, 2, 'METER-004', '0901234570', '2024-01-04 09:00:00',
         '2024-01-04 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "PROCESSING",
@@ -64,7 +64,7 @@ VALUES (80000001001, '123 Le Loi, District 1, HCMC', '190312345678', 'Techcomban
          "registration": "PROCESSING"
        }', NULL, NULL),
        (80000001005, '202 Nguyen Thi Minh Khai, District 1, HCMC', '190312345682', 'VPBank HCMC',
-        '079090000005', '2020-01-05', 'CA TPHCM', '2024-01-05 10:00:00', 'c8357517-3149-41b4-9b2c-881d5a40840a',
+        '079090000005', '2020-01-05', 'CA TPHCM', '2024-01-05 10:00:00', 'd35fa80e-0289-4b23-96db-0c43adde4fe2',
         'Hoang Thi E', 20240005, 523456, 3, 'METER-005', '0901234571', '2024-01-05 09:00:00',
         '2024-01-05 10:00:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
          "contract": "PROCESSING",
@@ -73,7 +73,7 @@ VALUES (80000001001, '123 Le Loi, District 1, HCMC', '190312345678', 'Techcomban
          "registration": "PROCESSING"
        }', NULL, NULL),
        (80000001006, '303 Cach Mang Thang Tam, District 10, HCMC', '190312345683', 'MBBank HCMC',
-        '079090000006', '2020-01-06', 'CA TPHCM', '2024-01-06 10:00:00', 'c8357517-3149-41b4-9b2c-881d5a40840a',
+        '079090000006', '2020-01-06', 'CA TPHCM', '2024-01-06 10:00:00', 'd35fa80e-0289-4b23-96db-0c43adde4fe2',
         'Nguyen Van F', 20240006, 623456, 4, 'METER-006', '0901234572', '2024-01-06 09:00:00',
         '2024-01-06 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "PROCESSING",
@@ -82,7 +82,7 @@ VALUES (80000001001, '123 Le Loi, District 1, HCMC', '190312345678', 'Techcomban
          "registration": "PROCESSING"
        }', NULL, NULL),
        (80000001007, '404 Le Van Sy, Phu Nhuan, HCMC', '190312345684', 'Sacombank HCMC',
-        '079090000007', '2020-01-07', 'CA TPHCM', '2024-01-07 10:00:00', 'c8357517-3149-41b4-9b2c-881d5a40840a',
+        '079090000007', '2020-01-07', 'CA TPHCM', '2024-01-07 10:00:00', 'd35fa80e-0289-4b23-96db-0c43adde4fe2',
         'Tran Thi G', 20240007, 723456, 2, 'METER-007', '0901234573', '2024-01-07 09:00:00',
         '2024-01-07 10:00:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
          "contract": "PROCESSING",
@@ -91,7 +91,7 @@ VALUES (80000001001, '123 Le Loi, District 1, HCMC', '190312345678', 'Techcomban
          "registration": "PROCESSING"
        }', NULL, NULL),
        (80000001008, '505 Nguyen Van Luong, Binh Thanh, HCMC', '190312345685', 'Techcombank HCMC',
-        '079090000008', '2020-01-08', 'CA TPHCM', '2024-01-08 10:00:00', 'c8357517-3149-41b4-9b2c-881d5a40840a',
+        '079090000008', '2020-01-08', 'CA TPHCM', '2024-01-08 10:00:00', 'd35fa80e-0289-4b23-96db-0c43adde4fe2',
         'Le Van H', 20240008, 823456, 5, 'METER-008', '0901234574', '2024-01-08 09:00:00',
         '2024-01-08 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "PROCESSING",
@@ -100,7 +100,7 @@ VALUES (80000001001, '123 Le Loi, District 1, HCMC', '190312345678', 'Techcomban
          "registration": "PROCESSING"
        }', NULL, NULL),
        (80000001009, '606 Hoang Van Thu, Tan Binh, HCMC', '190312345686', 'Vietinbank HCMC',
-        '079090000009', '2020-01-09', 'CA TPHCM', '2024-01-09 10:00:00', 'c8357517-3149-41b4-9b2c-881d5a40840a',
+        '079090000009', '2020-01-09', 'CA TPHCM', '2024-01-09 10:00:00', 'd35fa80e-0289-4b23-96db-0c43adde4fe2',
         'Pham Thi I', 20240009, 923456, 3, 'METER-009', '0901234575', '2024-01-09 09:00:00',
         '2024-01-09 10:00:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
          "contract": "PROCESSING",
@@ -109,7 +109,7 @@ VALUES (80000001001, '123 Le Loi, District 1, HCMC', '190312345678', 'Techcomban
          "registration": "PROCESSING"
        }', NULL, NULL),
        (80000001010, '707 Nguyen Thi Minh Khai, District 3, HCMC', '190312345687', 'BIDV HCMC',
-        '079090000010', '2020-01-10', 'CA TPHCM', '2024-01-10 10:00:00', 'c8357517-3149-41b4-9b2c-881d5a40840a',
+        '079090000010', '2020-01-10', 'CA TPHCM', '2024-01-10 10:00:00', 'd35fa80e-0289-4b23-96db-0c43adde4fe2',
         'Nguyen Van J', 20240010, 1023456, 4, 'METER-010', '0901234576', '2024-01-10 09:00:00',
         '2024-01-10 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "PROCESSING",

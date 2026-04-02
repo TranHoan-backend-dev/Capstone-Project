@@ -86,8 +86,8 @@ alter table public.water_supply_network
 
 create table public.installation_form
 (
-  form_code                               bigint       not null,
-  form_number                             bigint       not null,
+  form_code                               varchar(255) not null,
+  form_number                             varchar(36)  not null,
   address                                 varchar(255) not null,
   bank_account_number                     varchar(255) not null,
   bank_account_provider_location          varchar(255) not null,
@@ -133,8 +133,8 @@ create table public.construction_request
   contract_id                   varchar(255) not null,
   created_at                    timestamp(6) not null,
   updated_at                    timestamp(6) not null,
-  installation_form_form_code   bigint,
-  installation_form_form_number bigint,
+  installation_form_form_code   varchar(255),
+  installation_form_form_number varchar(36),
   constraint uk3l14rwso7ddv5c1nrfvjs4fka
     unique (installation_form_form_code, installation_form_form_number),
   constraint fkcw1o1cf9l9e3x8w0cp5leitop
@@ -170,8 +170,8 @@ create table public.cost_estimate
   updated_at                         timestamp(6) not null,
   vat_coefficient                    integer,
   water_meter_serial                 varchar(255),
-  installation_form_form_code        bigint,
-  installation_form_form_number      bigint,
+  installation_form_form_code        varchar(255),
+  installation_form_form_number      varchar(36),
   constraint ukoxhdwqay1l4rf08vh8ox7iuou
     unique (installation_form_form_code, installation_form_form_number),
   constraint fkd0hrmii0s9vndliepsyjr4y1k
@@ -212,8 +212,8 @@ create table public.receipt
   total_money_in_characters     varchar(255),
   total_money_in_digits         varchar(255) not null,
   updated_at                    timestamp(6) not null,
-  installation_form_form_code   bigint       not null,
-  installation_form_form_number bigint       not null,
+  installation_form_form_code   varchar(255) not null,
+  installation_form_form_number varchar(36)  not null,
   primary key (installation_form_form_code, installation_form_form_number),
   constraint fkjwvoi10c5ywsbf652cxlsp58s
     foreign key (installation_form_form_code, installation_form_form_number) references public.installation_form
@@ -255,8 +255,8 @@ create table public.settlement
   registration_at               date           not null,
   significance                  jsonb,
   updated_at                    timestamp(6)   not null,
-  installation_form_form_code   bigint,
-  installation_form_form_number bigint,
+  installation_form_form_code   varchar(255),
+  installation_form_form_number varchar(36),
   constraint uka16ybuafkf2crgemm1nivc0hs
     unique (installation_form_form_code, installation_form_form_number),
   constraint fk7glq90muysfwma3d7swfrx0gh
