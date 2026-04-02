@@ -26,8 +26,7 @@ public class AssignOrderConsumer extends GeneralEventConsumer<AssignEventMessage
 
   @RabbitListener(queues = "${rabbit-mq-config.queue}.${rabbit-mq-config.entities[13]}.${rabbit-mq-config.actions[4]}")
   public void handle(@NonNull AssignEventMessage event) {
-    var topic = event.data().status() ? Topic.getTopicOfPlanningTechnicalDepartment(RoleName.SURVEY_STAFF, "/" + event.data().empId()) :
-      Topic.getTopicOfConstructionDepartment(RoleName.CONSTRUCTION_DEPARTMENT_HEAD, "/" + event.data().empId());
+    var topic = Topic.getTopicOfPlanningTechnicalDepartment(RoleName.SURVEY_STAFF, "/" + event.data().empId());
     super.handle(
       event,
       List.of(topic),
