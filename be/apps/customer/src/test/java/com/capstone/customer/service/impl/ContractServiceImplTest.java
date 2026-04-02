@@ -302,4 +302,65 @@ class ContractServiceImplTest {
     assertThat(result).isEmpty();
     verify(contractRepository).findContractIdsByFormCodeAndFormNumber(formCode, formNumber);
   }
+
+  @Test
+  @DisplayName("Should return true when contract exists by id")
+  void should_ReturnTrue_When_ContractExistsById() {
+    // Given
+    var id = "CON001";
+    when(contractRepository.existsById(id)).thenReturn(true);
+
+    // When
+    var result = contractService.isExist(id);
+
+    // Then
+    assertThat(result).isTrue();
+    verify(contractRepository).existsById(id);
+  }
+
+  @Test
+  @DisplayName("Should return latest contract ID when prefix matches")
+  void should_ReturnLatestContractId_When_PrefixMatches() {
+    // Given
+    var prefix = "HQU";
+    var expectedId = "HQU0005";
+    when(contractRepository.findMaxContractIdByPrefix(prefix)).thenReturn(expectedId);
+
+    // When
+    var result = contractService.getLatestContractIdByPrefix(prefix);
+
+    // Then
+    assertThat(result).isEqualTo(expectedId);
+    verify(contractRepository).findMaxContractIdByPrefix(prefix);
+  }
+
+  @Test
+  @DisplayName("Should return null when no contract matches prefix")
+  void should_ReturnNull_When_NoContractMatchesPrefix() {
+    // Given
+    var prefix = "NON";
+    when(contractRepository.findMaxContractIdByPrefix(prefix)).thenReturn(null);
+
+    // When
+    var result = contractService.getLatestContractIdByPrefix(prefix);
+
+    // Then
+    assertThat(result).isNull();
+    verify(contractRepository).findMaxContractIdByPrefix(prefix);
+  }
+
+  @Test
+  @DisplayName("Should return null when maxId is blank")
+  void should_ReturnNull_When_MaxIdIsBlank() {
+    // Given
+    var prefix = "HQU";
+    when(contractRepository.findMaxContractIdByPrefix(prefix)).thenReturn(" ");
+
+    // When
+    var result = contractService.getLatestContractIdByPrefix(prefix);
+
+    // Then
+    assertThat(result).isNull();
+    verify(contractRepository).findMaxContractIdByPrefix(prefix);
+  }
 }

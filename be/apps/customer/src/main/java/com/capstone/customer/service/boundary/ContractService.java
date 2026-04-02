@@ -54,4 +54,6 @@ public interface ContractService {
   List<String> findContractIdsByFormCodeAndFormNumber(String formCode, String formNumber);
 
   Boolean isExist(String id);
+
+  String getLatestContractIdByPrefix(String prefix);
 }

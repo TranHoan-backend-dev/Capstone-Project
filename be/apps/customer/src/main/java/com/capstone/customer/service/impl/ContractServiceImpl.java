@@ -104,6 +104,14 @@ public class ContractServiceImpl implements ContractService {
     return contractRepository.existsById(id);
   }
 
+  @Override
+  @Transactional(readOnly = true)
+  public String getLatestContractIdByPrefix(String prefix) {
+    log.info("Fetching latest contract ID for prefix: {}", prefix);
+    var maxId = contractRepository.findMaxContractIdByPrefix(prefix);
+    return maxId != null && !maxId.isBlank() ? maxId : null;
+  }
+
   private @NonNull ContractResponse mapToResponse(@NonNull WaterUsageContract contract) {
     return new ContractResponse(
       contract.getContractId(),

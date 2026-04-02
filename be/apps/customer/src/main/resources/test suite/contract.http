@@ -1,6 +1,6 @@
 @baseUrl = http://localhost:9005/api/v1
 @contractsUrl = {{baseUrl}}/contracts
-@keycloak = http://localhost:8080/realms/cmsn/protocol/openid-connect
+@keycloak = http://localhost:8080/realms//protocol/openid-connect
 @client_secret =
 
 ### 0. Lấy Access Token (Keycloak)
@@ -9,10 +9,10 @@ POST {{keycloak}}/token
 Content-Type: application/x-www-form-urlencoded
 
 grant_type=password&
-client_id= cmsn &
+client_id= &
 client_secret={{client_secret}}&
-username= test&
-password= 123456&
+username=&
+password=&
 scope=openid
 
 > {%
@@ -125,3 +125,40 @@ Authorization: Bearer {{access_token}}
 ### 4.16 Lấy danh sách - Lọc theo phụ lục (thời gian)
 GET {{contractsUrl}}?appendix[0].time=2026-03-18T00:00:00
 Authorization: Bearer {{access_token}}
+
+### 5. Lấy mã hợp đồng gần nhất theo khu vực (Thành công)
+GET {{contractsUrl}}/latest-id?prefix=HQU
+Authorization: Bearer {{access_token}}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+### 5.1 Lấy mã hợp đồng gần nhất (Tiền tố không tồn tại)
+GET {{contractsUrl}}/latest-id?prefix=UNKNOWN_REGION
+Authorization: Bearer {{access_token}}
+
+> {%
+client.test("Status is 200 and data is null", function() {
+  client.assert(response.status === 200);
+  client.assert(response.body.data === null);
+});
+%}
+
+### 5.2 Lấy mã hợp đồng (Lỗi - Thiếu prefix)
+GET {{contractsUrl}}/latest-id
+Authorization: Bearer {{access_token}}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400 || response.status === 500);
+});
+%}
+
+### 5.3 Lấy mã hợp đồng (Lỗi - Không có quyền)
+# Giả sử token này không có quyền IT_STAFF
+GET {{contractsUrl}}/latest-id?prefix=HQU
+Authorization: Bearer {{invalid_token}}
+

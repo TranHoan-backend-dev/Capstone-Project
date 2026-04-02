@@ -100,4 +100,27 @@ public class ContractController {
     log.info("Check existence of contract: {}", id);
     return contractService.isExist(id);
   }
+
+  @Operation(
+    summary = "Lấy mã hợp đồng gần nhất theo khu vực",
+    description = "Truy xuất mã hợp đồng (Contract ID) được tạo sau cùng trong hệ thống dựa trên tiền tố mã khu vực (VD: HQU, DGA). " +
+      "Nghiệp vụ: Client gửi prefix, hệ thống tìm trong DB bản ghi có ID lớn nhất bắt đầu bằng prefix đó. " +
+      "Hỗ trợ phân quyền cho nhân viên IT và nhân viên tiếp nhận đơn.",
+    responses = {
+      @ApiResponse(responseCode = "200", description = "Tìm kiếm thành công, trả về mã ID hoặc null nếu chưa có dữ liệu cho khu vực này",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))),
+      @ApiResponse(responseCode = "403", description = "Không có quyền truy cập (Yêu cầu IT_STAFF hoặc ORDER_RECEIVING_STAFF)"),
+      @ApiResponse(responseCode = "500", description = "Lỗi hệ thống trong quá trình truy vấn")
+    }
+  )
+  @GetMapping("/latest-id")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF')")
+  public ResponseEntity<WrapperApiResponse> getLatestContractIdByPrefix(
+    @RequestParam @Parameter(description = "Mã khu vực cần tìm kiếm (Tiền tố)", example = "HQU") String prefix) {
+    log.info("REST request to get latest contract id for prefix: {}", prefix);
+    var latestId = contractService.getLatestContractIdByPrefix(prefix);
+    var suffix = latestId.split("-")[1];
+    log.info(suffix);
+    return Utils.returnOkResponse("Lấy mã hợp đồng gần nhất thành công", suffix);
+  }
 }

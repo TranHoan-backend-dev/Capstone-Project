@@ -22,6 +22,9 @@ import org.springframework.data.repository.query.Param;
 public interface ContractRepository extends JpaRepository<WaterUsageContract, String>,
   JpaSpecificationExecutor<WaterUsageContract> {
 
+  @Query(value = "SELECT contract_id FROM water_usage_contract WHERE contract_id LIKE CONCAT(:prefix, '%') ORDER BY LENGTH(contract_id) DESC, contract_id DESC LIMIT 1", nativeQuery = true)
+  String findMaxContractIdByPrefix(@Param("prefix") String prefix);
+
   @Query("SELECT c.contractId FROM WaterUsageContract c WHERE c.formCode = :formCode AND c.formNumber = :formNumber")
   List<String> findContractIdsByFormCodeAndFormNumber(
     @Param("formCode") String formCode,
