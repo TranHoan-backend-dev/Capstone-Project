@@ -527,6 +527,14 @@ export const assignInstallationForm = async (
   return res.data;
 };
 
+export const getLastCode = async (accessToken: string) => {
+  return axios.get(`${API_GATEWAY_URL}/construction/installation-forms/last-code`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+}
+
 export const getPendingRegistrationForms = (
   accessToken: string,
   page: number,
@@ -770,12 +778,12 @@ export const getEstimateById = (accessToken: string, estimateId: string) =>
 export const updateEstimate = (
   accessToken: string,
   estimateId: string,
-  data: UpdateEstimateRequest,
+  data: FormData,
 ) =>
   axios.put(`${API_GATEWAY_URL}/construction/estimates/${estimateId}`, data, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
+      // KHÔNG set Content-Type - axios sẽ tự set multipart/form-data với boundary
     },
   });
 

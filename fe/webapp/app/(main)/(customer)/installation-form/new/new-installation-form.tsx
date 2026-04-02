@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DocumentPlusIcon } from "@heroicons/react/24/solid";
 
 import { FormActions } from "./components/form-actions";
@@ -26,6 +26,45 @@ const NewInstallationForm = () => {
   const [reloadKey, setReloadKey] = useState(0);
   const today = new Date().toISOString().split("T")[0];
   const [loading, setLoading] = useState(true);
+  const [lastCode, setLastCode] = useState("");
+  const [isFetchingCode, setIsFetchingCode] = useState(true);
+
+  const getLastCode = async () => {
+    try {
+      setIsFetchingCode(true);
+      const res = await authFetch(
+        "/api/construction/installation-forms/last-code",
+      );
+      if (!res.ok) {
+        throw new Error("Failed to fetch last code");
+      }
+      const json = await res.json();
+      const lastCodeValue = json.data;
+      setLastCode(lastCodeValue);
+
+      // Tự động tăng code lên 1 và gán vào form
+      if (lastCodeValue) {
+        const nextCode = (parseInt(lastCodeValue) + 1).toString();
+        updateField("formCode", nextCode);
+        updateField("formNumber", nextCode);
+      }
+    } catch (error) {
+      console.error("Error fetching last code:", error);
+      CallToast({
+        title: "Lỗi",
+        message: "Không thể lấy mã phiếu cuối cùng. Vui lòng thử lại sau.",
+        color: "danger",
+      });
+    } finally {
+      setIsFetchingCode(false);
+    }
+  };
+
+  // Gọi API lấy mã cuối cùng khi component mount
+  useEffect(() => {
+    getLastCode();
+  }, []);
+
   const initialFormData: NewInstallationFormPayload = {
     formCode: "",
     formNumber: "",
@@ -178,6 +217,9 @@ const NewInstallationForm = () => {
         message: "Tạo đơn lắp đặt thành công",
         color: "success",
       });
+
+      // Sau khi tạo thành công, fetch lại mã mới cho lần tạo tiếp theo
+      await getLastCode();
       setFormData(initialFormData);
       setReloadKey((prev) => prev + 1);
     } catch (e: any) {
@@ -192,9 +234,20 @@ const NewInstallationForm = () => {
   };
 
   const handleClear = () => {
+    // Khi clear, cũng cần reset về mã mới nhất
+    getLastCode();
     setFormData(initialFormData);
     setReloadKey((prev) => prev + 1);
   };
+
+  // Optional: Hiển thị loading indicator khi đang fetch mã
+  if (isFetchingCode) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="text-gray-500">Đang tải mã phiếu...</div>
+      </div>
+    );
+  }
 
   return (
     <>
