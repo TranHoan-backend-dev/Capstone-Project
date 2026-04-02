@@ -39,14 +39,20 @@ const NewInstallationForm = () => {
         throw new Error("Failed to fetch last code");
       }
       const json = await res.json();
-      const lastCodeValue = json.data;
-      setLastCode(lastCodeValue);
+      const lastCodeData = json.data;
 
-      // Tự động tăng code lên 1 và gán vào form
-      if (lastCodeValue) {
-        const nextCode = (parseInt(lastCodeValue) + 1).toString();
-        updateField("formCode", nextCode);
-        updateField("formNumber", nextCode);
+      setLastCode(lastCodeData);
+
+      if (lastCodeData) {
+        const nextFormCode = (
+          parseInt(lastCodeData.formCode || "0") + 1
+        ).toString();
+        const nextFormNumber = (
+          parseInt(lastCodeData.formNumber || "0") + 1
+        ).toString();
+
+        updateField("formCode", nextFormCode);
+        updateField("formNumber", nextFormNumber);
       }
     } catch (error) {
       console.error("Error fetching last code:", error);
@@ -72,7 +78,7 @@ const NewInstallationForm = () => {
     representative: [],
     citizenIdentificationNumber: "",
     citizenIdentificationProvideDate: "",
-    citizenIdentificationProvideLocation: "",
+    citizenIdentificationProvideLocation: "Cục cảnh sát và trật tự xã hội",
     phoneNumber: "",
     taxCode: "",
     address: "",
@@ -82,7 +88,7 @@ const NewInstallationForm = () => {
     customerType: "FAMILY",
     receivedFormAt: today,
     scheduleSurveyAt: "",
-    numberOfHousehold: "",
+    numberOfHousehold: 1,
     householdRegistrationNumber: "",
     networkId: "",
     overallWaterMeterId: "",

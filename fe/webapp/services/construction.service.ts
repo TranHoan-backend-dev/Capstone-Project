@@ -478,6 +478,20 @@ export const getInstallationFormById = async (
     },
   });
 
+export const getInstallationFormByCode = async (
+  accessToken: string,
+  formCode: string,
+  formNumber: string,
+) =>
+  axios.get(
+    `${API_GATEWAY_URL}/construction/installation-forms/details/${formCode}/${formNumber}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+
 export const createNewInstallationForm = (
   accessToken: string,
   payload: NewInstallationFormPayload,
@@ -528,12 +542,15 @@ export const assignInstallationForm = async (
 };
 
 export const getLastCode = async (accessToken: string) => {
-  return axios.get(`${API_GATEWAY_URL}/construction/installation-forms/last-code`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
+  return axios.get(
+    `${API_GATEWAY_URL}/construction/installation-forms/last-code`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
     },
-  });
-}
+  );
+};
 
 export const getPendingRegistrationForms = (
   accessToken: string,

@@ -15,6 +15,7 @@ import { NEW_INSTALLATION_LOOKUP_COLUMN } from "@/config/table-columns";
 import { authFetch } from "@/utils/authFetch";
 import { formatDate1 } from "@/utils/format";
 import { AssignConstructionPopup } from "./assign-construction-popup";
+import { InstallationFormDetailPopup } from "./installation-form-detail-popup";
 
 interface ResultsTableProps {
   keyword?: string;
@@ -51,6 +52,17 @@ export const RelatedOrdersTable = ({
     formNumber: "",
     customerName: "",
   });
+
+  const [detailPopup, setDetailPopup] = useState<{
+    isOpen: boolean;
+    formCode: string;
+    formNumber: string;
+  }>({
+    isOpen: false,
+    formCode: "",
+    formNumber: "",
+  });
+
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
@@ -219,6 +231,14 @@ export const RelatedOrdersTable = ({
 
     return baseColumns;
   };
+
+  const handleOpenDetailPopup = (item: any) => {
+    setDetailPopup({
+      isOpen: true,
+      formCode: item.formCode,
+      formNumber: item.formNumber,
+    });
+  };
   const renderCell = (item: any, key: string) => {
     switch (key) {
       case "stt":
@@ -229,13 +249,12 @@ export const RelatedOrdersTable = ({
         );
       case "formNumber":
         return (
-          <Link
-            as={NextLink}
-            className={`font-bold text-blue-600 hover:underline hover:text-blue-800 ${TitleDarkColor}`}
-            href={`/installation-form/new/${item.formCode}`}
+          <button
+            onClick={() => handleOpenDetailPopup(item)}
+            className="font-bold text-blue-600 hover:underline hover:text-blue-800 cursor-pointer"
           >
             {item.formNumber}
-          </Link>
+          </button>
         );
       case "customerName":
         return (
@@ -302,6 +321,18 @@ export const RelatedOrdersTable = ({
         formCode={assignPopup.formCode}
         formNumber={assignPopup.formNumber}
         customerName={assignPopup.customerName}
+      />
+      <InstallationFormDetailPopup
+        isOpen={detailPopup.isOpen}
+        onClose={() =>
+          setDetailPopup({
+            isOpen: false,
+            formCode: "",
+            formNumber: "",
+          })
+        }
+        formCode={detailPopup.formCode}
+        formNumber={detailPopup.formNumber}
       />
     </>
   );
