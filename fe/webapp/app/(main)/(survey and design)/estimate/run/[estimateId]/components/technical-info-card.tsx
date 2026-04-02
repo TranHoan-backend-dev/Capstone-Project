@@ -274,13 +274,64 @@ export const TechnicalInfoCard = ({
     });
   };
 
+//   const updateEstimate = async (id, updateData, files) => {
+//   const formData = new FormData();
+
+//   // Thêm các trường metadata (Object -> từng field)
+//   // Ví dụ updateData = { name: "Dự toán A", status: "DRAFT" }
+//   Object.keys(updateData).forEach(key => {
+//     formData.append(key, updateData[key]);
+//   });
+
+//   // Thêm file (nếu có)
+//   if (files) {
+//     files.forEach(file => formData.append('files', file));
+//   }
+
+//   return axios.put(`/api/construction/${id}`, formData, {
+//     headers: {
+//       'Content-Type': 'multipart/form-data'
+//     }
+//   });
+// };
+
   const handleSave = async (isFinished: boolean) => {
     try {
       setIsUploading(true);
-      let designImageBase64 = undefined;
-      if (designImageFile instanceof File) {
-        designImageBase64 = await fileToBase64(designImageFile);
-      }
+
+      const formData = new FormData();
+
+      // Create the general information object
+      const generalInformation = {
+        estimationId: estimateId,
+        customerName: customerName || "",
+        address: address || "",
+        note: note || "",
+        contractFee: contractFee ? Number(contractFee) : 0,
+        surveyFee: surveyFee ? Number(surveyFee) : 0,
+        surveyEffort: surveyEffort ? Number(surveyEffort) : 0,
+        installationFee: installationFee ? Number(installationFee) : 0,
+        laborCoefficient: laborCoefficient ? Number(laborCoefficient) : 0,
+        generalCostCoefficient: generalCostCoefficient
+          ? Number(generalCostCoefficient)
+          : 0,
+        precalculatedTaxCoefficient: precalculatedTaxCoefficient
+          ? Number(precalculatedTaxCoefficient)
+          : 0,
+        constructionMachineryCoefficient: constructionMachineryCoefficient
+          ? Number(constructionMachineryCoefficient)
+          : 0,
+        vatCoefficient: vatCoefficient ? Number(vatCoefficient) : 0,
+        designCoefficient: designCoefficient ? Number(designCoefficient) : 0,
+        designFee: designFee ? Number(designFee) : 0,
+        waterMeterSerial: waterMeterSerial || "",
+        overallWaterMeterId: overallWaterMeterId || "",
+      };
+
+      // Append data as JSON strings
+      formData.append("generalInformation", JSON.stringify(generalInformation));
+
+      // Append materials
       const safeNumber = (v: any) => (isNaN(Number(v)) ? 0 : Number(v));
       const materialPayload = materials.map((m) => ({
         materialCode: m.id,
@@ -294,43 +345,18 @@ export const TechnicalInfoCard = ({
         totalLaborPrice: String(m.laborTotal),
       }));
 
-      const payload = {
-        generalInformation: {
-          estimationId: estimateId,
-          customerName: customerName || "",
-          address: address || "",
-          note: note || "",
-          contractFee: contractFee ? Number(contractFee) : 0,
-          surveyFee: surveyFee ? Number(surveyFee) : 0,
-          surveyEffort: surveyEffort ? Number(surveyEffort) : 0,
-          installationFee: installationFee ? Number(installationFee) : 0,
-          laborCoefficient: laborCoefficient ? Number(laborCoefficient) : 0,
-          generalCostCoefficient: generalCostCoefficient
-            ? Number(generalCostCoefficient)
-            : 0,
-          precalculatedTaxCoefficient: precalculatedTaxCoefficient
-            ? Number(precalculatedTaxCoefficient)
-            : 0,
-          constructionMachineryCoefficient: constructionMachineryCoefficient
-            ? Number(constructionMachineryCoefficient)
-            : 0,
-          vatCoefficient: vatCoefficient ? Number(vatCoefficient) : 0,
-          designCoefficient: designCoefficient ? Number(designCoefficient) : 0,
-          designFee: designFee ? Number(designFee) : 0,
-          waterMeterSerial: waterMeterSerial || "",
-          overallWaterMeterId: overallWaterMeterId || "",
-          designImage: designImageBase64,
-        },
-        material: materialPayload,
-        isFinished: isFinished,
-      };
+      formData.append("material", JSON.stringify(materialPayload));
+      formData.append("isFinished", String(isFinished));
 
+      // Append image file directly if exists
+      if (designImageFile instanceof File) {
+        formData.append("designImage", designImageFile);
+      }
+
+      // Don't set Content-Type header - let browser set it with boundary
       const res = await authFetch(`/api/construction/estimates/${estimateId}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
+        body: formData, // Remove Content-Type header
       });
 
       const json = await res.json();
