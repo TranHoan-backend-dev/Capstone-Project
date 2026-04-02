@@ -17,7 +17,6 @@ import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
 import { LookupModal } from "@/components/ui/modal/LookupModal";
 import { authFetch } from "@/utils/authFetch";
 import { CallToast } from "@/components/ui/CallToast";
-import { TotalCostDisplay } from "./total-cost-display ";
 
 interface TechnicalInfoCardProps {
   estimateData: EstimateResponse | null;
@@ -588,7 +587,7 @@ export const TechnicalInfoCard = ({
         </div>
       </div>
 
-      <div className="lg:col-span-3 pt-8 border-t border-divider space-y-4">
+      <div className="lg:col-span-3 pt-4 border-t border-divider space-y-2">
         <h3
           className={`text-sm font-bold ${TitleDarkColor} uppercase tracking-wider`}
         >
@@ -650,7 +649,6 @@ export const TechnicalInfoCard = ({
             onSelect={handleSelectOverallMeter}
           />
         </div>
-        <TotalCostDisplay estimateData={estimateData} materials={materials} />
       </div>
     </GenericSearchFilter>
   );

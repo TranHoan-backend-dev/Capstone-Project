@@ -43,7 +43,7 @@ export const MaterialCostCard = ({
             code: item.materialCode,
             description: item.jobContent,
             unit: item.unit,
-            quantity: quantity,
+            quantity: quantity || 1,
             materialPrice: materialPrice,
             laborPrice: laborPrice,
             materialTotal: quantity * materialPrice,
