@@ -4,6 +4,7 @@ import com.capstone.auth.application.business.dto.ProfileDTO;
 import com.capstone.common.exception.NotExistingException;
 import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.infrastructure.persistence.ProfileRepository;
+import com.capstone.auth.infrastructure.service.keycloak.KeycloakService;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.utils.SharedConstant;
 import lombok.AccessLevel;
@@ -24,6 +25,7 @@ import java.util.Optional;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProfileServiceImpl implements ProfileService {
   ProfileRepository repo;
+  KeycloakService keycloakService;
   @NonFinal
   Logger log;
 
@@ -48,6 +50,7 @@ public class ProfileServiceImpl implements ProfileService {
   public ProfileDTO updateProfile(Profile profile) {
     log.info("Updating profile: {}", profile);
     Objects.requireNonNull(profile, "Profile is null");
+    keycloakService.updateUserNames(profile.getProfileId(), profile.getFullname());
     repo.save(profile);
     return convertToResponse(Optional.of(profile));
   }
@@ -73,7 +76,8 @@ public class ProfileServiceImpl implements ProfileService {
 
   @Override
   public String getFullName(String id) {
-    return repo.findFullNameByProfileId(id);
+    var userNames = keycloakService.getUserNames(id);
+    return (userNames.firstName() + " " + userNames.lastName()).trim();
   }
 
   private @NonNull ProfileDTO convertToResponse(@NonNull Optional<Profile> profile) {
@@ -81,9 +85,11 @@ public class ProfileServiceImpl implements ProfileService {
       throw new NotExistingException("Profile does not exist");
     }
     var p = profile.get();
+    var userNames = keycloakService.getUserNames(p.getProfileId());
+    var fullname = (userNames.firstName() + " " + userNames.lastName()).trim();
     return new ProfileDTO(
       profile.get().getProfileId(),
-      p.getFullname(),
+      fullname,
       p.getAvatarUrl(),
       p.getAddress(),
       p.getPhoneNumber(),

@@ -29,7 +29,7 @@ public class Profile {
   @JoinColumn(name = "user_id")
   Users users;
 
-  @Column(nullable = false)
+  @Transient
   String fullname;
   String avatarUrl;
   String address;

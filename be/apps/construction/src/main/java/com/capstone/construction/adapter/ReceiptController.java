@@ -63,8 +63,8 @@ public class ReceiptController {
   @Operation(summary = "Xóa biên lai", description = "Xóa biên lai thanh toán.")
   @ApiResponse(responseCode = "200", description = "Xoá thành công")
   public ResponseEntity<WrapperApiResponse> deleteReceipt(
-    @PathVariable String formCode,
-    @PathVariable String formNumber
+    @PathVariable Long formCode,
+    @PathVariable Long formNumber
   ) {
     log.info("REST request to delete receipt for form: {}/{}", formCode, formNumber);
     receiptUseCase.deleteReceipt(formCode, formNumber);
@@ -76,8 +76,8 @@ public class ReceiptController {
   @ApiResponse(responseCode = "200", description = "Lấy thông tin thành công")
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'FINANCE_DEPARTMENT', 'ORDER_RECEIVING_STAFF')")
   public ResponseEntity<WrapperApiResponse> getReceipt(
-    @PathVariable String formCode,
-    @PathVariable String formNumber
+    @PathVariable Long formCode,
+    @PathVariable Long formNumber
   ) {
     log.info("REST request to get receipt for form: {}/{}", formCode, formNumber);
     var response = receiptUseCase.getReceipt(formCode, formNumber);

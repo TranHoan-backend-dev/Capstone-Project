@@ -19,6 +19,5 @@ public record ReceiptResponse(
   String attach,
   ReceiptSignificance significance,
   LocalDateTime createdAt,
-  LocalDateTime updatedAt
-) {
+  LocalDateTime updatedAt) {
 }

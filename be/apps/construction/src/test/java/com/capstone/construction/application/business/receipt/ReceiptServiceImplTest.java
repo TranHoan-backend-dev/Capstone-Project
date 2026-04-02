@@ -46,7 +46,7 @@ class ReceiptServiceImplTest {
 
   @BeforeEach
   void setUp() {
-    formId = new InstallationFormId("LD", "2024001");
+    formId = new InstallationFormId(1L, 1001L);
     form = new InstallationForm();
     form.setCustomerName("Customer Name");
     form.setAddress("Customer Address");
@@ -54,7 +54,7 @@ class ReceiptServiceImplTest {
 
     // CreateRequest(formCode, formNumber, receiptNumber, paymentReason, totalMoneyInDigit, totalMoneyInCharacters, attach, paymentDate, isPaid, significanceOfReceiptCreator)
     createRequest = new CreateRequest(
-      "LD", "2024001", "BL001",
+      1L, 1001L, "BL001",
       "Payment Reason", "1000", "One Thousand", "http://attach",
       LocalDate.now(), true, "http://creator-sign"
     );
@@ -137,7 +137,7 @@ class ReceiptServiceImplTest {
   @DisplayName("Update receipt successfully")
   void should_UpdateReceipt_Fully() {
     // UpdateRequest(formCode, formNumber, receiptNumber, customerName, address, paymentDate, isPaid, significanceOfTreasurer)
-    var update = new UpdateRequest("LD", "2024001", "NEW-BL", "New Name", "New Addr", LocalDate.now(), false, "http://treasurer-sign");
+    var update = new UpdateRequest(1L, 1001L, "NEW-BL", "New Name", "New Addr", LocalDate.now(), false, "http://treasurer-sign");
     var receipt = new Receipt();
     ReflectionTestUtils.setField(receipt, "installationForm", form);
     ReflectionTestUtils.setField(receipt, "installationFormId", formId);
@@ -157,7 +157,7 @@ class ReceiptServiceImplTest {
   void should_Delete_When_Exists() {
     when(receiptRepo.existsById(formId)).thenReturn(true);
 
-    receiptService.deleteReceipt("LD", "2024001");
+    receiptService.deleteReceipt(1L, 1001L);
 
     verify(receiptRepo).deleteById(formId);
   }
@@ -171,7 +171,7 @@ class ReceiptServiceImplTest {
 
     when(receiptRepo.findById(formId)).thenReturn(Optional.of(receipt));
 
-    var response = receiptService.getReceipt("LD", "2024001");
+    var response = receiptService.getReceipt(1L, 1001L);
     assertThat(response.receiptNumber()).isEqualTo("BL123");
   }
 }

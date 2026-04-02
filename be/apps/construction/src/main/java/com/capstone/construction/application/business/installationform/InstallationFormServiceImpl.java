@@ -11,6 +11,7 @@ import com.capstone.construction.application.dto.request.installationform.Approv
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import com.capstone.construction.application.dto.response.installationform.NewInstallationFormResponse;
+import com.capstone.construction.application.dto.response.installationform.OrderIdResponse;
 import com.capstone.construction.application.dto.response.installationform.ReviewedInstallationFormsResponse;
 import com.capstone.construction.domain.model.InstallationForm;
 import com.capstone.construction.domain.model.WaterSupplyNetwork;
@@ -59,9 +60,11 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       throw new IllegalArgumentException(Message.PT_58);
     }
 
-    var entity = InstallationForm.create(builder -> builder
-      .formCode(request.formCode())
-      .formNumber(request.formNumber())
+    var entity = InstallationForm.builder()
+      .id(InstallationFormId.builder()
+        .formCode(request.formCode())
+        .formNumber(request.formNumber())
+        .build())
       .customerName(request.customerName())
       .address(request.address())
       .customerType(request.customerType())
@@ -80,7 +83,8 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       .householdRegistrationNumber(request.householdRegistrationNumber())
       .network(getNetwork(request.networkId()))
       .createdBy(userId)
-      .overallWaterMeterId(request.overallWaterMeterId()));
+      .overallWaterMeterId(request.overallWaterMeterId())
+      .build();
     if (request.representative() != null) {
       entity.setRepresentative(request.representative());
     }
@@ -92,9 +96,9 @@ public class InstallationFormServiceImpl implements InstallationFormService {
     log.info("Installation form created successfully: {}", saved.getFormNumber());
 
     return new NewInstallationFormResponse(
-      saved.getFormNumber(),
+      saved.getFormNumber().toString(),
       saved.getCustomerName(),
-      saved.getFormCode(),
+      saved.getFormCode().toString(),
       saved.getCreatedBy(),
       saved.getCreatedAt());
   }
@@ -160,7 +164,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   }
 
   @Override
-  public InstallationFormListResponse getByFormCodeAndFormNumber(String formCode, String formNumber) {
+  public InstallationFormListResponse getByFormCodeAndFormNumber(Long formCode, Long formNumber) {
     log.info("Fetching installation form with form number: {}", formNumber);
     var result = ifRepo.findById(new InstallationFormId(formCode, formNumber))
       .orElseThrow(() -> new IllegalArgumentException(Message.PT_36));
@@ -223,7 +227,18 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   }
 
   @Override
-  public boolean isInstallationFormExisting(String formNumber, String formCode) {
+  public OrderIdResponse getLastFormCode() {
+    log.info("Fetching installation form with last form code");
+    var result = ifRepo.findLastFormCode();
+    log.info("Last form code: {}, form number: {}", result.getFormCode(), result.getFormNumber());
+    return OrderIdResponse.builder()
+      .formCode(result.getFormCode())
+      .formNumber(result.getFormNumber())
+      .build();
+  }
+
+  @Override
+  public boolean isInstallationFormExisting(Long formNumber, Long formCode) {
     var status = ifRepo.existsById_FormNumberAndId_FormCode(formNumber, formCode);
     log.info("Installation form with form number: {} and form code {} is exist: {}", formNumber, formCode, status);
     return status;
@@ -231,7 +246,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
 
   @Override
   @Transactional(rollbackFor = Exception.class)
-  public void updateContractStatus(String formCode, String formNumber) {
+  public void updateContractStatus(Long formCode, Long formNumber) {
     log.info("Updating contract status for formCode: {} and formNumber: {}", formCode, formNumber);
     var installationForm = ifRepo.findById(new InstallationFormId(formCode, formNumber))
       .orElseThrow(() -> new IllegalArgumentException(Message.PT_36));
@@ -251,8 +266,8 @@ public class InstallationFormServiceImpl implements InstallationFormService {
 
     return new InstallationFormListResponse(
       null,
-      entity.getFormCode(),
-      entity.getFormNumber(),
+      entity.getFormCode().toString(),
+      entity.getFormNumber().toString(),
       entity.getCustomerName(),
       entity.getAddress(),
       entity.getPhoneNumber(),

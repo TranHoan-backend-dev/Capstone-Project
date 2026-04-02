@@ -1,23 +1,19 @@
 package com.capstone.construction.application.dto.request.receipt;
 
-import com.capstone.common.utils.SharedConstant;
 import com.capstone.common.utils.SharedMessage;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 
 import java.time.LocalDate;
 
 public record CreateRequest(
-  @NotBlank(message = SharedMessage.MES_21)
-  @NotEmpty(message = SharedMessage.MES_21)
-  String formCode,
+  @NotNull(message = SharedMessage.MES_21)
+  Long formCode,
 
-  @NotBlank(message = SharedMessage.MES_20)
-  @NotEmpty(message = SharedMessage.MES_20)
-  String formNumber,
+  @NotNull(message = SharedMessage.MES_20)
+  Long formNumber,
 
   @NotBlank(message = "Số biên lai không được để trống")
   @NotEmpty(message = "Số biên lai không được để trống")

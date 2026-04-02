@@ -139,23 +139,23 @@ class InstallationFormHandlingUseCaseTest {
   @DisplayName("Should throw exception when form already exists")
   void should_ThrowException_When_FormAlreadyExists() {
     var request = createValidNewOrderRequest();
-    when(ifSrv.isInstallationFormExisting("FORM-001", "CODE-001")).thenReturn(true);
+    when(ifSrv.isInstallationFormExisting(1L, 1001L)).thenReturn(true);
 
     assertThatThrownBy(() -> useCase.createNewInstallationRequest(USER_ID, request))
       .isInstanceOf(ExistingItemException.class)
       .hasMessage(Message.PT_53);
 
-    verify(ifSrv).isInstallationFormExisting("FORM-001", "CODE-001");
+    verify(ifSrv).isInstallationFormExisting(1L, 1001L);
   }
 
   @Test
   @DisplayName("Should create form and send event")
   void should_CreateFormAndSendEvent_When_FormIsNew() {
     var request = createValidNewOrderRequest();
-    when(ifSrv.isInstallationFormExisting("FORM-001", "CODE-001")).thenReturn(false);
+    when(ifSrv.isInstallationFormExisting(1L, 1001L)).thenReturn(false);
 
     var formResponse = new NewInstallationFormResponse(
-      "FORM-001", "Customer", "CODE-001", USER_ID, LocalDateTime.now());
+      "1", "Customer", "1001", USER_ID, LocalDateTime.now());
     when(ifSrv.createNewInstallationForm(USER_ID, request)).thenReturn(formResponse);
     when(empSrv.getEmployeeNameById(USER_ID))
       .thenReturn(new WrapperApiResponse(200, "OK", "Staff Name", OffsetDateTime.now()));
@@ -163,7 +163,7 @@ class InstallationFormHandlingUseCaseTest {
     var result = useCase.createNewInstallationRequest(USER_ID, request);
 
     assertThat(result).isNotNull();
-    assertThat(result.formNumber()).isEqualTo("FORM-001");
+    assertThat(result.formNumber()).isEqualTo("1");
     verify(messageProducer).send(eq("construction_queue.order.create"), any());
   }
 
@@ -177,13 +177,13 @@ class InstallationFormHandlingUseCaseTest {
   @Test
   @DisplayName("Should approve and create estimate")
   void should_ApproveAndCreateEstimate_When_StatusIsTrue() {
-    var request = new ApproveRequest("F-001", "C-001", true);
+    var request = new ApproveRequest(1L, 1001L, true);
     var order = mock(InstallationFormListResponse.class);
-    when(order.formCode()).thenReturn("C-001");
-    when(order.formNumber()).thenReturn("F-001");
+    when(order.formCode()).thenReturn("1001");
+    when(order.formNumber()).thenReturn("1");
     when(order.registrationAt()).thenReturn("2024-01-01T10:00:00");
 
-    when(ifSrv.getByFormCodeAndFormNumber("C-001", "F-001")).thenReturn(order);
+    when(ifSrv.getByFormCodeAndFormNumber(1001L, 1L)).thenReturn(order);
 
     useCase.reviewInstallationForm(USER_ID, request);
 
@@ -194,9 +194,9 @@ class InstallationFormHandlingUseCaseTest {
   @Test
   @DisplayName("Should approve but not create estimate when status is false")
   void should_ApproveAndNotCreateEstimate_When_StatusIsFalse() {
-    var request = new ApproveRequest("F-001", "C-001", false);
+    var request = new ApproveRequest(1L, 1001L, false);
     var order = mock(InstallationFormListResponse.class);
-    when(ifSrv.getByFormCodeAndFormNumber("C-001", "F-001")).thenReturn(order);
+    when(ifSrv.getByFormCodeAndFormNumber(1001L, 1L)).thenReturn(order);
 
     useCase.reviewInstallationForm(USER_ID, request);
 
@@ -206,7 +206,7 @@ class InstallationFormHandlingUseCaseTest {
 
   private @NonNull NewOrderRequest createValidNewOrderRequest() {
     return new NewOrderRequest(
-      "CODE-001", "FORM-001", "Customer", "Address", "123456789012", "2020-01-01", "Loc", "0901234567",
+      1001L, 1L, "Customer", "Address", "123456789012", "2020-01-01", "Loc", "0901234567",
       "TAX01", "BANK01", "LOC", com.capstone.common.enumerate.UsageTarget.INSTITUTIONAL, com.capstone.common.enumerate.CustomerType.FAMILY,
       "2024-01-01", "2024-01-05", 1, 1, new ArrayList<>(), "net1", "meter1");
   }

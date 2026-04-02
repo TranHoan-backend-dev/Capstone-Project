@@ -22,7 +22,7 @@ import java.util.*;
 @Repository
 public interface InstallationFormRepository extends JpaRepository<InstallationForm, InstallationFormId>,
   JpaSpecificationExecutor<InstallationForm> {
-  boolean existsById_FormNumberAndId_FormCode(String formNumber, String formCode);
+  boolean existsById_FormNumberAndId_FormCode(Long formNumber, Long formCode);
 
   @Query(value = "SELECT * FROM installation_form i WHERE i.status->>'contract' = :statusContract AND i.status->>'construction' = :statusConstruction", nativeQuery = true)
   Page<InstallationForm> findByStatusContractAndStatusConstruction(@Param("statusContract") String statusContract, @Param("statusConstruction") String statusConstruction, Pageable pageable);
@@ -123,4 +123,7 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
     WHERE i.status->>'registration' <> 'REJECTED'
     """, nativeQuery = true)
   Page<InstallationForm> findAllNotRejectedInstallationForms(Pageable pageable);
+
+  @Query("SELECT MAX(id) FROM InstallationForm")
+  InstallationFormId findLastFormCode();
 }

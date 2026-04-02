@@ -53,13 +53,13 @@ class SettlementControllerTest {
     ReflectionTestUtils.setField(settlementController, "log", log);
 
     settlementRequest = new SettlementRequest(
-      "CODE-001", "FORM-001", "Job Content", "Address", BigDecimal.TEN, "Note", LocalDate.now()
+      1001L, 1L, "Job Content", "Address", BigDecimal.TEN, "Note", LocalDate.now()
     );
 
     mockResponse = new SettlementResponse(
       "id-123", "Job Content", "Address", BigDecimal.TEN, "Note",
       LocalDateTime.now(), LocalDateTime.now(), LocalDate.now(),
-      "CODE-001", "FORM-001", new com.capstone.construction.domain.model.utils.significance.SettlementSignificance(),
+      "1001", "1", new com.capstone.construction.domain.model.utils.significance.SettlementSignificance(),
       new FormProcessingStatus(
         ProcessingStatus.APPROVED, ProcessingStatus.APPROVED, ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING
       )

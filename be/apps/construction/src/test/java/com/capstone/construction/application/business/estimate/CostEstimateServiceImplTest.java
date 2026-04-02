@@ -60,8 +60,8 @@ class CostEstimateServiceImplTest {
   private CostEstimate costEstimate;
   private InstallationForm installationForm;
   private final String estimateId = "estimate-123";
-  private final String formCode = "FOR-001";
-  private final String formNumber = "NUM-001";
+  private final Long formCode = 1001L;
+  private final Long formNumber = 1L;
 
   @BeforeEach
   void setUp() {

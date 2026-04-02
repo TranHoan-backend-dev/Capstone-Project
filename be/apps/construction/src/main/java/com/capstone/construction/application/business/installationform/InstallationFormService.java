@@ -5,6 +5,7 @@ import com.capstone.construction.application.dto.request.installationform.Approv
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.NewInstallationFormResponse;
+import com.capstone.construction.application.dto.response.installationform.OrderIdResponse;
 import com.capstone.construction.application.dto.response.installationform.ReviewedInstallationFormsResponse;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
 import org.springframework.data.domain.Page;
@@ -13,13 +14,13 @@ import org.springframework.data.domain.Pageable;
 public interface InstallationFormService {
   NewInstallationFormResponse createNewInstallationForm(String userId, NewOrderRequest request);
 
-  boolean isInstallationFormExisting(String formNumber, String formCode);
+  boolean isInstallationFormExisting(Long formNumber, Long formCode);
 
   Page<InstallationFormListResponse> getInstallationForms(Pageable pageable, BaseFilterRequest request);
 
   void reviewInstallationForm(String userId, ApproveRequest request);
 
-  InstallationFormListResponse getByFormCodeAndFormNumber(String formCode, String formNumber);
+  InstallationFormListResponse getByFormCodeAndFormNumber(Long formCode, Long formNumber);
 
   Boolean checkAnyFormsBelongedToNetwork(String id);
 
@@ -33,15 +34,18 @@ public interface InstallationFormService {
 
   /**
    * Update contract status to APPROVED for an installation form
-   * @param formCode form code of the installation form
+   *
+   * @param formCode   form code of the installation form
    * @param formNumber form number of the installation form
    */
-  void updateContractStatus(String formCode, String formNumber);
+  void updateContractStatus(Long formCode, Long formNumber);
 
   /**
    * @param id
    * @param installationFormId
-   * @param status neu true thi la giao cho nv khao sat, false => doi truong doi thi cong
+   * @param status             neu true thi la giao cho nv khao sat, false => doi truong doi thi cong
    */
   void assignInstallationForm(String id, InstallationFormId installationFormId, Boolean status);
+
+  OrderIdResponse getLastFormCode();
 }

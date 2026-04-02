@@ -11,7 +11,6 @@ import com.capstone.construction.application.dto.request.settlement.Significance
 import com.capstone.construction.application.dto.response.settlement.SettlementResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.domain.model.Settlement;
-import com.capstone.construction.domain.model.InstallationForm;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
 import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
 import com.capstone.construction.infrastructure.persistence.SettlementRepository;
@@ -28,9 +27,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @AppLog
 @Service
 @RequiredArgsConstructor
@@ -42,73 +38,73 @@ public class SettlementServiceImpl implements SettlementService {
   @NonFinal
   Logger log;
 
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public SettlementResponse createSettlement(@NonNull SettlementRequest request) {
-        log.info("Creating new settlement for address: {}", request.address());
-        var form = formRepository.findById(new InstallationFormId(request.formCode(), request.formNumber()))
-                .orElseThrow(() -> new NotExistingException(Message.PT_38));
+  @Override
+  @Transactional(rollbackFor = Exception.class)
+  public SettlementResponse createSettlement(@NonNull SettlementRequest request) {
+    log.info("Creating new settlement for address: {}", request.address());
+    var form = formRepository.findById(new InstallationFormId(request.formCode(), request.formNumber()))
+      .orElseThrow(() -> new NotExistingException(Message.PT_38));
 
-        var settlement = Settlement.create(builder -> builder
-                .jobContent(request.jobContent())
-                .address(request.address())
-                .connectionFee(request.connectionFee())
-                .note(request.note())
-                .installationForm(form)
-                .registrationAt(request.registrationAt()));
+    var settlement = Settlement.create(builder -> builder
+      .jobContent(request.jobContent())
+      .address(request.address())
+      .connectionFee(request.connectionFee())
+      .note(request.note())
+      .installationForm(form)
+      .registrationAt(request.registrationAt()));
 
-        var saved = settlementRepository.save(settlement);
-        return mapToResponse(saved);
-    }
+    var saved = settlementRepository.save(settlement);
+    return mapToResponse(saved);
+  }
 
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public SettlementResponse updateSettlement(String id, @NonNull SettlementRequest request) {
-        log.info("Updating settlement with id: {}", id);
-        var settlement = settlementRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Settlement not found with id: " + id));
-        settlement.setJobContent(request.jobContent());
-        settlement.setAddress(request.address());
-        settlement.setConnectionFee(request.connectionFee());
-        settlement.setNote(request.note());
-        settlement.setRegistrationAt(request.registrationAt());
+  @Override
+  @Transactional(rollbackFor = Exception.class)
+  public SettlementResponse updateSettlement(String id, @NonNull SettlementRequest request) {
+    log.info("Updating settlement with id: {}", id);
+    var settlement = settlementRepository.findById(id)
+      .orElseThrow(() -> new IllegalArgumentException("Settlement not found with id: " + id));
+    settlement.setJobContent(request.jobContent());
+    settlement.setAddress(request.address());
+    settlement.setConnectionFee(request.connectionFee());
+    settlement.setNote(request.note());
+    settlement.setRegistrationAt(request.registrationAt());
 
-        var saved = settlementRepository.save(settlement);
-        return mapToResponse(saved);
-    }
+    var saved = settlementRepository.save(settlement);
+    return mapToResponse(saved);
+  }
 
-    @Override
-    public SettlementResponse getSettlementById(String id) {
-        log.info("Fetching settlement with id: {}", id);
-        return settlementRepository.findByIdWithInstallationForm(id)
-                .map(this::mapToResponse)
-                .orElseThrow(() -> new IllegalArgumentException("Settlement not found with id: " + id));
-    }
+  @Override
+  public SettlementResponse getSettlementById(String id) {
+    log.info("Fetching settlement with id: {}", id);
+    return settlementRepository.findByIdWithInstallationForm(id)
+      .map(this::mapToResponse)
+      .orElseThrow(() -> new IllegalArgumentException("Settlement not found with id: " + id));
+  }
 
-    @Override
-    public PageResponse<SettlementResponse> getAllSettlements(Pageable pageable) {
-        log.info("Fetching all settlements with pageable: {}", pageable);
-        // Use specification with fetch join
-        Specification<Settlement> spec = (root, query, cb) -> {
-            root.join("installationForm", jakarta.persistence.criteria.JoinType.LEFT);
-            return cb.conjunction();
-        };
-        var page = settlementRepository.findAll(spec, pageable);
-        return PageResponse.fromPage(page, this::mapToResponse);
-    }
+  @Override
+  public PageResponse<SettlementResponse> getAllSettlements(Pageable pageable) {
+    log.info("Fetching all settlements with pageable: {}", pageable);
+    // Use specification with fetch join
+    Specification<Settlement> spec = (root, query, cb) -> {
+      root.join("installationForm", jakarta.persistence.criteria.JoinType.LEFT);
+      return cb.conjunction();
+    };
+    var page = settlementRepository.findAll(spec, pageable);
+    return PageResponse.fromPage(page, this::mapToResponse);
+  }
 
-    @Override
-    public PageResponse<SettlementResponse> filterSettlements(SettlementFilterRequest filterRequest, Pageable pageable) {
-        log.info("Filtering settlements with filterRequest: {}", filterRequest);
-        Specification<Settlement> spec = SettlementRepository.filter(filterRequest);
-        // Add fetch join to the existing spec
-        Specification<Settlement> specWithFetch = spec.and((root, query, cb) -> {
-            root.join("installationForm", jakarta.persistence.criteria.JoinType.LEFT);
-            return cb.conjunction();
-        });
-        var page = settlementRepository.findAll(specWithFetch, pageable);
-        return PageResponse.fromPage(page, this::mapToResponse);
-    }
+  @Override
+  public PageResponse<SettlementResponse> filterSettlements(SettlementFilterRequest filterRequest, Pageable pageable) {
+    log.info("Filtering settlements with filterRequest: {}", filterRequest);
+    Specification<Settlement> spec = SettlementRepository.filter(filterRequest);
+    // Add fetch join to the existing spec
+    Specification<Settlement> specWithFetch = spec.and((root, query, cb) -> {
+      root.join("installationForm", jakarta.persistence.criteria.JoinType.LEFT);
+      return cb.conjunction();
+    });
+    var page = settlementRepository.findAll(specWithFetch, pageable);
+    return PageResponse.fromPage(page, this::mapToResponse);
+  }
 
   @Override
   public boolean signSettlement(String userId, String id, SignificanceRequest request) {
@@ -142,10 +138,10 @@ public class SettlementServiceImpl implements SettlementService {
     return significance.isSettlementFullySigned();
   }
 
-    @Override
-    public boolean isExistingSettlement(String id) {
-        return settlementRepository.existsById(id);
-    }
+  @Override
+  public boolean isExistingSettlement(String id) {
+    return settlementRepository.existsById(id);
+  }
 
   private @NonNull SettlementResponse mapToResponse(@NonNull Settlement settlement) {
     var installationForm = settlement.getInstallationForm();
@@ -158,8 +154,8 @@ public class SettlementServiceImpl implements SettlementService {
       settlement.getCreatedAt(),
       settlement.getUpdatedAt(),
       settlement.getRegistrationAt(),
-      installationForm.getFormCode(),
-      installationForm.getFormNumber(),
+      installationForm.getFormCode().toString(),
+      installationForm.getFormNumber().toString(),
       settlement.getSignificance(),
       installationForm.getStatus()
     );

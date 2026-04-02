@@ -1,6 +1,6 @@
 package com.capstone.construction.adapter;
 
-import com.capstone.common.request.BaseFilterRequest;
+import com.capstone.construction.application.dto.request.estimate.EstimateFilterRequest;
 import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.construction.application.dto.request.estimate.AssignTheSignificanceRequest;
 import com.capstone.construction.application.dto.request.estimate.SignRequest;
@@ -54,23 +54,19 @@ class CostEstimateControllerTest {
 
     updateRequest = new UpdateRequest(
       new UpdateRequest.GeneralInformation(
-        "Customer", "Address", "Note", 1000, 100, 1, 1000, 1, 1, 1, 1, 1, 1, 100, null, "SN", "METER"
-      ),
+        "Customer", "Address", "Note", 1000, 100, 1, 1000, 1, 1, 1, 1, 1, 1, 100, null, "SN", "METER"),
       Collections.emptyList(),
-      false
-    );
+      false);
 
     mockResponse = new CostEstimateResponse(
       new CostEstimateResponse.GeneralInformation(
         "id", "Customer", "Address", "Note", 1000, 100, 1, 1000, 1, 1, 1, 1, 1, 1, 100, "url",
         LocalDateTime.now(), LocalDateTime.now(), LocalDate.now(), "user", "SN", "METER",
-        new InstallationFormId("CODE", "NUM"),
+        new InstallationFormId(1001L, 1L),
         new FormProcessingStatus(
-          ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING, ProcessingStatus.PROCESSING, ProcessingStatus.PROCESSING
-        )
-      ),
-      Collections.emptyList()
-    );
+          ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING, ProcessingStatus.PROCESSING,
+          ProcessingStatus.PROCESSING)),
+      Collections.emptyList());
   }
 
   @Test
@@ -110,7 +106,7 @@ class CostEstimateControllerTest {
   void should_ReturnOk_When_GetAllEstimates() {
     // Arrange
     var pageable = PageRequest.of(0, 10);
-    var filter = new BaseFilterRequest(null, null, null);
+    var filter = org.mockito.Mockito.mock(EstimateFilterRequest.class);
     var pageResponse = new PageResponse<>(List.of(mockResponse), 0, 10, 1, 1, true);
     when(estimateUseCase.getAllEstimates(pageable, filter)).thenReturn(pageResponse);
 
@@ -148,14 +144,17 @@ class CostEstimateControllerTest {
     // Arrange
     var request = new AssignTheSignificanceRequest("EST-001", "EMP001", "EMP002", "EMP003");
 
+    var jwt = org.mockito.Mockito.mock(Jwt.class);
+    when(jwt.getSubject()).thenReturn("user-id");
+
     // Act
-    var responseEntity = estimateController.requireSignificances(request);
+    var responseEntity = estimateController.requireSignificances(request, jwt);
 
     // Assert
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(responseEntity.getBody()).isNotNull();
     assertThat(responseEntity.getBody().message()).isEqualTo("Yêu cầu ký duyệt dự toán thành công");
-    verify(estimateUseCase).assignStaffForSignCostEstimate(request);
+    verify(estimateUseCase).assignStaffForSignCostEstimate(request, "user-id");
   }
 
   @Test

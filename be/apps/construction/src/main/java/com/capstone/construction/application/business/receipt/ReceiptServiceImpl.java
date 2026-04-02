@@ -51,7 +51,8 @@ public class ReceiptServiceImpl implements ReceiptService {
     var costEstimate = ceRepo.findByInstallationForm(form)
       .orElseThrow(() -> new IllegalArgumentException("Chưa tạo dự toán cho đơn lắp đặt này."));
 
-    // Kiểm tra xem dự toán đã được duyệt hoàn toàn bởi nhân viên khảo sát, trưởng phòng KH-KT và lãnh đạo hay chưa
+    // Kiểm tra xem dự toán đã được duyệt hoàn toàn bởi nhân viên khảo sát, trưởng
+    // phòng KH-KT và lãnh đạo hay chưa
     if (costEstimate.getSignificance() == null || !costEstimate.getSignificance().isCostEstimateFullySigned()) {
       throw new IllegalArgumentException("Dự toán chưa được ký duyệt đầy đủ bởi các bộ phận liên quan.");
     }
@@ -84,7 +85,8 @@ public class ReceiptServiceImpl implements ReceiptService {
     log.info("Updating receipt for form: {}/{}", request.formCode(), request.formNumber());
     var formId = new InstallationFormId(request.formCode(), request.formNumber());
     var receipt = receiptRepo.findById(formId)
-      .orElseThrow(() -> new IllegalArgumentException("Khong tim thay phieu thu voi so don: " + request.formNumber()));
+      .orElseThrow(
+        () -> new IllegalArgumentException("Khong tim thay phieu thu voi so don: " + request.formNumber()));
 
     if (request.receiptNumber() != null) {
       receipt.setReceiptNumber(request.receiptNumber());
@@ -112,7 +114,7 @@ public class ReceiptServiceImpl implements ReceiptService {
 
   @Override
   @Transactional
-  public void deleteReceipt(String formCode, String formNumber) {
+  public void deleteReceipt(Long formCode, Long formNumber) {
     log.info("Deleting receipt for form: {}/{}", formCode, formNumber);
     var formId = new InstallationFormId(formCode, formNumber);
     if (!receiptRepo.existsById(formId)) {
@@ -133,29 +135,27 @@ public class ReceiptServiceImpl implements ReceiptService {
       filter.isPaid(),
       filter.formCode(),
       filter.formNumber(),
-      filter.receiptNumber()
-    );
+      filter.receiptNumber());
 
     return receiptRepo.findAll(spec, pageable)
       .map(this::mapToListResponse);
   }
 
-  private ReceiptListResponse mapToListResponse(Receipt receipt) {
+  private @NonNull ReceiptListResponse mapToListResponse(@NonNull Receipt receipt) {
     return new ReceiptListResponse(
-      receipt.getInstallationFormId().getFormCode(),
-      receipt.getInstallationFormId().getFormNumber(),
+      receipt.getInstallationFormId().getFormCode().toString(),
+      receipt.getInstallationFormId().getFormNumber().toString(),
       receipt.getReceiptNumber(),
       receipt.getCustomerName(),
       receipt.getAddress(),
       receipt.getPaymentDate(),
       receipt.getIsPaid(),
       receipt.getCreatedAt(),
-      receipt.getUpdatedAt()
-    );
+      receipt.getUpdatedAt());
   }
 
   @Override
-  public ReceiptResponse getReceipt(String formCode, String formNumber) {
+  public ReceiptResponse getReceipt(Long formCode, Long formNumber) {
     log.info("Fetching receipt for form: {}/{}", formCode, formNumber);
     return receiptRepo.findById(new InstallationFormId(formCode, formNumber))
       .map(this::mapToResponse)
@@ -164,8 +164,8 @@ public class ReceiptServiceImpl implements ReceiptService {
 
   private @NonNull ReceiptResponse mapToResponse(@NonNull Receipt receipt) {
     return new ReceiptResponse(
-      receipt.getInstallationFormId().getFormCode(),
-      receipt.getInstallationFormId().getFormNumber(),
+      receipt.getInstallationFormId().getFormCode().toString(),
+      receipt.getInstallationFormId().getFormNumber().toString(),
       receipt.getReceiptNumber(),
       receipt.getCustomerName(),
       receipt.getAddress(),
@@ -177,7 +177,6 @@ public class ReceiptServiceImpl implements ReceiptService {
       receipt.getAttach(),
       receipt.getSignificance(),
       receipt.getCreatedAt(),
-      receipt.getUpdatedAt()
-    );
+      receipt.getUpdatedAt());
   }
 }

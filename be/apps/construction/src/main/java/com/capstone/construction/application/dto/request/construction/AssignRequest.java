@@ -1,8 +1,8 @@
 package com.capstone.construction.application.dto.request.construction;
 
 public record AssignRequest(
-  String formCode,
-  String formNumber,
+  Long formCode,
+  Long formNumber,
   String contractId
 ) {
 }

@@ -1,5 +1,6 @@
 package com.capstone.auth.infrastructure.service.keycloak;
 
+import com.capstone.auth.application.dto.response.UserNamesResponse;
 import com.capstone.auth.infrastructure.utils.Message;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -62,6 +63,43 @@ public class KeycloakService {
       keycloak.tokenManager().getAccessToken();
     } catch (Exception e) {
       throw new IllegalArgumentException(Message.SE_14);
+    }
+  }
+
+  public UserNamesResponse getUserNames(String userId) {
+    try {
+      var user = keycloak.realm(realm).users().get(userId).toRepresentation();
+      return new UserNamesResponse(user.getFirstName(), user.getLastName());
+    } catch (Exception e) {
+      throw new IllegalArgumentException(String.format("User with id %s not found in Keycloak: %s", userId, e.getMessage()));
+    }
+  }
+
+  public void updateUserNames(String userId, String fullname) {
+    try {
+      var userResource = keycloak.realm(realm).users().get(userId);
+      var user = userResource.toRepresentation();
+
+      if (fullname == null || fullname.isBlank()) {
+        return;
+      }
+
+      String firstName;
+      String lastName;
+      int lastSpaceIndex = fullname.lastIndexOf(' ');
+      if (lastSpaceIndex == -1) {
+        firstName = fullname;
+        lastName = "";
+      } else {
+        firstName = fullname.substring(0, lastSpaceIndex);
+        lastName = fullname.substring(lastSpaceIndex + 1);
+      }
+
+      user.setFirstName(firstName);
+      user.setLastName(lastName);
+      userResource.update(user);
+    } catch (Exception e) {
+      throw new IllegalArgumentException(String.format("Failed to update user names in Keycloak: %s", e.getMessage()));
     }
   }
 }

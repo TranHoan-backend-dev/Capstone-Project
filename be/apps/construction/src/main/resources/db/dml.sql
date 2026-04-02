@@ -16,90 +16,90 @@ citizen_identification_provide_location, created_at, created_by, customer_name,
 form_number, household_registration_number, number_of_household, overall_water_meter_id,
 phone_number, received_form_at, updated_at, usage_target, customer_type, handover_by,
 representative, schedule_survey_at, tax_code, water_supply_network_id)
-VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', '123 Le Loi, District 1, HCMC', '190312345678', 'Techcombank HCMC',
+VALUES (80000001001, '123 Le Loi, District 1, HCMC', '190312345678', 'Techcombank HCMC',
 '079090000001', '2020-01-01', 'CA TPHCM', '2024-01-01 10:00:00', 'c8357517-3149-41b4-9b2c-881d5a40840a',
-'Nguyen Van A', 'FORM-2024-0001', 123456, 4, 'METER-001', '0901234567', '2024-01-01 09:00:00',
+'Nguyen Van A', 20240001, 123456, 4, 'METER-001', '0901234567', '2024-01-01 09:00:00',
 '2024-01-01 10:00:00', 'DOMESTIC', 'COMPANY', NULL, NULL, NULL, '{
 "contract": "PROCESSING",
 "estimate": "PROCESSING",
 "construction": "PROCESSING",
 "registration": "PROCESSING"
 }', NULL, NULL),
-('b1eebc99-9c0b-4ef8-bb6d-6bb9bd380a12', '456 Nguyen Hue, District 1, HCMC', '190312345679', 'Vietcombank HCMC',
+(80000001002, '456 Nguyen Hue, District 1, HCMC', '190312345679', 'Vietcombank HCMC',
 '079090000002', '2020-01-02', 'CA TPHCM', '2024-01-02 10:00:00', 'c8357517-3149-41b4-9b2c-881d5a40840a',
-'Tran Thi B', 'FORM-2024-0002', 223456, 3, 'METER-002', '0901234568', '2024-01-02 09:00:00',
+'Tran Thi B', 20240002, 223456, 3, 'METER-002', '0901234568', '2024-01-02 09:00:00',
 '2024-01-02 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
 "contract": "PROCESSING",
 "estimate": "PROCESSING",
 "construction": "PROCESSING",
 "registration": "PROCESSING"
 }', NULL, NULL),
-('c2eebc99-9c0b-4ef8-bb6d-6bb9bd380a13', '789 Hai Ba Trung, District 3, HCMC', '190312345680', 'ACB HCMC',
+(80000001003, '789 Hai Ba Trung, District 3, HCMC', '190312345680', 'ACB HCMC',
 '079090000003', '2020-01-03', 'CA TPHCM', '2024-01-03 10:00:00', 'c8357517-3149-41b4-9b2c-881d5a40840a',
-'Le Van C', 'FORM-2024-0003', 323456, 5, 'METER-003', '0901234569', '2024-01-03 09:00:00',
+'Le Van C', 20240003, 323456, 5, 'METER-003', '0901234569', '2024-01-03 09:00:00',
 '2024-01-03 10:00:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
 "contract": "PROCESSING",
 "estimate": "PROCESSING",
 "construction": "PROCESSING",
 "registration": "PROCESSING"
 }', NULL, NULL),
-('d3eebc99-9c0b-4ef8-bb6d-6bb9bd380a14', '101 Dien Bien Phu, Binh Thanh, HCMC', '190312345681', 'BIDV HCMC',
+(80000001004, '101 Dien Bien Phu, Binh Thanh, HCMC', '190312345681', 'BIDV HCMC',
 '079090000004', '2020-01-04', 'CA TPHCM', '2024-01-04 10:00:00', 'c8357517-3149-41b4-9b2c-881d5a40840a',
-'Pham Thi D', 'FORM-2024-0004', 423456, 2, 'METER-004', '0901234570', '2024-01-04 09:00:00',
+'Pham Thi D', 20240004, 423456, 2, 'METER-004', '0901234570', '2024-01-04 09:00:00',
 '2024-01-04 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
 "contract": "PROCESSING",
 "estimate": "PROCESSING",
 "construction": "PROCESSING",
 "registration": "PROCESSING"
 }', NULL, NULL),
-('e4eebc99-9c0b-4ef8-bb6d-6bb9bd380a15', '202 Nguyen Thi Minh Khai, District 1, HCMC', '190312345682', 'VPBank HCMC',
+(80000001005, '202 Nguyen Thi Minh Khai, District 1, HCMC', '190312345682', 'VPBank HCMC',
 '079090000005', '2020-01-05', 'CA TPHCM', '2024-01-05 10:00:00', 'c8357517-3149-41b4-9b2c-881d5a40840a',
-'Hoang Thi E', 'FORM-2024-0005', 523456, 3, 'METER-005', '0901234571', '2024-01-05 09:00:00',
+'Hoang Thi E', 20240005, 523456, 3, 'METER-005', '0901234571', '2024-01-05 09:00:00',
 '2024-01-05 10:00:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
 "contract": "PROCESSING",
 "estimate": "PROCESSING",
 "construction": "PROCESSING",
 "registration": "PROCESSING"
 }', NULL, NULL),
-('f5eebc99-9c0b-4ef8-bb6d-6bb9bd380a16', '303 Cach Mang Thang Tam, District 10, HCMC', '190312345683', 'MBBank HCMC',
+(80000001006, '303 Cach Mang Thang Tam, District 10, HCMC', '190312345683', 'MBBank HCMC',
 '079090000006', '2020-01-06', 'CA TPHCM', '2024-01-06 10:00:00', 'c8357517-3149-41b4-9b2c-881d5a40840a',
-'Nguyen Van F', 'FORM-2024-0006', 623456, 4, 'METER-006', '0901234572', '2024-01-06 09:00:00',
+'Nguyen Van F', 20240006, 623456, 4, 'METER-006', '0901234572', '2024-01-06 09:00:00',
 '2024-01-06 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
 "contract": "PROCESSING",
 "estimate": "PROCESSING",
 "construction": "PROCESSING",
 "registration": "PROCESSING"
 }', NULL, NULL),
-('g6eebc99-9c0b-4ef8-bb6d-6bb9bd380a17', '404 Le Van Sy, Phu Nhuan, HCMC', '190312345684', 'Sacombank HCMC',
+(80000001007, '404 Le Van Sy, Phu Nhuan, HCMC', '190312345684', 'Sacombank HCMC',
 '079090000007', '2020-01-07', 'CA TPHCM', '2024-01-07 10:00:00', 'c8357517-3149-41b4-9b2c-881d5a40840a',
-'Tran Thi G', 'FORM-2024-0007', 723456, 2, 'METER-007', '0901234573', '2024-01-07 09:00:00',
+'Tran Thi G', 20240007, 723456, 2, 'METER-007', '0901234573', '2024-01-07 09:00:00',
 '2024-01-07 10:00:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
 "contract": "PROCESSING",
 "estimate": "PROCESSING",
 "construction": "PROCESSING",
 "registration": "PROCESSING"
 }', NULL, NULL),
-('h7eebc99-9c0b-4ef8-bb6d-6bb9bd380a18', '505 Nguyen Van Luong, Binh Thanh, HCMC', '190312345685', 'Techcombank HCMC',
+(80000001008, '505 Nguyen Van Luong, Binh Thanh, HCMC', '190312345685', 'Techcombank HCMC',
 '079090000008', '2020-01-08', 'CA TPHCM', '2024-01-08 10:00:00', 'c8357517-3149-41b4-9b2c-881d5a40840a',
-'Le Van H', 'FORM-2024-0008', 823456, 5, 'METER-008', '0901234574', '2024-01-08 09:00:00',
+'Le Van H', 20240008, 823456, 5, 'METER-008', '0901234574', '2024-01-08 09:00:00',
 '2024-01-08 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
 "contract": "PROCESSING",
 "estimate": "PROCESSING",
 "construction": "PROCESSING",
 "registration": "PROCESSING"
 }', NULL, NULL),
-('i8eebc99-9c0b-4ef8-bb6d-6bb9bd380a19', '606 Hoang Van Thu, Tan Binh, HCMC', '190312345686', 'Vietinbank HCMC',
+(80000001009, '606 Hoang Van Thu, Tan Binh, HCMC', '190312345686', 'Vietinbank HCMC',
 '079090000009', '2020-01-09', 'CA TPHCM', '2024-01-09 10:00:00', 'c8357517-3149-41b4-9b2c-881d5a40840a',
-'Pham Thi I', 'FORM-2024-0009', 923456, 3, 'METER-009', '0901234575', '2024-01-09 09:00:00',
+'Pham Thi I', 20240009, 923456, 3, 'METER-009', '0901234575', '2024-01-09 09:00:00',
 '2024-01-09 10:00:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
 "contract": "PROCESSING",
 "estimate": "PROCESSING",
 "construction": "PROCESSING",
 "registration": "PROCESSING"
 }', NULL, NULL),
-('j9eebc99-9c0b-4ef8-bb6d-6bb9bd380a20', '707 Nguyen Thi Minh Khai, District 3, HCMC', '190312345687', 'BIDV HCMC',
+(80000001010, '707 Nguyen Thi Minh Khai, District 3, HCMC', '190312345687', 'BIDV HCMC',
 '079090000010', '2020-01-10', 'CA TPHCM', '2024-01-10 10:00:00', 'c8357517-3149-41b4-9b2c-881d5a40840a',
-'Nguyen Van J', 'FORM-2024-0010', 1023456, 4, 'METER-010', '0901234576', '2024-01-10 09:00:00',
+'Nguyen Van J', 20240010, 1023456, 4, 'METER-010', '0901234576', '2024-01-10 09:00:00',
 '2024-01-10 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
 "contract": "PROCESSING",
 "estimate": "PROCESSING",
@@ -353,35 +353,35 @@ VALUES ('6f708192-5000-4aaa-9bbb-ffffffff0001', 'Address 1', 1500000, now(), 'Jo
 INSERT INTO construction_request (id, contract_id, created_at, is_approved, updated_at,
                                   installation_form_form_code, installation_form_form_number)
 VALUES ('7a8192a3-7000-4aaa-9bbb-cccccccc0001', 'CONTRACT-1', now(), true, now(),
-        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'FORM-2024-0001'),
+        80000001001, 20240001),
        ('7a8192a3-7000-4aaa-9bbb-cccccccc0002', 'CONTRACT-2', now(), true, now(),
-        'b1eebc99-9c0b-4ef8-bb6d-6bb9bd380a12', 'FORM-2024-0002'),
+        80000001002, 20240002),
        ('7a8192a3-7000-4aaa-9bbb-cccccccc0003', 'CONTRACT-3', now(), false, now(),
-        'c2eebc99-9c0b-4ef8-bb6d-6bb9bd380a13', 'FORM-2024-0003'),
+        80000001003, 20240003),
        ('7a8192a3-7000-4aaa-9bbb-cccccccc0004', 'CONTRACT-4', now(), true, now(),
-        'd3eebc99-9c0b-4ef8-bb6d-6bb9bd380a14', 'FORM-2024-0004'),
+        80000001004, 20240004),
        ('7a8192a3-7000-4aaa-9bbb-cccccccc0005', 'CONTRACT-5', now(), true, now(),
-        'e4eebc99-9c0b-4ef8-bb6d-6bb9bd380a15', 'FORM-2024-0005'),
+        80000001005, 20240005),
        ('7a8192a3-7000-4aaa-9bbb-cccccccc0006', 'CONTRACT-6', now(), true, now(),
-        'f5eebc99-9c0b-4ef8-bb6d-6bb9bd380a16', 'FORM-2024-0006'),
+        80000001006, 20240006),
        ('7a8192a3-7000-4aaa-9bbb-cccccccc0007', 'CONTRACT-7', now(), false, now(),
-        '06eebc99-9c0b-4ef8-bb6d-6bb9bd380a17', 'FORM-2024-0007'),
+        80000001007, 20240007),
        ('7a8192a3-7000-4aaa-9bbb-cccccccc0008', 'CONTRACT-8', now(), true, now(),
-        '17eebc99-9c0b-4ef8-bb6d-6bb9bd380a18', 'FORM-2024-0008'),
+        80000001008, 20240008),
        ('7a8192a3-7000-4aaa-9bbb-cccccccc0009', 'CONTRACT-9', now(), true, now(),
-        '28eebc99-9c0b-4ef8-bb6d-6bb9bd380a19', 'FORM-2024-0009'),
+        80000001009, 20240009),
        ('7a8192a3-7000-4aaa-9bbb-cccccccc0010', 'CONTRACT-10', now(), true, now(),
-        '39eebc99-9c0b-4ef8-bb6d-6bb9bd380a1a', 'FORM-2024-0010'),
+        80000001010, 20240010),
        ('7a8192a3-7000-4aaa-9bbb-cccccccc0011', 'CONTRACT-11', now(), true, now(),
-        '4aeebc99-9c0b-4ef8-bb6d-6bb9bd380a1b', 'FORM-2024-0011'),
+        80000001011, 20240011),
        ('7a8192a3-7000-4aaa-9bbb-cccccccc0012', 'CONTRACT-12', now(), false, now(),
-        '5beebc99-9c0b-4ef8-bb6d-6bb9bd380a1c', 'FORM-2024-0012'),
+        80000001012, 20240012),
        ('7a8192a3-7000-4aaa-9bbb-cccccccc0013', 'CONTRACT-13', now(), true, now(),
-        '6ceebc99-9c0b-4ef8-bb6d-6bb9bd380a1d', 'FORM-2024-0013'),
+        80000001013, 20240013),
        ('7a8192a3-7000-4aaa-9bbb-cccccccc0014', 'CONTRACT-14', now(), true, now(),
-        '7deebc99-9c0b-4ef8-bb6d-6bb9bd380a1e', 'FORM-2024-0014'),
+        80000001014, 20240014),
        ('7a8192a3-7000-4aaa-9bbb-cccccccc0015', 'CONTRACT-15', now(), true, now(),
-        '8eeebc99-9c0b-4ef8-bb6d-6bb9bd380a1f', 'FORM-2024-0015');
+        80000001015, 20240015);
 
 INSERT INTO cost_estimate (estimation_id, address, construction_machinery_coefficient,
                            contract_fee, create_by, created_at, customer_name,
@@ -393,35 +393,35 @@ INSERT INTO cost_estimate (estimation_id, address, construction_machinery_coeffi
                            installation_form_form_code, installation_form_form_number, significance)
 VALUES ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', 'Address 1', 1, 1000000, 'admin', now(), 'Customer 1', 1, 200000,
         'img1', 1, 300000, 1, 'Note 1', 'WM1', 1, current_date, 1, 150000, now(), 1, 'SER1',
-        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'FORM-2024-0001', '{
+        80000001001, 20240001, '{
     "surveyStaff": "hehe",
     "companyLeaderShip": "kaka",
     "planningTechnicalHead": "huhu"
   }'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg0002', 'Address 2', 1, 1000000, 'admin', now(), 'Customer 2', 1, 200000,
         'img2', 1, 300000, 1, 'Note 2', 'WM2', 1, current_date, 1, 150000, now(), 1, 'SER2',
-        'b1eebc99-9c0b-4ef8-bb6d-6bb9bd380a12', 'FORM-2024-0002', '{
+        80000001002, 20240002, '{
          "surveyStaff": "hehe",
          "companyLeaderShip": "kaka",
          "planningTechnicalHead": "huhu"
        }'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg0003', 'Address 3', 1, 1000000, 'admin', now(), 'Customer 3', 1, 200000,
         'img3', 1, 300000, 1, 'Note 3', 'WM3', 1, current_date, 1, 150000, now(), 1, 'SER3',
-        'c2eebc99-9c0b-4ef8-bb6d-6bb9bd380a13', 'FORM-2024-0003', '{
+        80000001003, 20240003, '{
          "surveyStaff": "hehe",
          "companyLeaderShip": "kaka",
          "planningTechnicalHead": "huhu"
        }'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg0004', 'Address 4', 1, 1000000, 'admin', now(), 'Customer 4', 1, 200000,
         'img4', 1, 300000, 1, 'Note 4', 'WM4', 1, current_date, 1, 150000, now(),
-        1, 'SER4', 'd3eebc99-9c0b-4ef8-bb6d-6bb9bd380a14', 'FORM-2024-0004', '{
+        1, 'SER4', 80000001004, 20240004, '{
          "surveyStaff": "hehe",
          "companyLeaderShip": "kaka",
          "planningTechnicalHead": "huhu"
        }'),
        ('7a8192a3-6000-4bbb-9ccc-gggg4ggg0005', 'Address 5', 1, 1000000, 'admin', now(), 'Customer 5', 1, 200000,
         'img5', 1, 300000, 1, 'Note 5', 'WM5', 1, current_date, 1, 150000, now(), 1, 'SER5',
-        'e4eebc99-9c0b-4ef8-bb6d-6bb9bd380a15', 'FORM-2024-0005', '{
+        80000001005, 20240005, '{
          "surveyStaff": "hehe",
          "companyLeaderShip": "kaka",
          "planningTechnicalHead": "huhu"

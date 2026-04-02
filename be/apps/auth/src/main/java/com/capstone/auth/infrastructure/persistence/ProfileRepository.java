@@ -28,6 +28,4 @@ public interface ProfileRepository extends JpaRepository<Profile, String> {
   @Query("SELECT avatarUrl FROM Profile WHERE profileId=:id")
   String findAvatarUrlByProfileId(@Param("id") String profileId);
 
-  @Query("SELECT fullname FROM Profile WHERE profileId=:id")
-  String findFullNameByProfileId(@Param("id") String profileId);
 }

@@ -1,5 +1,5 @@
 CREATE
-EXTENSION IF NOT EXISTS unaccent;
+  EXTENSION IF NOT EXISTS unaccent;
 
 create table public.individual_notification
 (
@@ -26,11 +26,12 @@ create table public.user_roles
 (
   role_id varchar(255) not null
     primary key,
-  name    varchar(255) not null constraint uk182xa1gitcxqhaq6nn3n2kmo3
-            unique
-        constraint user_roles_name_check
-            check ((name)::text = ANY
-                   ((ARRAY ['IT_STAFF'::character varying, 'PLANNING_TECHNICAL_DEPARTMENT_HEAD'::character varying, 'SURVEY_STAFF'::character varying, 'ORDER_RECEIVING_STAFF'::character varying, 'FINANCE_DEPARTMENT'::character varying, 'CONSTRUCTION_DEPARTMENT_HEAD'::character varying, 'CONSTRUCTION_DEPARTMENT_STAFF'::character varying, 'BUSINESS_DEPARTMENT_HEAD'::character varying, 'METER_INSPECTION_STAFF'::character varying, 'COMPANY_LEADERSHIP'::character varying])::text[]))
+  name    varchar(255) not null
+    constraint uk182xa1gitcxqhaq6nn3n2kmo3
+      unique
+    constraint user_roles_name_check
+      check ((name)::text = ANY
+             ((ARRAY ['IT_STAFF'::character varying, 'PLANNING_TECHNICAL_DEPARTMENT_HEAD'::character varying, 'SURVEY_STAFF'::character varying, 'ORDER_RECEIVING_STAFF'::character varying, 'FINANCE_DEPARTMENT'::character varying, 'CONSTRUCTION_DEPARTMENT_HEAD'::character varying, 'CONSTRUCTION_DEPARTMENT_STAFF'::character varying, 'BUSINESS_DEPARTMENT_HEAD'::character varying, 'METER_INSPECTION_STAFF'::character varying, 'COMPANY_LEADERSHIP'::character varying])::text[]))
 );
 
 alter table public.user_roles
@@ -43,18 +44,21 @@ create table public.users
   created_at              timestamp(6) not null,
   department_id           varchar(255) not null,
   electronic_signing_url  varchar(255),
-  email                   varchar(255) not null constraint uk6dotkott2kjsp8vw4d0m25fb7
-            unique,
+  email                   varchar(255) not null
+    constraint uk6dotkott2kjsp8vw4d0m25fb7
+      unique,
   is_enabled              boolean      not null,
   is_locked               boolean      not null,
   locked_at               timestamp(6),
   locked_reason           varchar(255),
   updated_at              timestamp(6) not null,
-  username                varchar(255) not null constraint ukr43af9ap4edm43mmtq01oddj6
-            unique,
+  username                varchar(255) not null
+    constraint ukr43af9ap4edm43mmtq01oddj6
+      unique,
   water_supply_network_id varchar(255) not null,
-  role_id                 varchar(255) constraint fkh555fyoyldpyaltlb7jva35j2
-            references public.user_roles
+  role_id                 varchar(255)
+    constraint fkh555fyoyldpyaltlb7jva35j2
+      references public.user_roles
 );
 
 alter table public.users
@@ -63,8 +67,9 @@ alter table public.users
 create table public.business_pages_of_employees
 (
   page_id       varchar(255) not null,
-  users_user_id varchar(255) not null constraint fkg7u0fnqxlkw834xr6tq1fcgdr
-            references public.users,
+  users_user_id varchar(255) not null
+    constraint fkg7u0fnqxlkw834xr6tq1fcgdr
+      references public.users,
   primary key (users_user_id, page_id)
 );
 
@@ -74,8 +79,9 @@ alter table public.business_pages_of_employees
 create table public.employee_job
 (
   job_id        varchar(255) not null,
-  users_user_id varchar(255) not null constraint fki8amwm622upo9s9bxg8l0ofjd
-            references public.users,
+  users_user_id varchar(255) not null
+    constraint fki8amwm622upo9s9bxg8l0ofjd
+      references public.users,
   primary key (users_user_id, job_id)
 );
 
@@ -85,15 +91,17 @@ alter table public.employee_job
 create table public.profile
 (
   user_id      varchar(255) not null
-    primary key constraint fks14jvsf9tqrcnly0afsv0ngwv
-            references public.users,
+    primary key
+    constraint fks14jvsf9tqrcnly0afsv0ngwv
+      references public.users,
   address      varchar(255),
   avatar_url   varchar(255),
   birthday     date,
   fullname     varchar(255) not null,
   gender       boolean,
-  phone_number varchar(255) not null constraint ukrc7r62u5tals0tl5rkeyyo5sb
-            unique
+  phone_number varchar(255) not null
+    constraint ukrc7r62u5tals0tl5rkeyyo5sb
+      unique
 );
 
 alter table public.profile

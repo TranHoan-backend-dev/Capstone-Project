@@ -72,7 +72,9 @@ public class ConstructionRequestUseCase {
   public void approveTheConstruction(String id, Boolean approved) {
     constructionRequestService.approveTheConstruction(id, approved);
     var constructionRequest = constructionRequestService.getById(id);
-    var installationForm = ifSrv.getByFormCodeAndFormNumber(constructionRequest.installationForm().formCode(), constructionRequest.installationForm().formNumber());
+    var formCode = constructionRequest.installationForm().formCode();
+    var formNumber = constructionRequest.installationForm().formNumber();
+    var installationForm = ifSrv.getByFormCodeAndFormNumber(Long.parseLong(formCode), Long.parseLong(formNumber));
     var constructedBy = installationForm.constructedBy();
 
     if (approved) {

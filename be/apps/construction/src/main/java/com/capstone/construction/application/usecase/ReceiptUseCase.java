@@ -62,11 +62,11 @@ public class ReceiptUseCase {
   }
 
   @Transactional(rollbackFor = Exception.class)
-  public void deleteReceipt(String formCode, String formNumber) {
+  public void deleteReceipt(Long formCode, Long formNumber) {
     receiptService.deleteReceipt(formCode, formNumber);
   }
 
-  public ReceiptResponse getReceipt(String formCode, String formNumber) {
+  public ReceiptResponse getReceipt(Long formCode, Long formNumber) {
     return receiptService.getReceipt(formCode, formNumber);
   }
 

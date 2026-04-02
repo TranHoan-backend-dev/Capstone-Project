@@ -63,10 +63,10 @@ class SettlementServiceImplTest {
   @Test
   @DisplayName("Create settlement successfully")
   void createSettlement_ShouldSaveAndReturnResponse() {
-    var request = new SettlementRequest("CODE-001", "FORM-001", "Job", "Addr", BigDecimal.TEN, "Note", LocalDate.now());
+    var request = new SettlementRequest(1001L, 1L, "Job", "Addr", BigDecimal.TEN, "Note", LocalDate.now());
     var form = mock(InstallationForm.class);
-    when(form.getFormCode()).thenReturn("CODE-001");
-    when(form.getFormNumber()).thenReturn("FORM-001");
+    when(form.getFormCode()).thenReturn(1001L);
+    when(form.getFormNumber()).thenReturn(1L);
 
     var settlement = Settlement.create(b -> b
         .jobContent(request.jobContent())
@@ -89,10 +89,10 @@ class SettlementServiceImplTest {
   @DisplayName("Update settlement successfully")
   void updateSettlement_ShouldUpdateAndReturnResponse() {
     var id = "id123";
-    var request = new SettlementRequest("CODE-001", "FORM-001", "New Job", "New Addr", BigDecimal.ONE, "New Note", LocalDate.now());
+    var request = new SettlementRequest(1001L, 1L, "New Job", "New Addr", BigDecimal.ONE, "New Note", LocalDate.now());
     var form = mock(InstallationForm.class);
-    when(form.getFormCode()).thenReturn("CODE-001");
-    when(form.getFormNumber()).thenReturn("FORM-001");
+    when(form.getFormCode()).thenReturn(1001L);
+    when(form.getFormNumber()).thenReturn(1L);
 
     var existing = Settlement.create(b -> b.jobContent("Old").address("Old").connectionFee(BigDecimal.ZERO).note("Old").installationForm(form).registrationAt(LocalDate.now()));
 
@@ -119,8 +119,8 @@ class SettlementServiceImplTest {
   void getSettlementById_ShouldReturnResponse() {
     var id = "id123";
     var form = mock(InstallationForm.class);
-    when(form.getFormCode()).thenReturn("CODE-001");
-    when(form.getFormNumber()).thenReturn("FORM-001");
+    when(form.getFormCode()).thenReturn(1001L);
+    when(form.getFormNumber()).thenReturn(1L);
 
     var existing = Settlement.create(b -> b.jobContent("Job").address("Addr").connectionFee(BigDecimal.ZERO).note("Note").installationForm(form).registrationAt(LocalDate.now()));
 
