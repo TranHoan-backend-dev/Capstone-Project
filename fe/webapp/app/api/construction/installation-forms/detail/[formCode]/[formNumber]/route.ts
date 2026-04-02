@@ -16,14 +16,10 @@ export async function GET(
     );
   }
 
-  const result = await getInstallationFormByCode(
+  const response = await getInstallationFormByCode(
     accessToken,
     formCode,
     formNumber,
   );
-
-  return NextResponse.json({
-    message: "Cập nhật thành công",
-    data: result,
-  });
+  return NextResponse.json(response.data);
 }

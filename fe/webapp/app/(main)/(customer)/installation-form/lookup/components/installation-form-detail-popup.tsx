@@ -11,6 +11,8 @@ import {
 import { authFetch } from "@/utils/authFetch";
 import { CallToast } from "@/components/ui/CallToast";
 import { formatDate1 } from "@/utils/format";
+import CustomButton from "@/components/ui/custom/CustomButton";
+import { getStatusText } from "@/utils/statusHelper";
 
 interface InstallationFormDetailPopupProps {
   isOpen: boolean;
@@ -196,16 +198,27 @@ export const InstallationFormDetailPopup = ({
                     </div>
                   </div>
 
-                  {/* Trạng thái */}
                   <div>
                     <h3 className="text-lg font-bold text-primary-600 mb-3">
                       Trạng thái xử lý
                     </h3>
                     <div className="bg-gray-50 p-4 rounded-lg">
-                      {renderField("Đăng ký", detailData.status?.registration)}
-                      {renderField("Dự toán", detailData.status?.estimate)}
-                      {renderField("Hợp đồng", detailData.status?.contract)}
-                      {renderField("Thi công", detailData.status?.construction)}
+                      {renderField(
+                        "Đăng ký",
+                        getStatusText(detailData.status?.registration),
+                      )}
+                      {renderField(
+                        "Dự toán",
+                        getStatusText(detailData.status?.estimate),
+                      )}
+                      {renderField(
+                        "Hợp đồng",
+                        getStatusText(detailData.status?.contract),
+                      )}
+                      {renderField(
+                        "Thi công",
+                        getStatusText(detailData.status?.construction),
+                      )}
                     </div>
                   </div>
                 </div>
@@ -216,9 +229,13 @@ export const InstallationFormDetailPopup = ({
               )}
             </ModalBody>
             <ModalFooter>
-              <Button color="danger" variant="light" onPress={onCloseModal}>
+              <CustomButton
+                color="danger"
+                variant="light"
+                onPress={onCloseModal}
+              >
                 Đóng
-              </Button>
+              </CustomButton>
             </ModalFooter>
           </>
         )}

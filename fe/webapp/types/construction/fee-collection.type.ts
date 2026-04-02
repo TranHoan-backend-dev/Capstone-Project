@@ -9,10 +9,10 @@ export interface FeeCollectionItem {
   paymentDate: string;
   isPaid: boolean;
   createdAt: string;
-  attach?: string; // Thêm optional
-  paymentReason?: string; // Thêm optional
-  totalMoneyInDigits?: number; // Thêm optional
-  totalMoneyInCharacters?: string; // Thêm optional
+  attach?: string; 
+  paymentReason?: string;
+  totalMoneyInDigits?: number; 
+  totalMoneyInCharacters?: string;
 }
 
 export interface FeeCollectionResponse {
