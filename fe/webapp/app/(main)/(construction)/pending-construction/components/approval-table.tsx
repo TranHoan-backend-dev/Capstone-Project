@@ -140,8 +140,8 @@ export const ApprovedTable = ({
       item.installationForm?.customerName || "công trình này";
     const message =
       type === "approve"
-        ? `Bạn có chắc chắn muốn DUYỆT đơn thi công cho công trình "${customerName}"?`
-        : `Bạn có chắc chắn muốn TỪ CHỐI đơn thi công cho công trình "${customerName}"?`;
+        ? `Bạn có chắc chắn muốn DUYỆT cho công trình "${customerName}"?`
+        : `Bạn có chắc chắn muốn TỪ CHỐI cho công trình "${customerName}"?`;
 
     setConfirmModal({
       isOpen: true,
@@ -186,8 +186,8 @@ export const ApprovedTable = ({
           onApprove();
         }
         const message = status
-          ? "Duyệt đơn thi công thành công"
-          : "Từ chối đơn thi công thành công";
+          ? "Duyệt công trình thành công"
+          : "Từ chối công trình thành công";
         CallToast({
           title: "Thành công",
           message: message,
@@ -196,8 +196,8 @@ export const ApprovedTable = ({
       } else {
         const errorData = await response.json().catch(() => ({}));
         const message = status
-          ? errorData?.message || "Duyệt đơn thất bại"
-          : errorData?.message || "Từ chối đơn thất bại";
+          ? errorData?.message || "Duyệt công trình thất bại"
+          : errorData?.message || "Từ chối công trình thất bại";
         CallToast({
           title: "Lỗi",
           message: message,
@@ -207,8 +207,8 @@ export const ApprovedTable = ({
     } catch (error) {
       console.error("Error reviewing:", error);
       const message = status
-        ? "Có lỗi xảy ra khi duyệt đơn"
-        : "Có lỗi xảy ra khi từ chối đơn";
+        ? "Có lỗi xảy ra khi duyệt công trình"
+        : "Có lỗi xảy ra khi từ chối công trình";
       CallToast({
         title: "Lỗi",
         message: message,
@@ -335,7 +335,7 @@ export const ApprovedTable = ({
   return (
     <>
       <GenericDataTable
-        title="Danh sách đơn chờ duyệt thi công"
+        title="Danh sách công trình chờ duyệt"
         columns={PENDING_TABLE_COLUMNS}
         data={data}
         isCollapsible
