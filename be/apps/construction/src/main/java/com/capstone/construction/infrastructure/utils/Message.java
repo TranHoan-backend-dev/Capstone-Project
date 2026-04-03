@@ -60,11 +60,9 @@ public final class Message {
   public static final String PT_57 = "Tên chi nhánh cấp nước đã tồn tại";
   public static final String PT_58 = "Không tìm thấy đồng hồ tổng";
   public static final String PT_59 = "Không tìm thấy nhân viên";
-  public static final String PT_60 = "Tổng số tiền không được để trống";
+  public static final String PT_60 = "";
   public static final String PT_61 = "Dự toán với id %s không tồn tại";
   public static final String PT_62 = "Thôn/Làng với id %s không tìm thấy";
   public static final String PT_63 = "Thôn/Làng với tên %s đã tồn tại";
   public static final String PT_64 = "Chữ ký không được bỏ trống";
-  public static final String PT_65 = "Tổng số tiền ghi bằng chữ không được bỏ trống";
-  public static final String PT_66 = "Lý do nôp không được bỏ trống";
 }

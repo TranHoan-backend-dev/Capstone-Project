@@ -36,8 +36,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 
 @AppLog
 @Service
@@ -64,13 +62,14 @@ public class CostEstimateServiceImpl implements CostEstimateService {
       throw new IllegalArgumentException(Message.PT_29);
     }
 
-    var estimate = CostEstimate.create(builder -> builder
+    var estimate = CostEstimate.builder()
       .customerName(request.customerName())
       .address(request.address())
       .registrationAt(LocalDate.from(request.registrationAt()))
       .createBy(request.createBy())
       .installationForm(installationForm)
-      .overallWaterMeterId(request.overallWaterMeterId()));
+      .overallWaterMeterId(request.overallWaterMeterId())
+      .build();
 
     var saved = eRepo.save(estimate);
 
@@ -204,79 +203,6 @@ public class CostEstimateServiceImpl implements CostEstimateService {
         endDate),
       pageable) : eRepo.findAll(pageable);
 
-    // Create filter map with all non-null parameters
-    Map<String, Object> filters = new HashMap<>();
-
-    if (request != null) {
-      if (request.keyword() != null && !request.keyword().isBlank()) {
-        filters.put("keyword", request.keyword());
-      }
-      if (request.customerName() != null && !request.customerName().isBlank()) {
-        filters.put("customerName", request.customerName());
-      }
-      if (request.address() != null && !request.address().isBlank()) {
-        filters.put("address", request.address());
-      }
-      if (request.note() != null && !request.note().isBlank()) {
-        filters.put("note", request.note());
-      }
-      if (request.contractFee() != null) {
-        filters.put("contractFee", request.contractFee());
-      }
-      if (request.surveyFee() != null) {
-        filters.put("surveyFee", request.surveyFee());
-      }
-      if (request.surveyEffort() != null) {
-        filters.put("surveyEffort", request.surveyEffort());
-      }
-      if (request.installationFee() != null) {
-        filters.put("installationFee", request.installationFee());
-      }
-      if (request.laborCoefficient() != null) {
-        filters.put("laborCoefficient", request.laborCoefficient());
-      }
-      if (request.generalCostCoefficient() != null) {
-        filters.put("generalCostCoefficient", request.generalCostCoefficient());
-      }
-      if (request.precalculatedTaxCoefficient() != null) {
-        filters.put("precalculatedTaxCoefficient", request.precalculatedTaxCoefficient());
-      }
-      if (request.constructionMachineryCoefficient() != null) {
-        filters.put("constructionMachineryCoefficient", request.constructionMachineryCoefficient());
-      }
-      if (request.vatCoefficient() != null) {
-        filters.put("vatCoefficient", request.vatCoefficient());
-      }
-      if (request.designCoefficient() != null) {
-        filters.put("designCoefficient", request.designCoefficient());
-      }
-      if (request.designFee() != null) {
-        filters.put("designFee", request.designFee());
-      }
-      if (request.registrationAt() != null && !request.registrationAt().isBlank()) {
-        filters.put("registrationAt", LocalDate.parse(request.registrationAt(), DateTimeFormatter.ofPattern(SharedConstant.DATE_PATTERN)));
-      }
-      if (request.createBy() != null && !request.createBy().isBlank()) {
-        filters.put("createBy", request.createBy());
-      }
-      if (request.waterMeterSerial() != null && !request.waterMeterSerial().isBlank()) {
-        filters.put("waterMeterSerial", request.waterMeterSerial());
-      }
-      if (request.overallWaterMeterId() != null && !request.overallWaterMeterId().isBlank()) {
-        filters.put("overallWaterMeterId", request.overallWaterMeterId());
-      }
-      if (request.designImageUrl() != null && !request.designImageUrl().isBlank()) {
-        filters.put("designImageUrl", request.designImageUrl());
-      }
-
-      // Convert from/to dates to filter if provided
-      if (startDate != null) {
-        filters.put("from", startDate.toLocalDate());
-      }
-      if (endDate != null) {
-        filters.put("to", endDate.toLocalDate());
-      }
-    }
     return PageResponse.fromPage(page, estimate -> mapToResponse(estimate, getMaterials(estimate.getEstimationId())));
   }
 

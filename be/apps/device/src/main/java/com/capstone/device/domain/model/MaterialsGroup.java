@@ -1,7 +1,6 @@
 package com.capstone.device.domain.model;
 
 import com.capstone.common.utils.SharedMessage;
-import com.capstone.device.infrastructure.util.Message;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

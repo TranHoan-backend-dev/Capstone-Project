@@ -4,7 +4,6 @@ import com.capstone.common.utils.SharedConstant;
 import com.capstone.common.utils.SharedMessage;
 import jakarta.persistence.*;
 
-import com.capstone.organization.utils.Message;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.jspecify.annotations.NonNull;
@@ -29,11 +28,6 @@ public class Department {
 
   @Column(unique = true)
   String phoneNumber;
-
-  public void setDepartmentId(String departmentId) {
-    requireNonNullAndNotEmpty(departmentId, SharedMessage.MES_05);
-    this.departmentId = departmentId;
-  }
 
   public void setName(String name) {
     requireNonNullAndNotEmpty(name, SharedMessage.MES_05);
@@ -64,19 +58,13 @@ public class Department {
   public static class DepartmentBuilder {
     private final Department instance = new Department();
 
-    public DepartmentBuilder departmentId(String value) {
-      instance.setDepartmentId(value);
-      return this;
-    }
-
     public DepartmentBuilder name(String name) {
       instance.setName(name);
       return this;
     }
 
-    public DepartmentBuilder phoneNumber(String phoneNumber) {
+    public void phoneNumber(String phoneNumber) {
       instance.setPhoneNumber(phoneNumber);
-      return this;
     }
 
     public Department build() {

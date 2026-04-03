@@ -59,11 +59,6 @@ public class OverallWaterMeter {
       return this;
     }
 
-    public OverallWaterMeterBuilder lateralId(String lateralId) {
-      unit.setLateralId(lateralId);
-      return this;
-    }
-
     public OverallWaterMeter build() {
       return unit;
     }
