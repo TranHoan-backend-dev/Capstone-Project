@@ -197,6 +197,14 @@ export const deleteRoadmap = (accessToken: string, id: string) => {
   });
 };
 
+export const getRoadmapById = (accessToken: string, id: string) => {
+  return axios.get(`${API_GATEWAY_URL}/construction/roadmaps/${id}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
 export const getAllCommunes = (
   accessToken: string,
   page: number,
@@ -460,6 +468,30 @@ export const getInstallationForms = (
   });
 };
 
+export const getInstallationFormById = async (
+  accessToken: string,
+  formId: string,
+) =>
+  axios.get(`${API_GATEWAY_URL}/construction/installation-forms/${formId}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+export const getInstallationFormByCode = async (
+  accessToken: string,
+  formCode: string,
+  formNumber: string,
+) =>
+  axios.get(
+    `${API_GATEWAY_URL}/construction/installation-forms/details/${formCode}/${formNumber}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+
 export const createNewInstallationForm = (
   accessToken: string,
   payload: NewInstallationFormPayload,
@@ -507,6 +539,17 @@ export const assignInstallationForm = async (
     },
   );
   return res.data;
+};
+
+export const getLastCode = async (accessToken: string) => {
+  return axios.get(
+    `${API_GATEWAY_URL}/construction/installation-forms/last-code`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
 };
 
 export const getPendingRegistrationForms = (
@@ -749,15 +792,28 @@ export const getEstimateById = (accessToken: string, estimateId: string) =>
     },
   });
 
+// export const updateEstimate = (
+//   accessToken: string,
+//   estimateId: string,
+//   data: UpdateEstimateRequest,
+// ) =>
+//   axios.put(`${API_GATEWAY_URL}/construction/estimates/${estimateId}`, data, {
+//     headers: {
+//       Authorization: `Bearer ${accessToken}`,
+//       "Content-Type": "application/json",
+//     },
+//   });
+
 export const updateEstimate = (
   accessToken: string,
   estimateId: string,
-  data: UpdateEstimateRequest,
+  data: FormData,
 ) =>
   axios.put(`${API_GATEWAY_URL}/construction/estimates/${estimateId}`, data, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
+      // "Content-Type": "multipart/form-data; boundary=WebAppBoundary",
+      // KHÔNG set Content-Type - axios sẽ tự set multipart/form-data với boundary
     },
   });
 

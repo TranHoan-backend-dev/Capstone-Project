@@ -55,7 +55,7 @@ export const MaterialPriceTable = ({
         if (filter.groupId) params.append("groupId", filter.groupId);
         if (filter.minPrice) params.append("minPrice", filter.minPrice);
         if (filter.maxPrice) params.append("maxPrice", filter.maxPrice);
-        const res = await fetch(
+        const res = await authFetch(
           `/api/device/materials-prices?${params.toString()}`,
         );
 

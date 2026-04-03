@@ -29,7 +29,7 @@ import { SettlementDetailModal } from "./settlement-detail-modal";
 import { SettlementDocumentModal } from "./settlement-document-modal";
 
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import { EditIcon, ApprovalIcon } from "@/config/chip-and-icon";
+import { EditIcon, ApprovalIcon, PencilIcon } from "@/config/chip-and-icon";
 import { SettlementItem, SettlementDetail, SettlementResponse } from "@/types";
 import { authFetch } from "@/utils/authFetch";
 import { SETLEMENT_LOOKUP_COLUMN } from "@/config/table-columns";
@@ -128,7 +128,10 @@ export const ResultsTable = ({
 
   // Kiểm tra role hiện tại
   const canManageSettlements = useMemo(() => {
-    return currentUser?.role === "construction_department_staff" || currentUser?.role === "it_staff";
+    return (
+      currentUser?.role === "construction_department_staff" ||
+      currentUser?.role === "it_staff"
+    );
   }, [currentUser]);
 
   const canSignSettlements = useMemo(() => {
@@ -207,8 +210,8 @@ export const ResultsTable = ({
           formNumber: item.formNumber,
           jobContent: item.jobContent,
           address: item.address,
-          registrationAt: formatDate1(item.registrationAt),
-          connectionFee: formatVND(item.connectionFee),
+          registrationAt: item.registrationAt,
+          connectionFee: item.connectionFee,
           note: item.note,
           status: item.status,
         }));
@@ -230,7 +233,9 @@ export const ResultsTable = ({
       );
       if (!res.ok) throw new Error("Failed to fetch");
       const json = await res.json();
-      setSelectedSettlementDetail(json?.data);
+      const settlementData = json?.data?.data;
+      setSelectedSettlementDetail(settlementData);
+
       setIsDetailModalOpen(true);
     } catch (error: any) {
       CallToast({
@@ -411,11 +416,9 @@ export const ResultsTable = ({
     setPage(1);
   }, [keyword]);
 
-  // Xây dựng action items dựa trên role
   const actionItems = useMemo(() => {
     const items = [];
 
-    // Chỉ construction_department_staff mới thấy nút tạo yêu cầu ký, sửa, xóa
     if (canManageSettlements) {
       items.push({
         content: "Tạo yêu cầu ký",
@@ -437,7 +440,6 @@ export const ResultsTable = ({
         },
       });
 
-      // Thêm nút xóa
       items.push({
         content: "Xóa",
         icon: TrashIcon,
@@ -448,7 +450,6 @@ export const ResultsTable = ({
       });
     }
 
-    // Các role survey_staff, planning_teachnical_head, company_leadership chỉ thấy nút ký
     if (canSignSettlements) {
       items.push({
         content: "Ký duyệt",
@@ -476,6 +477,18 @@ export const ResultsTable = ({
           >
             {item.formNumber}
           </Link>
+        );
+      case "connectionFee":
+        return (
+          <span className="text-black-600 font-bold">
+            {formatVND(item.connectionFee)}
+          </span>
+        );
+      case "registrationAt":
+        return (
+          <span className="text-default-600">
+            {formatDate1(item.registrationAt)}
+          </span>
         );
       case "actions":
         return (
@@ -782,9 +795,10 @@ export const ResultsTable = ({
                   onPress={handleConfirmSign}
                   isLoading={isProcessing}
                   isDisabled={!currentUser?.significanceUrl}
+                  className="text-white hover:bg-success-600 disabled:bg-success-300 disabled:text-white/50"
                   startContent={
                     !isProcessing ? (
-                      <CheckCircleIcon className="w-4 h-4" />
+                      <PencilIcon className="w-4 h-4" />
                     ) : undefined
                   }
                 >

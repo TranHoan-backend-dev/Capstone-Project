@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DocumentPlusIcon } from "@heroicons/react/24/solid";
 
 import { FormActions } from "./components/form-actions";
@@ -26,6 +26,51 @@ const NewInstallationForm = () => {
   const [reloadKey, setReloadKey] = useState(0);
   const today = new Date().toISOString().split("T")[0];
   const [loading, setLoading] = useState(true);
+  const [lastCode, setLastCode] = useState("");
+  const [isFetchingCode, setIsFetchingCode] = useState(true);
+
+  const getLastCode = async () => {
+    try {
+      setIsFetchingCode(true);
+      const res = await authFetch(
+        "/api/construction/installation-forms/last-code",
+      );
+      if (!res.ok) {
+        throw new Error("Failed to fetch last code");
+      }
+      const json = await res.json();
+      const lastCodeData = json.data;
+
+      setLastCode(lastCodeData);
+
+      if (lastCodeData) {
+        const nextFormCode = (
+          parseInt(lastCodeData.formCode || "0") + 1
+        ).toString();
+        const nextFormNumber = (
+          parseInt(lastCodeData.formNumber || "0") + 1
+        ).toString();
+
+        updateField("formCode", nextFormCode);
+        updateField("formNumber", nextFormNumber);
+      }
+    } catch (error) {
+      console.error("Error fetching last code:", error);
+      CallToast({
+        title: "Lỗi",
+        message: "Không thể lấy mã phiếu cuối cùng. Vui lòng thử lại sau.",
+        color: "danger",
+      });
+    } finally {
+      setIsFetchingCode(false);
+    }
+  };
+
+  // Gọi API lấy mã cuối cùng khi component mount
+  useEffect(() => {
+    getLastCode();
+  }, []);
+
   const initialFormData: NewInstallationFormPayload = {
     formCode: "",
     formNumber: "",
@@ -33,7 +78,7 @@ const NewInstallationForm = () => {
     representative: [],
     citizenIdentificationNumber: "",
     citizenIdentificationProvideDate: "",
-    citizenIdentificationProvideLocation: "",
+    citizenIdentificationProvideLocation: "Cục cảnh sát và trật tự xã hội",
     phoneNumber: "",
     taxCode: "",
     address: "",
@@ -43,7 +88,7 @@ const NewInstallationForm = () => {
     customerType: "FAMILY",
     receivedFormAt: today,
     scheduleSurveyAt: "",
-    numberOfHousehold: "",
+    numberOfHousehold: 1,
     householdRegistrationNumber: "",
     networkId: "",
     overallWaterMeterId: "",
@@ -178,6 +223,9 @@ const NewInstallationForm = () => {
         message: "Tạo đơn lắp đặt thành công",
         color: "success",
       });
+
+      // Sau khi tạo thành công, fetch lại mã mới cho lần tạo tiếp theo
+      await getLastCode();
       setFormData(initialFormData);
       setReloadKey((prev) => prev + 1);
     } catch (e: any) {
@@ -192,9 +240,20 @@ const NewInstallationForm = () => {
   };
 
   const handleClear = () => {
+    // Khi clear, cũng cần reset về mã mới nhất
+    getLastCode();
     setFormData(initialFormData);
     setReloadKey((prev) => prev + 1);
   };
+
+  // Optional: Hiển thị loading indicator khi đang fetch mã
+  if (isFetchingCode) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="text-gray-500">Đang tải mã phiếu...</div>
+      </div>
+    );
+  }
 
   return (
     <>

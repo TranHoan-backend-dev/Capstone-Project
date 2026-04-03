@@ -246,6 +246,7 @@ export const SettlementFormModal = ({
 
       <LookupModal
         dataKey="content"
+        enableSearch={false}
         isOpen={showFormModal}
         onClose={() => setShowFormModal(false)}
         title="Chọn đơn lắp đặt"

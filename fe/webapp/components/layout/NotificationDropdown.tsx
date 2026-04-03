@@ -490,7 +490,7 @@ const NotificationDropdown = () => {
       <DropdownTrigger>
         <Button
           isIconOnly
-          className="relative text-default-600 hover:bg-default-100"
+          className="w-5 h-5 relative text-default-600 hover:bg-default-100"
           radius="full"
           variant="light"
         >
@@ -502,11 +502,12 @@ const NotificationDropdown = () => {
             content={unreadCount > 99 ? "99+" : unreadCount}
             shape="circle"
             size="sm"
+            placement="top-right"
           >
             <BellIcon className="w-6 h-6 text-default-600" />
           </Badge>
           {isConnected && (
-            <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-600 rounded-full border border-background" />
+            <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-600 rounded-full border-2 border-background z-20" />
           )}
         </Button>
       </DropdownTrigger>

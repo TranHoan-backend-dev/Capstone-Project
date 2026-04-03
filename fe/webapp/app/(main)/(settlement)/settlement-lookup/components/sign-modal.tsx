@@ -11,6 +11,8 @@ import {
   Image,
   Divider,
 } from "@heroui/react";
+import CustomButton from "@/components/ui/custom/CustomButton";
+import { PencilIcon } from "@/config/chip-and-icon";
 
 interface SignModalProps {
   isOpen: boolean;
@@ -91,17 +93,21 @@ export const SignModal = ({
               </div>
             </ModalBody>
             <ModalFooter>
-              <Button variant="light" onPress={onClose}>
+              <CustomButton variant="light" onPress={onClose}>
                 Hủy
-              </Button>
-              <Button
+              </CustomButton>
+              <CustomButton
                 color="success"
+                className="text-white hover:bg-success-600 disabled:bg-success-300 disabled:text-white/50"
                 onPress={onConfirm}
                 isLoading={isLoading}
                 isDisabled={!signatureUrl}
+                startContent={
+                  !isLoading ? <PencilIcon className="w-4 h-4" /> : null
+                }
               >
                 Xác nhận ký
-              </Button>
+              </CustomButton>
             </ModalFooter>
           </>
         )}

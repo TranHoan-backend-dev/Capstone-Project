@@ -162,18 +162,18 @@ export interface CreateCustomerPayload {
   protectEnvironmentFee: number;
   waterMeterType: string;
   citizenIdentificationNumber: string;
-  citizenIdentificationProvideAt: string;
+  // citizenIdentificationProvideAt: string;
   paymentMethod: string;
   bankAccountNumber: string;
   bankAccountProviderLocation: string;
   bankAccountName: string;
   isActive: boolean;
-
+  taxCode: string;
+  citizenIdentificationProvideAt: string;
   formNumber: string;
   formCode: string;
   waterPriceId: string;
   waterMeterId: string;
-
   isFree: boolean;
   isSale: boolean;
   m3Sale: string;

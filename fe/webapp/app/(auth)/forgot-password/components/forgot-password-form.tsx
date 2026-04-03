@@ -85,6 +85,13 @@ export function ForgotPasswordForm({
             label="Địa chỉ Email"
             type="email"
             value={email}
+            classNames={{
+              label:
+                "text-sm font-medium text-gray-700 dark:text-zinc-400 font-bold",
+              input: "text-gray-900 dark:text-white",
+              inputWrapper:
+                "border border-gray-300 dark:border-zinc-800 bg-white dark:bg-zinc-800/50 hover:border-gray-400 dark:hover:border-zinc-700",
+            }}
             onChange={(e) => {
               setEmail(e.target.value);
               setError("");
