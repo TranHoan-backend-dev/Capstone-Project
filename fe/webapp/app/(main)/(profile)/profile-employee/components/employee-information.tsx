@@ -12,6 +12,7 @@ import { Role } from "@/constants/roles";
 import { CallToast } from "@/components/ui/CallToast";
 import { formatDateProfile } from "@/utils/format";
 import { validateProfile } from "@/utils/profileValidation";
+import { authFetch } from "@/utils/authFetch";
 
 interface EmployeeProfileProps {
   data: EmployeeProfileData;
@@ -67,7 +68,7 @@ const EmployeeProfile = ({ data }: EmployeeProfileProps) => {
         });
         return;
       }
-      const res = await fetch("/api/auth/me", {
+      const res = await authFetch("/api/auth/me", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -125,7 +126,7 @@ const EmployeeProfile = ({ data }: EmployeeProfileProps) => {
       const formDataUpload = new FormData();
       formDataUpload.append("avatar", file);
 
-      const res = await fetch("/api/auth/avatar", {
+      const res = await authFetch("/api/auth/avatar", {
         method: "PATCH",
         body: formDataUpload,
       });

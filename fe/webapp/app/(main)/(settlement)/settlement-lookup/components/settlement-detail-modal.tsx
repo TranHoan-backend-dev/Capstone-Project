@@ -17,6 +17,12 @@ interface SettlementDetailModalProps {
   loading?: boolean;
 }
 
+const roleNameMap: Record<string, string> = {
+  survey_staff: "Nhân viên khảo sát",
+  technical_planning_head: "Trưởng phòng Kế hoạch Kỹ thuật",
+  company_leader: "Lãnh đạo công ty",
+};
+
 export const SettlementDetailModal = ({
   isOpen,
   onClose,
@@ -25,9 +31,8 @@ export const SettlementDetailModal = ({
 }: SettlementDetailModalProps) => {
   if (!isOpen) return null;
 
-  const formatCurrency = (value?: number | string) => {
-    if (!value) return "0 VNĐ";
-    if (typeof value === "string") return value;
+  const formatCurrency = (value?: number) => {
+    if (!value && value !== 0) return "0 VNĐ";
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
       currency: "VND",
@@ -39,6 +44,11 @@ export const SettlementDetailModal = ({
     return new Date(dateString).toLocaleDateString("vi-VN");
   };
 
+  const getSignerDisplayName = (roleValue?: string) => {
+    if (!roleValue || roleValue === "") return "Chưa có thông tin";
+    return roleNameMap[roleValue] || roleValue;
+  };
+
   return (
     <>
       <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} />
@@ -48,7 +58,7 @@ export const SettlementDetailModal = ({
           className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col"
           onClick={(e) => e.stopPropagation()}
         >
-          <ModalHeader title="Thông tin chiết tính" onClose={onClose} />
+          <ModalHeader title="Thông tin quyết toán" onClose={onClose} />
 
           <div className="flex-1 overflow-y-auto px-6 py-6 space-y-4">
             {loading ? (
@@ -60,8 +70,8 @@ export const SettlementDetailModal = ({
                 <InfoRow
                   label="Mã đơn đăng ký"
                   value={
-                    <span className="text-blue-600 font-medium">
-                      {data.address}
+                    <span className="text-black-600 font-medium">
+                      {data.formNumber || data.formCode}
                     </span>
                   }
                 />
@@ -69,53 +79,85 @@ export const SettlementDetailModal = ({
                 <InfoRow label="Địa chỉ lắp đặt" value={data.address} />
 
                 <InfoRow
-                  icon={
-                    <InformationCircleIcon className="w-4 h-4 text-gray-400" />
-                  }
                   label="Ngày đăng ký"
-                  value={formatDate(data.createDate)}
+                  value={formatDate(data.registrationAt)}
                 />
 
-                <div className="border-t border-gray-200 my-4" />
-
-                {/* <InfoRow
-                  label="Người lập chiết tính"
-                  value={data.creator || "Chưa cập nhật"}
-                /> */}
-                <InfoRow
-                  icon={
-                    <InformationCircleIcon className="w-4 h-4 text-gray-400" />
-                  }
-                  label="Ngày lập chiết tính"
-                  value={formatDate(data.createDate)}
-                />
-
-                <InfoRow
-                  label="Người duyệt chiết tính"
-                  value={data.approver || "Chưa cập nhật"}
-                />
-                <InfoRow
-                  icon={
-                    <InformationCircleIcon className="w-4 h-4 text-gray-400" />
-                  }
-                  label="Ngày duyệt chiết tính"
-                  value={formatDate(data.approveDate)}
-                />
+                <InfoRow label="Nội dung công việc" value={data.jobContent} />
 
                 <div className="border-t border-gray-200 my-4" />
 
                 <InfoRow
-                  label="Tổng giá trị công trình"
+                  label="Ngày tạo quyết toán"
+                  value={formatDate(data.createdAt)}
+                />
+
+                <InfoRow
+                  label="Phí kết nối"
                   value={
                     <PriceBox
-                      text="Tổng giá trị"
-                      value={formatCurrency(
-                        data.totalPriceNumber || data.totalPrice,
-                      )}
+                      text="Phí kết nối"
+                      value={formatCurrency(data.connectionFee)}
                     />
                   }
                 />
 
+                <div className="border-t border-gray-200 my-4" />
+
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-gray-700">
+                    Thông tin ký duyệt
+                  </h4>
+
+                  <InfoRow
+                    label="Nhân viên khảo sát"
+                    value={
+                      <div className="flex items-center gap-2">
+                        <span>
+                          {getSignerDisplayName(data.significance?.surveyStaff)}
+                        </span>
+                        {/* {data.significance?.surveyStaff && (
+                          <span className="text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded">
+                            Đã chỉ định
+                          </span>
+                        )} */}
+                      </div>
+                    }
+                  />
+
+                  <InfoRow
+                    label="Trưởng phòng Kế hoạch Kỹ thuật"
+                    value={
+                      <div className="flex items-center gap-2">
+                        <span>
+                          {getSignerDisplayName(data.significance?.ptHead)}
+                        </span>
+                        {/* {data.significance?.ptHead && (
+                          <span className="text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded">
+                            Đã chỉ định
+                          </span>
+                        )} */}
+                      </div>
+                    }
+                  />
+
+                  <InfoRow
+                    label="Lãnh đạo công ty"
+                    value={
+                      <div className="flex items-center gap-2">
+                        <span>
+                          {getSignerDisplayName(data.significance?.president)}
+                        </span>
+                        {/* {data.significance?.president && (
+                          <span className="text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded">
+                            Đã chỉ định
+                          </span>
+                        )} */}
+                      </div>
+                    }
+                  />
+                </div>
+                <div className="border-t border-gray-200 my-4" />
                 <InfoRow
                   label="Ghi chú"
                   value={<NoteField value={data.note || "Không có ghi chú"} />}

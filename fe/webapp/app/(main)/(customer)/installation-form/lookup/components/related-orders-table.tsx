@@ -1,18 +1,12 @@
 "use client";
 
-import { Button, Link, Tooltip } from "@heroui/react";
-import NextLink from "next/link";
 import React, { useEffect, useState } from "react";
-
+import NextLink from "next/link";
+import { Link, Tooltip } from "@heroui/react";
+import CustomButton from "@/components/ui/custom/CustomButton";
 import { StatusBar } from "./status-bar";
-
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import {
-  DeleteIcon,
-  PencilIcon,
-  RedIconColor,
-  TitleDarkColor,
-} from "@/config/chip-and-icon";
+import { PencilIcon, TitleDarkColor } from "@/config/chip-and-icon";
 import {
   NewInstallationLookupItem,
   NewInstallationLookupResponse,
@@ -21,7 +15,7 @@ import { NEW_INSTALLATION_LOOKUP_COLUMN } from "@/config/table-columns";
 import { authFetch } from "@/utils/authFetch";
 import { formatDate1 } from "@/utils/format";
 import { AssignConstructionPopup } from "./assign-construction-popup";
-import CustomButton from "@/components/ui/custom/CustomButton";
+import { InstallationFormDetailPopup } from "./installation-form-detail-popup";
 
 interface ResultsTableProps {
   keyword?: string;
@@ -58,6 +52,17 @@ export const RelatedOrdersTable = ({
     formNumber: "",
     customerName: "",
   });
+
+  const [detailPopup, setDetailPopup] = useState<{
+    isOpen: boolean;
+    formCode: string;
+    formNumber: string;
+  }>({
+    isOpen: false,
+    formCode: "",
+    formNumber: "",
+  });
+
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
@@ -96,6 +101,7 @@ export const RelatedOrdersTable = ({
             return {
               id: item.formCode,
               stt: (page - 1) * pageSize + index + 1,
+              formCode: item.formCode,
               formNumber: item.formNumber,
               customerName: item.customerName,
               registrationAt: formatDate1(item.registrationAt),
@@ -135,14 +141,6 @@ export const RelatedOrdersTable = ({
     });
   };
 
-  const actionButtons = [
-    {
-      content: "Xóa",
-      icon: DeleteIcon,
-      className: RedIconColor,
-      color: "danger" as const,
-    },
-  ];
   const handleOpenAssignPopup = (item: any) => {
     setAssignPopup({
       isOpen: true,
@@ -223,7 +221,24 @@ export const RelatedOrdersTable = ({
   useEffect(() => {
     setPage(1);
   }, [keyword, from, to]);
+  const hasAssignableOrders = data.some((item) => item.canAssign === true);
+  const getColumns = () => {
+    const baseColumns = [...NEW_INSTALLATION_LOOKUP_COLUMN];
 
+    if (!hasAssignableOrders) {
+      return baseColumns.filter((col) => col.key !== "actions");
+    }
+
+    return baseColumns;
+  };
+
+  const handleOpenDetailPopup = (item: any) => {
+    setDetailPopup({
+      isOpen: true,
+      formCode: item.formCode,
+      formNumber: item.formNumber,
+    });
+  };
   const renderCell = (item: any, key: string) => {
     switch (key) {
       case "stt":
@@ -234,13 +249,12 @@ export const RelatedOrdersTable = ({
         );
       case "formNumber":
         return (
-          <Link
-            as={NextLink}
-            className={`font-bold text-blue-600 hover:underline hover:text-blue-800 ${TitleDarkColor}`}
-            href="#"
+          <button
+            onClick={() => handleOpenDetailPopup(item)}
+            className="font-bold text-blue-600 hover:underline hover:text-blue-800 cursor-pointer"
           >
             {item.formNumber}
-          </Link>
+          </button>
         );
       case "customerName":
         return (
@@ -266,23 +280,6 @@ export const RelatedOrdersTable = ({
                 </CustomButton>
               </Tooltip>
             )}
-            {/* {actionButtons.map((action, idx) => (
-              <Tooltip
-                key={idx}
-                closeDelay={0}
-                color={action.color}
-                content={action.content}
-              >
-                <Button
-                  isIconOnly
-                  className={`${action.className} bg-transparent data-[hover=true]:bg-transparent`}
-                  size="sm"
-                  variant="light"
-                >
-                  <action.icon className="w-5 h-5" />
-                </Button>
-              </Tooltip>
-            ))} */}
           </div>
         );
       default:
@@ -295,7 +292,7 @@ export const RelatedOrdersTable = ({
       <GenericDataTable
         isLoading={loading}
         title="Danh sách đơn"
-        columns={NEW_INSTALLATION_LOOKUP_COLUMN}
+        columns={getColumns()}
         isCollapsible
         data={data}
         renderCellAction={renderCell}
@@ -324,6 +321,18 @@ export const RelatedOrdersTable = ({
         formCode={assignPopup.formCode}
         formNumber={assignPopup.formNumber}
         customerName={assignPopup.customerName}
+      />
+      <InstallationFormDetailPopup
+        isOpen={detailPopup.isOpen}
+        onClose={() =>
+          setDetailPopup({
+            isOpen: false,
+            formCode: "",
+            formNumber: "",
+          })
+        }
+        formCode={detailPopup.formCode}
+        formNumber={detailPopup.formNumber}
       />
     </>
   );

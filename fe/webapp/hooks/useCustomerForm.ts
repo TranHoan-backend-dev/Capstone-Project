@@ -1,19 +1,17 @@
-// hooks/useCustomerForm.ts
 import { useState, useEffect } from "react";
 import { CreateCustomerPayload } from "@/types/customer";
 
 const initialFormData: CreateCustomerPayload = {
-  // Customer Info
   name: "",
   email: "",
   phoneNumber: "",
-  address: "", // ← This field was missing
+  address: "", 
   type: "FAMILY",
   isBigCustomer: false,
   usageTarget: "DOMESTIC",
   numberOfHouseholds: 1,
   householdRegistrationNumber: 0,
-  protectEnvironmentFee: 0,
+  protectEnvironmentFee: 15000,
   waterMeterType: "MECHANICAL",
   citizenIdentificationNumber: "",
   citizenIdentificationProvideAt: "",
@@ -23,24 +21,23 @@ const initialFormData: CreateCustomerPayload = {
   bankAccountName: "",
   isActive: true,
   roadmapId: "",
-  
-  // Form Info
+
   formNumber: "",
   formCode: "",
   waterPriceId: "",
   waterMeterId: "",
 
-  // Additional Info
   isFree: false,
   isSale: false,
   m3Sale: "0",
-  fixRate: "0",
-  installationFee: 0,
-  deductionPeriod: "",
-  monthlyRent: 0,
-  budgetRelationshipCode: "",
+  fixRate: "15000",
+  installationFee: 500000,
+  deductionPeriod: new Date().toISOString().split('T')[0],
+  monthlyRent: 50000,
+  budgetRelationshipCode: "QH-ND-NAWACO",
   passportCode: "",
-  connectionPoint: "",
+  connectionPoint: "Nhà máy nước NAWACO",
+  taxCode: "",
 };
 
 export const useCustomerForm = (

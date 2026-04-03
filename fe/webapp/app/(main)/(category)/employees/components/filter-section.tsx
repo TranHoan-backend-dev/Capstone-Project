@@ -7,14 +7,15 @@ import { SearchIcon } from "@/components/ui/Icons";
 import CustomInput from "@/components/ui/custom/CustomInput";
 import FilterButton from "@/components/ui/FilterButton";
 import { AddNewIcon } from "@/config/chip-and-icon";
-import { FilterSectionDepartmentProps } from "@/types";
+import { FilterSectionEmployeeProps } from "@/types";
 
 export const FilterSection = ({
   filter,
   onSearch,
   onAddNew,
-}: FilterSectionDepartmentProps) => {
+}: FilterSectionEmployeeProps) => {
   const [keyword, setKeyword] = useState(filter.keyword ?? "");
+
   useEffect(() => {
     setKeyword(filter.keyword ?? "");
   }, [filter.keyword]);
@@ -27,7 +28,7 @@ export const FilterSection = ({
 
   return (
     <GenericSearchFilter
-      title="Tìm kiếm"
+      title="Tìm kiếm nhân viên"
       icon={<SearchIcon size={18} />}
       gridClassName="block space-y-10"
       isCollapsible={false}
@@ -48,7 +49,7 @@ export const FilterSection = ({
         <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
           <div className="md:col-span-1">
             <CustomInput
-              label="Tên phòng ban"
+              label="Từ khóa"
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
               onKeyDown={(e) => {

@@ -71,7 +71,7 @@ export const MaterialPriceForm = ({
       setInitLoading(true);
       try {
         if (initialData?.groupName) {
-          fetch(`/api/device/materials-group?filter=${initialData.groupName}`)
+          authFetch(`/api/device/materials-group?filter=${initialData.groupName}`)
             .then((res) => res.json())
             .then((data) => {
               setSelectedGroupId(data?.data?.content?.[0]?.groupId || "");
@@ -79,7 +79,7 @@ export const MaterialPriceForm = ({
         }
 
         if (initialData?.unitName) {
-          fetch(`/api/device/units?filter=${initialData.unitName}`)
+          authFetch(`/api/device/units?filter=${initialData.unitName}`)
             .then((res) => res.json())
             .then((data) => {
               setUnitId(data?.data?.content?.[0]?.id || "");

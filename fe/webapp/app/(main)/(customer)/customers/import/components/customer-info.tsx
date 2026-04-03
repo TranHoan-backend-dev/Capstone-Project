@@ -14,7 +14,7 @@ import { CallToast } from "@/components/ui/CallToast";
 
 export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
   const [showFormModal, setShowFormModal] = useState(false);
-  
+
   const [showWaterPriceModal, setShowWaterPriceModal] = useState(false);
   const [displayWaterPrice, setDisplayWaterPrice] = useState("");
 
@@ -76,9 +76,9 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
             `/api/construction/roadmaps/${formData.roadmapId}`,
           );
           const result = await response.json();
-          if (result.data.content) {
+          if (result.data) {
             setDisplayRoadmap(
-              `${result.data.lateralName} - ${result.data.networkName}`,
+              `${result.data.name} - ${result.data.lateralName} - ${result.data.networkName}`,
             );
           }
         } catch (error) {
@@ -125,13 +125,52 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
         );
       }
 
+      if (selectedForm.citizenIdentificationProvideLocation) {
+        onUpdate(
+          "citizenIdentificationProvideAt",
+          selectedForm.citizenIdentificationProvideLocation,
+        );
+      }
+
       if (selectedForm.overallWaterMeterId) {
         onUpdate("waterMeterId", selectedForm.overallWaterMeterId);
         fetchWaterMeterDetailsById(selectedForm.overallWaterMeterId);
       }
+      if (selectedForm.customerType) {
+        onUpdate("type", selectedForm.customerType);
+      }
+
+      if (selectedForm.usageTarget) {
+        onUpdate("usageTarget", selectedForm.usageTarget);
+      }
+
+      if (selectedForm.taxCode) {
+        onUpdate("taxCode", selectedForm.taxCode);
+      }
+
+      if (selectedForm.householdRegistrationNumber) {
+        onUpdate(
+          "householdRegistrationNumber",
+          selectedForm.householdRegistrationNumber,
+        );
+      }
+
+      if (selectedForm.numberOfHousehold) {
+        onUpdate("numberOfHouseholds", selectedForm.numberOfHousehold);
+      }
+
+      if (selectedForm.bankAccountNumber) {
+        onUpdate("bankAccountNumber", selectedForm.bankAccountNumber);
+      }
+
+      if (selectedForm.bankAccountProviderLocation) {
+        onUpdate(
+          "bankAccountProviderLocation",
+          selectedForm.bankAccountProviderLocation,
+        );
+      }
 
       setShowFormModal(false);
-
     } catch (error) {
       console.error("Failed to process form data:", error);
     }
@@ -209,14 +248,33 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
           mapData={(item: any, index: number) => ({
             stt: index + 1,
             id: item.formCode,
+            // Thông tin cơ bản
             formNumber: item.formNumber,
             formCode: item.formCode,
             customerName: item.customerName,
             address: item.address,
             phoneNumber: item.phoneNumber,
             email: item.email,
+
+            // Thông tin CCCD
             citizenIdentificationNumber: item.citizenIdentificationNumber,
-            overallWaterMeterId: item.overallWaterMeterId,
+            citizenIdentificationProvideDate:
+              item.citizenIdentificationProvideDate,
+            citizenIdentificationProvideLocation:
+              item.citizenIdentificationProvideLocation,
+
+            // Thông tin bổ sung
+            customerType: item.customerType,
+            usageTarget: item.usageTarget,
+            taxCode: item.taxCode,
+            householdRegistrationNumber: item.householdRegistrationNumber,
+            numberOfHousehold: item.numberOfHousehold,
+            scheduleSurveyAt: item.scheduleSurveyAt,
+            registrationAt: item.registrationAt,
+
+            // Thông tin ngân hàng
+            bankAccountNumber: item.bankAccountNumber,
+            bankAccountProviderLocation: item.bankAccountProviderLocation,
           })}
           onSelect={handleSelectForm}
         />
@@ -334,7 +392,6 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
           onValueChange={() => {}}
           onSearch={() => setShowRoadmapModal(true)}
         />
-
         <LookupModal
           enableSearch={false}
           dataKey="content"
@@ -344,12 +401,14 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
           api="/api/construction/roadmaps"
           columns={[
             { key: "stt", label: "STT" },
-            { key: "lateralName", label: "Tên lộ trình" },
+            { key: "name", label: "Tên lộ trình" },
+            { key: "lateralName", label: "Nhánh tổng" },
             { key: "networkName", label: "Chi nhánh" },
           ]}
           mapData={(item: any, index: number) => ({
             stt: index + 1,
             id: item.roadmapId,
+            name: item.name,
             lateralName: item.lateralName,
             networkName: item.networkName,
           })}

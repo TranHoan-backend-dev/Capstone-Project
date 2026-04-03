@@ -6,6 +6,7 @@ import CustomButton from "@/components/ui/custom/CustomButton";
 import EstimateInfoCard from "./estimate-info-card";
 import UserInfoCard from "./user-info-card";
 import { EstimateOrder } from "@/types";
+import { PencilIcon } from "@/config/chip-and-icon";
 
 interface SignModalProps {
   isOpen: boolean;
@@ -68,7 +69,9 @@ const SignModal = ({
           onPress={onConfirm}
           isLoading={isProcessing}
           color="success"
+          className="text-white hover:bg-success-600 disabled:bg-success-300 disabled:text-white/50"
           isDisabled={!currentUser?.significanceUrl}
+          startContent={!isProcessing ? <PencilIcon className="w-4 h-4" /> : null}
         >
           Xác nhận ký
         </CustomButton>

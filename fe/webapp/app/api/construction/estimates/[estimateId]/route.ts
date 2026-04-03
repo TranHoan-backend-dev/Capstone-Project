@@ -52,9 +52,10 @@ export async function PUT(
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
     const { estimateId } = await params;
-    const body = await req.json();
 
-    const response = await updateEstimate(accessToken, estimateId, body);
+    const formData = await req.formData();
+
+    const response = await updateEstimate(accessToken, estimateId, formData);
 
     return NextResponse.json(
       {
@@ -86,7 +87,7 @@ export async function PATCH(
     if (!accessToken) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
-    const {status,estimateId} = await req.json();
+    const { status, estimateId } = await req.json();
 
     const response = await approveEstimate(accessToken, estimateId, status);
 

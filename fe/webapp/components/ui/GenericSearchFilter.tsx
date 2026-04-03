@@ -3,6 +3,7 @@
 import React from "react";
 import { Card, CardBody, Button, ButtonProps } from "@heroui/react";
 import { FunnelIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
+import CustomButton from "./custom/CustomButton";
 
 interface GenericSearchFilterProps {
   title: string;
@@ -65,8 +66,8 @@ export const GenericSearchFilter = ({
           {actions ? (
             <div className="mt-8">{actions}</div>
           ) : (
-            <div className="flex justify-end mt-8 gap-2">
-              <Button
+            <div className="flex justify-end mt-6 gap-2">
+              <CustomButton
                 className="px-8 h-11 text-sm font-bold shadow-md shadow-primary/20 rounded-lg"
                 color="primary"
                 startContent={<FunnelIcon className="w-4 h-4" />}
@@ -74,7 +75,7 @@ export const GenericSearchFilter = ({
                 {...filterButtonProps}
               >
                 {filterButtonLabel}
-              </Button>
+              </CustomButton>
             </div>
           )}
         </div>

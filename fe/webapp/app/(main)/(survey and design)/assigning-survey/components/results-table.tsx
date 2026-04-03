@@ -12,6 +12,7 @@ import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
 import { LookupModal } from "@/components/ui/modal/LookupModal";
 import { SURVEY_ASSIGNMENT_COLUMN } from "@/config/table-columns";
 import { CallToast } from "@/components/ui/CallToast";
+import { authFetch } from "@/utils/authFetch";
 
 interface Props {
   data: SurveyAssignmentItem[];
@@ -52,7 +53,7 @@ export const SurveyAssignmentTable = ({
     employeeName: string,
   ) => {
     try {
-      const res = await fetch(
+      const res = await authFetch(
         `/api/construction/installation-forms/assign/${employeeId}`,
         {
           method: "PATCH",

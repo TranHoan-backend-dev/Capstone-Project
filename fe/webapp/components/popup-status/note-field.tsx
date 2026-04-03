@@ -1,5 +1,5 @@
 interface NoteFieldProps {
-  value: string;
+  value?: string | null;
 }
 
 export const NoteField = ({ value }: NoteFieldProps) => (
@@ -7,6 +7,6 @@ export const NoteField = ({ value }: NoteFieldProps) => (
     readOnly
     className="w-full px-3 py-2 text-sm text-gray-600 bg-gray-50 border border-gray-200 rounded-lg resize-none focus:outline-none"
     rows={3}
-    value={value}
+    value={value || ""}
   />
 );

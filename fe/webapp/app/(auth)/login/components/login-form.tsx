@@ -1,4 +1,3 @@
-// components/LoginForm.tsx
 "use client";
 
 import { Form, Link } from "@heroui/react";
@@ -11,6 +10,7 @@ import { useState } from "react";
 import { CallToast } from "@/components/ui/CallToast";
 import { z } from "zod";
 import { getDeviceId } from "@/services/auth.service";
+import { getRoleBasedRoute } from "@/utils/getRoleBasedRoute";
 
 const loginSchema = z.object({
   username: z.string().trim().min(1, "Vui lòng nhập email hoặc tên đăng nhập"),
@@ -69,14 +69,16 @@ const LoginForm = () => {
         localStorage.setItem("user", JSON.stringify(data.userDetails));
       }
 
-      // Hiển thị thông báo nếu là thiết bị mới (BE sẽ trả về message phù hợp)
       CallToast({
         title: "Thành công",
         message: "Đăng nhập thành công!",
         color: "success",
       });
 
-      router.push("/home");
+      // Redirect dựa trên role của user
+      const userRole = data.userDetails?.role.toUpperCase();
+      const redirectPath = getRoleBasedRoute(userRole);
+      router.push(redirectPath);
     } catch (err: any) {
       CallToast({
         title: "Thất bại",
@@ -101,7 +103,7 @@ const LoginForm = () => {
                 "text-sm font-medium text-gray-700 dark:text-zinc-400 font-bold",
               input: "text-gray-900 dark:text-white",
               inputWrapper:
-                "border border-gray-300 dark:border-zinc-800 bg-white dark:bg-zinc-800/50 hover:border-gray-400 dark:hover:border-zinc-700 h-12",
+                "border border-gray-300 dark:border-zinc-800 bg-white dark:bg-zinc-800/50 hover:border-gray-400 dark:hover:border-zinc-700",
             }}
             endContent={
               <div className="flex items-center h-full">
@@ -120,7 +122,7 @@ const LoginForm = () => {
                 "text-sm font-medium text-gray-700 dark:text-zinc-400 font-bold",
               input: "text-gray-900 dark:text-white",
               inputWrapper:
-                "border border-gray-300 dark:border-zinc-800 bg-white dark:bg-zinc-800/50 hover:border-gray-400 dark:hover:border-zinc-700 h-12",
+                "border border-gray-300 dark:border-zinc-800 bg-white dark:bg-zinc-800/50 hover:border-gray-400 dark:hover:border-zinc-700",
             }}
             label="Nhập mật khẩu"
             value={formData.password}
