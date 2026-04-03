@@ -96,6 +96,11 @@ public class CostEstimateServiceImpl implements CostEstimateService {
     if (installationForm.getStatus().getEstimate().name().equals(ProcessingStatus.APPROVED.name())) {
       throw new IllegalArgumentException("Dự toán đã được duyệt, không được phép chỉnh sửa");
     }
+    if (installationForm.getStatus().getEstimate().name().equals(ProcessingStatus.REJECTED.name())) {
+      var status = installationForm.getStatus();
+      status.setEstimate(ProcessingStatus.PROCESSING);
+      ifRepo.save(installationForm);
+    }
 
     var generalInformation = request.generalInformation();
 
@@ -313,7 +318,11 @@ public class CostEstimateServiceImpl implements CostEstimateService {
         estimate.getWaterMeterSerial(),
         estimate.getOverallWaterMeterId(),
         estimate.getInstallationForm().getId(),
-        estimate.getInstallationForm().getStatus()
+        estimate.getInstallationForm().getStatus(),
+        estimate.getSignificance() != null ? new CostEstimateResponse.Significance(
+          estimate.getSignificance().getCompanyLeaderShip(),
+          estimate.getSignificance().getSurveyStaff(),
+          estimate.getSignificance().getPlanningTechnicalHead()) : null
       ),
       material);
   }

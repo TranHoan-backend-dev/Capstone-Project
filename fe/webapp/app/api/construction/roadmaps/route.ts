@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     return NextResponse.json(
       {
-        message: error.response?.data?.message || "Create network failed",
+        message: error.response?.data?.message || "Tạo lộ trình ghi thất bại",
       },
       { status: error.response?.status || 500 },
     );

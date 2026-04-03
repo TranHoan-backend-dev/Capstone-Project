@@ -17,6 +17,8 @@ import {
 import { EstimateItem, EstimateResponse, EstimateStatus } from "@/types";
 import { ESTIMATE_PREPARATION_COLUMN } from "@/config/table-columns";
 import { formatDate } from "@/utils/format";
+import { calculateTotalAmount } from "@/utils/calculateTotalAmount";
+import { authFetch } from "@/utils/authFetch";
 
 interface ResultsTableProps {
   keyword?: string;
@@ -91,7 +93,8 @@ export const ResultsTable = ({ keyword, from, to }: ResultsTableProps) => {
       approver: "Chưa có",
       approveDate: "",
       totalPrice: item.totalPrice,
-      note: item.note,
+      note: item.note || "",
+      significance: item.significance,
     };
   };
 
@@ -108,7 +111,7 @@ export const ResultsTable = ({ keyword, from, to }: ResultsTableProps) => {
         if (from) params.append("from", from);
         if (to) params.append("to", to);
 
-        const res = await fetch(
+        const res = await authFetch(
           `/api/construction/estimates?${params.toString()}`,
         );
 
@@ -126,14 +129,7 @@ export const ResultsTable = ({ keyword, from, to }: ResultsTableProps) => {
 
         const mapped: EstimateItem[] = items.map((item: any) => {
           const info = item.generalInformation;
-
-          const totalPrice = (item.material || []).reduce(
-            (sum: number, m: any) =>
-              sum +
-              Number(m.totalMaterialPrice || 0) +
-              Number(m.totalLaborPrice || 0),
-            0,
-          );
+          const form = info.installationFormId;
 
           return {
             id: info.estimationId,
@@ -145,7 +141,8 @@ export const ResultsTable = ({ keyword, from, to }: ResultsTableProps) => {
             address: info.address,
             registerDate: new Date(info.createdAt).toLocaleDateString("vi-VN"),
             status: info.status.estimate,
-            totalPrice,
+            totalPrice: calculateTotalAmount(item.material, info),
+            significance: info.significance,
           };
         });
         // const mapped: EstimateItem[] = items.map((item: any) => {

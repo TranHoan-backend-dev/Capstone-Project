@@ -3,13 +3,8 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Tooltip, Button } from "@heroui/react";
 import { DeleteIcon, EditIcon } from "@/config/chip-and-icon";
-import {
-  EmployeeItem,
-  EmployeeResponse,
-  EmployeeTableProps,
-} from "@/types";
+import { EmployeeItem, EmployeeTableProps } from "@/types";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
-import { DEPARTMENT_COLUMN } from "@/config/table-columns";
 import { CallToast } from "@/components/ui/CallToast";
 import { authFetch } from "@/utils/authFetch";
 import { ConfirmDialog } from "@/components/ui/modal/ConfirmDialog";
@@ -31,7 +26,7 @@ export const EmployeeTable = ({
     field: string;
     direction: "asc" | "desc";
   }>({
-    field: "name",
+    field: "",
     direction: "desc",
   });
   const [page, setPage] = useState(1);
@@ -48,14 +43,11 @@ export const EmployeeTable = ({
           sort: `${sort.field},${sort.direction}`,
         });
 
-        const trimmedKeyword = keyword?.keyword?.trim();
-        if (trimmedKeyword) {
-          params.append("keyword", trimmedKeyword);
+        if (keyword?.keyword?.trim()) {
+          params.append("username", keyword.keyword.trim());
         }
 
-        const res = await authFetch(
-          `/api/auth/employees?${params.toString()}`,
-        );
+        const res = await authFetch(`/api/auth/employees?${params.toString()}`);
 
         if (!res.ok) {
           CallToast({
@@ -68,18 +60,20 @@ export const EmployeeTable = ({
 
         const json = await res.json();
         const pageData = json?.data;
-        const items = pageData?.items ?? [];
-        setTotalItems(pageData?.totalElements ?? 0);
-        setTotalPages(pageData?.totalPages ?? 1);
+        const items = pageData?.content ?? [];
+        setTotalItems(pageData?.page?.totalElements ?? 0);
+        setTotalPages(pageData?.page?.totalPages ?? 1);
 
-        const mapped = items.map((item: EmployeeResponse, index: number) => ({
-          id: item.departmentId,
+        const mapped = items.map((item: EmployeeItem, index: number) => ({
+          id: item.id,
           stt: (page - 1) * pageSize + index + 1,
-          name: item.name,
-          phoneNumber: item.phoneNumber,
+          name: item.fullName,
+          email: item.email,
+          departmentName: item.departmentName,
         }));
         setData(mapped);
       } catch (e) {
+        console.error(e);
         setData([]);
         setTotalItems(0);
         setTotalPages(1);
@@ -97,15 +91,18 @@ export const EmployeeTable = ({
     try {
       setDeleteLoading(true);
 
-      const res = await authFetch(`/api/organization/departments/${deleteId}`, {
+      const res = await authFetch(`/api/auth/employees/${deleteId}`, {
         method: "DELETE",
       });
 
-      if (!res.ok) throw new Error("Delete failed");
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || "Xóa thất bại");
+      }
 
       CallToast({
         title: "Thành công",
-        message: "Xóa phòng ban thành công",
+        message: "Xóa nhân viên thành công",
         color: "success",
       });
 
@@ -124,7 +121,7 @@ export const EmployeeTable = ({
 
   useEffect(() => {
     setPage(1);
-  }, [keyword.keyword]);
+  }, [keyword?.keyword]);
 
   const actionItems = useMemo(
     () => [
@@ -166,6 +163,13 @@ export const EmployeeTable = ({
           </span>
         );
 
+      case "phoneNumber":
+        return (
+          <span className="text-gray-600 dark:text-default-600">
+            {item.phoneNumber || "--"}
+          </span>
+        );
+
       case "actions":
         return (
           <div className="flex items-center justify-center gap-2">
@@ -197,7 +201,7 @@ export const EmployeeTable = ({
     <>
       <GenericDataTable
         isLoading={loading}
-        title="Danh sách Phòng ban"
+        title="Danh sách Nhân viên"
         columns={EMPLOYEE_COLUMN}
         data={data}
         isCollapsible

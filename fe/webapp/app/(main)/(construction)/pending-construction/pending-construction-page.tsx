@@ -17,7 +17,9 @@ export default function PendingConstructionPage() {
   const isConstructionHead = hasRole("construction_department_head");
   const isConstructionStaff = hasRole("construction_department_staff");
   const isSurveyStaff = hasRole("survey_staff");
-  const canView = isConstructionHead || isConstructionStaff || isSurveyStaff;
+  const isITStaff = hasRole("it_staff");
+  const canView =
+    isConstructionHead || isConstructionStaff || isSurveyStaff || isITStaff;
 
   const handleFilterChange = (newFilters: FilterPendingConstructionRequest) => {
     setFilters(newFilters);
@@ -49,14 +51,14 @@ export default function PendingConstructionPage() {
   return (
     <div className="space-y-6">
       <ConstructionProcessor onFilterChange={handleFilterChange} />
-      {(isConstructionHead || isConstructionStaff) && (
+      {(isConstructionHead || isConstructionStaff || isITStaff) && (
         <PendingTable
           filters={filters}
           onSuccess={handleApprove}
           refreshTrigger={refreshTrigger}
         />
       )}
-      {isSurveyStaff && <ApprovedTable refreshTrigger={refreshTrigger} />}
+      {isSurveyStaff || isITStaff ? <ApprovedTable refreshTrigger={refreshTrigger} /> : null}
     </div>
   );
 }

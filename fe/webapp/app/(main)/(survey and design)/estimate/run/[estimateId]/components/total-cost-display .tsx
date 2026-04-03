@@ -177,7 +177,7 @@ export const TotalCostDisplay = ({
           <h3 className="text-base font-bold">
             TỔNG DỰ TOÁN XÂY DỰNG CÔNG TRÌNH
           </h3>
-          <span className="text-lg text-blue-500">
+          <span className="font-bold text-lg text-black-500">
             ({formatCurrency(costBreakdown.grandTotal)})
           </span>
         </div>
@@ -381,12 +381,12 @@ export const TotalCostDisplay = ({
             </tr>
 
             {/* TỔNG CỘNG */}
-            <tr className="bg-primary-50 border-t-2 border-primary-200">
-              <td className="px-4 py-3 pl-8 font-bold text-primary">
+            <tr className="bg-primary-50 border-t-2 border-black-200">
+              <td className="px-4 py-3 pl-8 font-bold text-black-900">
                 TỔNG DỰ TOÁN XÂY DỰNG CÔNG TRÌNH
               </td>
               <td className="px-4 py-3 text-right font-bold">GXD + GTV + GK</td>
-              <td className="px-4 py-3 text-right font-mono font-bold text-primary text-lg">
+              <td className="px-4 py-3 text-right font-mono font-bold text-black-900 text-lg">
                 {formatCurrency(costBreakdown.grandTotal)}
               </td>
             </tr>

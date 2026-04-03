@@ -19,6 +19,11 @@ export interface EstimateItem {
   status: string;
   createBy: string;
   totalPrice: string;
+  significance?: {
+    surveyStaff?: string;
+    planningTechnicalHead?: string;
+    companyLeaderShip?: string;
+  };
 }
 
 export interface MaterialEstimateItem {
@@ -143,6 +148,12 @@ export interface EstimateGeneralInformation {
   installationFormId?: {
     formCode: string;
     formNumber: string;
+  };
+  status: {
+    registration: string;
+    estimate: string;
+    contract: string;
+    construction: string;
   };
 }
 

@@ -86,7 +86,17 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post("/api/auth/logout");
+      await axios.post(
+        "/api/auth/logout",
+        {},
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
       localStorage.removeItem("user");
       CallToast({
         title: "Thành công",
@@ -184,7 +194,7 @@ const Header = () => {
                         delay={500}
                         placement="bottom"
                       >
-                        <span className="hidden md:block text-sm font-bold max-w-[120px] truncate">
+                        <span className="hidden md:block text-sm font-bold">
                           {profile.fullname}
                         </span>
                       </Tooltip>

@@ -54,7 +54,9 @@ public class CostEstimateController {
     @PathVariable @Parameter(description = "ID của dự toán", required = true) String id,
     @ModelAttribute @Valid UpdateRequest request
   ) {
+    
     log.info("REST request to update cost estimate with id: {}", id);
+    log.info(request.generalInformation().designImage().getName());
     var response = estimateUseCase.updateEstimate(id, request);
     return Utils.returnOkResponse("Cập nhật dự toán chi phí thành công", response);
   }

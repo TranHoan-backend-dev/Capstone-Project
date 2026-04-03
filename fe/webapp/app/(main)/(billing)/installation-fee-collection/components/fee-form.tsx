@@ -11,6 +11,7 @@ import { authFetch } from "@/utils/authFetch";
 import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
 import { LookupModal } from "@/components/ui/modal/LookupModal";
 import { numberToVietnamese } from "@/utils/numberToVietnamese";
+import { useProfile } from "@/hooks/useLogin";
 
 export const FeeForm = ({
   initialData,
@@ -30,6 +31,7 @@ export const FeeForm = ({
   const [totalMoneyInCharacters, setTotalMoneyInCharacters] = useState("");
   const [submitLoading, setSubmitLoading] = useState(false);
   const [showFormModal, setShowFormModal] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState<{
     id: string;
     fullname: string;
@@ -39,42 +41,94 @@ export const FeeForm = ({
 
   const isEdit = !!initialData?.receiptNumber;
   const isPrefill = !!initialData?.formCode && !initialData?.formNumber;
+  const { profile, loading: profileLoading } = useProfile();
 
   useEffect(() => {
-    const fetchCurrentUser = async () => {
+    if (profile) {
+      setCurrentUser({
+        id: profile.id,
+        fullname: profile.fullname,
+        role: profile.role,
+        significanceUrl: profile.significanceUrl || "",
+      });
+    }
+  }, [profile]);
+
+  // Fetch detail data when editing
+  useEffect(() => {
+    const fetchDetailData = async () => {
+      if (!initialData || !initialData.formCode || !initialData.formNumber) {
+        return;
+      }
+
+      // Nếu đã có đủ dữ liệu thì không cần fetch
+      if (initialData.paymentReason && initialData.totalMoneyInDigits) {
+        setFormCode(initialData.formCode);
+        setFormNumber(initialData.formNumber);
+        setReceiptNumber(initialData.receiptNumber || "");
+        setCustomerName(initialData.customerName || "");
+        setAddress(initialData.address || "");
+        setPaymentDate(initialData.paymentDate || "");
+        setIsPaid(initialData.isPaid || false);
+        setAttach(initialData.attach || "");
+        setPaymentReason(initialData.paymentReason);
+        setTotalMoneyInDigits(initialData.totalMoneyInDigits);
+        setTotalMoneyInCharacters(initialData.totalMoneyInCharacters || "");
+        return;
+      }
+
+      // Fetch chi tiết từ API
       try {
-        const res = await authFetch("/api/auth/me");
-        const json = await res.json();
-        if (json) {
-          setCurrentUser({
-            id: json.id,
-            fullname: json.fullname,
-            role: json.role,
-            significanceUrl: json.significanceUrl || "",
-          });
+        setLoading(true);
+        const response = await authFetch(
+          `/api/construction/receipts/${initialData.formCode}/${initialData.formNumber}`,
+        );
+        const result = await response.json();
+
+        if (response.ok && result.data) {
+          const detail = result.data;
+          setFormCode(detail.formCode || "");
+          setFormNumber(detail.formNumber || "");
+          setReceiptNumber(detail.receiptNumber || "");
+          setCustomerName(detail.customerName || "");
+          setAddress(detail.address || "");
+          setPaymentDate(detail.paymentDate || "");
+          setIsPaid(detail.isPaid || false);
+          setAttach(detail.attach || "");
+          setPaymentReason(detail.paymentReason || "");
+          setTotalMoneyInDigits(detail.totalMoneyInDigits);
+          setTotalMoneyInCharacters(detail.totalMoneyInCharacters || "");
+        } else {
+          setFormCode(initialData.formCode);
+          setFormNumber(initialData.formNumber);
+          setReceiptNumber(initialData.receiptNumber || "");
+          setCustomerName(initialData.customerName || "");
+          setAddress(initialData.address || "");
+          setPaymentDate(initialData.paymentDate || "");
+          setIsPaid(initialData.isPaid || false);
+          setAttach(initialData.attach || "");
+          setPaymentReason(initialData.paymentReason || "");
+          setTotalMoneyInDigits(initialData.totalMoneyInDigits || 0);
+          setTotalMoneyInCharacters(initialData.totalMoneyInCharacters || "");
         }
       } catch (error) {
-        console.error("Error fetching current user:", error);
+        setFormCode(initialData.formCode);
+        setFormNumber(initialData.formNumber);
+        setReceiptNumber(initialData.receiptNumber || "");
+        setCustomerName(initialData.customerName || "");
+        setAddress(initialData.address || "");
+        setPaymentDate(initialData.paymentDate || "");
+        setIsPaid(initialData.isPaid || false);
+        setAttach(initialData.attach || "");
+        setPaymentReason(initialData.paymentReason || "");
+        setTotalMoneyInDigits(initialData.totalMoneyInDigits || 0);
+        setTotalMoneyInCharacters(initialData.totalMoneyInCharacters || "");
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchCurrentUser();
-  }, []);
-
-  useEffect(() => {
-    if (initialData) {
-      setFormCode(initialData.formCode || "");
-      setFormNumber(initialData.formNumber || "");
-      setReceiptNumber(initialData.receiptNumber || "");
-      setCustomerName(initialData.customerName || "");
-      setAddress(initialData.address || "");
-      setPaymentDate(initialData.paymentDate || "");
-      setIsPaid(initialData.isPaid || false);
-      setAttach(initialData.attach || "");
-      setPaymentReason(initialData.paymentReason || "");
-      setTotalMoneyInDigits(initialData.totalMoneyInDigits || 0);
-      setTotalMoneyInCharacters(initialData.totalMoneyInCharacters || "");
-    }
+    fetchDetailData();
   }, [initialData]);
 
   const handleTotalMoneyChange = (value: string) => {
@@ -89,7 +143,6 @@ export const FeeForm = ({
     }
   };
 
-  // Format date function
   const formatDateForBackend = (dateStr: string) => {
     if (!dateStr) return null;
     try {
@@ -102,7 +155,6 @@ export const FeeForm = ({
       }
       return dateStr;
     } catch (error) {
-      console.error("Date format error:", error);
       return null;
     }
   };
@@ -129,15 +181,33 @@ export const FeeForm = ({
       return;
     }
 
+    if (!paymentReason) {
+      CallToast({
+        title: "Lỗi",
+        message: "Vui lòng nhập lý do thanh toán",
+        color: "danger",
+      });
+      return;
+    }
+
+    if (totalMoneyInDigits <= 0) {
+      CallToast({
+        title: "Lỗi",
+        message: "Vui lòng nhập số tiền thanh toán",
+        color: "danger",
+      });
+      return;
+    }
+
     try {
       setSubmitLoading(true);
 
       const url = `/api/construction/receipts`;
       const method = isEdit ? "PUT" : "POST";
-
       const formattedPaymentDate = formatDateForBackend(paymentDate);
 
-      let payload: any = {
+      // Base payload chung cho cả create và update
+      const basePayload = {
         formCode,
         formNumber,
         receiptNumber,
@@ -145,55 +215,27 @@ export const FeeForm = ({
         address,
         paymentDate: formattedPaymentDate,
         isPaid,
+        attach: attach || null,
+        paymentReason: paymentReason,
+        totalMoneyInDigits: totalMoneyInDigits,
+        totalMoneyInCharacters: totalMoneyInCharacters || null,
       };
 
-      if (!isEdit) {
-        // Validate required fields for create
-        if (!paymentReason) {
-          CallToast({
-            title: "Lỗi",
-            message: "Vui lòng nhập lý do thanh toán",
-            color: "danger",
-          });
-          setSubmitLoading(false);
-          return;
-        }
+      let payload;
 
-        if (totalMoneyInDigits <= 0) {
-          CallToast({
-            title: "Lỗi",
-            message: "Vui lòng nhập số tiền thanh toán",
-            color: "danger",
-          });
-          setSubmitLoading(false);
-          return;
-        }
-
+      if (isEdit) {
         payload = {
-          ...payload,
-          attach: attach || null,
-          paymentReason: paymentReason,
-          totalMoneyInDigit: totalMoneyInDigits,
-          totalMoneyInCharacters: totalMoneyInCharacters || null,
-          significanceOfReceiptCreator:
-            currentUser?.significanceUrl || "System",
+          ...basePayload,
+          significanceOfTreasurer: currentUser?.significanceUrl || null,
         };
       } else {
         payload = {
-          ...payload,
-          receiptNumber: receiptNumber,
-          customerName: customerName,
-          address: address,
-          paymentDate: formattedPaymentDate,
-          isPaid: isPaid,
-
-          attach: attach || null,
-          paymentReason: paymentReason,
-          totalMoneyInDigit: totalMoneyInDigits,
-          totalMoneyInCharacters: totalMoneyInCharacters || null,
-          significanceOfTreasurer: currentUser?.significanceUrl,
+          ...basePayload,
+          significanceOfReceiptCreator:
+            currentUser?.significanceUrl || "System",
         };
       }
+
       const response = await authFetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
@@ -216,7 +258,6 @@ export const FeeForm = ({
 
       onSuccess();
     } catch (e: any) {
-      console.error("Submit error:", e);
       CallToast({
         title: "Lỗi",
         message: e.message || "Có lỗi xảy ra",
@@ -226,6 +267,24 @@ export const FeeForm = ({
       setSubmitLoading(false);
     }
   };
+
+  if (loading) {
+    return (
+      <Card
+        shadow="sm"
+        className="rounded-2xl border border-divider bg-content1"
+      >
+        <CardBody className="p-8">
+          <div className="flex justify-center items-center">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+              <p className="mt-2 text-default-500">Đang tải dữ liệu...</p>
+            </div>
+          </div>
+        </CardBody>
+      </Card>
+    );
+  }
 
   return (
     <Card shadow="sm" className="rounded-2xl border border-divider bg-content1">
@@ -291,7 +350,6 @@ export const FeeForm = ({
               />
             </div>
 
-            {/* Cột phải */}
             <div className="space-y-5">
               <CustomInput
                 label="Lý do thanh toán"
@@ -301,7 +359,6 @@ export const FeeForm = ({
               />
 
               <CustomInput
-                type="number"
                 label="Tổng tiền (số)"
                 value={totalMoneyInDigits.toString()}
                 onChange={(e) => handleTotalMoneyChange(e.target.value)}
@@ -356,6 +413,7 @@ export const FeeForm = ({
       <LookupModal
         dataKey="content"
         isOpen={showFormModal}
+        enableSearch={false}
         onClose={() => setShowFormModal(false)}
         title="Chọn đơn lắp đặt"
         api="/api/construction/installation-forms"

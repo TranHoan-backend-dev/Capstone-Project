@@ -43,7 +43,7 @@ export const MaterialCostCard = ({
             code: item.materialCode,
             description: item.jobContent,
             unit: item.unit,
-            quantity: quantity,
+            quantity: quantity || 1,
             materialPrice: materialPrice,
             laborPrice: laborPrice,
             materialTotal: quantity * materialPrice,
@@ -94,7 +94,7 @@ export const MaterialCostCard = ({
             }
             size="sm"
             type="number"
-            step="1"
+            step="0.1"
           />
         );
       case "materialPrice":
@@ -199,7 +199,7 @@ export const MaterialCostCard = ({
         topContent={
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
             <SearchInputWithButton
-              label="Mã vật tư"
+              label="Chọn vật tư"
               onSearch={() => setShowMaterialModal(true)}
             />
           </div>

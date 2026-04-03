@@ -103,7 +103,7 @@ export function LookupModal<T extends { id: string }>({
           renderCellAction={(item, columnKey) => {
             return (
               <span
-                className="cursor-pointer text-blue-600"
+                className="cursor-pointer text-black-600"
                 onClick={() => {
                   onSelect(item);
                   onClose();

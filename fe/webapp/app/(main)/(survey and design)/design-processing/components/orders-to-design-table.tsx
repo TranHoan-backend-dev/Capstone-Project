@@ -73,7 +73,11 @@ const statusMap = {
 } as const;
 
 export const OrdersToDesignTable = ({
-  data,page,totalPages,totalElements,onPageChange,
+  data,
+  page,
+  totalPages,
+  totalElements,
+  onPageChange,
   onApprove,
 }: OrdersToDesignTableProps) => {
   const [selectedDesign, setSelectedDesign] =
@@ -325,7 +329,12 @@ export const OrdersToDesignTable = ({
               Hủy
             </CustomButton>
 
-            <CustomButton color="success" onPress={handleApproveConfirm}>
+            <CustomButton
+              color="success"
+              onPress={handleApproveConfirm}
+              className="text-white"
+              startContent={<ApprovalIcon className="w-4 h-4" />}
+            >
               Đồng ý
             </CustomButton>
           </ModalFooter>
@@ -352,7 +361,12 @@ export const OrdersToDesignTable = ({
               Hủy
             </CustomButton>
 
-            <CustomButton color="success" onPress={handleRejectConfirm}>
+            <CustomButton
+              color="success"
+              onPress={handleRejectConfirm}
+              className="text-white"
+              startContent={<ApprovalIcon className="w-4 h-4" />}
+            >
               Đồng ý
             </CustomButton>
           </ModalFooter>

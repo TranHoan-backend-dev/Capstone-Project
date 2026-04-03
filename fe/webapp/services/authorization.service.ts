@@ -20,11 +20,62 @@ export const getAllEmployees = (
     },
   });
 
+export const createEmployee = (
+  accessToken: string,
+  body: {
+    username: string;
+    email: string;
+    fullName: string;
+    phone: string;
+    role: string;
+    departmentId?: string;
+    waterSupplyNetworkId?: string;
+  },
+) => {
+  return axios.post(`${API_GATEWAY_URL}/auth/authorization/employees`, body, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+  });
+};
+
+export const updateEmployee = (
+  accessToken: string,
+  id: string,
+  body: {
+    name?: string;
+    phone?: string;
+    departmentId?: string;
+    networkId?: string;
+    isActive?: boolean;
+  },
+) => {
+  return axios.put(
+    `${API_GATEWAY_URL}/auth/authorization/employees/${id}`,
+    body,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    },
+  );
+};
+
+export const deleteEmployee = (accessToken: string, id: string) => {
+  return axios.delete(`${API_GATEWAY_URL}/auth/authorization/employees/${id}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
 export const getBusinessPageNamesOfEmployees = (
   accessToken: string,
   empId: string,
 ) =>
-  axios.get(`${API_GATEWAY_URL}/auth/authorization/${empId}/pages`, {
+  axios.get(`${API_GATEWAY_URL}/auth/authorization/employees/${empId}/pages`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },

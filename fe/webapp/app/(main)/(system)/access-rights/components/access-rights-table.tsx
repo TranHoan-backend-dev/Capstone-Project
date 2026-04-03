@@ -15,6 +15,8 @@ import {
   ModalHeader,
   ModalFooter,
 } from "@heroui/react";
+import { authFetch } from "@/utils/authFetch";
+import CustomButton from "@/components/ui/custom/CustomButton";
 
 interface Props {
   username: string;
@@ -35,6 +37,11 @@ export const AccessRightsTable = ({ username }: Props) => {
   const [selectedUser, setSelectedUser] = useState<{
     id: string;
     username: string;
+    fullName?: string;
+    email?: string;
+    departmentName?: string;
+    networkName?: string;
+    jobs?: string;
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -57,7 +64,7 @@ export const AccessRightsTable = ({ username }: Props) => {
           params.append("username", username);
         }
 
-        const res = await fetch(`/api/auth/employees?${params.toString()}`);
+        const res = await authFetch(`/api/auth/employees?${params.toString()}`);
 
         if (!res.ok) {
           console.error("Fetch failed", res.status);
@@ -68,13 +75,19 @@ export const AccessRightsTable = ({ username }: Props) => {
         const pageData = json?.data;
         const items = pageData?.content ?? [];
         const pageInfo = pageData?.page;
+
         setTotalItems(pageInfo?.totalElements ?? 0);
+        setTotalPages(pageInfo?.totalPages ?? 1);
 
         const mapped = items.map((item: any, index: number) => ({
           id: item.id,
           stt: (page - 1) * pageSize + index + 1,
-          username: item.username,
-          fullname: item.fullname,
+          username: item.username || "Chưa có tên đăng nhập",
+          fullname: item.fullName || item.fullname || "Chưa có tên",
+          email: item.email,
+          departmentName: item.departmentName,
+          networkName: item.networkName,
+          jobs: item.jobs,
         }));
         setData(mapped);
 
@@ -82,6 +95,11 @@ export const AccessRightsTable = ({ username }: Props) => {
           setSelectedUser({
             id: mapped[0].id,
             username: mapped[0].username,
+            fullName: mapped[0].fullname,
+            email: mapped[0].email,
+            departmentName: mapped[0].departmentName,
+            networkName: mapped[0].networkName,
+            jobs: mapped[0].jobs,
           });
         }
 
@@ -89,6 +107,7 @@ export const AccessRightsTable = ({ username }: Props) => {
           setSelectedUser(null);
         }
       } catch (e) {
+        console.error("Error fetching data:", e);
         setData([]);
         setTotalItems(0);
         setTotalPages(1);
@@ -104,6 +123,11 @@ export const AccessRightsTable = ({ username }: Props) => {
     setSelectedUser({
       id: item.id,
       username: item.username,
+      fullName: item.fullname,
+      email: (item as any).email,
+      departmentName: (item as any).departmentName,
+      networkName: (item as any).networkName,
+      jobs: (item as any).jobs,
     });
     setIsModalOpen(true);
   };
@@ -122,8 +146,12 @@ export const AccessRightsTable = ({ username }: Props) => {
             setSelectedUser({
               id: found.id,
               username: found.username,
+              fullName: found.fullname,
+              email: (found as any).email,
+              departmentName: (found as any).departmentName,
+              networkName: (found as any).networkName,
+              jobs: (found as any).jobs,
             });
-
             setIsModalOpen(true);
           }
         },
@@ -131,20 +159,21 @@ export const AccessRightsTable = ({ username }: Props) => {
     ],
     [data],
   );
+
   const renderCell = (item: AccessRightsItem, columnKey: string) => {
     switch (columnKey) {
       case "stt":
         return <span>{item.stt}</span>;
 
-      case "username":
-        return (
-          <button
-            onClick={() => handleSelectUser(item)}
-            className="font-semibold text-blue-600 hover:underline"
-          >
-            {item.username}
-          </button>
-        );
+      // case "username":
+      //   return (
+      //     <button
+      //       onClick={() => handleSelectUser(item)}
+      //       className="font-semibold text-blue-600 hover:underline"
+      //     >
+      //       {item.username || "Chưa có tên đăng nhập"}
+      //     </button>
+      //   );
 
       case "fullname":
         return (
@@ -152,7 +181,7 @@ export const AccessRightsTable = ({ username }: Props) => {
             onClick={() => handleSelectUser(item)}
             className="text-gray-700 hover:text-blue-600 hover:underline"
           >
-            {item.fullname}
+            {item.fullname || "Chưa có tên"}
           </button>
         );
 
@@ -199,28 +228,47 @@ export const AccessRightsTable = ({ username }: Props) => {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        size="3xl"
+        size="5xl"
       >
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader>Quyền truy cập</ModalHeader>
-
+              <ModalHeader>
+                Quyền truy cập -{" "}
+                {selectedUser?.fullName || selectedUser?.username}
+              </ModalHeader>
               <ModalBody>
                 {selectedUser && (
                   <UserPermissionPanel
                     empId={selectedUser.id}
                     username={selectedUser.username}
+                    userInfo={{
+                      fullName: selectedUser.fullName,
+                      email: selectedUser.email,
+                      departmentName: selectedUser.departmentName,
+                      networkName: selectedUser.networkName,
+                      jobs: selectedUser.jobs,
+                    }}
                   />
                 )}
               </ModalBody>
-
               <ModalFooter>
-                <Button variant="light" onPress={onClose}>
+                <CustomButton
+                  className="border border-gray-300 text-gray-700 hover:bg-gray-100"
+                  variant="light"
+                  onPress={onClose}
+                >
                   Huỷ
-                </Button>
+                </CustomButton>
 
-                <Button color="success">Lưu</Button>
+                <CustomButton
+                  className="bg-green-500 hover:bg-green-600 text-white"
+                  color="success"
+                  onPress={onClose}
+                  startContent={<EditIcon className="w-5 h-5" />}
+                >
+                  Lưu
+                </CustomButton>
               </ModalFooter>
             </>
           )}

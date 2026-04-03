@@ -9,6 +9,7 @@ import { Card, CardBody } from "@heroui/react";
 import React, { useState, useEffect } from "react";
 import { useIsITStaff } from "@/hooks/useHasRole";
 import { validateBranchName } from "@/utils/validation";
+import { authFetch } from "@/utils/authFetch";
 
 export const NetworkForm = ({
   initialData,
@@ -48,7 +49,7 @@ export const NetworkForm = ({
         name,
       };
 
-      const response = await fetch(url, {
+      const response = await authFetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

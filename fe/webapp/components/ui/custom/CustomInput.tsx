@@ -13,6 +13,7 @@ const CustomInput = ({
   type = "text",
   label,
   isRequired,
+  className = "",
   ...props
 }: CustomInputProps) => {
   return (
@@ -24,6 +25,7 @@ const CustomInput = ({
       size="md"
       type={type}
       variant="bordered"
+      className={`w-full ${className}`}
       {...props}
     />
   );

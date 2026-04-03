@@ -28,6 +28,7 @@ export interface NewInstallationLookupItem {
   address: string;
   stage: OrderStage;
   status: OrderStatus;
+  canAssign: boolean;
 }
 
 type FormStatus = {
