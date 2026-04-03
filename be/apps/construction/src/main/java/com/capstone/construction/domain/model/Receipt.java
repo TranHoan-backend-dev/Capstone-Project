@@ -77,21 +77,6 @@ public class Receipt {
     this.customerName = customerName;
   }
 
-  public void setTotalMoneyInDigits(String value) {
-    requireNonNullAndNotEmpty(value, Message.PT_60);
-    this.totalMoneyInDigits = value;
-  }
-
-  public void setTotalMoneyInCharacters(String value) {
-    requireNonNullAndNotEmpty(value, Message.PT_65);
-    this.totalMoneyInCharacters = value;
-  }
-
-  public void setPaymentReason(String value) {
-    requireNonNullAndNotEmpty(value, Message.PT_66);
-    this.paymentReason = value;
-  }
-
   public void setAddress(String address) {
     requireNonNullAndNotEmpty(address, SharedMessage.MES_06);
     this.address = address;

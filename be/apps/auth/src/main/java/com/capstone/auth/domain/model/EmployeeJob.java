@@ -6,6 +6,7 @@ import com.capstone.common.utils.SharedMessage;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -35,7 +36,7 @@ public class EmployeeJob {
     this.users = users;
   }
 
-  public static EmployeeJob create(Consumer<EmployeeJobBuilder> consumer) {
+  public static EmployeeJob create(@NonNull Consumer<EmployeeJobBuilder> consumer) {
     var builder = new EmployeeJobBuilder();
     consumer.accept(builder);
     return builder.build();

@@ -6,6 +6,7 @@ import com.capstone.device.infrastructure.util.Message;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -41,23 +42,7 @@ public class MaterialsOfSettlement {
     this.material = Objects.requireNonNull(material, Message.ENT_33);
   }
 
-  public void setLaborCost(String laborCost) {
-    this.laborCost = Objects.requireNonNull(laborCost, Message.ENT_30);
-    if (laborCost.isBlank())
-      throw new IllegalArgumentException(Message.ENT_30);
-  }
-
-  public void setMaterialCost(String materialCost) {
-    this.materialCost = Objects.requireNonNull(materialCost, Message.ENT_31);
-    if (materialCost.isBlank())
-      throw new IllegalArgumentException(Message.ENT_31);
-  }
-
-  public void setNote(String note) {
-    this.note = Objects.requireNonNull(note, Message.ENT_55);
-  }
-
-  public static MaterialsOfSettlement create(Consumer<MaterialsOfSettlementBuilder> consumer) {
+  public static MaterialsOfSettlement create(@NonNull Consumer<MaterialsOfSettlementBuilder> consumer) {
     MaterialsOfSettlementBuilder builder = new MaterialsOfSettlementBuilder();
     consumer.accept(builder);
     return builder.build();
@@ -73,21 +58,6 @@ public class MaterialsOfSettlement {
 
     public MaterialsOfSettlementBuilder material(Material material) {
       instance.setMaterial(material);
-      return this;
-    }
-
-    public MaterialsOfSettlementBuilder laborCost(String laborCost) {
-      instance.setLaborCost(laborCost);
-      return this;
-    }
-
-    public MaterialsOfSettlementBuilder materialCost(String materialCost) {
-      instance.setMaterialCost(materialCost);
-      return this;
-    }
-
-    public MaterialsOfSettlementBuilder note(String note) {
-      instance.setNote(note);
       return this;
     }
 

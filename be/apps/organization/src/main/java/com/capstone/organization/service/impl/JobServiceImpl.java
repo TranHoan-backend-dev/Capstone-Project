@@ -40,7 +40,7 @@ public class JobServiceImpl implements JobService {
     log.info("Creating job with name: {}", request.name());
 
     if (jobRepository.existsByNameIgnoreCase(request.name())) {
-      throw new IllegalArgumentException(Message.ORG_13.concat(": ").concat(request.name()));
+      throw new IllegalArgumentException(Message.ORG_04.concat(": ").concat(request.name()));
     }
 
     var entity = Job.create(builder -> builder
@@ -56,12 +56,12 @@ public class JobServiceImpl implements JobService {
     log.info("Updating job: {}", jobId);
 
     var entity = jobRepository.findById(jobId)
-      .orElseThrow(() -> new IllegalArgumentException(Message.ORG_12));
+      .orElseThrow(() -> new IllegalArgumentException(Message.ORG_03));
 
     jobRepository.findByNameIgnoreCase(request.name())
       .ifPresent(existing -> {
         if (!existing.getId().equals(jobId)) {
-          throw new IllegalArgumentException(Message.ORG_13);
+          throw new IllegalArgumentException(Message.ORG_04);
         }
       });
 
@@ -77,12 +77,12 @@ public class JobServiceImpl implements JobService {
     log.info("Deleting job: {}", jobId);
 
     if (!jobRepository.existsById(jobId)) {
-      throw new IllegalArgumentException(Message.ORG_12);
+      throw new IllegalArgumentException(Message.ORG_03);
     }
 
     var response = employeeService.isJobAssigned(jobId);
     if (response != null && response.data() != null && (Boolean) response.data()) {
-      throw new IllegalArgumentException(Message.ORG_14);
+      throw new IllegalArgumentException(Message.ORG_05);
     }
 
     jobRepository.deleteById(jobId);

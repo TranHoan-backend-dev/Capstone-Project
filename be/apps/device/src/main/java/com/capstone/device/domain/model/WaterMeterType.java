@@ -116,11 +116,6 @@ public class WaterMeterType {
     this.diameter = diameter;
   }
 
-  public void setWaterMeter(List<WaterMeter> waterMeter) {
-    Objects.requireNonNull(waterMeter, Message.ENT_24);
-    this.waterMeter = waterMeter;
-  }
-
   private void requireNonNullAndNotEmpty(String value, String message) {
     Objects.requireNonNull(value, message);
     if (value.trim().isEmpty()) {
@@ -179,11 +174,6 @@ public class WaterMeterType {
 
     public WaterMeterTypeBuilder diameter(Float diameter) {
       type.setDiameter(diameter);
-      return this;
-    }
-
-    public WaterMeterTypeBuilder waterMeter(List<WaterMeter> waterMeter) {
-      type.setWaterMeter(waterMeter);
       return this;
     }
 

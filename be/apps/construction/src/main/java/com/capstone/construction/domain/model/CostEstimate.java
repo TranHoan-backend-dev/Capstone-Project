@@ -186,11 +186,6 @@ public class CostEstimate implements Serializable {
     this.designImageUrl = designImageUrl;
   }
 
-  public void setCreateBy(String createBy) {
-    requireNonNullAndNotEmpty(createBy, Message.PT_26);
-    this.createBy = createBy;
-  }
-
   public void setWaterMeterSerial(String waterMeterId) {
     requireNonNullAndNotEmpty(waterMeterId, Message.PT_27);
     this.waterMeterSerial = waterMeterId;
@@ -239,78 +234,8 @@ public class CostEstimate implements Serializable {
       return this;
     }
 
-    public EstimationBuilder contractFee(Integer contractFee) {
-      instance.setContractFee(contractFee);
-      return this;
-    }
-
-    public EstimationBuilder surveyFee(Integer surveyFee) {
-      instance.setSurveyFee(surveyFee);
-      return this;
-    }
-
-    public EstimationBuilder surveyEffort(Integer surveyEffort) {
-      instance.setSurveyEffort(surveyEffort);
-      return this;
-    }
-
-    public EstimationBuilder installationFee(Integer installationFee) {
-      instance.setInstallationFee(installationFee);
-      return this;
-    }
-
-    public EstimationBuilder laborCoefficient(Integer laborCoefficient) {
-      instance.setLaborCoefficient(laborCoefficient);
-      return this;
-    }
-
-    public EstimationBuilder generalCostCoefficient(Integer generalCostCoefficient) {
-      instance.setGeneralCostCoefficient(generalCostCoefficient);
-      return this;
-    }
-
-    public EstimationBuilder precalculatedTaxCoefficient(Integer precalculatedTaxCoefficient) {
-      instance.setPrecalculatedTaxCoefficient(precalculatedTaxCoefficient);
-      return this;
-    }
-
-    public EstimationBuilder constructionMachineryCoefficient(Integer constructionMachineryCoefficient) {
-      instance.setConstructionMachineryCoefficient(constructionMachineryCoefficient);
-      return this;
-    }
-
-    public EstimationBuilder vatCoefficient(Integer vatCoefficient) {
-      instance.setVatCoefficient(vatCoefficient);
-      return this;
-    }
-
-    public EstimationBuilder designCoefficient(Integer designCoefficient) {
-      instance.setDesignCoefficient(designCoefficient);
-      return this;
-    }
-
     public EstimationBuilder installationForm(InstallationForm value) {
       instance.setInstallationForm(value);
-      return this;
-    }
-
-    public EstimationBuilder designFee(Integer designFee) {
-      instance.setDesignFee(designFee);
-      return this;
-    }
-
-    public EstimationBuilder designImageUrl(String designImageUrl) {
-      instance.setDesignImageUrl(designImageUrl);
-      return this;
-    }
-
-    public EstimationBuilder createBy(String createBy) {
-      instance.setCreateBy(createBy);
-      return this;
-    }
-
-    public EstimationBuilder waterMeterSerial(String waterMeterSerial) {
-      instance.setWaterMeterSerial(waterMeterSerial);
       return this;
     }
 
