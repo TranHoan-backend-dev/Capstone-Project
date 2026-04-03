@@ -36,6 +36,7 @@ export default function CustomerList({
     m3: c.latestUsage ? c.latestUsage.mass : '--',
     status: c.displayStatus,
     amount: c.latestUsage ? c.latestUsage.price : '---.---',
+    meterId: c.waterMeterId,
   }));
 
   const filteredCustomers = mappedCustomers.filter(c => {

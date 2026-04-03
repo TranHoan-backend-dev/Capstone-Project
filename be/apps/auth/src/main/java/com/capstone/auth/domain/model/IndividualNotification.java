@@ -23,9 +23,6 @@ public class IndividualNotification {
   @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
   Boolean isRead = false;
 
-  // @Column(nullable = false, updatable = false)
-  // java.time.LocalDateTime createdAt = java.time.LocalDateTime.now();
-
   @Data
   @NoArgsConstructor
   @AllArgsConstructor

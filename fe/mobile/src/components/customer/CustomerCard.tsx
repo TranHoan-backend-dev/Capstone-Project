@@ -8,7 +8,7 @@ import styles from './customer.styles';
 export default function CustomerCard({ data }: any) {
   const navigation = useNavigation<any>();
 
-  const handleInputMeter = () => {
+  const handleCardPress = () => {
     navigation.navigate('MeterInput', {
       customerId: data.id,
       customerName: data.name,
@@ -17,8 +17,18 @@ export default function CustomerCard({ data }: any) {
     });
   };
 
+  const handleTakePhoto = () => {
+    navigation.navigate('CaptureWaterMeter', {
+      customerId: data.id,
+      customerName: data.name,
+      address: data.address,
+      meterId: data.meterId,
+      stt: data.stt,
+    });
+  };
+
   return (
-    <TouchableOpacity activeOpacity={0.8} onPress={handleInputMeter}>
+    <TouchableOpacity activeOpacity={0.8} onPress={handleCardPress}>
       <Card style={styles.card}>
         <Card.Content style={{ paddingVertical: 12 }}>
           {/* Header Row: ID and Status Badge */}
@@ -29,14 +39,14 @@ export default function CustomerCard({ data }: any) {
             </View>
 
             <Button
-              mode="outlined"
-              icon="file-document-edit-outline"
+              mode="contained"
+              icon="camera"
               compact
-              style={{ borderColor: '#4CAF50', borderRadius: 6 }}
-              labelStyle={{ color: '#4CAF50', fontSize: 13, marginHorizontal: 8, marginVertical: 4 }}
-              onPress={handleInputMeter}
+              style={{ backgroundColor: '#1E88E5', borderRadius: 6 }}
+              labelStyle={{ color: '#FFFFFF', fontSize: 13, marginHorizontal: 8, marginVertical: 4 }}
+              onPress={handleTakePhoto}
             >
-              Nhập chỉ số
+              Chụp ảnh
             </Button>
           </View>
 
