@@ -20,44 +20,28 @@ import {
   CurrencyDollarIcon,
   TrashIcon,
   ExclamationTriangleIcon,
+  DocumentTextIcon,
 } from "@heroicons/react/24/outline";
+import { useWebSocketWithFallback } from "@/hooks/useWebSocketWithFallback";
 
-// Interface cho response từ API
+// Interface cho response từ API - Cập nhật theo dữ liệu thực tế
 interface ApiNotification {
-  id: string;
-  title?: string;
-  content: string;
-  type: string;
-  isRead: boolean;
+  notificationId: string;
+  title: string;
+  message: string;
+  status: boolean; // false = unread, true = read
   createdAt: string;
-  sender?: {
-    id: string;
-    name: string;
-    avatar?: string;
-  };
-  metadata?: Record<string, any>;
+  link: string | null;
 }
 
 interface Notification {
   id: string;
-  sender: string;
+  title: string;
   message: string;
-  time: string;
   isRead: boolean;
-  avatar: string;
-  type:
-    | "device_login"
-    | "message"
-    | "system"
-    | "billing"
-    | "security"
-    | "sign-request";
-  metadata?: {
-    deviceInfo?: string;
-    ipAddress?: string;
-    loginTime?: string;
-    location?: string;
-  };
+  createdAt: string;
+  link: string | null;
+  time: string;
 }
 
 // Helper function để format thời gian
@@ -77,17 +61,26 @@ const formatTime = (dateString: string): string => {
   return date.toLocaleDateString("vi-VN");
 };
 
-// Helper function để map type từ API
-const mapNotificationType = (type: string): Notification["type"] => {
-  const typeMap: Record<string, Notification["type"]> = {
-    DEVICE_LOGIN: "device_login",
-    MESSAGE: "message",
-    SYSTEM: "system",
-    BILLING: "billing",
-    SECURITY: "security",
-    SIGN_REQUEST: "sign-request",
-  };
-  return typeMap[type] || "message";
+// Lấy icon dựa trên title
+const getNotificationIcon = (title: string) => {
+  if (title?.toLowerCase().includes("ký")) {
+    return <DocumentTextIcon className="w-3.5 h-3.5 text-white" />;
+  }
+  if (title?.toLowerCase().includes("hệ thống")) {
+    return <ComputerDesktopIcon className="w-3.5 h-3.5 text-white" />;
+  }
+  return <CheckCircleIcon className="w-3.5 h-3.5 text-white" />;
+};
+
+// Lấy màu icon dựa trên title
+const getNotificationIconColor = (title: string) => {
+  if (title?.toLowerCase().includes("ký")) {
+    return "bg-purple-600";
+  }
+  if (title?.toLowerCase().includes("hệ thống")) {
+    return "bg-blue-600";
+  }
+  return "bg-orange-600";
 };
 
 const NotificationDropdown = () => {
@@ -100,9 +93,39 @@ const NotificationDropdown = () => {
   const [totalElements, setTotalElements] = useState(0);
   const [hasError, setHasError] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [isConnected] = useState(true);
 
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const handleNewNotification = useCallback((newNotification: any) => {
+    console.log("📨 New notification received:", newNotification);
+
+    const transformed: Notification = {
+      id: newNotification.notificationId,
+      title: newNotification.title || "Thông báo",
+      message: newNotification.message,
+      isRead: newNotification.status === true,
+      createdAt: newNotification.createdAt,
+      link: newNotification.link,
+      time: formatTime(newNotification.createdAt),
+    };
+
+    setNotifications((prev) => {
+      const exists = prev.some((n) => n.id === transformed.id);
+      if (exists) return prev;
+      return [transformed, ...prev];
+    });
+  }, []);
+
+  const { isConnected, isUsingPolling } = useWebSocketWithFallback(
+    handleNewNotification,
+    5000,
+  );
+
+  useEffect(() => {
+    if (isUsingPolling) {
+      console.log("⚠️ Using polling fallback for notifications");
+    }
+  }, [isUsingPolling]);
 
   // Fetch notifications từ API
   const fetchNotifications = useCallback(
@@ -115,29 +138,31 @@ const NotificationDropdown = () => {
       setHasError(false);
 
       try {
-        const response = await fetch(`/api/notifications?page=${page}&size=10`);
+        const response = await fetch(`/api/notifications?page=${page}&size=5`);
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const data = await response.json();
+        const result = await response.json();
+console.log(result)
+        // Cập nhật theo format API thực tế
+        const data = result.data;
+        const items = data?.items || [];
+        const totalFound = data?.totalFound || 0;
 
-        // Transform API response to component's notification format
-        const transformedNotifications: Notification[] = (
-          data.content ||
-          data.data ||
-          []
-        ).map((item: ApiNotification) => ({
-          id: item.id,
-          sender: item.sender?.name || item.title || "Hệ thống",
-          message: item.content,
-          time: formatTime(item.createdAt),
-          isRead: item.isRead,
-          avatar: item.sender?.avatar || "",
-          type: mapNotificationType(item.type),
-          metadata: item.metadata,
-        }));
+        // Transform API response
+        const transformedNotifications: Notification[] = items.map(
+          (item: ApiNotification) => ({
+            id: item.notificationId,
+            title: item.title,
+            message: item.message,
+            isRead: item.status === true, // status = true là đã đọc
+            createdAt: item.createdAt,
+            link: item.link,
+            time: formatTime(item.createdAt),
+          }),
+        );
 
         if (isLoadMore) {
           setNotifications((prev) => [...prev, ...transformedNotifications]);
@@ -145,8 +170,10 @@ const NotificationDropdown = () => {
           setNotifications(transformedNotifications);
         }
 
-        setTotalPages(data.totalPages || Math.ceil((data.total || 0) / 10));
-        setTotalElements(data.totalElements || data.total || 0);
+        // Tính total pages dựa trên totalFound
+        const pages = Math.ceil(totalFound / 10);
+        setTotalPages(pages);
+        setTotalElements(totalFound);
         setCurrentPage(page);
       } catch (error) {
         console.error("Failed to fetch notifications:", error);
@@ -256,102 +283,24 @@ const NotificationDropdown = () => {
     }
   }, [isOpen, fetchNotifications, notifications.length, hasError]);
 
-  // Lấy background color theo loại thông báo
-  const getNotificationBgColor = (type: Notification["type"]) => {
-    switch (type) {
-      case "sign-request":
-        return "bg-purple-100";
-      case "system":
-        return "bg-blue-100";
-      case "billing":
-        return "bg-green-100";
-      case "device_login":
-        return "bg-indigo-100";
-      case "security":
-        return "bg-red-100";
-      case "message":
-      default:
-        return "bg-orange-100";
-    }
-  };
-
   const unreadCount = notifications.filter((n) => !n.isRead).length;
   const filteredNotifications =
     filter === "all" ? notifications : notifications.filter((n) => !n.isRead);
 
-  // Lấy icon color theo loại thông báo
-  const getNotificationIconColor = (type: Notification["type"]) => {
-    switch (type) {
-      case "sign-request":
-        return "bg-purple-600";
-      case "system":
-        return "bg-blue-600";
-      case "billing":
-        return "bg-green-600";
-      case "device_login":
-        return "bg-indigo-600";
-      case "security":
-        return "bg-red-600";
-      case "message":
-      default:
-        return "bg-orange-600";
-    }
-  };
-
-  // Lấy icon component theo loại thông báo
-  const getNotificationIcon = (type: Notification["type"]) => {
-    switch (type) {
-      case "sign-request":
-        return <CheckCircleIcon className="w-3.5 h-3.5 text-white" />;
-      case "system":
-        return <ComputerDesktopIcon className="w-3.5 h-3.5 text-white" />;
-      case "billing":
-        return <CurrencyDollarIcon className="w-3.5 h-3.5 text-white" />;
-      case "device_login":
-        return <ComputerDesktopIcon className="w-3.5 h-3.5 text-white" />;
-      case "security":
-        return <ShieldCheckIcon className="w-3.5 h-3.5 text-white" />;
-      case "message":
-      default:
-        return <CheckCircleIcon className="w-3.5 h-3.5 text-white" />;
-    }
-  };
-
+  // Format message display
   const formatMessage = (notification: Notification) => {
-    if (notification.type === "device_login" && notification.metadata) {
-      return (
-        <div>
-          <p className="text-[14px] leading-[1.3]">
-            <span className="font-bold text-foreground">
-              {notification.sender}
-            </span>{" "}
-            <span
-              className={!notification.isRead ? "font-bold" : "font-medium"}
-            >
-              {notification.message}
-            </span>
-          </p>
-          {notification.metadata.location && (
-            <p className="text-[11px] text-default-400 mt-1">
-              {notification.metadata.location} •{" "}
-              {notification.metadata.deviceInfo}
-            </p>
-          )}
-        </div>
-      );
-    }
-
     return (
-      <p
-        className={`text-[14px] leading-[1.3] ${
-          !notification.isRead
-            ? "font-bold text-foreground"
-            : "text-default-600 font-medium"
-        }`}
-      >
-        <span className="text-foreground">{notification.sender}</span>{" "}
-        {notification.message}
-      </p>
+      <div>
+        <p className="text-[14px] leading-[1.3]">
+          <span className="font-bold text-foreground">
+            {notification.title}
+          </span>
+          <span className={!notification.isRead ? "font-bold" : "font-medium"}>
+            {" - "}
+            {notification.message}
+          </span>
+        </p>
+      </div>
     );
   };
 
@@ -411,7 +360,7 @@ const NotificationDropdown = () => {
     }
 
     return (
-      <div className="flex flex-col py-2 px-2">
+      <div className="flex flex-col py-4 px-2">
         {filteredNotifications.map((n) => (
           <div
             key={n.id}
@@ -422,19 +371,14 @@ const NotificationDropdown = () => {
           >
             <div className="relative shrink-0">
               <Avatar
-                className={
-                  !n.avatar
-                    ? "bg-primary-50 text-primary font-bold"
-                    : "border border-divider"
-                }
-                name={n.sender}
+                className="bg-primary-50 text-primary font-bold"
+                name={n.title.charAt(0)}
                 size="lg"
-                src={n.avatar}
               />
               <div
-                className={`absolute -bottom-1 -right-1 rounded-full p-1 border-2 border-background ${getNotificationIconColor(n.type)}`}
+                className={`absolute -bottom-1 -right-1 rounded-full p-1 border-2 border-background ${getNotificationIconColor(n.title)}`}
               >
-                {getNotificationIcon(n.type)}
+                {getNotificationIcon(n.title)}
               </div>
             </div>
             <div className="flex-1 min-w-0 pr-4">
@@ -490,7 +434,7 @@ const NotificationDropdown = () => {
       <DropdownTrigger>
         <Button
           isIconOnly
-          className="w-5 h-5 relative text-default-600 hover:bg-default-100"
+          className="w-7 h-7 relative text-default-600 hover:bg-default-100"
           radius="full"
           variant="light"
         >
@@ -505,10 +449,10 @@ const NotificationDropdown = () => {
             placement="top-right"
           >
             <BellIcon className="w-6 h-6 text-default-600" />
+            {isConnected && (
+              <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-600 rounded-full border-2 border-background z-20" />
+            )}
           </Badge>
-          {isConnected && (
-            <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-600 rounded-full border-2 border-background z-20" />
-          )}
         </Button>
       </DropdownTrigger>
       <DropdownMenu
@@ -634,8 +578,8 @@ const NotificationDropdown = () => {
           </DropdownItem>
         </DropdownSection>
 
-        {/* Footer Section - Only show when there are notifications */}
-        {!isInitialLoading && !hasError && notifications.length > 0 ? (
+        {/* Footer Section */}
+        {(!isInitialLoading && !hasError && notifications.length > 0) ? (
           <DropdownSection
             aria-label="Footer"
             classNames={{
