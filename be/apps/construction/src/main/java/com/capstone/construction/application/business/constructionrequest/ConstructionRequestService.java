@@ -2,7 +2,6 @@ package com.capstone.construction.application.business.constructionrequest;
 
 import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.construction.application.dto.response.construction.ConstructionResponse;
-import com.capstone.construction.domain.model.InstallationForm;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -15,7 +14,7 @@ public interface ConstructionRequestService {
 
   ConstructionResponse getById(String id);
 
-  ConstructionResponse getByInstallationForm(InstallationForm installationForm);
+  ConstructionResponse getByInstallationForm(String formCode, String formNumber);
 
   Page<ConstructionResponse> getConstructionRequestsList(Pageable pageable, BaseFilterRequest request);
 }

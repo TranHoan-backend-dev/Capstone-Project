@@ -1,9 +1,8 @@
-package com.capstone.notification.event.consumer.waterprices.processing;
+package com.capstone.notification.event.consumer.waterprices;
 
 import com.capstone.common.enumerate.RoleName;
 import com.capstone.notification.event.consumer.GeneralEventConsumer;
 import com.capstone.notification.event.consumer.Topic;
-import com.capstone.notification.event.consumer.waterprices.message.WaterPricesEventMessage;
 import com.capstone.notification.event.producer.MessageProducer;
 import org.jspecify.annotations.NonNull;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;

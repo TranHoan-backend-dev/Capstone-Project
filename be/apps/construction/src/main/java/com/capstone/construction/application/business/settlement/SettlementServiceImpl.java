@@ -154,8 +154,8 @@ public class SettlementServiceImpl implements SettlementService {
       settlement.getCreatedAt(),
       settlement.getUpdatedAt(),
       settlement.getRegistrationAt(),
-      installationForm.getFormCode().toString(),
-      installationForm.getFormNumber().toString(),
+      installationForm.getFormCode(),
+      installationForm.getFormNumber(),
       settlement.getSignificance(),
       installationForm.getStatus()
     );

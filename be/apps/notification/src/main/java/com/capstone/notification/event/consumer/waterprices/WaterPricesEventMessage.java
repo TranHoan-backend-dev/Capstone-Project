@@ -1,4 +1,4 @@
-package com.capstone.notification.event.consumer.waterprices.message;
+package com.capstone.notification.event.consumer.waterprices;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

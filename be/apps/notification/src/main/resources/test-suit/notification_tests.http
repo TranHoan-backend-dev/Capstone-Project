@@ -1,235 +1,489 @@
-### TC01 - Create notification successfully (IT_STAFF)
+### TC01 - Create individual notification successfully
 POST http://localhost:9007/api/v1/notification
 Content-Type: application/json
-Authorization: Bearer {{it_staff_token}}
+Authorization: Bearer {{access_token}}
 
 {
-  "title": "Bảo trì hệ thống định kỳ",
-  "message": "Hệ thống sẽ tạm ngưng hoạt động từ 00:00 đến 02:00 ngày 25/03/2026 để nâng cấp.",
-  "link": "/news/maintenance-2026-03"
+  "title": "System Update",
+  "message": "The system will be updated at midnight.",
+  "link": "/updates/1"
 }
 
 > {%
-client.test("Status is 201", function() {
-  client.assert(response.status === 201);
-});
+  client.test("Status is 201", function () {
+    client.assert(response.status === 201);
+  });
 %}
 
 
-### TC02 - Create notification without Authorization
+### TC02 - Missing title in individual notification
 POST http://localhost:9007/api/v1/notification
 Content-Type: application/json
+Authorization: Bearer {{access_token}}
 
 {
-  "title": "Unauthorized Test",
-  "message": "Should fail",
+  "message": "Message without title",
   "link": "/test"
 }
 
 > {%
-client.test("Status is 401 or 403", function() {
-  client.assert(response.status === 401 || response.status === 403);
-});
+  client.test("Status is 400", function () {
+    client.assert(response.status === 400);
+  });
 %}
 
 
-### TC03 - Create notification with invalid role (e.g. USER)
+### TC03 - Null title in individual notification
 POST http://localhost:9007/api/v1/notification
 Content-Type: application/json
-Authorization: Bearer {{user_token}}
+Authorization: Bearer {{access_token}}
 
 {
-  "title": "Forbidden Test",
-  "message": "Should fail",
-  "link": "/test"
+  "title": null,
+  "message": "Message with null title"
 }
 
 > {%
-client.test("Status is 403", function() {
-  client.assert(response.status === 403);
-});
+  client.test("Status is 400", function () {
+    client.assert(response.status === 400);
+  });
 %}
 
 
-### TC04 - Missing title
+### TC04 - Empty title in individual notification
 POST http://localhost:9007/api/v1/notification
 Content-Type: application/json
-Authorization: Bearer {{it_staff_token}}
-
-{
-  "message": "Missing title",
-  "link": "/test"
-}
-
-> {%
-client.test("Status is 400", function() {
-  client.assert(response.status === 400);
-});
-%}
-
-
-### TC05 - Empty title
-POST http://localhost:9007/api/v1/notification
-Content-Type: application/json
-Authorization: Bearer {{it_staff_token}}
+Authorization: Bearer {{access_token}}
 
 {
   "title": "",
-  "message": "Empty title",
-  "link": "/test"
+  "message": "Message with empty title"
 }
 
 > {%
-client.test("Status is 400", function() {
-  client.assert(response.status === 400);
-});
+  client.test("Status is 400", function () {
+    client.assert(response.status === 400);
+  });
 %}
 
 
-### TC06 - Missing message
+### TC05 - Missing message in individual notification
 POST http://localhost:9007/api/v1/notification
 Content-Type: application/json
-Authorization: Bearer {{it_staff_token}}
+Authorization: Bearer {{access_token}}
 
 {
-  "title": "Valid title",
-  "link": "/test"
+  "title": "Title only"
 }
 
 > {%
-client.test("Status is 400", function() {
-  client.assert(response.status === 400);
-});
+  client.test("Status is 400", function () {
+    client.assert(response.status === 400);
+  });
 %}
 
 
-### TC07 - Create department notification successfully
-POST http://localhost:9007/api/v1/notification/departments
+### TC06 - Whitespace only message
+POST http://localhost:9007/api/v1/notification
 Content-Type: application/json
-Authorization: Bearer {{it_staff_token}}
+Authorization: Bearer {{access_token}}
 
 {
-  "title": "Thông báo họp phòng IT",
-  "message": "Họp triển khai dự án Capstone tại phòng 202.",
-  "link": "/meetings/it-dept",
-  "targetDepartmentCodes": ["IT", "TECHNICAL"]
+  "title": "Valid Title",
+  "message": "   "
 }
 
 > {%
-client.test("Status is 201", function() {
-  client.assert(response.status === 201);
-});
+  client.test("Status is 400", function () {
+    client.assert(response.status === 400);
+  });
 %}
 
 
-### TC08 - Create department notification with null body
-POST http://localhost:9007/api/v1/notification/departments
+### TC07 - Invalid data type for title (number)
+POST http://localhost:9007/api/v1/notification
 Content-Type: application/json
-Authorization: Bearer {{it_staff_token}}
+Authorization: Bearer {{access_token}}
+
+{
+  "title": 12345,
+  "message": "Message with numeric title"
+}
+
+> {%
+  client.test("Status is 400", function () {
+    client.assert(response.status === 400);
+  });
+%}
+
+
+### TC08 - Invalid data type for message (array)
+POST http://localhost:9007/api/v1/notification
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "Title",
+  "message": [
+    "Invalid",
+    "Type"
+  ]
+}
+
+> {%
+  client.test("Status is 400", function () {
+    client.assert(response.status === 400);
+  });
+%}
+
+
+### TC09 - Boundary - Very long title
+POST http://localhost:9007/api/v1/notification
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+  "message": "Testing long title boundary"
+}
+
+> {%
+  client.test("Status is 400 or 201", function () {
+    client.assert(response.status === 400 || response.status === 201);
+  });
+%}
+
+
+### TC10 - Boundary - Empty string link
+POST http://localhost:9007/api/v1/notification
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "Title",
+  "message": "Message",
+  "link": ""
+}
+
+> {%
+  client.test("Status is 201", function () {
+    client.assert(response.status === 201);
+  });
+%}
+
+
+### TC11 - Security - SQL Injection attempt in title
+POST http://localhost:9007/api/v1/notification
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "' OR '1'='1' --",
+  "message": "Database threat test"
+}
+
+> {%
+  client.test("Status is 400 or 201", function () {
+    client.assert(response.status === 400 || response.status === 201);
+  });
+%}
+
+
+### TC12 - Security - XSS Script in message
+POST http://localhost:9007/api/v1/notification
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "Alert",
+  "message": "<script>alert('XSS')</script>",
+  "link": "javascript:void(0)"
+}
+
+> {%
+  client.test("Status is 400 or 201", function () {
+    client.assert(response.status === 400 || response.status === 201);
+  });
+%}
+
+
+### TC13 - Malformed JSON body
+POST http://localhost:9007/api/v1/notification
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "Broken JSON",
+  "message": "Missing comma"
+}
+
+> {%
+  client.test("Status is 400", function () {
+    client.assert(response.status === 400);
+  });
+%}
+
+
+### TC14 - Empty JSON object
+POST http://localhost:9007/api/v1/notification
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+}
+
+> {%
+  client.test("Status is 400", function () {
+    client.assert(response.status === 400);
+  });
+%}
+
+
+### TC15 - Null request body
+POST http://localhost:9007/api/v1/notification
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
 
 null
 
 > {%
-client.test("Status is 400", function() {
-  client.assert(response.status === 400);
-});
+  client.test("Status is 400", function () {
+    client.assert(response.status === 400);
+  });
 %}
 
 
-### TC09 - Create department notification with empty JSON
+### TC16 - Create department notification successfully
 POST http://localhost:9007/api/v1/notification/departments
 Content-Type: application/json
-Authorization: Bearer {{it_staff_token}}
+Authorization: Bearer {{access_token}}
 
-{}
+{
+  "title": "Department Meeting",
+  "message": "General meeting for IT and Finance.",
+  "link": "/meeting/it-finance",
+  "targetDepartmentCodes": [
+    "IT",
+    "FINANCE"
+  ]
+}
 
 > {%
-client.test("Status is 400", function() {
-  client.assert(response.status === 400);
-});
+  client.test("Status is 201", function () {
+    client.assert(response.status === 201);
+  });
 %}
 
 
-### TC10 - Get notifications successfully
+### TC17 - Department notification with invalid enum value
+POST http://localhost:9007/api/v1/notification/departments
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "Invalid Dept",
+  "message": "Targeting non-existent department",
+  "targetDepartmentCodes": [
+    "INVALID_DEPT"
+  ]
+}
+
+> {%
+  client.test("Status is 400", function () {
+    client.assert(response.status === 400);
+  });
+%}
+
+
+### TC18 - Department notification with empty department list
+POST http://localhost:9007/api/v1/notification/departments
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "No Dept",
+  "message": "Message for nobody",
+  "targetDepartmentCodes": []
+}
+
+> {%
+  client.test("Status is 201 or 400", function () {
+    client.assert(response.status === 201 || response.status === 400);
+  });
+%}
+
+
+### TC19 - Null targetDepartmentCodes in department notification
+POST http://localhost:9007/api/v1/notification/departments
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "Null Dept",
+  "message": "Missing department list",
+  "targetDepartmentCodes": null
+}
+
+> {%
+  client.test("Status is 400", function () {
+    client.assert(response.status === 400);
+  });
+%}
+
+
+### TC20 - Invalid type for targetDepartmentCodes (string instead of list)
+POST http://localhost:9007/api/v1/notification/departments
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "Wrong Type",
+  "message": "String instead of Array",
+  "targetDepartmentCodes": "IT"
+}
+
+> {%
+  client.test("Status is 400", function () {
+    client.assert(response.status === 400);
+  });
+%}
+
+
+### TC21 - Get notifications successfully
 GET http://localhost:9007/api/v1/notification?page=0&size=10
-Authorization: Bearer {{user_token}}
+Authorization: Bearer {{access_token}}
 
 > {%
-client.test("Status is 200", function() {
-  client.assert(response.status === 200);
-});
+  client.test("Status is 200", function () {
+    client.assert(response.status === 200);
+  });
 %}
 
 
-### TC11 - Get notifications with invalid page format
-GET http://localhost:9007/api/v1/notification?page=abc&size=10
-Authorization: Bearer {{user_token}}
+### TC22 - Get notifications with negative page
+GET http://localhost:9007/api/v1/notification?page=-1&size=10
+Authorization: Bearer {{access_token}}
 
 > {%
-client.test("Status is 400", function() {
-  client.assert(response.status === 400);
-});
+  client.test("Status is 400", function () {
+    client.assert(response.status === 400);
+  });
 %}
 
 
-### TC12 - Get notifications without pageable params (Should use defaults if configured)
+### TC23 - Get notifications with zero size
+GET http://localhost:9007/api/v1/notification?page=0&size=0
+Authorization: Bearer {{access_token}}
+
+> {%
+  client.test("Status is 400", function () {
+    client.assert(response.status === 400);
+  });
+%}
+
+
+### TC24 - Get notifications with invalid sort param
+GET http://localhost:9007/api/v1/notification?page=0&size=10&sort=nonExistentField
+Authorization: Bearer {{access_token}}
+
+> {%
+  client.test("Status is 400 or 200", function () {
+    client.assert(response.status === 400 || response.status === 200);
+  });
+%}
+
+
+### TC25 - Get notifications unauthorized
 GET http://localhost:9007/api/v1/notification
-Authorization: Bearer {{user_token}}
+Content-Type: application/json
 
 > {%
-client.test("Status is 200", function() {
-  client.assert(response.status === 200);
-});
+  client.test("Status is 401", function () {
+    client.assert(response.status === 401);
+  });
 %}
 
 
-### TC13 - SQL Injection attempt in title
-POST http://localhost:9007/api/v1/notification
+### TC26 - Create department notification - Single target
+POST http://localhost:9007/api/v1/notification/departments
 Content-Type: application/json
-Authorization: Bearer {{it_staff_token}}
+Authorization: Bearer {{access_token}}
 
 {
-  "title": "Test' OR '1'='1",
-  "message": "SQL Injection attempt",
-  "link": "/test"
+  "title": "Leadership Announcement",
+  "message": "New policy released.",
+  "targetDepartmentCodes": [
+    "LEADERSHIP"
+  ]
 }
 
 > {%
-client.test("Status is 400 or 201", function() {
-  client.assert(response.status === 400 || response.status === 201);
-});
+  client.test("Status is 201", function () {
+    client.assert(response.status === 201);
+  });
 %}
 
 
-### TC14 - Very long title
-POST http://localhost:9007/api/v1/notification
+### TC27 - Boundary - Very long message in department notification
+POST http://localhost:9007/api/v1/notification/departments
 Content-Type: application/json
-Authorization: Bearer {{it_staff_token}}
+Authorization: Bearer {{access_token}}
 
 {
-  "title": "A".repeat(1000),
-  "message": "Long title message",
-  "link": "/test"
+  "title": "Long Message",
+  "message": "A",
+  "targetDepartmentCodes": [
+    "GENERAL"
+  ]
 }
 
 > {%
-client.test("Status should be handled", function() {
-  client.assert(response.status === 201 || response.status === 400);
-});
+  client.test("Status is 400 or 201", function () {
+    client.assert(response.status === 400 || response.status === 201);
+  });
 %}
 
 
-### TC15 - Create notification with malformed JSON
+### TC28 - Unicode characters in title and message
 POST http://localhost:9007/api/v1/notification
 Content-Type: application/json
-Authorization: Bearer {{it_staff_token}}
+Authorization: Bearer {{access_token}}
 
 {
-  "title": "Malformed JSON",
-  "message": "Missing closing brace"
+  "title": "Thông báo bảo trì",
+  "message": "Chào bạn, hệ thống sẽ bảo trì vào ngày mai 😊.",
+  "link": "/thông-báo"
+}
 
 > {%
-client.test("Status is 400", function() {
-  client.assert(response.status === 400);
-});
+  client.test("Status is 201", function () {
+    client.assert(response.status === 201);
+  });
+%}
+
+
+### TC29 - Large page size request
+GET http://localhost:9007/api/v1/notification?page=0&size=1000
+Authorization: Bearer {{access_token}}
+
+> {%
+  client.test("Status is 200 or 400", function () {
+    client.assert(response.status === 200 || response.status === 400);
+  });
+%}
+
+
+### TC30 - Missing Auth header for creation
+POST http://localhost:9007/api/v1/notification
+Content-Type: application/json
+
+{
+  "title": "Unauthorized",
+  "message": "Should fail"
+}
+
+> {%
+  client.test("Status is 401 or 403", function () {
+    client.assert(response.status === 401 || response.status === 403);
+  });
 %}

@@ -1,6 +1,5 @@
 package com.capstone.notification.service.impl;
 
-import com.capstone.common.annotation.AppLog;
 import com.capstone.notification.dto.request.CreateNotificationRequest;
 import com.capstone.notification.dto.response.NotificationBatchResponse;
 import com.capstone.notification.dto.response.NotificationResponse;
@@ -11,27 +10,25 @@ import com.capstone.notification.service.boundary.NotificationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@AppLog
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class NotificationServiceImpl implements NotificationService {
   NotificationRepository notificationRepo;
   AuthService service;
-  @NonFinal
-  Logger log;
 
   @Override
   public NotificationResponse createNotification(@NonNull CreateNotificationRequest request) {
+    log.info("Creating notification");
     var entity = Notification.builder()
       .title(request.title())
       .message(request.message())
@@ -46,6 +43,7 @@ public class NotificationServiceImpl implements NotificationService {
 
   @Override
   public NotificationBatchResponse getNotificationsOfAnEmployee(Pageable pageable, String userId) {
+    log.info("[getNotificationsOfAnEmployee] userId: {}", userId);
     var individualNotifications = service.getIndividualNotificationsOfAnEmployee(pageable, userId);
 
     if (!individualNotifications.isEmpty()) {
@@ -53,6 +51,7 @@ public class NotificationServiceImpl implements NotificationService {
 
       individualNotifications.forEach(notification -> {
         var n = notificationRepo.findById(notification.notificationId());
+        log.info("Notification: {}", n);
         n.ifPresent(value -> notificationResponses.add(new NotificationResponse(
           value.getNotificationId(),
           value.getTitle(),
