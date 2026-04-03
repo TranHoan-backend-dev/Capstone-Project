@@ -75,7 +75,7 @@ class SettlementUseCaseTest {
     var constructionRequest = mock(ConstructionResponse.class);
 
     when(installationFormRepository.findById(any(InstallationFormId.class))).thenReturn(Optional.of(installationForm));
-    when(constructionRequestService.getByInstallationForm(installationForm)).thenReturn(constructionRequest);
+    when(constructionRequestService.getByInstallationForm("1", "1001")).thenReturn(constructionRequest);
     when(constructionRequest.isApproved()).thenReturn("true");
     when(settlementService.createSettlement(request)).thenReturn(response1);
 

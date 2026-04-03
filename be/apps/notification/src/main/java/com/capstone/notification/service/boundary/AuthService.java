@@ -3,6 +3,7 @@ package com.capstone.notification.service.boundary;
 import com.capstone.common.config.feign.FeignAuthInterceptor;
 import com.capstone.notification.dto.response.IndividualNotificationResponse;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,7 +19,7 @@ import java.util.List;
 public interface AuthService {
   @GetMapping("/{userId}")
   List<IndividualNotificationResponse> getIndividualNotificationsOfAnEmployee(
-    @RequestParam Pageable pageable,
+    @SpringQueryMap Pageable pageable,
     @PathVariable String userId
   );
 }

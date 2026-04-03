@@ -28,8 +28,9 @@ public class IndividualNotificationController {
   @GetMapping("/{id}")
   public List<NotificationResponse> getIndividualNotificationsOfAnEmployee(
     @PathVariable String id,
-    @RequestParam Pageable pageable
+    Pageable pageable
   ) {
+    log.info("getIndividualNotificationsOfAnEmployee");
     return individualNotificationService.getNotificationIdsByAccount(id, pageable);
   }
 }

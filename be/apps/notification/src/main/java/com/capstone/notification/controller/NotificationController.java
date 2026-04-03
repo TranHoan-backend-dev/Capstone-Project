@@ -1,6 +1,5 @@
 package com.capstone.notification.controller;
 
-import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
 import com.capstone.notification.dto.request.CreateDepartmentNotificationRequest;
@@ -17,8 +16,7 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
-import org.slf4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -33,7 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@AppLog
+@Slf4j
 @RestController
 @Validated
 @RequiredArgsConstructor
@@ -43,8 +41,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class NotificationController {
   NotificationService notificationService;
   SimpMessagingTemplate messagingTemplate;
-  @NonFinal
-  Logger log;
 
   @Operation(summary = "Tạo thông báo cá nhân", description = "Dành cho IT STAFF để tạo một thông báo mới.", responses = {
     @ApiResponse(responseCode = "201", description = "Tạo thông báo thành công"),
@@ -67,9 +63,12 @@ public class NotificationController {
     @ApiResponse(responseCode = "401", description = "Chưa xác thực", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @GetMapping
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF', " +
+    "'FINANCE_DEPARTMENT', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF', 'BUSINESS_DEPARTMENT_HEAD', " +
+    "'METER_INSPECTION_STAFF', 'COMPANY_LEADERSHIP')")
   public ResponseEntity<WrapperApiResponse> getNotifications(
     @AuthenticationPrincipal Jwt jwt,
-    @RequestParam Pageable pageable
+    Pageable pageable
   ) {
     var id = jwt.getSubject();
     var response = notificationService.getNotificationsOfAnEmployee(pageable, id);
