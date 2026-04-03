@@ -14,8 +14,8 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.function.Consumer;
 
+@Builder
 @Getter
 @Entity
 @ToString
@@ -200,52 +200,6 @@ public class CostEstimate implements Serializable {
     Objects.requireNonNull(value, message);
     if (value.trim().isEmpty()) {
       throw new IllegalArgumentException(message);
-    }
-  }
-
-  public static CostEstimate create(@NonNull Consumer<EstimationBuilder> builder) {
-    var instance = new EstimationBuilder();
-    builder.accept(instance);
-    return instance.build();
-  }
-  // </editor-fold>
-
-  // <editor-fold> desc="builder"
-  public static class EstimationBuilder {
-    private final CostEstimate instance = new CostEstimate();
-
-    public EstimationBuilder customerName(String customerName) {
-      instance.setCustomerName(customerName);
-      return this;
-    }
-
-    public EstimationBuilder registrationAt(LocalDate address) {
-      instance.setRegistrationAt(address);
-      return this;
-    }
-
-    public EstimationBuilder address(String address) {
-      instance.setAddress(address);
-      return this;
-    }
-
-    public EstimationBuilder note(String note) {
-      instance.setNote(note);
-      return this;
-    }
-
-    public EstimationBuilder installationForm(InstallationForm value) {
-      instance.setInstallationForm(value);
-      return this;
-    }
-
-    public EstimationBuilder overallWaterMeterId(String overallWaterMeterId) {
-      instance.setOverallWaterMeterId(overallWaterMeterId);
-      return this;
-    }
-
-    public CostEstimate build() {
-      return instance;
     }
   }
   // </editor-fold>

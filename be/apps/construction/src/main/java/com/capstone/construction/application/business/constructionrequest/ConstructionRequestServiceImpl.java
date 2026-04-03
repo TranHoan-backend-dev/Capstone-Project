@@ -65,6 +65,7 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
 
   @Override
   public void updatePendingRequest(String id, String employeeId) {
+    log.info("Updating pending request");
     var request = getConstructionRequest(id);
 
     validateEmployee(employeeId);
@@ -76,6 +77,7 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
 
   @Override
   public void approveTheConstruction(String id, Boolean approved) {
+    log.info("review the construction request");
     var request = getConstructionRequest(id);
     var installationForm = request.getInstallationForm();
     var status = installationForm.getStatus();
@@ -85,12 +87,14 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
 
   @Override
   public ConstructionResponse getById(String id) {
+    log.info("get construction request by id");
     var result = repository.findById(id).orElseThrow(() -> new NotExistingException("Không tìm thấy đơn thi công"));
     return convert(result);
   }
 
   @Override
   public ConstructionResponse getByInstallationForm(InstallationForm installationForm) {
+    log.info("get construction request by form");
     return convert(repository.findByInstallationForm(installationForm));
   }
 

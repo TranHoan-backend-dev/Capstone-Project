@@ -169,3 +169,112 @@ client.test("Status is 400", function() {
 ###
 GET {{baseUrl}}/construction
 Authorization: Bearer {{access_token}}
+
+
+### TC11 - Duyệt đơn chờ thi công thành công (status = true)
+POST {{baseUrl}}/construction/review/7a8192a3-7000-4aaa-9bbb-cccccccc0001/true
+Authorization: Bearer {{access_token}}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC12 - Yêu cầu xem lại đơn chờ thi công (status = false)
+POST {{baseUrl}}/construction/review/7a8192a3-7000-4aaa-9bbb-cccccccc0001/false
+Authorization: Bearer {{access_token}}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC13 - Trạng thái duyệt không hợp lệ (không phải boolean)
+POST {{baseUrl}}/construction/review/7a8192a3-7000-4aaa-9bbb-cccccccc0001/not-boolean
+Authorization: Bearer {{access_token}}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC14 - Thiếu ID của đơn chờ thi công (404)
+POST {{baseUrl}}/construction/review//true
+Authorization: Bearer {{access_token}}
+
+> {%
+client.test("Status is 404", function() {
+  client.assert(response.status === 404);
+});
+%}
+
+
+### TC15 - Thiếu trạng thái duyệt (404/405)
+POST {{baseUrl}}/construction/review/7a8192a3-7000-4aaa-9bbb-cccccccc0001/
+Authorization: Bearer {{access_token}}
+
+> {%
+client.test("Status should be error", function() {
+  client.assert(response.status >= 400);
+});
+%}
+
+
+### TC16 - Truy cập không có Token (401)
+POST {{baseUrl}}/construction/review/7a8192a3-7000-4aaa-9bbb-cccccccc0001/true
+
+> {%
+client.test("Status is 401", function() {
+  client.assert(response.status === 401);
+});
+%}
+
+
+### TC17 - Truy cập với quyền hạn không đủ (403)
+POST {{baseUrl}}/construction/review/7a8192a3-7000-4aaa-9bbb-cccccccc0001/true
+Authorization: Bearer {{low_privilege_token}}
+
+> {%
+client.test("Status is 403", function() {
+  client.assert(response.status === 403);
+});
+%}
+
+
+### TC18 - Tấn công SQL Injection vào ID đơn chờ (400/404)
+POST {{baseUrl}}/construction/review/' OR 1=1 --/true
+Authorization: Bearer {{access_token}}
+
+> {%
+client.test("Status should be error", function() {
+  client.assert(response.status >= 400);
+});
+%}
+
+
+### TC19 - ID đơn chờ thi công không tồn tại (404)
+POST {{baseUrl}}/construction/review/NON-EXISTENT-ID/true
+Authorization: Bearer {{access_token}}
+
+> {%
+client.test("Status is 404", function() {
+  client.assert(response.status === 404);
+});
+%}
+
+
+### TC20 - ID đơn chờ quá dài (Boundary case)
+POST {{baseUrl}}/construction/review/CONST_LONG_ID_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/true
+Authorization: Bearer {{access_token}}
+
+> {%
+client.test("Status should be error", function() {
+  client.assert(response.status >= 400);
+});
+%}
