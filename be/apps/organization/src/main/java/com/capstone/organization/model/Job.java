@@ -2,7 +2,6 @@ package com.capstone.organization.model;
 
 import jakarta.persistence.*;
 import com.capstone.common.utils.SharedMessage;
-import com.capstone.organization.utils.Message;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.jspecify.annotations.NonNull;
@@ -45,15 +44,11 @@ public class Job {
   }
 
   public void setName(String name) {
-    requireNonNullAndNotEmpty(name, SharedMessage.MES_05);
-    this.name = name;
-  }
-
-  private void requireNonNullAndNotEmpty(String value, String message) {
-    Objects.requireNonNull(value, message);
-    if (value.trim().isEmpty()) {
-      throw new IllegalArgumentException(message);
+    Objects.requireNonNull(name, SharedMessage.MES_05);
+    if (name.trim().isEmpty()) {
+      throw new IllegalArgumentException(SharedMessage.MES_05);
     }
+    this.name = name;
   }
 
   public static Job create(@NonNull Consumer<JobBuilder> builder) {

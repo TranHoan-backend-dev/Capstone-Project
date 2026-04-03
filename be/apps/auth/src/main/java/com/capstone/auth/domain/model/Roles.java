@@ -8,7 +8,7 @@ import lombok.experimental.FieldDefaults;
 import org.jspecify.annotations.NonNull;
 
 import java.io.Serializable;
-import java.util.Arrays;
+//import java.util.Arrays;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -43,23 +43,23 @@ public class Roles implements Serializable {
     this.users = users;
   }
 
-  public boolean removeUserFromRole(Users... usersList) {
-    if (usersList != null && usersList.length > 0 && !users.isEmpty()) {
-      Arrays.stream(usersList)
-          .sequential()
-          .forEach(user -> users.remove(user));
-      return true;
-    }
-    return false;
-  }
+//  public boolean removeUserFromRole(Users... usersList) {
+//    if (usersList != null && usersList.length > 0 && !users.isEmpty()) {
+//      Arrays.stream(usersList)
+//          .sequential()
+//          .forEach(user -> users.remove(user));
+//      return true;
+//    }
+//    return false;
+//  }
 
-  public boolean addUserToRole(Users... usersList) {
-    if (usersList != null && usersList.length > 0 && !users.isEmpty()) {
-      users.addAll(Arrays.asList(usersList));
-      return true;
-    }
-    return false;
-  }
+//  public boolean addUserToRole(Users... usersList) {
+//    if (usersList != null && usersList.length > 0 && !users.isEmpty()) {
+//      users.addAll(Arrays.asList(usersList));
+//      return true;
+//    }
+//    return false;
+//  }
 
   public static Roles create(@NonNull Consumer<RolesBuilder> builder) {
     var instance = new RolesBuilder();

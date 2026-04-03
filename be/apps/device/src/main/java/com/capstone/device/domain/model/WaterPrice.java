@@ -139,9 +139,8 @@ public class WaterPrice {
       return this;
     }
 
-    public WaterPriceBuilder expirationDate(LocalDate expirationDate) {
+    public void expirationDate(LocalDate expirationDate) {
       wp.setExpirationDate(expirationDate);
-      return this;
     }
 
     public WaterPriceBuilder description(String description) {
