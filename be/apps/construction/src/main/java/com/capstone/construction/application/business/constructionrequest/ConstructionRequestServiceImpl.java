@@ -46,8 +46,7 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
 
     validateEmployee(employeeId);
 
-    var installationForm = ifRepo.findById(new InstallationFormId(formCode, formNumber))
-      .orElseThrow(() -> new IllegalArgumentException(String.format(SharedMessage.MES_24, formNumber, formCode)));
+    var installationForm = getById(formCode, formNumber);
 
     var status = installationForm.getStatus();
     var contractStatus = status.getContract();
@@ -93,8 +92,9 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
   }
 
   @Override
-  public ConstructionResponse getByInstallationForm(InstallationForm installationForm) {
+  public ConstructionResponse getByInstallationForm(String formCode, String formNumber) {
     log.info("get construction request by form");
+    var installationForm = getById(formCode, formNumber);
     return convert(repository.findByInstallationForm(installationForm));
   }
 
@@ -156,5 +156,10 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
     var constructionRequest = repository.findByInstallationForm(entity);
     log.info("Handle the construction request with id: {}", constructionRequest.getId());
     return convert(constructionRequest);
+  }
+
+  private InstallationForm getById(String formCode, String formNumber) {
+    return ifRepo.findById(new InstallationFormId(formCode, formNumber))
+      .orElseThrow(() -> new NotExistingException(String.format(SharedMessage.MES_24, formCode, formNumber)));
   }
 }
