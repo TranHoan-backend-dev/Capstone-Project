@@ -1,6 +1,4 @@
-"use client";
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   Dropdown,
   DropdownTrigger,
@@ -12,7 +10,6 @@ import {
   ScrollShadow,
   Button,
   Skeleton,
-  Spinner,
 } from "@heroui/react";
 import {
   BellIcon,
@@ -22,7 +19,24 @@ import {
   ShieldCheckIcon,
   CurrencyDollarIcon,
   TrashIcon,
+  ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
+
+// Interface cho response từ API
+interface ApiNotification {
+  id: string;
+  title?: string;
+  content: string;
+  type: string;
+  isRead: boolean;
+  createdAt: string;
+  sender?: {
+    id: string;
+    name: string;
+    avatar?: string;
+  };
+  metadata?: Record<string, any>;
+}
 
 interface Notification {
   id: string;
@@ -46,15 +60,201 @@ interface Notification {
   };
 }
 
+// Helper function để format thời gian
+const formatTime = (dateString: string): string => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffMins < 1) return "Vừa xong";
+  if (diffMins < 60) return `${diffMins} phút trước`;
+  if (diffHours < 24) return `${diffHours} giờ trước`;
+  if (diffDays < 7) return `${diffDays} ngày trước`;
+
+  return date.toLocaleDateString("vi-VN");
+};
+
+// Helper function để map type từ API
+const mapNotificationType = (type: string): Notification["type"] => {
+  const typeMap: Record<string, Notification["type"]> = {
+    DEVICE_LOGIN: "device_login",
+    MESSAGE: "message",
+    SYSTEM: "system",
+    BILLING: "billing",
+    SECURITY: "security",
+    SIGN_REQUEST: "sign-request",
+  };
+  return typeMap[type] || "message";
+};
+
 const NotificationDropdown = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [filter, setFilter] = useState<"all" | "unread">("all");
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [totalFound, setTotalFound] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
   const [hasError, setHasError] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [isConnected] = useState(true);
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Fetch notifications từ API
+  const fetchNotifications = useCallback(
+    async (page: number, isLoadMore = false) => {
+      if (!isLoadMore) {
+        setIsInitialLoading(true);
+      } else {
+        setIsLoadingMore(true);
+      }
+      setHasError(false);
+
+      try {
+        const response = await fetch(`/api/notifications?page=${page}&size=10`);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Transform API response to component's notification format
+        const transformedNotifications: Notification[] = (
+          data.content ||
+          data.data ||
+          []
+        ).map((item: ApiNotification) => ({
+          id: item.id,
+          sender: item.sender?.name || item.title || "Hệ thống",
+          message: item.content,
+          time: formatTime(item.createdAt),
+          isRead: item.isRead,
+          avatar: item.sender?.avatar || "",
+          type: mapNotificationType(item.type),
+          metadata: item.metadata,
+        }));
+
+        if (isLoadMore) {
+          setNotifications((prev) => [...prev, ...transformedNotifications]);
+        } else {
+          setNotifications(transformedNotifications);
+        }
+
+        setTotalPages(data.totalPages || Math.ceil((data.total || 0) / 10));
+        setTotalElements(data.totalElements || data.total || 0);
+        setCurrentPage(page);
+      } catch (error) {
+        console.error("Failed to fetch notifications:", error);
+        setHasError(true);
+      } finally {
+        setIsInitialLoading(false);
+        setIsLoadingMore(false);
+      }
+    },
+    [],
+  );
+
+  // Load more when scrolling
+  const handleScroll = useCallback(
+    (e: React.UIEvent<HTMLDivElement>) => {
+      const target = e.currentTarget;
+      const isBottom =
+        target.scrollHeight - target.scrollTop <= target.clientHeight + 100;
+
+      if (
+        isBottom &&
+        !isLoadingMore &&
+        !isInitialLoading &&
+        currentPage < totalPages
+      ) {
+        fetchNotifications(currentPage + 1, true);
+      }
+    },
+    [
+      isLoadingMore,
+      isInitialLoading,
+      currentPage,
+      totalPages,
+      fetchNotifications,
+    ],
+  );
+
+  // Mark notification as read
+  const markAsRead = useCallback(async (notificationId: string) => {
+    try {
+      const response = await fetch(
+        `/api/notifications/${notificationId}/read`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      if (response.ok) {
+        setNotifications((prev) =>
+          prev.map((n) =>
+            n.id === notificationId ? { ...n, isRead: true } : n,
+          ),
+        );
+      }
+    } catch (error) {
+      console.error("Failed to mark as read:", error);
+    }
+  }, []);
+
+  // Mark all as read
+  const markAllAsRead = useCallback(async () => {
+    try {
+      const response = await fetch("/api/notifications/read-all", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+      }
+    } catch (error) {
+      console.error("Failed to mark all as read:", error);
+    }
+  }, []);
+
+  // Delete notification
+  const deleteNotification = useCallback(
+    async (notificationId: string, e: React.MouseEvent) => {
+      e.stopPropagation();
+
+      try {
+        const response = await fetch(`/api/notifications/${notificationId}`, {
+          method: "DELETE",
+        });
+
+        if (response.ok) {
+          setNotifications((prev) =>
+            prev.filter((n) => n.id !== notificationId),
+          );
+        }
+      } catch (error) {
+        console.error("Failed to delete notification:", error);
+      }
+    },
+    [],
+  );
+
+  // Load initial data when dropdown opens
+  useEffect(() => {
+    if (isOpen && notifications.length === 0 && !hasError) {
+      fetchNotifications(1, false);
+    }
+  }, [isOpen, fetchNotifications, notifications.length, hasError]);
 
   // Lấy background color theo loại thông báo
   const getNotificationBgColor = (type: Notification["type"]) => {
@@ -104,35 +304,16 @@ const NotificationDropdown = () => {
       case "sign-request":
         return <CheckCircleIcon className="w-3.5 h-3.5 text-white" />;
       case "system":
-        return <CheckCircleIcon className="w-3.5 h-3.5 text-white" />;
+        return <ComputerDesktopIcon className="w-3.5 h-3.5 text-white" />;
       case "billing":
         return <CurrencyDollarIcon className="w-3.5 h-3.5 text-white" />;
       case "device_login":
-        return <CheckCircleIcon className="w-3.5 h-3.5 text-white" />;
+        return <ComputerDesktopIcon className="w-3.5 h-3.5 text-white" />;
       case "security":
-        return <CheckCircleIcon className="w-3.5 h-3.5 text-white" />;
+        return <ShieldCheckIcon className="w-3.5 h-3.5 text-white" />;
       case "message":
       default:
         return <CheckCircleIcon className="w-3.5 h-3.5 text-white" />;
-    }
-  };
-
-  // Lấy label loại thông báo
-  const getNotificationTypeLabel = (type: Notification["type"]) => {
-    switch (type) {
-      case "sign-request":
-        return "Yêu cầu ký";
-      case "system":
-        return "Hệ thống";
-      case "billing":
-        return "Thanh toán";
-      case "device_login":
-        return "Đăng nhập";
-      case "security":
-        return "Bảo mật";
-      case "message":
-      default:
-        return "Tin nhắn";
     }
   };
 
@@ -174,8 +355,138 @@ const NotificationDropdown = () => {
     );
   };
 
+  // Render content based on state
+  const renderContent = () => {
+    if (isInitialLoading) {
+      return (
+        <div className="flex flex-col py-2 px-2">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div
+              key={`skeleton-${i}`}
+              className="flex items-center gap-3 px-3 py-3 mb-1"
+            >
+              <Skeleton className="w-12 h-12 rounded-full" />
+              <div className="flex-1 space-y-1">
+                <Skeleton className="w-3/4 h-4 rounded" />
+                <Skeleton className="w-1/2 h-3 rounded" />
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (hasError) {
+      return (
+        <div className="py-20 text-center px-4">
+          <ExclamationTriangleIcon className="w-12 h-12 mx-auto text-danger-400 mb-3" />
+          <p className="font-bold text-default-600">Không thể tải thông báo</p>
+          <Button
+            className="mt-4"
+            size="sm"
+            onClick={() => fetchNotifications(1, false)}
+          >
+            Thử lại
+          </Button>
+        </div>
+      );
+    }
+
+    if (filteredNotifications.length === 0) {
+      return (
+        <div className="py-20 text-center text-default-400 px-4">
+          <BellIcon className="w-12 h-12 mx-auto opacity-20 mb-3" />
+          <p className="font-bold text-default-500">
+            {filter === "all"
+              ? "Không có thông báo nào"
+              : "Không có thông báo chưa đọc"}
+          </p>
+          <p className="text-sm">
+            {filter === "all"
+              ? "Khi có thông báo mới, bạn sẽ thấy ở đây"
+              : "Bạn đã đọc tất cả thông báo"}
+          </p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex flex-col py-2 px-2">
+        {filteredNotifications.map((n) => (
+          <div
+            key={n.id}
+            className={`flex items-center gap-3 px-3 py-3 cursor-pointer transition-all rounded-xl relative group hover:bg-default-50 mb-1 ${
+              !n.isRead ? "bg-primary-50" : ""
+            }`}
+            onClick={() => markAsRead(n.id)}
+          >
+            <div className="relative shrink-0">
+              <Avatar
+                className={
+                  !n.avatar
+                    ? "bg-primary-50 text-primary font-bold"
+                    : "border border-divider"
+                }
+                name={n.sender}
+                size="lg"
+                src={n.avatar}
+              />
+              <div
+                className={`absolute -bottom-1 -right-1 rounded-full p-1 border-2 border-background ${getNotificationIconColor(n.type)}`}
+              >
+                {getNotificationIcon(n.type)}
+              </div>
+            </div>
+            <div className="flex-1 min-w-0 pr-4">
+              {formatMessage(n)}
+              <p
+                className={`text-[12px] mt-1 ${
+                  !n.isRead
+                    ? "text-primary font-bold"
+                    : "text-default-400 font-medium"
+                }`}
+              >
+                {n.time}
+              </p>
+            </div>
+            <div
+              className="opacity-0 group-hover:opacity-100 transition-opacity"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Button
+                isIconOnly
+                className="hover:bg-danger-50 text-danger"
+                radius="full"
+                size="sm"
+                variant="light"
+                onClick={(e) => deleteNotification(n.id, e)}
+              >
+                <TrashIcon className="w-4 h-4" />
+              </Button>
+            </div>
+            {!n.isRead && (
+              <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                <div className="w-3 h-3 bg-primary rounded-full" />
+              </div>
+            )}
+          </div>
+        ))}
+        {isLoadingMore && (
+          <div className="p-6 text-center">
+            <div className="inline-block w-6 h-6 border-[3px] border-primary border-t-transparent rounded-full animate-spin" />
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
-    <Dropdown className="p-0" placement="bottom-end">
+    <Dropdown
+      className="p-0"
+      placement="bottom-end"
+      isOpen={isOpen}
+      onOpenChange={setIsOpen}
+    >
       <DropdownTrigger>
         <Button
           isIconOnly
@@ -204,6 +515,7 @@ const NotificationDropdown = () => {
         className="w-[360px] md:w-[400px] p-0 overflow-visible rounded-2xl shadow-2xl border border-divider bg-content1"
         variant="light"
       >
+        {/* Header Section */}
         <DropdownSection
           aria-label="Header"
           classNames={{
@@ -233,7 +545,15 @@ const NotificationDropdown = () => {
                 </div>
                 <div className="flex gap-1">
                   {unreadCount > 0 && (
-                    <Button size="sm" variant="light" className="text-xs">
+                    <Button
+                      size="sm"
+                      variant="light"
+                      className="text-xs"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        markAllAsRead();
+                      }}
+                    >
                       Đọc tất cả
                     </Button>
                   )}
@@ -262,7 +582,7 @@ const NotificationDropdown = () => {
                     setFilter("all");
                   }}
                 >
-                  Tất cả ({notifications.length})
+                  Tất cả ({totalElements})
                 </Button>
                 <Button
                   className={`font-bold px-4 text-sm ${
@@ -289,6 +609,7 @@ const NotificationDropdown = () => {
           </DropdownItem>
         </DropdownSection>
 
+        {/* Notification List Section */}
         <DropdownSection
           aria-label="Notification list"
           classNames={{
@@ -303,124 +624,35 @@ const NotificationDropdown = () => {
           >
             <ScrollShadow
               hideScrollBar
+              ref={scrollRef}
               className="max-h-[520px] w-full"
-              onScroll={() => {}}
+              onScroll={handleScroll}
             >
-              <div className="flex flex-col py-2 px-2">
-                {isInitialLoading ? (
-                  // Loading skeletons
-                  Array.from({ length: 5 }).map((_, i) => (
-                    <div
-                      key={`skeleton-${i}`}
-                      className="flex items-center gap-3 px-3 py-3 mb-1"
-                    >
-                      <Skeleton className="w-12 h-12 rounded-full" />
-                      <div className="flex-1 space-y-1">
-                        <Skeleton className="w-3/4 h-4 rounded" />
-                        <Skeleton className="w-1/2 h-3 rounded" />
-                      </div>
-                    </div>
-                  ))
-                ) : filteredNotifications.length === 0 ? (
-                  // Empty state
-                  <div className="py-20 text-center text-default-400 px-4">
-                    <BellIcon className="w-12 h-12 mx-auto opacity-20 mb-3" />
-                    <p className="font-bold text-default-500">
-                      Không có thông báo mới
-                    </p>
-                    <p className="text-sm">
-                      Khi có bình luận hoặc tin nhắn, bạn sẽ thấy ở đây.
-                    </p>
-                  </div>
-                ) : (
-                  // Notification list
-                  <>
-                    {filteredNotifications.map((n) => (
-                      <div
-                        key={n.id}
-                        className={`flex items-center gap-3 px-3 py-3 cursor-pointer transition-all rounded-xl relative group hover:bg-default-50 mb-1 ${
-                          !n.isRead ? "bg-primary-50" : ""
-                        }`}
-                        onClick={() => {}}
-                      >
-                        <div className="relative shrink-0">
-                          <Avatar
-                            className={
-                              !n.avatar
-                                ? "bg-primary-50 text-primary font-bold"
-                                : "border border-divider"
-                            }
-                            name={n.sender}
-                            size="lg"
-                            src={n.avatar}
-                          />
-                          <div
-                            className={`absolute -bottom-1 -right-1 rounded-full p-1 border-2 border-background ${getNotificationIconColor(n.type)}`}
-                          >
-                            {getNotificationIcon(n.type)}
-                          </div>
-                        </div>
-                        <div className="flex-1 min-w-0 pr-4">
-                          {formatMessage(n)}
-                          <p
-                            className={`text-[12px] mt-1 ${
-                              !n.isRead
-                                ? "text-primary font-bold"
-                                : "text-default-400 font-medium"
-                            }`}
-                          >
-                            {n.time}
-                          </p>
-                        </div>
-                        <div
-                          className="opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={(e) => {}}
-                        >
-                          <Button
-                            isIconOnly
-                            className="hover:bg-danger-50 text-danger"
-                            radius="full"
-                            size="sm"
-                            variant="light"
-                          >
-                            <TrashIcon className="w-4 h-4" />
-                          </Button>
-                        </div>
-                        {!n.isRead && (
-                          <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                            <div className="w-3 h-3 bg-primary rounded-full" />
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                    {isLoadingMore && (
-                      <div className="p-6 text-center">
-                        <div className="inline-block w-6 h-6 border-[3px] border-primary border-t-transparent rounded-full animate-spin" />
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
+              {renderContent()}
             </ScrollShadow>
           </DropdownItem>
         </DropdownSection>
 
-        <DropdownSection
-          aria-label="Footer"
-          classNames={{
-            base: "p-2 border-t border-divider bg-content1 rounded-b-2xl",
-            group: "p-0",
-          }}
-        >
-          <DropdownItem
-            key="view-all"
-            className="p-0 text-center text-sm font-bold text-primary hover:text-primary-600 hover:bg-primary-50/50 rounded-xl transition-colors"
+        {/* Footer Section - Only show when there are notifications */}
+        {!isInitialLoading && !hasError && notifications.length > 0 ? (
+          <DropdownSection
+            aria-label="Footer"
+            classNames={{
+              base: "p-2 border-t border-divider bg-content1 rounded-b-2xl",
+              group: "p-0",
+            }}
           >
-            <span className="block py-2.5">Xem tất cả thông báo</span>
-          </DropdownItem>
-        </DropdownSection>
+            <DropdownItem
+              key="view-all"
+              className="p-0 text-center text-sm font-bold text-primary hover:text-primary-600 hover:bg-primary-50/50 rounded-xl transition-colors"
+            >
+              <span className="block py-2.5">Xem tất cả thông báo</span>
+            </DropdownItem>
+          </DropdownSection>
+        ) : null}
       </DropdownMenu>
     </Dropdown>
   );
 };
+
 export default NotificationDropdown;
