@@ -12,8 +12,9 @@ import {
   TableCell,
   TableProps,
   Spinner,
+  Button,
 } from "@heroui/react";
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import { ChevronDownIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Skeleton } from "@heroui/react";
 import { CustomPagination } from "./custom/CustomPagination";
 import { SortAscIcon, SortDescIcon } from "@/config/chip-and-icon";
@@ -57,6 +58,8 @@ interface GenericDataTableProps<T> {
     direction: "asc" | "desc";
   };
   onSortChange?: (field: string) => void;
+  onClose?: () => void; // Thêm prop onClose
+  showCloseButton?: boolean; // Thêm prop để hiển thị nút đóng
 }
 
 export const GenericDataTable = <T extends { id: string | number }>({
@@ -76,8 +79,11 @@ export const GenericDataTable = <T extends { id: string | number }>({
   isLoading,
   sort,
   onSortChange,
+  onClose,
+  showCloseButton = false,
 }: GenericDataTableProps<T>) => {
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
+
   const renderSkeletonRows = () => {
     return Array.from({ length: 5 }).map((_, rowIndex) => (
       <TableRow key={`skeleton-${rowIndex}`}>
@@ -89,6 +95,13 @@ export const GenericDataTable = <T extends { id: string | number }>({
       </TableRow>
     ));
   };
+
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    }
+  };
+
   return (
     <Card
       className="overflow-hidden bg-content1 transition-all duration-300"
@@ -116,6 +129,21 @@ export const GenericDataTable = <T extends { id: string | number }>({
                     </div>
                   )}
                   {actions && <div>{actions}</div>}
+                  {showCloseButton && onClose && (
+                    <Button
+                      isIconOnly
+                      size="sm"
+                      variant="light"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleClose();
+                      }}
+                      className="text-default-400 hover:text-danger transition-colors"
+                      aria-label="Đóng"
+                    >
+                      <XMarkIcon className="w-5 h-5" />
+                    </Button>
+                  )}
                   {isCollapsible && (
                     <div className="text-default-400">
                       <ChevronDownIcon
@@ -138,7 +166,7 @@ export const GenericDataTable = <T extends { id: string | number }>({
                 <input
                   type="text"
                   placeholder={search.placeholder ?? "Tìm kiếm..."}
-                  className="w-72 border rounded-lg px-3 py-2 text-sm"
+                  className="w-72 border rounded-lg px-3 py-2 text-sm dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100"
                   value={search.value}
                   onChange={(e) => search.onChange(e.target.value)}
                 />
@@ -168,16 +196,18 @@ export const GenericDataTable = <T extends { id: string | number }>({
                     onClick={() =>
                       column.sortable && onSortChange?.(column.key)
                     }
-                    className={`${index === 0 ? "!pl-8" : ""} bg-default-100 text-foreground ${onSortChange ? "cursor-pointer select-none" : ""} column.sortable ? "cursor-pointer select-none ..." : ""`}
+                    className={`${index === 0 ? "!pl-8" : ""} bg-default-100 text-foreground ${onSortChange ? "cursor-pointer select-none" : ""} ${column.sortable ? "cursor-pointer select-none" : ""}`}
                     style={column.width ? { width: column.width } : {}}
                   >
-                    {column.label}
-                    {sort?.field === column.key &&
-                      (sort.direction === "asc" ? (
-                        <SortAscIcon className="w-3 h-3" />
-                      ) : (
-                        <SortDescIcon className="w-3 h-3" />
-                      ))}
+                    <div className="flex items-center gap-1">
+                      {column.label}
+                      {sort?.field === column.key &&
+                        (sort.direction === "asc" ? (
+                          <SortAscIcon className="w-3 h-3" />
+                        ) : (
+                          <SortDescIcon className="w-3 h-3" />
+                        ))}
+                    </div>
                   </TableColumn>
                 ))}
               </TableHeader>
