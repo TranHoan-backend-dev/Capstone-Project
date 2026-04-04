@@ -186,7 +186,7 @@ const Header = () => {
                       key={item.key}
                       className={`text-sm px-4 py-2 whitespace-nowrap rounded-lg transition-colors cursor-pointer ${
                         isActive
-                          ? "bg-primary-100 text-primary-800 dark:text-white font-medium"
+                          ? "bg-white-100 text-white-800 dark:text-white font-medium"
                           : "text-foreground-700 hover:bg-default-100"
                       }`}
                       href={item.href || "#"}
@@ -224,7 +224,7 @@ const Header = () => {
                         src={profile.avatarUrl}
                         name={profile.fullname}
                         size="sm"
-                        className="bg-primary-100 text-primary-600"
+                        className="bg-white-100 text-white-600"
                         fallback={
                           <span className="font-semibold">
                             {profile.fullname.charAt(0).toUpperCase()}
@@ -246,7 +246,7 @@ const Header = () => {
                       as={Link}
                       className={`${
                         pathname === "/profile-employee"
-                          ? "bg-primary-100 text-primary-800 dark:text-primary-200"
+                          ? "bg-white-100 text-white-800 dark:text-white-200"
                           : ""
                       }`}
                       href="/profile-employee"
@@ -259,7 +259,7 @@ const Header = () => {
                       as={Link}
                       className={`${
                         pathname === "/change-password"
-                          ? "bg-primary-100 text-primary-800 dark:text-primary-200"
+                          ? "bg-white-100 text-white-800 dark:text-white-200"
                           : ""
                       }`}
                       href="/change-password"
