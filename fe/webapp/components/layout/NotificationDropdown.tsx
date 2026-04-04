@@ -434,7 +434,7 @@ console.log(result)
       <DropdownTrigger>
         <Button
           isIconOnly
-          className="w-7 h-7 relative text-default-600 hover:bg-default-100"
+          className="w-8 h-8 relative text-default-600 hover:bg-default-100"
           radius="full"
           variant="light"
         >

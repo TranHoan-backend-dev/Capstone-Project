@@ -10,6 +10,12 @@ import {
   NavbarBrand,
   NavbarContent,
   Tooltip,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
 } from "@heroui/react";
 import Link from "next/link";
 import { Bars3Icon } from "@heroicons/react/24/solid";
@@ -25,6 +31,7 @@ import { CallToast } from "../ui/CallToast";
 import axios from "axios";
 import { useProfile } from "@/hooks/useLogin";
 import { filterNavItems, siteConfig } from "@/config/site";
+import CustomButton from "../ui/custom/CustomButton";
 
 export interface SubMenuItemChild {
   key: string;
@@ -51,6 +58,8 @@ const Header = () => {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { profile } = useProfile();
   const filteredMenu = profile?.role
     ? filterNavItems(siteConfig.navItems, profile?.role)
@@ -85,6 +94,7 @@ const Header = () => {
   };
 
   const handleLogout = async () => {
+    setIsLoggingOut(true);
     try {
       await axios.post(
         "/api/auth/logout",
@@ -104,6 +114,7 @@ const Header = () => {
         color: "success",
       });
 
+      setShowLogoutDialog(false);
       router.replace("/login");
     } catch (err: any) {
       CallToast({
@@ -112,7 +123,17 @@ const Header = () => {
           err.response?.data?.message || "Đăng xuất thất bại, vui lòng thử lại",
         color: "danger",
       });
+    } finally {
+      setIsLoggingOut(false);
     }
+  };
+
+  const handleLogoutClick = () => {
+    setShowLogoutDialog(true);
+  };
+
+  const handleCancelLogout = () => {
+    setShowLogoutDialog(false);
   };
 
   return (
@@ -217,7 +238,7 @@ const Header = () => {
                     aria-label="User menu"
                     variant="flat"
                     onAction={(key) => {
-                      if (key === "logout") handleLogout();
+                      if (key === "logout") handleLogoutClick();
                     }}
                   >
                     <DropdownItem
@@ -266,6 +287,43 @@ const Header = () => {
         menuItems={filteredMenu}
         onClose={() => setSidebarOpen(false)}
       />
+
+      <Modal
+        isOpen={showLogoutDialog}
+        onClose={handleCancelLogout}
+        backdrop="blur"
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                Xác nhận đăng xuất
+              </ModalHeader>
+              <ModalBody>
+                <p>Bạn có chắc chắn muốn đăng xuất khỏi hệ thống?</p>
+              </ModalBody>
+              <ModalFooter>
+                <CustomButton
+                  color="default"
+                  variant="light"
+                  onPress={handleCancelLogout}
+                  isDisabled={isLoggingOut}
+                >
+                  Hủy
+                </CustomButton>
+                <CustomButton
+                  color="danger"
+                  onPress={handleLogout}
+                  isLoading={isLoggingOut}
+                  isDisabled={isLoggingOut}
+                >
+                  {isLoggingOut ? "Đang đăng xuất..." : "Đăng xuất"}
+                </CustomButton>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </>
   );
 };
