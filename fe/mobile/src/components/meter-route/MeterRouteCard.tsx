@@ -18,6 +18,7 @@ export default function MeterRouteCard({ data }: any) {
     navigation.navigate('CaptureWaterMeter', {
       routeId: data.id,
       totalCustomer: data.totalCustomer,
+      source: 'route',
     });
   };
 

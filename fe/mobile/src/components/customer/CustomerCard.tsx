@@ -22,8 +22,9 @@ export default function CustomerCard({ data }: any) {
       customerId: data.id,
       customerName: data.name,
       address: data.address,
-      meterId: data.meterId,
+      serial: data.waterMeterId,
       stt: data.stt,
+      source: 'customer',
     });
   };
 

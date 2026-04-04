@@ -30,4 +30,5 @@ public final class Message {
   public static final String ENT_27 = "Không tìm thấy lộ trình ghi phù hợp";
   public static final String ENT_28 = "Không tìm thấy giá nước";
   public static final String ENT_29 = "Không tìm thấy đồng hồ nước";
+  public static final String ENT_30 = "Mã đồng hồ này đã được gán cho một khách hàng khác";
 }

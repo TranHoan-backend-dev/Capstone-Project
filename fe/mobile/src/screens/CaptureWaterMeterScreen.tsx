@@ -4,7 +4,7 @@ import { Text, IconButton, Button, ActivityIndicator } from 'react-native-paper'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { launchCamera } from 'react-native-image-picker';
-// import { meterService } from '../services/meterService';
+import { meterService } from '../services/meterService';
 import { showToast } from '../utils/toast';
 
 export default function CaptureWaterMeterScreen({ route }: any) {
@@ -91,30 +91,27 @@ export default function CaptureWaterMeterScreen({ route }: any) {
     try {
       setIsSending(true);
 
-      const { meterId, totalCustomer } = route.params || {};
+      const { serial, source, totalCustomer } = route.params || {};
+      const recordingDate = new Date().toISOString().split('T')[0];
 
-      // Gửi ảnh về Backend để Backend thực hiện luồng:
-      // Upload GCS -> RabbitMQ -> AI Worker -> Trả kết quả bất đồng bộ
-      /*
-      const response = await meterService.updateMeterIndex(
-        meterId || '00000000-0000-0000-0000-A00000000001',
-        0, // Chỉ số tạm thời sẽ được AI cập nhật sau
-        new Date().toISOString().split('T')[0],
-        { uri: photoUri }
-      );
-      console.log("[CaptureWaterMeterScreen.tsx] response: " + response)
-      */
+      let response;
+      if (source === 'customer' && serial) {
+        console.log(`[CaptureWaterMeterScreen.tsx] Calling /analyze/${serial}`);
+        response = await meterService.analyzeMeterImageWithSerial(serial, recordingDate, { uri: photoUri });
+      } else {
+        console.log(`[CaptureWaterMeterScreen.tsx] Calling /analyze (generic)`);
+        response = await meterService.analyzeMeterImage(recordingDate, { uri: photoUri });
+      }
 
-      console.log("[Mock Save] Simulated sending photo to backend");
-      await new Promise(resolve => setTimeout(() => resolve(undefined), 1000));
+      console.log("[CaptureWaterMeterScreen.tsx] AI Analyze Response:", response);
 
       if (totalCustomer && currentCustomerIndex < totalCustomer) {
-        showToast.success(`Đã gửi! Tiếp tục khách hàng ${currentCustomerIndex + 1}/${totalCustomer}`);
+        showToast.success(`Đã phân tích xong! Tiếp tục khách hàng ${currentCustomerIndex + 1}/${totalCustomer}`);
         setCurrentCustomerIndex(prev => prev + 1);
         setPhotoUri(null); // Reset back to camera
         setIsBlurry(null);
       } else {
-        showToast.success('Hoàn thành gửi ảnh!');
+        showToast.success('Gửi ảnh thành công!');
         navigation.goBack();
       }
     } catch (error: any) {

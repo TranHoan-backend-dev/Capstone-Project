@@ -67,7 +67,6 @@ public class NotificationConsumer {
       if (roles != null) {
         targetRoles.addAll(roles);
       }
-
     }
 
     if (targetRoles.isEmpty()) {
