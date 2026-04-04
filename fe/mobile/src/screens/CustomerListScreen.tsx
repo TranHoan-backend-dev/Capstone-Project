@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, StatusBar } from 'react-native';
-import { useRoute } from '@react-navigation/native';
+import { useRoute, useFocusEffect } from '@react-navigation/native';
 import { customerService } from '../services/customerService';
 import { meterService } from '../services/meterService';
 import CustomerHeader from '../components/customer/CustomerHeader';
@@ -19,10 +19,20 @@ const CustomerListScreen = () => {
 
   const fetchCustomers = useCallback(async () => {
     if (!routeId) return;
-    try {
-      setLoading(true);
 
-      // 1. Lấy danh sách khách hàng từ roadmap (customer service)
+    const cacheKey = `customers:${routeId}`;
+    const { cacheService } = require('../services/cacheService');
+
+    // 1. Kiểm tra cache trước để hiển thị dữ liệu ngay lập tức
+    const cachedData = cacheService.get(cacheKey);
+    if (cachedData) {
+      setCustomers(cachedData);
+    } else {
+      setLoading(true);
+    }
+
+    try {
+      // 2. Lấy danh sách khách hàng từ roadmap (customer service)
       console.log('[CustomerListScreen.tsx] getCustomersByRoadmap')
       const resCustomers = await customerService.getCustomersByRoadmap(routeId);
       console.log('[CustomerListScreen.tsx] data: ' + resCustomers)
@@ -30,12 +40,18 @@ const CustomerListScreen = () => {
 
       if (customerData.length === 0) {
         setCustomers([]);
+        cacheService.set(cacheKey, []);
         return;
       }
 
-      // 2. Lấy dữ liệu ghi nước cho các khách hàng này (device service)
+      // 2. Lấy dữ liệu ghi nước và cả trạng thái chụp ảnh cục bộ (tránh lag backend)
       const customerIds = customerData.map((c: any) => c.customerId).join(',');
-      const resUsages = await meterService.getUsageHistory(customerIds);
+      
+      const { localCapturedService } = require('../services/localCapturedService');
+      const [resUsages, localCapturedIds] = await Promise.all([
+        meterService.getUsageHistory(customerIds),
+        localCapturedService.getCapturedIds()
+      ]);
 
       // 3. Join dữ liệu
       const joinedData = customerData.map((c: any) => {
@@ -48,88 +64,48 @@ const CustomerListScreen = () => {
           new Date(b.recordingDate).getTime() - new Date(a.recordingDate).getTime()
         )[0];
 
-        // Xác định trạng thái dựa trên status của bản ghi mới nhất
+        // Xác định trạng thái dựa trên status của bản ghi mới nhất HOẶC trạng thái chụp ảnh cục bộ
         let status = 'Chưa ghi';
+        
+        // Ưu tiên trạng thái cục bộ nếu mới chụp xong mà backend chưa có record
+        if (localCapturedIds.includes(c.customerId)) {
+          status = 'Đã chụp ảnh';
+        }
+
         if (latestUsage) {
           const usageDate = new Date(latestUsage.recordingDate);
           if (usageDate.getMonth() + 1 === currentMonth && usageDate.getFullYear() === currentYear) {
-            status = latestUsage.status === 'PENDING' ? 'Đã ghi (Chờ duyệt)' : 'Đã ghi';
+            // Khi mới chụp ảnh và gửi thành công (status=PENDING), hiển thị "Đã chụp ảnh" (màu vàng)
+            // Khi đã được duyệt (status=APPROVED hoặc trạng thái hoàn tất), hiển thị "Đã ghi" (màu xanh)
+            if (latestUsage.status === 'PENDING') {
+              status = 'Đã chụp ảnh';
+            } else if (latestUsage.status === 'APPROVED' || latestUsage.status === 'COMPLETED') {
+              status = 'Đã ghi';
+            }
           }
         }
 
         return {
           ...c,
           latestUsage,
-          displayStatus: status,
+          status: status, // Dùng 'status' thay vì 'displayStatus' để đồng nhất với CustomerCard
         };
       });
 
       setCustomers(joinedData);
-      // Mock data
-      // const mockCustomers = [
-      //   {
-      //     customerId: 'KH001',
-      //     name: 'Nguyễn Văn An',
-      //     address: '123 Đường ABC, Phường 1, Quận 1, TP.HCM',
-      //     displayStatus: 'Đã ghi',
-      //     latestUsage: {
-      //       recordingDate: new Date().toISOString(),
-      //       index: 150,
-      //       mass: 12,
-      //       price: '150.000',
-      //     }
-      //   },
-      //   {
-      //     customerId: 'KH002',
-      //     name: 'Trần Thị Bình',
-      //     address: '456 Đường DEF, Phường 2, Quận 3, TP.HCM',
-      //     displayStatus: 'Chưa ghi',
-      //     latestUsage: null
-      //   },
-      //   {
-      //     customerId: 'KH003',
-      //     name: 'Lê Văn Cường',
-      //     address: '789 Đường GHI, Phường 5, Quận Gò Vấp, TP.HCM',
-      //     displayStatus: 'Đã ghi (Chờ duyệt)',
-      //     latestUsage: {
-      //       recordingDate: new Date().toISOString(),
-      //       index: 210,
-      //       mass: 18,
-      //       price: '210.000',
-      //     }
-      //   },
-      //   {
-      //     customerId: 'KH004',
-      //     name: 'Phạm Minh Đức',
-      //     address: '101 Đường JKL, Quận Bình Thạnh, TP.HCM',
-      //     displayStatus: 'Chưa ghi',
-      //     latestUsage: null
-      //   },
-      //   {
-      //     customerId: 'KH005',
-      //     name: 'Hoàng Anh Tuấn',
-      //     address: '202 Đường MNO, Quận Tân Bình, TP.HCM',
-      //     displayStatus: 'Đã ghi',
-      //     latestUsage: {
-      //       recordingDate: new Date().toISOString(),
-      //       index: 345,
-      //       mass: 25,
-      //       price: '345.000',
-      //     }
-      //   }
-      // ];
-
-      // setCustomers(mockCustomers);
-    } catch (error) {
-      console.error('Failed to fetch customers or usages:', error);
+      cacheService.set(cacheKey, joinedData);
+    } catch (error: any) {
+      console.error(error.message);
     } finally {
       setLoading(false);
     }
   }, [routeId]);
 
-  useEffect(() => {
-    fetchCustomers();
-  }, [fetchCustomers]);
+  useFocusEffect(
+    useCallback(() => {
+      fetchCustomers();
+    }, [fetchCustomers])
+  );
 
   return (
     <View style={styles.container}>

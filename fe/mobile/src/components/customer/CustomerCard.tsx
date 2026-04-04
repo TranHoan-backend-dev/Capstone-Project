@@ -31,20 +31,20 @@ export default function CustomerCard({ data }: any) {
   return (
     <TouchableOpacity activeOpacity={0.8} onPress={handleCardPress}>
       <Card style={styles.card}>
-        <Card.Content style={{ paddingVertical: 12 }}>
+        <Card.Content style={styles.cardContent}>
           {/* Header Row: ID and Status Badge */}
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-              <Icon name="format-list-numbered" size={20} color="#1E88E5" style={{ marginRight: 8 }} />
-              <Text style={{ color: '#1E88E5', fontWeight: '700', fontSize: 16 }}>STT: {data.stt}</Text>
+          <View style={styles.headerRow}>
+            <View style={styles.sttSection}>
+              <Icon name="format-list-numbered" size={20} color="#1E88E5" style={styles.sttIcon} />
+              <Text style={styles.sttText}>STT: {data.stt}</Text>
             </View>
 
             <Button
               mode="contained"
               icon="camera"
               compact
-              style={{ backgroundColor: '#1E88E5', borderRadius: 6 }}
-              labelStyle={{ color: '#FFFFFF', fontSize: 13, marginHorizontal: 8, marginVertical: 4 }}
+              style={styles.photoButton}
+              labelStyle={styles.photoButtonLabel}
               onPress={handleTakePhoto}
             >
               Chụp ảnh
@@ -52,46 +52,58 @@ export default function CustomerCard({ data }: any) {
           </View>
 
           {/* Customer Info */}
-          <View style={{ marginBottom: 12 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-              <Icon name="account-circle-outline" size={20} color="#757575" style={{ marginRight: 8 }} />
-              <Text style={{ fontWeight: '600', color: '#333', fontSize: 15 }}>{data.name}</Text>
+          <View style={styles.infoSection}>
+            <View style={styles.infoRow}>
+              <Icon name="account-circle-outline" size={20} color="#757575" style={styles.infoIcon} />
+              <Text style={styles.customerName}>{data.name}</Text>
             </View>
 
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-              <Icon name="map-marker-outline" size={20} color="#757575" style={{ marginRight: 8 }} />
-              <Text style={{ color: '#555', flex: 1, fontSize: 13 }} numberOfLines={2}>{data.address}</Text>
+            <View style={styles.infoRow}>
+              <Icon name="map-marker-outline" size={20} color="#757575" style={styles.infoIcon} />
+              <Text style={styles.customerAddress} numberOfLines={2}>{data.address}</Text>
             </View>
 
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Icon name="calendar-clock-outline" size={20} color="#757575" style={{ marginRight: 8 }} />
-              <Text style={{ color: '#555', fontSize: 13 }}>{data.date || '24/12/2025 11:44'}</Text>
+            <View style={styles.infoRow}>
+              <Icon name="calendar-clock-outline" size={20} color="#757575" style={styles.infoIcon} />
+              <Text style={styles.dateText}>{data.date || '24/12/2025 11:44'}</Text>
             </View>
           </View>
 
-          <View style={{ height: 1, backgroundColor: '#EEEEEE', marginBottom: 12 }} />
+          <View style={styles.divider} />
 
           {/* Stats Row 1: Chỉ số & M3 */}
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={{ color: '#555', fontSize: 14 }}>Chỉ số mới:</Text>
-              <Text style={{ color: '#333', fontSize: 14, marginLeft: 4 }}>{data.newIndex}</Text>
+          <View style={styles.statsRow}>
+            <View style={styles.statItem}>
+              <Text style={styles.statLabel}>Chỉ số mới:</Text>
+              <Text style={styles.statValue}>{data.newIndex}</Text>
             </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={{ color: '#555', fontSize: 14 }}>M3:</Text>
-              <Text style={{ color: '#EF4444', fontWeight: '700', fontSize: 14, marginLeft: 6 }}>{data.m3}</Text>
+            <View style={styles.statItem}>
+              <Text style={styles.statLabel}>M3:</Text>
+              <Text style={styles.m3Value}>{data.m3}</Text>
             </View>
           </View>
 
           {/* Stats Row 2: Status & Amount */}
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Icon name="check-bold" size={20} color="#4CAF50" style={{ marginRight: 6 }} />
-              <Text style={{ color: '#4CAF50', fontWeight: '700', fontSize: 16 }}>{data.status}</Text>
+          <View style={styles.statusRow}>
+            <View style={styles.statusContainer}>
+              <Icon 
+                name={data.status === 'Đã ghi' ? 'check-circle' : (data.status === 'Đã chụp ảnh' ? 'camera-check' : 'alert-circle-outline')} 
+                size={20} 
+                color={data.status === 'Đã ghi' ? '#4CAF50' : (data.status === 'Đã chụp ảnh' ? '#F59E0B' : '#EF4444')} 
+                style={styles.statusIcon} 
+              />
+              <Text style={[
+                styles.statusText,
+                data.status === 'Đã ghi' 
+                  ? styles.statusDone 
+                  : (data.status === 'Đã chụp ảnh' ? styles.statusPending : styles.statusAlert)
+              ]}>
+                {data.status}
+              </Text>
             </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={{ color: '#555', fontSize: 14 }}>Số tiền:</Text>
-              <Text style={{ color: '#EF4444', fontWeight: '700', fontSize: 14, marginLeft: 6 }}>{data.amount}</Text>
+            <View style={styles.amountContainer}>
+              <Text style={styles.amountLabel}>Số tiền:</Text>
+              <Text style={styles.amountValue}>{data.amount}</Text>
             </View>
           </View>
         </Card.Content>

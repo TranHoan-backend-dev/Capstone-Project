@@ -106,12 +106,34 @@ export default function CaptureWaterMeterScreen({ route }: any) {
       console.log("[CaptureWaterMeterScreen.tsx] AI Analyze Response:", response);
 
       if (totalCustomer && currentCustomerIndex < totalCustomer) {
-        showToast.success(`Đã phân tích xong! Tiếp tục khách hàng ${currentCustomerIndex + 1}/${totalCustomer}`);
+        showToast.success(`Gửi ảnh thành công! Tiếp tục khách hàng ${currentCustomerIndex + 1}/${totalCustomer}`);
+
+        // Lưu trạng thái đã chụp cục bộ để hiển thị trong Danh sách
+        if (route.params?.customerId) {
+          try {
+            const { localCapturedService } = require('../services/localCapturedService');
+            await localCapturedService.markAsCaptured(route.params.customerId);
+          } catch {
+            console.warn('[Capture] Failed to save local state');
+          }
+        }
+
         setCurrentCustomerIndex(prev => prev + 1);
-        setPhotoUri(null); // Reset back to camera
+        setPhotoUri(null);
         setIsBlurry(null);
       } else {
         showToast.success('Gửi ảnh thành công!');
+
+        // Lưu trạng thái đã chụp cục bộ
+        if (route.params?.customerId) {
+          try {
+            const { localCapturedService } = require('../services/localCapturedService');
+            await localCapturedService.markAsCaptured(route.params.customerId);
+          } catch {
+            console.warn('[Capture] Failed to save local state');
+          }
+        }
+
         navigation.goBack();
       }
     } catch (error: any) {

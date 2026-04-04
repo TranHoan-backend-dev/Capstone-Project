@@ -152,13 +152,18 @@ export default function MeterInputForm({
   // Lắng nghe kết quả từ AI OCR
   useEffect(() => {
     if (ocrResult) {
-      const newIdx = ocrResult.currentIndex.toString();
-      setNewIndex(newIdx);
-      _setImage(ocrResult.imageUrl);
-
-      // Tính toán lại m3 tiêu thụ
-      const difference = Math.max(0, parseInt(newIdx, 10) - parseInt(oldIndex || '0', 10));
-      setM3(difference.toString());
+      if (ocrResult.currentIndex !== null && ocrResult.currentIndex !== undefined) {
+        const newIdx = ocrResult.currentIndex.toString();
+        setNewIndex(newIdx);
+  
+        // Tính toán lại m3 tiêu thụ
+        const difference = Math.max(0, parseInt(newIdx, 10) - parseInt(oldIndex || '0', 10));
+        setM3(difference.toString());
+      }
+      
+      if (ocrResult.imageUrl) {
+        _setImage(ocrResult.imageUrl);
+      }
     }
   }, [ocrResult, oldIndex]);
 

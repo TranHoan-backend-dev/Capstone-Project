@@ -83,130 +83,165 @@ export default StyleSheet.create({
   card: {
     marginBottom: 12,
     borderRadius: 8,
-    backgroundColor: '#FFFFFF', // Đảm bảo card có nền trắng
+    backgroundColor: '#FFFFFF',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+
+  cardContent: {
+    paddingVertical: 12,
   },
 
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 16,
   },
 
-  idSection: {
+  sttSection: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
     flex: 1,
   },
 
-  customerId: {
+  sttIcon: {
+    marginRight: 8,
+  },
+
+  sttText: {
+    color: '#1E88E5',
     fontWeight: '700',
-    fontSize: 14,
-    color: '#333',
+    fontSize: 16,
   },
 
-  stt: {
-    fontSize: 12,
-    color: '#999',
-    backgroundColor: '#F0F0F0',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 3,
+  photoButton: {
+    backgroundColor: '#1E88E5',
+    borderRadius: 6,
   },
 
-  inputButton: {
-    backgroundColor: '#4CAF50',
-    paddingHorizontal: 4,
-  },
-
-  inputButtonLabel: {
-    fontSize: 12,
+  photoButtonLabel: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    marginHorizontal: 8,
+    marginVertical: 4,
   },
 
   infoSection: {
     marginBottom: 12,
-    gap: 6,
   },
 
   infoRow: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 8,
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+
+  infoIcon: {
+    marginRight: 8,
   },
 
   customerName: {
-    fontSize: 13,
-    fontWeight: '500',
+    fontWeight: '600',
     color: '#333',
-    flex: 1,
+    fontSize: 15,
   },
 
   customerAddress: {
-    fontSize: 12,
-    color: '#666',
+    color: '#555',
     flex: 1,
+    fontSize: 13,
   },
 
-  date: {
-    fontSize: 12,
-    color: '#999',
-    flex: 1,
+  dateText: {
+    color: '#555',
+    fontSize: 13,
+  },
+
+  divider: {
+    height: 1,
+    backgroundColor: '#EEEEEE',
+    marginBottom: 12,
   },
 
   statsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    marginBottom: 12,
   },
 
   statItem: {
-    flex: 1,
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginRight: 12,
+    alignItems: 'center',
   },
 
   statLabel: {
-    fontSize: 12,
-    color: '#666',
-    fontWeight: '500',
+    color: '#555',
+    fontSize: 14,
   },
 
   statValue: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#1E88E5',
+    color: '#333',
+    fontSize: 14,
     marginLeft: 4,
   },
 
-  statusItem: {
+  m3Value: {
+    color: '#EF4444',
+    fontWeight: '700',
+    fontSize: 14,
+    marginLeft: 6,
+  },
+
+  statusRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+
+  statusContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+  },
+
+  statusIcon: {
+    marginRight: 6,
   },
 
   statusText: {
-    fontSize: 12,
-    fontWeight: '600',
+    fontWeight: '700',
+    fontSize: 16,
+  },
+
+  statusDone: {
     color: '#4CAF50',
   },
 
-  amountItem: {
+  statusPending: {
+    color: '#F59E0B',
+  },
+
+  statusAlert: {
+    color: '#EF4444',
+  },
+
+  amountContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
   },
 
   amountLabel: {
-    fontSize: 12,
-    color: '#666',
-    fontWeight: '500',
+    color: '#555',
+    fontSize: 14,
   },
 
   amountValue: {
-    fontSize: 12,
+    color: '#EF4444',
     fontWeight: '700',
-    color: '#E53935',
+    fontSize: 14,
+    marginLeft: 6,
   },
 });

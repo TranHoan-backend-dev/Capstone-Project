@@ -223,4 +223,15 @@ export default StyleSheet.create({
     textAlign: 'center',
     fontWeight: '600',
   },
+  loadingContainer: {
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyText: {
+    padding: 20,
+    textAlign: 'center',
+    color: '#666',
+    fontSize: 14,
+  },
 });

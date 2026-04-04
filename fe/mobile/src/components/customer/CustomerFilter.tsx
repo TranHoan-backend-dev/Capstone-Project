@@ -11,7 +11,7 @@ interface Props {
 
 export default function CustomerFilter({ value, onChange }: Props) {
   const [visible, setVisible] = useState(false);
-  const options = ['Tất cả', 'Đã ghi', 'Chưa ghi'];
+  const options = ['Tất cả', 'Đã chụp ảnh', 'Đã ghi', 'Chưa ghi'];
 
   return (
     <View style={styles.filterContainer}>

@@ -21,7 +21,7 @@ public interface RoadmapRepository extends JpaRepository<Roadmap, String> {
   @Query("""
     SELECT r
     FROM Roadmap r
-    WHERE (:keyword IS NULL OR LOWER(r.name) LIKE LOWER(CONCAT('%', :keyword, '%')))
+    WHERE (:keyword IS NULL OR LOWER(CAST(r.name AS string)) LIKE LOWER(CONCAT('%', CAST(:keyword AS string), '%')))
       AND (:lateralId IS NULL OR r.lateral.id = :lateralId)
       AND (:networkId IS NULL OR r.network.branchId = :networkId)
     """)

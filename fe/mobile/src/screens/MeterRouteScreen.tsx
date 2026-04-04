@@ -17,7 +17,7 @@ export default function MeterRouteScreen() {
     <View style={styles.container}>
       <MeterRouteHeader />
       <MeterRouteFilter period={period} onChange={setPeriod} />
-      <MeterRouteList />
+      <MeterRouteList period={period} />
       <MeterRouteFooter />
     </View>
   );
