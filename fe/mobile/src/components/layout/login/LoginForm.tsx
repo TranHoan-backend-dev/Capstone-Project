@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
+import { TextInput } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import FormInput from '../common/FormInput';
+import FormInput from '../../ui/FormInput';
 import LoginFooter from './LoginFooter';
-import authService from '../../services/auth.service';
-import { useAuth } from '../../context/AuthContext';
-import { showToast } from '../../utils/toast';
-import { RootStackParamList } from '../../navigation/AppNavigator';
+import authService from '../../../services/auth.service';
+import { useAuth } from '../../../context/AuthContext';
+import { showToast } from '../../../utils/toast';
+import { RootStackParamList } from '../../../navigation/AppNavigator';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Login'>;
 
@@ -19,6 +20,7 @@ export default function LoginForm() {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
     // 1. Validate data
@@ -58,7 +60,13 @@ export default function LoginForm() {
         label="Mật khẩu"
         value={password}
         onChangeText={setPassword}
-        secureTextEntry
+        secureTextEntry={!showPassword}
+        right={
+          <TextInput.Icon
+            icon={showPassword ? 'eye-off' : 'eye'}
+            onPress={() => setShowPassword(!showPassword)}
+          />
+        }
       />
 
       <LoginFooter

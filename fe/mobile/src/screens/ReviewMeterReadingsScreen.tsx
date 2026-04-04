@@ -138,8 +138,8 @@ export default function ReviewMeterReadingsScreen() {
               <Icon name="arrow-right" size={24} color="#94A3B8" />
 
               <View style={styles.indexItem}>
-                <Text style={[styles.indexLabel, { color: '#10B981' }]}>Chỉ số mới (AI)</Text>
-                <Text style={[styles.indexValue, { color: '#10B981' }]}>{activeReview.newIndexAI}</Text>
+                <Text style={[styles.indexLabel, styles.successText]}>Chỉ số mới (AI)</Text>
+                <Text style={[styles.indexValue, styles.successText]}>{activeReview.newIndexAI}</Text>
                 <Text style={styles.serialSmall}>SN: {activeReview.serial}</Text>
               </View>
             </View>
@@ -297,6 +297,9 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: '900',
     color: '#1E293B',
+  },
+  successText: {
+    color: '#10B981',
   },
   serialSmall: {
     fontSize: 10,

@@ -3,7 +3,7 @@ import { Appbar, Text } from 'react-native-paper';
 import { View } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import styles from './debt.styles';
-import { RootStackParamList } from '../../navigation/AppNavigator';
+import { RootStackParamList } from '../../../navigation/AppNavigator';
 
 interface Props {
   title?: string;

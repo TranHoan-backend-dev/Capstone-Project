@@ -10,9 +10,9 @@ import {
 } from 'react-native';
 import { Text, Surface, Button, IconButton } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import styles from '../components/change-password/styles';
-import PasswordInput from '../components/change-password/PasswordInput';
-import PasswordRequirements from '../components/change-password/PasswordRequirements';
+import styles from '../components/layout/change-password/styles';
+import PasswordInput from '../components/layout/change-password/PasswordInput';
+import PasswordRequirements from '../components/layout/change-password/PasswordRequirements';
 import authService from '../services/auth.service';
 import { useNavigation } from '@react-navigation/core';
 import { showToast } from '../utils/toast';

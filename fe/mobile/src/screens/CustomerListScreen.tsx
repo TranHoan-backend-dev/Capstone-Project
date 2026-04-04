@@ -3,11 +3,11 @@ import { View, StatusBar } from 'react-native';
 import { useRoute, useFocusEffect } from '@react-navigation/native';
 import { customerService } from '../services/customerService';
 import { meterService } from '../services/meterService';
-import CustomerHeader from '../components/customer/CustomerHeader';
-import CustomerFilter from '../components/customer/CustomerFilter';
-import CustomerSearch from '../components/customer/CustomerSearch';
-import CustomerList from '../components/customer/CustomerList';
-import styles from '../components/customer/customer.styles';
+import CustomerHeader from '../components/layout/customer/CustomerHeader';
+import CustomerFilter from '../components/layout/customer/CustomerFilter';
+import CustomerSearch from '../components/layout/customer/CustomerSearch';
+import CustomerList from '../components/layout/customer/CustomerList';
+import styles from '../components/layout/customer/customer.styles';
 
 const CustomerListScreen = () => {
   const route = useRoute<any>();
@@ -46,7 +46,7 @@ const CustomerListScreen = () => {
 
       // 2. Lấy dữ liệu ghi nước và cả trạng thái chụp ảnh cục bộ (tránh lag backend)
       const customerIds = customerData.map((c: any) => c.customerId).join(',');
-      
+
       const { localCapturedService } = require('../services/localCapturedService');
       const [resUsages, localCapturedIds] = await Promise.all([
         meterService.getUsageHistory(customerIds),
@@ -66,7 +66,7 @@ const CustomerListScreen = () => {
 
         // Xác định trạng thái dựa trên status của bản ghi mới nhất HOẶC trạng thái chụp ảnh cục bộ
         let status = 'Chưa ghi';
-        
+
         // Ưu tiên trạng thái cục bộ nếu mới chụp xong mà backend chưa có record
         if (localCapturedIds.includes(c.customerId)) {
           status = 'Đã chụp ảnh';

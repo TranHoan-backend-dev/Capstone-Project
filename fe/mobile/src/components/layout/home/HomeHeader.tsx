@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Pressable } from 'react-native';
 import { Appbar, Avatar, Text, Menu, Divider, IconButton } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../../context/AuthContext';
 import styles from './home.styles';
 
 export default function HomeHeader() {

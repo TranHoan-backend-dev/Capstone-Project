@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ScrollView, Animated, StatusBar, View, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import styles from '../components/profile/styles';
+import styles from '../components/layout/profile/styles';
 import authService from '../services/auth.service';
 
-import ProfileHeader from '../components/profile/ProfileHeader';
-import ProfileCard from '../components/profile/ProfileCard';
-import ProfileActions from '../components/profile/ProfileActions';
+import ProfileHeader from '../components/layout/profile/ProfileHeader';
+import ProfileCard from '../components/layout/profile/ProfileCard';
+import ProfileActions from '../components/layout/profile/ProfileActions';
 
 export default function ProfileScreen() {
   const fadeAnim = useRef(new Animated.Value(0)).current;

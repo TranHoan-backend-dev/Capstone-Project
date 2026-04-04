@@ -8,15 +8,15 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card } from 'react-native-paper';
 
-import LoginHeader from '../components/login/LoginHeader';
-import LoginForm from '../components/login/LoginForm';
+import LoginHeader from '../components/layout/login/LoginHeader';
+import LoginForm from '../components/layout/login/LoginForm';
 
 export default function LoginScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{ flex: 1 }}
+        style={styles.keyboardAvoiding}
       >
         <ScrollView
           contentContainerStyle={styles.scrollContent}
@@ -47,5 +47,8 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 16,
     backgroundColor: '#FFFFFF'
+  },
+  keyboardAvoiding: {
+    flex: 1,
   },
 });

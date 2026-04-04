@@ -2,11 +2,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ScrollView, Animated, KeyboardAvoidingView, Platform } from 'react-native';
 import { StatusBar } from 'react-native';
 
-import ProgressBar from '../components/forgot-password/ProgressBar';
-import StepEmail from '../components/forgot-password/StepEmail';
-import StepOTP from '../components/forgot-password/StepOTP';
-import StepResetPassword from '../components/forgot-password/StepResetPassword';
-import styles from '../components/forgot-password/styles';
+import ProgressBar from '../components/layout/forgot-password/ProgressBar';
+import StepEmail from '../components/layout/forgot-password/StepEmail';
+import StepOTP from '../components/layout/forgot-password/StepOTP';
+import StepResetPassword from '../components/layout/forgot-password/StepResetPassword';
+import styles from '../components/layout/forgot-password/styles';
 
 export default function ForgotPasswordScreen() {
   const [step, setStep] = useState(1);

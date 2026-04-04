@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ScrollView, Text, ActivityIndicator, View } from 'react-native';
 import MeterRouteCard from './MeterRouteCard';
 import styles from './meterRoute.styles';
-import { roadmapService, MeterRoute } from '../../services/roadmapService';
+import { roadmapService, MeterRoute } from '../../../services/roadmapService';
 
 // const MOCK_DATA: MeterRoute[] = [
 //   {
@@ -48,7 +48,7 @@ export default function MeterRouteList({ period }: { period: any }) {
     const fetchRoutes = async () => {
       const { cacheService } = require('../../services/cacheService');
       const cacheKey = `routes:${period.ky}:${period.nam}:${period.dot}`;
-      
+
       // 1. Dùng cache để hiển thị ngay lập tức
       const cached = cacheService.get(cacheKey);
       if (cached) {
@@ -69,7 +69,7 @@ export default function MeterRouteList({ period }: { period: any }) {
         setLoading(false);
       }
     };
-    
+
     fetchRoutes();
   }, [period.ky, period.nam, period.dot]);
 

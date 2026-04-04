@@ -1,15 +1,15 @@
 import React from 'react';
 import { View, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import MeterInputForm from '../components/meter-input/MeterInputForm';
-import MeterInputHeader from '../components/meter-input/MeterInputHeader';
-import styles from '../components/meter-input/meterInput.styles';
+import MeterInputForm from '../components/layout/meter-input/MeterInputForm';
+import MeterInputHeader from '../components/layout/meter-input/MeterInputHeader';
+import styles from '../components/layout/meter-input/meterInput.styles';
 
 const MeterInputScreen = ({ route }: any) => {
   const navigation = useNavigation<any>();
-  const { 
-    customerId: initialCustomerId, 
-    customerName: initialCustomerName, 
+  const {
+    customerId: initialCustomerId,
+    customerName: initialCustomerName,
     address: initialAddress,
     stt: initialStt,
     allCustomerIds = [],

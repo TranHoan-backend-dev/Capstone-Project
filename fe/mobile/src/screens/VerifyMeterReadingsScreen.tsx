@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Image, ActivityIndicator, Alert } from 'react-native';
-import { Text, Surface, Button, IconButton, Badge, TextInput } from 'react-native-paper';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, StyleSheet, Image, ActivityIndicator, Alert } from 'react-native';
+import { Text, Surface, Button, Badge, TextInput } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
+import ScreenLayout from '../components/layout/ScreenLayout';
 
 interface ReviewItem {
   id: string;
@@ -40,7 +40,7 @@ const dummyData: ReviewItem[] = [
 
 export default function VerifyMeterReadingsScreen() {
   const navigation = useNavigation();
-  const [items, setItems] = useState<ReviewItem[]>(dummyData);
+  const [items] = useState<ReviewItem[]>(dummyData);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isEditMode, setIsEditMode] = useState(false);
   const [manualSerial, setManualSerial] = useState('');
@@ -49,7 +49,6 @@ export default function VerifyMeterReadingsScreen() {
   const currentItem = items[currentIndex];
 
   const handleApprove = () => {
-    // Lưu chỉ số vào DB (giả lập)
     Alert.alert('Đã duyệt', `Chỉ số nước của ${currentItem.customerName} đã được lưu.`);
     nextItem();
   };
@@ -61,7 +60,6 @@ export default function VerifyMeterReadingsScreen() {
   };
 
   const handleSaveManual = () => {
-    // Lưu nhập tay
     Alert.alert('Đã lưu nhập tay', `Dữ liệu của ${currentItem.customerName} đã được cập nhật thủ công.`);
     setIsEditMode(false);
     nextItem();
@@ -87,123 +85,102 @@ export default function VerifyMeterReadingsScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <IconButton icon="arrow-left" onPress={() => navigation.goBack()} />
-        <Text style={styles.headerTitle}>Duyệt ảnh cuối ngày</Text>
-        <Badge style={styles.badge}>{currentIndex + 1}/{items.length}</Badge>
-      </View>
+    <ScreenLayout
+      title="Duyệt ảnh cuối ngày"
+      headerBackgroundColor="#FFFFFF"
+      statusBarColor="#FFFFFF"
+      statusBarStyle="dark-content"
+      rightContent={
+        <Badge style={styles.badge}>{`${currentIndex + 1}/${items.length}`}</Badge>
+      }
+    >
+      <Surface style={styles.card}>
+        <Text style={styles.customerName}>{currentItem.customerName}</Text>
+        <Text style={styles.meterId}>Mã ĐD: {currentItem.meterId}</Text>
+        <View style={styles.imageContainer}>
+          <Image source={{ uri: currentItem.photoUri }} style={styles.image} />
+        </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Surface style={styles.card}>
-          <Text style={styles.customerName}>{currentItem.customerName}</Text>
-          <Text style={styles.meterId}>Mã ĐD: {currentItem.meterId}</Text>
-          <View style={styles.imageContainer}>
-            <Image source={{ uri: currentItem.photoUri }} style={styles.image} />
+        {!isEditMode ? (
+          <View style={styles.aiResultContainer}>
+            <Text style={styles.sectionTitle}>Kết quả phân tích AI</Text>
+            <View style={styles.dataRow}>
+              <Text style={styles.label}>Số Serial:</Text>
+              <Text style={styles.value}>{currentItem.aiSerialResult}</Text>
+            </View>
+            <View style={styles.dataRow}>
+              <Text style={styles.label}>Chỉ số nước:</Text>
+              <Text style={styles.valueHighlight}>{currentItem.aiIndexResult}</Text>
+            </View>
           </View>
+        ) : (
+          <View style={styles.aiResultContainer}>
+            <Text style={styles.sectionTitle}>Nhập tay dữ liệu</Text>
+            <TextInput
+              label="Số Serial"
+              value={manualSerial}
+              onChangeText={setManualSerial}
+              style={styles.input}
+              mode="outlined"
+            />
+            <TextInput
+              label="Chỉ số nước mới"
+              value={manualIndex}
+              onChangeText={setManualIndex}
+              style={styles.input}
+              keyboardType="numeric"
+              mode="outlined"
+            />
+          </View>
+        )}
 
+        <View style={styles.actionButtons}>
           {!isEditMode ? (
-            <View style={styles.aiResultContainer}>
-              <Text style={styles.sectionTitle}>Kết quả phân tích AI</Text>
-              <View style={styles.dataRow}>
-                <Text style={styles.label}>Số Serial:</Text>
-                <Text style={styles.value}>{currentItem.aiSerialResult}</Text>
-              </View>
-              <View style={styles.dataRow}>
-                <Text style={styles.label}>Chỉ số nước:</Text>
-                <Text style={styles.valueHighlight}>{currentItem.aiIndexResult}</Text>
-              </View>
-            </View>
+            <>
+              <Button
+                mode="outlined"
+                onPress={handleManualEdit}
+                style={styles.flexButton}
+                buttonColor="white"
+                textColor="#EF4444"
+              >
+                Nhập tay
+              </Button>
+              <Button
+                mode="contained"
+                onPress={handleApprove}
+                style={styles.flexButton}
+                buttonColor="#10B981"
+              >
+                Duyệt (OK)
+              </Button>
+            </>
           ) : (
-            <View style={styles.aiResultContainer}>
-              <Text style={styles.sectionTitle}>Nhập tay dữ liệu</Text>
-              <TextInput
-                label="Số Serial"
-                value={manualSerial}
-                onChangeText={setManualSerial}
-                style={styles.input}
-                mode="outlined"
-              />
-              <TextInput
-                label="Chỉ số nước mới"
-                value={manualIndex}
-                onChangeText={setManualIndex}
-                style={styles.input}
-                keyboardType="numeric"
-                mode="outlined"
-              />
-            </View>
+            <>
+              <Button mode="text" onPress={() => setIsEditMode(false)} style={styles.flexButton}>
+                Hủy
+              </Button>
+              <Button mode="contained" onPress={handleSaveManual} style={styles.flexButton}>
+                Lưu thay đổi
+              </Button>
+            </>
           )}
-
-          <View style={styles.actionButtons}>
-            {!isEditMode ? (
-              <>
-                <Button
-                  mode="outlined"
-                  onPress={handleManualEdit}
-                  style={styles.flexButton}
-                  buttonColor="white"
-                  textColor="#EF4444"
-                >
-                  Không ổn định (Nhập tay)
-                </Button>
-                <Button
-                  mode="contained"
-                  onPress={handleApprove}
-                  style={styles.flexButton}
-                  buttonColor="#10B981"
-                >
-                  Duyệt (OK)
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button mode="text" onPress={() => setIsEditMode(false)} style={styles.flexButton}>
-                  Hủy
-                </Button>
-                <Button mode="contained" onPress={handleSaveManual} style={styles.flexButton}>
-                  Lưu thay đổi
-                </Button>
-              </>
-            )}
-          </View>
-        </Surface>
-      </ScrollView>
-    </SafeAreaView>
+        </View>
+      </Surface>
+    </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F4F6',
-  },
   centerContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    flex: 1,
-  },
   badge: {
     alignSelf: 'center',
     marginRight: 16,
     backgroundColor: '#3B82F6',
-  },
-  scrollContent: {
-    padding: 16,
   },
   card: {
     padding: 16,

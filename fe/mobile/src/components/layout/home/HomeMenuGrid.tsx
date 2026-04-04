@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { Text } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 
-import MenuItemCard from '../../components/common/MenuItemCard';
+import MenuItemCard from '../../ui/MenuItemCard';
 import styles from './home.styles';
 
 export default function HomeMenuGrid() {

@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, ScrollView, StatusBar, StyleSheet } from 'react-native';
-import HomeHeader from '../components/home/HomeHeader';
-import HomeMenuGrid from '../components/home/HomeMenuGrid';
-import HomeWatermark from '../components/home/HomeWatermark';
-import HomeBottomTab from '../components/home/HomeBottomTab';
+import HomeHeader from '../components/layout/home/HomeHeader';
+import HomeMenuGrid from '../components/layout/home/HomeMenuGrid';
+import HomeWatermark from '../components/layout/home/HomeWatermark';
+import HomeBottomTab from '../components/layout/home/HomeBottomTab';
 
 const HomeScreen = () => {
   return (

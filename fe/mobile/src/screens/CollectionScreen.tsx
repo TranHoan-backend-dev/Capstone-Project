@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { View, FlatList, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { Button } from 'react-native-paper';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import DebtHeader from '../components/debt/DebtHeader';
-import CollectionListItem from '../components/debt-route/CollectionListItem';
-import styles from '../components/debt-route/debtRoute.styles';
+import DebtHeader from '../components/layout/debt/DebtHeader';
+import CollectionListItem from '../components/layout/debt-route/CollectionListItem';
+import styles from '../components/layout/debt-route/debtRoute.styles';
 import { RootStackParamList } from '../navigation/AppNavigator';
 
 type CollectionScreenProps = NativeStackScreenProps<RootStackParamList, 'Collection'>;

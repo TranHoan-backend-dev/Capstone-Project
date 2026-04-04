@@ -1,10 +1,9 @@
 import React from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import { Text } from 'react-native-paper';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import styles from './meter.styles';
 import { useNavigation } from '@react-navigation/native';
-import MenuItemCard from '../common/MenuItemCard';
+import MenuItemCard from '../../ui/MenuItemCard';
 
 export default function MeterActionCard() {
   const navigation = useNavigation<any>();

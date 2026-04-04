@@ -3,8 +3,8 @@ import { View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import styles from './debt.styles';
-import MenuItemCard from '../common/MenuItemCard';
-import { RootStackParamList } from '../../navigation/AppNavigator';
+import MenuItemCard from '../../ui/MenuItemCard';
+import { RootStackParamList } from '../../../navigation/AppNavigator';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -22,7 +22,7 @@ export default function DebtFunctionsGrid() {
         <MenuItemCard
           icon="chart-bar"
           label="Thống kê"
-          onPress={() => {}}
+          onPress={() => { }}
         />
       </View>
     </View>

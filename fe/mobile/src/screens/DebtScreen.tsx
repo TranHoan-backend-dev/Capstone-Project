@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, ScrollView } from 'react-native';
 import { Text } from 'react-native-paper';
-import DebtHeader from '../components/debt/DebtHeader';
-import DebtFunctionsGrid from '../components/debt/DebtFunctionsGrid';
-import styles from '../components/debt/debt.styles';
+import DebtHeader from '../components/layout/debt/DebtHeader';
+import DebtFunctionsGrid from '../components/layout/debt/DebtFunctionsGrid';
+import styles from '../components/layout/debt/debt.styles';
 
 export default function DebtScreen({ navigation }: any) {
   return (
