@@ -6,8 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 
 public record AnalysisRequest(
-  MultipartFile image,
-
+  @NotNull MultipartFile image,
   @NotNull LocalDate recordingDate
 ) {
 }

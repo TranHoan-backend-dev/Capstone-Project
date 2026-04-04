@@ -14,7 +14,6 @@ import com.capstone.customer.utils.Message;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 import java.time.LocalDateTime;
 
@@ -120,7 +119,7 @@ public class Customer {
   @Column(nullable = false)
   String waterPriceId;
 
-  @Column(nullable = false)
+  @Column(nullable = false, unique = true)
   String waterMeterId;
 
   @Setter

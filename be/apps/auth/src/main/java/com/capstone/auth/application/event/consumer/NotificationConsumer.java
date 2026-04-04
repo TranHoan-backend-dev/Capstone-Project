@@ -7,6 +7,7 @@ import com.capstone.auth.infrastructure.persistence.UserRepository;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.enumerate.RoleName;
 
+import com.capstone.common.utils.Utils;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -50,18 +51,22 @@ public class NotificationConsumer {
     }
 
     var targetRoles = new HashSet<RoleName>();
-    String userId = null;
+    List<String> userId = new ArrayList<>();
     for (var topic : topics) {
       var components = topic.split("/");
-      if (components.length == 4) {
-        userId = components[3];
+      if (components.length == 4 && Utils.isUUID(components[3])) {
+        userId.addFirst(components[3]);
+        // loai bo id o cuoi
         topic = String.join("/", components[0], components[1], components[2]);
+      }
+      if (components.length == 3 && Utils.isUUID(components[2])) {
+        userId.add(components[2]);
+        topic = String.join("/", components[0], components[1]);
       }
       List<RoleName> roles = mapTopicToRoles(topic);
       if (roles != null) {
         targetRoles.addAll(roles);
       }
-
     }
 
     if (targetRoles.isEmpty()) {
@@ -96,9 +101,9 @@ public class NotificationConsumer {
     };
   }
 
-  private void saveNotification(Set<RoleName> targetRoles, String userId, List<String> topics, String notificationId) {
+  private void saveNotification(Set<RoleName> targetRoles, @NonNull List<String> userIds, List<String> topics, String notificationId) {
     List<IndividualNotification> individualNotifications;
-    if (userId == null) {
+    if (userIds.isEmpty()) {
       List<Users> targetUsers = userRepository.findByRoleNameIn(new ArrayList<>(targetRoles));
       if (targetUsers == null || targetUsers.isEmpty()) {
         log.info("No users found for roles corresponding to topics: {}", topics);
@@ -111,12 +116,15 @@ public class NotificationConsumer {
         .map(user -> new IndividualNotification(notificationId, user.getUserId(), false))
         .toList();
     } else {
-      var user = userRepository.existsByUserId(userId);
-      if (user == null || !user) {
-        log.info("No user found for roles corresponding to topics: {}", topics);
-        return;
-      }
-      individualNotifications = List.of(new IndividualNotification(notificationId, userId, false));
+      individualNotifications = new ArrayList<>();
+      userIds.forEach(id -> {
+        var user = userRepository.existsByUserId(id);
+        if (user == null || !user) {
+          log.info("No user found for roles corresponding to topics: {}", topics);
+          return;
+        }
+        individualNotifications.add(new IndividualNotification(notificationId, id, false));
+      });
     }
 
     individualNotificationRepository.saveAll(individualNotifications);

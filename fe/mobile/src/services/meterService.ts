@@ -65,6 +65,16 @@ export interface MeterService {
    * Lấy URL hình ảnh đồng hồ mới nhất
    */
   getLatestImage: (customerId: string, options?: ApiOptions) => Promise<string>;
+
+  /**
+   * Phân tích ảnh chụp đồng hồ với AI (không cần mã serial)
+   */
+  analyzeMeterImage: (recordingDate: string, image: any, options?: ApiOptions) => Promise<any>;
+
+  /**
+   * Phân tích ảnh chụp đồng hồ với AI (có mã serial)
+   */
+  analyzeMeterImageWithSerial: (serial: string, recordingDate: string, image: any, options?: ApiOptions) => Promise<any>;
 }
 
 export const meterService: MeterService = {
@@ -93,6 +103,56 @@ export const meterService: MeterService = {
 
   getUsageHistory: async (customerId, options) => {
     const response = await apiFetch(`/d/usage/batch?ids=${customerId}`, options);
+    return response.data;
+  },
+
+  analyzeMeterImage: async (recordingDate, image, options) => {
+    const formData = new FormData();
+    formData.append('recordingDate', recordingDate);
+
+    if (image) {
+      const uri = typeof image === 'string' ? image : image.uri;
+      formData.append('image', {
+        uri: uri,
+        type: 'image/jpeg',
+        name: 'meter_reading.jpg',
+      } as any);
+    }
+
+    const response = await apiFetch('/d/usage/analyze', {
+      ...options,
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        ...options?.headers
+      },
+    });
+    return response.data;
+  },
+
+  analyzeMeterImageWithSerial: async (serial, recordingDate, image, options) => {
+    const formData = new FormData();
+    formData.append('recordingDate', recordingDate);
+
+    if (image) {
+      const uri = typeof image === 'string' ? image : image.uri;
+      formData.append('image', {
+        uri: uri,
+        type: 'image/jpeg',
+        name: 'meter_reading.jpg',
+      } as any);
+    }
+
+    const response = await apiFetch(`/d/usage/analyze/${serial}`, {
+      ...options,
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        ...options?.headers
+      },
+    });
     return response.data;
   },
 

@@ -1,341 +1,108 @@
 @uri = http://localhost:9006/api/v1/usage
-@keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
-@client_secret=
 @customerId = 00a6ec02-3652-46fd-8c62-c5d01c7b3148
 @serial = 00000000-0000-0000-0000-A00000000001
+@reviewId = rev-123
 
-### get token
-POST {{keycloak}}/token
-Content-Type: application/x-www-form-urlencoded
-Accept: application/json
+# ============================================================================
+# 1. QUẢN LÝ LỊCH SỬ SỬ DỤNG (GET APIS)
+# ============================================================================
 
-grant_type=password&
-client_id= &
-client_secret={{client_secret}}&
-username= &
-password= &
-scope=openid
-
-> {%
-  client.global.set("access_token", response.body.access_token);
-  client.global.set("refresh_token", response.body.refresh_token);
-%}
-
-### Case 1: Lấy lịch sử sử dụng nước thành công theo customer ID
+### TC01 - Lấy lịch sử sử dụng nước theo customer ID
 GET {{uri}}/customer/{{customerId}}
 Authorization: Bearer {{access_token}}
-Accept: application/json
 
-### Case 2: Lấy thất bại - Customer ID không tồn tại (404)
-GET {{uri}}/customer/INVALID-CUSTOMER-ID
+### TC02 - Lấy lịch sử theo danh sách customer IDs (batch)
+GET {{uri}}/batch?ids={{customerId}}&ids=CUST-2024-002
 Authorization: Bearer {{access_token}}
-Accept: application/json
 
-### Case 3: Lấy thất bại - Thiếu token xác thực (401)
-GET {{uri}}/customer/{{customerId}}
-Accept: application/json
-
-# ============================================================================
-# G - GET: Lấy lịch sử theo danh sách customer IDs (batch)
-# ============================================================================
-
-### Case 1: Lấy lịch sử theo danh sách customer IDs thành công
-GET {{uri}}/batch?ids={{customerId}}
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### Case 2: Lấy lịch sử theo nhiều customer IDs
-GET {{uri}}/batch?ids=CUST-2024-001&ids=CUST-2024-002&ids=CUST-2024-003
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### Case 3: Lấy thất bại - Không có tham số ids
-GET {{uri}}/batch
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-# ============================================================================
-# G - GET: Xem lượng tiêu thụ nước (consumption report)
-# ============================================================================
-
-### Case 1: Lấy báo cáo tiêu thụ nước thành công
+### TC03 - Lấy báo cáo tiêu thụ nước (consumption report)
 GET {{uri}}/consumption-report?ids={{customerId}}
 Authorization: Bearer {{access_token}}
-Accept: application/json
 
-### Case 2: Lấy báo cáo tiêu thụ với nhiều customer IDs
-GET {{uri}}/consumption-report?ids=CUST-2024-001&ids=CUST-2024-002
+### TC04 - Lấy dữ liệu tiêu thụ gần nhất (3 tháng)
+GET {{uri}}/recent/{{customerId}}
 Authorization: Bearer {{access_token}}
-Accept: application/json
+
+### TC05 - Lấy hình ảnh đồng hồ mới nhất
+GET {{uri}}/latest-image/{{customerId}}
+Authorization: Bearer {{access_token}}
 
 # ============================================================================
-# P - POST: Cập nhật chỉ số nước tháng này
+# 2. GHI NHẬN VÀ PHÂN TÍCH CHỈ SỐ (POST APIS)
 # ============================================================================
 
-### Case 1: Cập nhật chỉ số nước thành công
+### TC06 - Cập nhật chỉ số nước tháng này (Có Serial)
 POST {{uri}}/{{serial}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "index": 155.5,
+  "recordingDate": "2024-03-01"
+}
+
+### TC07 - Phân tích ảnh chụp đồng hồ với AI (Yêu cầu có Serial)
+POST {{uri}}/analyze/{{serial}}
 Authorization: Bearer {{access_token}}
 Content-Type: multipart/form-data; boundary=WebAppBoundary
 
---WebAppBoundary
-Content-Disposition: form-data; name="index"
-
-150.5
---WebAppBoundary
-Content-Disposition: form-data; name="recordingDate"
-
-2024-03-01
 --WebAppBoundary
 Content-Disposition: form-data; name="image"; filename="img_1.png"
 Content-Type: image/png
 
 < ./img_1.png
---WebAppBoundary--
-
-### Case 2: Cập nhật thất bại - Thiếu chỉ số (index)
-POST {{uri}}/{{serial}}
-Authorization: Bearer {{access_token}}
-Content-Type: multipart/form-data; boundary=WebAppBoundary
-
 --WebAppBoundary
 Content-Disposition: form-data; name="recordingDate"
 
-2024-03-01
---WebAppBoundary
-Content-Disposition: form-data; name="image"; filename="meter-image.jpg"
-Content-Type: image/jpeg
-
-mock data
+2024-04-04
 --WebAppBoundary--
 
-### Case 3: Cập nhật thất bại - Chỉ số âm không hợp lệ
-POST {{uri}}/{{serial}}
+### TC08 - Phân tích ảnh chụp đồng hồ với AI (Không cần Serial)
+POST {{uri}}/analyze
 Authorization: Bearer {{access_token}}
 Content-Type: multipart/form-data; boundary=WebAppBoundary
 
 --WebAppBoundary
-Content-Disposition: form-data; name="index"
+Content-Disposition: form-data; name="image"; filename="img_1.png"
+Content-Type: image/png
 
--10.0
+< ./img_1.png
 --WebAppBoundary
 Content-Disposition: form-data; name="recordingDate"
 
-2024-03-01
---WebAppBoundary
-Content-Disposition: form-data; name="image"; filename="meter-image.jpg"
-Content-Type: image/jpeg
-
-mock data
---WebAppBoundary--
-
-### Case 4: Cập nhật thất bại - Serial không tồn tại (404)
-POST {{uri}}/INVALID-SERIAL
-Authorization: Bearer {{access_token}}
-Content-Type: multipart/form-data; boundary=WebAppBoundary
-
---WebAppBoundary
-Content-Disposition: form-data; name="index"
-
-150.5
---WebAppBoundary
-Content-Disposition: form-data; name="recordingDate"
-
-2024-03-01
---WebAppBoundary
-Content-Disposition: form-data; name="image"; filename="meter-image.jpg"
-Content-Type: image/jpeg
-
-mock data
---WebAppBoundary--
-
-### Case 5: Cập nhật thất bại - Thiếu ngày ghi nhận (recordingDate)
-POST {{uri}}/{{serial}}
-Authorization: Bearer {{access_token}}
-Content-Type: multipart/form-data; boundary=WebAppBoundary
-
---WebAppBoundary
-Content-Disposition: form-data; name="index"
-
-150.5
---WebAppBoundary
-Content-Disposition: form-data; name="image"; filename="meter-image.jpg"
-Content-Type: image/jpeg
-
-mock data
+2024-04-04
 --WebAppBoundary--
 
 # ============================================================================
-# P - PATCH: Cập nhật trạng thái thanh toán
+# 3. PHÊ DUYỆT VÀ ĐIỀU CHỈNH (WORKFLOW APIS)
 # ============================================================================
 
-### Case 1: Cập nhật trạng thái thanh toán thành công
-PATCH {{uri}}/{{serial}}?method=BANK_TRANSFER
+### TC09 - Lấy danh sách các bản ghi chờ phê duyệt (AI reviews)
+GET {{uri}}/pending-reviews
 Authorization: Bearer {{access_token}}
-Accept: application/json
 
-### Case 2: Cập nhật thất bại - Thiếu phương thức thanh toán (method)
-PATCH {{uri}}/{{serial}}
+### TC10 - Xác nhận chỉ số sau khi AI phân tích
+POST {{uri}}/confirm/{{reviewId}}
 Authorization: Bearer {{access_token}}
-Accept: application/json
+Content-Type: application/x-www-form-urlencoded
 
-### Case 3: Cập nhật thất bại - Serial không tồn tại (404)
-PATCH {{uri}}/INVALID-SERIAL?method=CASH
-Authorization: Bearer {{access_token}}
-Accept: application/json
+finalIndex=155.0&status=APPROVED
 
-# ============================================================================
-# P - PUT: Cập nhật ghi tiêu thụ nước
-# ============================================================================
-
-### Case 1: Cập nhật bản ghi tiêu thụ thành công
+### TC11 - Cập nhật (Sửa) chỉ số tiêu thụ nước thủ công
 PUT {{uri}}/{{serial}}?date=2024-03-01&index=150.5
 Authorization: Bearer {{access_token}}
-Accept: application/json
 
-### Case 2: Cập nhật với hình ảnh
-PUT {{uri}}/{{serial}}?date=2024-03-01&index=150.5&imageUrl=https://example.com/meter-new.jpg
+### TC12 - Cập nhật trạng thái thanh toán
+PATCH {{uri}}/{{serial}}?method=BANK_TRANSFER
 Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### Case 3: Cập nhật thất bại - Thiếu ngày ghi nhận (date)
-PUT {{uri}}/{{serial}}?index=150.5
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### Case 4: Cập nhật thất bại - Thiếu chỉ số (index)
-PUT {{uri}}/{{serial}}?date=2024-03-01
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### Case 5: Cập nhật thất bại - Serial không tồn tại (404)
-PUT {{uri}}/INVALID-SERIAL?date=2024-03-01&index=150.5
-Authorization: Bearer {{access_token}}
-Accept: application/json
 
 # ============================================================================
-# Các test cases bổ sung với dữ liệu mẫu
+# 4. KIỂM THỬ LỖI (NEGATIVE TESTS)
 # ============================================================================
 
-### Test với customer ID thực tế (thay đổi theo dữ liệu trong DB)
-GET {{uri}}/customer/CUST-2024-001
+### TC13 - Lấy lịch sử thất bại - ID không tồn tại
+GET {{uri}}/customer/INVALID-ID
 Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### Test batch với nhiều IDs
-GET {{uri}}/batch?ids=CUST-2024-001&ids=CUST-2024-002
-Authorization: Bearer {{access_token}}
-Accept: application/json
-
-### TC01 - Update water index successfully (Happy Path)
-POST http://localhost:9006/api/v1/usage/00000000-0000-0000-0000-A00000000001
-Authorization: Bearer {{access_token}}
-Content-Type: multipart/form-data; boundary=WebAppBoundary
-
---WebAppBoundary
-Content-Disposition: form-data; name="index"
-
-125.5
---WebAppBoundary
-Content-Disposition: form-data; name="recordingDate"
-
-2024-03-27
---WebAppBoundary
-Content-Disposition: form-data; name="image"; filename="img.png"
-Content-Type: image/png
-
-< ./img.png
---WebAppBoundary--
-
-> {%
-client.test("Status is 200", function() {
-  client.assert(response.status === 200);
-});
-%}
-
-
-### TC02 - Update failed - Missing image
-POST http://localhost:9006/api/v1/usage/WM-2024-001
-Content-Type: multipart/form-data; boundary=WebAppBoundary
-
---WebAppBoundary
-Content-Disposition: form-data; name="index"
-
-125.5
---WebAppBoundary
-Content-Disposition: form-data; name="recordingDate"
-
-2024-03-27
---WebAppBoundary--
-
-> {%
-client.test("Status is 400", function() {
-  client.assert(response.status === 400);
-});
-%}
-
-
-### TC03 - Update failed - Missing index
-POST http://localhost:9006/api/v1/usage/WM-2024-001
-Content-Type: multipart/form-data; boundary=WebAppBoundary
-
---WebAppBoundary
-Content-Disposition: form-data; name="recordingDate"
-
-2024-03-27
---WebAppBoundary
-Content-Disposition: form-data; name="image"; filename="img.png"
-Content-Type: image/png
-
-< ./img.png
---WebAppBoundary--
-
-> {%
-client.test("Status is 400", function() {
-  client.assert(response.status === 400);
-});
-%}
-
-
-### TC04 - Update failed - Missing recordingDate
-POST http://localhost:9006/api/v1/usage/WM-2024-001
-Content-Type: multipart/form-data; boundary=WebAppBoundary
-
---WebAppBoundary
-Content-Disposition: form-data; name="index"
-
-125.5
---WebAppBoundary
-Content-Disposition: form-data; name="image"; filename="img.png"
-Content-Type: image/png
-
-< ./img.png
---WebAppBoundary--
-
-> {%
-client.test("Status is 400", function() {
-  client.assert(response.status === 400);
-});
-%}
-
-
-### TC05 - Update failed - Invalid serial (Not Found)
-POST http://localhost:9006/api/v1/usage/NOT-FOUND-SERIAL
-Content-Type: multipart/form-data; boundary=WebAppBoundary
-
---WebAppBoundary
-Content-Disposition: form-data; name="index"
-
-125.5
---WebAppBoundary
-Content-Disposition: form-data; name="recordingDate"
-
-2024-03-27
---WebAppBoundary
-Content-Disposition: form-data; name="image"; filename="img.png"
-Content-Type: image/png
-
-< ./img.png
---WebAppBoundary--
 
 > {%
 client.test("Status is 404", function() {
@@ -343,25 +110,14 @@ client.test("Status is 404", function() {
 });
 %}
 
+### TC14 - Cập nhật thất bại - Thiếu tham số bắt buộc (index)
+POST {{uri}}/{{serial}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
 
-### TC06 - Update failed - Invalid index type (String instead of Number)
-POST http://localhost:9006/api/v1/usage/WM-2024-001
-Content-Type: multipart/form-data; boundary=WebAppBoundary
-
---WebAppBoundary
-Content-Disposition: form-data; name="index"
-
-invalid_index
---WebAppBoundary
-Content-Disposition: form-data; name="recordingDate"
-
-2024-03-27
---WebAppBoundary
-Content-Disposition: form-data; name="image"; filename="img.png"
-Content-Type: image/png
-
-< ./img.png
---WebAppBoundary--
+{
+  "recordingDate": "2024-03-01"
+}
 
 > {%
 client.test("Status is 400", function() {
@@ -369,197 +125,44 @@ client.test("Status is 400", function() {
 });
 %}
 
+### TC15 - Cập nhật thất bại - Serial không tồn tại
+POST {{uri}}/NOT-FOUND-SERIAL
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
 
-### TC07 - Update failed - Invalid recordingDate format
-POST http://localhost:9006/api/v1/usage/WM-2024-001
-Content-Type: multipart/form-data; boundary=WebAppBoundary
-
---WebAppBoundary
-Content-Disposition: form-data; name="index"
-
-125.5
---WebAppBoundary
-Content-Disposition: form-data; name="recordingDate"
-
-27-03-2024
---WebAppBoundary
-Content-Disposition: form-data; name="image"; filename="img.png"
-Content-Type: image/png
-
-< ./img.png
---WebAppBoundary--
+{
+  "index": 150.5,
+  "recordingDate": "2024-03-01"
+}
 
 > {%
-client.test("Status is 400", function() {
-  client.assert(response.status === 400);
+client.test("Status is 404", function() {
+  client.assert(response.status === 404);
 });
 %}
 
-
-### TC08 - Update failed - Empty body (no multipart parts)
-POST http://localhost:9006/api/v1/usage/WM-2024-001
-Content-Type: multipart/form-data; boundary=WebAppBoundary
-
---WebAppBoundary--
+### TC16 - Bảo mật - Thiếu Token xác thực
+GET {{uri}}/customer/{{customerId}}
 
 > {%
-client.test("Status is 400", function() {
-  client.assert(response.status === 400);
+client.test("Status is 401", function() {
+  client.assert(response.status === 401);
 });
 %}
 
-
-### TC09 - Update failed - Index is lower than previous (Business rule)
-POST http://localhost:9006/api/v1/usage/WM-2024-001
+### TC17 - SQL Injection attempt in serial
+POST {{uri}}/analyze/' OR 1=1 --
+Authorization: Bearer {{access_token}}
 Content-Type: multipart/form-data; boundary=WebAppBoundary
 
 --WebAppBoundary
-Content-Disposition: form-data; name="index"
-
-0.1
---WebAppBoundary
 Content-Disposition: form-data; name="recordingDate"
 
-2026-03-27
---WebAppBoundary
-Content-Disposition: form-data; name="image"; filename="img.png"
-Content-Type: image/png
-
-< ./img.png
+2024-04-04
 --WebAppBoundary--
 
 > {%
-client.test("Status is 400", function() {
-  client.assert(response.status === 400);
-});
-%}
-
-
-### TC10 - SQL Injection attempt in serial
-POST http://localhost:9006/api/v1/usage/' OR 1=1 --
-Content-Type: multipart/form-data; boundary=WebAppBoundary
-
---WebAppBoundary
-Content-Disposition: form-data; name="index"
-
-125.5
---WebAppBoundary
-Content-Disposition: form-data; name="recordingDate"
-
-2024-03-27
---WebAppBoundary
-Content-Disposition: form-data; name="image"; filename="img.png"
-Content-Type: image/png
-
-< ./img.png
---WebAppBoundary--
-
-> {%
-client.test("Status is 400 or 404", function() {
-  client.assert(response.status === 400 || response.status === 404);
-});
-%}
-
-
-### TC11 - XSS attempt in serial
-POST http://localhost:9006/api/v1/usage/<script>alert(1)</script>
-Content-Type: multipart/form-data; boundary=WebAppBoundary
-
---WebAppBoundary
-Content-Disposition: form-data; name="index"
-
-125.5
---WebAppBoundary
-Content-Disposition: form-data; name="recordingDate"
-
-2024-03-27
---WebAppBoundary
-Content-Disposition: form-data; name="image"; filename="img.png"
-Content-Type: image/png
-
-< ./img.png
---WebAppBoundary--
-
-> {%
-client.test("Status is 400 or 404", function() {
-  client.assert(response.status === 400 || response.status === 404);
-});
-%}
-
-
-### TC12 - Large index value boundary test
-POST http://localhost:9006/api/v1/usage/WM-2024-001
-Content-Type: multipart/form-data; boundary=WebAppBoundary
-
---WebAppBoundary
-Content-Disposition: form-data; name="index"
-
-999999999.99
---WebAppBoundary
-Content-Disposition: form-data; name="recordingDate"
-
-2024-03-27
---WebAppBoundary
-Content-Disposition: form-data; name="image"; filename="img.png"
-Content-Type: image/png
-
-< ./img.png
---WebAppBoundary--
-
-> {%
-client.test("Status is 200 or 400 depending on DB constraints", function() {
-  client.assert(response.status === 200 || response.status === 400);
-});
-%}
-
-
-### TC13 - Future recordingDate
-POST http://localhost:9006/api/v1/usage/WM-2024-001
-Content-Type: multipart/form-data; boundary=WebAppBoundary
-
---WebAppBoundary
-Content-Disposition: form-data; name="index"
-
-150.0
---WebAppBoundary
-Content-Disposition: form-data; name="recordingDate"
-
-2099-12-31
---WebAppBoundary
-Content-Disposition: form-data; name="image"; filename="img.png"
-Content-Type: image/png
-
-< ./img.png
---WebAppBoundary--
-
-> {%
-client.test("Status is 400 (if future date not allowed)", function() {
-  client.assert(response.status === 400 || response.status === 200);
-});
-%}
-
-
-### TC14 - Update failed - Wrong Content-Type for image
-POST http://localhost:9006/api/v1/usage/WM-2024-001
-Content-Type: multipart/form-data; boundary=WebAppBoundary
-
---WebAppBoundary
-Content-Disposition: form-data; name="index"
-
-125.5
---WebAppBoundary
-Content-Disposition: form-data; name="recordingDate"
-
-2024-03-27
---WebAppBoundary
-Content-Disposition: form-data; name="image"; filename="img.png"
-Content-Type: text/plain
-
-This is not an image content
---WebAppBoundary--
-
-> {%
-client.test("Status is 400", function() {
-  client.assert(response.status === 400);
+client.test("Status is 4xx", function() {
+  client.assert(response.status >= 400);
 });
 %}

@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { View, ScrollView, ActivityIndicator } from 'react-native';
 
-import { useNavigation } from '@react-navigation/native';
 import { Card, Text, TextInput, Button } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MeterInputInfoCard from './MeterInputInfoCard';
@@ -34,7 +33,6 @@ export default function MeterInputForm({
   ocrResult,
 }: MeterInputFormProps) {
 
-  const navigation = useNavigation<any>();
   const [loading, setLoading] = React.useState(true);
   const [customerData, setCustomerData] = React.useState<any>(null);
   const [_usageHistory, setUsageHistory] = React.useState<Usage[]>([]);
@@ -50,7 +48,7 @@ export default function MeterInputForm({
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      
+
       // Khởi tạo các promise lấy dữ liệu đồng thời (chế độ silent để dùng mock nếu lỗi)
       const [details, recentData, latestImage] = await Promise.all([
         meterService.getCustomerDetails(initialCustomerId, { silent: true }).catch(e => {
@@ -85,15 +83,15 @@ export default function MeterInputForm({
       // Phần này KHÔNG dùng mock nếu API có trả về
       if (recentData && recentData.usagesList && recentData.usagesList.length > 0) {
         setUsageHistory(recentData.usagesList);
-        
+
         // Sắp xếp lấy bản ghi mới nhất làm chỉ số cũ (oldIndex)
-        const sortedUsages = [...recentData.usagesList].sort((a, b) => 
+        const sortedUsages = [...recentData.usagesList].sort((a, b) =>
           new Date(b.recordingDate).getTime() - new Date(a.recordingDate).getTime()
         );
-        
+
         const latestRecorded = sortedUsages[0];
         setOldIndex(latestRecorded.index.toString());
-        
+
         // Nếu record mới nhất có ảnh, ưu tiên hiển thị
         if (latestRecorded.meterImageUrl) {
           _setImage(latestRecorded.meterImageUrl);
@@ -157,15 +155,12 @@ export default function MeterInputForm({
       const newIdx = ocrResult.currentIndex.toString();
       setNewIndex(newIdx);
       _setImage(ocrResult.imageUrl);
-      
+
       // Tính toán lại m3 tiêu thụ
       const difference = Math.max(0, parseInt(newIdx, 10) - parseInt(oldIndex || '0', 10));
       setM3(difference.toString());
     }
   }, [ocrResult, oldIndex]);
-
-
-
 
   const handleNewIndexChange = (value: string) => {
     setNewIndex(value);
@@ -195,7 +190,7 @@ export default function MeterInputForm({
         image
       );
       */
-      
+
       console.log('[Mock Save] Saving index:', newIndex);
       await new Promise<void>(resolve => setTimeout(resolve, 1000)); // Giả lập độ trễ
 
@@ -209,21 +204,9 @@ export default function MeterInputForm({
     }
   };
 
-
-
-
   const handleNext = () => {
     console.log('Go to next customer');
   };
-
-  const handleTakePhoto = () => {
-    navigation.navigate('CaptureWaterMeter', {
-      customerId: initialCustomerId,
-      customerName: customerData?.name || initialCustomerName,
-      address: customerData?.address || initialAddress,
-    });
-  };
-
 
   const handleViewInvoice = async () => {
     /* Comment out real fetch for on-demand image loading
@@ -294,15 +277,6 @@ export default function MeterInputForm({
         <Card style={styles.card}>
           <Card.Content>
             <View style={styles.imageActionCard}>
-              <Button
-                mode="contained"
-                buttonColor="#1E88E5"
-                style={styles.cameraButton}
-                contentStyle={styles.buttonContent56}
-                onPress={handleTakePhoto}
-              >
-                <Icon name="camera-plus-outline" size={28} color="#fff" />
-              </Button>
               <Button
                 mode="outlined"
                 icon="image-outline"

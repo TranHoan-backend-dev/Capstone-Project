@@ -108,13 +108,10 @@ public class CostEstimateUseCase {
   public void assignStaffForSignCostEstimate(@NonNull AssignTheSignificanceRequest request, String userId) {
     var status = estSrv.isExisting(request.estId());
     var status1 = empSrv.isEmployeeExisting(request.surveyStaff()).data().toString();
-    System.out.println("Kiem tra truong phong co ton tai hay k");
     var status2 = empSrv.isEmployeeExisting(request.plHead()).data().toString();
-    System.out.println("Kiem tra lanh dao co ton tai hay k");
     var status3 = empSrv.isEmployeeExisting(request.companyLeadership()).data().toString();
-    System.out.println("Lay ra role cua nguoi dung");
     var currentUser = empSrv.getRoleOfEmployeeById(userId).data().toString();
-    System.out.println("Kiem tra xong");
+
     if (!status) {
       throw new NotExistingException(String.format(Message.PT_61, request.estId()));
     }
@@ -148,7 +145,6 @@ public class CostEstimateUseCase {
     var status = estSrv.signForCostEstimate(electronicSignificance, RoleName.valueOf(role), request.estimateId());
 
     if (status) {
-      // TODO: ban su kien cho phong tai vu
       // Thong diep khong di kem noi dung
       messageProducer.send(QUEUE_NAME + FINANCE_PREFIX + VIEW_ACTION, null);
     }

@@ -7,7 +7,6 @@ import com.capstone.device.application.dto.request.history.UsageHistoryRequest;
 import com.capstone.device.application.dto.response.pricetype.PendingReviewResponse;
 import com.capstone.device.application.dto.response.usagehistory.AnalysisResponse;
 import com.capstone.device.application.dto.response.usagehistory.UsageResponse;
-import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -15,9 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import com.capstone.device.infrastructure.service.GcsService;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
@@ -40,6 +39,7 @@ public class UsageHistoryUseCase {
     }
 
     var imageUrl = redisTemplate.opsForValue().get(REDIS_KEY_PREFIX + serial);
+    log.info("Image url: {}", imageUrl);
     if (imageUrl == null) {
       imageUrl = "";
     }
@@ -52,21 +52,22 @@ public class UsageHistoryUseCase {
     return response;
   }
 
-  public AnalysisResponse analysisTheMeterImage(@ModelAttribute @Valid AnalysisRequest request, String serial) {
-    if (!waterMeterService.isWaterMeterExisting(serial)) {
-      throw new IllegalArgumentException("Serial " + serial + " does not exist");
+  public AnalysisResponse analysisTheMeterImageWithSerial(AnalysisRequest request, String serial) {
+    if (serial != null) {
+      if (!waterMeterService.isWaterMeterExisting(serial)) {
+        throw new IllegalArgumentException("Serial " + serial + " does not exist");
+      }
     }
+    var response = usageHistoryService.extractDataFromTheMeterImage(request.image());
+    serial = serial != null ? serial : response.serial();
 
     // Upload to GCS
-    var imageUrl = service.upload(request.image());
+//    var imageUrl = service.upload(request.image());
 
-    // Cache to Redis with 10 minutes timeout
-    redisTemplate.opsForValue().set(
-      REDIS_KEY_PREFIX + serial,
-      imageUrl,
-      java.time.Duration.ofMinutes(10));
+    // Cache to Redis with 1 days timeout
+    redisTemplate.opsForValue().set(REDIS_KEY_PREFIX + serial, "imageUrl", Duration.ofDays(1));
 
-    return usageHistoryService.extractDataFromTheMeterImage(request.image());
+    return response;
   }
 
   public void updatePaymentStatus(String serial, String method) {

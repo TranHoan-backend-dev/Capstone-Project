@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, TouchableOpacity } from 'react-native';
-import { Card, Text } from 'react-native-paper';
+import { Card, Text, Button } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 import styles from './meterRoute.styles';
@@ -14,20 +14,34 @@ export default function MeterRouteCard({ data }: any) {
     });
   };
 
+  const handleTakePhoto = () => {
+    navigation.navigate('CaptureWaterMeter', {
+      routeId: data.id,
+      totalCustomer: data.totalCustomer,
+      source: 'route',
+    });
+  };
+
   return (
     <TouchableOpacity activeOpacity={0.8} onPress={goToCustomerList}>
       <Card style={styles.card}>
         <Card.Content>
           <View style={styles.cardHeader}>
-            <View style={[styles.routeIdContainer, { flexDirection: 'row', alignItems: 'center' }]}>
+            <View style={[styles.routeIdContainer, { flexDirection: 'row', alignItems: 'center', flex: 1 }]}>
               <MaterialCommunityIcons name="map-marker-outline" size={20} color="#1E88E5" style={{ marginRight: 8 }} />
               <Text style={[styles.routeId, { color: '#1E88E5', fontWeight: 'bold' }]}>{data.type}</Text>
             </View>
 
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <MaterialCommunityIcons name="format-list-bulleted" size={18} color="#4CAF50" />
-              <Text style={styles.actionText}>Danh sách ghi</Text>
-            </View>
+            <Button
+              mode="contained"
+              icon="camera"
+              compact
+              style={{ backgroundColor: '#1E88E5', borderRadius: 6 }}
+              labelStyle={{ color: '#FFFFFF', fontSize: 13, marginHorizontal: 8, marginVertical: 4 }}
+              onPress={handleTakePhoto}
+            >
+              Chụp ảnh
+            </Button>
           </View>
 
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>

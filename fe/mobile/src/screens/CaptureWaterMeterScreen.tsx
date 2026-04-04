@@ -13,6 +13,7 @@ export default function CaptureWaterMeterScreen({ route }: any) {
   const [isChecking, setIsChecking] = useState(false);
   const [isBlurry, setIsBlurry] = useState<boolean | null>(null);
   const [isSending, setIsSending] = useState(false);
+  const [currentCustomerIndex, setCurrentCustomerIndex] = useState(1);
 
   const requestCameraPermission = async () => {
     if (Platform.OS === 'android') {
@@ -65,7 +66,6 @@ export default function CaptureWaterMeterScreen({ route }: any) {
     }
   };
 
-
   const checkImageQuality = () => {
     setIsChecking(true);
     // Giả lập kiểm tra ảnh mờ
@@ -91,20 +91,29 @@ export default function CaptureWaterMeterScreen({ route }: any) {
     try {
       setIsSending(true);
 
-      const { meterId } = route.params || {};
+      const { serial, source, totalCustomer } = route.params || {};
+      const recordingDate = new Date().toISOString().split('T')[0];
 
-      // Gửi ảnh về Backend để Backend thực hiện luồng:
-      // Upload GCS -> RabbitMQ -> AI Worker -> Trả kết quả bất đồng bộ
-      const response = await meterService.updateMeterIndex(
-        meterId || '00000000-0000-0000-0000-A00000000001',
-        0, // Chỉ số tạm thời sẽ được AI cập nhật sau
-        new Date().toISOString().split('T')[0],
-        { uri: photoUri }
-      );
+      let response;
+      if (source === 'customer' && serial) {
+        console.log(`[CaptureWaterMeterScreen.tsx] Calling /analyze/${serial}`);
+        response = await meterService.analyzeMeterImageWithSerial(serial, recordingDate, { uri: photoUri });
+      } else {
+        console.log(`[CaptureWaterMeterScreen.tsx] Calling /analyze (generic)`);
+        response = await meterService.analyzeMeterImage(recordingDate, { uri: photoUri });
+      }
 
-      console.log("[CaptureWaterMeterScreen.tsx] response: " + response)
-      showToast.success('Đã gửi ảnh thành công. AI sẽ xử lý trong giây lát!');
-      navigation.goBack();
+      console.log("[CaptureWaterMeterScreen.tsx] AI Analyze Response:", response);
+
+      if (totalCustomer && currentCustomerIndex < totalCustomer) {
+        showToast.success(`Đã phân tích xong! Tiếp tục khách hàng ${currentCustomerIndex + 1}/${totalCustomer}`);
+        setCurrentCustomerIndex(prev => prev + 1);
+        setPhotoUri(null); // Reset back to camera
+        setIsBlurry(null);
+      } else {
+        showToast.success('Gửi ảnh thành công!');
+        navigation.goBack();
+      }
     } catch (error: any) {
       console.error(error.message)
       showToast.error('Gửi ảnh thất bại. Vui lòng thử lại.');
@@ -113,12 +122,16 @@ export default function CaptureWaterMeterScreen({ route }: any) {
     }
   };
 
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <IconButton icon="arrow-left" onPress={() => navigation.goBack()} />
-        <Text style={styles.headerTitle}>Chụp ảnh đồng hồ</Text>
+        <Text style={styles.headerTitle}>
+          {route.params?.totalCustomer
+            ? `Chụp ảnh (${currentCustomerIndex}/${route.params.totalCustomer})`
+            : 'Chụp ảnh đồng hồ'
+          }
+        </Text>
         <View style={styles.headerSpacer} />
       </View>
 

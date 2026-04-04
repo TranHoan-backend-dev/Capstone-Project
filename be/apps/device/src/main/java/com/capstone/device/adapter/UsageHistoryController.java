@@ -41,18 +41,18 @@ public class UsageHistoryController {
     @ApiResponse(responseCode = "400", description = "Dữ liệu không hợp lệ hoặc chỉ số mới thấp hơn kỳ trước"),
     @ApiResponse(responseCode = "404", description = "Không tìm thấy thiết bị")
   })
-  @PostMapping(value = "/{serial}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PostMapping(value = "/{serial}")
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'BUSINESS_DEPARTMENT_HEAD', 'METER_INSPECTION_STAFF')")
   public ResponseEntity<WrapperApiResponse> updateWaterIndexThisMonth(
     @Parameter(description = "Mã Serial của thiết bị", example = "WM-2024-001") @PathVariable String serial,
-    @ModelAttribute @Valid UsageHistoryRequest request
+    @RequestBody @Valid UsageHistoryRequest request
   ) {
     log.info("Updating usage history for serial {}", serial);
     var response = useCase.updateWaterIndex(request, serial);
     return Utils.returnOkResponse("Cập nhật chỉ số nước thành công", response);
   }
 
-  @Operation(summary = "Phân tích ảnh chụp đồng hồ với AI", description = "")
+  @Operation(summary = "Phân tích ảnh chụp đồng hồ với AI. Yêu cầu cần có số serial")
   @ApiResponses({
     @ApiResponse(responseCode = "200", description = "Cập nhật thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "400", description = "Dữ liệu không hợp lệ hoặc chỉ số mới thấp hơn kỳ trước"),
@@ -60,12 +60,28 @@ public class UsageHistoryController {
   })
   @PostMapping(value = "/analyze/{serial}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'BUSINESS_DEPARTMENT_HEAD', 'METER_INSPECTION_STAFF')")
-  public ResponseEntity<WrapperApiResponse> analysisTheMeterImage(
+  public ResponseEntity<WrapperApiResponse> analysisTheMeterImageWithSerial(
     @Parameter(description = "Mã Serial của thiết bị", example = "WM-2024-001") @PathVariable String serial,
     @ModelAttribute @Valid AnalysisRequest request
   ) {
-    log.info("Updating usage history for serial {}", serial);
-    var response = useCase.analysisTheMeterImage(request, serial);
+    log.info("Analysis the meter image with serial {}", serial);
+    var response = useCase.analysisTheMeterImageWithSerial(request, serial);
+    return Utils.returnOkResponse("Phân tích thành công", response);
+  }
+
+  @Operation(summary = "Phân tích ảnh chụp đồng hồ với AI. Không cần có số serial")
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "Cập nhật thành công", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
+    @ApiResponse(responseCode = "400", description = "Dữ liệu không hợp lệ hoặc chỉ số mới thấp hơn kỳ trước"),
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy thiết bị")
+  })
+  @PostMapping(value = "/analyze", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'BUSINESS_DEPARTMENT_HEAD', 'METER_INSPECTION_STAFF')")
+  public ResponseEntity<WrapperApiResponse> analysisTheMeterImageWithoutSerial(
+    @ModelAttribute @Valid AnalysisRequest request
+  ) {
+    log.info("Analysis the meter image without serial");
+    var response = useCase.analysisTheMeterImageWithSerial(request, null);
     return Utils.returnOkResponse("Phân tích thành công", response);
   }
 

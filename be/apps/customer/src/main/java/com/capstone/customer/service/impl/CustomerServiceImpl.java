@@ -107,6 +107,9 @@ public class CustomerServiceImpl implements CustomerService {
       if (!deviceService.checkExistenceOfWaterMeter(s4)) {
         throw new IllegalArgumentException(Message.ENT_29);
       }
+      if (customerRepository.existsByWaterMeterId(s4) && !s4.equals(customer.getWaterMeterId())) {
+        throw new IllegalArgumentException(Message.ENT_30);
+      }
       customer.setWaterMeterId(s4);
     }
   }
@@ -266,8 +269,9 @@ public class CustomerServiceImpl implements CustomerService {
 
   @Override
   public String getIdByMeterId(String meterId) {
-    return customerRepository.findByWaterMeterId(meterId)
-      .orElseThrow(() -> new NotExistingException("Customer not found"))
+    log.info("Get customer id by meterId: {}", meterId);
+    return customerRepository.findTopByWaterMeterId(meterId)
+      .orElseThrow(() -> new NotExistingException("Không tìm thấy khách hàng"))
       .getCustomerId();
   }
 

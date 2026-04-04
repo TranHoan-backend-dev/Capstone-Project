@@ -80,7 +80,7 @@ class UsageHistoryUseCaseTest {
   }
 
   @Test
-  void should_analysisTheMeterImage_When_Called() {
+  void should_analysisTheMeterImage_WithSerial_When_Called() {
     // Given
     var serial = "WM-001";
     var url = "http://gcs.com/image.png";
@@ -94,7 +94,7 @@ class UsageHistoryUseCaseTest {
     when(usageHistoryService.extractDataFromTheMeterImage(file)).thenReturn(expected);
 
     // When
-    var result = usageHistoryUseCase.analysisTheMeterImage(request, serial);
+    var result = usageHistoryUseCase.analysisTheMeterImageWithSerial(request, serial);
 
     // Then
     assertNotNull(result);

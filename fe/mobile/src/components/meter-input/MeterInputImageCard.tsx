@@ -5,12 +5,10 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import styles from './meterInput.styles';
 
 interface MeterInputImageCardProps {
-  image: string | null;
   onImagePress: () => void;
 }
 
 export default function MeterInputImageCard({
-  image,
   onImagePress,
 }: MeterInputImageCardProps) {
   return (
