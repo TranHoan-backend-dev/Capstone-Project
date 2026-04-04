@@ -23,6 +23,8 @@ interface MeterInputFormProps {
     currentIndex: number;
     imageUrl: string;
   };
+  onNext?: () => void;
+  onPrevious?: () => void;
 }
 
 export default function MeterInputForm({
@@ -31,6 +33,8 @@ export default function MeterInputForm({
   address: initialAddress = '621, Trường Chinh, Phương Nam Định',
   stt: initialStt = 1,
   ocrResult,
+  onNext,
+  onPrevious
 }: MeterInputFormProps) {
 
   const [loading, setLoading] = React.useState(true);
@@ -40,6 +44,8 @@ export default function MeterInputForm({
   const [waterType, setWaterType] = useState('Sinh hoạt dân cư');
   const [meterStatus, setMeterStatus] = useState('binh-thuong');
   const [oldIndex, setOldIndex] = useState('0');
+  const [oldDate, setOldDate] = useState('N/A');
+  const [oldMass, setOldMass] = useState('0');
   const [newIndex, setNewIndex] = useState('');
   const [m3, setM3] = useState('0');
   const [image, _setImage] = useState<string | null>(null);
@@ -68,12 +74,12 @@ export default function MeterInputForm({
       // 1. Xử lý Customer Details (Gộp với mock nếu thiếu)
       const finalDetails = {
         customerId: initialCustomerId,
-        name: details?.fullName || initialCustomerName,
+        name: details?.name || initialCustomerName,
         address: details?.address || initialAddress,
         phoneNumber: details?.phoneNumber || '0987.654.321', // Mock
-        waterMeterId: details?.waterMeter?.serialNumber || 'WM-2024-TEST-001', // Mock
+        waterMeterId: details?.waterMeterId || '...',
         numberOfHouseholds: details?.numberOfHouseholds || 1, // Mock
-        householdRegistrationNumber: details?.numberOfPeople || 4, // Mock
+        householdRegistrationNumber: details?.householdRegistrationNumber || 4, // Mock
         waterPrice: details?.waterPrice || { name: 'Sinh hoạt dân cư' } // Mock
       };
       setCustomerData(finalDetails);
@@ -89,16 +95,39 @@ export default function MeterInputForm({
           new Date(b.recordingDate).getTime() - new Date(a.recordingDate).getTime()
         );
 
-        const latestRecorded = sortedUsages[0];
-        setOldIndex(latestRecorded.index.toString());
+        // Resolve Old Index: find the most recent record that is NOT from the current period
+        const currentMonthYear = new Date().toISOString().substring(0, 7); // "YYYY-MM"
+
+        let oldIndexRecord = null;
+        const previousRecords = sortedUsages.filter(u =>
+          !u.recordingDate.startsWith(currentMonthYear)
+        );
+
+        if (previousRecords.length > 0) {
+          oldIndexRecord = previousRecords[0];
+        } else if (sortedUsages.length > 0) {
+          oldIndexRecord = sortedUsages[sortedUsages.length - 1]; // Fallback to oldest
+        }
+
+        if (oldIndexRecord) {
+          setOldIndex(oldIndexRecord.index.toString());
+          setOldDate(new Date(oldIndexRecord.recordingDate).toLocaleDateString('vi-VN'));
+          setOldMass(oldIndexRecord.mass?.toString() || '0');
+        } else {
+          setOldIndex("0");
+          setOldDate("Chưa có dữ liệu");
+          setOldMass("0");
+        }
 
         // Nếu record mới nhất có ảnh, ưu tiên hiển thị
-        if (latestRecorded.meterImageUrl) {
-          _setImage(latestRecorded.meterImageUrl);
+        if (sortedUsages[0]?.meterImageUrl) {
+          _setImage(sortedUsages[0].meterImageUrl);
         }
       } else {
         // Dự phòng tối thiểu nếu hoàn toàn trống
         setOldIndex("0");
+        setOldDate("N/A");
+        setOldMass("0");
       }
 
       // 3. Xử lý Xem hình ảnh (Uư tiên lấy ảnh mới nhất từ API riêng nếu có)
@@ -155,12 +184,12 @@ export default function MeterInputForm({
       if (ocrResult.currentIndex !== null && ocrResult.currentIndex !== undefined) {
         const newIdx = ocrResult.currentIndex.toString();
         setNewIndex(newIdx);
-  
+
         // Tính toán lại m3 tiêu thụ
         const difference = Math.max(0, parseInt(newIdx, 10) - parseInt(oldIndex || '0', 10));
         setM3(difference.toString());
       }
-      
+
       if (ocrResult.imageUrl) {
         _setImage(ocrResult.imageUrl);
       }
@@ -174,7 +203,7 @@ export default function MeterInputForm({
   };
 
   const handlePrevious = () => {
-    console.log('Go to previous customer');
+    if (onPrevious) onPrevious();
   };
 
   const handleSave = async () => {
@@ -210,7 +239,7 @@ export default function MeterInputForm({
   };
 
   const handleNext = () => {
-    console.log('Go to next customer');
+    if (onNext) onNext();
   };
 
   const handleViewInvoice = async () => {
@@ -241,7 +270,6 @@ export default function MeterInputForm({
 
         <MeterInputInfoCard
           customerName={customerData?.name || initialCustomerName}
-          customerId={customerData?.customerId || initialCustomerId}
           stt={initialStt}
           address={customerData?.address || initialAddress}
           phone={customerData?.phoneNumber || "085..."}
@@ -249,8 +277,10 @@ export default function MeterInputForm({
           waterType={waterType}
           householdNumber={customerData?.numberOfHouseholds?.toString() || "0"}
           populationNumber={customerData?.householdRegistrationNumber?.toString() || "0"}
+          oldIndex={oldIndex}
+          oldDate={oldDate}
+          oldMass={oldMass}
         />
-
 
         <MeterInputStatusCard value={meterStatus} onStatusChange={setMeterStatus} />
 
@@ -301,12 +331,12 @@ export default function MeterInputForm({
       </ScrollView>
 
       <MeterInputActionButtons
-        onPrevious={handlePrevious}
+        onPrevious={onPrevious ? handlePrevious : () => { }}
         onSave={handleSave}
-        onNext={handleNext}
+        onNext={onNext ? handleNext : () => { }}
+        disabledPrevious={!onPrevious}
+        disabledNext={!onNext}
       />
-
-
 
       <ImagePreviewModal
         visible={showImagePreview}

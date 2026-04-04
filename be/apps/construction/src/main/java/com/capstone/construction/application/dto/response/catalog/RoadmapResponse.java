@@ -10,6 +10,7 @@ public record RoadmapResponse(
   String networkId,
   String networkName,
   LocalDateTime createdAt,
-  String assignedStaffId
+  String assignedStaffId,
+  int numberOfCustomers
 ) {
 }

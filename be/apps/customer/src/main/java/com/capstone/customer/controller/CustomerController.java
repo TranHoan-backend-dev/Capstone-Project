@@ -125,4 +125,10 @@ public class CustomerController {
     log.info("REST request to get customer id: {}", meterId);
     return customerService.getIdByMeterId(meterId);
   }
+
+  @GetMapping("/count/{id}")
+  public int countCustomersInTheRoadmap(@PathVariable String id) {
+    log.info("REST request to get customer count: {}", id);
+    return customerService.countCustomersOfRoadmap(id);
+  }
 }

@@ -10,6 +10,7 @@ import com.capstone.construction.infrastructure.persistence.RoadmapRepository;
 import com.capstone.construction.infrastructure.persistence.LateralRepository;
 import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRepository;
 import com.capstone.construction.application.exception.ExistingItemException;
+import com.capstone.construction.infrastructure.service.CustomerService;
 import com.capstone.construction.infrastructure.service.EmployeeService;
 import com.capstone.construction.infrastructure.utils.Message;
 import lombok.AccessLevel;
@@ -35,6 +36,7 @@ public class RoadmapServiceImpl implements RoadmapService {
   LateralRepository lateralRepository;
   WaterSupplyNetworkRepository networkRepository;
   EmployeeService employeeService;
+  CustomerService customerService;
 
   @Override
   @Transactional(rollbackFor = Exception.class)
@@ -123,6 +125,7 @@ public class RoadmapServiceImpl implements RoadmapService {
   }
 
   private @NonNull RoadmapResponse mapToResponse(@NonNull Roadmap roadmap) {
+    var numberOfCustomers = customerService.count(roadmap.getRoadmapId());
     return new RoadmapResponse(
       roadmap.getRoadmapId(),
       roadmap.getName(),
@@ -131,7 +134,8 @@ public class RoadmapServiceImpl implements RoadmapService {
       roadmap.getNetwork().getBranchId(),
       roadmap.getNetwork().getName(),
       roadmap.getCreatedAt(),
-      roadmap.getAssignedStaffId());
+      roadmap.getAssignedStaffId(),
+      numberOfCustomers);
   }
 
   @Override

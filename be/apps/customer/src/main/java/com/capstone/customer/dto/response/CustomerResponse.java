@@ -40,6 +40,7 @@ public record CustomerResponse(
   String waterPriceId,
   WaterPriceInfoResponse waterPrice,
   String waterMeterId,
+  WaterMeterInfoResponse waterMeter,
   String address,
   String roadmapId
 ) {

@@ -113,8 +113,8 @@ export default function CaptureWaterMeterScreen({ route }: any) {
           try {
             const { localCapturedService } = require('../services/localCapturedService');
             await localCapturedService.markAsCaptured(route.params.customerId);
-          } catch {
-            console.warn('[Capture] Failed to save local state');
+          } catch (e: any) {
+            console.warn('[Capture] Failed to save local state ' + e.message);
           }
         }
 
@@ -129,8 +129,8 @@ export default function CaptureWaterMeterScreen({ route }: any) {
           try {
             const { localCapturedService } = require('../services/localCapturedService');
             await localCapturedService.markAsCaptured(route.params.customerId);
-          } catch {
-            console.warn('[Capture] Failed to save local state');
+          } catch (e: any) {
+            console.warn('[Capture] Failed to save local state ' + e.message);
           }
         }
 

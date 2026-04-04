@@ -5,6 +5,7 @@ import com.capstone.common.utils.SharedMessage;
 import com.capstone.customer.dto.request.customer.CreateRequest;
 import com.capstone.customer.dto.request.customer.UpdateRequest;
 import com.capstone.customer.dto.response.CustomerResponse;
+import com.capstone.customer.dto.response.WaterMeterInfoResponse;
 import com.capstone.customer.dto.response.WaterPriceInfoResponse;
 import com.capstone.customer.model.Customer;
 import com.capstone.customer.repository.ContractRepository;
@@ -275,8 +276,15 @@ public class CustomerServiceImpl implements CustomerService {
       .getCustomerId();
   }
 
+  @Override
+  public int countCustomersOfRoadmap(String roadmapId) {
+    log.info("Counting customers of roadmap: {}", roadmapId);
+    return customerRepository.countByRoadmapId(roadmapId);
+  }
+
   private @NonNull CustomerResponse mapToResponse(@NonNull Customer customer) {
     var waterPrice = resolveWaterPrice(customer.getWaterPriceId());
+    var waterMeter = resolveWaterMeter(customer.getWaterMeterId());
 
     return new CustomerResponse(
       customer.getCustomerId(),
@@ -314,9 +322,27 @@ public class CustomerServiceImpl implements CustomerService {
       customer.getWaterPriceId(),
       waterPrice,
       customer.getWaterMeterId(),
+      waterMeter,
       customer.getAddress(),
       customer.getRoadmapId()
     );
+  }
+
+  private WaterMeterInfoResponse resolveWaterMeter(String waterMeterId) {
+    if (waterMeterId == null || waterMeterId.isBlank()) {
+      return null;
+    }
+
+    try {
+      var response = deviceService.getWaterMeterById(waterMeterId);
+      if (response == null || response.data() == null) {
+        return null;
+      }
+      return objectMapper.convertValue(response.data(), WaterMeterInfoResponse.class);
+    } catch (Exception ex) {
+      log.warn("Cannot resolve water meter info for id={}", waterMeterId, ex);
+      return null;
+    }
   }
 
   private WaterPriceInfoResponse resolveWaterPrice(String waterPriceId) {

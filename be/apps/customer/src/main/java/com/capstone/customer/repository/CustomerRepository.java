@@ -17,4 +17,6 @@ public interface CustomerRepository extends JpaRepository<Customer, String>, Jpa
   boolean existsByWaterMeterId(String waterMeterId);
 
   Optional<Customer> findTopByWaterMeterId(String waterMeterId);
+
+  int countByRoadmapId(String roadmapId);
 }

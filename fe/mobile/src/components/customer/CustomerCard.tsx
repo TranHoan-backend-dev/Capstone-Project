@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 import styles from './customer.styles';
 
-export default function CustomerCard({ data }: any) {
+export default function CustomerCard({ data, allCustomerIds, currentIndex }: any) {
   const navigation = useNavigation<any>();
 
   const handleCardPress = () => {
@@ -14,6 +14,8 @@ export default function CustomerCard({ data }: any) {
       customerName: data.name,
       address: data.address,
       stt: data.stt,
+      allCustomerIds,
+      currentIndex,
     });
   };
 

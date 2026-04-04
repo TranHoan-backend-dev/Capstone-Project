@@ -58,10 +58,17 @@ export default function CustomerList({
     );
   }
 
+  const allCustomerIds = filteredCustomers.map(c => c.id);
+
   return (
     <ScrollView contentContainerStyle={styles.listContent}>
-      {filteredCustomers.map(customer => (
-        <CustomerCard key={customer.id} data={customer} />
+      {filteredCustomers.map((customer, index) => (
+        <CustomerCard 
+          key={customer.id} 
+          data={customer} 
+          allCustomerIds={allCustomerIds}
+          currentIndex={index}
+        />
       ))}
     </ScrollView>
   );

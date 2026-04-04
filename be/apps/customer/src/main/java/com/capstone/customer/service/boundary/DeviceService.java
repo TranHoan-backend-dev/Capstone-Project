@@ -22,4 +22,7 @@ public interface DeviceService {
 
   @GetMapping("/usage/batch")
   WrapperApiResponse getUsageBatch(@RequestParam("ids") Collection<String> ids);
+
+  @GetMapping("/water-meters/{id}")
+  WrapperApiResponse getWaterMeterById(@PathVariable("id") String id);
 }
