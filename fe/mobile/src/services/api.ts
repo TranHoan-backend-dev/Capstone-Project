@@ -108,26 +108,29 @@ export const apiFetch = async (endpoint: string, options: ApiOptions = {}) => {
     if (!response.ok) {
       let errorMessage = `Lỗi hệ thống (${response.status})`;
       try {
-        const errorData = await response.json();
-        errorMessage = errorData.message || errorData.error || errorMessage;
+        const text = await response.text();
+        if (text) {
+          const errorData = JSON.parse(text);
+          errorMessage = errorData.message || errorData.error || errorMessage;
+        }
       } catch (e: any) {
-        console.error('[API] Parse error data failed:', e.message);
+        console.warn('[API] Parse error data failed or empty body:', e.message);
       }
 
-      if (!silent && !endpoint.includes('/auth/login')) {
+      if (!silent) {
         showToast.error(errorMessage);
       }
       throw new Error(errorMessage);
     }
 
-    const data = await response.json();
-    return data;
+    const text = await response.text();
+    return text ? JSON.parse(text) : {};
   } catch (error: any) {
     if (!silent) {
       if (error.message === 'Network request failed') {
         showToast.error('Không thể kết nối máy chủ. Vui lòng kiểm tra mạng.');
-      } else if (!error.message.includes('Phiên đăng nhập') && !error.message.includes('Lỗi') && !endpoint.includes('login')) {
-        showToast.error('Có lỗi xảy ra, vui lòng thử lại sau.');
+      } else if (!error.message.includes('Phiên đăng nhập') && !error.message.includes('Lỗi')) {
+        showToast.error(error.message || 'Có lỗi xảy ra, vui lòng thử lại sau.');
       }
     }
     throw error;
