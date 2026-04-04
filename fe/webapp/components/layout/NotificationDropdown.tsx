@@ -10,6 +10,12 @@ import {
   ScrollShadow,
   Button,
   Skeleton,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
 } from "@heroui/react";
 import {
   BellIcon,
@@ -21,6 +27,7 @@ import {
   TrashIcon,
   ExclamationTriangleIcon,
   DocumentTextIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { useWebSocketNotifications } from "@/hooks/useWebSocketNotifications";
 
@@ -94,11 +101,20 @@ const NotificationDropdown = () => {
   const [hasError, setHasError] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
+  // Modal states
+  const { isOpen: isModalOpen, onOpen: onModalOpen, onOpenChange: onModalOpenChange } = useDisclosure();
+  const [allNotifications, setAllNotifications] = useState<Notification[]>([]);
+  const [modalCurrentPage, setModalCurrentPage] = useState(1);
+  const [modalTotalPages, setModalTotalPages] = useState(0);
+  const [modalFilter, setModalFilter] = useState<"all" | "unread">("all");
+  const [isModalLoading, setIsModalLoading] = useState(false);
+  const [isModalLoadingMore, setIsModalLoadingMore] = useState(false);
+  const [modalHasError, setModalHasError] = useState(false);
+
   const scrollRef = useRef<HTMLDivElement>(null);
+  const modalScrollRef = useRef<HTMLDivElement>(null);
 
   const handleNewNotification = useCallback((newNotification: any) => {
-    console.log("📨 New notification received:", newNotification);
-
     const transformed: Notification = {
       id: newNotification.notificationId,
       title: newNotification.title || "Thông báo",
@@ -120,7 +136,7 @@ const NotificationDropdown = () => {
 
   // useEffect(() => {
   //   if (isUsingPolling) {
-  //     console.log("⚠️ Using polling fallback for notifications");
+  //     console.log("Using polling fallback for notifications");
   //   }
   // }, [isUsingPolling]);
 
@@ -142,19 +158,16 @@ const NotificationDropdown = () => {
         }
 
         const result = await response.json();
-        console.log(result);
-        // Cập nhật theo format API thực tế
         const data = result.data;
         const items = data?.items || [];
         const totalFound = data?.totalFound || 0;
 
-        // Transform API response
         const transformedNotifications: Notification[] = items.map(
           (item: ApiNotification) => ({
             id: item.notificationId,
             title: item.title,
             message: item.message,
-            isRead: item.status === true, // status = true là đã đọc
+            isRead: item.status === true, 
             createdAt: item.createdAt,
             link: item.link,
             time: formatTime(item.createdAt),
@@ -183,7 +196,62 @@ const NotificationDropdown = () => {
     [],
   );
 
-  // Load more when scrolling
+  // Fetch all notifications cho modal
+  const fetchAllNotifications = useCallback(
+    async (page: number, isLoadMore = false) => {
+      if (!isLoadMore) {
+        setIsModalLoading(true);
+      } else {
+        setIsModalLoadingMore(true);
+      }
+      setModalHasError(false);
+
+      try {
+        const response = await fetch(`/api/notifications?page=${page - 1}&size=10`);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        const data = result.data;
+        const items = data?.items || [];
+        const totalFound = data?.totalFound || 0;
+
+        const transformedNotifications: Notification[] = items.map(
+          (item: ApiNotification) => ({
+            id: item.notificationId,
+            title: item.title,
+            message: item.message,
+            isRead: item.status === true,
+            createdAt: item.createdAt,
+            link: item.link,
+            time: formatTime(item.createdAt),
+          }),
+        );
+
+        if (isLoadMore) {
+          setAllNotifications((prev) => [...prev, ...transformedNotifications]);
+        } else {
+          setAllNotifications(transformedNotifications);
+        }
+
+        // Tính total pages
+        const pages = Math.ceil(totalFound / 10);
+        setModalTotalPages(pages);
+        setModalCurrentPage(page);
+      } catch (error) {
+        console.error("Failed to fetch all notifications:", error);
+        setModalHasError(true);
+      } finally {
+        setIsModalLoading(false);
+        setIsModalLoadingMore(false);
+      }
+    },
+    [],
+  );
+
+  // Load more when scrolling (dropdown)
   const handleScroll = useCallback(
     (e: React.UIEvent<HTMLDivElement>) => {
       const target = e.currentTarget;
@@ -205,6 +273,31 @@ const NotificationDropdown = () => {
       currentPage,
       totalPages,
       fetchNotifications,
+    ],
+  );
+
+  // Load more when scrolling (modal)
+  const handleModalScroll = useCallback(
+    (e: React.UIEvent<HTMLDivElement>) => {
+      const target = e.currentTarget;
+      const isBottom =
+        target.scrollHeight - target.scrollTop <= target.clientHeight + 100;
+
+      if (
+        isBottom &&
+        !isModalLoadingMore &&
+        !isModalLoading &&
+        modalCurrentPage < modalTotalPages
+      ) {
+        fetchAllNotifications(modalCurrentPage + 1, true);
+      }
+    },
+    [
+      isModalLoadingMore,
+      isModalLoading,
+      modalCurrentPage,
+      modalTotalPages,
+      fetchAllNotifications,
     ],
   );
 
@@ -279,6 +372,13 @@ const NotificationDropdown = () => {
       fetchNotifications(1, false);
     }
   }, [isOpen, fetchNotifications, notifications.length, hasError]);
+
+  // Load initial data when modal opens
+  useEffect(() => {
+    if (isModalOpen && allNotifications.length === 0 && !modalHasError) {
+      fetchAllNotifications(1, false);
+    }
+  }, [isModalOpen, fetchAllNotifications, allNotifications.length, modalHasError]);
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
   const filteredNotifications =
@@ -421,13 +521,134 @@ const NotificationDropdown = () => {
     );
   };
 
+  // Render modal content
+  const renderModalContent = () => {
+    if (isModalLoading) {
+      return (
+        <div className="flex flex-col py-4 px-4 gap-3">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div
+              key={`modal-skeleton-${i}`}
+              className="flex items-center gap-3 p-3 border border-divider rounded-xl"
+            >
+              <Skeleton className="w-12 h-12 rounded-full" />
+              <div className="flex-1 space-y-1">
+                <Skeleton className="w-3/4 h-4 rounded" />
+                <Skeleton className="w-1/2 h-3 rounded" />
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (modalHasError) {
+      return (
+        <div className="py-12 text-center px-4">
+          <ExclamationTriangleIcon className="w-12 h-12 mx-auto text-danger-400 mb-3" />
+          <p className="font-bold text-default-600">Không thể tải thông báo</p>
+          <Button
+            className="mt-4"
+            size="sm"
+            onClick={() => fetchAllNotifications(1, false)}
+          >
+            Thử lại
+          </Button>
+        </div>
+      );
+    }
+
+    const filteredModalNotifications =
+      modalFilter === "all"
+        ? allNotifications
+        : allNotifications.filter((n) => !n.isRead);
+
+    if (filteredModalNotifications.length === 0) {
+      return (
+        <div className="py-12 text-center text-default-400 px-4">
+          <BellIcon className="w-12 h-12 mx-auto opacity-20 mb-3" />
+          <p className="font-bold text-default-500">
+            {modalFilter === "all"
+              ? "Không có thông báo nào"
+              : "Không có thông báo chưa đọc"}
+          </p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex flex-col gap-2">
+        {filteredModalNotifications.map((n) => (
+          <div
+            key={n.id}
+            className={`flex items-center gap-3 px-4 py-3 cursor-pointer transition-all rounded-xl relative group hover:bg-default-50 border border-divider ${
+              !n.isRead ? "bg-primary-50" : ""
+            }`}
+            onClick={() => markAsRead(n.id)}
+          >
+            <div className="relative shrink-0">
+              <Avatar
+                className="bg-primary-50 text-primary font-bold"
+                name={n.title.charAt(0)}
+                size="lg"
+              />
+              <div
+                className={`absolute -bottom-1 -right-1 rounded-full p-1 border-2 border-background ${getNotificationIconColor(n.title)}`}
+              >
+                {getNotificationIcon(n.title)}
+              </div>
+            </div>
+            <div className="flex-1 min-w-0 pr-4">
+              {formatMessage(n)}
+              <p
+                className={`text-[12px] mt-1 ${
+                  !n.isRead
+                    ? "text-primary font-bold"
+                    : "text-default-400 font-medium"
+                }`}
+              >
+                {n.time}
+              </p>
+            </div>
+            <div
+              className="opacity-0 group-hover:opacity-100 transition-opacity"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Button
+                isIconOnly
+                className="hover:bg-danger-50 text-danger"
+                radius="full"
+                size="sm"
+                variant="light"
+                onClick={(e) => deleteNotification(n.id, e)}
+              >
+                <TrashIcon className="w-4 h-4" />
+              </Button>
+            </div>
+            {!n.isRead && (
+              <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                <div className="w-3 h-3 bg-primary rounded-full" />
+              </div>
+            )}
+          </div>
+        ))}
+        {isModalLoadingMore && (
+          <div className="p-6 text-center">
+            <div className="inline-block w-6 h-6 border-[3px] border-primary border-t-transparent rounded-full animate-spin" />
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
-    <Dropdown
-      className="p-0"
-      placement="bottom-end"
-      isOpen={isOpen}
-      onOpenChange={setIsOpen}
-    >
+    <>
+      <Dropdown
+        className="p-0"
+        placement="bottom-end"
+        isOpen={isOpen}
+        onOpenChange={setIsOpen}
+      >
       <DropdownTrigger>
         <Button
           isIconOnly
@@ -587,6 +808,7 @@ const NotificationDropdown = () => {
             <DropdownItem
               key="view-all"
               className="p-0 text-center text-sm font-bold text-primary hover:text-primary-600 hover:bg-primary-50/50 rounded-xl transition-colors"
+              onClick={() => onModalOpen()}
             >
               <span className="block py-2.5">Xem tất cả thông báo</span>
             </DropdownItem>
@@ -594,7 +816,83 @@ const NotificationDropdown = () => {
         ) : null}
       </DropdownMenu>
     </Dropdown>
-  );
+
+    {/* Modal for viewing all notifications */}
+    <Modal
+      isOpen={isModalOpen}
+      onOpenChange={onModalOpenChange}
+      size="2xl"
+      backdrop="blur"
+      scrollBehavior="inside"
+      classNames={{
+        base: "max-h-[90vh]",
+        closeButton: "top-4 right-4 z-50",
+      }}
+    >
+      <ModalContent>
+        {(onClose) => (
+          <>
+            <ModalHeader className="flex flex-col gap-3 border-b border-divider">
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-black text-foreground tracking-tight">
+                  Tất cả thông báo
+                </h2>
+                {/* <Button
+                  isIconOnly
+                  size="sm"
+                  variant="light"
+                  onClick={onClose}
+                  className="absolute top-4 right-4"
+                >
+                  <XMarkIcon className="w-6 h-6 text-default-600" />
+                </Button> */}
+              </div>
+
+              {/* Filter buttons */}
+              <div className="flex gap-2">
+                <Button
+                  className={`font-bold px-4 text-sm ${
+                    modalFilter === "all"
+                      ? "bg-primary-50 text-primary"
+                      : "bg-transparent text-default-600 hover:bg-default-100"
+                  }`}
+                  radius="full"
+                  size="sm"
+                  onClick={() => setModalFilter("all")}
+                >
+                  Tất cả
+                </Button>
+                <Button
+                  className={`font-bold px-4 text-sm ${
+                    modalFilter === "unread"
+                      ? "bg-primary-50 text-primary"
+                      : "bg-transparent text-default-600 hover:bg-default-100"
+                  }`}
+                  radius="full"
+                  size="sm"
+                  onClick={() => setModalFilter("unread")}
+                >
+                  Chưa đọc
+                </Button>
+              </div>
+            </ModalHeader>
+
+            <ModalBody className="p-4">
+              <ScrollShadow
+                hideScrollBar
+                ref={modalScrollRef}
+                className="overflow-y-auto"
+                onScroll={handleModalScroll}
+              >
+                {renderModalContent()}
+              </ScrollShadow>
+            </ModalBody>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
+  </>
+);
 };
 
 export default NotificationDropdown;
