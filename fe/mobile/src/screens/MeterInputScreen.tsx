@@ -7,7 +7,30 @@ import styles from '../components/meter-input/meterInput.styles';
 
 const MeterInputScreen = ({ route }: any) => {
   const navigation = useNavigation<any>();
-  const { customerId, customerName, address } = route.params || {};
+  const { 
+    customerId: initialCustomerId, 
+    customerName: initialCustomerName, 
+    address: initialAddress,
+    stt: initialStt,
+    allCustomerIds = [],
+    currentIndex: initialIndex = 0
+  } = route.params || {};
+
+  const [currentIndex, setCurrentIndex] = React.useState(initialIndex);
+
+  const handleNext = () => {
+    if (currentIndex < allCustomerIds.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+    }
+  };
+
+  const currentCustomerId = allCustomerIds.length > 0 ? allCustomerIds[currentIndex] : initialCustomerId;
 
   return (
     <View style={styles.container}>
@@ -17,13 +40,15 @@ const MeterInputScreen = ({ route }: any) => {
 
       <View style={styles.content}>
         <MeterInputForm
-          customerId={customerId}
-          customerName={customerName}
-          address={address}
-          stt={route.params?.stt}
-          ocrResult={route.params?.ocrResult}
+          key={currentCustomerId} // Force re-mount when customer changes
+          customerId={currentCustomerId}
+          customerName={currentIndex === initialIndex ? initialCustomerName : undefined}
+          address={currentIndex === initialIndex ? initialAddress : undefined}
+          stt={currentIndex === initialIndex ? initialStt : (currentIndex + 1)}
+          ocrResult={currentIndex === initialIndex ? route.params?.ocrResult : undefined}
+          onNext={currentIndex < allCustomerIds.length - 1 ? handleNext : undefined}
+          onPrevious={currentIndex > 0 ? handlePrevious : undefined}
         />
-
       </View>
     </View>
   );

@@ -5,7 +5,6 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface MeterInputInfoCardProps {
   customerName?: string;
-  customerId: string;
   stt?: number;
   address: string;
   phone: string;
@@ -14,11 +13,13 @@ interface MeterInputInfoCardProps {
   waterType: string;
   householdNumber?: string;
   populationNumber?: string;
+  oldIndex?: string;
+  oldDate?: string;
+  oldMass?: string;
 }
 
 export default function MeterInputInfoCard({
   customerName,
-  customerId,
   stt = 1,
   address,
   phone,
@@ -27,6 +28,7 @@ export default function MeterInputInfoCard({
   waterType,
   householdNumber = '0',
   populationNumber = '0',
+  oldDate = 'N/A',
 }: MeterInputInfoCardProps) {
   return (
     <Card style={styles.card}>
@@ -40,11 +42,11 @@ export default function MeterInputInfoCard({
       <Card.Content style={{ padding: 0 }}>
         <View style={styles.row}>
           <View style={styles.labelCol}>
-            <Icon name="card-account-details-outline" size={20} color="#1E88E5" style={{ marginRight: 8 }} />
-            <Text style={styles.label}>Mã KH</Text>
+            <Icon name="calendar-clock" size={20} color="#1E88E5" style={{ marginRight: 8 }} />
+            <Text style={styles.label}>Ngày ghi cũ</Text>
           </View>
-          <View style={[styles.valueCol, { flex: 2.5 }]}>
-            <Text style={[styles.value, { color: '#EF4444', fontWeight: 'bold', flex: 1 }]} numberOfLines={2}>{customerId}</Text>
+          <View style={styles.valueCol}>
+            <Text style={styles.value}>{oldDate}</Text>
           </View>
         </View>
         <Divider />

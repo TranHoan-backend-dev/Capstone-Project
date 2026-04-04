@@ -350,6 +350,11 @@ export default StyleSheet.create({
     justifyContent: 'center',
   },
 
+  disabledButton: {
+    backgroundColor: '#E0E0E0',
+    opacity: 0.7,
+  },
+
   leftButton: {
     borderRightWidth: 1,
     borderRightColor: 'rgba(255,255,255,0.3)',
