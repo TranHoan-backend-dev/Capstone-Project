@@ -102,7 +102,11 @@ const NotificationDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   // Modal states
-  const { isOpen: isModalOpen, onOpen: onModalOpen, onOpenChange: onModalOpenChange } = useDisclosure();
+  const {
+    isOpen: isModalOpen,
+    onOpen: onModalOpen,
+    onOpenChange: onModalOpenChange,
+  } = useDisclosure();
   const [allNotifications, setAllNotifications] = useState<Notification[]>([]);
   const [modalCurrentPage, setModalCurrentPage] = useState(1);
   const [modalTotalPages, setModalTotalPages] = useState(0);
@@ -167,7 +171,7 @@ const NotificationDropdown = () => {
             id: item.notificationId,
             title: item.title,
             message: item.message,
-            isRead: item.status === true, 
+            isRead: item.status === true,
             createdAt: item.createdAt,
             link: item.link,
             time: formatTime(item.createdAt),
@@ -197,6 +201,7 @@ const NotificationDropdown = () => {
   );
 
   // Fetch all notifications cho modal
+  // Fetch all notifications cho modal
   const fetchAllNotifications = useCallback(
     async (page: number, isLoadMore = false) => {
       if (!isLoadMore) {
@@ -207,7 +212,9 @@ const NotificationDropdown = () => {
       setModalHasError(false);
 
       try {
-        const response = await fetch(`/api/notifications?page=${page - 1}&size=10`);
+        const response = await fetch(
+          `/api/notifications?page=${page - 1}&size=10`,
+        );
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -216,7 +223,7 @@ const NotificationDropdown = () => {
         const result = await response.json();
         const data = result.data;
         const items = data?.items || [];
-        const totalFound = data?.totalFound || 0;
+        const totalFound = data?.totalFound || 0; // Đây là tổng số thông báo thực tế
 
         const transformedNotifications: Notification[] = items.map(
           (item: ApiNotification) => ({
@@ -236,10 +243,13 @@ const NotificationDropdown = () => {
           setAllNotifications(transformedNotifications);
         }
 
-        // Tính total pages
+        // Tính total pages dựa trên totalFound thực tế
         const pages = Math.ceil(totalFound / 10);
         setModalTotalPages(pages);
         setModalCurrentPage(page);
+
+        // THÊM: Cập nhật totalElements cho modal (nếu cần)
+        // setModalTotalElements(totalFound); // Bạn có thể thêm state này nếu muốn hiển thị tổng số
       } catch (error) {
         console.error("Failed to fetch all notifications:", error);
         setModalHasError(true);
@@ -378,7 +388,12 @@ const NotificationDropdown = () => {
     if (isModalOpen && allNotifications.length === 0 && !modalHasError) {
       fetchAllNotifications(1, false);
     }
-  }, [isModalOpen, fetchAllNotifications, allNotifications.length, modalHasError]);
+  }, [
+    isModalOpen,
+    fetchAllNotifications,
+    allNotifications.length,
+    modalHasError,
+  ]);
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
   const filteredNotifications =
@@ -649,195 +664,195 @@ const NotificationDropdown = () => {
         isOpen={isOpen}
         onOpenChange={setIsOpen}
       >
-      <DropdownTrigger>
-        <Button
-          isIconOnly
-          className="w-12 h-12 relative text-default-600 hover:bg-default-100"
-          radius="full"
+        <DropdownTrigger>
+          <Button
+            isIconOnly
+            className="w-12 h-12 relative text-default-600 hover:bg-default-100"
+            radius="full"
+            variant="light"
+          >
+            <Badge
+              className={
+                unreadCount === 0 ? "hidden" : "border-2 border-background"
+              }
+              color="danger"
+              content={unreadCount >= 5 ? "5+" : unreadCount}
+              shape="circle"
+              size="sm"
+              placement="top-right"
+            >
+              <BellIcon className="w-6 h-6 text-default-600" />
+              {isConnected && (
+                <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-600 rounded-full border-2 border-background z-20" />
+              )}
+            </Badge>
+          </Button>
+        </DropdownTrigger>
+        <DropdownMenu
+          aria-label="Notifications"
+          className="w-[360px] md:w-[400px] p-0 overflow-visible rounded-2xl shadow-2xl border border-divider bg-content1"
           variant="light"
         >
-          <Badge
-            className={
-              unreadCount === 0 ? "hidden" : "border-2 border-background"
-            }
-            color="danger"
-            content={unreadCount > 99 ? "99+" : unreadCount}
-            shape="circle"
-            size="sm"
-            placement="top-right"
-          >
-            <BellIcon className="w-6 h-6 text-default-600" />
-            {isConnected && (
-              <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-600 rounded-full border-2 border-background z-20" />
-            )}
-          </Badge>
-        </Button>
-      </DropdownTrigger>
-      <DropdownMenu
-        aria-label="Notifications"
-        className="w-[360px] md:w-[400px] p-0 overflow-visible rounded-2xl shadow-2xl border border-divider bg-content1"
-        variant="light"
-      >
-        {/* Header Section */}
-        <DropdownSection
-          aria-label="Header"
-          classNames={{
-            base: "w-full p-0 flex flex-col",
-            group: "p-0",
-          }}
-        >
-          <DropdownItem
-            key="header"
-            isReadOnly
-            className="p-0 opacity-100 cursor-default focus:bg-transparent"
-          >
-            <div className="flex flex-col gap-4 px-4 pt-4 pb-2 border-b border-divider bg-content1 rounded-t-2xl pointer-events-auto">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl font-black text-foreground tracking-tight">
-                    Thông báo
-                  </span>
-                  {isConnected && (
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 bg-green-50 rounded-full">
-                      <div className="w-2 h-2 bg-green-600 rounded-full animate-pulse" />
-                      <span className="text-xs font-bold text-green-700">
-                        Trực tuyến
-                      </span>
-                    </div>
-                  )}
-                </div>
-                <div className="flex gap-1">
-                  {unreadCount > 0 && (
-                    <Button
-                      size="sm"
-                      variant="light"
-                      className="text-xs"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        markAllAsRead();
-                      }}
-                    >
-                      Đọc tất cả
-                    </Button>
-                  )}
-                  <Button
-                    isIconOnly
-                    className="hover:bg-default-100"
-                    radius="full"
-                    size="sm"
-                    variant="light"
-                  >
-                    <EllipsisHorizontalIcon className="w-6 h-6 text-default-600" />
-                  </Button>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  className={`font-bold px-4 text-sm ${
-                    filter === "all"
-                      ? "bg-primary-50 text-primary"
-                      : "bg-transparent text-default-600 hover:bg-default-100"
-                  }`}
-                  radius="full"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setFilter("all");
-                  }}
-                >
-                  Tất cả ({totalElements})
-                </Button>
-                <Button
-                  className={`font-bold px-4 text-sm ${
-                    filter === "unread"
-                      ? "bg-primary-50 text-primary"
-                      : "bg-transparent text-default-600 hover:bg-default-100"
-                  }`}
-                  radius="full"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setFilter("unread");
-                  }}
-                >
-                  Chưa đọc
-                  {unreadCount > 0 && (
-                    <span className="ml-1 text-xs bg-primary text-white px-1.5 py-0.5 rounded-full">
-                      {unreadCount}
-                    </span>
-                  )}
-                </Button>
-              </div>
-            </div>
-          </DropdownItem>
-        </DropdownSection>
-
-        {/* Notification List Section */}
-        <DropdownSection
-          aria-label="Notification list"
-          classNames={{
-            base: "w-full p-0 flex flex-col",
-            group: "p-0",
-          }}
-        >
-          <DropdownItem
-            key="scroll-container"
-            className="p-0 hover:bg-transparent cursor-default focus:bg-transparent"
-            textValue="Notifications list"
-          >
-            <ScrollShadow
-              hideScrollBar
-              ref={scrollRef}
-              className="max-h-[520px] w-full"
-              onScroll={handleScroll}
-            >
-              {renderContent()}
-            </ScrollShadow>
-          </DropdownItem>
-        </DropdownSection>
-
-        {/* Footer Section */}
-        {!isInitialLoading && !hasError && notifications.length > 0 ? (
+          {/* Header Section */}
           <DropdownSection
-            aria-label="Footer"
+            aria-label="Header"
             classNames={{
-              base: "p-2 border-t border-divider bg-content1 rounded-b-2xl",
+              base: "w-full p-0 flex flex-col",
               group: "p-0",
             }}
           >
             <DropdownItem
-              key="view-all"
-              className="p-0 text-center text-sm font-bold text-primary hover:text-primary-600 hover:bg-primary-50/50 rounded-xl transition-colors"
-              onClick={() => onModalOpen()}
+              key="header"
+              isReadOnly
+              className="p-0 opacity-100 cursor-default focus:bg-transparent"
             >
-              <span className="block py-2.5">Xem tất cả thông báo</span>
+              <div className="flex flex-col gap-4 px-4 pt-4 pb-2 border-b border-divider bg-content1 rounded-t-2xl pointer-events-auto">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl font-black text-foreground tracking-tight">
+                      Thông báo
+                    </span>
+                    {isConnected && (
+                      <div className="flex items-center gap-1.5 px-2.5 py-1 bg-green-50 rounded-full">
+                        <div className="w-2 h-2 bg-green-600 rounded-full animate-pulse" />
+                        <span className="text-xs font-bold text-green-700">
+                          Trực tuyến
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex gap-1">
+                    {unreadCount > 0 && (
+                      <Button
+                        size="sm"
+                        variant="light"
+                        className="text-xs"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          markAllAsRead();
+                        }}
+                      >
+                        Đọc tất cả
+                      </Button>
+                    )}
+                    <Button
+                      isIconOnly
+                      className="hover:bg-default-100"
+                      radius="full"
+                      size="sm"
+                      variant="light"
+                    >
+                      <EllipsisHorizontalIcon className="w-6 h-6 text-default-600" />
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    className={`font-bold px-4 text-sm ${
+                      filter === "all"
+                        ? "bg-primary-50 text-primary"
+                        : "bg-transparent text-default-600 hover:bg-default-100"
+                    }`}
+                    radius="full"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setFilter("all");
+                    }}
+                  >
+                    Tất cả ({totalElements})
+                  </Button>
+                  <Button
+                    className={`font-bold px-4 text-sm ${
+                      filter === "unread"
+                        ? "bg-primary-50 text-primary"
+                        : "bg-transparent text-default-600 hover:bg-default-100"
+                    }`}
+                    radius="full"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setFilter("unread");
+                    }}
+                  >
+                    Chưa đọc
+                    {unreadCount > 0 && (
+                      <span className="ml-1 text-xs bg-primary text-white px-1.5 py-0.5 rounded-full">
+                        {unreadCount}
+                      </span>
+                    )}
+                  </Button>
+                </div>
+              </div>
             </DropdownItem>
           </DropdownSection>
-        ) : null}
-      </DropdownMenu>
-    </Dropdown>
 
-    {/* Modal for viewing all notifications */}
-    <Modal
-      isOpen={isModalOpen}
-      onOpenChange={onModalOpenChange}
-      size="2xl"
-      backdrop="blur"
-      scrollBehavior="inside"
-      classNames={{
-        base: "max-h-[90vh]",
-        closeButton: "top-4 right-4 z-50",
-      }}
-    >
-      <ModalContent>
-        {(onClose) => (
-          <>
-            <ModalHeader className="flex flex-col gap-3 border-b border-divider">
-              <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-black text-foreground tracking-tight">
-                  Tất cả thông báo
-                </h2>
-                {/* <Button
+          {/* Notification List Section */}
+          <DropdownSection
+            aria-label="Notification list"
+            classNames={{
+              base: "w-full p-0 flex flex-col",
+              group: "p-0",
+            }}
+          >
+            <DropdownItem
+              key="scroll-container"
+              className="p-0 hover:bg-transparent cursor-default focus:bg-transparent"
+              textValue="Notifications list"
+            >
+              <ScrollShadow
+                hideScrollBar
+                ref={scrollRef}
+                className="max-h-[520px] w-full"
+                onScroll={handleScroll}
+              >
+                {renderContent()}
+              </ScrollShadow>
+            </DropdownItem>
+          </DropdownSection>
+
+          {/* Footer Section */}
+          {!isInitialLoading && !hasError && notifications.length > 0 ? (
+            <DropdownSection
+              aria-label="Footer"
+              classNames={{
+                base: "p-2 border-t border-divider bg-content1 rounded-b-2xl",
+                group: "p-0",
+              }}
+            >
+              <DropdownItem
+                key="view-all"
+                className="p-0 text-center text-sm font-bold text-primary hover:text-primary-600 hover:bg-primary-50/50 rounded-xl transition-colors"
+                onClick={() => onModalOpen()}
+              >
+                <span className="block py-2.5">Xem tất cả thông báo</span>
+              </DropdownItem>
+            </DropdownSection>
+          ) : null}
+        </DropdownMenu>
+      </Dropdown>
+
+      {/* Modal for viewing all notifications */}
+      <Modal
+        isOpen={isModalOpen}
+        onOpenChange={onModalOpenChange}
+        size="2xl"
+        backdrop="blur"
+        scrollBehavior="inside"
+        classNames={{
+          base: "max-h-[90vh]",
+          closeButton: "top-4 right-4 z-50",
+        }}
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-3 border-b border-divider">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-2xl font-black text-foreground tracking-tight">
+                    Tất cả thông báo
+                  </h2>
+                  {/* <Button
                   isIconOnly
                   size="sm"
                   variant="light"
@@ -846,53 +861,53 @@ const NotificationDropdown = () => {
                 >
                   <XMarkIcon className="w-6 h-6 text-default-600" />
                 </Button> */}
-              </div>
+                </div>
 
-              {/* Filter buttons */}
-              <div className="flex gap-2">
-                <Button
-                  className={`font-bold px-4 text-sm ${
-                    modalFilter === "all"
-                      ? "bg-primary-50 text-primary"
-                      : "bg-transparent text-default-600 hover:bg-default-100"
-                  }`}
-                  radius="full"
-                  size="sm"
-                  onClick={() => setModalFilter("all")}
-                >
-                  Tất cả
-                </Button>
-                <Button
-                  className={`font-bold px-4 text-sm ${
-                    modalFilter === "unread"
-                      ? "bg-primary-50 text-primary"
-                      : "bg-transparent text-default-600 hover:bg-default-100"
-                  }`}
-                  radius="full"
-                  size="sm"
-                  onClick={() => setModalFilter("unread")}
-                >
-                  Chưa đọc
-                </Button>
-              </div>
-            </ModalHeader>
+                {/* Filter buttons */}
+                <div className="flex gap-2">
+                  <Button
+                    className={`font-bold px-4 text-sm ${
+                      modalFilter === "all"
+                        ? "bg-primary-50 text-primary"
+                        : "bg-transparent text-default-600 hover:bg-default-100"
+                    }`}
+                    radius="full"
+                    size="sm"
+                    onClick={() => setModalFilter("all")}
+                  >
+                    Tất cả
+                  </Button>
+                  <Button
+                    className={`font-bold px-4 text-sm ${
+                      modalFilter === "unread"
+                        ? "bg-primary-50 text-primary"
+                        : "bg-transparent text-default-600 hover:bg-default-100"
+                    }`}
+                    radius="full"
+                    size="sm"
+                    onClick={() => setModalFilter("unread")}
+                  >
+                    Chưa đọc
+                  </Button>
+                </div>
+              </ModalHeader>
 
-            <ModalBody className="p-4">
-              <ScrollShadow
-                hideScrollBar
-                ref={modalScrollRef}
-                className="overflow-y-auto"
-                onScroll={handleModalScroll}
-              >
-                {renderModalContent()}
-              </ScrollShadow>
-            </ModalBody>
-          </>
-        )}
-      </ModalContent>
-    </Modal>
-  </>
-);
+              <ModalBody className="p-4">
+                <ScrollShadow
+                  hideScrollBar
+                  ref={modalScrollRef}
+                  className="overflow-y-auto"
+                  onScroll={handleModalScroll}
+                >
+                  {renderModalContent()}
+                </ScrollShadow>
+              </ModalBody>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+    </>
+  );
 };
 
 export default NotificationDropdown;
