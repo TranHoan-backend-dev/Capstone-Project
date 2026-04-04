@@ -5,8 +5,8 @@ import { getAllNotifications } from "@/services/notification.service";
 export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams;
-    const page = Number(searchParams.get("page")) || 1;
-    const size = Number(searchParams.get("size")) || 10;
+    const page = Number(searchParams.get("page")) || 0;
+    const size = Number(searchParams.get("size")) || 5;
 
     const accessToken = getAccessToken(req);
 

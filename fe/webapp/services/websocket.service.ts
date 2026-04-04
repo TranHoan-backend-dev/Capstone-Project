@@ -11,7 +11,7 @@ class WebSocketService {
   connect(accessToken: string): Promise<void> {
     return new Promise((resolve, reject) => {
       const socketUrl =
-        process.env.NEXT_PUBLIC_WS_URL || "http://localhost:9007/ws";
+        process.env.NEXT_PUBLIC_WS_URL || "http://localhost:9999/ws";
 
       this.client = new Client({
         webSocketFactory: () => new SockJS(socketUrl),

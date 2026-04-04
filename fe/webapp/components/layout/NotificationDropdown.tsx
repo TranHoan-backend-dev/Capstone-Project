@@ -22,7 +22,7 @@ import {
   ExclamationTriangleIcon,
   DocumentTextIcon,
 } from "@heroicons/react/24/outline";
-import { useWebSocketWithFallback } from "@/hooks/useWebSocketWithFallback";
+import { useWebSocketNotifications } from "@/hooks/useWebSocketNotifications";
 
 // Interface cho response từ API - Cập nhật theo dữ liệu thực tế
 interface ApiNotification {
@@ -116,16 +116,13 @@ const NotificationDropdown = () => {
     });
   }, []);
 
-  const { isConnected, isUsingPolling } = useWebSocketWithFallback(
-    handleNewNotification,
-    5000,
-  );
+  const { isConnected } = useWebSocketNotifications(handleNewNotification);
 
-  useEffect(() => {
-    if (isUsingPolling) {
-      console.log("⚠️ Using polling fallback for notifications");
-    }
-  }, [isUsingPolling]);
+  // useEffect(() => {
+  //   if (isUsingPolling) {
+  //     console.log("⚠️ Using polling fallback for notifications");
+  //   }
+  // }, [isUsingPolling]);
 
   // Fetch notifications từ API
   const fetchNotifications = useCallback(
@@ -138,14 +135,14 @@ const NotificationDropdown = () => {
       setHasError(false);
 
       try {
-        const response = await fetch(`/api/notifications?page=${page}&size=5`);
+        const response = await fetch(`/api/notifications?page=0&size=5`);
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const result = await response.json();
-console.log(result)
+        console.log(result);
         // Cập nhật theo format API thực tế
         const data = result.data;
         const items = data?.items || [];
@@ -434,7 +431,7 @@ console.log(result)
       <DropdownTrigger>
         <Button
           isIconOnly
-          className="w-8 h-8 relative text-default-600 hover:bg-default-100"
+          className="w-12 h-12 relative text-default-600 hover:bg-default-100"
           radius="full"
           variant="light"
         >
@@ -579,7 +576,7 @@ console.log(result)
         </DropdownSection>
 
         {/* Footer Section */}
-        {(!isInitialLoading && !hasError && notifications.length > 0) ? (
+        {!isInitialLoading && !hasError && notifications.length > 0 ? (
           <DropdownSection
             aria-label="Footer"
             classNames={{

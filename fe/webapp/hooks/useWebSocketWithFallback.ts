@@ -19,10 +19,10 @@ export const useWebSocketWithFallback = (
   // Polling function
   const pollNotifications = useCallback(async () => {
     try {
-      const response = await fetch("/api/notifications?page=1&size=5");
+      const response = await fetch("/api/notifications?page=0&size=5");
       if (response.ok) {
         const data = await response.json();
-        const notifications = data.content || data.data || [];
+        const notifications = data.data.data.items || data.data || [];
 
         // Check for new notifications
         if (notifications.length > 0) {

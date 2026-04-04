@@ -166,7 +166,7 @@ export const GenericDataTable = <T extends { id: string | number }>({
                 <input
                   type="text"
                   placeholder={search.placeholder ?? "Tìm kiếm..."}
-                  className="w-72 border rounded-lg px-3 py-2 text-sm dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100"
+                  className="w-72 border rounded-lg px-3 py-2 text-sm"
                   value={search.value}
                   onChange={(e) => search.onChange(e.target.value)}
                 />
@@ -196,18 +196,16 @@ export const GenericDataTable = <T extends { id: string | number }>({
                     onClick={() =>
                       column.sortable && onSortChange?.(column.key)
                     }
-                    className={`${index === 0 ? "!pl-8" : ""} bg-default-100 text-foreground ${onSortChange ? "cursor-pointer select-none" : ""} ${column.sortable ? "cursor-pointer select-none" : ""}`}
+                    className={`${index === 0 ? "!pl-8" : ""} bg-default-100 text-foreground ${onSortChange ? "cursor-pointer select-none" : ""} column.sortable ? "cursor-pointer select-none ..." : ""`}
                     style={column.width ? { width: column.width } : {}}
                   >
-                    <div className="flex items-center gap-1">
-                      {column.label}
-                      {sort?.field === column.key &&
-                        (sort.direction === "asc" ? (
-                          <SortAscIcon className="w-3 h-3" />
-                        ) : (
-                          <SortDescIcon className="w-3 h-3" />
-                        ))}
-                    </div>
+                    {column.label}
+                    {sort?.field === column.key &&
+                      (sort.direction === "asc" ? (
+                        <SortAscIcon className="w-3 h-3" />
+                      ) : (
+                        <SortDescIcon className="w-3 h-3" />
+                      ))}
                   </TableColumn>
                 ))}
               </TableHeader>
