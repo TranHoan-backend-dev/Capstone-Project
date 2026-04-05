@@ -1,50 +1,46 @@
-// services/websocket.service.ts
 import { Client, IMessage, StompSubscription } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
 
 class WebSocketService {
   private client: Client | null = null;
   private subscriptions: Map<string, StompSubscription> = new Map();
-  private reconnectAttempts = 0;
-  private maxReconnectAttempts = 5;
   private isConnecting = false;
-  private reconnectTimer: NodeJS.Timeout | null = null;
+  private onConnectCallback: (() => void) | null = null;
+  private onDisconnectCallback: ((error?: any) => void) | null = null;
+
+  private pendingSubscriptions: Array<{ topic: string; callback: (message: any) => void }> = [];
+
+  setCallbacks(onConnect: () => void, onDisconnect: (error?: any) => void) {
+    this.onConnectCallback = onConnect;
+    this.onDisconnectCallback = onDisconnect;
+  }
 
   connect(accessToken: string): Promise<void> {
+    if (this.client?.active) {
+      console.log("[WebSocket] Already active, skipping connect");
+      return Promise.resolve();
+    }
+
+    if (this.isConnecting) {
+      console.log("[WebSocket] Connection attempt in progress...");
+      return Promise.resolve();
+    }
+
+    this.isConnecting = true;
+
     return new Promise((resolve, reject) => {
-      if (this.isConnecting) {
-        console.log("[WebSocket] Already connecting, skipping...");
-        reject(new Error("Already connecting"));
-        return;
-      }
+      let baseUrl = process.env.NEXT_PUBLIC_WS_URL || "http://localhost:8000/n/ws";
 
-      if (this.client?.connected) {
-        console.log("[WebSocket] Already connected");
-        resolve();
-        return;
-      }
-
-      this.isConnecting = true;
-
-      // Dùng raw WebSocket thay vì SockJS
-      let wsUrl = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8000/n/ws";
-
-      // Chuyển đổi protocol đúng
-      if (wsUrl.startsWith("http://")) {
-        wsUrl = wsUrl.replace("http://", "ws://");
-      } else if (wsUrl.startsWith("https://")) {
-        wsUrl = wsUrl.replace("https://", "wss://");
-      }
-
-      console.log("[WebSocket] Connecting to:", wsUrl);
+      console.log("[WebSocket] Connecting to:", baseUrl);
 
       this.client = new Client({
-        brokerURL: wsUrl, // Dùng raw WebSocket URL
+        webSocketFactory: () => new SockJS(baseUrl),
         connectHeaders: {
           Authorization: `Bearer ${accessToken}`,
         },
         debug: (str) => {
           if (process.env.NODE_ENV === "development") {
-            console.log("[WebSocket Debug]", str);
+            // console.log("[WebSocket]", str);
           }
         },
         reconnectDelay: 5000,
@@ -53,48 +49,71 @@ class WebSocketService {
 
         onConnect: () => {
           console.log("[WebSocket] Connected successfully");
-          this.reconnectAttempts = 0;
           this.isConnecting = false;
+          this.onConnectCallback?.();
+          this.processPendingSubscriptions();
           resolve();
         },
 
         onStompError: (frame) => {
-          console.error("[WebSocket] STOMP error:", frame);
+          console.error("[WebSocket] STOMP error:", frame.headers["message"]);
           this.isConnecting = false;
-          reject(new Error(frame.headers?.message || "STOMP error"));
+          const error = frame.headers["message"] || "STOMP error";
+          this.onDisconnectCallback?.(error);
+          reject(new Error(error));
         },
 
         onWebSocketError: (event) => {
-          console.error("[WebSocket] WebSocket error:", event);
+          console.error("[WebSocket] WebSocket error occurred");
           this.isConnecting = false;
-          if (this.reconnectAttempts === 0) {
-            reject(event);
+          this.onDisconnectCallback?.("WebSocket error");
+          // Chỉ reject lần đầu tiên để tránh unhandled promise rejections khi tự động reconnect
+          if (this.client?.active === false) {
+             reject(new Error("WebSocket connection failed"));
           }
         },
 
         onDisconnect: () => {
           console.log("[WebSocket] Disconnected");
           this.isConnecting = false;
+          this.onDisconnectCallback?.();
         },
       });
 
-      this.client.activate();
+      try {
+        this.client.activate();
+      } catch (err) {
+        this.isConnecting = false;
+        reject(err);
+      }
+    });
+  }
+
+  private processPendingSubscriptions() {
+    if (!this.client || !this.client.connected) return;
+    
+    console.log(`[WebSocket] Processing ${this.pendingSubscriptions.length} pending subscriptions`);
+    const toSubscribe = [...this.pendingSubscriptions];
+    this.pendingSubscriptions = [];
+    
+    toSubscribe.forEach(({ topic, callback }) => {
+      this.subscribe(topic, callback);
     });
   }
 
   subscribe(topic: string, callback: (message: any) => void): void {
     if (!this.client || !this.client.connected) {
-      console.warn(`[WebSocket] Not connected, cannot subscribe to ${topic}`);
-      // Store callback for retry when connected
-      this.waitForConnection(() => {
-        this.subscribe(topic, callback);
-      });
+      // Check if already pending to avoid duplicates
+      if (!this.pendingSubscriptions.find(s => s.topic === topic)) {
+        console.log(`[WebSocket] Queueing subscription for ${topic} (not connected yet)`);
+        this.pendingSubscriptions.push({ topic, callback });
+      }
       return;
     }
 
     // Check if already subscribed
     if (this.subscriptions.has(topic)) {
-      console.log(`[WebSocket] Already subscribed to ${topic}`);
+      // console.log(`[WebSocket] Already subscribed to ${topic}`);
       return;
     }
 
@@ -116,37 +135,29 @@ class WebSocketService {
     }
   }
 
-  private waitForConnection(callback: () => void): void {
-    let attempts = 0;
-    const maxAttempts = 50; // 5 seconds max
-    const interval = setInterval(() => {
-      attempts++;
-      if (this.client?.connected) {
-        clearInterval(interval);
-        callback();
-      } else if (attempts >= maxAttempts) {
-        clearInterval(interval);
-        console.error("[WebSocket] Timeout waiting for connection");
-      }
-    }, 100);
-  }
-
   unsubscribe(topic: string): void {
+    // Remove from pending if it's there
+    const pendingIndex = this.pendingSubscriptions.findIndex(s => s.topic === topic);
+    if (pendingIndex !== -1) {
+      this.pendingSubscriptions.splice(pendingIndex, 1);
+      console.log(`[WebSocket] Removed ${topic} from pending subscriptions`);
+    }
+
     const subscription = this.subscriptions.get(topic);
     if (subscription) {
-      subscription.unsubscribe();
-      this.subscriptions.delete(topic);
-      console.log(`[WebSocket] Unsubscribed from ${topic}`);
+      try {
+        subscription.unsubscribe();
+        this.subscriptions.delete(topic);
+        console.log(`[WebSocket] Unsubscribed from ${topic}`);
+      } catch (error) {
+        console.error(`[WebSocket] Error unsubscribing from ${topic}:`, error);
+      }
     }
   }
 
   disconnect(): void {
-    console.log("[WebSocket] Disconnecting...");
-    if (this.reconnectTimer) {
-      clearTimeout(this.reconnectTimer);
-      this.reconnectTimer = null;
-    }
-
+    console.log("[WebSocket] Disconnecting manually...");
+    
     this.subscriptions.forEach((sub) => {
       try {
         sub.unsubscribe();
@@ -164,7 +175,6 @@ class WebSocketService {
       }
       this.client = null;
     }
-    this.reconnectAttempts = 0;
     this.isConnecting = false;
   }
 

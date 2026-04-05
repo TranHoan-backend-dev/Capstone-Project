@@ -26,7 +26,11 @@ import {
   DocumentTextIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
+
+import { CallToast } from "../ui/CallToast";
+
 import { useWebSocket } from "@/context/WebSocketContext";
+import { useProfile } from "@/hooks/useLogin";
 
 // Interface cho response từ API
 interface ApiNotification {
@@ -110,10 +114,10 @@ const NotificationDropdown = () => {
   const [totalElements, setTotalElements] = useState(0);
   const [hasError, setHasError] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [showNotificationAlert, setShowNotificationAlert] = useState(false);
-  const [lastNotification, setLastNotification] = useState<Notification | null>(
-    null,
-  );
+
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
+  const filteredNotifications =
+    filter === "all" ? notifications : notifications.filter((n) => !n.isRead);
 
   // WebSocket context
   const { isConnected, connectionError, reconnect, subscribe, unsubscribe } =
@@ -136,114 +140,8 @@ const NotificationDropdown = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const modalScrollRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const alertTimeoutRef = useRef<NodeJS.Timeout>();
 
-  // Xử lý thông báo mới từ WebSocket
-  const handleNewNotification = useCallback(
-    (newNotification: any) => {
-      console.log("🔔 New notification received:", newNotification);
-
-      const transformed = transformNotification(newNotification);
-
-      // Thêm vào danh sách notifications
-      setNotifications((prev) => {
-        const exists = prev.some((n) => n.id === transformed.id);
-        if (exists) return prev;
-        return [transformed, ...prev];
-      });
-
-      // Cập nhật allNotifications nếu modal đang mở
-      if (isModalOpen) {
-        setAllNotifications((prev) => {
-          const exists = prev.some((n) => n.id === transformed.id);
-          if (exists) return prev;
-          return [transformed, ...prev];
-        });
-      }
-
-      // Hiển thị alert tạm thời
-      setLastNotification(transformed);
-      setShowNotificationAlert(true);
-
-      // Tự động ẩn alert sau 5 giây
-      if (alertTimeoutRef.current) {
-        clearTimeout(alertTimeoutRef.current);
-      }
-      alertTimeoutRef.current = setTimeout(() => {
-        setShowNotificationAlert(false);
-        setLastNotification(null);
-      }, 5000);
-
-      // Phát âm thanh thông báo
-      if (audioRef.current && document.visibilityState === "visible") {
-        audioRef.current
-          .play()
-          .catch((e) => console.log("Audio play failed:", e));
-      }
-
-      // Hiển thị browser notification
-      if (
-        Notification.permission === "granted" &&
-        document.visibilityState === "hidden"
-      ) {
-        new Notification(transformed.title, {
-          body: transformed.message,
-          icon: "/notification-icon.png",
-          silent: false,
-        });
-      }
-
-      // Tăng badge count trên tab
-      const currentUnreadCount = notifications.filter((n) => !n.isRead).length;
-      if (document.visibilityState === "hidden") {
-        document.title = `🔔 (${currentUnreadCount + 1}) ${document.title.replace(/^🔔 \(\d+\) /, "")}`;
-      }
-    },
-    [isModalOpen, notifications],
-  );
-
-  // Subscribe WebSocket topics
-  useEffect(() => {
-    const handleNotification = (notification: any) => {
-      handleNewNotification(notification);
-    };
-
-    // Subscribe to user-specific queue
-    subscribe("/user/queue/notifications", handleNotification);
-    // Subscribe to general topic
-    subscribe("/topic/notifications", handleNotification);
-  }, [subscribe, unsubscribe, handleNewNotification]);
-
-  // Reset title khi focus vào tab
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible") {
-        document.title = document.title.replace(/^🔔 \(\d+\) /, "");
-      }
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () =>
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-  }, []);
-
-  // Request notification permission
-  useEffect(() => {
-    if ("Notification" in window && Notification.permission === "default") {
-      Notification.requestPermission();
-    }
-  }, []);
-
-  // Auto reconnect on error
-  useEffect(() => {
-    if (connectionError) {
-      const timeout = setTimeout(() => {
-        console.log("Attempting to reconnect WebSocket...");
-        reconnect();
-      }, 10000);
-      return () => clearTimeout(timeout);
-    }
-  }, [connectionError, reconnect]);
+  const { profile } = useProfile();
 
   // Fetch notifications từ API
   const fetchNotifications = useCallback(
@@ -339,6 +237,160 @@ const NotificationDropdown = () => {
     },
     [],
   );
+
+  // Xử lý thông báo mới từ WebSocket
+  const handleNewNotification = useCallback(
+    (newPayload: any) => {
+      console.log("🔔 New notification received payload:", newPayload);
+
+      // Backend sends NotificationResponse directly or wrapped
+      const newNotification = newPayload.notificationId
+        ? newPayload
+        : newPayload.data;
+      if (!newNotification) return;
+
+      const transformed = transformNotification(newNotification);
+
+      // Show Toast - đưa tiêu đề vào cả title và description để đảm bảo hiển thị trên mọi phiên bản HeroUI
+      CallToast({
+        title: "",
+        message: transformed.title, // Dùng title làm description luôn nếu message yêu cầu trống
+        color: "primary",
+      });
+
+      // Thêm vào danh sách notifications trước khi fetch để update UI tức thì
+      setNotifications((prev) => {
+        const exists = prev.some((n) => n.id === transformed.id);
+        if (exists) return prev;
+        const newList = [transformed, ...prev];
+        // Giới hạn số lượng hiển thị trong dropdown (ví dụ 10-20 cái)
+        return newList.slice(0, 20);
+      });
+
+      // Refetch from API to ensure sync (optional, but keep it if you want fresh state)
+      // fetchNotifications(1, false);
+
+      // Cập nhật allNotifications nếu modal đang mở
+      if (isModalOpen) {
+        setAllNotifications((prev) => {
+          const exists = prev.some((n) => n.id === transformed.id);
+          if (exists) return prev;
+          return [transformed, ...prev];
+        });
+      }
+
+      // Phát âm thanh thông báo
+      if (audioRef.current && document.visibilityState === "visible") {
+        audioRef.current
+          .play()
+          .catch((e) => console.log("Audio play failed:", e));
+      }
+
+      // Hiển thị browser notification
+      if (
+        Notification.permission === "granted" &&
+        document.visibilityState === "hidden"
+      ) {
+        new Notification(transformed.title, {
+          body: transformed.message,
+          icon: "/notification-icon.png",
+          silent: false,
+        });
+      }
+    },
+    [isModalOpen, fetchNotifications, isConnected],
+  );
+
+  // Cập nhật Badge trên tab trình duyệt khi có thông báo chưa đọc
+  useEffect(() => {
+    if (document.visibilityState === "hidden" && unreadCount > 0) {
+      const baseTitle = document.title.replace(/^🔔 \(\d+\) /, "");
+      document.title = `🔔 (${unreadCount}) ${baseTitle}`;
+    } else if (document.visibilityState === "visible") {
+      document.title = document.title.replace(/^🔔 \(\d+\) /, "");
+    }
+  }, [unreadCount]);
+
+  // Subscribe WebSocket topics
+  useEffect(() => {
+    if (!profile?.id || !profile?.role || !isConnected) return;
+
+    const handleNotification = (notification: any) => {
+      handleNewNotification(notification);
+    };
+
+    const userId = profile.id;
+    const role = profile.role.toUpperCase();
+    const topics: string[] = ["/notification", "/topic/notifications"];
+
+    // Role-based topics (matching backend Topic.java)
+    if (role === "PLANNING_TECHNICAL_DEPARTMENT_HEAD") {
+      topics.push("/technical", "/technical/head", "/create-new-order");
+    } else if (role === "SURVEY_STAFF") {
+      topics.push(
+        "/technical",
+        "/technical/survey-staff",
+        `/technical/survey-staff/${userId}`,
+      );
+    } else if (role === "ORDER_RECEIVING_STAFF") {
+      topics.push("/technical", "/technical/order-receiving-staff");
+    } else if (role === "CONSTRUCTION_DEPARTMENT_HEAD") {
+      topics.push("/construction", "/construction/head");
+    } else if (role === "CONSTRUCTION_DEPARTMENT_STAFF") {
+      topics.push("/construction", "/construction/staff");
+    } else if (role === "BUSINESS_DEPARTMENT_HEAD") {
+      topics.push("/business", "/business/head");
+    } else if (role === "METER_INSPECTION_STAFF") {
+      topics.push("/business", "/business/staff");
+    } else if (role === "IT_STAFF") {
+      topics.push("/it");
+    } else if (role === "FINANCE_DEPARTMENT") {
+      topics.push("/finance");
+    } else if (role === "COMPANY_LEADERSHIP") {
+      topics.push("/leadership");
+    }
+
+    // Unique topics
+    const uniqueTopics = Array.from(new Set(topics));
+
+    console.log("🔔 Subscribing to topics:", uniqueTopics);
+    uniqueTopics.forEach((topic) => {
+      subscribe(topic, handleNotification);
+    });
+
+    return () => {
+      uniqueTopics.forEach((topic) => {
+        unsubscribe(topic, handleNotification);
+      });
+    };
+  }, [
+    subscribe,
+    unsubscribe,
+    handleNewNotification,
+    profile?.id,
+    profile?.role,
+    isConnected,
+  ]);
+
+  // Reset title khi focus vào tab
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        document.title = document.title.replace(/^🔔 \(\d+\) /, "");
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () =>
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, []);
+
+  // Request notification permission
+  useEffect(() => {
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+  }, []);
 
   // Load more when scrolling (dropdown)
   const handleScroll = useCallback(
@@ -466,12 +518,12 @@ const NotificationDropdown = () => {
     [],
   );
 
-  // Load initial data when dropdown opens
+  // Load data when dropdown opens
   useEffect(() => {
-    if (isOpen && notifications.length === 0 && !hasError) {
+    if (isOpen) {
       fetchNotifications(1, false);
     }
-  }, [isOpen, fetchNotifications, notifications.length, hasError]);
+  }, [isOpen, fetchNotifications]);
 
   // Load initial data when modal opens
   useEffect(() => {
@@ -484,10 +536,6 @@ const NotificationDropdown = () => {
     allNotifications.length,
     modalHasError,
   ]);
-
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
-  const filteredNotifications =
-    filter === "all" ? notifications : notifications.filter((n) => !n.isRead);
 
   // Format message display
   const formatMessage = (notification: Notification) => {
@@ -566,9 +614,8 @@ const NotificationDropdown = () => {
         {filteredNotifications.map((n) => (
           <div
             key={n.id}
-            className={`flex items-center gap-3 px-3 py-3 cursor-pointer transition-all rounded-xl relative group hover:bg-default-50 mb-1 ${
-              !n.isRead ? "bg-primary-50" : ""
-            }`}
+            className={`flex items-center gap-3 px-3 py-3 cursor-pointer transition-all rounded-xl relative group hover:bg-default-50 mb-1 ${!n.isRead ? "bg-primary-50" : ""
+              }`}
             onClick={() => markAsRead(n.id)}
           >
             <div className="relative shrink-0">
@@ -586,11 +633,10 @@ const NotificationDropdown = () => {
             <div className="flex-1 min-w-0 pr-4">
               {formatMessage(n)}
               <p
-                className={`text-[12px] mt-1 ${
-                  !n.isRead
-                    ? "text-primary font-bold"
-                    : "text-default-400 font-medium"
-                }`}
+                className={`text-[12px] mt-1 ${!n.isRead
+                  ? "text-primary font-bold"
+                  : "text-default-400 font-medium"
+                  }`}
               >
                 {n.time}
               </p>
@@ -686,9 +732,8 @@ const NotificationDropdown = () => {
         {filteredModalNotifications.map((n) => (
           <div
             key={n.id}
-            className={`flex items-center gap-3 px-4 py-3 cursor-pointer transition-all rounded-xl relative group hover:bg-default-50 border border-divider ${
-              !n.isRead ? "bg-primary-50" : ""
-            }`}
+            className={`flex items-center gap-3 px-4 py-3 cursor-pointer transition-all rounded-xl relative group hover:bg-default-50 border border-divider ${!n.isRead ? "bg-primary-50" : ""
+              }`}
             onClick={() => markAsRead(n.id)}
           >
             <div className="relative shrink-0">
@@ -706,11 +751,10 @@ const NotificationDropdown = () => {
             <div className="flex-1 min-w-0 pr-4">
               {formatMessage(n)}
               <p
-                className={`text-[12px] mt-1 ${
-                  !n.isRead
-                    ? "text-primary font-bold"
-                    : "text-default-400 font-medium"
-                }`}
+                className={`text-[12px] mt-1 ${!n.isRead
+                  ? "text-primary font-bold"
+                  : "text-default-400 font-medium"
+                  }`}
               >
                 {n.time}
               </p>
@@ -748,45 +792,6 @@ const NotificationDropdown = () => {
 
   return (
     <>
-      {/* Floating notification alert */}
-      {showNotificationAlert && lastNotification && (
-        <div className="fixed top-4 right-4 z-50 animate-slide-in-right">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl border-l-4 border-primary p-4 min-w-[300px] max-w-md">
-            <div className="flex items-start gap-3">
-              <div className="relative shrink-0">
-                <Avatar
-                  className="bg-primary-50 text-primary font-bold"
-                  name={lastNotification.title.charAt(0)}
-                  size="md"
-                />
-                <div
-                  className={`absolute -bottom-1 -right-1 rounded-full p-1 border-2 border-white dark:border-gray-800 ${getNotificationIconColor(lastNotification.title)}`}
-                >
-                  {getNotificationIcon(lastNotification.title)}
-                </div>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-sm text-foreground">
-                  {lastNotification.title}
-                </p>
-                <p className="text-sm text-default-600 line-clamp-2">
-                  {lastNotification.message}
-                </p>
-                <p className="text-xs text-default-400 mt-1">
-                  {lastNotification.time}
-                </p>
-              </div>
-              <button
-                onClick={() => setShowNotificationAlert(false)}
-                className="text-default-400 hover:text-default-600"
-              >
-                <XMarkIcon className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       <Dropdown
         className="p-0"
         placement="bottom-end"
@@ -901,11 +906,10 @@ const NotificationDropdown = () => {
                 </div>
                 <div className="flex gap-2">
                   <Button
-                    className={`font-bold px-4 text-sm ${
-                      filter === "all"
-                        ? "bg-primary-50 text-primary"
-                        : "bg-transparent text-default-600 hover:bg-default-100"
-                    }`}
+                    className={`font-bold px-4 text-sm ${filter === "all"
+                      ? "bg-primary-50 text-primary"
+                      : "bg-transparent text-default-600 hover:bg-default-100"
+                      }`}
                     radius="full"
                     size="sm"
                     onClick={(e) => {
@@ -916,11 +920,10 @@ const NotificationDropdown = () => {
                     Tất cả ({totalElements})
                   </Button>
                   <Button
-                    className={`font-bold px-4 text-sm ${
-                      filter === "unread"
-                        ? "bg-primary-50 text-primary"
-                        : "bg-transparent text-default-600 hover:bg-default-100"
-                    }`}
+                    className={`font-bold px-4 text-sm ${filter === "unread"
+                      ? "bg-primary-50 text-primary"
+                      : "bg-transparent text-default-600 hover:bg-default-100"
+                      }`}
                     radius="full"
                     size="sm"
                     onClick={(e) => {
@@ -1011,11 +1014,10 @@ const NotificationDropdown = () => {
                 {/* Filter buttons */}
                 <div className="flex gap-2">
                   <Button
-                    className={`font-bold px-4 text-sm ${
-                      modalFilter === "all"
-                        ? "bg-primary-50 text-primary"
-                        : "bg-transparent text-default-600 hover:bg-default-100"
-                    }`}
+                    className={`font-bold px-4 text-sm ${modalFilter === "all"
+                      ? "bg-primary-50 text-primary"
+                      : "bg-transparent text-default-600 hover:bg-default-100"
+                      }`}
                     radius="full"
                     size="sm"
                     onClick={() => setModalFilter("all")}
@@ -1023,11 +1025,10 @@ const NotificationDropdown = () => {
                     Tất cả
                   </Button>
                   <Button
-                    className={`font-bold px-4 text-sm ${
-                      modalFilter === "unread"
-                        ? "bg-primary-50 text-primary"
-                        : "bg-transparent text-default-600 hover:bg-default-100"
-                    }`}
+                    className={`font-bold px-4 text-sm ${modalFilter === "unread"
+                      ? "bg-primary-50 text-primary"
+                      : "bg-transparent text-default-600 hover:bg-default-100"
+                      }`}
                     radius="full"
                     size="sm"
                     onClick={() => setModalFilter("unread")}
@@ -1051,23 +1052,6 @@ const NotificationDropdown = () => {
           )}
         </ModalContent>
       </Modal>
-
-      <style jsx>{`
-        @keyframes slideInRight {
-          from {
-            transform: translateX(100%);
-            opacity: 0;
-          }
-          to {
-            transform: translateX(0);
-            opacity: 1;
-          }
-        }
-
-        .animate-slide-in-right {
-          animation: slideInRight 0.3s ease-out;
-        }
-      `}</style>
     </>
   );
 };

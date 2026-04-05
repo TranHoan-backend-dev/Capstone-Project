@@ -8,7 +8,9 @@ import {
   useState,
   useEffect,
   useRef,
+  useCallback,
 } from "react";
+
 import { websocketService } from "@/services/websocket.service";
 import { getClientAccessToken } from "@/utils/getClientAccessToken";
 
@@ -18,7 +20,7 @@ interface WebSocketContextType {
   reconnect: () => void;
   lastNotification: any | null;
   subscribe: (topic: string, callback: (data: any) => void) => void;
-  unsubscribe: (topic: string) => void;
+  unsubscribe: (topic: string, callback?: (data: any) => void) => void;
 }
 
 const WebSocketContext = createContext<WebSocketContextType | null>(null);
@@ -40,35 +42,59 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
   };
 
   // Subscribe wrapper
-  const subscribe = (topic: string, callback: (data: any) => void) => {
-    // Lưu callback vào ref
-    if (!callbacksRef.current.has(topic)) {
-      callbacksRef.current.set(topic, new Set());
-      // Đăng ký topic với WebSocket service
-      websocketService.subscribe(topic, (data) =>
-        handleNotification(topic, data),
-      );
-    }
-    callbacksRef.current.get(topic)?.add(callback);
-  };
+  const subscribe = useCallback(
+    (topic: string, callback: (data: any) => void) => {
+      // Lưu callback vào ref
+      if (!callbacksRef.current.has(topic)) {
+        callbacksRef.current.set(topic, new Set());
+        // Đăng ký topic với WebSocket service
+        websocketService.subscribe(topic, (data) =>
+          handleNotification(topic, data),
+        );
+      }
+      callbacksRef.current.get(topic)?.add(callback);
+    },
+    [],
+  );
 
   // Unsubscribe wrapper
-  const unsubscribe = (topic: string, callback?: (data: any) => void) => {
-    if (callback) {
-      callbacksRef.current.get(topic)?.delete(callback);
-      if (callbacksRef.current.get(topic)?.size === 0) {
+  const unsubscribe = useCallback(
+    (topic: string, callback?: (data: any) => void) => {
+      if (callback) {
+        callbacksRef.current.get(topic)?.delete(callback);
+        if (callbacksRef.current.get(topic)?.size === 0) {
+          websocketService.unsubscribe(topic);
+          callbacksRef.current.delete(topic);
+        }
+      } else {
         websocketService.unsubscribe(topic);
         callbacksRef.current.delete(topic);
       }
-    } else {
-      websocketService.unsubscribe(topic);
-      callbacksRef.current.delete(topic);
-    }
-  };
+    },
+    [],
+  );
 
   // Khởi tạo WebSocket connection
   useEffect(() => {
     let mounted = true;
+
+    // Đăng ký callbacks với service để cập nhật state real-time
+    websocketService.setCallbacks(
+      () => {
+        if (mounted) {
+          setIsConnected(true);
+          setConnectionError(null);
+        }
+      },
+      (error) => {
+        if (mounted) {
+          setIsConnected(false);
+          if (error) {
+            setConnectionError(typeof error === "string" ? error : "Connection error");
+          }
+        }
+      },
+    );
 
     const initWebSocket = async () => {
       try {
@@ -79,10 +105,7 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
         }
 
         await websocketService.connect(token);
-        if (mounted) {
-          setIsConnected(true);
-          setConnectionError(null);
-        }
+        // State will be updated via callbacks
       } catch (error) {
         console.error("WebSocket connection error:", error);
         if (mounted) {
@@ -115,12 +138,19 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const reconnect = async () => {
-    setConnectionError(null);
-    websocketService.disconnect();
-    const token = await getClientAccessToken();
-    if (token) {
-      await websocketService.connect(token);
-      setIsConnected(websocketService.isConnected());
+    try {
+      setConnectionError(null);
+      websocketService.disconnect();
+      const token = await getClientAccessToken();
+      if (token) {
+        await websocketService.connect(token);
+        setIsConnected(websocketService.isConnected());
+      }
+    } catch (error) {
+      console.error("Manual reconnect failed:", error);
+      setConnectionError(
+        error instanceof Error ? error.message : "Manual reconnect failed",
+      );
     }
   };
 

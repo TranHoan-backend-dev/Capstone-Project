@@ -230,9 +230,9 @@ Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
 {
-  "empId": "6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20",
-  "formNumber": "FORM-2024-0002",
-  "formCode": "b1eebc99-9c0b-4ef8-bb6d-6bb9bd380a12",
+  "empId": "d75e221e-d150-4962-9afb-687062bfbcc8",
+  "formNumber": "20240010",
+  "formCode": "80000001010",
   "status": true
 }
 
@@ -254,10 +254,10 @@ Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
 {
-  "empId": "6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20",
-  "formNumber": "NUM-AHbUrpRI",
-  "formCode": "FORM-b1a01c53-41d6-4881-a83e-61d9bb8564d2",
-  "status": null
+  "empId": "d75e221e-d150-4962-9afb-687062bfbcc8",
+  "formNumber": "20240010",
+  "formCode": "80000001010",
+  "status": true
 }
 
 ### 4. Error Case - Form Not Found (404)

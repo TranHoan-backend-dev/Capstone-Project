@@ -1,7 +1,7 @@
 // hooks/useWebSocketNotifications.ts
 import { useEffect, useRef, useState, useCallback } from "react";
+
 import { websocketService } from "@/services/websocket.service";
-import { getAccessTokenFromCookie } from "@/utils/token-helper";
 import { getClientAccessToken } from "@/utils/getClientAccessToken";
 
 interface UserInfo {
@@ -39,66 +39,69 @@ export const useWebSocketNotifications = (
   const getUserTopics = useCallback((user: UserInfo): string[] => {
     const topics: string[] = [];
     const userId = user?.id;
-    const roles = user?.roles || [];
+    const roles = user?.roles?.map((r) => r.toUpperCase()) || [];
 
     if (!userId) return topics;
 
-    // User-specific queue (most important for notifications)
-    topics.push(`/user/${userId}/queue/notifications`);
-    topics.push(`/user/queue/notifications`); // Alternative format
+    // Default general notification topic
+    topics.push("/notification");
 
-    // General notification topic
-    topics.push("/topic/notifications");
-    topics.push("/topic/notification");
-
-    // Role-based topics
-    if (
-      roles.includes("SURVEY_STAFF") ||
-      roles.includes("ORDER_RECEIVING_STAFF")
-    ) {
-      topics.push("/topic/technical");
-      topics.push(`/user/${userId}/queue/technical`);
-    }
-
+    // Case-by-case mapping based on what backend Topic.java and consumers use
     if (roles.includes("PLANNING_TECHNICAL_DEPARTMENT_HEAD")) {
-      topics.push("/topic/technical");
-      topics.push(`/topic/technical/head`);
+      topics.push("/technical");
+      topics.push("/technical/head");
+      topics.push("/create-new-order");
     }
 
-    if (roles.includes("CONSTRUCTION_DEPARTMENT_STAFF")) {
-      topics.push("/topic/construction");
-      topics.push(`/user/${userId}/queue/construction`);
+    if (roles.includes("SURVEY_STAFF")) {
+      topics.push("/technical");
+      topics.push("/technical/survey-staff");
+      topics.push(`/technical/survey-staff/${userId}`);
+    }
+
+    if (roles.includes("ORDER_RECEIVING_STAFF")) {
+      topics.push("/technical");
+      topics.push("/technical/order-receiving-staff");
     }
 
     if (roles.includes("CONSTRUCTION_DEPARTMENT_HEAD")) {
-      topics.push("/topic/construction");
-      topics.push(`/topic/construction/head`);
+      topics.push("/construction");
+      topics.push("/construction/head");
     }
 
-    if (roles.includes("METER_INSPECTION_STAFF")) {
-      topics.push("/topic/business");
-      topics.push(`/user/${userId}/queue/business`);
+    if (roles.includes("CONSTRUCTION_DEPARTMENT_STAFF")) {
+      topics.push("/construction");
+      topics.push("/construction/staff");
     }
 
     if (roles.includes("BUSINESS_DEPARTMENT_HEAD")) {
-      topics.push("/topic/business");
-      topics.push(`/topic/business/head`);
+      topics.push("/business");
+      topics.push("/business/head");
+    }
+
+    if (roles.includes("METER_INSPECTION_STAFF")) {
+      topics.push("/business");
+      topics.push("/business/staff");
+    }
+
+    if (roles.includes("IT_STAFF")) {
+      topics.push("/it");
+    }
+
+    if (roles.includes("FINANCE_DEPARTMENT")) {
+      topics.push("/finance");
     }
 
     if (roles.includes("COMPANY_LEADERSHIP")) {
-      topics.push("/topic/leadership");
+      topics.push("/leadership");
     }
 
-    if (roles.includes("IT_STAFF") || roles.includes("IT_HEAD")) {
-      topics.push("/topic/it");
-    }
+    // Always follow common topics although backend doesn't explicitly state them for all roles
+    // But NotificationController.java uses Topic.getTopic(department) which can be /notification
+    topics.push("/topic/notifications");
 
-    if (roles.includes("FINANCE_STAFF") || roles.includes("FINANCE_HEAD")) {
-      topics.push("/topic/finance");
-    }
-
-    // Remove duplicates using filter
-    return topics.filter((topic, index, self) => self.indexOf(topic) === index);
+    // Remove duplicates using Set and filters
+    return [...new Set(topics)];
   }, []);
 
   // Connect to WebSocket
