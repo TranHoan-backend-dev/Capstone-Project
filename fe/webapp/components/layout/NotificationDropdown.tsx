@@ -114,6 +114,7 @@ const NotificationDropdown = () => {
   const [totalElements, setTotalElements] = useState(0);
   const [hasError, setHasError] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [totalUnreadCount, setTotalUnreadCount] = useState(0);
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
   const filteredNotifications =
@@ -142,6 +143,19 @@ const NotificationDropdown = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const { profile } = useProfile();
+
+  // Fetch total unread count
+  const fetchUnreadCount = useCallback(async () => {
+    try {
+      const response = await fetch("/api/notifications/unread-count");
+      if (response.ok) {
+        const data = await response.json();
+        setTotalUnreadCount(data.data || 0);
+      }
+    } catch (error) {
+      console.error("Failed to fetch unread count:", error);
+    }
+  }, []);
 
   // Fetch notifications từ API
   const fetchNotifications = useCallback(
@@ -267,8 +281,8 @@ const NotificationDropdown = () => {
         return newList.slice(0, 20);
       });
 
-      // Refetch from API to ensure sync (optional, but keep it if you want fresh state)
-      // fetchNotifications(1, false);
+      // Cập nhật số lượng tổng cộng
+      fetchUnreadCount();
 
       // Cập nhật allNotifications nếu modal đang mở
       if (isModalOpen) {
@@ -298,18 +312,18 @@ const NotificationDropdown = () => {
         });
       }
     },
-    [isModalOpen, fetchNotifications, isConnected],
+    [isModalOpen, fetchUnreadCount],
   );
 
   // Cập nhật Badge trên tab trình duyệt khi có thông báo chưa đọc
   useEffect(() => {
-    if (document.visibilityState === "hidden" && unreadCount > 0) {
+    if (document.visibilityState === "hidden" && totalUnreadCount > 0) {
       const baseTitle = document.title.replace(/^🔔 \(\d+\) /, "");
-      document.title = `🔔 (${unreadCount}) ${baseTitle}`;
+      document.title = `🔔 (${totalUnreadCount}) ${baseTitle}`;
     } else if (document.visibilityState === "visible") {
       document.title = document.title.replace(/^🔔 \(\d+\) /, "");
     }
-  }, [unreadCount]);
+  }, [totalUnreadCount]);
 
   // Subscribe WebSocket topics
   useEffect(() => {
@@ -449,9 +463,6 @@ const NotificationDropdown = () => {
         `/api/notifications/${notificationId}/read`,
         {
           method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
         },
       );
 
@@ -466,11 +477,12 @@ const NotificationDropdown = () => {
             n.id === notificationId ? { ...n, isRead: true } : n,
           ),
         );
+        fetchUnreadCount();
       }
     } catch (error) {
       console.error("Failed to mark as read:", error);
     }
-  }, []);
+  }, [fetchUnreadCount]);
 
   // Mark all as read
   const markAllAsRead = useCallback(async () => {
@@ -487,11 +499,12 @@ const NotificationDropdown = () => {
         setAllNotifications((prev) =>
           prev.map((n) => ({ ...n, isRead: true })),
         );
+        fetchUnreadCount();
       }
     } catch (error) {
       console.error("Failed to mark all as read:", error);
     }
-  }, []);
+  }, [fetchUnreadCount]);
 
   // Delete notification
   const deleteNotification = useCallback(
@@ -510,20 +523,29 @@ const NotificationDropdown = () => {
           setAllNotifications((prev) =>
             prev.filter((n) => n.id !== notificationId),
           );
+          fetchUnreadCount();
         }
       } catch (error) {
         console.error("Failed to delete notification:", error);
       }
     },
-    [],
+    [fetchUnreadCount],
   );
 
   // Load data when dropdown opens
   useEffect(() => {
     if (isOpen) {
       fetchNotifications(1, false);
+      fetchUnreadCount();
     }
-  }, [isOpen, fetchNotifications]);
+  }, [isOpen, fetchNotifications, fetchUnreadCount]);
+
+  // Initial load unread count
+  useEffect(() => {
+    if (isConnected) {
+      fetchUnreadCount();
+    }
+  }, [isConnected, fetchUnreadCount]);
 
   // Load initial data when modal opens
   useEffect(() => {
@@ -807,10 +829,10 @@ const NotificationDropdown = () => {
           >
             <Badge
               className={
-                unreadCount === 0 ? "hidden" : "border-2 border-background"
+                totalUnreadCount === 0 ? "hidden" : "border-2 border-background"
               }
               color="danger"
-              content={unreadCount >= 5 ? "5+" : unreadCount}
+              content={totalUnreadCount >= 99 ? "99+" : totalUnreadCount}
               shape="circle"
               size="sm"
               placement="top-right"
@@ -880,7 +902,7 @@ const NotificationDropdown = () => {
                     )}
                   </div>
                   <div className="flex gap-1">
-                    {unreadCount > 0 && (
+                    {totalUnreadCount > 0 && (
                       <Button
                         size="sm"
                         variant="light"
