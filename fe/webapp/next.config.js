@@ -16,6 +16,34 @@ const nextConfig = {
       },
     ];
   },
+  // Thêm proxy để tránh CORS
+  async rewrites() {
+    return [
+      {
+        source: '/n/ws/:path*',
+        destination: 'http://localhost:8000/n/ws/:path*',
+      },
+      // Nếu cần proxy cho API calls
+      {
+        source: '/api/:path*',
+        destination: 'http://localhost:8000/api/:path*',
+      },
+    ];
+  },
+  // Thêm headers cho API routes
+  async headers() {
+    return [
+      {
+        source: '/api/:path*',
+        headers: [
+          { key: 'Access-Control-Allow-Credentials', value: 'true' },
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'Access-Control-Allow-Methods', value: 'GET,OPTIONS,PATCH,DELETE,POST,PUT' },
+          { key: 'Access-Control-Allow-Headers', value: 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization' },
+        ],
+      },
+    ];
+  },
 };
 
 export default withNextIntl(nextConfig);

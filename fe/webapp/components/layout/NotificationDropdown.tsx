@@ -14,7 +14,6 @@ import {
   ModalContent,
   ModalHeader,
   ModalBody,
-  ModalFooter,
   useDisclosure,
 } from "@heroui/react";
 import {
@@ -22,16 +21,14 @@ import {
   CheckCircleIcon,
   EllipsisHorizontalIcon,
   ComputerDesktopIcon,
-  ShieldCheckIcon,
-  CurrencyDollarIcon,
   TrashIcon,
   ExclamationTriangleIcon,
   DocumentTextIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { useWebSocketNotifications } from "@/hooks/useWebSocketNotifications";
+import { useWebSocket } from "@/context/WebSocketContext";
 
-// Interface cho response từ API - Cập nhật theo dữ liệu thực tế
+// Interface cho response từ API
 interface ApiNotification {
   notificationId: string;
   title: string;
@@ -90,6 +87,19 @@ const getNotificationIconColor = (title: string) => {
   return "bg-orange-600";
 };
 
+// Transform notification từ WebSocket hoặc API
+const transformNotification = (item: any): Notification => ({
+  id: item.notificationId || item.id,
+  title: item.title || "Thông báo mới",
+  message: item.message || item.body || "",
+  isRead: item.status === true || item.read === true,
+  createdAt: item.createdAt || item.timestamp || new Date().toISOString(),
+  link: item.link || null,
+  time: formatTime(
+    item.createdAt || item.timestamp || new Date().toISOString(),
+  ),
+});
+
 const NotificationDropdown = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [filter, setFilter] = useState<"all" | "unread">("all");
@@ -100,6 +110,14 @@ const NotificationDropdown = () => {
   const [totalElements, setTotalElements] = useState(0);
   const [hasError, setHasError] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [showNotificationAlert, setShowNotificationAlert] = useState(false);
+  const [lastNotification, setLastNotification] = useState<Notification | null>(
+    null,
+  );
+
+  // WebSocket context
+  const { isConnected, connectionError, reconnect, subscribe, unsubscribe } =
+    useWebSocket();
 
   // Modal states
   const {
@@ -117,32 +135,115 @@ const NotificationDropdown = () => {
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const modalScrollRef = useRef<HTMLDivElement>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const alertTimeoutRef = useRef<NodeJS.Timeout>();
 
-  const handleNewNotification = useCallback((newNotification: any) => {
-    const transformed: Notification = {
-      id: newNotification.notificationId,
-      title: newNotification.title || "Thông báo",
-      message: newNotification.message,
-      isRead: newNotification.status === true,
-      createdAt: newNotification.createdAt,
-      link: newNotification.link,
-      time: formatTime(newNotification.createdAt),
+  // Xử lý thông báo mới từ WebSocket
+  const handleNewNotification = useCallback(
+    (newNotification: any) => {
+      console.log("🔔 New notification received:", newNotification);
+
+      const transformed = transformNotification(newNotification);
+
+      // Thêm vào danh sách notifications
+      setNotifications((prev) => {
+        const exists = prev.some((n) => n.id === transformed.id);
+        if (exists) return prev;
+        return [transformed, ...prev];
+      });
+
+      // Cập nhật allNotifications nếu modal đang mở
+      if (isModalOpen) {
+        setAllNotifications((prev) => {
+          const exists = prev.some((n) => n.id === transformed.id);
+          if (exists) return prev;
+          return [transformed, ...prev];
+        });
+      }
+
+      // Hiển thị alert tạm thời
+      setLastNotification(transformed);
+      setShowNotificationAlert(true);
+
+      // Tự động ẩn alert sau 5 giây
+      if (alertTimeoutRef.current) {
+        clearTimeout(alertTimeoutRef.current);
+      }
+      alertTimeoutRef.current = setTimeout(() => {
+        setShowNotificationAlert(false);
+        setLastNotification(null);
+      }, 5000);
+
+      // Phát âm thanh thông báo
+      if (audioRef.current && document.visibilityState === "visible") {
+        audioRef.current
+          .play()
+          .catch((e) => console.log("Audio play failed:", e));
+      }
+
+      // Hiển thị browser notification
+      if (
+        Notification.permission === "granted" &&
+        document.visibilityState === "hidden"
+      ) {
+        new Notification(transformed.title, {
+          body: transformed.message,
+          icon: "/notification-icon.png",
+          silent: false,
+        });
+      }
+
+      // Tăng badge count trên tab
+      const currentUnreadCount = notifications.filter((n) => !n.isRead).length;
+      if (document.visibilityState === "hidden") {
+        document.title = `🔔 (${currentUnreadCount + 1}) ${document.title.replace(/^🔔 \(\d+\) /, "")}`;
+      }
+    },
+    [isModalOpen, notifications],
+  );
+
+  // Subscribe WebSocket topics
+  useEffect(() => {
+    const handleNotification = (notification: any) => {
+      handleNewNotification(notification);
     };
 
-    setNotifications((prev) => {
-      const exists = prev.some((n) => n.id === transformed.id);
-      if (exists) return prev;
-      return [transformed, ...prev];
-    });
+    // Subscribe to user-specific queue
+    subscribe("/user/queue/notifications", handleNotification);
+    // Subscribe to general topic
+    subscribe("/topic/notifications", handleNotification);
+  }, [subscribe, unsubscribe, handleNewNotification]);
+
+  // Reset title khi focus vào tab
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        document.title = document.title.replace(/^🔔 \(\d+\) /, "");
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () =>
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, []);
 
-  const { isConnected } = useWebSocketNotifications(handleNewNotification);
+  // Request notification permission
+  useEffect(() => {
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+  }, []);
 
-  // useEffect(() => {
-  //   if (isUsingPolling) {
-  //     console.log("Using polling fallback for notifications");
-  //   }
-  // }, [isUsingPolling]);
+  // Auto reconnect on error
+  useEffect(() => {
+    if (connectionError) {
+      const timeout = setTimeout(() => {
+        console.log("Attempting to reconnect WebSocket...");
+        reconnect();
+      }, 10000);
+      return () => clearTimeout(timeout);
+    }
+  }, [connectionError, reconnect]);
 
   // Fetch notifications từ API
   const fetchNotifications = useCallback(
@@ -167,15 +268,7 @@ const NotificationDropdown = () => {
         const totalFound = data?.totalFound || 0;
 
         const transformedNotifications: Notification[] = items.map(
-          (item: ApiNotification) => ({
-            id: item.notificationId,
-            title: item.title,
-            message: item.message,
-            isRead: item.status === true,
-            createdAt: item.createdAt,
-            link: item.link,
-            time: formatTime(item.createdAt),
-          }),
+          transformNotification,
         );
 
         if (isLoadMore) {
@@ -184,7 +277,6 @@ const NotificationDropdown = () => {
           setNotifications(transformedNotifications);
         }
 
-        // Tính total pages dựa trên totalFound
         const pages = Math.ceil(totalFound / 10);
         setTotalPages(pages);
         setTotalElements(totalFound);
@@ -200,7 +292,6 @@ const NotificationDropdown = () => {
     [],
   );
 
-  // Fetch all notifications cho modal
   // Fetch all notifications cho modal
   const fetchAllNotifications = useCallback(
     async (page: number, isLoadMore = false) => {
@@ -223,18 +314,10 @@ const NotificationDropdown = () => {
         const result = await response.json();
         const data = result.data;
         const items = data?.items || [];
-        const totalFound = data?.totalFound || 0; // Đây là tổng số thông báo thực tế
+        const totalFound = data?.totalFound || 0;
 
         const transformedNotifications: Notification[] = items.map(
-          (item: ApiNotification) => ({
-            id: item.notificationId,
-            title: item.title,
-            message: item.message,
-            isRead: item.status === true,
-            createdAt: item.createdAt,
-            link: item.link,
-            time: formatTime(item.createdAt),
-          }),
+          transformNotification,
         );
 
         if (isLoadMore) {
@@ -243,13 +326,9 @@ const NotificationDropdown = () => {
           setAllNotifications(transformedNotifications);
         }
 
-        // Tính total pages dựa trên totalFound thực tế
         const pages = Math.ceil(totalFound / 10);
         setModalTotalPages(pages);
         setModalCurrentPage(page);
-
-        // THÊM: Cập nhật totalElements cho modal (nếu cần)
-        // setModalTotalElements(totalFound); // Bạn có thể thêm state này nếu muốn hiển thị tổng số
       } catch (error) {
         console.error("Failed to fetch all notifications:", error);
         setModalHasError(true);
@@ -330,6 +409,11 @@ const NotificationDropdown = () => {
             n.id === notificationId ? { ...n, isRead: true } : n,
           ),
         );
+        setAllNotifications((prev) =>
+          prev.map((n) =>
+            n.id === notificationId ? { ...n, isRead: true } : n,
+          ),
+        );
       }
     } catch (error) {
       console.error("Failed to mark as read:", error);
@@ -348,6 +432,9 @@ const NotificationDropdown = () => {
 
       if (response.ok) {
         setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+        setAllNotifications((prev) =>
+          prev.map((n) => ({ ...n, isRead: true })),
+        );
       }
     } catch (error) {
       console.error("Failed to mark all as read:", error);
@@ -366,6 +453,9 @@ const NotificationDropdown = () => {
 
         if (response.ok) {
           setNotifications((prev) =>
+            prev.filter((n) => n.id !== notificationId),
+          );
+          setAllNotifications((prev) =>
             prev.filter((n) => n.id !== notificationId),
           );
         }
@@ -658,6 +748,45 @@ const NotificationDropdown = () => {
 
   return (
     <>
+      {/* Floating notification alert */}
+      {showNotificationAlert && lastNotification && (
+        <div className="fixed top-4 right-4 z-50 animate-slide-in-right">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl border-l-4 border-primary p-4 min-w-[300px] max-w-md">
+            <div className="flex items-start gap-3">
+              <div className="relative shrink-0">
+                <Avatar
+                  className="bg-primary-50 text-primary font-bold"
+                  name={lastNotification.title.charAt(0)}
+                  size="md"
+                />
+                <div
+                  className={`absolute -bottom-1 -right-1 rounded-full p-1 border-2 border-white dark:border-gray-800 ${getNotificationIconColor(lastNotification.title)}`}
+                >
+                  {getNotificationIcon(lastNotification.title)}
+                </div>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-sm text-foreground">
+                  {lastNotification.title}
+                </p>
+                <p className="text-sm text-default-600 line-clamp-2">
+                  {lastNotification.message}
+                </p>
+                <p className="text-xs text-default-400 mt-1">
+                  {lastNotification.time}
+                </p>
+              </div>
+              <button
+                onClick={() => setShowNotificationAlert(false)}
+                className="text-default-400 hover:text-default-600"
+              >
+                <XMarkIcon className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Dropdown
         className="p-0"
         placement="bottom-end"
@@ -682,8 +811,12 @@ const NotificationDropdown = () => {
               placement="top-right"
             >
               <BellIcon className="w-6 h-6 text-default-600" />
+              {/* WebSocket connection status indicator */}
               {isConnected && (
-                <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-600 rounded-full border-2 border-background z-20" />
+                <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-background z-20 animate-pulse" />
+              )}
+              {connectionError && !isConnected && (
+                <div className="absolute bottom-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-background z-20" />
               )}
             </Badge>
           </Button>
@@ -712,11 +845,31 @@ const NotificationDropdown = () => {
                     <span className="text-2xl font-black text-foreground tracking-tight">
                       Thông báo
                     </span>
-                    {isConnected && (
+                    {isConnected ? (
                       <div className="flex items-center gap-1.5 px-2.5 py-1 bg-green-50 rounded-full">
-                        <div className="w-2 h-2 bg-green-600 rounded-full animate-pulse" />
+                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                         <span className="text-xs font-bold text-green-700">
                           Trực tuyến
+                        </span>
+                      </div>
+                    ) : connectionError ? (
+                      <div
+                        className="flex items-center gap-1.5 px-2.5 py-1 bg-red-50 rounded-full cursor-pointer hover:bg-red-100 transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          reconnect();
+                        }}
+                      >
+                        <div className="w-2 h-2 bg-red-500 rounded-full" />
+                        <span className="text-xs font-bold text-red-700">
+                          Mất kết nối - Nhấn để kết nối lại
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1.5 px-2.5 py-1 bg-yellow-50 rounded-full">
+                        <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
+                        <span className="text-xs font-bold text-yellow-700">
+                          Đang kết nối...
                         </span>
                       </div>
                     )}
@@ -812,6 +965,7 @@ const NotificationDropdown = () => {
           </DropdownSection>
 
           {/* Footer Section */}
+          {/* Footer Section */}
           {!isInitialLoading && !hasError && notifications.length > 0 ? (
             <DropdownSection
               aria-label="Footer"
@@ -845,22 +999,13 @@ const NotificationDropdown = () => {
         }}
       >
         <ModalContent>
-          {(onClose) => (
+          {() => (
             <>
               <ModalHeader className="flex flex-col gap-3 border-b border-divider">
                 <div className="flex justify-between items-center">
                   <h2 className="text-2xl font-black text-foreground tracking-tight">
                     Tất cả thông báo
                   </h2>
-                  {/* <Button
-                  isIconOnly
-                  size="sm"
-                  variant="light"
-                  onClick={onClose}
-                  className="absolute top-4 right-4"
-                >
-                  <XMarkIcon className="w-6 h-6 text-default-600" />
-                </Button> */}
                 </div>
 
                 {/* Filter buttons */}
@@ -896,7 +1041,7 @@ const NotificationDropdown = () => {
                 <ScrollShadow
                   hideScrollBar
                   ref={modalScrollRef}
-                  className="overflow-y-auto"
+                  className="overflow-y-auto max-h-[60vh]"
                   onScroll={handleModalScroll}
                 >
                   {renderModalContent()}
@@ -906,6 +1051,23 @@ const NotificationDropdown = () => {
           )}
         </ModalContent>
       </Modal>
+
+      <style jsx>{`
+        @keyframes slideInRight {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+
+        .animate-slide-in-right {
+          animation: slideInRight 0.3s ease-out;
+        }
+      `}</style>
     </>
   );
 };

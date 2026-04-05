@@ -32,6 +32,7 @@ import axios from "axios";
 import { useProfile } from "@/hooks/useLogin";
 import { filterNavItems, siteConfig } from "@/config/site";
 import CustomButton from "../ui/custom/CustomButton";
+import GlobalWebSocket from "../GlobalWebSocket";
 
 export interface SubMenuItemChild {
   key: string;

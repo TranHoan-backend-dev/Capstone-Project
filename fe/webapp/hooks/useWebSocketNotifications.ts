@@ -1,135 +1,264 @@
 // hooks/useWebSocketNotifications.ts
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { websocketService } from "@/services/websocket.service";
-import { useAuth } from "./useAuth";
-// hooks/useWebSocketNotifications.ts (updated)
+import { getAccessTokenFromCookie } from "@/utils/token-helper";
+import { getClientAccessToken } from "@/utils/getClientAccessToken";
+
+interface UserInfo {
+  id: string;
+  roles: string[];
+  email?: string;
+  name?: string;
+}
+
 export const useWebSocketNotifications = (
-  onNotificationReceived: (notification: any) => void
+  onNotificationReceived: (notification: any) => void,
 ) => {
   const [isConnected, setIsConnected] = useState(false);
-  const subscribedTopics = useRef<Set<string>>(new Set());
+  const [connectionError, setConnectionError] = useState<string | null>(null);
+  const subscribedTopics = useRef<string[]>([]); // Thay đổi từ Set thành Array
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout>();
 
-  useEffect(() => {
-    const getAccessToken = () => {
-      // Try multiple sources
-      const cookies = document.cookie.split(';');
-      const tokenCookie = cookies.find(c => c.trim().startsWith('access_token='));
-      if (tokenCookie) {
-        return tokenCookie.split('=')[1];
-      }
-      
-      const localStorageToken = localStorage.getItem('access_token');
-      if (localStorageToken) {
-        return localStorageToken;
-      }
+  // Get user from token
+  const getUserFromToken = useCallback((token: string): UserInfo | null => {
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      return {
+        id: payload.sub || payload.userId,
+        roles: payload.realm_access?.roles || payload.roles || [],
+        email: payload.email,
+        name: payload.name,
+      };
+    } catch (error) {
+      console.error("[WebSocket] Failed to decode token:", error);
+      return null;
+    }
+  }, []);
 
-      // Try to get from sessionStorage
-      return sessionStorage.getItem('access_token');
-    };
+  // Get topics based on user roles
+  const getUserTopics = useCallback((user: UserInfo): string[] => {
+    const topics: string[] = [];
+    const userId = user?.id;
+    const roles = user?.roles || [];
 
-    const getUserFromToken = (token: string) => {
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        console.log('🔑 Token payload:', payload);
-        return {
-          id: payload.sub || payload.userId,
-          roles: payload.realm_access?.roles || payload.roles || [],
-          email: payload.email,
-          name: payload.name,
-        };
-      } catch (error) {
-        console.error('Failed to decode token:', error);
-        return null;
-      }
-    };
+    if (!userId) return topics;
 
-    const accessToken = getAccessToken();
-    console.log('🔑 Access token found:', !!accessToken);
-    
-    if (!accessToken) {
-      console.error('No access token found');
-      return;
+    // User-specific queue (most important for notifications)
+    topics.push(`/user/${userId}/queue/notifications`);
+    topics.push(`/user/queue/notifications`); // Alternative format
+
+    // General notification topic
+    topics.push("/topic/notifications");
+    topics.push("/topic/notification");
+
+    // Role-based topics
+    if (
+      roles.includes("SURVEY_STAFF") ||
+      roles.includes("ORDER_RECEIVING_STAFF")
+    ) {
+      topics.push("/topic/technical");
+      topics.push(`/user/${userId}/queue/technical`);
     }
 
-    const user = getUserFromToken(accessToken);
-    console.log('👤 User from token:', user);
-    
-    if (!user) return;
+    if (roles.includes("PLANNING_TECHNICAL_DEPARTMENT_HEAD")) {
+      topics.push("/topic/technical");
+      topics.push(`/topic/technical/head`);
+    }
 
-    // Test WebSocket connection first
-    const testWebSocket = async () => {
+    if (roles.includes("CONSTRUCTION_DEPARTMENT_STAFF")) {
+      topics.push("/topic/construction");
+      topics.push(`/user/${userId}/queue/construction`);
+    }
+
+    if (roles.includes("CONSTRUCTION_DEPARTMENT_HEAD")) {
+      topics.push("/topic/construction");
+      topics.push(`/topic/construction/head`);
+    }
+
+    if (roles.includes("METER_INSPECTION_STAFF")) {
+      topics.push("/topic/business");
+      topics.push(`/user/${userId}/queue/business`);
+    }
+
+    if (roles.includes("BUSINESS_DEPARTMENT_HEAD")) {
+      topics.push("/topic/business");
+      topics.push(`/topic/business/head`);
+    }
+
+    if (roles.includes("COMPANY_LEADERSHIP")) {
+      topics.push("/topic/leadership");
+    }
+
+    if (roles.includes("IT_STAFF") || roles.includes("IT_HEAD")) {
+      topics.push("/topic/it");
+    }
+
+    if (roles.includes("FINANCE_STAFF") || roles.includes("FINANCE_HEAD")) {
+      topics.push("/topic/finance");
+    }
+
+    // Remove duplicates using filter
+    return topics.filter((topic, index, self) => self.indexOf(topic) === index);
+  }, []);
+
+  // Connect to WebSocket
+  const connectWebSocket = useCallback(async (accessToken: string) => {
+    try {
+      console.log("[WebSocket] Connecting...");
+      await websocketService.connect(accessToken);
+      console.log("[WebSocket] Connected successfully");
+      setIsConnected(true);
+      setConnectionError(null);
+      return true;
+    } catch (error) {
+      console.error("[WebSocket] Connection failed:", error);
+      setConnectionError(
+        error instanceof Error ? error.message : "Connection failed",
+      );
+      setIsConnected(false);
+      return false;
+    }
+  }, []);
+
+  // Subscribe to topics
+  const subscribeToTopics = useCallback(
+    (user: UserInfo) => {
+      const topics = getUserTopics(user);
+      console.log("[WebSocket] Subscribing to topics:", topics);
+
+      topics.forEach((topic) => {
+        // Kiểm tra nếu topic chưa được subscribe
+        if (!subscribedTopics.current.includes(topic)) {
+          websocketService.subscribe(topic, (notification) => {
+            console.log(`[WebSocket] Received on ${topic}:`, notification);
+            onNotificationReceived(notification);
+          });
+          subscribedTopics.current.push(topic);
+        }
+      });
+    },
+    [getUserTopics, onNotificationReceived],
+  );
+
+  // Get access token
+  const getAccessToken = useCallback(async (): Promise<string | null> => {
+    // Method 1: Get from localStorage
+    const token = localStorage.getItem("access_token");
+    if (token) return token;
+
+    // Method 2: Get from cookies
+    const getCookie = (name: string) => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop()?.split(";").shift();
+      return null;
+    };
+
+    const cookieToken = getCookie("access_token");
+    if (cookieToken) return cookieToken;
+
+    // Method 3: Call your auth endpoint
+    try {
+      const response = await fetch("/api/auth/token");
+      const data = await response.json();
+      return data.accessToken;
+    } catch (error) {
+      console.error("[WebSocket] Failed to get access token:", error);
+      return null;
+    }
+  }, []);
+
+  // Initialize WebSocket connection
+  useEffect(() => {
+    let mounted = true;
+    let retryCount = 0;
+    const maxRetries = 3;
+
+    const initWebSocket = async () => {
       try {
-        console.log('🔌 Testing WebSocket connection...');
-        await websocketService.connect(accessToken);
-        console.log('✅ WebSocket test successful');
-        setIsConnected(true);
-        
-        // Subscribe to topics
-        const topicsToSubscribe = getUserTopics(user);
-        console.log('📡 Subscribing to topics:', topicsToSubscribe);
-        
-        topicsToSubscribe.forEach(topic => {
-          if (!subscribedTopics.current.has(topic)) {
-            websocketService.subscribe(topic, (notification) => {
-              console.log('📨 WebSocket message received on', topic, ':', notification);
-              onNotificationReceived(notification);
-            });
-            subscribedTopics.current.add(topic);
+        const accessToken = await getClientAccessToken();
+        if (!accessToken) {
+          console.error("[WebSocket] No access token available");
+          if (mounted) {
+            setConnectionError("No authentication token available");
           }
-        });
+          return;
+        }
+
+        const user = getUserFromToken(accessToken);
+        if (!user || !user.id) {
+          console.error("[WebSocket] Invalid user data from token");
+          if (mounted) {
+            setConnectionError("Invalid user token");
+          }
+          return;
+        }
+
+        const connected = await connectWebSocket(accessToken);
+
+        if (connected && mounted) {
+          subscribeToTopics(user);
+          retryCount = 0; // Reset retry count on successful connection
+        } else if (mounted && retryCount < maxRetries) {
+          // Retry connection
+          retryCount++;
+          const delay = 5000 * retryCount;
+          console.log(
+            `[WebSocket] Retrying connection in ${delay}ms (attempt ${retryCount}/${maxRetries})`,
+          );
+
+          reconnectTimeoutRef.current = setTimeout(() => {
+            if (mounted) {
+              initWebSocket();
+            }
+          }, delay);
+        }
       } catch (error) {
-        console.error('❌ WebSocket connection failed:', error);
-        setIsConnected(false);
+        console.error("[WebSocket] Initialization error:", error);
+        if (mounted) {
+          setConnectionError(
+            error instanceof Error ? error.message : "Unknown error",
+          );
+        }
       }
     };
 
-    testWebSocket();
+    initWebSocket();
 
+    // Cleanup
     return () => {
+      mounted = false;
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
       websocketService.disconnect();
       setIsConnected(false);
-      subscribedTopics.current.clear();
+      subscribedTopics.current = []; // Clear array instead of Set
     };
-  }, [onNotificationReceived]);
+  }, [getAccessToken, getUserFromToken, connectWebSocket, subscribeToTopics]);
 
-  return { isConnected };
-};
+  // Manual reconnect function
+  const reconnect = useCallback(async () => {
+    console.log("[WebSocket] Manual reconnect requested");
+    setConnectionError(null);
+    websocketService.disconnect();
+    subscribedTopics.current = []; // Clear array
 
-// Helper để lấy topics dựa trên user roles
-const getUserTopics = (user: any): string[] => {
-  const topics: string[] = [];
-  const userId = user?.id;
+    const accessToken = await getAccessToken();
+    if (accessToken) {
+      const user = getUserFromToken(accessToken);
+      if (user) {
+        const connected = await connectWebSocket(accessToken);
+        if (connected) {
+          subscribeToTopics(user);
+        }
+      }
+    }
+  }, [getAccessToken, getUserFromToken, connectWebSocket, subscribeToTopics]);
 
-  if (!userId) return topics;
-
-  // User-specific topic (để nhận thông báo cá nhân)
-  topics.push(`/user/${userId}/queue/notifications`);
-
-  // Role-based topics (từ backend logs thấy)
-  if (user?.roles?.includes("SURVEY_STAFF")) {
-    topics.push(`/topic/technical/survey-staff/${userId}`);
-  }
-
-  if (user?.roles?.includes("PLANNING_TECHNICAL_DEPARTMENT_HEAD")) {
-    topics.push(`/topic/technical/head/${userId}`);
-  }
-
-  if (user?.roles?.includes("COMPANY_LEADERSHIP")) {
-    topics.push(`/topic/leadership/${userId}`);
-  }
-
-  // General department topics (không có userId)
-  if (user?.roles?.includes("SURVEY_STAFF")) {
-    topics.push("/topic/technical/survey-staff");
-  }
-
-  if (user?.roles?.includes("PLANNING_TECHNICAL_DEPARTMENT_HEAD")) {
-    topics.push("/topic/technical/head");
-  }
-
-  if (user?.roles?.includes("COMPANY_LEADERSHIP")) {
-    topics.push("/topic/leadership");
-  }
-
-  return topics;
+  return {
+    isConnected,
+    connectionError,
+    reconnect,
+  };
 };

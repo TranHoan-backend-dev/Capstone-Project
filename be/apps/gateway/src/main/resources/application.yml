@@ -34,6 +34,13 @@ spring:
             - Path=/d/**
           filters:
             - RewritePath=/d/(?<segment>.*), /api/v1/${segment}
+        - id: notification-ws
+          uri: lb://notification
+          predicates:
+            - Path=/ws/**
+          filters:
+            - RewritePath=/ws/(?<segment>.*), /ws/${segment}
+            - RewritePath=/ws
         - id: notification
           uri: lb://notification
           predicates:
