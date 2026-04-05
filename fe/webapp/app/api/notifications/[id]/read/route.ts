@@ -5,11 +5,11 @@ import { markAsRead } from "@/services/notification.service";
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id: notificationId } = await params;
     const accessToken = getAccessToken(req);
-    const notificationId = params.id;
 
     if (!accessToken) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -19,7 +19,8 @@ export async function PATCH(
 
     return NextResponse.json(response.data);
   } catch (error) {
-    console.error(`API Error [mark-read] - ${params.id}:`, error);
+    const { id } = await params;
+    console.error(`API Error [mark-read] - ${id}:`, error);
     return NextResponse.json(
       { error: "Failed to mark as read" },
       { status: 500 },
