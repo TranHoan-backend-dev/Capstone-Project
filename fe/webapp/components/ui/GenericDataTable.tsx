@@ -12,8 +12,9 @@ import {
   TableCell,
   TableProps,
   Spinner,
+  Button,
 } from "@heroui/react";
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import { ChevronDownIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Skeleton } from "@heroui/react";
 import { CustomPagination } from "./custom/CustomPagination";
 import { SortAscIcon, SortDescIcon } from "@/config/chip-and-icon";
@@ -57,6 +58,8 @@ interface GenericDataTableProps<T> {
     direction: "asc" | "desc";
   };
   onSortChange?: (field: string) => void;
+  onClose?: () => void; // Thêm prop onClose
+  showCloseButton?: boolean; // Thêm prop để hiển thị nút đóng
 }
 
 export const GenericDataTable = <T extends { id: string | number }>({
@@ -76,8 +79,11 @@ export const GenericDataTable = <T extends { id: string | number }>({
   isLoading,
   sort,
   onSortChange,
+  onClose,
+  showCloseButton = false,
 }: GenericDataTableProps<T>) => {
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
+
   const renderSkeletonRows = () => {
     return Array.from({ length: 5 }).map((_, rowIndex) => (
       <TableRow key={`skeleton-${rowIndex}`}>
@@ -89,6 +95,13 @@ export const GenericDataTable = <T extends { id: string | number }>({
       </TableRow>
     ));
   };
+
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    }
+  };
+
   return (
     <Card
       className="overflow-hidden bg-content1 transition-all duration-300"
@@ -116,6 +129,21 @@ export const GenericDataTable = <T extends { id: string | number }>({
                     </div>
                   )}
                   {actions && <div>{actions}</div>}
+                  {showCloseButton && onClose && (
+                    <Button
+                      isIconOnly
+                      size="sm"
+                      variant="light"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleClose();
+                      }}
+                      className="text-default-400 hover:text-danger transition-colors"
+                      aria-label="Đóng"
+                    >
+                      <XMarkIcon className="w-5 h-5" />
+                    </Button>
+                  )}
                   {isCollapsible && (
                     <div className="text-default-400">
                       <ChevronDownIcon

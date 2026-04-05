@@ -18,4 +18,8 @@ public interface IndividualNotificationRepository
     SELECT i FROM IndividualNotification i WHERE i.userId=:id
     """)
   List<IndividualNotification> findAllByUserId(@Param("id") String userId, Pageable pageable);
+
+  long countByUserIdAndIsReadFalse(String userId);
+
+  void deleteByUserIdAndNotificationId(String userId, String notificationId);
 }

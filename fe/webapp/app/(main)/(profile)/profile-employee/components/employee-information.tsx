@@ -29,11 +29,60 @@ const EmployeeProfile = ({ data }: EmployeeProfileProps) => {
       ? "Nam"
       : formData.gender === "false"
         ? "Nữ"
-        : "Chưa cập nhật";
+        : "Chưa xác định";
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const displayValue = (value?: string | null) => {
-    return value && value.trim() !== "" ? value : "Không xác định";
+    if (!value || value.trim() === "") return "Chưa xác định";
+    return value;
+  };
+
+  // Hàm format và hiển thị ngày sinh
+  const getBirthdayDisplay = () => {
+    // Kiểm tra nếu birthday là null, undefined hoặc chuỗi rỗng
+    if (
+      !formData.birthday ||
+      formData.birthday === null ||
+      formData.birthday.trim() === ""
+    ) {
+      return "Chưa xác định";
+    }
+
+    try {
+      const date = new Date(formData.birthday);
+      // Kiểm tra nếu date hợp lệ
+      if (isNaN(date.getTime())) {
+        return "Chưa xác định";
+      }
+
+      // Format theo dd/MM/yyyy
+      const day = date.getDate().toString().padStart(2, "0");
+      const month = (date.getMonth() + 1).toString().padStart(2, "0");
+      const year = date.getFullYear();
+
+      return `${day}/${month}/${year}`;
+    } catch (error) {
+      return "Chưa xác định";
+    }
+  };
+
+  // Hàm lấy giá trị cho input date khi edit
+  const getDateValueForEdit = () => {
+    if (
+      !formData.birthday ||
+      formData.birthday === null ||
+      formData.birthday.trim() === ""
+    ) {
+      return "";
+    }
+
+    try {
+      const date = new Date(formData.birthday);
+      if (isNaN(date.getTime())) return "";
+      return date.toISOString().split("T")[0]; // YYYY-MM-DD
+    } catch {
+      return "";
+    }
   };
 
   const handleChange = (key: keyof EmployeeProfileData, value: string) => {
@@ -42,6 +91,7 @@ const EmployeeProfile = ({ data }: EmployeeProfileProps) => {
 
   const handleSave = async () => {
     try {
+      // Kiểm tra nếu birthday không phải null khi lưu
       if (!formData.birthday || formData.birthday.trim() === "") {
         CallToast({
           title: "Lỗi",
@@ -176,7 +226,7 @@ const EmployeeProfile = ({ data }: EmployeeProfileProps) => {
                 onClick={() => fileInputRef.current?.click()}
               >
                 <Avatar
-                  src={formData.avatarUrl}
+                  src={formData.avatarUrl || undefined}
                   className="w-20 h-20 transition-opacity group-hover:opacity-80"
                   isBordered
                 />
@@ -200,14 +250,16 @@ const EmployeeProfile = ({ data }: EmployeeProfileProps) => {
                   isEditing={isEditing}
                   onChange={(v) => handleChange("fullname", v)}
                 />
-                <p className="text-sm text-gray-500">{roleLabel}</p>
+                <p className="text-sm text-gray-500">
+                  {displayValue(roleLabel)}
+                </p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12">
               <CustomField
                 label="Tên đăng nhập"
-                value={formData.username}
+                value={displayValue(formData.username)}
                 isEditing={false}
               />
 
@@ -233,7 +285,7 @@ const EmployeeProfile = ({ data }: EmployeeProfileProps) => {
 
               <CustomField
                 label="Ngày sinh"
-                value={displayValue(formData.birthday)}
+                value={isEditing ? getDateValueForEdit() : getBirthdayDisplay()}
                 type="date"
                 isEditing={isEditing}
                 onChange={(v) => handleChange("birthday", v)}
@@ -280,7 +332,10 @@ const EmployeeProfile = ({ data }: EmployeeProfileProps) => {
               <>
                 <CustomButton
                   variant="light"
-                  onClick={() => setIsEditing(false)}
+                  onClick={() => {
+                    setIsEditing(false);
+                    setFormData(originalData);
+                  }}
                 >
                   Hủy
                 </CustomButton>

@@ -25,10 +25,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -102,5 +104,39 @@ public class NotificationController {
     });
 
     return Utils.returnCreatedResponse("Tạo thông báo phòng ban thành công");
+  }
+  @Operation(summary = "Lấy số lượng thông báo chưa đọc", description = "Trả về tổng số lượng thông báo chưa đọc của nhân viên.")
+  @GetMapping("/unread-count")
+  @PreAuthorize("isAuthenticated()")
+  public ResponseEntity<WrapperApiResponse> getUnreadCount(
+    @AuthenticationPrincipal Jwt jwt
+  ) {
+    var id = jwt.getSubject();
+    var count = notificationService.getUnreadCount(id);
+    return Utils.returnOkResponse("Lấy số lượng thông báo chưa đọc thành công", count);
+  }
+
+  @Operation(summary = "Đánh dấu thông báo là đã đọc")
+  @PatchMapping("/{notificationId}/read")
+  @PreAuthorize("isAuthenticated()")
+  public ResponseEntity<WrapperApiResponse> markAsRead(
+    @AuthenticationPrincipal Jwt jwt,
+    @PathVariable String notificationId
+  ) {
+    var id = jwt.getSubject();
+    notificationService.markAsRead(id, notificationId);
+    return Utils.returnOkResponse("Đánh dấu thông báo là đã đọc thành công", null);
+  }
+
+  @Operation(summary = "Xóa thông báo")
+  @DeleteMapping("/{notificationId}")
+  @PreAuthorize("isAuthenticated()")
+  public ResponseEntity<WrapperApiResponse> deleteNotification(
+    @AuthenticationPrincipal Jwt jwt,
+    @PathVariable String notificationId
+  ) {
+    var id = jwt.getSubject();
+    notificationService.deleteNotification(id, notificationId);
+    return Utils.returnOkResponse("Xóa thông báo thành công", null);
   }
 }

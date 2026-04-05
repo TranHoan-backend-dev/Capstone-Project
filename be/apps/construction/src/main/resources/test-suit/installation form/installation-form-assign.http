@@ -1,0 +1,241 @@
+### TC01 - Giao việc cho nhân viên khảo sát thành công (Happy Path)
+PATCH http://localhost:9004/api/v1/installation-forms/assign/d75e221e-d150-4962-9afb-687062bfbcc8
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "formCode": "80000001010",
+  "formNumber": "20240010"
+}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+### TC02 - Thiếu trường formCode trong request body
+PATCH http://localhost:9004/api/v1/installation-forms/assign/EMP001
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "formNumber": "FNUM-2026-001"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC03 - Thiếu trường formNumber trong request body
+PATCH http://localhost:9004/api/v1/installation-forms/assign/EMP001
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "formCode": "FORMC-2026-001"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC04 - formCode là null
+PATCH http://localhost:9004/api/v1/installation-forms/assign/EMP001
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "formCode": null,
+  "formNumber": "FNUM-2026-001"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC05 - formNumber vượt quá độ dài tối đa (36 characters)
+PATCH http://localhost:9004/api/v1/installation-forms/assign/EMP001
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "formCode": "FORMC-2026-001",
+  "formNumber": "THIS-FORM-NUMBER-IS-WAY-TOO-LONG-FOR-THIRTY-SIX-CHARS"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC06 - Request body rỗng ({})
+PATCH http://localhost:9004/api/v1/installation-forms/assign/EMP001
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC07 - Request body bị null
+PATCH http://localhost:9004/api/v1/installation-forms/assign/EMP001
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC08 - JSON không đúng định dạng (Malformed JSON)
+PATCH http://localhost:9004/api/v1/installation-forms/assign/EMP001
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "formCode": "FORMC-2026-001",
+  "formNumber": "FNUM-2026-001",
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC09 - empId trong path variable bị trống
+PATCH http://localhost:9004/api/v1/installation-forms/assign/
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "formCode": "FORMC-2026-001",
+  "formNumber": "FNUM-2026-001"
+}
+
+> {%
+client.test("Status is 404 (Endpoint not found)", function() {
+  client.assert(response.status === 404);
+});
+%}
+
+
+### TC10 - formCode chứa ký tự đặc biệt (SQL Injection attempt)
+PATCH http://localhost:9004/api/v1/installation-forms/assign/EMP001
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "formCode": "FORMC' OR 1=1 --",
+  "formNumber": "FNUM-2026-001"
+}
+
+> {%
+client.test("Status is 400 or 404 (Business exception)", function() {
+  client.assert(response.status === 400 || response.status === 404);
+});
+%}
+
+
+### TC11 - Không có quyền truy cập (Missing Authorization header)
+PATCH http://localhost:9004/api/v1/installation-forms/assign/EMP001
+Content-Type: application/json
+
+{
+  "formCode": "FORMC-2026-001",
+  "formNumber": "FNUM-2026-001"
+}
+
+> {%
+client.test("Status is 401", function() {
+  client.assert(response.status === 401);
+});
+%}
+
+
+### TC12 - Quyền truy cập không hợp lệ (Role not authorized - e.g. SURVEY_STAFF)
+PATCH http://localhost:9004/api/v1/installation-forms/assign/EMP001
+Content-Type: application/json
+Authorization: Bearer {{invalid_role_token}}
+
+{
+  "formCode": "FORMC-2026-001",
+  "formNumber": "FNUM-2026-001"
+}
+
+> {%
+client.test("Status is 403", function() {
+  client.assert(response.status === 403);
+});
+%}
+
+
+### TC13 - formNumber là số (Invalid data type)
+PATCH http://localhost:9004/api/v1/installation-forms/assign/EMP001
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "formCode": "FORMC-2026-001",
+  "formNumber": 12345
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC14 - formCode là chuỗi Unicode đặc biệt
+PATCH http://localhost:9004/api/v1/installation-forms/assign/EMP001
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "formCode": "MÃ-HỒ-SƠ-001 🔥",
+  "formNumber": "FNUM-2026-001"
+}
+
+> {%
+client.test("Status is 200 or 404", function() {
+  client.assert(response.status === 200 || response.status === 404);
+});
+%}
+
+
+### TC15 - Không tìm thấy đơn lắp đặt (Not Found)
+PATCH http://localhost:9004/api/v1/installation-forms/assign/EMP001
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "formCode": "NOT-EXIST-CODE",
+  "formNumber": "NOT-EXIST-NUMBER"
+}
+
+> {%
+client.test("Status is 404", function() {
+  client.assert(response.status === 404);
+});
+%}

@@ -1,6 +1,7 @@
 package com.capstone.auth.application.business.notification;
 
 import com.capstone.auth.application.dto.response.NotificationResponse;
+import com.capstone.auth.domain.model.IndividualNotification;
 import com.capstone.auth.infrastructure.persistence.IndividualNotificationRepository;
 import com.capstone.common.annotation.AppLog;
 import lombok.AccessLevel;
@@ -10,6 +11,7 @@ import lombok.experimental.NonFinal;
 import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,5 +38,29 @@ public class IndividualNotificationServiceImpl implements IndividualNotification
         )));
     }
     return result;
+  }
+
+  @Override
+  public long getUnreadCount(String userId) {
+    log.info("getUnreadCount for userId: {}", userId);
+    return repo.countByUserIdAndIsReadFalse(userId);
+  }
+
+  @Override
+  @Transactional
+  public void markAsRead(String userId, String notificationId) {
+    log.info("markAsRead for userId: {}, notificationId: {}", userId, notificationId);
+    var id = new IndividualNotification.IndividualNotificationId(notificationId, userId);
+    repo.findById(id).ifPresent(notification -> {
+      notification.setIsRead(true);
+      repo.save(notification);
+    });
+  }
+
+  @Override
+  @Transactional
+  public void deleteNotification(String userId, String notificationId) {
+    log.info("deleteNotification for userId: {}, notificationId: {}", userId, notificationId);
+    repo.deleteByUserIdAndNotificationId(userId, notificationId);
   }
 }

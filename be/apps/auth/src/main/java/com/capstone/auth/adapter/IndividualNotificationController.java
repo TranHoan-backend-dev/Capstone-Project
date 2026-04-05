@@ -33,4 +33,22 @@ public class IndividualNotificationController {
     log.info("getIndividualNotificationsOfAnEmployee");
     return individualNotificationService.getNotificationIdsByAccount(id, pageable);
   }
+
+  @Operation(hidden = true)
+  @GetMapping("/{id}/unread-count")
+  public long getUnreadCount(@PathVariable String id) {
+    return individualNotificationService.getUnreadCount(id);
+  }
+
+  @Operation(hidden = true)
+  @PatchMapping("/{userId}/mark-read/{notificationId}")
+  public void markAsRead(@PathVariable String userId, @PathVariable String notificationId) {
+    individualNotificationService.markAsRead(userId, notificationId);
+  }
+
+  @Operation(hidden = true)
+  @DeleteMapping("/{userId}/{notificationId}")
+  public void deleteNotification(@PathVariable String userId, @PathVariable String notificationId) {
+    individualNotificationService.deleteNotification(userId, notificationId);
+  }
 }
