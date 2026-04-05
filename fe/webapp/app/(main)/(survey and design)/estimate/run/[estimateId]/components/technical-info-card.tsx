@@ -84,8 +84,65 @@ export const TechnicalInfoCard = ({
   const [defaultParameters, setDefaultParameters] = useState<Parameter[]>([]);
   const [isLoadingDefaults, setIsLoadingDefaults] = useState(false);
 
+  // Error states
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
   const isEstimateApproved =
     estimateData?.generalInformation?.status?.estimate === "APPROVED";
+
+  // Validation functions
+  const validateRequired = (value: string, fieldName: string) => {
+    if (!value || !value.trim()) {
+      return `${fieldName} không được để trống`;
+    }
+    return null;
+  };
+
+  const validateImage = () => {
+    // Check if there's no image and image hasn't been deleted
+    if (!designImageUrl && !designImageFile && !isImageDeleted) {
+      return "Ảnh cụm đồng hồ là bắt buộc";
+    }
+    return null;
+  };
+
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
+
+    // Required fields
+    const customerNameError = validateRequired(customerName, "Tên khách hàng");
+    if (customerNameError) newErrors.customerName = customerNameError;
+
+    const waterMeterError = validateRequired(waterMeterSerial, "Đồng hồ nước");
+    if (waterMeterError) newErrors.waterMeterSerial = waterMeterError;
+
+    // Image validation
+    const imageError = validateImage();
+    if (imageError) newErrors.designImage = imageError;
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const clearFieldError = (fieldName: string) => {
+    if (errors[fieldName]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[fieldName];
+        return newErrors;
+      });
+    }
+  };
+
+  const handleFieldChange = (
+    setter: React.Dispatch<React.SetStateAction<string>>,
+    fieldName: string,
+    value: string,
+  ) => {
+    setter(value);
+    clearFieldError(fieldName);
+  };
+
   const fetchDefaultParameters = async () => {
     try {
       setIsLoadingDefaults(true);
@@ -271,6 +328,11 @@ export const TechnicalInfoCard = ({
       setOverallWaterMeterId(info.overallWaterMeterId || "");
       setDesignImageUrl(info.designImageUrl || "");
       setIsImageDeleted(false);
+
+      // Clear image error if there's an image
+      if (info.designImageUrl) {
+        clearFieldError("designImage");
+      }
     }
   }, [estimateData, defaultParameters]);
 
@@ -283,28 +345,27 @@ export const TechnicalInfoCard = ({
     });
   };
 
-  //   const updateEstimate = async (id, updateData, files) => {
-  //   const formData = new FormData();
-
-  //   // Thêm các trường metadata (Object -> từng field)
-  //   // Ví dụ updateData = { name: "Dự toán A", status: "DRAFT" }
-  //   Object.keys(updateData).forEach(key => {
-  //     formData.append(key, updateData[key]);
-  //   });
-
-  //   // Thêm file (nếu có)
-  //   if (files) {
-  //     files.forEach(file => formData.append('files', file));
-  //   }
-
-  //   return axios.put(`/api/construction/${id}`, formData, {
-  //     headers: {
-  //       'Content-Type': 'multipart/form-data'
-  //     }
-  //   });
-  // };
-
   const handleSave = async (isFinished: boolean) => {
+    // Validate before saving
+    if (!validateForm()) {
+      CallToast({
+        title: "Validation Error",
+        message: "Vui lòng điền đầy đủ thông tin bắt buộc",
+        color: "warning",
+      });
+      return;
+    }
+
+    // Check if materials exist
+    if (materials.length === 0) {
+      CallToast({
+        title: "Validation Error",
+        message: "Vui lòng thêm ít nhất một vật tư",
+        color: "warning",
+      });
+      return;
+    }
+
     try {
       setIsUploading(true);
 
@@ -372,10 +433,16 @@ export const TechnicalInfoCard = ({
         "generalInformation.overallWaterMeterId",
         overallWaterMeterId || "",
       );
+
+      // Handle image upload - always send if there's a file or keep existing
       if (designImageFile instanceof File) {
         formData.append("generalInformation.designImage", designImageFile);
         console.log("Appending designImage file:", designImageFile.name);
+      } else if (isImageDeleted) {
+        // If image was deleted, send a flag to remove it
+        formData.append("generalInformation.removeImage", "true");
       }
+
       // Gửi materials - mỗi item là một object riêng
       const safeNumber = (v: any) => (isNaN(Number(v)) ? 0 : Number(v));
       materials.forEach((m, index) => {
@@ -407,14 +474,6 @@ export const TechnicalInfoCard = ({
 
       // Thêm isFinished flag
       formData.append("isFinished", String(isFinished));
-      // if (designImageFile instanceof File) {
-      //   formData.append("designImage", designImageFile);
-      //   console.log(
-      //     "Appending file:",
-      //     designImageFile.name,
-      //     designImageFile.size,
-      //   );
-      // }
 
       // Gọi API - KHÔNG set Content-Type header
       const res = await authFetch(`/api/construction/estimates/${estimateId}`, {
@@ -464,6 +523,7 @@ export const TechnicalInfoCard = ({
     setWaterMeterSerial(item.id);
     setDisplayWaterMeter(`Loại: ${item.typeName} - Size: ${item.size}`);
     setShowWaterMeterModal(false);
+    clearFieldError("waterMeterSerial");
   };
 
   const handleSelectOverallMeter = (item: any) => {
@@ -485,6 +545,9 @@ export const TechnicalInfoCard = ({
     }
     const previewUrl = URL.createObjectURL(file);
     setPreviewImageUrl(previewUrl);
+
+    // Clear image error when file is selected
+    clearFieldError("designImage");
   };
 
   // Sửa lại handleRemoveImage
@@ -499,7 +562,14 @@ export const TechnicalInfoCard = ({
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+
+    // Set image error when image is removed
+    setErrors((prev) => ({
+      ...prev,
+      designImage: "Ảnh cụm đồng hồ là bắt buộc",
+    }));
   };
+
   return (
     <GenericSearchFilter
       actions={
@@ -527,6 +597,11 @@ export const TechnicalInfoCard = ({
             >
               {designImageFile ? "Đã chọn ảnh mới" : "Ảnh cụm đồng hồ"}
             </CustomButton>
+
+            {/* Image validation error */}
+            {errors.designImage && (
+              <p className="text-danger text-tiny mt-2">{errors.designImage}</p>
+            )}
           </div>
 
           {/* Hiển thị trạng thái và preview ảnh */}
@@ -615,13 +690,21 @@ export const TechnicalInfoCard = ({
           isRequired
           label="Tên khách hàng"
           value={customerName}
-          onChange={(e) => setCustomerName(e.target.value)}
+          onChange={(e) =>
+            handleFieldChange(setCustomerName, "customerName", e.target.value)
+          }
+          isInvalid={!!errors.customerName}
+          errorMessage={errors.customerName}
         />
 
         <CustomInput
           label="Địa chỉ thi công"
           value={address}
-          onChange={(e) => setAddress(e.target.value)}
+          onChange={(e) =>
+            handleFieldChange(setAddress, "address", e.target.value)
+          }
+          isInvalid={!!errors.address}
+          errorMessage={errors.address}
         />
 
         <CustomTextarea
@@ -717,13 +800,20 @@ export const TechnicalInfoCard = ({
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <SearchInputWithButton
-            label="Đồng hồ nước"
-            isRequired
-            value={displayWaterMeter}
-            onValueChange={() => {}}
-            onSearch={() => setShowWaterMeterModal(true)}
-          />
+          <div>
+            <SearchInputWithButton
+              label="Đồng hồ nước"
+              isRequired
+              value={displayWaterMeter}
+              onValueChange={() => {}}
+              onSearch={() => setShowWaterMeterModal(true)}
+            />
+            {errors.waterMeterSerial && (
+              <p className="text-danger text-tiny mt-1">
+                {errors.waterMeterSerial}
+              </p>
+            )}
+          </div>
           <LookupModal
             enableSearch={false}
             dataKey="content"
