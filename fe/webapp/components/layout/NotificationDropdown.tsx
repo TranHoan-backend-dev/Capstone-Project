@@ -281,8 +281,9 @@ const NotificationDropdown = () => {
         return newList.slice(0, 20);
       });
 
-      // Cập nhật số lượng tổng cộng
+      // Cập nhật số lượng tổng cộng và danh sách ngay lập tức
       fetchUnreadCount();
+      fetchNotifications(1, false);
 
       // Cập nhật allNotifications nếu modal đang mở
       if (isModalOpen) {
@@ -532,20 +533,22 @@ const NotificationDropdown = () => {
     [fetchUnreadCount],
   );
 
-  // Load data when dropdown opens
+  // Initial data load - Chỉ gọi khi người dùng truy cập web
   useEffect(() => {
-    if (isOpen) {
+    if (isConnected) {
       fetchNotifications(1, false);
       fetchUnreadCount();
     }
-  }, [isOpen, fetchNotifications, fetchUnreadCount]);
+  }, [isConnected, fetchNotifications, fetchUnreadCount]);
 
-  // Initial load unread count
+  // Khi dropdown mở, không gọi API nữa (sử dụng cache trong state)
+  // Trừ khi danh sách đang trống do lỗi trước đó
   useEffect(() => {
-    if (isConnected) {
+    if (isOpen && notifications.length === 0 && !hasError) {
+      fetchNotifications(1, false);
       fetchUnreadCount();
     }
-  }, [isConnected, fetchUnreadCount]);
+  }, [isOpen, notifications.length, hasError, fetchNotifications, fetchUnreadCount]);
 
   // Load initial data when modal opens
   useEffect(() => {
