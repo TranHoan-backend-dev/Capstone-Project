@@ -34,6 +34,13 @@ class WebSocketService {
     this.isConnecting = true;
 
     return new Promise((resolve, reject) => {
+      if (!API_GATEWAY_URL) {
+        console.error("[WebSocket] API_GATEWAY_URL is not defined in environment variables");
+        this.isConnecting = false;
+        reject(new Error("API_GATEWAY_URL is not defined"));
+        return;
+      }
+
       // Chuyển đổi HTTP/HTTPS sang WS/WSS cho Pure WebSocket
       let brokerUrl = API_GATEWAY_URL.replace("http://", "ws://").replace(
         "https://",
