@@ -72,7 +72,6 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       .citizenIdentificationProvideDate(request.citizenIdentificationProvideDate())
       .citizenIdentificationProvideLocation(request.citizenIdentificationProvideLocation())
       .phoneNumber(request.phoneNumber())
-      .taxCode(request.taxCode())
       .bankAccountNumber(request.bankAccountNumber())
       .bankAccountProviderLocation(request.bankAccountProviderLocation())
       .usageTarget(request.usageTarget())

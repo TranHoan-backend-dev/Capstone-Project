@@ -14,15 +14,15 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
   @Override
   public void registerStompEndpoints(@NonNull StompEndpointRegistry registry) {
     registry.addEndpoint("/ws")
-      .setAllowedOrigins("http://localhost:3000")
-      .setAllowedOriginPatterns("*")
-      .withSockJS();
+        .setAllowedOrigins(
+            "http://localhost:3000",
+            "http://14.225.198.198:3000");
   }
 
   @Override
   public void configureMessageBroker(@NonNull MessageBrokerRegistry registry) {
     registry.enableSimpleBroker("/topic", "/user", "/queue", "/notification", "/technical", "/construction",
-      "/business", "/it", "/finance", "/leadership", "/general");
+        "/business", "/it", "/finance", "/leadership", "/general");
     registry.setApplicationDestinationPrefixes("/app");
   }
 }

@@ -1,5 +1,6 @@
-import { API_GATEWAY_URL } from "@/utils/constraints";
 import { Client, IMessage, StompSubscription } from "@stomp/stompjs";
+
+import { API_GATEWAY_URL } from "@/utils/constraints";
 // SockJS will be loaded dynamically in the webSocketFactory to avoid bundling issues
 
 class WebSocketService {
@@ -9,7 +10,10 @@ class WebSocketService {
   private onConnectCallback: (() => void) | null = null;
   private onDisconnectCallback: ((error?: any) => void) | null = null;
 
-  private pendingSubscriptions: Array<{ topic: string; callback: (message: any) => void }> = [];
+  private pendingSubscriptions: Array<{
+    topic: string;
+    callback: (message: any) => void;
+  }> = [];
 
   setCallbacks(onConnect: () => void, onDisconnect: (error?: any) => void) {
     this.onConnectCallback = onConnect;
@@ -30,23 +34,17 @@ class WebSocketService {
     this.isConnecting = true;
 
     return new Promise((resolve, reject) => {
-      let baseUrl = `${API_GATEWAY_URL}/n/ws`
+      // Chuyển đổi HTTP/HTTPS sang WS/WSS cho Pure WebSocket
+      let brokerUrl = API_GATEWAY_URL.replace("http://", "ws://").replace(
+        "https://",
+        "wss://",
+      );
+      brokerUrl = `${brokerUrl}/n/ws`;
 
-      // If we are on HTTPS, ensure the WebSocket URL is also secure
-      if (typeof window !== "undefined" && window.location.protocol === "https:" && baseUrl.startsWith("http:")) {
-        baseUrl = baseUrl.replace("http:", "https:");
-        console.log("[WebSocket] Upgraded URL to HTTPS for security:", baseUrl);
-      }
-
-      console.log("[WebSocket] Connecting to:", baseUrl);
+      console.log("[WebSocket] Connecting to Pure WebSocket:", brokerUrl);
 
       this.client = new Client({
-        webSocketFactory: () => {
-          // SockJS has compatibility issues with ESM in Next.js.
-          // Using a direct import from the dist folder or require inside the browser context.
-          const SockJS = require("sockjs-client/dist/sockjs.js");
-          return new SockJS(baseUrl);
-        },
+        brokerURL: brokerUrl,
         connectHeaders: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -104,7 +102,9 @@ class WebSocketService {
   private processPendingSubscriptions() {
     if (!this.client || !this.client.connected) return;
 
-    console.log(`[WebSocket] Processing ${this.pendingSubscriptions.length} pending subscriptions`);
+    console.log(
+      `[WebSocket] Processing ${this.pendingSubscriptions.length} pending subscriptions`,
+    );
     const toSubscribe = [...this.pendingSubscriptions];
     this.pendingSubscriptions = [];
 
@@ -116,8 +116,10 @@ class WebSocketService {
   subscribe(topic: string, callback: (message: any) => void): void {
     if (!this.client || !this.client.connected) {
       // Check if already pending to avoid duplicates
-      if (!this.pendingSubscriptions.find(s => s.topic === topic)) {
-        console.log(`[WebSocket] Queueing subscription for ${topic} (not connected yet)`);
+      if (!this.pendingSubscriptions.find((s) => s.topic === topic)) {
+        console.log(
+          `[WebSocket] Queueing subscription for ${topic} (not connected yet)`,
+        );
         this.pendingSubscriptions.push({ topic, callback });
       }
       return;
@@ -149,7 +151,9 @@ class WebSocketService {
 
   unsubscribe(topic: string): void {
     // Remove from pending if it's there
-    const pendingIndex = this.pendingSubscriptions.findIndex(s => s.topic === topic);
+    const pendingIndex = this.pendingSubscriptions.findIndex(
+      (s) => s.topic === topic,
+    );
     if (pendingIndex !== -1) {
       this.pendingSubscriptions.splice(pendingIndex, 1);
       console.log(`[WebSocket] Removed ${topic} from pending subscriptions`);
