@@ -131,7 +131,6 @@ const NewInstallationForm = () => {
         { value: formData.customerName, fieldName: "Họ tên khách hàng" },
         { value: formData.phoneNumber, fieldName: "Số điện thoại" },
         { value: formData.address, fieldName: "Địa chỉ" },
-        { value: formData.taxCode, fieldName: "Mã số thuế" },
         { value: formData.citizenIdentificationNumber, fieldName: "Số CCCD" },
         {
           value: formData.citizenIdentificationProvideDate,
@@ -175,11 +174,11 @@ const NewInstallationForm = () => {
       );
       if (nameError) return showError(nameError);
 
-      const representativeError = validateName(
-        formData.representative?.[0]?.name ?? "",
-        "Người đại diện",
-      );
-      if (representativeError) return showError(representativeError);
+      // const representativeError = validateName(
+      //   formData.representative?.[0]?.name ?? "",
+      //   "Người đại diện",
+      // );
+      // if (representativeError) return showError(representativeError);
 
       const receivedError = validateNotPastDate(
         formData.receivedFormAt,

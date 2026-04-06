@@ -27,7 +27,6 @@ export const CustomerInfoSection = ({
       type: "input",
       key: "representative",
       label: "Người đại diện",
-      required: true,
     },
     {
       type: "input",
@@ -51,7 +50,6 @@ export const CustomerInfoSection = ({
       type: "input",
       key: "taxCode",
       label: "Mã số thuế",
-      required: true,
     },
     {
       type: "select",

@@ -6,7 +6,7 @@ export default function LoginHeader() {
   return (
     <View style={styles.header}>
       <Image
-        source={require('../../assets/logo.png')}
+        source={require('../../../assets/logo.png')}
         style={styles.imageLogo}
       />
       <Text variant="titleLarge">Đăng nhập</Text>

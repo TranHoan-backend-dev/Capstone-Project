@@ -24,7 +24,7 @@ export default function HomeHeader() {
           >
             <Avatar.Image
               size={40}
-              source={require('../../assets/logo.png')}
+              source={require('../../../assets/logo.png')}
               style={{ backgroundColor: 'transparent' }}
             />
           </Pressable>

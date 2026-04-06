@@ -87,7 +87,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
     if (request.representative() != null) {
       entity.setRepresentative(request.representative());
     }
-    if (request.taxCode() != null) {
+    if (request.taxCode() != null && !request.taxCode().isBlank()) {
       entity.setTaxCode(request.taxCode());
     }
 
