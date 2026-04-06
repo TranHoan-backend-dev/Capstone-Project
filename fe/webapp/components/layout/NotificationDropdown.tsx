@@ -31,6 +31,7 @@ import { CallToast } from "../ui/CallToast";
 
 import { useWebSocket } from "@/context/WebSocketContext";
 import { useProfile } from "@/hooks/useLogin";
+import CustomButton from "../ui/custom/CustomButton";
 
 // Interface cho response từ API
 interface ApiNotification {
@@ -103,7 +104,67 @@ const transformNotification = (item: any): Notification => ({
     item.createdAt || item.timestamp || new Date().toISOString(),
   ),
 });
+// Component riêng cho message có thể mở rộng - Đặt OUTSIDE component NotificationDropdown
+const NotificationMessage = ({
+  notification,
+}: {
+  notification: Notification;
+}) => {
+  const [expanded, setExpanded] = useState(false);
+  const normalizedTitle = (notification.title || "Thông báo mới").trim();
+  const normalizedMessage = (notification.message || "").trim();
+  const fallbackMessage = "Bạn có một thông báo mới.";
+  const messageToDisplay = normalizedMessage || fallbackMessage;
+  const rawParts = messageToDisplay
+    .split(" - ")
+    .map((part) => part.trim())
+    .filter(Boolean);
+  const lines =
+    rawParts.length > 0
+      ? rawParts.map((part, idx) => (idx === 0 ? part : `- ${part}`))
+      : [fallbackMessage];
+  const MAX_LINES = 3;
+  const displayedLines = expanded ? lines : lines.slice(0, MAX_LINES);
+  const canExpand = lines.length > MAX_LINES;
 
+  return (
+    <div className="min-w-0">
+      <p
+        className={`text-[14px] leading-[1.35] line-clamp-1 ${
+          !notification.isRead
+            ? "font-semibold text-foreground"
+            : "font-medium text-foreground"
+        }`}
+      >
+        {normalizedTitle}
+      </p>
+      <div className="text-[13px] leading-[1.45] text-default-600 space-y-0.5">
+        {displayedLines.map((line, idx) => (
+          <p key={`${notification.id}-line-${idx}`} className="break-words">
+            {line}
+          </p>
+        ))}
+      </div>
+      {canExpand && (
+        <button
+          type="button"
+          onMouseDown={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setExpanded((prev) => !prev);
+          }}
+          className="text-primary text-[12px] mt-1 font-medium hover:underline p-0 h-auto min-w-0 bg-transparent"
+        >
+          {expanded ? "Thu gọn" : "Xem chi tiết"}
+        </button>
+      )}
+    </div>
+  );
+};
 const NotificationDropdown = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [filter, setFilter] = useState<"all" | "unread">("all");
@@ -143,7 +204,6 @@ const NotificationDropdown = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const { profile } = useProfile();
-
   // Fetch total unread count
   const fetchUnreadCount = useCallback(async () => {
     try {
@@ -458,32 +518,35 @@ const NotificationDropdown = () => {
   );
 
   // Mark notification as read
-  const markAsRead = useCallback(async (notificationId: string) => {
-    try {
-      const response = await fetch(
-        `/api/notifications/${notificationId}/read`,
-        {
-          method: "PATCH",
-        },
-      );
+  const markAsRead = useCallback(
+    async (notificationId: string) => {
+      try {
+        const response = await fetch(
+          `/api/notifications/${notificationId}/read`,
+          {
+            method: "PATCH",
+          },
+        );
 
-      if (response.ok) {
-        setNotifications((prev) =>
-          prev.map((n) =>
-            n.id === notificationId ? { ...n, isRead: true } : n,
-          ),
-        );
-        setAllNotifications((prev) =>
-          prev.map((n) =>
-            n.id === notificationId ? { ...n, isRead: true } : n,
-          ),
-        );
-        fetchUnreadCount();
+        if (response.ok) {
+          setNotifications((prev) =>
+            prev.map((n) =>
+              n.id === notificationId ? { ...n, isRead: true } : n,
+            ),
+          );
+          setAllNotifications((prev) =>
+            prev.map((n) =>
+              n.id === notificationId ? { ...n, isRead: true } : n,
+            ),
+          );
+          fetchUnreadCount();
+        }
+      } catch (error) {
+        console.error("Failed to mark as read:", error);
       }
-    } catch (error) {
-      console.error("Failed to mark as read:", error);
-    }
-  }, [fetchUnreadCount]);
+    },
+    [fetchUnreadCount],
+  );
 
   // Mark all as read
   const markAllAsRead = useCallback(async () => {
@@ -548,7 +611,13 @@ const NotificationDropdown = () => {
       fetchNotifications(1, false);
       fetchUnreadCount();
     }
-  }, [isOpen, notifications.length, hasError, fetchNotifications, fetchUnreadCount]);
+  }, [
+    isOpen,
+    notifications.length,
+    hasError,
+    fetchNotifications,
+    fetchUnreadCount,
+  ]);
 
   // Load initial data when modal opens
   useEffect(() => {
@@ -561,23 +630,6 @@ const NotificationDropdown = () => {
     allNotifications.length,
     modalHasError,
   ]);
-
-  // Format message display
-  const formatMessage = (notification: Notification) => {
-    return (
-      <div>
-        <p className="text-[14px] leading-[1.3]">
-          <span className="font-bold text-foreground">
-            {notification.title}
-          </span>
-          <span className={!notification.isRead ? "font-bold" : "font-medium"}>
-            {" - "}
-            {notification.message}
-          </span>
-        </p>
-      </div>
-    );
-  };
 
   // Render content based on state
   const renderContent = () => {
@@ -639,8 +691,9 @@ const NotificationDropdown = () => {
         {filteredNotifications.map((n) => (
           <div
             key={n.id}
-            className={`flex items-center gap-3 px-3 py-3 cursor-pointer transition-all rounded-xl relative group hover:bg-default-50 mb-1 ${!n.isRead ? "bg-primary-50" : ""
-              }`}
+            className={`flex items-center gap-3 px-3 py-3 cursor-pointer transition-all rounded-xl relative group hover:bg-default-50 mb-1 ${
+              !n.isRead ? "bg-primary-50" : ""
+            }`}
             onClick={() => markAsRead(n.id)}
           >
             <div className="relative shrink-0">
@@ -656,12 +709,13 @@ const NotificationDropdown = () => {
               </div>
             </div>
             <div className="flex-1 min-w-0 pr-4">
-              {formatMessage(n)}
+              <NotificationMessage notification={n} />
               <p
-                className={`text-[12px] mt-1 ${!n.isRead
-                  ? "text-primary font-bold"
-                  : "text-default-400 font-medium"
-                  }`}
+                className={`text-[12px] mt-1 ${
+                  !n.isRead
+                    ? "text-primary font-bold"
+                    : "text-default-400 font-medium"
+                }`}
               >
                 {n.time}
               </p>
@@ -757,8 +811,9 @@ const NotificationDropdown = () => {
         {filteredModalNotifications.map((n) => (
           <div
             key={n.id}
-            className={`flex items-center gap-3 px-4 py-3 cursor-pointer transition-all rounded-xl relative group hover:bg-default-50 border border-divider ${!n.isRead ? "bg-primary-50" : ""
-              }`}
+            className={`flex items-center gap-3 px-4 py-3 cursor-pointer transition-all rounded-xl relative group hover:bg-default-50 border border-divider ${
+              !n.isRead ? "bg-primary-50" : ""
+            }`}
             onClick={() => markAsRead(n.id)}
           >
             <div className="relative shrink-0">
@@ -774,12 +829,13 @@ const NotificationDropdown = () => {
               </div>
             </div>
             <div className="flex-1 min-w-0 pr-4">
-              {formatMessage(n)}
+              <NotificationMessage notification={n} />
               <p
-                className={`text-[12px] mt-1 ${!n.isRead
-                  ? "text-primary font-bold"
-                  : "text-default-400 font-medium"
-                  }`}
+                className={`text-[12px] mt-1 ${
+                  !n.isRead
+                    ? "text-primary font-bold"
+                    : "text-default-400 font-medium"
+                }`}
               >
                 {n.time}
               </p>
@@ -853,6 +909,7 @@ const NotificationDropdown = () => {
         </DropdownTrigger>
         <DropdownMenu
           aria-label="Notifications"
+          closeOnSelect={false}
           className="w-[360px] md:w-[400px] p-0 overflow-visible rounded-2xl shadow-2xl border border-divider bg-content1"
           variant="light"
         >
@@ -931,10 +988,11 @@ const NotificationDropdown = () => {
                 </div>
                 <div className="flex gap-2">
                   <Button
-                    className={`font-bold px-4 text-sm ${filter === "all"
-                      ? "bg-primary-50 text-primary"
-                      : "bg-transparent text-default-600 hover:bg-default-100"
-                      }`}
+                    className={`font-bold px-4 text-sm ${
+                      filter === "all"
+                        ? "bg-primary-50 text-primary"
+                        : "bg-transparent text-default-600 hover:bg-default-100"
+                    }`}
                     radius="full"
                     size="sm"
                     onClick={(e) => {
@@ -945,10 +1003,11 @@ const NotificationDropdown = () => {
                     Tất cả ({totalElements})
                   </Button>
                   <Button
-                    className={`font-bold px-4 text-sm ${filter === "unread"
-                      ? "bg-primary-50 text-primary"
-                      : "bg-transparent text-default-600 hover:bg-default-100"
-                      }`}
+                    className={`font-bold px-4 text-sm ${
+                      filter === "unread"
+                        ? "bg-primary-50 text-primary"
+                        : "bg-transparent text-default-600 hover:bg-default-100"
+                    }`}
                     radius="full"
                     size="sm"
                     onClick={(e) => {
@@ -1039,10 +1098,11 @@ const NotificationDropdown = () => {
                 {/* Filter buttons */}
                 <div className="flex gap-2">
                   <Button
-                    className={`font-bold px-4 text-sm ${modalFilter === "all"
-                      ? "bg-primary-50 text-primary"
-                      : "bg-transparent text-default-600 hover:bg-default-100"
-                      }`}
+                    className={`font-bold px-4 text-sm ${
+                      modalFilter === "all"
+                        ? "bg-primary-50 text-primary"
+                        : "bg-transparent text-default-600 hover:bg-default-100"
+                    }`}
                     radius="full"
                     size="sm"
                     onClick={() => setModalFilter("all")}
@@ -1050,10 +1110,11 @@ const NotificationDropdown = () => {
                     Tất cả
                   </Button>
                   <Button
-                    className={`font-bold px-4 text-sm ${modalFilter === "unread"
-                      ? "bg-primary-50 text-primary"
-                      : "bg-transparent text-default-600 hover:bg-default-100"
-                      }`}
+                    className={`font-bold px-4 text-sm ${
+                      modalFilter === "unread"
+                        ? "bg-primary-50 text-primary"
+                        : "bg-transparent text-default-600 hover:bg-default-100"
+                    }`}
                     radius="full"
                     size="sm"
                     onClick={() => setModalFilter("unread")}
