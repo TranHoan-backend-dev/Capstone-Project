@@ -1,3 +1,4 @@
+import { API_GATEWAY_URL } from "@/utils/constraints";
 import { Client, IMessage, StompSubscription } from "@stomp/stompjs";
 // SockJS will be loaded dynamically in the webSocketFactory to avoid bundling issues
 
@@ -29,7 +30,7 @@ class WebSocketService {
     this.isConnecting = true;
 
     return new Promise((resolve, reject) => {
-      let baseUrl = process.env.NEXT_PUBLIC_WS_URL || "http://localhost:8000/n/ws";
+      let baseUrl = `${API_GATEWAY_URL}/n/ws`
 
       // If we are on HTTPS, ensure the WebSocket URL is also secure
       if (typeof window !== "undefined" && window.location.protocol === "https:" && baseUrl.startsWith("http:")) {
@@ -80,7 +81,7 @@ class WebSocketService {
           this.onDisconnectCallback?.("WebSocket error");
           // Chỉ reject lần đầu tiên để tránh unhandled promise rejections khi tự động reconnect
           if (this.client?.active === false) {
-             reject(new Error("WebSocket connection failed"));
+            reject(new Error("WebSocket connection failed"));
           }
         },
 
@@ -102,11 +103,11 @@ class WebSocketService {
 
   private processPendingSubscriptions() {
     if (!this.client || !this.client.connected) return;
-    
+
     console.log(`[WebSocket] Processing ${this.pendingSubscriptions.length} pending subscriptions`);
     const toSubscribe = [...this.pendingSubscriptions];
     this.pendingSubscriptions = [];
-    
+
     toSubscribe.forEach(({ topic, callback }) => {
       this.subscribe(topic, callback);
     });
@@ -168,7 +169,7 @@ class WebSocketService {
 
   disconnect(): void {
     console.log("[WebSocket] Disconnecting manually...");
-    
+
     this.subscriptions.forEach((sub) => {
       try {
         sub.unsubscribe();
