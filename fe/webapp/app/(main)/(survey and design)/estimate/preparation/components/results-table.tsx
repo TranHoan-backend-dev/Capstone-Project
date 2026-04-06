@@ -279,15 +279,16 @@ export const ResultsTable = ({ keyword, from, to }: ResultsTableProps) => {
         }}
         onSortChange={handleSortChange}
       />
-      <EstimateDetailModal
-        data={
-          selectedEstimate
-            ? mapEstimateToModalData(selectedEstimate)
-            : undefined
-        }
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
+      {selectedEstimate && (
+        <EstimateDetailModal
+          data={mapEstimateToModalData(selectedEstimate)}
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedEstimate(null);
+          }}
+        />
+      )}
     </>
   );
 };
