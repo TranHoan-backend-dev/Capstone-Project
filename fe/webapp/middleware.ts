@@ -37,6 +37,9 @@ export async function middleware(req: NextRequest) {
   const refreshToken = getRefreshToken(req);
 
   if (!refreshToken) {
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
@@ -67,6 +70,9 @@ async function refreshAndContinue(req: NextRequest, refreshToken: string) {
     setAuthCookies(res, tokenRes);
     return res;
   } catch {
+    if (req.nextUrl.pathname.startsWith("/api/")) {
+      return NextResponse.json({ message: "Session expired" }, { status: 401 });
+    }
     return NextResponse.redirect(new URL("/login", req.url));
   }
 }

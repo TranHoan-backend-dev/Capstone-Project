@@ -1,5 +1,5 @@
 import { Client, IMessage, StompSubscription } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
+// SockJS will be loaded dynamically in the webSocketFactory to avoid bundling issues
 
 class WebSocketService {
   private client: Client | null = null;
@@ -31,10 +31,21 @@ class WebSocketService {
     return new Promise((resolve, reject) => {
       let baseUrl = process.env.NEXT_PUBLIC_WS_URL || "http://localhost:8000/n/ws";
 
+      // If we are on HTTPS, ensure the WebSocket URL is also secure
+      if (typeof window !== "undefined" && window.location.protocol === "https:" && baseUrl.startsWith("http:")) {
+        baseUrl = baseUrl.replace("http:", "https:");
+        console.log("[WebSocket] Upgraded URL to HTTPS for security:", baseUrl);
+      }
+
       console.log("[WebSocket] Connecting to:", baseUrl);
 
       this.client = new Client({
-        webSocketFactory: () => new SockJS(baseUrl),
+        webSocketFactory: () => {
+          // SockJS has compatibility issues with ESM in Next.js.
+          // Using a direct import from the dist folder or require inside the browser context.
+          const SockJS = require("sockjs-client/dist/sockjs.js");
+          return new SockJS(baseUrl);
+        },
         connectHeaders: {
           Authorization: `Bearer ${accessToken}`,
         },
