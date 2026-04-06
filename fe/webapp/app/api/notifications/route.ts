@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { getAccessToken } from "@/utils/getAccessToken";
 import { getAllNotifications } from "@/services/notification.service";
 

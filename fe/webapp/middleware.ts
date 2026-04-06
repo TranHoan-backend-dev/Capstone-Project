@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { keycloakRefreshToken } from "@/services/keycloak.service";
+import { refreshTokenService } from "@/services/auth.service";
 import { getAccessToken } from "@/utils/getAccessToken";
 import { getRefreshToken } from "@/utils/getRefreshToken";
 import { setAuthCookies } from "@/utils/setAuthCookies";
@@ -56,7 +56,13 @@ export async function middleware(req: NextRequest) {
 
 async function refreshAndContinue(req: NextRequest, refreshToken: string) {
   try {
-    const tokenRes = await keycloakRefreshToken(refreshToken);
+    const axiosRes = await refreshTokenService(refreshToken);
+    const tokenRes = axiosRes.data?.data;
+
+    if (!tokenRes || !tokenRes.access_token) {
+      throw new Error("Invalid token format from backend");
+    }
+
     const res = NextResponse.next();
     setAuthCookies(res, tokenRes);
     return res;

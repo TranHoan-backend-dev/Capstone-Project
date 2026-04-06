@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { keycloakRefreshToken } from "@/services/keycloak.service";
+
+import { refreshTokenService } from "@/services/auth.service";
 import {
   IS_PRODUCTION,
   MAX_AGE_REFRESH_TOKEN,
@@ -18,7 +19,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const tokenRes = await keycloakRefreshToken(refreshToken);
+    const tokenRes = await refreshTokenService(refreshToken);
+    const tokenData = tokenRes.data?.data; // Extracting from WrapperApiResponse
+
+    if (!tokenData || !tokenData.access_token) {
+      throw new Error("Invalid token data from backend");
+    }
+
     const res = NextResponse.json({ message: "REFRESH_OK" });
 
     const cookieOptions = {
@@ -30,16 +37,16 @@ export async function POST(req: NextRequest) {
 
     res.cookies.set(
       IS_PRODUCTION ? "__Secure-access_token" : "access_token",
-      tokenRes.access_token,
+      tokenData.access_token,
       {
         ...cookieOptions,
-        maxAge: tokenRes.expires_in,
+        maxAge: tokenData.expires_in,
       },
     );
 
     res.cookies.set(
       IS_PRODUCTION ? "__Secure-refresh_token" : "refresh_token",
-      tokenRes.refresh_token,
+      tokenData.refresh_token,
       {
         ...cookieOptions,
         maxAge: MAX_AGE_REFRESH_TOKEN,
@@ -48,6 +55,7 @@ export async function POST(req: NextRequest) {
 
     return res;
   } catch (err) {
+    console.error("Refresh token error:", err);
     return NextResponse.json(
       { message: "Refresh token expired" },
       { status: 401 },

@@ -171,4 +171,12 @@ public class AuthenticationController {
     log.info("Get refresh token: {}", request);
     return Utils.returnOkResponse("", authUC.refreshToken(request.token()));
   }
+
+  @Operation(summary = "Đăng xuất", description = "Đăng xuất người dùng bằng cách hủy bỏ refresh token trên Keycloak. Data response rỗng.")
+  @PostMapping("/logout")
+  public ResponseEntity<?> logout(@RequestBody @Valid RefreshTokenRequest request) {
+    log.info("Logout request: {}", request);
+    authUC.logout(request.token());
+    return Utils.returnOkResponse("Đăng xuất thành công", null);
+  }
 }

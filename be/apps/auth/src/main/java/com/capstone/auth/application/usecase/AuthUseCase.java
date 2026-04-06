@@ -141,6 +141,14 @@ public class AuthUseCase {
       .refreshToken(refreshToken)
       .build());
   }
+  
+  public void logout(String refreshToken) {
+    keycloakFeignClient.logout(TokenParam.builder()
+      .clientId(clientId)
+      .clientSecret(clientSecret)
+      .refreshToken(refreshToken)
+      .build());
+  }
 
   @Transactional(rollbackOn = Exception.class)
   public void register(@NonNull NewUserRequest request) throws ExecutionException, InterruptedException {

@@ -285,11 +285,11 @@ Content-Type: application/json
 
 ### L - Get Construction Orders List (đơn chờ thi công)
 ### 1. Happy Path - Get all construction orders (No param)
-GET {{uri}}/construction/construction
+GET {{uri}}/construction
 Authorization: Bearer {{access_token}}
 
 ### 2. Happy Path - Pagination and Sort
-GET {{uri}}/construction/construction?page=0&size=10&sort=createdAt,desc
+GET {{uri}}/construction?page=0&size=10&sort=createdAt,desc
 Authorization: Bearer {{access_token}}
 
 ### 3. Happy Path - Filtering by keyword, from, and to
