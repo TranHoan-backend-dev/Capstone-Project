@@ -81,4 +81,19 @@ public class NotificationServiceImpl implements NotificationService {
       notification.getCreatedAt()
     );
   }
+
+  @Override
+  public long getUnreadCount(String userId) {
+    return service.getUnreadCount(userId);
+  }
+
+  @Override
+  public void markAsRead(String userId, String notificationId) {
+    service.markAsRead(userId, notificationId);
+  }
+
+  @Override
+  public void deleteNotification(String userId, String notificationId) {
+    service.deleteNotification(userId, notificationId);
+  }
 }

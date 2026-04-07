@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { SocketProvider } from "@/context/SocketContext";
 import { useAuthRefresh } from "@/hooks/useAuthRefresh";
+import { WebSocketProvider } from "@/context/WebSocketContext";
 
 export interface ProvidersProps {
   children: React.ReactNode;
@@ -26,13 +27,13 @@ export const Providers = ({ children, themeProps }: ProvidersProps) => {
   const router = useRouter();
   useAuthRefresh();
   return (
-    <SocketProvider>
+    <WebSocketProvider>
       <HeroUIProvider navigate={router.push}>
         <NextThemesProvider {...themeProps}>
           <ToastProvider maxVisibleToasts={5} placement="bottom-right" />
           {children}
         </NextThemesProvider>
       </HeroUIProvider>
-    </SocketProvider>
+    </WebSocketProvider>
   );
 };

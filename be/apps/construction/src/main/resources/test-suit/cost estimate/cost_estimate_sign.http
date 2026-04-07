@@ -1,0 +1,255 @@
+### Cost Estimate Signing Test Cases
+@baseUrl = http://localhost:9004/api/v1/estimates
+
+### TC01 - Gửi yêu cầu ký duyệt dự toán thành công
+POST {{baseUrl}}/sign
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "estId": "7a8192a3-6000-4bbb-9ccc-gggggggg0001",
+  "surveyStaff": "d75e221e-d150-4962-9afb-687062bfbcc8",
+  "plHead": "6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20",
+  "companyLeadership": "67d04cc3-b4b8-44b9-ba41-91a1e477617a"
+}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC02 - Thiếu estId
+POST {{baseUrl}}/sign
+Content-Type: application/json
+
+{
+  "surveyStaff": "EMP001",
+  "plHead": "EMP002",
+  "companyLeadership": "EMP003"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC03 - estId để trống
+POST {{baseUrl}}/sign
+Content-Type: application/json
+
+{
+  "estId": "",
+  "surveyStaff": "EMP001",
+  "plHead": "EMP002",
+  "companyLeadership": "EMP003"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC04 - Thiếu surveyStaff
+POST {{baseUrl}}/sign
+Content-Type: application/json
+
+{
+  "estId": "EST001",
+  "plHead": "EMP002",
+  "companyLeadership": "EMP003"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC05 - Thiếu plHead
+POST {{baseUrl}}/sign
+Content-Type: application/json
+
+{
+  "estId": "EST001",
+  "surveyStaff": "EMP001",
+  "companyLeadership": "EMP003"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC06 - Thiếu companyLeadership
+POST {{baseUrl}}/sign
+Content-Type: application/json
+
+{
+  "estId": "EST001",
+  "surveyStaff": "EMP001",
+  "plHead": "EMP002"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC07 - Request body trống
+POST {{baseUrl}}/sign
+Content-Type: application/json
+
+{}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC08 - Ký duyệt dự toán thành công (SURVEY_STAFF)
+PATCH {{baseUrl}}/sign
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICIzM01aSUgzcDhGMlNuMnJKTkUxajRNR09oaS1qdDJVVFNwVllmMExUQi1NIn0.eyJleHAiOjE3NzQ0Mjk1NjUsImlhdCI6MTc3NDQyOTI2NSwianRpIjoib2ZydHJvOmM4ZjQwYjllLTcyMDEtMTBkOS1lZjkyLTJlY2JlYzQ5ZTlmNCIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9yZWFsbXMvY21zbiIsImF1ZCI6WyJjbXNuIiwiYnJva2VyIiwiYWNjb3VudCJdLCJzdWIiOiJkNzVlMjIxZS1kMTUwLTQ5NjItOWFmYi02ODcwNjJiZmJjYzgiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJjbXNuIiwic2lkIjoiRS1KR3BXNkxEb3puM0Q0NmFfU0xNMU5jIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjMwMDAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbImRlZmF1bHQtcm9sZXMtY21zbiIsIm9mZmxpbmVfYWNjZXNzIiwiU1VSVkVZX1NUQUZGIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJicm9rZXIiOnsicm9sZXMiOlsicmVhZC10b2tlbiJdfSwiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsInZpZXctYXBwbGljYXRpb25zIiwidmlldy1jb25zZW50Iiwidmlldy1ncm91cHMiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsIm1hbmFnZS1jb25zZW50IiwiZGVsZXRlLWFjY291bnQiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6Im9wZW5pZCBwaG9uZSBvZmZsaW5lX2FjY2VzcyBtaWNyb3Byb2ZpbGUtand0IGVtYWlsIGFkZHJlc3Mgb3JnYW5pemF0aW9uIiwidXBuIjoic3VydmV5X3N0YWZmMSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiZ3JvdXBzIjpbImRlZmF1bHQtcm9sZXMtY21zbiIsIm9mZmxpbmVfYWNjZXNzIiwiU1VSVkVZX1NUQUZGIiwidW1hX2F1dGhvcml6YXRpb24iXSwicHJlZmVycmVkX3VzZXJuYW1lIjoic3VydmV5X3N0YWZmMSIsImVtYWlsIjoiaG9hbmE2azQ0bmtuZEBnbWFpbC5jb20ifQ.uhD__xu9KborODVAc62hV0eYzFDhgZn8zcWTY-If3NWv9De6v9mA158MJWWw6jAlCqKH30_EcV4xgzwEvSqbUYXjMmvZHmkCno9UFL3V3YLw0C05eVgwK3YW2t7-QAAnlaT0o41lc1vAgjD0iTZ-ONVvgRynuya9ocVOlxjyC-ap2FebSIr-UISxpPHF5cW_B0fgbUTYa-2dqrxfh9L5URqWgpPCyClQmnYO6FC9g0dtkBjas9OOudqwl2tNyjpKgLlwPxvXyEwF8WhYI-YaDGB16OO9gcIPDNVKzJaumyHBxLa22h0UYSL8Kz9NeZVphkrXW_O3lbsopte-GQmnIQ
+
+{
+  "estimateId": "7a8192a3-6000-4bbb-9ccc-gggggggg0001",
+  "electronicSignUrl": "https://example.com/sign1.png"
+}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC09 - Ký duyệt dự toán thành công (PLANNING_HEAD)
+PATCH {{baseUrl}}/sign
+Content-Type: application/json
+Authorization: Bearer {{pl_head_token}}
+
+{
+  "estimateId": "EST001",
+  "electronicSignUrl": "https://example.com/sign2.png"
+}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC10 - Ký duyệt dự toán thành công (LEADERSHIP)
+PATCH {{baseUrl}}/sign
+Content-Type: application/json
+Authorization: Bearer {{leadership_token}}
+
+{
+  "estimateId": "EST001",
+  "electronicSignUrl": "https://example.com/sign3.png"
+}
+
+> {%
+client.test("Status is 200", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+
+### TC11 - Thiếu estimateId khi ký
+PATCH {{baseUrl}}/sign
+Content-Type: application/json
+Authorization: Bearer {{survey_staff_token}}
+
+{
+  "electronicSignUrl": "https://example.com/sign1.png"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC12 - Thiếu electronicSignUrl khi ký
+PATCH {{baseUrl}}/sign
+Content-Type: application/json
+Authorization: Bearer {{survey_staff_token}}
+
+{
+  "estimateId": "EST001"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}
+
+
+### TC13 - Không có quyền ký (User không có role phù hợp)
+PATCH {{baseUrl}}/sign
+Content-Type: application/json
+Authorization: Bearer {{normal_user_token}}
+
+{
+  "estimateId": "EST001",
+  "electronicSignUrl": "https://example.com/sign1.png"
+}
+
+> {%
+client.test("Status is 403", function() {
+  client.assert(response.status === 403);
+});
+%}
+
+
+### TC14 - Dự toán không tồn tại khi yêu cầu ký
+POST {{baseUrl}}/sign
+Content-Type: application/json
+
+{
+  "estId": "NON_EXISTENT",
+  "surveyStaff": "EMP001",
+  "plHead": "EMP002",
+  "companyLeadership": "EMP003"
+}
+
+> {%
+client.test("Status is 404", function() {
+  client.assert(response.status === 404);
+});
+%}
+
+
+### TC15 - Malformed JSON
+POST {{baseUrl}}/sign
+Content-Type: application/json
+
+{
+  "estId": "EST001",
+  "surveyStaff": "EMP001",
+  "plHead": "EMP002"
+  "companyLeadership": "EMP003"
+}
+
+> {%
+client.test("Status is 400", function() {
+  client.assert(response.status === 400);
+});
+%}

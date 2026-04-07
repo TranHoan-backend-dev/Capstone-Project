@@ -70,20 +70,43 @@ const roleNameMap: Record<string, string> = {
 export const EstimateDetailModal = ({ isOpen, onClose, data }: any) => {
   if (!isOpen) return null;
   const [creatorName, setCreatorName] = useState("Đang tải...");
+  const [isLoadingCreator, setIsLoadingCreator] = useState(false);
 
   useEffect(() => {
     const fetchCreator = async () => {
-      if (!data?.creator) return;
+      // Nếu không có creator hoặc creator là null/undefined
+      if (
+        !data?.creator ||
+        data.creator === null ||
+        data.creator === undefined
+      ) {
+        setCreatorName("Chưa có người lập");
+        return;
+      }
 
+      setIsLoadingCreator(true);
       try {
         const res = await authFetch(`/api/auth/employees/${data.creator}/name`);
-        const json = await res.json();
 
+        // Kiểm tra response status
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+
+        const json = await res.json();
         const emp = json?.data;
 
-        setCreatorName(emp);
+        // Kiểm tra dữ liệu trả về
+        if (emp && emp !== null) {
+          setCreatorName(emp);
+        } else {
+          setCreatorName("Không tìm thấy thông tin");
+        }
       } catch (err) {
-        setCreatorName("Không lấy được");
+        console.error("Error fetching creator:", err);
+        setCreatorName("Không lấy được thông tin");
+      } finally {
+        setIsLoadingCreator(false);
       }
     };
 
@@ -101,7 +124,7 @@ export const EstimateDetailModal = ({ isOpen, onClose, data }: any) => {
     dot: "bg-gray-600",
   };
 
-  const significance = data?.significance;
+  const significance = data?.significance || {};
 
   return (
     <>
@@ -118,13 +141,21 @@ export const EstimateDetailModal = ({ isOpen, onClose, data }: any) => {
             <InfoRow
               label="Mã đơn đăng ký"
               value={
-                <span className="text-black-600 font-medium">{data.code}</span>
+                <span className="text-black-600 font-medium">
+                  {data.code || "Chưa có mã"}
+                </span>
               }
             />
 
-            <InfoRow label="Địa chỉ lắp đặt" value={data.address} />
+            <InfoRow
+              label="Địa chỉ lắp đặt"
+              value={data.address || "Chưa có địa chỉ"}
+            />
 
-            <InfoRow label="Ngày đăng ký" value={data.registerDate} />
+            <InfoRow
+              label="Ngày đăng ký"
+              value={data.registerDate || "Chưa có ngày"}
+            />
 
             <InfoRow
               label="Trạng thái"
@@ -135,15 +166,29 @@ export const EstimateDetailModal = ({ isOpen, onClose, data }: any) => {
                   <span
                     className={`w-1.5 h-1.5 ${statusColors.dot} rounded-full`}
                   />
-                  {statusLabelMap[data.status] ?? data.status}
+                  {statusLabelMap[data.status] ??
+                    data.status ??
+                    "Không xác định"}
                 </Chip>
               }
             />
 
             <div className="border-t border-gray-200 my-4" />
 
-            <InfoRow label="Người lập chiết tính" value={creatorName} />
-            <InfoRow label="Ngày lập chiết tính" value={data.createDate} />
+            <InfoRow
+              label="Người lập chiết tính"
+              value={
+                isLoadingCreator ? (
+                  <span className="text-gray-500">Đang tải...</span>
+                ) : (
+                  creatorName
+                )
+              }
+            />
+            <InfoRow
+              label="Ngày lập chiết tính"
+              value={data.createDate || "Chưa có ngày"}
+            />
 
             <div className="border-t border-gray-200 my-4" />
 
@@ -181,7 +226,7 @@ export const EstimateDetailModal = ({ isOpen, onClose, data }: any) => {
                 value={
                   <div className="flex items-center gap-2">
                     <span>
-                      {significance.planningTechnicalHead ||
+                      {significance?.planningTechnicalHead ||
                         "Chưa có thông tin"}
                     </span>
                   </div>
@@ -192,7 +237,7 @@ export const EstimateDetailModal = ({ isOpen, onClose, data }: any) => {
                 label="Lãnh đạo công ty"
                 value={
                   <div className="flex items-center gap-2">
-                    {significance.companyLeaderShip || "Chưa có thông tin"}
+                    {significance?.companyLeaderShip || "Chưa có thông tin"}
                   </div>
                 }
               />

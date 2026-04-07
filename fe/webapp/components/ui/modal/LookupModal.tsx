@@ -83,6 +83,8 @@ export function LookupModal<T extends { id: string }>({
           title={title}
           columns={columns}
           data={data}
+          showCloseButton={true}
+          onClose={onClose}
           search={
             enableSearch
               ? {

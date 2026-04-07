@@ -51,4 +51,7 @@ public interface KeycloakFeignClient {
 
   @PostMapping(value = TOKEN_URL, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
   TokenExchangeResponse token(@RequestBody TokenParam param);
+
+  @PostMapping(value = "/realms/cmsn/protocol/openid-connect/logout", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+  void logout(@RequestBody TokenParam param);
 }

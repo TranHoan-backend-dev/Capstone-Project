@@ -21,5 +21,5 @@ public class Usage implements Serializable {
   String meterImageUrl;
   Boolean isPaid;
   String paymentMethod;
-  String status; // New field: PENDING, APPROVED, REJECTED
+  String status; // New field: PENDING, APPROVED
 }

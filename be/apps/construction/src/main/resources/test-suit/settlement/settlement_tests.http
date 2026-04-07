@@ -1,0 +1,109 @@
+### Settlement API Test Suit
+
+@baseUrl = http://localhost:9005/construction/settlements
+
+### 1. Tạo mới bản quyết toán công trình (Happy Path)
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{it_staff_token}}
+
+{
+  "formCode": "CODE-001",
+  "formNumber": "FORM-001",
+  "jobContent": "Lắp đặt hệ thống cấp nước D110 cho khu dân cư A",
+  "address": "123 Đường ABC, Quận 1, TP.HCM",
+  "connectionFee": 500000.00,
+  "note": "Hoàn thành giai đoạn 1",
+  "registrationAt": "2023-10-27"
+}
+
+> {%
+ client.test("Tạo thành công", function() {
+   client.assert(response.status === 201, "Response status should be 201");
+ });
+ %}
+
+### 2. Tạo mới với dữ liệu không hợp lệ (Bad Request)
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{it_staff_token}}
+
+{
+  "formCode": "",
+  "formNumber": "",
+  "jobContent": "",
+  "address": "",
+  "connectionFee": -100,
+  "registrationAt": null
+}
+
+> {%
+ client.test("Lỗi validation", function() {
+   client.assert(response.status === 400, "Response status should be 400");
+ });
+ %}
+
+### 3. Cập nhật thông tin quyết toán
+# Thay {{settlement_id}} bằng ID thực tế từ phản hồi bước 1
+PUT {{baseUrl}}/{{settlement_id}}
+Content-Type: application/json
+Authorization: Bearer {{it_staff_token}}
+
+{
+  "formCode": "CODE-001",
+  "formNumber": "FORM-001",
+  "jobContent": "Cập nhật: Lắp đặt hệ thống cấp nước D150",
+  "address": "124 Đường ABC, Quận 1, TP.HCM",
+  "connectionFee": 750000.00,
+  "note": "Đã điều chỉnh phí",
+  "registrationAt": "2023-10-28"
+}
+
+### 4. Lấy chi tiết quyết toán theo ID
+GET {{baseUrl}}/{{settlement_id}}
+Authorization: Bearer {{user_token}}
+
+### 5. Lấy danh sách tất cả quyết toán
+GET {{baseUrl}}?page=0&size=10
+Authorization: Bearer {{user_token}}
+
+### 6. Lọc quyết toán theo tiêu chí
+GET {{baseUrl}}/filter?search=hệ thống&status=PENDING&connectionFeeMin=100000&registrationFrom=2023-01-01
+Authorization: Bearer {{user_token}}
+
+### 7. Phân công các bên ký duyệt
+POST {{baseUrl}}/sign
+Content-Type: application/json
+Authorization: Bearer {{it_staff_token}}
+
+{
+  "settlementId": "{{settlement_id}}",
+  "surveyStaff": "EMP001",
+  "plHead": "EMP002",
+  "companyLeadership": "EMP003",
+  "constructionPresident": "EMP004"
+}
+
+### 8. Thực hiện ký duyệt (Lãnh đạo hoặc bên liên quan)
+POST {{baseUrl}}/sign/{{settlement_id}}
+Content-Type: application/json
+Authorization: Bearer {{leadership_token}}
+
+{
+  "president": "NGUYEN_VAN_A",
+  "ptHead": null,
+  "surveyStaff": null,
+  "constructionPresident": null
+}
+
+### 9. Thử truy cập không có quyền (Forbidden)
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{user_token}}
+
+# Expect 403 because users don't have IT_STAFF authority for creation
+
+### 10. Truy cập không có Token (Unauthorized)
+GET {{baseUrl}}
+
+# Expect 401

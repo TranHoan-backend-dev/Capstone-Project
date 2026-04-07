@@ -72,7 +72,6 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       .citizenIdentificationProvideDate(request.citizenIdentificationProvideDate())
       .citizenIdentificationProvideLocation(request.citizenIdentificationProvideLocation())
       .phoneNumber(request.phoneNumber())
-      .taxCode(request.taxCode())
       .bankAccountNumber(request.bankAccountNumber())
       .bankAccountProviderLocation(request.bankAccountProviderLocation())
       .usageTarget(request.usageTarget())
@@ -88,7 +87,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
     if (request.representative() != null) {
       entity.setRepresentative(request.representative());
     }
-    if (request.taxCode() != null) {
+    if (request.taxCode() != null && !request.taxCode().isBlank()) {
       entity.setTaxCode(request.taxCode());
     }
 

@@ -1,6 +1,17 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CAPTURED_KEY = 'captured_customers';
+const AUDIT_RECORDS_KEY = 'audit_records';
+
+export interface AuditRecord {
+  id: string;
+  customerId?: string;
+  photoUri: string;
+  aiIndex: number | string;
+  aiSerial: string;
+  customerName?: string;
+  timestamp: string;
+}
 
 export const localCapturedService = {
   /**
@@ -25,7 +36,8 @@ export const localCapturedService = {
     try {
       const data = await AsyncStorage.getItem(CAPTURED_KEY);
       return data ? JSON.parse(data) : [];
-    } catch (e) {
+    } catch (e: any) {
+      console.error("[localCapturedService.ts]" + e.message)
       return [];
     }
   },
@@ -34,6 +46,61 @@ export const localCapturedService = {
    * Clear captured list (usually after a sync or new day)
    */
   async clearCaptured(): Promise<void> {
-    await AsyncStorage.removeItem(CAPTURED_KEY);
+    try {
+      await AsyncStorage.removeItem(CAPTURED_KEY);
+      await AsyncStorage.removeItem(AUDIT_RECORDS_KEY);
+    } catch (e) {
+      console.error('Failed to clear captured data:', e);
+    }
+  },
+
+  /**
+   * Save a full audit record (photo + ai response)
+   */
+  async saveAuditRecord(record: AuditRecord): Promise<void> {
+    try {
+      const records = await this.getAuditRecords();
+      // Check if record exists, update if it does, otherwise push
+      const index = records.findIndex(r => r.id === record.id);
+      if (index >= 0) {
+        records[index] = record;
+      } else {
+        records.push(record);
+      }
+      await AsyncStorage.setItem(AUDIT_RECORDS_KEY, JSON.stringify(records));
+
+      // Also mark as captured for ID tracking
+      if (record.customerId) {
+        await this.markAsCaptured(record.customerId);
+      }
+    } catch (e) {
+      console.error('Failed to save audit record:', e);
+    }
+  },
+
+  /**
+   * Get all pending audit records
+   */
+  async getAuditRecords(): Promise<AuditRecord[]> {
+    try {
+      const data = await AsyncStorage.getItem(AUDIT_RECORDS_KEY);
+      return data ? JSON.parse(data) : [];
+    } catch (e: any) {
+      console.error("[localCapturedService.ts]" + e.message)
+      return [];
+    }
+  },
+
+  /**
+   * Remove a single record (after review)
+   */
+  async removeAuditRecord(id: string): Promise<void> {
+    try {
+      const records = await this.getAuditRecords();
+      const filtered = records.filter(r => r.id !== id);
+      await AsyncStorage.setItem(AUDIT_RECORDS_KEY, JSON.stringify(filtered));
+    } catch (e) {
+      console.error('Failed to remove audit record:', e);
+    }
   }
 };

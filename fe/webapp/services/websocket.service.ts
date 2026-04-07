@@ -1,171 +1,208 @@
-import { SOCKET_URL } from "@/utils/constraints";
+import { Client, IMessage, StompSubscription } from "@stomp/stompjs";
 
-export interface WebSocketMessage {
-  type: string;
-  userId?: string;
-  data: any;
-  timestamp?: number;
-}
+import { API_GATEWAY_URL } from "@/utils/constraints";
+// SockJS will be loaded dynamically in the webSocketFactory to avoid bundling issues
 
 class WebSocketService {
-  private ws: WebSocket | null = null;
-  private url: string;
-  private reconnectAttempts = 0;
-  private maxReconnectAttempts = 5;
-  private reconnectDelay = 3000;
-  private messageHandlers: Map<string, Set<(data: any) => void>> = new Map();
-  private isManualClose = false;
+  private client: Client | null = null;
+  private subscriptions: Map<string, StompSubscription> = new Map();
+  private isConnecting = false;
+  private onConnectCallback: (() => void) | null = null;
+  private onDisconnectCallback: ((error?: any) => void) | null = null;
 
-  constructor() {
-    // Convert HTTP URLs to WebSocket URLs
-    let baseUrl = SOCKET_URL || "http://localhost:9999/ws";
-    
-    if (baseUrl.startsWith("http://")) {
-      this.url = baseUrl.replace("http://", "ws://");
-    } else if (baseUrl.startsWith("https://")) {
-      this.url = baseUrl.replace("https://", "wss://");
-    } else if (baseUrl.startsWith("ws://") || baseUrl.startsWith("wss://")) {
-      this.url = baseUrl;
-    } else {
-      this.url = `ws://${baseUrl}`;
-    }
+  private pendingSubscriptions: Array<{
+    topic: string;
+    callback: (message: any) => void;
+  }> = [];
 
-    console.log("WebSocket Service initialized with URL:", this.url);
+  setCallbacks(onConnect: () => void, onDisconnect: (error?: any) => void) {
+    this.onConnectCallback = onConnect;
+    this.onDisconnectCallback = onDisconnect;
   }
 
-  /**
-   * Kết nối đến WebSocket server
-   */
-  public connect(accessToken: string): Promise<void> {
+  connect(accessToken: string): Promise<void> {
+    if (this.client?.active) {
+      console.log("[WebSocket] Already active, skipping connect");
+      return Promise.resolve();
+    }
+
+    if (this.isConnecting) {
+      console.log("[WebSocket] Connection attempt in progress...");
+      return Promise.resolve();
+    }
+
+    this.isConnecting = true;
+
     return new Promise((resolve, reject) => {
-      try {
-        if (!accessToken) {
-          const error = "No access token provided to WebSocket.connect()";
-          console.error(error);
-          reject(new Error(error));
-          return;
-        }
+      if (!API_GATEWAY_URL) {
+        console.error("[WebSocket] API_GATEWAY_URL is not defined in environment variables");
+        this.isConnecting = false;
+        reject(new Error("API_GATEWAY_URL is not defined"));
+        return;
+      }
 
-        // Thêm token vào URL
-        const wsUrl = `${this.url}?token=${accessToken}`;
-        console.log("Attempting to connect to WebSocket:", this.url);
-        
-        this.ws = new WebSocket(wsUrl);
-        this.isManualClose = false;
+      // Chuyển đổi HTTP/HTTPS sang WS/WSS cho Pure WebSocket
+      let brokerUrl = API_GATEWAY_URL.replace("http://", "ws://").replace(
+        "https://",
+        "wss://",
+      );
+      brokerUrl = `${brokerUrl}/n/ws`;
 
-        this.ws.onopen = () => {
-          console.log("WebSocket connected");
-          this.reconnectAttempts = 0;
+      console.log("[WebSocket] Connecting to Pure WebSocket:", brokerUrl);
+
+      this.client = new Client({
+        brokerURL: brokerUrl,
+        connectHeaders: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        debug: (str) => {
+          if (process.env.NODE_ENV === "development") {
+            // console.log("[WebSocket]", str);
+          }
+        },
+        reconnectDelay: 5000,
+        heartbeatIncoming: 10000,
+        heartbeatOutgoing: 10000,
+
+        onConnect: () => {
+          console.log("[WebSocket] Connected successfully");
+          this.isConnecting = false;
+          this.onConnectCallback?.();
+          this.processPendingSubscriptions();
           resolve();
-        };
+        },
 
-        this.ws.onmessage = (event) => {
-          try {
-            const message: WebSocketMessage = JSON.parse(event.data);
-            this.handleMessage(message);
-          } catch (error) {
-            console.error("Failed to parse WebSocket message:", error);
+        onStompError: (frame) => {
+          console.error("[WebSocket] STOMP error:", frame.headers["message"]);
+          this.isConnecting = false;
+          const error = frame.headers["message"] || "STOMP error";
+          this.onDisconnectCallback?.(error);
+          reject(new Error(error));
+        },
+
+        onWebSocketError: (event) => {
+          console.error("[WebSocket] WebSocket error occurred");
+          this.isConnecting = false;
+          this.onDisconnectCallback?.("WebSocket error");
+          // Chỉ reject lần đầu tiên để tránh unhandled promise rejections khi tự động reconnect
+          if (this.client?.active === false) {
+            reject(new Error("WebSocket connection failed"));
           }
-        };
+        },
 
-        this.ws.onerror = (error) => {
-          console.error("WebSocket error:", error);
-          reject(error);
-        };
+        onDisconnect: () => {
+          console.log("[WebSocket] Disconnected");
+          this.isConnecting = false;
+          this.onDisconnectCallback?.();
+        },
+      });
 
-        this.ws.onclose = () => {
-          console.log("WebSocket disconnected");
-          if (!this.isManualClose) {
-            this.attemptReconnect(accessToken);
-          }
-        };
-      } catch (error) {
-        console.error("WebSocket connection error:", error);
-        reject(error);
+      try {
+        this.client.activate();
+      } catch (err) {
+        this.isConnecting = false;
+        reject(err);
       }
     });
   }
 
-  /**
-   * Ngắt kết nối WebSocket
-   */
-  public disconnect(): void {
-    this.isManualClose = true;
-    if (this.ws) {
-      this.ws.close();
-      this.ws = null;
-    }
-    this.messageHandlers.clear();
-    this.reconnectAttempts = 0;
+  private processPendingSubscriptions() {
+    if (!this.client || !this.client.connected) return;
+
+    console.log(
+      `[WebSocket] Processing ${this.pendingSubscriptions.length} pending subscriptions`,
+    );
+    const toSubscribe = [...this.pendingSubscriptions];
+    this.pendingSubscriptions = [];
+
+    toSubscribe.forEach(({ topic, callback }) => {
+      this.subscribe(topic, callback);
+    });
   }
 
-  /**
-   * Gửi message tới server
-   */
-  public send(message: WebSocketMessage): void {
-    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
-      console.warn("WebSocket not connected");
+  subscribe(topic: string, callback: (message: any) => void): void {
+    if (!this.client || !this.client.connected) {
+      // Check if already pending to avoid duplicates
+      if (!this.pendingSubscriptions.find((s) => s.topic === topic)) {
+        console.log(
+          `[WebSocket] Queueing subscription for ${topic} (not connected yet)`,
+        );
+        this.pendingSubscriptions.push({ topic, callback });
+      }
       return;
     }
-    this.ws.send(JSON.stringify(message));
-  }
 
-  /**
-   * Subscribe vào một loại message
-   */
-  public subscribe(messageType: string, handler: (data: any) => void): () => void {
-    if (!this.messageHandlers.has(messageType)) {
-      this.messageHandlers.set(messageType, new Set());
+    // Check if already subscribed
+    if (this.subscriptions.has(topic)) {
+      // console.log(`[WebSocket] Already subscribed to ${topic}`);
+      return;
     }
-    this.messageHandlers.get(messageType)!.add(handler);
 
-    // Return unsubscribe function
-    return () => {
-      this.messageHandlers.get(messageType)?.delete(handler);
-    };
-  }
-
-  /**
-   * Xử lý message nhận được
-   */
-  private handleMessage(message: WebSocketMessage): void {
-    const handlers = this.messageHandlers.get(message.type);
-    if (handlers) {
-      handlers.forEach((handler) => {
+    try {
+      const subscription = this.client.subscribe(topic, (message: IMessage) => {
         try {
-          handler(message.data);
+          const data = JSON.parse(message.body);
+          callback(data);
         } catch (error) {
-          console.error(`Error in message handler for type ${message.type}:`, error);
+          console.error("[WebSocket] Parse error for topic", topic, ":", error);
+          callback(message.body);
         }
       });
+
+      this.subscriptions.set(topic, subscription);
+      console.log(`[WebSocket] Subscribed to ${topic}`);
+    } catch (error) {
+      console.error(`[WebSocket] Failed to subscribe to ${topic}:`, error);
     }
   }
 
-  /**
-   * Tự động kết nối lại khi mất kết nối
-   */
-  private attemptReconnect(accessToken: string): void {
-    if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-      console.error("Max reconnect attempts reached");
-      return;
+  unsubscribe(topic: string): void {
+    // Remove from pending if it's there
+    const pendingIndex = this.pendingSubscriptions.findIndex(
+      (s) => s.topic === topic,
+    );
+    if (pendingIndex !== -1) {
+      this.pendingSubscriptions.splice(pendingIndex, 1);
+      console.log(`[WebSocket] Removed ${topic} from pending subscriptions`);
     }
 
-    this.reconnectAttempts++;
-    const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
-    console.log(`Attempting to reconnect in ${delay}ms (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
-
-    setTimeout(() => {
-      this.connect(accessToken).catch((error) => {
-        console.error("Reconnection failed:", error);
-      });
-    }, delay);
+    const subscription = this.subscriptions.get(topic);
+    if (subscription) {
+      try {
+        subscription.unsubscribe();
+        this.subscriptions.delete(topic);
+        console.log(`[WebSocket] Unsubscribed from ${topic}`);
+      } catch (error) {
+        console.error(`[WebSocket] Error unsubscribing from ${topic}:`, error);
+      }
+    }
   }
 
-  /**
-   * Kiểm tra kết nối
-   */
-  public isConnected(): boolean {
-    return this.ws !== null && this.ws.readyState === WebSocket.OPEN;
+  disconnect(): void {
+    console.log("[WebSocket] Disconnecting manually...");
+
+    this.subscriptions.forEach((sub) => {
+      try {
+        sub.unsubscribe();
+      } catch (error) {
+        console.error("[WebSocket] Error unsubscribing:", error);
+      }
+    });
+    this.subscriptions.clear();
+
+    if (this.client) {
+      try {
+        this.client.deactivate();
+      } catch (error) {
+        console.error("[WebSocket] Error during disconnect:", error);
+      }
+      this.client = null;
+    }
+    this.isConnecting = false;
+  }
+
+  isConnected(): boolean {
+    return this.client?.connected || false;
   }
 }
 

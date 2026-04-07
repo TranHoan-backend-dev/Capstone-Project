@@ -10,6 +10,12 @@ import {
   NavbarBrand,
   NavbarContent,
   Tooltip,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
 } from "@heroui/react";
 import Link from "next/link";
 import { Bars3Icon } from "@heroicons/react/24/solid";
@@ -25,6 +31,8 @@ import { CallToast } from "../ui/CallToast";
 import axios from "axios";
 import { useProfile } from "@/hooks/useLogin";
 import { filterNavItems, siteConfig } from "@/config/site";
+import CustomButton from "../ui/custom/CustomButton";
+import GlobalWebSocket from "../GlobalWebSocket";
 
 export interface SubMenuItemChild {
   key: string;
@@ -51,6 +59,8 @@ const Header = () => {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { profile } = useProfile();
   const filteredMenu = profile?.role
     ? filterNavItems(siteConfig.navItems, profile?.role)
@@ -85,6 +95,7 @@ const Header = () => {
   };
 
   const handleLogout = async () => {
+    setIsLoggingOut(true);
     try {
       await axios.post(
         "/api/auth/logout",
@@ -104,6 +115,7 @@ const Header = () => {
         color: "success",
       });
 
+      setShowLogoutDialog(false);
       router.replace("/login");
     } catch (err: any) {
       CallToast({
@@ -112,7 +124,17 @@ const Header = () => {
           err.response?.data?.message || "Đăng xuất thất bại, vui lòng thử lại",
         color: "danger",
       });
+    } finally {
+      setIsLoggingOut(false);
     }
+  };
+
+  const handleLogoutClick = () => {
+    setShowLogoutDialog(true);
+  };
+
+  const handleCancelLogout = () => {
+    setShowLogoutDialog(false);
   };
 
   return (
@@ -165,7 +187,7 @@ const Header = () => {
                       key={item.key}
                       className={`text-sm px-4 py-2 whitespace-nowrap rounded-lg transition-colors cursor-pointer ${
                         isActive
-                          ? "bg-primary-100 text-primary-800 dark:text-white font-medium"
+                          ? "bg-white-100 text-white-800 dark:text-white font-medium"
                           : "text-foreground-700 hover:bg-default-100"
                       }`}
                       href={item.href || "#"}
@@ -203,7 +225,7 @@ const Header = () => {
                         src={profile.avatarUrl}
                         name={profile.fullname}
                         size="sm"
-                        className="bg-primary-100 text-primary-600"
+                        className="bg-white-100 text-white-600"
                         fallback={
                           <span className="font-semibold">
                             {profile.fullname.charAt(0).toUpperCase()}
@@ -217,7 +239,7 @@ const Header = () => {
                     aria-label="User menu"
                     variant="flat"
                     onAction={(key) => {
-                      if (key === "logout") handleLogout();
+                      if (key === "logout") handleLogoutClick();
                     }}
                   >
                     <DropdownItem
@@ -225,7 +247,7 @@ const Header = () => {
                       as={Link}
                       className={`${
                         pathname === "/profile-employee"
-                          ? "bg-primary-100 text-primary-800 dark:text-primary-200"
+                          ? "bg-white-100 text-white-800 dark:text-white-200"
                           : ""
                       }`}
                       href="/profile-employee"
@@ -238,7 +260,7 @@ const Header = () => {
                       as={Link}
                       className={`${
                         pathname === "/change-password"
-                          ? "bg-primary-100 text-primary-800 dark:text-primary-200"
+                          ? "bg-white-100 text-white-800 dark:text-white-200"
                           : ""
                       }`}
                       href="/change-password"
@@ -266,6 +288,43 @@ const Header = () => {
         menuItems={filteredMenu}
         onClose={() => setSidebarOpen(false)}
       />
+
+      <Modal
+        isOpen={showLogoutDialog}
+        onClose={handleCancelLogout}
+        backdrop="blur"
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                Xác nhận đăng xuất
+              </ModalHeader>
+              <ModalBody>
+                <p>Bạn có chắc chắn muốn đăng xuất khỏi hệ thống?</p>
+              </ModalBody>
+              <ModalFooter>
+                <CustomButton
+                  color="default"
+                  variant="light"
+                  onPress={handleCancelLogout}
+                  isDisabled={isLoggingOut}
+                >
+                  Hủy
+                </CustomButton>
+                <CustomButton
+                  color="danger"
+                  onPress={handleLogout}
+                  isLoading={isLoggingOut}
+                  isDisabled={isLoggingOut}
+                >
+                  {isLoggingOut ? "Đang đăng xuất..." : "Đăng xuất"}
+                </CustomButton>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </>
   );
 };

@@ -9,6 +9,7 @@ import com.capstone.device.application.dto.response.usagehistory.AnalysisRespons
 import com.capstone.device.application.dto.response.usagehistory.UsageResponse;
 import com.capstone.device.application.dto.response.customer.CustomerWaterPriceRefResponse;
 import com.capstone.device.domain.model.UsageHistory;
+import com.capstone.device.domain.model.WaterMeter;
 import com.capstone.device.domain.model.WaterPrice;
 import com.capstone.device.domain.model.utils.Usage;
 import com.capstone.device.infrastructure.persistence.UsageHistoryRepository;
@@ -51,17 +52,27 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
   @Transactional
   public UsageResponse addWaterIndexOfThisMonth(
     String imageUrl, String serial, BigDecimal index,
-    @NonNull LocalDate recordingDate
-  ) {
-    log.info("addWaterIndexOfThisMonth");
-    var meter = waterMeterRepository.findById(serial)
-      .orElseThrow(() -> new NotExistingException("Không tìm thấy thiết bị: " + serial));
+    @NonNull LocalDate recordingDate, String status) {
+    log.info("addWaterIndexOfThisMonth for serial {}", serial);
+    var meter = findById(serial);
     // tim lich su tieu thu bang dong ho nuoc. Neu dong ho nuoc nay moi duoc su dung thi tao moi
     var history = repository.findByMeter(meter).orElseGet(() -> UsageHistory.builder()
       .usageHistory(serial)
       .meter(meter)
       .usages(new ArrayList<>())
       .build());
+
+    // Resolve customerId if not already in history
+    if (history.getCustomerId() == null) {
+      try {
+        var customerId = customerService.getCustomerIdByMeterId(serial);
+        if (customerId != null) {
+          history.setCustomerId(customerId);
+        }
+      } catch (Exception e) {
+        log.warn("Could not auto-resolve customerId for serial {}: {}", serial, e.getMessage());
+      }
+    }
 
     // So sanh voi chi so gan nhat trong lich su
     if (!history.getUsages().isEmpty()) {
@@ -82,22 +93,23 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
       .recordingDate(recordingDate)
       .index(index)
       .meterImageUrl(imageUrl)
-      .status("PENDING")
+      .status(status)
       .isPaid(false)
       .build();
     log.info("Lich su su dung nuoc thang nay: {}", newUsage);
 
     history.addOrUpdateUsage(newUsage);
-//    history = repository.save(history);
+    history = repository.save(history);
 
-    var customerId = customerService.getCustomerIdByMeterId(serial);
+    var customerId = history.getCustomerId();
     if (customerId == null) {
-      throw new IllegalArgumentException("Dong ho nuoc nay khong co khach hang nao su dung");
+      log.warn("Lưu bản ghi tiêu thụ không có customerId cho serial {}", serial);
+      // Try fetching again to be sure for the response
+      customerId = customerService.getCustomerIdByMeterId(serial);
     }
 
     var customerInfo = getCustomerInfo(customerId);
-    var waterPrice = resolveWaterPrice(customerInfo.waterPriceId());
-    return mapToResponse(history, customerId, customerInfo.name(), waterPrice);
+    return mapToResponse(history, customerId, customerInfo);
   }
 
   @Override
@@ -120,8 +132,7 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
   @Transactional
   public void updatePaymentStatus(String serial, String method) {
     log.info("Cập nhật thanh toán thiết bị {} với phương thức {}", serial, method);
-    var meter = waterMeterRepository.findById(serial)
-      .orElseThrow(() -> new NotExistingException("Không tìm thấy thiết bị"));
+    var meter = findById(serial);
     var history = repository.findByMeter(meter).orElseThrow(() -> new NotExistingException("Không tìm thấy lịch sử"));
     if (!history.getUsages().isEmpty()) {
       var latest = history.getUsages().stream().max(Comparator.comparing(Usage::getRecordingDate)).get();
@@ -144,21 +155,45 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
     }
     log.info("WaterMeterId: {}", waterMeterId);
 
-    var meter = waterMeterRepository.findById(waterMeterId)
-      .orElseThrow(() -> new NotExistingException("Không tìm thấy đồng hồ nước của khách hàng!"));
+    var meter = findById(waterMeterId);
     var history = repository.findByMeter(meter).orElseThrow(
       () -> new NotExistingException("Không tìm thấy lịch sử sử dụng nước cho khách hàng: " + customerId));
 
-    var waterPrice = resolveWaterPrice(customerInfo.waterPriceId());
+    return mapToResponse(history, customerId, customerInfo);
+  }
 
-    return mapToResponse(history, customerId, customerInfo.name(), waterPrice);
+  @Override
+  public UsageResponse getTheLatestUsageHistoryBySerial(String serial) {
+    log.info("[getTheLatestUsageHistoryBySerial] Get usage history for serial {}", serial);
+    var meter = findById(serial);
+    var history = repository.findByMeter(meter);
+    if (history.isPresent()) {
+      var customerId = customerService.getCustomerIdByMeterId(serial);
+      if (customerId == null) {
+        throw new IllegalArgumentException("Dong ho nuoc nay khong co khach hang nao su dung");
+      }
+      var lastUsage = history.get().getLastUsage();
+      var customerInfo = getCustomerInfo(customerId);
+      var response = UsageResponse.builder()
+        .serial(serial)
+        .customerId(customerId)
+        .customerName(customerInfo.name())
+        .priceTypes(null)
+        .usagesList(List.of(lastUsage))
+        .tax(null)
+        .environmentPrice(null)
+        .build();
+      log.info("[getTheLatestUsageHistoryBySerial] response: {}", response);
+      return response;
+    }
+    return null;
   }
 
   @Override
   public List<UsageResponse> getUsageByCustomerIds(Collection<String> customerIds) {
     log.info("getUsageByCustomerIds: {}", customerIds);
     List<UsageResponse> responses = new ArrayList<>();
-    for (String cid : customerIds) {
+    for (var cid : customerIds) {
       try {
         responses.add(getUsageHistoryByCustomerId(cid));
       } catch (Exception e) {
@@ -170,55 +205,129 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
 
   @Override
   @Transactional
-  public UsageResponse updateUsageDetails(String serial, @NonNull LocalDate recordingDate, BigDecimal index, String imageUrl) {
-    var meter = waterMeterRepository.findById(serial)
-      .orElseThrow(() -> new NotExistingException("Không tìm thấy thiết bị mang serial: " + serial));
+  public UsageResponse updateUsageDetails(String serial, @NonNull LocalDate recordingDate, BigDecimal index) {
+    var meter = findById(serial);
     var history = repository.findByMeter(meter)
       .orElseThrow(() -> new NotExistingException("Không tìm thấy lịch sử sử dụng cho serial: " + serial));
 
-    var monthStr = recordingDate.format(DateTimeFormatter.ofPattern(SharedConstant.DATE_PATTERN));
-    var newUsage = Usage.builder()
-      .id(monthStr)
-      .recordingDate(recordingDate)
-      .index(index)
-      .meterImageUrl(imageUrl)
-      .status("APPROVED")
-      .isPaid(true)
-      .build();
+    var lastUsage = history.getLastUsage();
+    lastUsage.setRecordingDate(recordingDate);
+    lastUsage.setIndex(index);
+    lastUsage.setStatus("APPROVED");
 
-    history.addOrUpdateUsage(newUsage);
+    history.addOrUpdateUsage(lastUsage);
     history = repository.save(history);
 
     try {
       var customerId = customerService.getCustomerIdByMeterId(serial);
       if (customerId != null) {
         var customerInfo = getCustomerInfo(customerId);
-        var waterPrice = resolveWaterPrice(customerInfo.waterPriceId());
-        return mapToResponse(history, customerId, customerInfo.name(), waterPrice);
+        return mapToResponse(history, customerId, customerInfo);
       }
     } catch (Exception e) {
-      log.warn("Lỗi khi đồng bộ khách hàng: " + e.getMessage());
+      log.warn("Lỗi khi đồng bộ khách hàng: {}", e.getMessage());
     }
     return null;
   }
 
   @Override
-  public List<PendingReviewResponse> getPendingReviews() {
+  public List<PendingReviewResponse> getPendingReviews(String roadmapId) {
+    log.info("[getPendingReviews] Get pending reviews for roadmap {}", roadmapId);
     List<PendingReviewResponse> pendingReviews = new ArrayList<>();
-    var histories = repository.findAll();
+    List<UsageHistory> histories;
+    Map<String, CustomerWaterPriceRefResponse> customerMap = new HashMap<>();
+
+    if (roadmapId != null && !roadmapId.isBlank()) {
+      // Optimized path: Find customers by roadmap first
+      log.info("Get customers by roadmap {}", roadmapId);
+      var customerRes = customerService.getCustomersByRoadmapId(roadmapId);
+      if (customerRes != null && customerRes.data() != null) {
+        // Map data which is likely a Page/List of objects
+        try {
+          // Attempt to extract the content if it's a Page object
+          List<?> contentList;
+          if (customerRes.data() instanceof Map && ((Map<?, ?>) customerRes.data()).containsKey("content")) {
+            contentList = (List<?>) ((Map<?, ?>) customerRes.data()).get("content");
+            log.info("[getPendingReviews] contentList size: {}", contentList.size());
+          } else if (customerRes.data() instanceof List) {
+            contentList = (List<?>) customerRes.data();
+          } else {
+            contentList = Collections.emptyList();
+          }
+
+          List<CustomerWaterPriceRefResponse> customers = contentList.stream()
+            .map(c -> objectMapper.convertValue(c, CustomerWaterPriceRefResponse.class))
+            .filter(c -> c.waterMeterId() != null)
+            .toList();
+          log.info("[getPendingReviews] Customers size: {}", customers.size());
+
+          List<String> customerIds = customers.stream()
+            .map(CustomerWaterPriceRefResponse::customerId)
+            .toList();
+          log.info("[getPendingReviews] customerIds size: {}", customerIds.size());
+
+          histories = repository.findAllByCustomerIdIn(customerIds);
+          customerMap = customers.stream()
+            .collect(Collectors.toMap(CustomerWaterPriceRefResponse::customerId, c -> c, (a, b) -> a));
+        } catch (Exception e) {
+          log.error("Lỗi khi xử lý dữ liệu khách hàng: {}", e.getMessage());
+          histories = new ArrayList<>();
+        }
+      } else {
+        histories = new ArrayList<>();
+      }
+    } else {
+      // Fallback: Fetch all (though less efficient, it handles the null roadmapId case)
+      histories = repository.findAll();
+    }
+    log.info("[getPendingReviews] histories size: {}", histories.size());
+
     for (var history : histories) {
+      String serial = history.getUsageHistory();
+      String customerId = history.getCustomerId();
+      CustomerWaterPriceRefResponse customerInfo = customerMap.get(customerId);
+
+      // If customer info is not in map (e.g. roadmapId was null), fetch it individually
+      if (customerInfo == null) {
+        try {
+          if (customerId != null) {
+            customerInfo = getCustomerInfo(customerId);
+          } else {
+            // Fallback to searching by meter id if customerId is currently null for some reason
+            customerId = customerService.getCustomerIdByMeterId(serial);
+            if (customerId != null) {
+              customerInfo = getCustomerInfo(customerId);
+            }
+          }
+        } catch (Exception e) {
+          log.warn("Could not find customer/info for meter: {}, customerId: {}", serial, customerId);
+        }
+      }
+
+      if (customerInfo == null) continue;
+
+      // Final check for roadmapId filter if it wasn't filtered by the initial query
+      if (roadmapId != null && !roadmapId.isBlank() && !roadmapId.equals(customerInfo.roadmapId())) {
+        continue;
+      }
+
       for (var u : history.getUsages()) {
         if ("PENDING".equals(u.getStatus())) {
           pendingReviews.add(PendingReviewResponse.builder()
             .id(u.getId())
-            .serial(history.getUsageHistory())
+            .serial(serial)
+            .customerId(customerInfo.customerId())
+            .customerName(customerInfo.name())
+            .address(customerInfo.address())
             .newIndexAI(u.getIndex())
             .imageUrl(u.getMeterImageUrl())
             .status("PENDING")
+            .routeId(customerInfo.roadmapId())
             .build());
         }
       }
     }
+    log.info("[getPendingReviews] pendingReviews size: {}", pendingReviews.size());
     return pendingReviews;
   }
 
@@ -260,7 +369,8 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
       .orElseThrow(() -> new NotExistingException("Không tìm thấy bảng giá nước"));
   }
 
-  private UsageResponse mapToResponse(@NonNull UsageHistory entity, String customerId, String customerName, WaterPrice waterPrice) {
+  private UsageResponse mapToResponse(@NonNull UsageHistory entity, String customerId, @NonNull CustomerWaterPriceRefResponse customerInfo) {
+    var waterPrice = resolveWaterPrice(customerInfo.waterPriceId());
     log.info("Mapping usage response for price ID: {}", waterPrice != null ? waterPrice.getPriceId() : "null");
     List<PriceTypeResponse> priceTypeResponses = waterPrice != null && waterPrice.getPriceTypes() != null ? waterPrice.getPriceTypes().stream()
       .map(pt -> new PriceTypeResponse(pt.getPriceTypeId(), pt.getArea(), pt.getPrice()))
@@ -308,7 +418,7 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
     return UsageResponse.builder()
       .serial(entity.getUsageHistory())
       .customerId(customerId)
-      .customerName(customerName)
+      .customerName(customerInfo.name())
       .priceTypes(priceTypeResponses)
       .usagesList(usagesList)
       .tax(waterPrice != null ? waterPrice.getTax() : BigDecimal.ZERO)
@@ -380,5 +490,10 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
       .map(AIResponse.AIResponseData::text)
       .findFirst()
       .orElse(null);
+  }
+
+  private WaterMeter findById(String serial) {
+    return waterMeterRepository.findById(serial)
+      .orElseThrow(() -> new NotExistingException("Không tìm thấy đồng hồ nước mang serial: " + serial));
   }
 }

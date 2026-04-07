@@ -14,13 +14,16 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
   @Override
   public void registerStompEndpoints(@NonNull StompEndpointRegistry registry) {
     registry.addEndpoint("/ws")
-      .setAllowedOriginPatterns("*")
-      .withSockJS();
+      .setAllowedOrigins(
+        "http://localhost:3000",
+        "capstone-project-chi-rouge.vercel.app"
+      );
   }
 
   @Override
   public void configureMessageBroker(@NonNull MessageBrokerRegistry registry) {
-    registry.enableSimpleBroker("/topic");
+    registry.enableSimpleBroker("/topic", "/user", "/queue", "/notification", "/technical", "/construction",
+      "/business", "/it", "/finance", "/leadership", "/general");
     registry.setApplicationDestinationPrefixes("/app");
   }
 }

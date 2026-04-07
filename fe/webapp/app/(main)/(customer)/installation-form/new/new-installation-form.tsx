@@ -7,7 +7,6 @@ import { OrderInfoSection } from "./components/order-info-section";
 import { CustomerInfoSection } from "./components/customer-info-section";
 import { AddressContactSection } from "./components/address-contact-section";
 import { RelatedOrdersTable } from "./components/related-orders-table";
-import { BillingInfoSection } from "./components/billing-info-section";
 
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { NewInstallationFormPayload } from "@/types";
@@ -20,6 +19,17 @@ import {
 } from "@/utils/validation";
 import { CallToast } from "@/components/ui/CallToast";
 import { authFetch } from "@/utils/authFetch";
+
+const validateCitizenId = (value: string): string | null => {
+  if (!value || !value.trim()) {
+    return "Số CCCD không được để trống";
+  }
+  const cleanValue = value.replace(/\s/g, "");
+  if (!/^\d{12}$/.test(cleanValue)) {
+    return "Số CCCD phải gồm đúng 12 chữ số";
+  }
+  return null;
+};
 
 const NewInstallationForm = () => {
   const [keyword, setKeyword] = useState("");
@@ -66,7 +76,6 @@ const NewInstallationForm = () => {
     }
   };
 
-  // Gọi API lấy mã cuối cùng khi component mount
   useEffect(() => {
     getLastCode();
   }, []);
@@ -93,6 +102,7 @@ const NewInstallationForm = () => {
     networkId: "",
     overallWaterMeterId: "",
   };
+
   const [formData, setFormData] =
     useState<NewInstallationFormPayload>(initialFormData);
 
@@ -114,13 +124,13 @@ const NewInstallationForm = () => {
   const handleCreate = async () => {
     try {
       setLoading(true);
+
       const requiredError = validateRequiredFields([
         { value: formData.formCode, fieldName: "Mã biểu mẫu" },
         { value: formData.formNumber, fieldName: "Số hồ sơ" },
         { value: formData.customerName, fieldName: "Họ tên khách hàng" },
         { value: formData.phoneNumber, fieldName: "Số điện thoại" },
         { value: formData.address, fieldName: "Địa chỉ" },
-        { value: formData.taxCode, fieldName: "Mã số thuế" },
         { value: formData.citizenIdentificationNumber, fieldName: "Số CCCD" },
         {
           value: formData.citizenIdentificationProvideDate,
@@ -150,6 +160,11 @@ const NewInstallationForm = () => {
       ]);
       if (requiredError) return showError(requiredError);
 
+      const citizenIdError = validateCitizenId(
+        formData.citizenIdentificationNumber,
+      );
+      if (citizenIdError) return showError(citizenIdError);
+
       const phoneError = validatePhone(formData.phoneNumber);
       if (phoneError) return showError(phoneError);
 
@@ -159,11 +174,11 @@ const NewInstallationForm = () => {
       );
       if (nameError) return showError(nameError);
 
-      const representativeError = validateName(
-        formData.representative?.[0]?.name ?? "",
-        "Người đại diện",
-      );
-      if (representativeError) return showError(representativeError);
+      // const representativeError = validateName(
+      //   formData.representative?.[0]?.name ?? "",
+      //   "Người đại diện",
+      // );
+      // if (representativeError) return showError(representativeError);
 
       const receivedError = validateNotPastDate(
         formData.receivedFormAt,
@@ -177,11 +192,11 @@ const NewInstallationForm = () => {
       );
       if (surveyError) return showError(surveyError);
 
-      const citizenError = validateNotFutureDate(
+      const citizenDateError = validateNotFutureDate(
         formData.citizenIdentificationProvideDate,
         "Ngày cấp CCCD",
       );
-      if (citizenError) return showError(citizenError);
+      if (citizenDateError) return showError(citizenDateError);
 
       const payload = {
         ...formData,
@@ -211,6 +226,10 @@ const NewInstallationForm = () => {
           const errJson = await res.json();
           if (errJson?.message?.includes("duplicate key")) {
             userFriendlyMsg = "Số hồ sơ đã tồn tại. Vui lòng nhập số khác.";
+          } else if (
+            errJson?.message?.includes("citizenIdentificationNumber")
+          ) {
+            userFriendlyMsg = "Số CCCD đã tồn tại trong hệ thống.";
           }
         } catch {}
 
@@ -224,7 +243,6 @@ const NewInstallationForm = () => {
         color: "success",
       });
 
-      // Sau khi tạo thành công, fetch lại mã mới cho lần tạo tiếp theo
       await getLastCode();
       setFormData(initialFormData);
       setReloadKey((prev) => prev + 1);
@@ -240,13 +258,11 @@ const NewInstallationForm = () => {
   };
 
   const handleClear = () => {
-    // Khi clear, cũng cần reset về mã mới nhất
     getLastCode();
     setFormData(initialFormData);
     setReloadKey((prev) => prev + 1);
   };
 
-  // Optional: Hiển thị loading indicator khi đang fetch mã
   if (isFetchingCode) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -273,7 +289,6 @@ const NewInstallationForm = () => {
             updateField={updateField}
           />
         </div>
-        {/* <BillingInfoSection /> */}
       </GenericSearchFilter>
 
       <RelatedOrdersTable keyword={keyword} reloadKey={reloadKey} />

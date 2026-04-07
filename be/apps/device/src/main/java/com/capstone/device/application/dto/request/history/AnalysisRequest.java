@@ -7,6 +7,7 @@ import java.time.LocalDate;
 
 public record AnalysisRequest(
   @NotNull MultipartFile image,
-  @NotNull LocalDate recordingDate
+  @NotNull LocalDate recordingDate,
+  String customerId
 ) {
 }

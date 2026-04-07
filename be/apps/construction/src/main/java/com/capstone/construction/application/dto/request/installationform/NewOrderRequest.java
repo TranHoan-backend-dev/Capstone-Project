@@ -49,7 +49,7 @@ public record NewOrderRequest(
   String phoneNumber,
 
   @Schema(description = "Mã số thuế (nếu có)", example = "8001234567")
-  @NotBlank(message = Message.PT_31) String taxCode,
+  String taxCode,
 
   @Schema(description = "Số tài khoản ngân hàng", example = "123456789")
   @NotBlank(message = SharedMessage.MES_13)

@@ -1,5 +1,6 @@
-import axiosBase from "@/lib/axios/axios-base";
 import axios from "axios";
+
+import axiosBase from "@/lib/axios/axios-base";
 import { API_GATEWAY_URL } from "@/utils/constraints";
 
 // Hàm tạo device fingerprint (chỉ chạy ở client)
@@ -182,4 +183,32 @@ export const changePasswordService = async (
   );
 
   return res.data;
+};
+
+export const refreshTokenService = (refreshToken: string) => {
+  return axios.post(
+    `${API_GATEWAY_URL}/auth/auth/refresh-token`,
+    {
+      token: refreshToken,
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  );
+};
+
+export const logoutService = (refreshToken: string) => {
+  return axios.post(
+    `${API_GATEWAY_URL}/auth/auth/logout`,
+    {
+      token: refreshToken,
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  );
 };

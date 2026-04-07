@@ -1,13 +1,11 @@
+import { NextRequest, NextResponse } from "next/server";
+
 import {
   getProfileEmployee,
   updateProfileEmployee,
 } from "@/services/auth.service";
-import { keycloakRefreshToken } from "@/services/keycloak.service";
 import { getAccessToken } from "@/utils/getAccessToken";
-import { getRefreshToken } from "@/utils/getRefreshToken";
 import { validateProfile } from "@/utils/profileValidation";
-import { setAuthCookies } from "@/utils/setAuthCookies";
-import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {

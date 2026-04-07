@@ -23,6 +23,9 @@ public class UsageHistory {
   @Id
   String usageHistory;
 
+  @Column(name = "customer_id", nullable = false, unique = true)
+  String customerId;
+
   @OneToOne(fetch = FetchType.EAGER)
   @MapsId("usageHistory")
   @JoinColumn(name = "meter_code")
@@ -41,6 +44,10 @@ public class UsageHistory {
     usages.removeIf(u -> u.getRecordingDate().getMonth() == usage.getRecordingDate().getMonth() &&
       u.getRecordingDate().getYear() == usage.getRecordingDate().getYear());
     usages.addLast(usage);
+  }
+
+  public Usage getLastUsage() {
+    return !usages.isEmpty() ? usages.getLast() : null;
   }
 }
 

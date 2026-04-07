@@ -206,7 +206,6 @@ export const FeeForm = ({
       const method = isEdit ? "PUT" : "POST";
       const formattedPaymentDate = formatDateForBackend(paymentDate);
 
-      // Base payload chung cho cả create và update
       const basePayload = {
         formCode,
         formNumber,
@@ -217,7 +216,7 @@ export const FeeForm = ({
         isPaid,
         attach: attach || null,
         paymentReason: paymentReason,
-        totalMoneyInDigits: totalMoneyInDigits,
+        totalMoneyInDigit: totalMoneyInDigits,
         totalMoneyInCharacters: totalMoneyInCharacters || null,
       };
 
@@ -245,7 +244,22 @@ export const FeeForm = ({
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Save failed");
+        // HIỂN THỊ LỖI CHI TIẾT TỪ BACKEND
+        let errorMessage = data.message || "Save failed";
+
+        // Nếu có validation errors từ backend (data chứa chi tiết lỗi)
+        if (data.data && typeof data.data === "object") {
+          // Lấy tất cả lỗi validation và gộp lại
+          const validationErrors = Object.entries(data.data)
+            .map(([field, message]) => `${field}: ${message}`)
+            .join(", ");
+
+          if (validationErrors) {
+            errorMessage = validationErrors;
+          }
+        }
+
+        throw new Error(errorMessage);
       }
 
       CallToast({

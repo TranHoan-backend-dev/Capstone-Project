@@ -12,7 +12,7 @@ import com.capstone.device.application.dto.response.pricetype.PendingReviewRespo
 import org.springframework.web.multipart.MultipartFile;
 
 public interface UsageHistoryService {
-  UsageResponse addWaterIndexOfThisMonth(String imageUrl, String serial, BigDecimal index, LocalDate recordingDate);
+  UsageResponse addWaterIndexOfThisMonth(String imageUrl, String serial, BigDecimal index, LocalDate recordingDate, String status);
 
   AnalysisResponse extractDataFromTheMeterImage(MultipartFile file);
 
@@ -20,12 +20,14 @@ public interface UsageHistoryService {
 
   List<UsageResponse> getUsageByCustomerIds(Collection<String> customerIds);
 
-  UsageResponse updateUsageDetails(String serial, LocalDate recordingDate, BigDecimal index, String imageUrl);
+  UsageResponse updateUsageDetails(String serial, LocalDate recordingDate, BigDecimal index);
 
   // New method to get usage history by customer ID
   UsageResponse getUsageHistoryByCustomerId(String customerId);
 
-  List<PendingReviewResponse> getPendingReviews();
+  UsageResponse getTheLatestUsageHistoryBySerial(String serial);
+
+  List<PendingReviewResponse> getPendingReviews(String roadmapId);
 
   void confirmMeterReading(String reviewId, BigDecimal finalIndex, String status);
 

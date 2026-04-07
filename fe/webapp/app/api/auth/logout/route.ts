@@ -1,4 +1,4 @@
-import { keycloakLogout } from "@/services/keycloak.service";
+import { logoutService } from "@/services/auth.service";
 import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
@@ -15,11 +15,11 @@ export async function POST(req: NextRequest) {
     req.cookies.get("refresh_token")?.value ||
     req.cookies.get("__Secure-refresh_token")?.value;
 
-  // Gọi logout Keycloak nếu có token
+  // Gọi logout Backend nếu có token
   if (refreshToken) {
     try {
-      await keycloakLogout(refreshToken);
-      console.log("Keycloak logout successful");
+      await logoutService(refreshToken);
+      console.log("Backend logout successful");
     } catch (error) {
       // Log chi tiết nhưng không throw để vẫn xóa cookies
       console.warn(

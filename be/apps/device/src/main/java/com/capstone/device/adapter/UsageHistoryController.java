@@ -149,25 +149,27 @@ public class UsageHistoryController {
 
   @Operation(summary = "Lấy danh sách các bản ghi cần phê duyệt", description = "Danh sách các chỉ số nước do AI nhận diện đang chờ xác nhận")
   @GetMapping("/pending-reviews")
-  public ResponseEntity<WrapperApiResponse> getPendingReviews() {
-    log.info("Fetching pending reviews");
-    var response = useCase.getPendingReviews();
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'METER_INSPECTION_STAFF')")
+  public ResponseEntity<WrapperApiResponse> getPendingReviews(@RequestParam(required = false) String roadmapId) {
+    log.info("Fetching pending reviews for roadmapId: {}", roadmapId);
+    var response = useCase.getPendingReviews(roadmapId);
     return Utils.returnOkResponse("Lấy danh sách chờ duyệt thành công", response);
   }
 
-  @Operation(summary = "Xác nhận chỉ số sau khi đã kiểm tra", description = "Phê duyệt hoặc sửa đổi chỉ số AI gợi ý")
-  @PostMapping("/confirm/{reviewId}")
-  public ResponseEntity<WrapperApiResponse> confirmMeterReading(
-    @PathVariable String reviewId,
-    @RequestParam BigDecimal finalIndex,
-    @RequestParam String status) {
-    log.info("Confirming meter reading for id {}", reviewId);
-    useCase.confirmMeterReading(reviewId, finalIndex, status);
-    return Utils.returnOkResponse("Xác nhận chỉ số thành công", null);
-  }
+//  @Operation(summary = "Xác nhận chỉ số sau khi đã kiểm tra", description = "Phê duyệt hoặc sửa đổi chỉ số AI gợi ý")
+//  @PostMapping("/confirm/{reviewId}")
+//  public ResponseEntity<WrapperApiResponse> confirmMeterReading(
+//    @PathVariable String reviewId,
+//    @RequestParam BigDecimal finalIndex,
+//    @RequestParam String status) {
+//    log.info("Confirming meter reading for id {}", reviewId);
+//    useCase.confirmMeterReading(reviewId, finalIndex, status);
+//    return Utils.returnOkResponse("Xác nhận chỉ số thành công", null);
+//  }
 
   @Operation(summary = "Lấy dữ liệu tiêu thụ gần nhất (3 tháng)", description = "Lấy hình ảnh mới nhất và chỉ số + số tiền của 3 tháng liền kề")
   @GetMapping("/recent/{customerId}")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'METER_INSPECTION_STAFF')")
   public ResponseEntity<WrapperApiResponse> getRecentUsage(
     @Parameter(description = "Mã ID của khách hàng", example = "CUST-2024-001") @PathVariable String customerId
   ) {
@@ -178,6 +180,7 @@ public class UsageHistoryController {
 
   @Operation(summary = "Lấy hình ảnh đồng hồ mới nhất", description = "Lấy ra URL hình ảnh của lần gần nhất đã chụp đồng hồ của khách hàng")
   @GetMapping("/latest-image/{customerId}")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'METER_INSPECTION_STAFF', 'BUSINESS_DEPARTMENT_HEAD', 'SURVEY_STAFF')")
   public ResponseEntity<WrapperApiResponse> getLatestImage(
     @Parameter(description = "Mã ID của khách hàng", example = "CUST-2024-001") @PathVariable String customerId
   ) {
