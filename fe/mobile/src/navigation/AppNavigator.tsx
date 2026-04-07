@@ -18,6 +18,7 @@ import ChangePasswordScreen from '../screens/ChangePasswordScreen';
 import NotificationScreen from '../screens/NotificationScreen';
 import CaptureWaterMeterScreen from '../screens/CaptureWaterMeterScreen';
 import VerifyMeterReadingsScreen from '../screens/VerifyMeterReadingsScreen';
+import ImageReviewScreen from '../screens/ImageReviewScreen';
 
 export type RootStackParamList = {
   Login: undefined;
@@ -49,6 +50,7 @@ export type RootStackParamList = {
     address?: string;
   };
   VerifyMeterReadings: undefined;
+  ImageReview: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -91,6 +93,7 @@ export default function AppNavigator() {
             <Stack.Screen name="Notification" component={NotificationScreen} />
             <Stack.Screen name="CaptureWaterMeter" component={CaptureWaterMeterScreen} />
             <Stack.Screen name="VerifyMeterReadings" component={VerifyMeterReadingsScreen} />
+            <Stack.Screen name="ImageReview" component={ImageReviewScreen} />
           </>
         )}
       </Stack.Navigator>

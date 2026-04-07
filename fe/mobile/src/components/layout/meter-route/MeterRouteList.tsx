@@ -46,7 +46,7 @@ export default function MeterRouteList({ period }: { period: any }) {
 
   useEffect(() => {
     const fetchRoutes = async () => {
-      const { cacheService } = require('../../services/cacheService');
+      const { cacheService } = require('../../../services/cacheService');
       const cacheKey = `routes:${period.ky}:${period.nam}:${period.dot}`;
 
       // 1. Dùng cache để hiển thị ngay lập tức
