@@ -13,6 +13,7 @@ public record PendingReviewResponse(
     BigDecimal oldIndex,
     BigDecimal newIndexAI,
     String imageUrl,
-    String status
+    String status,
+    String routeId
 ) {
 }

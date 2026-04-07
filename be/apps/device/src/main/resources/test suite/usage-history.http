@@ -78,7 +78,7 @@ Content-Disposition: form-data; name="recordingDate"
 # ============================================================================
 
 ### TC09 - Lấy danh sách các bản ghi chờ phê duyệt (AI reviews)
-GET {{uri}}/pending-reviews
+GET {{uri}}/pending-reviews?roadmapId=5e6f7081-4000-4eee-9fff-eeee4eee0001
 Authorization: Bearer {{access_token}}
 
 ### TC10 - Xác nhận chỉ số sau khi AI phân tích

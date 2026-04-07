@@ -13,10 +13,8 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import com.capstone.device.infrastructure.service.GcsService;
-import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.math.BigDecimal;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
@@ -29,27 +27,17 @@ public class UsageHistoryUseCase {
   WaterMeterService waterMeterService;
   UsageHistoryService usageHistoryService;
   GcsService service;
-  StringRedisTemplate redisTemplate;
-
-  private static final String REDIS_KEY_PREFIX = "meter:image:url:";
 
   public UsageResponse updateWaterIndex(UsageHistoryRequest request, String serial) {
     if (!waterMeterService.isWaterMeterExisting(serial)) {
       throw new IllegalArgumentException("Serial " + serial + " does not exist");
     }
 
-    var imageUrl = redisTemplate.opsForValue().get(REDIS_KEY_PREFIX + serial);
-    log.info("Image url: {}", imageUrl);
-    if (imageUrl == null) {
-      imageUrl = "";
+    var lastUsage = usageHistoryService.getTheLatestUsageHistoryBySerial(serial);
+    if (lastUsage != null && lastUsage.usagesList().getFirst().getStatus().equals("PENDING")) {
+      return usageHistoryService.updateUsageDetails(serial, request.recordingDate(), request.index());
     }
-
-    var response = usageHistoryService.addWaterIndexOfThisMonth(imageUrl, serial, request.index(), request.recordingDate());
-
-    // Clear cache after usage
-    redisTemplate.delete(REDIS_KEY_PREFIX + serial);
-
-    return response;
+    return null;
   }
 
   public AnalysisResponse analysisTheMeterImageWithSerial(AnalysisRequest request, String serial) {
@@ -61,12 +49,23 @@ public class UsageHistoryUseCase {
     var response = usageHistoryService.extractDataFromTheMeterImage(request.image());
     serial = serial != null ? serial : response.serial();
 
+    // Nếu AI không nhận diện được Serial, thử lấy từ CustomerId cấp bởi Client
+    if (serial == null && request.customerId() != null) {
+      try {
+        var customerUsageHistory = usageHistoryService.getUsageHistoryByCustomerId(request.customerId());
+        if (customerUsageHistory != null) {
+          serial = customerUsageHistory.serial();
+        }
+      } catch (Exception e) {
+        log.warn("Could not resolve serial for customerId: {} - {}", request.customerId(), e.getMessage());
+      }
+    }
+
     // Upload to GCS
-//    var imageUrl = service.upload(request.image());
+    // var imageUrl = service.upload(request.image());
 
-    // Cache to Redis with 1 days timeout
-    redisTemplate.opsForValue().set(REDIS_KEY_PREFIX + serial, "imageUrl", Duration.ofDays(1));
-
+    usageHistoryService.addWaterIndexOfThisMonth("imageUrl", serial,
+        BigDecimal.valueOf(Long.parseLong(response.index())), request.recordingDate(), "PENDING");
     return response;
   }
 
@@ -75,20 +74,21 @@ public class UsageHistoryUseCase {
   }
 
   public UsageResponse updateUsage(String serial, LocalDate recordingDate, BigDecimal index, String imageUrl) {
-    return usageHistoryService.updateUsageDetails(serial, recordingDate, index, imageUrl);
+    return usageHistoryService.updateUsageDetails(serial, recordingDate, index);
   }
 
   public List<UsageResponse> getUsageByCustomerIds(Collection<String> customerIds) {
     return usageHistoryService.getUsageByCustomerIds(customerIds);
   }
 
-  public List<PendingReviewResponse> getPendingReviews() {
-    return usageHistoryService.getPendingReviews();
+  public List<PendingReviewResponse> getPendingReviews(String roadmapId) {
+    return usageHistoryService.getPendingReviews(roadmapId);
   }
 
-  public void confirmMeterReading(String reviewId, BigDecimal finalIndex, String status) {
-    usageHistoryService.confirmMeterReading(reviewId, finalIndex, status);
-  }
+  // public void confirmMeterReading(String reviewId, BigDecimal finalIndex,
+  // String status) {
+  // usageHistoryService.confirmMeterReading(reviewId, finalIndex, status);
+  // }
 
   public UsageResponse getUsageHistoryByCustomerId(String customerId) {
     return usageHistoryService.getUsageHistoryByCustomerId(customerId);

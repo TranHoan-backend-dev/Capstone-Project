@@ -21,12 +21,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -73,11 +73,12 @@ class UsageHistoryServiceImplTest {
   void should_addWaterIndexOfThisMonth_When_HistoryFound() {
     // Given
     Object data = new Object();
-    var wrappedCustomer = new WrapperApiResponse(200, "Success", data, LocalDateTime.now());
-    var customerInfo = new CustomerWaterPriceRefResponse("CUST-001", "Hoàn", "PRICE-001");
+    var wrappedCustomer = new WrapperApiResponse(200, "Success", data, OffsetDateTime.now());
+    var customerInfo = new CustomerWaterPriceRefResponse("CUST-001", "Hoàn", "PRICE-001", "RM-001", "Serial-001", "Addr-001");
 
     when(waterMeterRepository.findWaterMeterById("WM-001")).thenReturn(meter);
     when(repository.findByMeter(meter)).thenReturn(Optional.of(history));
+    when(customerService.getCustomerIdByMeterId("WM-001")).thenReturn("CUST-001");
     when(customerService.getCustomerById("CUST-001")).thenReturn(wrappedCustomer);
     when(objectMapper.convertValue(any(), eq(CustomerWaterPriceRefResponse.class))).thenReturn(customerInfo);
     when(waterPriceRepository.findById("PRICE-001")).thenReturn(Optional.of(price));
@@ -88,7 +89,7 @@ class UsageHistoryServiceImplTest {
     when(repository.save(any())).thenReturn(history);
 
     // When
-    var response = service.addWaterIndexOfThisMonth("url", "WM-001", BigDecimal.TEN, LocalDate.now());
+    var response = service.addWaterIndexOfThisMonth("url", "WM-001", BigDecimal.TEN, LocalDate.now(), "PENDING");
 
     // Then
     assertNotNull(response);
@@ -96,23 +97,17 @@ class UsageHistoryServiceImplTest {
   }
 
   @Test
-  void should_ThrowException_When_MassIsInvalid() {
+  void should_ThrowException_When_IndexIsInvalid() {
     // Given
     history.getUsages()
       .add(Usage.builder().index(new BigDecimal("100")).recordingDate(LocalDate.now().minusDays(1)).build());
-    var customerInfo = new CustomerWaterPriceRefResponse("CUST-001", "Hoàn", "PRICE-001");
-    Object data = new Object();
-    WrapperApiResponse wrappedCustomer = new WrapperApiResponse(200, "Success", data, LocalDateTime.now());
 
     when(waterMeterRepository.findWaterMeterById("WM-001")).thenReturn(meter);
     when(repository.findByMeter(meter)).thenReturn(Optional.of(history));
-    when(customerService.getCustomerById("CUST-001")).thenReturn(wrappedCustomer);
-    when(objectMapper.convertValue(any(), any(Class.class))).thenReturn(customerInfo);
-    when(waterPriceRepository.findById(anyString())).thenReturn(Optional.of(price));
 
     // When & Then - New index (50) < Previous index (100)
     assertThrows(IllegalArgumentException.class,
-      () -> service.addWaterIndexOfThisMonth("url", "WM-001", new BigDecimal("50"), LocalDate.now()));
+      () -> service.addWaterIndexOfThisMonth("url", "WM-001", new BigDecimal("50"), LocalDate.now(), "PENDING"));
   }
 
   @Test

@@ -69,7 +69,7 @@ export interface MeterService {
   /**
    * Phân tích ảnh chụp đồng hồ với AI (không cần mã serial)
    */
-  analyzeMeterImage: (recordingDate: string, image: any, options?: ApiOptions) => Promise<any>;
+  analyzeMeterImage: (recordingDate: string, image: any, customerId?: string, options?: ApiOptions) => Promise<any>;
 
   /**
    * Phân tích ảnh chụp đồng hồ với AI (có mã serial)
@@ -106,9 +106,12 @@ export const meterService: MeterService = {
     return response.data;
   },
 
-  analyzeMeterImage: async (recordingDate, image, options) => {
+  analyzeMeterImage: async (recordingDate, image, customerId, options) => {
     const formData = new FormData();
     formData.append('recordingDate', recordingDate);
+    if (customerId) {
+      formData.append('customerId', customerId);
+    }
 
     if (image) {
       const uri = typeof image === 'string' ? image : image.uri;

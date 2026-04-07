@@ -17,16 +17,6 @@ services:
     networks:
       - app-network
 
-  redis:
-    image: redis:7-alpine
-    container_name: redis
-    restart: always
-    ports:
-      - ${REDIS_PORT}
-    volumes:
-      - redis_data:/data
-    networks:
-      - app-network
   # kong-migrations:
   #   image: kong:3.6
   #   command: kong migrations bootstrap
@@ -122,6 +112,5 @@ services:
 
 volumes:
   rabbitmq_data:
-  redis_data:
 networks:
   app-network:

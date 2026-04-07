@@ -94,46 +94,43 @@ export default function CaptureWaterMeterScreen({ route }: any) {
       const { serial, source, totalCustomer } = route.params || {};
       const recordingDate = new Date().toISOString().split('T')[0];
 
-      let response;
+      let response: any;
       if (source === 'customer' && serial) {
         console.log(`[CaptureWaterMeterScreen.tsx] Calling /analyze/${serial}`);
         response = await meterService.analyzeMeterImageWithSerial(serial, recordingDate, { uri: photoUri });
       } else {
         console.log(`[CaptureWaterMeterScreen.tsx] Calling /analyze (generic)`);
-        response = await meterService.analyzeMeterImage(recordingDate, { uri: photoUri });
+        response = await meterService.analyzeMeterImage(recordingDate, { uri: photoUri }, route.params?.customerId);
       }
 
       console.log("[CaptureWaterMeterScreen.tsx] AI Analyze Response:", response);
 
+      // Lưu chi tiết kết quả vào Local Cache để chuẩn bị cho bước Duyệt (Tinder UI)
+      if (response) {
+        try {
+          const { localCapturedService } = require('../services/localCapturedService');
+          await localCapturedService.saveAuditRecord({
+            id: response.id || `local_${Date.now()}`,
+            customerId: route.params?.customerId,
+            customerName: route.params?.customerName,
+            photoUri: photoUri,
+            aiIndex: response.newIndexAI || 0,
+            aiSerial: response.serial || '',
+            timestamp: new Date().toISOString(),
+          });
+          console.log("[Capture] Saved audit record to local cache");
+        } catch (e: any) {
+          console.warn('[Capture] Failed to save audit record: ' + e.message);
+        }
+      }
+
       if (totalCustomer && currentCustomerIndex < totalCustomer) {
         showToast.success(`Gửi ảnh thành công! Tiếp tục khách hàng ${currentCustomerIndex + 1}/${totalCustomer}`);
-
-        // Lưu trạng thái đã chụp cục bộ để hiển thị trong Danh sách
-        if (route.params?.customerId) {
-          try {
-            const { localCapturedService } = require('../services/localCapturedService');
-            await localCapturedService.markAsCaptured(route.params.customerId);
-          } catch (e: any) {
-            console.warn('[Capture] Failed to save local state ' + e.message);
-          }
-        }
-
         setCurrentCustomerIndex(prev => prev + 1);
         setPhotoUri(null);
         setIsBlurry(null);
       } else {
         showToast.success('Gửi ảnh thành công!');
-
-        // Lưu trạng thái đã chụp cục bộ
-        if (route.params?.customerId) {
-          try {
-            const { localCapturedService } = require('../services/localCapturedService');
-            await localCapturedService.markAsCaptured(route.params.customerId);
-          } catch (e: any) {
-            console.warn('[Capture] Failed to save local state ' + e.message);
-          }
-        }
-
         navigation.goBack();
       }
     } catch (error: any) {
