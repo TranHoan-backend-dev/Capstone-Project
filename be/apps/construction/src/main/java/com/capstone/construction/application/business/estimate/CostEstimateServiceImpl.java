@@ -6,6 +6,7 @@ import com.capstone.common.enumerate.RoleName;
 import com.capstone.common.utils.SharedConstant;
 import com.capstone.common.utils.SharedMessage;
 import com.capstone.common.request.BaseMaterial;
+import com.capstone.common.utils.Utils;
 import com.capstone.construction.application.dto.request.estimate.CreateRequest;
 import com.capstone.construction.application.dto.request.estimate.EstimateFilterRequest;
 import com.capstone.construction.application.dto.request.estimate.UpdateRequest;
@@ -191,8 +192,8 @@ public class CostEstimateServiceImpl implements CostEstimateService {
     log.info("Fetching all cost estimates with pageable: {}", pageable);
 
     // Convert string dates to LocalDateTime
-    LocalDateTime startDate = parseFrom(request != null ? request.from() : null);
-    LocalDateTime endDate = parseTo(request != null ? request.to() : null);
+    LocalDateTime startDate = Utils.parseFrom(request != null ? request.from() : null);
+    LocalDateTime endDate = Utils.parseTo(request != null ? request.to() : null);
 
     var keyword = request == null ? null : request.keyword();
 
@@ -257,20 +258,6 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   public boolean isExisting(String id) {
     log.info("isExisting with id: {}", id);
     return eRepo.existsById(id);
-  }
-
-  private LocalDateTime parseFrom(String from) {
-    if (from == null || from.isBlank()) {
-      return null;
-    }
-    return LocalDate.parse(from, DateTimeFormatter.ofPattern(SharedConstant.DATE_PATTERN)).atStartOfDay();
-  }
-
-  private LocalDateTime parseTo(String to) {
-    if (to == null || to.isBlank()) {
-      return null;
-    }
-    return LocalDate.parse(to, DateTimeFormatter.ofPattern(SharedConstant.DATE_PATTERN)).atTime(LocalTime.MAX);
   }
 
   private List<BaseMaterial> mapMaterials(List<MaterialsOfCostEstimateResponse> materials) {

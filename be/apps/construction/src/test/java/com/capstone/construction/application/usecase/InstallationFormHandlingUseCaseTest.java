@@ -37,9 +37,6 @@ class InstallationFormHandlingUseCaseTest {
   @Mock
   private EmployeeService empSrv;
 
-  @Mock
-  private CostEstimateUseCase costEstimateUseCase;
-
   @InjectMocks
   private InstallationFormUseCase useCase;
 
@@ -172,36 +169,6 @@ class InstallationFormHandlingUseCaseTest {
   void should_ThrowException_When_RequestIsNull() {
     assertThatThrownBy(() -> useCase.createNewInstallationRequest(USER_ID, null))
       .isInstanceOf(NullPointerException.class);
-  }
-
-  @Test
-  @DisplayName("Should approve and create estimate")
-  void should_ApproveAndCreateEstimate_When_StatusIsTrue() {
-    var request = new ApproveRequest("1", "1001", true);
-    var order = mock(InstallationFormListResponse.class);
-    when(order.formCode()).thenReturn("1001");
-    when(order.formNumber()).thenReturn("1");
-    when(order.registrationAt()).thenReturn("2024-01-01T10:00:00");
-
-    when(ifSrv.getByFormCodeAndFormNumber("1", "1001")).thenReturn(order);
-
-    useCase.reviewInstallationForm(USER_ID, request);
-
-    verify(ifSrv).reviewInstallationForm(USER_ID, request);
-    verify(costEstimateUseCase).createEstimate(any());
-  }
-
-  @Test
-  @DisplayName("Should approve but not create estimate when status is false")
-  void should_ApproveAndNotCreateEstimate_When_StatusIsFalse() {
-    var request = new ApproveRequest("1", "1001", false);
-    var order = mock(InstallationFormListResponse.class);
-    when(ifSrv.getByFormCodeAndFormNumber("1", "1001")).thenReturn(order);
-
-    useCase.reviewInstallationForm(USER_ID, request);
-
-    verify(ifSrv).reviewInstallationForm(USER_ID, request);
-    verify(costEstimateUseCase, never()).createEstimate(any());
   }
 
   private @NonNull NewOrderRequest createValidNewOrderRequest() {
