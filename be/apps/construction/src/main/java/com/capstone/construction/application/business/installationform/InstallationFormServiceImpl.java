@@ -299,7 +299,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       entity.getBankAccountNumber(),
       entity.getBankAccountProviderLocation(),
       entity.getCitizenIdentificationNumber(),
-      entity.getCitizenIdentificationProvideDate() == null ? null : entity.getCitizenIdentificationProvideDate().toString(),
+      entity.getCitizenIdentificationProvideDate() == null ? null : entity.getCitizenIdentificationProvideDate(),
       entity.getCitizenIdentificationProvideLocation(),
       entity.getNumberOfHousehold(),
       entity.getHouseholdRegistrationNumber(),

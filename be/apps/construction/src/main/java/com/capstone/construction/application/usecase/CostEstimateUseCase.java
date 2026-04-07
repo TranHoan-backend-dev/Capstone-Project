@@ -6,7 +6,6 @@ import com.capstone.common.exception.NotExistingException;
 import com.capstone.common.utils.SharedMessage;
 import com.capstone.construction.application.business.estimate.CostEstimateService;
 import com.capstone.construction.application.dto.request.estimate.AssignTheSignificanceRequest;
-import com.capstone.construction.application.dto.request.estimate.CreateRequest;
 import com.capstone.construction.application.dto.request.estimate.EstimateFilterRequest;
 import com.capstone.construction.application.dto.request.estimate.SignRequest;
 import com.capstone.construction.application.dto.request.estimate.UpdateRequest;
@@ -56,10 +55,6 @@ public class CostEstimateUseCase {
   @Value("${rabbit-mq-config.queue_name}")
   String QUEUE_NAME;
   // </editor-fold>
-
-  public CostEstimateResponse createEstimate(@NonNull CreateRequest request) {
-    return estSrv.createEstimate(request);
-  }
 
   public CostEstimateResponse updateEstimate(String id, @NonNull UpdateRequest request) {
     var result = estSrv.updateEstimate(id, request);

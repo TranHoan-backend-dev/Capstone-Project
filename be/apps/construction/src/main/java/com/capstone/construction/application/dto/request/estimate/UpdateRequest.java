@@ -17,6 +17,7 @@ public record UpdateRequest(
   @NotNull(message = Message.PT_08)
   Boolean isFinished
 ) {
+  // TODO: Doan nay thong tin dang bi lap voi GeneralInformation cua CostEstimateResponse
   public record GeneralInformation(
     @Schema(description = "Tên khách hàng", example = "Trần Văn A")
     String customerName,
