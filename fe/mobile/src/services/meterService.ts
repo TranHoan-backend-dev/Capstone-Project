@@ -27,7 +27,7 @@ export interface PendingReview {
   oldIndex: number;
   newIndexAI: number; // Chỉ số do AI gợi ý
   imageUrl: string;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  // status: 'PENDING' | 'APPROVED' | 'REJECTED';
 }
 
 export interface MeterService {
@@ -35,37 +35,64 @@ export interface MeterService {
    * Lấy danh sách các bản ghi cần phê duyệt (End of Day)
    * roadmapId: lọc theo lộ trình (nếu backend hỗ trợ query)
    */
-  getPendingReviews: (options?: ApiOptions & { roadmapId?: string }) => Promise<PendingReview[]>;
+  getPendingReviews: (
+    options?: ApiOptions & { roadmapId?: string },
+  ) => Promise<PendingReview[]>;
 
   /**
    * Xác nhận chỉ số sau khi đã kiểm tra (Phê duyệt hoặc sửa đổi)
    */
-  confirmMeterReading: (reviewId: string, finalIndex: number, status: 'APPROVED' | 'REJECTED', options?: ApiOptions) => Promise<any>;
+  confirmMeterReading: (
+    reviewId: string,
+    finalIndex: number,
+    status: 'APPROVED' | 'REJECTED',
+    options?: ApiOptions,
+  ) => Promise<any>;
 
   /**
    * Cập nhật thủ công chỉ số theo serial (TC11)
    */
-  updateUsageManual: (serial: string, date: string, index: number, options?: ApiOptions) => Promise<any>;
+  updateUsageManual: (
+    serial: string,
+    date: string,
+    index: number,
+    options?: ApiOptions,
+  ) => Promise<any>;
 
   /**
    * Lấy lịch sử sử dụng nước của khách hàng (bao gồm chỉ số cũ)
    */
-  getUsageHistory: (customerId: string, options?: ApiOptions) => Promise<UsageHistoryResponse[]>;
+  getUsageHistory: (
+    customerId: string,
+    options?: ApiOptions,
+  ) => Promise<UsageHistoryResponse[]>;
 
   /**
    * Cập nhật chỉ số nước mới
    */
-  updateMeterIndex: (serial: string, index: number, recordingDate: string, image: any, options?: ApiOptions) => Promise<any>;
+  updateMeterIndex: (
+    serial: string,
+    index: number,
+    recordingDate: string,
+    image: any,
+    options?: ApiOptions,
+  ) => Promise<any>;
 
   /**
    * Lấy chi tiết khách hàng (bao gồm mã đồng hồ, loại giá...)
    */
-  getCustomerDetails: (customerId: string, options?: ApiOptions) => Promise<any>;
+  getCustomerDetails: (
+    customerId: string,
+    options?: ApiOptions,
+  ) => Promise<any>;
 
   /**
    * Lấy dữ liệu tiêu thụ gần nhất (3 tháng)
    */
-  getRecentUsage: (customerId: string, options?: ApiOptions) => Promise<UsageHistoryResponse>;
+  getRecentUsage: (
+    customerId: string,
+    options?: ApiOptions,
+  ) => Promise<UsageHistoryResponse>;
 
   /**
    * Lấy URL hình ảnh đồng hồ mới nhất
@@ -75,24 +102,62 @@ export interface MeterService {
   /**
    * Phân tích ảnh chụp đồng hồ với AI (không cần mã serial)
    */
-  analyzeMeterImage: (recordingDate: string, image: any, customerId?: string, options?: ApiOptions) => Promise<any>;
+  analyzeMeterImage: (
+    recordingDate: string,
+    image: any,
+    customerId?: string,
+    options?: ApiOptions,
+  ) => Promise<any>;
 
   /**
    * Phân tích ảnh chụp đồng hồ với AI (có mã serial)
    */
-  analyzeMeterImageWithSerial: (serial: string, recordingDate: string, image: any, options?: ApiOptions) => Promise<any>;
+  analyzeMeterImageWithSerial: (
+    serial: string,
+    recordingDate: string,
+    image: any,
+    options?: ApiOptions,
+  ) => Promise<any>;
 }
 
 export const meterService: MeterService = {
-  getPendingReviews: async (options) => {
-    const roadmapId = (options as { roadmapId?: string } | undefined)?.roadmapId;
-    const rest = options ? { ...options } : {};
-    if (roadmapId) {
-      delete (rest as { roadmapId?: string }).roadmapId;
+  // Trong meterService.ts
+  // Trong meterService.ts
+  getPendingReviews: async (options?: { roadmapId?: string }) => {
+    const params = new URLSearchParams();
+    if (options?.roadmapId) {
+      params.append('roadmapId', options.roadmapId);
     }
-    const qs = roadmapId ? `?roadmapId=${encodeURIComponent(roadmapId)}` : '';
-    const response = await apiFetch(`/d/usage/pending-reviews${qs}`, rest);
-    return response.data;
+
+    const queryString = params.toString();
+    const url = `/d/usage/pending-reviews${
+      queryString ? `?${queryString}` : ''
+    }`;
+
+    try {
+      const response = await apiFetch(url);
+
+      // Log để debug
+      console.log('Pending reviews response:', response);
+
+      // Lấy data từ response wrapper
+      if (response && response.data) {
+        const data = response.data;
+        console.log('Extracted data:', data);
+        console.log('Data length:', data?.length || 0);
+        return Array.isArray(data) ? data : [];
+      }
+
+      // Fallback nếu response trực tiếp là mảng
+      if (Array.isArray(response)) {
+        return response;
+      }
+
+      return [];
+    } catch (error) {
+      console.error('Error in getPendingReviews:', error);
+      throw error;
+    }
   },
 
   confirmMeterReading: async (reviewId, finalIndex, status, options) => {
@@ -103,17 +168,21 @@ export const meterService: MeterService = {
         'Content-Type': 'application/x-www-form-urlencoded',
         ...options?.headers,
       },
-      body: `finalIndex=${encodeURIComponent(String(finalIndex))}&status=${encodeURIComponent(status)}`,
+      body: `finalIndex=${encodeURIComponent(
+        String(finalIndex),
+      )}&status=${encodeURIComponent(status)}`,
     });
   },
 
   updateUsageManual: async (serial, date, index, options) => {
     return await apiFetch(
-      `/d/usage/${encodeURIComponent(serial)}?date=${encodeURIComponent(date)}&index=${encodeURIComponent(String(index))}`,
+      `/d/usage/${encodeURIComponent(serial)}?date=${encodeURIComponent(
+        date,
+      )}&index=${encodeURIComponent(String(index))}`,
       {
         ...options,
         method: 'PUT',
-      }
+      },
     );
   },
 
@@ -123,12 +192,18 @@ export const meterService: MeterService = {
   },
 
   getLatestImage: async (customerId, options) => {
-    const response = await apiFetch(`/d/usage/latest-image/${customerId}`, options);
+    const response = await apiFetch(
+      `/d/usage/latest-image/${customerId}`,
+      options,
+    );
     return response.data;
   },
 
   getUsageHistory: async (customerId, options) => {
-    const response = await apiFetch(`/d/usage/batch?ids=${customerId}`, options);
+    const response = await apiFetch(
+      `/d/usage/batch?ids=${customerId}`,
+      options,
+    );
     return response.data;
   },
 
@@ -154,13 +229,18 @@ export const meterService: MeterService = {
       body: formData,
       headers: {
         'Content-Type': 'multipart/form-data',
-        ...options?.headers
+        ...options?.headers,
       },
     });
     return response.data;
   },
 
-  analyzeMeterImageWithSerial: async (serial, recordingDate, image, options) => {
+  analyzeMeterImageWithSerial: async (
+    serial,
+    recordingDate,
+    image,
+    options,
+  ) => {
     const formData = new FormData();
     formData.append('recordingDate', recordingDate);
 
@@ -179,7 +259,7 @@ export const meterService: MeterService = {
       body: formData,
       headers: {
         'Content-Type': 'multipart/form-data',
-        ...options?.headers
+        ...options?.headers,
       },
     });
     return response.data;
@@ -205,13 +285,16 @@ export const meterService: MeterService = {
       body: formData,
       headers: {
         'Content-Type': 'multipart/form-data',
-        ...options?.headers
+        ...options?.headers,
       },
     });
   },
 
   getCustomerDetails: async (customerId, options) => {
-    const response = await apiFetch(`/customer/customers/${customerId}`, options);
+    const response = await apiFetch(
+      `/customer/customers/${customerId}`,
+      options,
+    );
     return response.data;
   },
 };
