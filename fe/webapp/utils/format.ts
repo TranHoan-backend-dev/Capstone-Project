@@ -1,4 +1,4 @@
-import {DateValue} from "@heroui/react";
+import { DateValue } from "@heroui/react";
 
 export const formatVND = (value: number | string) => {
   const number =
@@ -41,7 +41,6 @@ export const formatDate2 = (date: DateValue | null | undefined) => {
 export const formatDateValueToString = (date: DateValue | null | undefined) => {
   if (!date) return "";
 
-
   if (typeof date === "string") return date;
 
   if ("year" in date && "month" in date && "day" in date) {
@@ -54,8 +53,8 @@ export const formatDateValueToString = (date: DateValue | null | undefined) => {
 };
 
 export const formatDateProfile = (date: string) => {
-    if (!date) return null;
-    return new Date(date).toISOString().split("T")[0];
+  if (!date) return null;
+  return new Date(date).toISOString().split("T")[0];
 };
 
 export const formatToDDMMYYYY = (dateStr: string) => {
@@ -64,4 +63,17 @@ export const formatToDDMMYYYY = (dateStr: string) => {
   const month = String(d.getMonth() + 1).padStart(2, "0");
   const year = d.getFullYear();
   return `${day}-${month}-${year}`;
+};
+
+export const formatDate4 = (dateString: string) => {
+  if (!dateString) return "";
+  
+  try {
+    const [datePart] = dateString.split("T");
+    const [year, month, day] = datePart.split("-");
+    return `${day}/${month}/${year}`;
+  } catch (error) {
+    console.error("Error formatting date:", error);
+    return dateString;
+  }
 };
