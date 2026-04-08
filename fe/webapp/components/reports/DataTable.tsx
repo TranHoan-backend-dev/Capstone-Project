@@ -33,7 +33,6 @@ export const DataTable = ({
     );
   }, [data, searchQuery, columns]);
 
-  // Thêm cột STT vào danh sách cột
   const allColumns = useMemo(() => {
     return [{ key: "stt", label: "STT", width: "60px" }, ...columns];
   }, [columns]);
@@ -52,8 +51,7 @@ export const DataTable = ({
                 {column.label}
               </th>
             ))}
-          </tr>{" "}
-          {/* Đã sửa: thêm dấu > và đóng đúng thẻ tr */}
+          </tr>
         </thead>
         <tbody className="divide-y bg-white dark:bg-zinc-200">
           {filteredData.length === 0 ? (
