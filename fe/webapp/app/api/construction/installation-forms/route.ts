@@ -17,10 +17,12 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const page = Number(searchParams.get("page") ?? 0);
     const size = Number(searchParams.get("size") ?? 10);
-    const sort = searchParams.get("sort") || "created_at,desc";
+    const sort = searchParams.get("sort") || "createdAt,desc";
     const keyword = searchParams.get("keyword") || undefined;
     const from = searchParams.get("from") || undefined;
     const to = searchParams.get("to") || undefined;
+    const status = searchParams.get("status") || undefined; // Thêm status parameter
+
     const response = await getInstallationForms(
       accessToken,
       page,
@@ -29,11 +31,12 @@ export async function GET(req: NextRequest) {
       keyword,
       from,
       to,
+      status, // Truyền status vào service
     );
 
     return NextResponse.json(
       {
-        message: "Lấy danh sách chi nhánh cấp nước thành công",
+        message: "Lấy danh sách đơn thành công",
         data: response.data.data,
       },
       { status: 200 },
