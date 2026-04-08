@@ -2,10 +2,10 @@ package com.capstone.construction.adapter;
 
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
-import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.common.utils.Utils;
 import com.capstone.construction.application.business.installationform.InstallationFormService;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
+import com.capstone.construction.application.dto.request.installationform.InstallationFormFilterRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import com.capstone.construction.application.usecase.InstallationFormUseCase;
@@ -59,8 +59,7 @@ public class InstallationFormController {
   @PreAuthorize("hasAnyAuthority('ORDER_RECEIVING_STAFF', 'IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> createInstallationForm(
     @RequestBody @Valid NewOrderRequest request,
-    @AuthenticationPrincipal Jwt jwt
-  ) {
+    @AuthenticationPrincipal Jwt jwt) {
     log.info("Received request to create installation form: {}", request.formNumber());
     var id = jwt.getSubject();
 
@@ -80,7 +79,8 @@ public class InstallationFormController {
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF')")
   public ResponseEntity<WrapperApiResponse> getLastFormCode() {
     log.info("Received request to get the last form code");
-    return Utils.returnOkResponse("Lấy ra mã đơn và số đơn gần nhất thành công", installationFormService.getLastFormCode());
+    return Utils.returnOkResponse("Lấy ra mã đơn và số đơn gần nhất thành công",
+      installationFormService.getLastFormCode());
   }
 
   @Operation(summary = "Phê duyệt hoặc từ chối đơn lắp đặt", description = """
@@ -95,8 +95,7 @@ public class InstallationFormController {
   @PreAuthorize("hasAnyAuthority('SURVEY_STAFF', 'IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> reviewInstallationForm(
     @AuthenticationPrincipal Jwt jwt,
-    @RequestBody @Valid ApproveRequest request
-  ) {
+    @RequestBody @Valid ApproveRequest request) {
     log.info("Received request to approve installation form: {}", request.formCode());
 
     var id = jwt.getSubject();
@@ -124,7 +123,7 @@ public class InstallationFormController {
     return Utils.returnOkResponse("Thay đổi trạng thái thành công", null);
   }
 
-  @Operation(summary = "Lấy danh sách đơn lắp đặt (có phân trang & lọc)", description = "API này cho phép lấy danh sách các đơn lắp đặt nước. Hỗ trợ phân trang và lọc theo từ khóa (tên khách hàng, địa chỉ) hoặc khoảng thời gian.", responses = {
+  @Operation(summary = "Lấy danh sách đơn lắp đặt (có phân trang & lọc)", description = "API này cho phép lấy danh sách các đơn lắp đặt nước. Hỗ trợ phân trang và lọc theo từ khóa (tên khách hàng, địa chỉ), khoảng thời gian hoặc trạng thái đơn.", responses = {
     @ApiResponse(responseCode = "200", description = "Thành công. Trả về danh sách đơn lắp đặt.", content = @Content(schema = @Schema(implementation = InstallationFormListResponse.class))),
     @ApiResponse(responseCode = "400", description = "Lỗi dữ liệu đầu vào (VD: định dạng ngày sai, ngày bắt đầu lớn hơn ngày kết thúc).", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "500", description = "Lỗi hệ thống.", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
@@ -133,13 +132,13 @@ public class InstallationFormController {
   @PreAuthorize("hasAnyAuthority('PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'IT_STAFF', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF', 'CONSTRUCTION_DEPARTMENT_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'FINANCE_DEPARTMENT')")
   public ResponseEntity<WrapperApiResponse> getInstallationForms(
     @Parameter(description = "Thông tin phân trang (page, size, sort)", schema = @Schema(implementation = Pageable.class)) Pageable pageable,
-    @Parameter(description = "Thông tin lọc (từ khóa, khoảng thời gian)") BaseFilterRequest request
+    @Parameter(description = "Thông tin lọc (từ khóa, khoảng thời gian, trạng thái)") InstallationFormFilterRequest request
   ) {
     log.info("Received request to fetch grouped installation forms");
 
-    if (request.from() != null && request.to() != null) {
-      LocalDate from = LocalDate.parse(request.from());
-      LocalDate to = LocalDate.parse(request.to());
+    if (request.getFrom() != null && request.getTo() != null) {
+      LocalDate from = LocalDate.parse(request.getFrom());
+      LocalDate to = LocalDate.parse(request.getTo());
 
       if (from.isAfter(to)) {
         throw new IllegalArgumentException("Ngày bắt đầu phải trước ngày kết thúc");

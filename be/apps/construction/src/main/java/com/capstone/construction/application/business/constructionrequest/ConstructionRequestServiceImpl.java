@@ -102,13 +102,13 @@ public class ConstructionRequestServiceImpl implements ConstructionRequestServic
   public Page<ConstructionResponse> getConstructionRequestsList(Pageable pageable,
                                                                 @NonNull BaseFilterRequest request) {
     log.info("Fetching paginated construction request with pageable: {}", pageable);
-    var startDate = Utils.parseFrom(request.from());
-    var endDate = Utils.parseTo(request.to());
+    var startDate = Utils.parseFrom(request.getFrom());
+    var endDate = Utils.parseTo(request.getTo());
     var specification = InstallationFormRepository.search(
-      request.keyword(), startDate, endDate,
-      ProcessingStatus.APPROVED, ProcessingStatus.PENDING_FOR_APPROVAL);
+      request.getKeyword(), startDate, endDate,
+      ProcessingStatus.APPROVED, ProcessingStatus.PENDING_FOR_APPROVAL, null);
 
-    var response = (startDate != null || endDate != null || (request.keyword() != null && !request.keyword().isBlank()))
+    var response = (startDate != null || endDate != null || (request.getKeyword() != null && !request.getKeyword().isBlank()))
       ? ifRepo.findAll(specification, pageable)
       : ifRepo.findByStatusContractAndStatusConstruction(ProcessingStatus.APPROVED.name(), ProcessingStatus.PENDING_FOR_APPROVAL.name(),
       pageable);
