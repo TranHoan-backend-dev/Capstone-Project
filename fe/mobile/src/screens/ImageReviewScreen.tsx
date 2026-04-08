@@ -10,8 +10,10 @@ import {
   Animated,
   Dimensions,
   Image,
+  KeyboardAvoidingView,
   Modal,
   PanResponder,
+  Platform,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -107,6 +109,44 @@ function mapServer(p: PendingReview): HybridReviewItem {
 function hasSerial(s: string): boolean {
   return !!s && s.trim() !== '' && s !== 'N/A';
 }
+
+/*
+const dummyQueue: HybridReviewItem[] = [
+  {
+    id: 'mock-1',
+    source: 'local',
+    customerName: 'Nguyễn Văn A',
+    address: '123 Đường ABC, Hà Nội',
+    aiIndex: 1050,
+    aiSerial: 'SN-00123',
+    oldIndex: 1000,
+    photoUri:
+      'https://images.unsplash.com/photo-1585702138250-afe07474776e?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'mock-2',
+    source: 'server',
+    customerName: 'Trần Thị B',
+    address: '456 Đường XYZ, TP.HCM',
+    aiIndex: 2210,
+    aiSerial: 'SN-00456',
+    oldIndex: 2150,
+    imageUrl:
+      'https://images.unsplash.com/photo-1590496793907-4e96395b0c79?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'mock-3',
+    source: 'local',
+    customerName: 'Lê Văn C',
+    address: '789 Đường LMN, Đà Nẵng',
+    aiIndex: 3345,
+    aiSerial: 'SN-00789',
+    oldIndex: 3300,
+    photoUri:
+      'https://images.unsplash.com/photo-1610492470714-539031eb09d2?q=80&w=600&auto=format&fit=crop',
+  },
+];
+*/
 
 export default function ImageReviewScreen() {
   const navigation = useNavigation();
@@ -207,6 +247,7 @@ export default function ImageReviewScreen() {
       if (newQueue.length === 0 && selectedRoadmapId) {
         showToast.info(`Không có chỉ số nào cần duyệt trong lộ trình này`);
       }
+      // setQueue(dummyQueue);
     } catch (e) {
       console.error('[ImageReview] loadQueue', e);
       showToast.error('Không tải được danh sách duyệt');
@@ -247,7 +288,7 @@ export default function ImageReviewScreen() {
     return () => {
       cancelled = true;
     };
-  }, [current?.id, current?.photoUri, current?.imageUrl, current?.source]);
+  }, [current]);
 
   const resetCardPosition = useCallback(() => {
     Animated.spring(position, {
@@ -297,7 +338,7 @@ export default function ImageReviewScreen() {
       if (current.source === 'local') {
         await localCapturedService.removeAuditRecord(current.id);
       }
-      showToast.success('Đã duyệt chỉ số');
+      // showToast.success('Đã duyệt chỉ số (Mock)');
       popFront();
     } catch (e) {
       console.error('[ImageReview] confirm', e);
@@ -309,7 +350,7 @@ export default function ImageReviewScreen() {
   }, [current, submitting, editIndex, editSerial, popFront, resetCardPosition]);
 
   const runSwipeOut = useCallback(() => {
-    const toX = SCREEN_WIDTH * 1.4;
+    const toX = -SCREEN_WIDTH * 1.4;
     Animated.timing(position, {
       toValue: { x: toX, y: 0 },
       duration: 220,
@@ -322,21 +363,29 @@ export default function ImageReviewScreen() {
   const panResponder = useMemo(
     () =>
       PanResponder.create({
-        onStartShouldSetPanResponder: () => !submitting,
-        onMoveShouldSetPanResponder: (_, g) =>
-          Math.abs(g.dx) > 6 && Math.abs(g.dx) > Math.abs(g.dy),
+        onStartShouldSetPanResponder: () => false,
+        onMoveShouldSetPanResponder: (_, g) => {
+          // Chỉ nhận diện khi vuốt sang trái (dx < 0)
+          // và độ ngang lướt đi phải lớn gấp đôi độ dọc để tránh nhầm với cuộn trang
+          return g.dx < -20 && Math.abs(g.dx) > Math.abs(g.dy) * 2;
+        },
         onPanResponderMove: (_, g) => {
-          position.setValue({ x: g.dx, y: g.dy * 0.15 });
+          // Chỉ cho phép kéo sang trái (x <= 0)
+          const newX = Math.min(0, g.dx);
+          position.setValue({ x: newX, y: g.dy * 0.05 });
         },
         onPanResponderRelease: (_, g) => {
-          if (g.dx > SWIPE_THRESHOLD) {
+          if (g.dx < -SWIPE_THRESHOLD) {
             runSwipeOut();
           } else {
             resetCardPosition();
           }
         },
+        onPanResponderTerminate: () => {
+          resetCardPosition();
+        },
       }),
-    [submitting, position, runSwipeOut, resetCardPosition],
+    [position, runSwipeOut, resetCardPosition],
   );
 
   const rotate = position.x.interpolate({
@@ -346,8 +395,8 @@ export default function ImageReviewScreen() {
   });
 
   const likeOpacity = position.x.interpolate({
-    inputRange: [0, SWIPE_THRESHOLD],
-    outputRange: [0, 1],
+    inputRange: [-SWIPE_THRESHOLD, 0],
+    outputRange: [1, 0],
     extrapolate: 'clamp',
   });
 
@@ -389,10 +438,10 @@ export default function ImageReviewScreen() {
       q.map(item =>
         item.id === current.id
           ? {
-              ...item,
-              customerId: c.customerId,
-              customerName: c.name || item.customerName,
-            }
+            ...item,
+            customerId: c.customerId,
+            customerName: c.name || item.customerName,
+          }
           : item,
       ),
     );
@@ -486,121 +535,128 @@ export default function ImageReviewScreen() {
           <Button
             mode="contained"
             onPress={loadQueue}
-            style={{ marginTop: 16 }}
+            style={styles.refreshBtn}
           >
             Làm mới
           </Button>
         </View>
       ) : (
-        <View style={styles.body}>
-          <View style={styles.metaRow}>
-            <Text style={styles.metaBadge}>Còn lại: {remain}</Text>
-            <Text style={[styles.metaBadge, styles.metaMuted]}>
-              {current.source === 'local' ? 'Ảnh máy (nhanh)' : 'Ảnh server'}
-            </Text>
-          </View>
-
-          {/* Hiển thị roadmap đang chọn */}
-          {selectedRoadmapId && roadmaps.length > 0 && (
-            <Chip
-              icon="map-marker"
-              style={styles.roadmapChip}
-              onPress={() => setMenuVisible(true)}
-            >
-              Lộ trình: {getSelectedRoadmapName()}
-            </Chip>
-          )}
-
-          <Text style={styles.hintSwipe}>
-            Vuốt phải hoặc bấm nút để duyệt (sửa chỉ số trước khi duyệt nếu cần)
-          </Text>
-
-          <Animated.View
-            style={[
-              styles.card,
-              {
-                transform: [
-                  { translateX: position.x },
-                  { translateY: position.y },
-                  { rotate },
-                ],
-              },
-            ]}
+        <KeyboardAvoidingView
+          style={styles.body}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
+        >
+          <ScrollView
+            style={styles.mainScroll}
+            contentContainerStyle={styles.mainScrollContent}
+            keyboardShouldPersistTaps="handled"
           >
-            <View style={styles.swipeImageArea} {...panResponder.panHandlers}>
-              {displayUri ? (
-                <Image
-                  source={{ uri: displayUri }}
-                  style={styles.image}
-                  resizeMode="cover"
-                />
-              ) : (
-                <View style={[styles.image, styles.imagePh]}>
-                  <ActivityIndicator color="#93C5FD" />
-                </View>
-              )}
-              <Animated.View
-                style={[
-                  styles.stamp,
-                  styles.stampLike,
-                  { opacity: likeOpacity },
-                ]}
-              >
-                <Text style={styles.stampTextLike}>DUYỆT</Text>
-              </Animated.View>
+            <View style={styles.metaRow}>
+              <Text style={styles.metaBadge}>Còn lại: {remain}</Text>
+              <Text style={[styles.metaBadge, styles.metaMuted]}>
+                {current.source === 'local' ? 'Ảnh máy (nhanh)' : 'Ảnh server'}
+              </Text>
             </View>
 
-            <ScrollView
-              style={styles.formScroll}
-              keyboardShouldPersistTaps="handled"
-              nestedScrollEnabled
+            {/* Hiển thị roadmap đang chọn */}
+            {selectedRoadmapId && roadmaps.length > 0 && (
+              <Chip
+                icon="map-marker"
+                style={styles.roadmapChip}
+                onPress={() => setMenuVisible(true)}
+              >
+                Lộ trình: {getSelectedRoadmapName()}
+              </Chip>
+            )}
+
+            <Text style={styles.hintSwipe}>
+              Vuốt trái hoặc bấm nút để duyệt (sửa chỉ số trước khi duyệt nếu cần)
+            </Text>
+
+            <Animated.View
+              {...panResponder.panHandlers}
+              style={[
+                styles.card,
+                {
+                  transform: [
+                    { translateX: position.x },
+                    { translateY: position.y },
+                    { rotate },
+                  ],
+                },
+              ]}
             >
-              <Text style={styles.customerTitle} numberOfLines={2}>
-                {current.customerName || 'Chưa gán khách hàng'}
-              </Text>
-              {current.address ? (
-                <Text style={styles.address}>{current.address}</Text>
-              ) : null}
-              {current.oldIndex != null &&
-              !Number.isNaN(Number(current.oldIndex)) ? (
-                <Text style={styles.oldIdx}>
-                  Chỉ số kỳ trước: {String(current.oldIndex)}
+              <View style={styles.swipeImageArea}>
+                {displayUri ? (
+                  <Image
+                    source={{ uri: displayUri }}
+                    style={styles.image}
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <View style={[styles.image, styles.imagePh]}>
+                    <ActivityIndicator color="#93C5FD" />
+                  </View>
+                )}
+                <Animated.View
+                  style={[
+                    styles.stamp,
+                    styles.stampLike,
+                    { opacity: likeOpacity },
+                  ]}
+                >
+                  <Text style={styles.stampTextLike}>DUYỆT</Text>
+                </Animated.View>
+              </View>
+
+              <View style={styles.formPadding}>
+                <Text style={styles.customerTitle} numberOfLines={2}>
+                  {current.customerName || 'Chưa gán khách hàng'}
                 </Text>
-              ) : null}
-
-              {serialMissing && (
-                <View style={styles.warnBox}>
-                  <Text style={styles.warnText}>
-                    Chưa có serial và chưa gán khách hàng — chọn khách hàng hoặc
-                    nhập serial.
+                {current.address ? (
+                  <Text style={styles.address}>{current.address}</Text>
+                ) : null}
+                {current.oldIndex != null &&
+                  !Number.isNaN(Number(current.oldIndex)) ? (
+                  <Text style={styles.oldIdx}>
+                    Chỉ số kỳ trước: {String(current.oldIndex)}
                   </Text>
-                  <Button
-                    mode="outlined"
-                    onPress={() => setPickerOpen(true)}
-                    compact
-                  >
-                    Chọn khách hàng theo lộ trình
-                  </Button>
-                </View>
-              )}
+                ) : null}
 
-              <TextInput
-                mode="outlined"
-                label="Số serial đồng hồ"
-                value={editSerial}
-                onChangeText={setEditSerial}
-                style={styles.input}
-              />
-              <TextInput
-                mode="outlined"
-                label="Chỉ số duyệt"
-                value={editIndex}
-                onChangeText={setEditIndex}
-                keyboardType="decimal-pad"
-                style={styles.input}
-              />
-            </ScrollView>
-          </Animated.View>
+                {serialMissing && (
+                  <View style={styles.warnBox}>
+                    <Text style={styles.warnText}>
+                      Chưa có serial và chưa gán khách hàng — chọn khách hàng hoặc
+                      nhập serial.
+                    </Text>
+                    <Button
+                      mode="outlined"
+                      onPress={() => setPickerOpen(true)}
+                      compact
+                    >
+                      Chọn khách hàng theo lộ trình
+                    </Button>
+                  </View>
+                )}
+
+                <TextInput
+                  mode="outlined"
+                  label="Số serial đồng hồ"
+                  value={editSerial}
+                  onChangeText={setEditSerial}
+                  style={styles.input}
+                />
+                <TextInput
+                  mode="outlined"
+                  label="Chỉ số duyệt"
+                  value={editIndex}
+                  onChangeText={setEditIndex}
+                  keyboardType="decimal-pad"
+                  style={styles.input}
+                />
+              </View>
+            </Animated.View>
+          </ScrollView>
 
           <View style={styles.actions}>
             <TouchableOpacity
@@ -611,7 +667,7 @@ export default function ImageReviewScreen() {
               <Text style={styles.btnText}>Duyệt</Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       )}
 
       <Modal
@@ -620,7 +676,10 @@ export default function ImageReviewScreen() {
         animationType="slide"
         onRequestClose={() => setPickerOpen(false)}
       >
-        <View style={styles.modalBackdrop}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.modalBackdrop}
+        >
           <View style={styles.modalCard}>
             <Text style={styles.modalTitle}>Gán khách hàng</Text>
             <Text style={styles.modalHint}>
@@ -640,7 +699,7 @@ export default function ImageReviewScreen() {
             >
               Tải danh sách
             </Button>
-            <ScrollView style={{ maxHeight: 280, marginTop: 12 }}>
+            <ScrollView style={styles.pickerScroll}>
               {pickerCustomers.map(c => (
                 <TouchableOpacity
                   key={c.customerId}
@@ -658,12 +717,12 @@ export default function ImageReviewScreen() {
             </ScrollView>
             <Button
               onPress={() => setPickerOpen(false)}
-              style={{ marginTop: 8 }}
+              style={styles.modalCloseBtn}
             >
               Đóng
             </Button>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
   );
@@ -747,7 +806,7 @@ const styles = StyleSheet.create({
     top: 24,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderWidth: 3,
+    borderWidth: 4,
     borderRadius: 8,
   },
   stampLike: {
@@ -756,12 +815,14 @@ const styles = StyleSheet.create({
     transform: [{ rotate: '12deg' }],
   },
   stampTextLike: {
-    fontSize: 22,
+    fontSize: 28,
     fontWeight: '900',
-    letterSpacing: 2,
+    letterSpacing: 4,
     color: '#16a34a',
   },
-  formScroll: { maxHeight: 260, paddingHorizontal: 12, paddingBottom: 8 },
+  mainScroll: { flex: 1 },
+  mainScrollContent: { paddingBottom: 120, paddingHorizontal: 12 },
+  formPadding: { paddingHorizontal: 12, paddingBottom: 20 },
   customerTitle: {
     fontSize: 18,
     fontWeight: '800',
@@ -815,4 +876,7 @@ const styles = StyleSheet.create({
   pickerName: { fontWeight: '700', color: '#0f172a' },
   pickerAddr: { fontSize: 12, color: '#64748b', marginTop: 2 },
   chip: { marginTop: 12 },
+  refreshBtn: { marginTop: 16 },
+  pickerScroll: { maxHeight: 280, marginTop: 12 },
+  modalCloseBtn: { marginTop: 8 },
 });
