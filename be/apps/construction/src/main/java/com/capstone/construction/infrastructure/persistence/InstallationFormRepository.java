@@ -49,7 +49,7 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
    */
   static @NonNull Specification<InstallationForm> search(
     String keyword, LocalDateTime start, LocalDateTime end,
-    ProcessingStatus statusEstimate, ProcessingStatus statusConstruction) {
+    ProcessingStatus statusEstimate, ProcessingStatus statusConstruction, ProcessingStatus statusRegistration) {
     return (root, query, cb) -> {
       // tao danh sach cac dieu kien
       List<Predicate> predicates = new ArrayList<>();
@@ -81,23 +81,24 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
         predicates.add(cb.lessThanOrEqualTo(root.get("createdAt"), end));
       }
 
-      Expression<String> estimate = cb.function(
-        "jsonb_extract_path_text",
-        String.class,
-        root.get("status"),
-        cb.literal("estimate"));
-      Expression<String> construction = cb.function(
-        "jsonb_extract_path_text",
-        String.class,
-        root.get("status"),
-        cb.literal("construction"));
-
-      if (statusConstruction != null && statusEstimate != null) {
+      if (statusEstimate != null) {
+        Expression<String> estimate = cb.function("jsonb_extract_path_text", String.class, root.get("status"),
+          cb.literal("estimate"));
         predicates.add(cb.equal(estimate, statusEstimate.name()));
+      }
+
+      if (statusConstruction != null) {
+        Expression<String> construction = cb.function("jsonb_extract_path_text", String.class, root.get("status"),
+          cb.literal("construction"));
         predicates.add(cb.equal(construction, statusConstruction.name()));
       }
 
-      // gop cac dieu kien bang toan tu AND
+      if (statusRegistration != null) {
+        Expression<String> registration = cb.function("jsonb_extract_path_text", String.class, root.get("status"),
+          cb.literal("registration"));
+        predicates.add(cb.equal(registration, statusRegistration.name()));
+      }
+
       return cb.and(predicates.toArray(new Predicate[0]));
     };
   }

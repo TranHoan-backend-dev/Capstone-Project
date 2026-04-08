@@ -1,7 +1,7 @@
 package com.capstone.construction.application.business.installationform;
 
-import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
+import com.capstone.construction.application.dto.request.installationform.InstallationFormFilterRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.NewInstallationFormResponse;
@@ -16,7 +16,7 @@ public interface InstallationFormService {
 
   boolean isInstallationFormExisting(String formNumber, String formCode);
 
-  Page<InstallationFormListResponse> getInstallationForms(Pageable pageable, BaseFilterRequest request);
+  Page<InstallationFormListResponse> getInstallationForms(Pageable pageable, InstallationFormFilterRequest request);
 
   void reviewInstallationForm(String userId, ApproveRequest request);
 
@@ -43,7 +43,8 @@ public interface InstallationFormService {
   /**
    * @param id
    * @param installationFormId
-   * @param status             neu true thi la giao cho nv khao sat, false => doi truong doi thi cong
+   * @param status             neu true thi la giao cho nv khao sat, false => doi
+   *                           truong doi thi cong
    */
   void assignInstallationForm(String id, InstallationFormId installationFormId, Boolean status);
 

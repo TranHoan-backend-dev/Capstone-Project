@@ -21,14 +21,6 @@ public class FormProcessingStatus {
    *   <li>construction: PROCESSING</li>
    * </ul>
    * <br/>
-   * Khi trưởng phòng duyệt đơn chờ thiết kế:<br/>
-   * <ul>
-   *   <li>registration: APPROVE (nếu không duyệt thì -> REJECTED)</li>
-   *   <li>estimate: PENDING_FOR_APPROVAL</li>
-   *   <li>contract: PROCESSING</li>
-   *   <li>construction: PROCESSING</li>
-   * </ul>
-   * <br/>
    * Khi nhân viên khảo sát duyệt đơn:<br/>
    * <ul>
    *   <li>registration: APPROVE</li>

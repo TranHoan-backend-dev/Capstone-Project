@@ -2,12 +2,12 @@ package com.capstone.construction.application.business.installationform;
 
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.enumerate.ProcessingStatus;
-import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.common.utils.SharedMessage;
 import com.capstone.common.utils.Utils;
 import com.capstone.construction.application.business.estimate.CostEstimateService;
 import com.capstone.construction.application.dto.request.estimate.CreateRequest;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
+import com.capstone.construction.application.dto.request.installationform.InstallationFormFilterRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import com.capstone.construction.application.dto.response.installationform.NewInstallationFormResponse;
@@ -104,15 +104,27 @@ public class InstallationFormServiceImpl implements InstallationFormService {
 
   @Override
   public Page<InstallationFormListResponse> getInstallationForms(Pageable pageable,
-                                                                 @NonNull BaseFilterRequest request) {
-    log.info("Fetching paginated installation forms with pageable: {}", pageable);
-    var startDate = Utils.parseFrom(request.from());
-    var endDate = Utils.parseTo(request.to());
+                                                                 @NonNull InstallationFormFilterRequest request) {
+    log.info("Fetching paginated installation forms with status: {}", request.getStatus());
+    var startDate = Utils.parseFrom(request.getFrom());
+    var endDate = Utils.parseTo(request.getTo());
 
-    var result = (startDate != null || endDate != null || (request.keyword() != null && !request.keyword().isBlank()))
-      ? ifRepo.findAll(
-      InstallationFormRepository.search(request.keyword(), startDate, endDate, null, null),
-      pageable)
+    var statusRegistration = ProcessingStatus.PROCESSING;
+
+    if (request.getStatus() != null) {
+      if (request.getStatus() == InstallationFormFilterRequest.Status.REGISTRATION_APPROVED) {
+        statusRegistration = ProcessingStatus.APPROVED;
+      } else if (request.getStatus() == InstallationFormFilterRequest.Status.REGISTRATION_PENDING_FOR_APPROVAL) {
+        statusRegistration = ProcessingStatus.PENDING_FOR_APPROVAL;
+      }
+    }
+
+    var result = (startDate != null || endDate != null
+      || (request.getKeyword() != null && !request.getKeyword().isBlank()) || request.getStatus() != null)
+      ? ifRepo.findAll(InstallationFormRepository.search(
+      request.getKeyword(), startDate, endDate, ProcessingStatus.PROCESSING, ProcessingStatus.PROCESSING,
+      statusRegistration), pageable)
+
       : ifRepo.findAllNotRejectedInstallationForms(pageable);
 
     var content = result.getContent()

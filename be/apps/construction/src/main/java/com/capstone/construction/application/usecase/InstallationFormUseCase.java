@@ -2,8 +2,8 @@ package com.capstone.construction.application.usecase;
 
 import com.capstone.common.enumerate.RoleName;
 import com.capstone.construction.application.business.installationform.InstallationFormService;
-import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
+import com.capstone.construction.application.dto.request.installationform.InstallationFormFilterRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.application.dto.response.installationform.InstallationFormListResponse;
 import com.capstone.construction.application.dto.response.installationform.NewInstallationFormResponse;
@@ -49,7 +49,7 @@ public class InstallationFormUseCase {
   String QUEUE_NAME;
   // </editor-fold>
 
-  public Page<InstallationFormListResponse> getPaginatedInstallationForms(Pageable pageable, BaseFilterRequest request) {
+  public Page<InstallationFormListResponse> getPaginatedInstallationForms(Pageable pageable, InstallationFormFilterRequest request) {
     return ifSrv.getInstallationForms(pageable, request);
   }
 
