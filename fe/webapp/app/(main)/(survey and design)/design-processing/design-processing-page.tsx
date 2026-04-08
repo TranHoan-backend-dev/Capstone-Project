@@ -31,94 +31,152 @@ const DesignProcessingPage = () => {
   >([]);
   const [waitingInput, setWaitingInput] = useState<DesignProcessingItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(0);
+
+  // Pagination riêng cho từng bảng
+  const [currentPageOrders, setCurrentPageOrders] = useState(0);
+  const [currentPageProcessed, setCurrentPageProcessed] = useState(0);
   const [pageSize] = useState(10);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalElements, setTotalElements] = useState(0);
+  const [totalPagesOrders, setTotalPagesOrders] = useState(1);
+  const [totalElementsOrders, setTotalElementsOrders] = useState(0);
+  const [totalPagesProcessed, setTotalPagesProcessed] = useState(1);
+  const [totalElementsProcessed, setTotalElementsProcessed] = useState(0);
+
   const [keyword, setKeyword] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Fetch orders to design (status = REGISTRATION_PENDING_FOR_APPROVAL)
+  const fetchOrdersToDesign = async () => {
+    try {
+      const fromStr = formatDateValueToString(from);
+      const toStr = formatDateValueToString(to);
+
+      const params = new URLSearchParams({
+        page: String(currentPageOrders),
+        size: String(pageSize),
+        status: "REGISTRATION_PENDING_FOR_APPROVAL", // Thêm status param
+      });
+
+      if (searchQuery?.trim()) {
+        params.append("keyword", searchQuery.trim());
+      }
+
+      if (fromStr) {
+        params.append("from", fromStr);
+      }
+
+      if (toStr) {
+        params.append("to", toStr);
+      }
+
+      const res = await authFetch(
+        `/api/construction/installation-forms?${params.toString()}`,
+      );
+
+      if (!res.ok) {
+        console.error("Fetch orders failed", res.status);
+        return;
+      }
+
+      const json = await res.json();
+      const result = json?.data;
+      const items = result?.content ?? [];
+
+      const orders: DesignProcessingItem[] = items.map(
+        (item: NewInstallationLookupResponse) => ({
+          id: item.formCode,
+          formNumber: item.formNumber,
+          customerName: item.customerName,
+          phoneNumber: item.phoneNumber,
+          address: item.address,
+          registrationAt: formatDate1(item.registrationAt),
+          scheduleSurveyAt: formatDate1(item.scheduleSurveyAt),
+          status: "processing",
+        }),
+      );
+
+      setOrdersToDesign(orders);
+      setTotalPagesOrders(result?.page?.totalPages ?? 1);
+      setTotalElementsOrders(result?.page?.totalElements ?? 0);
+    } catch (error) {
+      console.error(error);
+      setOrdersToDesign([]);
+      setTotalPagesOrders(1);
+      setTotalElementsOrders(0);
+    }
+  };
+
+  // Fetch processed designs (status = REGISTRATION_APPROVED)
+  const fetchProcessedDesigns = async () => {
+    try {
+      const fromStr = formatDateValueToString(from);
+      const toStr = formatDateValueToString(to);
+
+      const params = new URLSearchParams({
+        page: String(currentPageProcessed),
+        size: String(pageSize),
+        status: "REGISTRATION_APPROVED", // Thêm status param
+      });
+
+      if (searchQuery?.trim()) {
+        params.append("keyword", searchQuery.trim());
+      }
+
+      if (fromStr) {
+        params.append("from", fromStr);
+      }
+
+      if (toStr) {
+        params.append("to", toStr);
+      }
+
+      const res = await authFetch(
+        `/api/construction/installation-forms?${params.toString()}`,
+      );
+
+      if (!res.ok) {
+        console.error("Fetch processed failed", res.status);
+        return;
+      }
+
+      const json = await res.json();
+      const result = json?.data;
+      const items = result?.content ?? [];
+
+      const processed: DesignProcessingItem[] = items.map(
+        (item: NewInstallationLookupResponse) => ({
+          id: item.formCode,
+          formNumber: item.formNumber,
+          customerName: item.customerName,
+          phoneNumber: item.phoneNumber,
+          address: item.address,
+          registrationAt: formatDate1(item.registrationAt),
+          scheduleSurveyAt: formatDate1(item.scheduleSurveyAt),
+          status: "paid",
+        }),
+      );
+
+      setProcessedDesigns(processed);
+      setTotalPagesProcessed(result?.page?.totalPages ?? 1);
+      setTotalElementsProcessed(result?.page?.totalElements ?? 0);
+    } catch (error) {
+      console.error(error);
+      setProcessedDesigns([]);
+      setTotalPagesProcessed(1);
+      setTotalElementsProcessed(0);
+    }
+  };
+
+  // Fetch all data
   useEffect(() => {
     setLoading(true);
 
-    const fetchData = async () => {
-      try {
-        const fromStr = formatDateValueToString(from);
-        const toStr = formatDateValueToString(to);
-
-        const params = new URLSearchParams({
-          page: String(currentPage),
-          size: String(pageSize),
-        });
-
-        if (searchQuery?.trim()) {
-          params.append("keyword", searchQuery.trim());
-        }
-
-        if (fromStr) {
-          params.append("from", fromStr);
-        }
-
-        if (toStr) {
-          params.append("to", toStr);
-        }
-
-        const res = await authFetch(
-          `/api/construction/installation-forms?${params.toString()}`,
-        );
-
-        if (!res.ok) {
-          console.error("Fetch failed", res.status);
-          return;
-        }
-
-        const json = await res.json();
-        const result = json?.data;
-
-        const items = result?.content ?? [];
-
-        const orders: DesignProcessingItem[] = [];
-        const processed: DesignProcessingItem[] = [];
-
-        items.forEach((item: NewInstallationLookupResponse) => {
-          const regStatus = item.status?.registration?.toUpperCase();
-
-          const mapped: DesignProcessingItem = {
-            id: item.formCode,
-            formNumber: item.formNumber,
-            customerName: item.customerName,
-            phoneNumber: item.phoneNumber,
-            address: item.address,
-            registrationAt: formatDate1(item.registrationAt),
-            scheduleSurveyAt: formatDate1(item.scheduleSurveyAt),
-            status: "processing",
-          };
-
-          if (regStatus === "PENDING_FOR_APPROVAL") {
-            orders.push({ ...mapped, status: "processing" });
-          } else if (regStatus === "APPROVED") {
-            processed.push({ ...mapped, status: "paid" });
-          }
-        });
-
-        setOrdersToDesign(orders);
-        setProcessedDesigns(processed);
-
-        setTotalPages(result?.page?.totalPages ?? 1);
-        setTotalElements(result?.page?.totalElements ?? 0);
-      } catch (error) {
-        console.error(error);
-        setOrdersToDesign([]);
-        setProcessedDesigns([]);
-        setTotalPages(1);
-        setTotalElements(0);
-      } finally {
-        setLoading(false);
-      }
+    const fetchAllData = async () => {
+      await Promise.all([fetchOrdersToDesign(), fetchProcessedDesigns()]);
+      setLoading(false);
     };
 
-    fetchData();
-  }, [currentPage, searchQuery, from, to]);
+    fetchAllData();
+  }, [currentPageOrders, currentPageProcessed, searchQuery, from, to]);
 
   const handleApprove = (order: DesignProcessingItem) => {
     setOrdersToDesign((prev) => prev.filter((i) => i.id !== order.id));
@@ -137,7 +195,8 @@ const DesignProcessingPage = () => {
 
   const handleSearch = () => {
     setSearchQuery(keyword);
-    setCurrentPage(0);
+    setCurrentPageOrders(0);
+    setCurrentPageProcessed(0);
   };
 
   if (loading) {
@@ -147,9 +206,9 @@ const DesignProcessingPage = () => {
       </div>
     );
   }
+
   return (
     <>
-      {/* <ActionsSection /> */}
       <FilterSection
         from={from}
         keyword={keyword}
@@ -163,21 +222,20 @@ const DesignProcessingPage = () => {
       <div className="space-y-8">
         <OrdersToDesignTable
           data={ordersToDesign}
-          page={currentPage + 1}
-          totalElements={totalElements}
-          totalPages={totalPages}
-          onPageChange={(p) => setCurrentPage(p - 1)}
+          page={currentPageOrders + 1}
+          totalElements={totalElementsOrders}
+          totalPages={totalPagesOrders}
+          onPageChange={(p) => setCurrentPageOrders(p - 1)}
           onApprove={handleApprove}
         />
         <ProcessedDesignsTable
           data={processedDesigns}
-          page={currentPage + 1}
-          totalElements={totalElements}
-          totalPages={totalPages}
-          onPageChange={(p) => setCurrentPage(p - 1)}
+          page={currentPageProcessed + 1}
+          totalElements={totalElementsProcessed}
+          totalPages={totalPagesProcessed}
+          onPageChange={(p) => setCurrentPageProcessed(p - 1)}
           onReject={handleReject}
         />
-        {/* <WaitingInputTable data={filteredWaiting} onRestore={handleRestore} /> */}
       </div>
     </>
   );
