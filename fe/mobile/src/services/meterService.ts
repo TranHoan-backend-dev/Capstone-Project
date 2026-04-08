@@ -33,13 +33,19 @@ export interface PendingReview {
 export interface MeterService {
   /**
    * Lấy danh sách các bản ghi cần phê duyệt (End of Day)
+   * roadmapId: lọc theo lộ trình (nếu backend hỗ trợ query)
    */
-  getPendingReviews: (options?: ApiOptions) => Promise<PendingReview[]>;
+  getPendingReviews: (options?: ApiOptions & { roadmapId?: string }) => Promise<PendingReview[]>;
 
   /**
    * Xác nhận chỉ số sau khi đã kiểm tra (Phê duyệt hoặc sửa đổi)
    */
   confirmMeterReading: (reviewId: string, finalIndex: number, status: 'APPROVED' | 'REJECTED', options?: ApiOptions) => Promise<any>;
+
+  /**
+   * Cập nhật thủ công chỉ số theo serial (TC11)
+   */
+  updateUsageManual: (serial: string, date: string, index: number, options?: ApiOptions) => Promise<any>;
 
   /**
    * Lấy lịch sử sử dụng nước của khách hàng (bao gồm chỉ số cũ)
@@ -79,7 +85,13 @@ export interface MeterService {
 
 export const meterService: MeterService = {
   getPendingReviews: async (options) => {
-    const response = await apiFetch('/d/usage/pending-reviews', options);
+    const roadmapId = (options as { roadmapId?: string } | undefined)?.roadmapId;
+    const rest = options ? { ...options } : {};
+    if (roadmapId) {
+      delete (rest as { roadmapId?: string }).roadmapId;
+    }
+    const qs = roadmapId ? `?roadmapId=${encodeURIComponent(roadmapId)}` : '';
+    const response = await apiFetch(`/d/usage/pending-reviews${qs}`, rest);
     return response.data;
   },
 
@@ -87,8 +99,22 @@ export const meterService: MeterService = {
     return await apiFetch(`/d/usage/confirm/${reviewId}`, {
       ...options,
       method: 'POST',
-      body: JSON.stringify({ finalIndex, status }),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        ...options?.headers,
+      },
+      body: `finalIndex=${encodeURIComponent(String(finalIndex))}&status=${encodeURIComponent(status)}`,
     });
+  },
+
+  updateUsageManual: async (serial, date, index, options) => {
+    return await apiFetch(
+      `/d/usage/${encodeURIComponent(serial)}?date=${encodeURIComponent(date)}&index=${encodeURIComponent(String(index))}`,
+      {
+        ...options,
+        method: 'PUT',
+      }
+    );
   },
 
   getRecentUsage: async (customerId, options) => {
