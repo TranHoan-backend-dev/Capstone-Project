@@ -1,6 +1,6 @@
-drop database if exists microservice;
-
-create database microservice;
+-- drop database if exists microservice;
+--
+-- create database microservice;
 
 CREATE EXTENSION IF NOT EXISTS unaccent;
 
@@ -223,7 +223,14 @@ create table public.installation_form
   received_form_at                        date         not null,
   representative                          jsonb,
   schedule_survey_at                      date,
-  status                                  jsonb        not null,
+  status                                  jsonb        not null
+    constraint installation_form_status_check
+      check (
+        (status ->> 'contract' IN ('PROCESSING', 'PENDING_FOR_APPROVAL', 'APPROVED', 'REJECTED')) AND
+        (status ->> 'estimate' IN ('PROCESSING', 'PENDING_FOR_APPROVAL', 'APPROVED', 'REJECTED')) AND
+        (status ->> 'construction' IN ('PROCESSING', 'PENDING_FOR_APPROVAL', 'APPROVED', 'REJECTED')) AND
+        (status ->> 'registration' IN ('PROCESSING', 'PENDING_FOR_APPROVAL', 'APPROVED', 'REJECTED'))
+      ),
   tax_code                                varchar(255),
   updated_at                              timestamp(6) not null,
   usage_target                            varchar(255) not null
