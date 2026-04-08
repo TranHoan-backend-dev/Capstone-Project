@@ -30,11 +30,17 @@ const AssigningSurveyPage = () => {
   });
   const [page, setPage] = useState(1);
   const pageSize = 10;
+  const [pendingCount, setPendingCount] = useState(0);
+  const [assignedCount, setAssignedCount] = useState(0);
+
+  const hasHandoverByValue = (handoverBy: any): boolean => {
+    return handoverBy && handoverBy.toString().trim() !== "";
+  };
 
   useEffect(() => {
     setLoading(true);
 
-    const fetchData = async () => {
+    const fetchAllData = async () => {
       try {
         const params = new URLSearchParams({
           page: String(page - 1),
@@ -43,56 +49,92 @@ const AssigningSurveyPage = () => {
         });
 
         const trimmedKeyword = keyword.trim();
-        if (trimmedKeyword) {
-          params.append("keyword", trimmedKeyword);
+        if (trimmedKeyword) params.append("keyword", trimmedKeyword);
+        if (from) params.append("from", formatDateValueToString(from));
+        if (to) params.append("to", formatDateValueToString(to));
+
+        const pendingUrl = `/api/construction/installation-forms/registration/pending?${params.toString()}`;
+        const assignedUrl = `/api/construction/installation-forms?${params.toString()}`;
+
+        const [pendingRes, assignedRes] = await Promise.all([
+          authFetch(pendingUrl),
+          authFetch(assignedUrl),
+        ]);
+
+        if (pendingRes.ok) {
+          const pendingJson = await pendingRes.json();
+          const pendingPageData = pendingJson?.data;
+
+          setPendingCount(pendingPageData?.page?.totalElements ?? 0);
+
+          if (activeTab === "pending") {
+            const items = pendingPageData?.content ?? [];
+            setTotalItems(pendingPageData?.page?.totalElements ?? 0);
+            setTotalPages(pendingPageData?.page?.totalPages ?? 1);
+
+            const mapped = items.map(
+              (item: SurveyAssignmentFormResponse, index: number) => ({
+                id: item.formCode,
+                stt: (page - 1) * pageSize + index + 1,
+                formNumber: item.formNumber,
+                customerName: item.customerName,
+                phone: item.phoneNumber,
+                address: item.address,
+                handoverBy: item.handoverBy,
+                handoverByFullName: item.handoverByFullName,
+                constructedBy: item.constructedBy,
+                constructedByFullName: item.constructedByFullName,
+                registrationAt: formatDate1(item.registrationAt),
+                scheduleSurveyAt: formatDate1(item.scheduleSurveyAt),
+                creator: item.creator,
+                creatorFullName: item.creatorFullName,
+                overallWaterMeterId: item.overallWaterMeterId,
+              }),
+            );
+            setData(mapped);
+          }
         }
-        if (from) {
-          params.append("from", formatDateValueToString(from)); // formatDate1 là hàm bạn đang dùng
+
+        if (assignedRes.ok) {
+          const assignedJson = await assignedRes.json();
+          const assignedPageData = assignedJson?.data;
+
+          const items = assignedPageData?.content ?? [];
+          setTotalItems(assignedPageData?.page?.totalElements ?? 0);
+          setTotalPages(assignedPageData?.page?.totalPages ?? 1);
+
+          const filteredItems = items.filter(
+            (item: SurveyAssignmentFormResponse) =>
+              hasHandoverByValue(item.handoverBy),
+          );
+
+          setAssignedCount(filteredItems.length);
+
+          if (activeTab === "assigned") {
+            const mapped = filteredItems.map(
+              (item: SurveyAssignmentFormResponse, index: number) => ({
+                id: item.formCode,
+                stt: (page - 1) * pageSize + index + 1,
+                formNumber: item.formNumber,
+                customerName: item.customerName,
+                phone: item.phoneNumber,
+                address: item.address,
+                handoverBy: item.handoverBy,
+                handoverByFullName: item.handoverByFullName,
+                constructedBy: item.constructedBy,
+                constructedByFullName: item.constructedByFullName,
+                registrationAt: formatDate1(item.registrationAt),
+                scheduleSurveyAt: formatDate1(item.scheduleSurveyAt),
+                creator: item.creator,
+                creatorFullName: item.creatorFullName,
+                overallWaterMeterId: item.overallWaterMeterId,
+              }),
+            );
+            setData(mapped);
+          }
         }
-        if (to) {
-          params.append("to", formatDateValueToString(to));
-        }
-        const res = await authFetch(
-          `/api/construction/installation-forms?${params.toString()}`,
-        );
-
-        if (!res.ok) {
-          console.error("Fetch failed", res.status);
-          return;
-        }
-
-        const json = await res.json();
-        const pageData = json?.data;
-        const items = pageData?.content ?? [];
-        setTotalItems(pageData?.page.totalElements ?? 0);
-        setTotalPages(pageData?.page.totalPages ?? 1);
-
-        const mapped = items.map(
-          (item: SurveyAssignmentFormResponse, index: number) => ({
-            id: item.formCode,
-            stt: (page - 1) * pageSize + index + 1,
-            formNumber: item.formNumber,
-            customerName: item.customerName,
-            phone: item.phoneNumber,
-            address: item.address,
-
-            handoverBy: item.handoverBy,
-            handoverByFullName: item.handoverByFullName,
-
-            constructedBy: item.constructedBy,
-            constructedByFullName: item.constructedByFullName,
-
-            registrationAt: formatDate1(item.registrationAt),
-            scheduleSurveyAt: formatDate1(item.scheduleSurveyAt),
-
-            creator: item.creator,
-            creatorFullName: item.creatorFullName,
-            overallWaterMeterId: item.overallWaterMeterId,
-          }),
-        );
-
-        setData(mapped);
       } catch (e) {
+        console.error("Fetch error:", e);
         setData([]);
         setTotalItems(0);
         setTotalPages(1);
@@ -101,15 +143,8 @@ const AssigningSurveyPage = () => {
       }
     };
 
-    fetchData();
-  }, [page, keyword, reloadKey, sort, pageSize, from, to]);
-
-  const filteredData = data.filter((item) => {
-    const hasValue =
-      item.handoverBy && item.handoverBy.toString().trim() !== "";
-
-    return activeTab === "pending" ? !hasValue : hasValue;
-  });
+    fetchAllData();
+  }, [page, keyword, reloadKey, sort, pageSize, from, to, activeTab]);
 
   return (
     <>
@@ -127,12 +162,15 @@ const AssigningSurveyPage = () => {
       <div>
         <SurveyTabs
           activeTab={activeTab}
-          onChange={setActiveTab}
-          pendingCount={data.filter((i) => !i.handoverBy).length}
-          assignedCount={data.filter((i) => i.handoverBy).length}
+          onChange={(tab) => {
+            setActiveTab(tab);
+            setPage(1);
+          }}
+          pendingCount={pendingCount}
+          assignedCount={assignedCount}
         />
         <SurveyAssignmentTable
-          data={filteredData}
+          data={data}
           page={page}
           totalItem={totalItems}
           totalPage={totalPages}
