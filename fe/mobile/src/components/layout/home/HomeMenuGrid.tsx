@@ -31,6 +31,12 @@ export default function HomeMenuGrid() {
           label="Gửi thông báo"
           onPress={() => navigation.navigate('Notification')}
         />
+
+        <MenuItemCard
+          icon="image-search-outline"
+          label="Kiểm tra hình ảnh"
+          onPress={() => navigation.navigate('ImageReview')}
+        />
       </View>
     </>
   );

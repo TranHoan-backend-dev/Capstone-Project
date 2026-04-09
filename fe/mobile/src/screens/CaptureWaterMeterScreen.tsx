@@ -94,12 +94,18 @@ export default function CaptureWaterMeterScreen({ route }: any) {
       const { serial, source, totalCustomer } = route.params || {};
       const recordingDate = new Date().toISOString().split('T')[0];
 
+      console.log("[CaptureWaterMeterScreen.tsx] handleAccept Params:", {
+        serial,
+        source,
+        customerId: route.params?.customerId
+      });
+
       let response: any;
       if (source === 'customer' && serial) {
-        console.log(`[CaptureWaterMeterScreen.tsx] Calling /analyze/${serial}`);
+        console.log(`[CaptureWaterMeterScreen.tsx] Calling /analyze/${serial} (WITH SERIAL)`);
         response = await meterService.analyzeMeterImageWithSerial(serial, recordingDate, { uri: photoUri });
       } else {
-        console.log(`[CaptureWaterMeterScreen.tsx] Calling /analyze (generic)`);
+        console.log(`[CaptureWaterMeterScreen.tsx] Calling /analyze (WITHOUT SERIAL). Reason: source=${source}, serial=${serial}`);
         response = await meterService.analyzeMeterImage(recordingDate, { uri: photoUri }, route.params?.customerId);
       }
 
@@ -113,12 +119,17 @@ export default function CaptureWaterMeterScreen({ route }: any) {
             id: response.id || `local_${Date.now()}`,
             customerId: route.params?.customerId,
             customerName: route.params?.customerName,
+            address: route.params?.address, // Preserve address for local review
             photoUri: photoUri,
-            aiIndex: response.newIndexAI || 0,
-            aiSerial: response.serial || '',
+            aiIndex: response.index || 0,
+            aiSerial: response.serial || route.params?.serial || '',
             timestamp: new Date().toISOString(),
           });
-          console.log("[Capture] Saved audit record to local cache");
+          console.log("[Capture] Saved audit record to local cache. Data:", {
+            index: response.index,
+            serial: response.serial || route.params?.serial,
+            address: route.params?.address
+          });
         } catch (e: any) {
           console.warn('[Capture] Failed to save audit record: ' + e.message);
         }
@@ -136,6 +147,7 @@ export default function CaptureWaterMeterScreen({ route }: any) {
     } catch (error: any) {
       console.error(error.message)
       showToast.error('Gửi ảnh thất bại. Vui lòng thử lại.');
+      showToast.error(error.message)
     } finally {
       setIsSending(false);
     }

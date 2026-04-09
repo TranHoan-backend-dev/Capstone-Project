@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { View, FlatList, Text, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, FlatList, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Button } from 'react-native-paper';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import DebtHeader from '../components/layout/debt/DebtHeader';
 import CollectionListItem from '../components/layout/debt-route/CollectionListItem';
 import styles from '../components/layout/debt-route/debtRoute.styles';
 import { RootStackParamList } from '../navigation/AppNavigator';
+import { roadmapService } from '../services/roadmapService';
 
 type CollectionScreenProps = NativeStackScreenProps<RootStackParamList, 'Collection'>;
 
@@ -32,6 +33,7 @@ interface CollectionItem {
 }
 
 // Mock data matching the image
+/*
 const MOCK_COLLECTIONS: CollectionItem[] = [
   {
     id: '5e6f7081-4000-4eee-9fff-eeeeeeee0001',
@@ -64,6 +66,7 @@ const MOCK_COLLECTIONS: CollectionItem[] = [
     tienTonConLai: 1783110,
   },
 ];
+*/
 
 type TabType = 'number' | 'customer';
 
@@ -74,6 +77,43 @@ export default function CollectionScreen({ navigation }: CollectionScreenProps) 
     year: '2025',
     batch: '02',
   });
+  const [collections, setCollections] = useState<CollectionItem[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchCollections = async () => {
+      setLoading(true);
+      try {
+        const data = await roadmapService.getMyRoadmaps(filters.period, filters.year, filters.batch);
+        if (data) {
+          const mapped: CollectionItem[] = data.map(route => {
+            const total = parseFloat(route.totalAmount?.replace(/\./g, '').replace(',', '.')) || 0;
+            return {
+              id: route.id,
+              meterId: route.name,
+              soHD: String(route.totalCustomer),
+              daZhu: String(route.recorded),
+              conLai: String(route.unrecorded),
+              tongTien: total,
+              tienThu: 0, // Hiện tại MeterRoute chưa có trường tiền đã thu cụ thể
+              tienConLai: total, // Tạm thời để bằng tổng tiền
+              soHDTon: '0',
+              daZhuThuTon: '0',
+              tienThuThuTon: 0,
+              tongTienTon: 0,
+              tienTonConLai: 0,
+            };
+          });
+          setCollections(mapped);
+        }
+      } catch (err) {
+        console.error('Failed to fetch collections:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCollections();
+  }, [filters.period, filters.year, filters.batch]);
 
   const handleFilterChange = (type: keyof CollectionFilterState, value: string) => {
     setFilters(prev => ({ ...prev, [type]: value }));
@@ -155,15 +195,26 @@ export default function CollectionScreen({ navigation }: CollectionScreenProps) 
         </View>
 
         {/* Collection List Title */}
-        <Text style={styles.sectionTitle}>Danh sách số thu</Text>
+        <Text style={styles.sectionTitle}>Danh sách sổ thu</Text>
 
         {/* Collection List */}
-        <FlatList
-          data={MOCK_COLLECTIONS}
-          keyExtractor={(item, index) => item.id + index}
-          renderItem={({ item }) => <CollectionListItem item={item} />}
-          scrollEnabled={false}
-        />
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#1E88E5" />
+          </View>
+        ) : (
+          <FlatList
+            data={collections}
+            keyExtractor={(item, index) => item.id + index}
+            renderItem={({ item }) => <CollectionListItem item={item} />}
+            scrollEnabled={false}
+            ListEmptyComponent={
+              <Text style={styles.emptyText}>
+                Không có dữ liệu thu tiền
+              </Text>
+            }
+          />
+        )}
       </ScrollView>
     </View>
   );

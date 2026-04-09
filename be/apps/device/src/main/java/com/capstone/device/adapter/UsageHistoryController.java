@@ -151,8 +151,10 @@ public class UsageHistoryController {
   @GetMapping("/pending-reviews")
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'METER_INSPECTION_STAFF')")
   public ResponseEntity<WrapperApiResponse> getPendingReviews(@RequestParam(required = false) String roadmapId) {
+    log.info("===================================================");
     log.info("Fetching pending reviews for roadmapId: {}", roadmapId);
     var response = useCase.getPendingReviews(roadmapId);
+    log.info("Response serial: {}, index: {}", response.getFirst().serial(), response.getFirst().newIndexAI());
     return Utils.returnOkResponse("Lấy danh sách chờ duyệt thành công", response);
   }
 
