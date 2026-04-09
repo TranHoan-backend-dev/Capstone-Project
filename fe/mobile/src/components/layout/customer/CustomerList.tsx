@@ -33,10 +33,11 @@ export default function CustomerList({
     address: c.address,
     date: c.latestUsage ? new Date(c.latestUsage.recordingDate).toLocaleDateString('vi-VN') : '--/--/----',
     newIndex: c.latestUsage ? c.latestUsage.index : '----',
-    m3: c.latestUsage ? c.latestUsage.mass : '--',
+    m3: (c.latestUsage && (c.latestUsage.mass !== undefined && c.latestUsage.mass !== null)) ? c.latestUsage.mass : 0,
     status: c.status,
     amount: c.latestUsage ? c.latestUsage.price : '---.---',
     meterId: c.waterMeterId,
+    waterMeterId: c.waterMeterId,
   }));
 
   const filteredCustomers = mappedCustomers.filter(c => {

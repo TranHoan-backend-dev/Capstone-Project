@@ -10,6 +10,7 @@ export interface AuditRecord {
   aiIndex: number | string;
   aiSerial: string;
   customerName?: string;
+  address?: string;
   timestamp: string;
 }
 

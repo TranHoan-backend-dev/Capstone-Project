@@ -28,6 +28,7 @@ export const roadmapService = {
       });
 
       const roadmapList = response.data?.content || response.data || [];
+      console.log(roadmapList);
 
       if (roadmapList.length > 0) {
         return roadmapList.map((item: any) => ({
