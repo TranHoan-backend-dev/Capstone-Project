@@ -321,7 +321,6 @@ export const siteConfig = {
           href: "/settlement-lookup",
           roles: [
             "it_staff",
-            "finance_department",
             "construction_department_staff",
             "construction_department_head",
             "survey_staff",

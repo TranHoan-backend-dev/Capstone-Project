@@ -7,7 +7,7 @@ export const getRoleBasedRoute = (role: string): string => {
     COMPANY_LEADERSHIP: "/home",
     CONSTRUCTION_DEPARTMENT_HEAD: "/pending-construction",
     CONSTRUCTION_DEPARTMENT_STAFF: "/pending-construction",
-    FINANCE_DEPARTMENT: "/settlement-lookup",
+    FINANCE_DEPARTMENT: "/installation-fee-collection",
     METER_INSPECTION_STAFF: "/home",
   };
   return roleRouteMap[role] || "/home";
