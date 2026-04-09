@@ -63,10 +63,18 @@ public class UsageHistoryUseCase {
 
     // Upload to GCS
     // var imageUrl = service.upload(request.image());
+    String imageUrl = "https://images.unsplash.com/photo-1585702138250-afe07474776e"; // Mock URL for now
 
-    usageHistoryService.addWaterIndexOfThisMonth("imageUrl", serial,
+    usageHistoryService.addWaterIndexOfThisMonth(imageUrl, serial,
         BigDecimal.valueOf(Long.parseLong(response.index())), request.recordingDate(), "PENDING");
-    return response;
+
+    String monthStr = request.recordingDate().format(java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+
+    return AnalysisResponse.builder()
+        .id(serial + "_" + monthStr)
+        .serial(serial)
+        .index(response.index())
+        .build();
   }
 
   public void updatePaymentStatus(String serial, String method) {

@@ -59,6 +59,7 @@ export interface HybridReviewItem {
   aiSerial: string;
   oldIndex?: number;
   timestamp?: string;
+  localId?: string;
 }
 
 export interface Roadmap {
@@ -80,6 +81,7 @@ function mapLocal(r: AuditRecord): HybridReviewItem {
     photoUri: r.photoUri,
     customerId: r.customerId,
     customerName: r.customerName,
+    address: r.address,
     aiIndex: Number.isFinite(idx) ? idx : 0,
     aiSerial: (r.aiSerial || '').trim(),
     timestamp: r.timestamp,
@@ -228,21 +230,33 @@ export default function ImageReviewScreen() {
         serverPending = [];
       }
 
-      const localIds = new Set(localRecords.map(r => r.id));
-      const localItems = localRecords.map(mapLocal);
-      const serverOnly = serverPending
-        .filter(p => !localIds.has(p.id))
-        .map(mapServer);
+      // Tạo bản đồ local records theo customerId để truy xuất nhanh
+      const localMap = new Map<string, any>();
+      localRecords.forEach(r => {
+        if (r.customerId) localMap.set(r.customerId, r);
+      });
 
-      const byTime = (a: HybridReviewItem, b: HybridReviewItem) => {
-        const ta = a.timestamp ? new Date(a.timestamp).getTime() : 0;
-        const tb = b.timestamp ? new Date(b.timestamp).getTime() : 0;
-        return tb - ta;
-      };
-      localItems.sort(byTime);
+      const serverItems = serverPending.map(p => {
+        const item = mapServer(p);
+        // Ưu tiên ảnh local nếu có (vì load nhanh hơn và không tốn băng thông)
+        const local = localMap.get(p.customerId || '');
+        if (local) {
+          item.photoUri = local.photoUri;
+          item.localId = local.id;
+        }
+        return item;
+      });
 
-      const newQueue = [...localItems, ...serverOnly];
+      // Lọc ra những bản ghi chỉ có ở local (chưa đẩy lên server thành công hoặc server chưa sync kịp)
+      const serverCustIds = new Set(serverPending.map(p => p.customerId));
+      const localOnly = localRecords
+        .filter(r => r.customerId && !serverCustIds.has(r.customerId))
+        .map(mapLocal);
+
+      const newQueue = [...serverItems, ...localOnly];
       setQueue(newQueue);
+
+      console.log("[ImageReviewScreen.tsx] Merged queue size:", newQueue.length);
 
       if (newQueue.length === 0 && selectedRoadmapId) {
         showToast.info(`Không có chỉ số nào cần duyệt trong lộ trình này`);
@@ -264,6 +278,7 @@ export default function ImageReviewScreen() {
   }, [selectedRoadmapId, loadQueue]);
 
   useEffect(() => {
+    console.log("[ImageReviewScreen.tsx] current: ", current)
     if (!current) {
       setDisplayUri(null);
       setEditSerial('');
@@ -317,26 +332,20 @@ export default function ImageReviewScreen() {
 
     setSubmitting(true);
     try {
-      // TC11: nếu có serial thì cập nhật thủ công chỉ số theo serial trước khi confirm
-      if (hasSerial(editSerial)) {
-        const date = new Date().toISOString().split('T')[0];
-        await meterService.updateUsageManual(
-          editSerial.trim(),
-          date,
-          finalIndex,
-          { silent: true },
-        );
-      }
+      const targetSerial = editSerial.trim() || current.aiSerial;
 
-      // TC10: confirm bản ghi đã phân tích AI
+      // TC10: cập nhật và phê duyệt chỉ số nước tháng này
       await meterService.confirmMeterReading(
-        current.id,
+        targetSerial,
         finalIndex,
-        'APPROVED',
         { silent: true },
       );
+
       if (current.source === 'local') {
         await localCapturedService.removeAuditRecord(current.id);
+      } else if (current.localId) {
+        // Nếu là server record nhưng có ảnh local đi kèm, cũng xóa local audit sau khi duyệt xong
+        await localCapturedService.removeAuditRecord(current.localId);
       }
       // showToast.success('Đã duyệt chỉ số (Mock)');
       popFront();

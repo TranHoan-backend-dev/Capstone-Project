@@ -43,9 +43,8 @@ export interface MeterService {
    * Xác nhận chỉ số sau khi đã kiểm tra (Phê duyệt hoặc sửa đổi)
    */
   confirmMeterReading: (
-    reviewId: string,
+    serial: string,
     finalIndex: number,
-    status: 'APPROVED' | 'REJECTED',
     options?: ApiOptions,
   ) => Promise<any>;
 
@@ -160,17 +159,18 @@ export const meterService: MeterService = {
     }
   },
 
-  confirmMeterReading: async (reviewId, finalIndex, status, options) => {
-    return await apiFetch(`/d/usage/confirm/${reviewId}`, {
+  confirmMeterReading: async (serial, finalIndex, options) => {
+    return await apiFetch(`/d/usage/${encodeURIComponent(serial)}`, {
       ...options,
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json',
         ...options?.headers,
       },
-      body: `finalIndex=${encodeURIComponent(
-        String(finalIndex),
-      )}&status=${encodeURIComponent(status)}`,
+      body: JSON.stringify({
+        index: finalIndex,
+        recordingDate: new Date().toISOString().split('T')[0],
+      }),
     });
   },
 
