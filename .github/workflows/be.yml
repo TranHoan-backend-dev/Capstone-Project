@@ -95,6 +95,8 @@ jobs:
 
       - name: Build and Package Images
         working-directory: be
+        env:
+          ENV_FILE: ${{ secrets.ENV_FILE }}
         run: |
           REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
 
@@ -123,9 +125,17 @@ jobs:
           # 2. Package Infrastructure using Docker Compose and .env
           # We use "docker compose config" to resolve image names and tags from your files
           cd apps
+          
+          # Create .env file:
+          # Priority 1: From GitHub Secrets (ENV_FILE)
+          # Priority 2: Fallback to .env.example
+          if [ -n "$ENV_FILE" ]; then
+            echo "$ENV_FILE" > .env
+          elif [ ! -f .env ]; then
+            cp .env.example .env
+          fi
 
           # Pull images defined in your compose files
-          # Using -f to include both DB and Other infrastructure
           docker compose -f docker-compose-db.yml -f docker-compose-other.yml --env-file .env pull
 
           # Tag and prepare for push
