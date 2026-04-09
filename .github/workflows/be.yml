@@ -93,11 +93,12 @@ jobs:
           key: "${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}"
           restore-keys: "${{ runner.os }}-gradle"
 
-      - name: Build Image
+      - name: Build and Package Images
         working-directory: be
         run: |
           REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
 
+          # 1. Build Application Services (Java & Node.js)
           services=(
             auth
             construction
@@ -118,6 +119,19 @@ jobs:
 
           # Build Node.js email-service
           docker build --target runner -t ghcr.io/$REPO_LOWER/email:latest -f apps/Dockerfile .
+
+          # 2. Package Infrastructure using Docker Compose and .env
+          # We use "docker compose config" to resolve image names and tags from your files
+          cd apps
+
+          # Pull images defined in your compose files
+          # Using -f to include both DB and Other infrastructure
+          docker compose -f docker-compose-db.yml -f docker-compose-other.yml --env-file .env pull
+
+          # Tag and prepare for push
+          docker tag postgres:15-alpine ghcr.io/$REPO_LOWER/postgres:latest
+          docker tag mongo:6.0 ghcr.io/$REPO_LOWER/mongodb:latest
+          docker tag rabbitmq:4-management ghcr.io/$REPO_LOWER/rabbitmq:latest
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -140,6 +154,9 @@ jobs:
             image
             notification
             organization
+            postgres
+            mongodb
+            rabbitmq
           )
 
           for service in "${services[@]}"
