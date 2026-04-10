@@ -6,13 +6,11 @@ import com.capstone.construction.domain.model.Lateral;
 import com.capstone.construction.domain.model.WaterSupplyNetwork;
 import com.capstone.construction.infrastructure.persistence.LateralRepository;
 import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRepository;
-import com.capstone.construction.infrastructure.service.DeviceService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.slf4j.Logger;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -34,12 +32,6 @@ class LateralServiceImplTest {
 
   @Mock
   WaterSupplyNetworkRepository networkRepository;
-
-  @Mock
-  DeviceService metersService;
-
-  @Mock
-  Logger log;
 
   @InjectMocks
   LateralServiceImpl lateralService;

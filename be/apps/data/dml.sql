@@ -257,27 +257,28 @@ VALUES ('3c4d5e6f-2000-4ccc-9ddd-cccc4ccc0001', now(), 'KĐT Hòa Vượng', now
        ('3c4d5e6f-2000-4ccc-9ddd-cccc4ccc0022', now(), 'Cầu Trạm Xá', now());
 
 INSERT INTO laterals (lateral_id, created_at, name, updated_at, water_supply_network_id)
-VALUES ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0001', now(), 'A300', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0002', now(), 'B600m', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0003', now(), 'A600c', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0004', now(), 'C400', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0005', now(), 'Năng Tĩnh', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0006', now(), 'Cửa Bắc', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0007', now(), 'Bà Triệu', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0008', now(), 'Lộc Vượng', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0009', now(), 'Hạ Long', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0010', now(), 'Mỹ Tân', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0011', now(), 'Cấp nước Nam Định', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0012', now(), 'Lộc Hạ', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0013', now(), 'Lộc Hòa', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0014', now(), 'Mỹ Xá', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0015', now(), 'Thống Nhất', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0016', now(), 'Trần Tế Xương', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0017', now(), 'DHT Trực Ninh', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0018', now(), 'CQ Trực Ninh 1', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0019', now(), 'Cụm CN', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0020', now(), 'Xã Ninh Giang', now(), NULL),
-       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0021', now(), 'Xã Cổ Lễ', now(), NULL);
+VALUES ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0001', now(), 'A300', now(), '550e8400-e29b-41d4-a716-446655440001'),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0002', now(), 'B600m', now(), '550e8400-e29b-41d4-a716-446655440001'),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0003', now(), 'A600c', now(), '550e8400-e29b-41d4-a716-446655440001'),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0004', now(), 'C400', now(), '550e8400-e29b-41d4-a716-446655440001'),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0005', now(), 'Năng Tĩnh', now(), '550e8400-e29b-41d4-a716-446655440001'),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0006', now(), 'Cửa Bắc', now(), '550e8400-e29b-41d4-a716-446655440001'),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0007', now(), 'Bà Triệu', now(), '550e8400-e29b-41d4-a716-446655440001'),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0008', now(), 'Lộc Vượng', now(), '550e8400-e29b-41d4-a716-446655440001'),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0009', now(), 'Hạ Long', now(), '550e8400-e29b-41d4-a716-446655440001'),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0010', now(), 'Mỹ Tân', now(), '550e8400-e29b-41d4-a716-446655440001'),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0011', now(), 'Cấp nước Nam Định', now(),
+        '550e8400-e29b-41d4-a716-446655440001'),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0012', now(), 'Lộc Hạ', now(), '550e8400-e29b-41d4-a716-446655440001'),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0013', now(), 'Lộc Hòa', now(), '550e8400-e29b-41d4-a716-446655440001'),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0014', now(), 'Mỹ Xá', now(), '550e8400-e29b-41d4-a716-446655440001'),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0015', now(), 'Thống Nhất', now(), '550e8400-e29b-41d4-a716-446655440001'),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0016', now(), 'Trần Tế Xương', now(), '550e8400-e29b-41d4-a716-446655440001'),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0017', now(), 'DHT Trực Ninh', now(), '550e8400-e29b-41d4-a716-446655440001'),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0018', now(), 'CQ Trực Ninh 1', now(), '550e8400-e29b-41d4-a716-446655440001'),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0019', now(), 'Cụm CN', now(), '550e8400-e29b-41d4-a716-446655440001'),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0020', now(), 'Xã Ninh Giang', now(), '550e8400-e29b-41d4-a716-446655440001'),
+       ('4d5e6f70-3000-4ddd-9eee-dddd4ddd0021', now(), 'Xã Cổ Lễ', now(), '550e8400-e29b-41d4-a716-446655440001');
 
 INSERT INTO roadmap (roadmap_id, created_at, name, updated_at, lateral_id, water_supply_network_id)
 VALUES ('5e6f7081-4000-4eee-9fff-eeee4eee0001', now(), '108-111-112e', now(), '4d5e6f70-3000-4ddd-9eee-dddd4ddd0002',
@@ -683,7 +684,7 @@ INSERT INTO cost_estimate (estimation_id, address, construction_machinery_coeffi
                            labor_coefficient, note, overall_water_meter_id,
                            precalculated_tax_coefficient, registration_at,
                            survey_effort, survey_fee, updated_at, vat_coefficient, water_meter_serial,
-                           installation_form_form_code, installation_form_form_number, significance)
+                           installation_form_code, installation_form_number, significance, water_meter_type_id)
 VALUES ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', '456 Lê Hồng Phong, Nam Định', 1, 1000000,
         'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Trần Thị Lan', 1, 200000,
         'https://example.com/design1.png', 1, 300000, 1, 'Kế hoạch lắp đặt khu vực ngõ', 'METER-017', 1, '2024-03-25',
@@ -692,7 +693,7 @@ VALUES ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', '456 Lê Hồng Phong, Nam Đị
     "surveyStaff": "Nguyễn Văn Khảo Sát",
     "companyLeaderShip": "Lê Văn Quản Lý",
     "planningTechnicalHead": "Trần Trưởng Phòng"
-  }'),
+  }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg0002', '789 Quang Trung, Nam Định', 1, 1200000,
         'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Lê Văn Bình', 1, 250000,
         'https://example.com/design2.png', 1, 350000, 1, 'Nhà mặt phố, cần khoan hạ tầng', 'METER-018', 1, '2024-03-25',
@@ -701,7 +702,7 @@ VALUES ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', '456 Lê Hồng Phong, Nam Đị
          "surveyStaff": "Phạm Văn Điều Tra",
          "companyLeaderShip": "Hoàng Văn Giám Đốc",
          "planningTechnicalHead": "Vũ Kỹ Thuật"
-       }'),
+       }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg0003', '101 Nguyễn Du, Nam Định', 1, 1000000,
         'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Phạm Thị Mai', 1, 200000,
         'https://example.com/design3.png', 1, 300000, 1, 'Lắp đặt mới hoàn toàn', 'METER-019', 1, '2024-03-25', 1,
@@ -710,7 +711,7 @@ VALUES ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', '456 Lê Hồng Phong, Nam Đị
          "surveyStaff": "Nguyễn Văn Khảo Sát",
          "companyLeaderShip": "Lê Văn Quản Lý",
          "planningTechnicalHead": "Trần Trưởng Phòng"
-       }'),
+       }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg0004', '202 Hùng Vương, Nam Định', 1, 1500000,
         'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Hoàng Văn Dũng', 1, 300000,
         'https://example.com/design20.png', 1, 400000, 1, 'Thi công khu dân cư mới', 'METER-020', 1, '2024-03-25', 1,
@@ -719,7 +720,7 @@ VALUES ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', '456 Lê Hồng Phong, Nam Đị
          "surveyStaff": "Trần Văn Kiểm Tra",
          "companyLeaderShip": "Lê Quản Lý",
          "planningTechnicalHead": "Nguyễn Trưởng Phòng"
-       }'),
+       }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg0005', '303 Trường Chinh, Nam Định', 1, 1100000,
         'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Nguyễn Thị Hoa', 1, 220000,
         'https://example.com/design21.png', 1, 320000, 1, 'Nâng cấp hệ thống hiện có', 'METER-021', 1, '2024-03-25', 1,
@@ -728,7 +729,7 @@ VALUES ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', '456 Lê Hồng Phong, Nam Đị
          "surveyStaff": "Lê Văn Thẩm Định",
          "companyLeaderShip": "Trần Ban Giám Đốc",
          "planningTechnicalHead": "Hoàng Kỹ Thuật"
-       }'),
+       }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg0006', '404 Võ Nguyên Giáp, Nam Định', 1, 1400000,
         'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Trần Văn Thành', 1, 280000,
         'https://example.com/design22.png', 1, 380000, 1, 'Lắp đặt tại cơ sở kinh doanh', 'METER-022', 1, '2024-03-25',
@@ -737,7 +738,7 @@ VALUES ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', '456 Lê Hồng Phong, Nam Đị
          "surveyStaff": "Phạm Văn Đo Đạc",
          "companyLeaderShip": "Vũ Lãnh Đạo",
          "planningTechnicalHead": "Bùi Trưởng Ban"
-       }'),
+       }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg0007', '606 Giải Phóng, Nam Định', 1, 1000000,
         'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Bùi Văn Cường', 1, 200000,
         'https://example.com/design4.png', 1, 300000, 1, 'Hồ sơ dự toán bị từ chối, cần khảo sát lại', 'METER-024', 1,
@@ -746,7 +747,7 @@ VALUES ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', '456 Lê Hồng Phong, Nam Đị
          "surveyStaff": "Nguyễn Văn Khảo Sát",
          "companyLeaderShip": "Lê Văn Quản Lý",
          "planningTechnicalHead": "Trần Trưởng Phòng"
-       }'),
+       }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg0008', '707 Trường Chinh, Nam Định', 1, 1050000,
         'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Đặng Thị B', 1, 210000,
         'https://example.com/design25.png', 1, 310000, 1, 'Khảo sát lắp đặt hộ gia đình', 'METER-025', 1, '2024-03-26',
@@ -755,7 +756,7 @@ VALUES ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', '456 Lê Hồng Phong, Nam Đị
          "surveyStaff": "Đỗ Văn Hiện Trường",
          "companyLeaderShip": "Lý Ban Điều Hành",
          "planningTechnicalHead": "Ngô Trưởng Phòng"
-       }'),
+       }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg0009', '909 Mạc Thị Bưởi, Nam Định', 1, 1000000,
         'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Nguyễn Thị Q', 1, 200000,
         'https://example.com/design27.png', 1, 300000, 1, 'Kết quả khảo sát ban đầu', 'METER-027', 1, '2024-03-26', 1,
@@ -764,7 +765,7 @@ VALUES ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', '456 Lê Hồng Phong, Nam Đị
          "surveyStaff": "Nguyễn Văn Khảo Sát",
          "companyLeaderShip": "Lê Văn Quản Lý",
          "planningTechnicalHead": "Trần Trưởng Phòng"
-       }'),
+       }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg0010', '1010 Hàng Thao, Nam Định', 1, 1300000,
         'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Trần Văn K', 1, 260000,
         'https://example.com/design5.png', 1, 360000, 1, 'Công trình đã có dự toán được duyệt', 'METER-028', 1,
@@ -773,7 +774,7 @@ VALUES ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', '456 Lê Hồng Phong, Nam Đị
          "surveyStaff": "Phan Văn Thực Địa",
          "companyLeaderShip": "Bùi Giám Đốc",
          "planningTechnicalHead": "Đinh Trưởng Phòng"
-       }'),
+       }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg1029', '11 Nguyễn Du, Nam Định', 1, 1000000,
         'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Nguyễn Thị Tới', 1, 200000,
         'https://example.com/design29.png', 1, 300000, 1, 'Lắp mới đồng hồ D15', 'METER-029', 1, '2024-04-01',
@@ -781,7 +782,7 @@ VALUES ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', '456 Lê Hồng Phong, Nam Đị
          "surveyStaff": "Nguyễn Văn Khảo Sát",
          "companyLeaderShip": "Lê Văn Quản Lý",
          "planningTechnicalHead": "Trần Trưởng Phòng"
-       }'),
+       }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg1030', '22 Trần Phú, Nam Định', 1, 1000000,
         'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Lê Văn Thắng', 1, 200000,
         'https://example.com/design30.png', 1, 300000, 1, 'Lắp mới đồng hồ D15', 'METER-030', 1, '2024-04-01',
@@ -789,7 +790,7 @@ VALUES ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', '456 Lê Hồng Phong, Nam Đị
          "surveyStaff": "Nguyễn Văn Khảo Sát",
          "companyLeaderShip": "Lê Văn Quản Lý",
          "planningTechnicalHead": "Trần Trưởng Phòng"
-       }'),
+       }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg1031', '33 Lý Thường Kiệt, Nam Định', 1, 1000000,
         'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Trần Thị Tuyết', 1, 200000,
         'https://example.com/design31.png', 1, 300000, 1, 'Lắp mới đồng hồ D15', 'METER-031', 1, '2024-04-01',
@@ -797,7 +798,7 @@ VALUES ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', '456 Lê Hồng Phong, Nam Đị
          "surveyStaff": "Nguyễn Văn Khảo Sát",
          "companyLeaderShip": "Lê Văn Quản Lý",
          "planningTechnicalHead": "Trần Trưởng Phòng"
-       }'),
+       }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg1032', '44 Hàng Thao, Nam Định', 1, 1200000,
         'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Phạm Văn Hùng', 1, 240000,
         'https://example.com/design32.png', 1, 340000, 1, 'Lắp mới đồng hồ D15', 'METER-032', 1, '2024-04-01',
@@ -805,7 +806,7 @@ VALUES ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', '456 Lê Hồng Phong, Nam Đị
          "surveyStaff": "Nguyễn Văn Khảo Sát",
          "companyLeaderShip": "Lê Văn Quản Lý",
          "planningTechnicalHead": "Trần Trưởng Phòng"
-       }'),
+       }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg1033', '55 Quang Trung, Nam Định', 1, 1000000,
         'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Hoàng Thị Kim', 1, 200000,
         'https://example.com/design33.png', 1, 300000, 1, 'Lắp mới đồng hồ D15', 'METER-033', 1, '2024-04-02',
@@ -813,7 +814,7 @@ VALUES ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', '456 Lê Hồng Phong, Nam Đị
          "surveyStaff": "Nguyễn Văn Khảo Sát",
          "companyLeaderShip": "Lê Văn Quản Lý",
          "planningTechnicalHead": "Trần Trưởng Phòng"
-       }'),
+       }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg1034', '66 Lê Hồng Phong, Nam Định', 1, 1000000,
         'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Đỗ Văn Cường', 1, 200000,
         'https://example.com/design34.png', 1, 300000, 1, 'Lắp mới đồng hồ D15', 'METER-034', 1, '2024-04-02',
@@ -821,7 +822,7 @@ VALUES ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', '456 Lê Hồng Phong, Nam Đị
          "surveyStaff": "Nguyễn Văn Khảo Sát",
          "companyLeaderShip": "Lê Văn Quản Lý",
          "planningTechnicalHead": "Trần Trưởng Phòng"
-       }'),
+       }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg1035', '77 Hùng Vương, Nam Định', 1, 1000000,
         'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Bùi Thị Ngọc', 1, 200000,
         'https://example.com/design35.png', 1, 300000, 1, 'Lắp mới đồng hồ D15', 'METER-035', 1, '2024-04-02',
@@ -829,7 +830,7 @@ VALUES ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', '456 Lê Hồng Phong, Nam Đị
          "surveyStaff": "Nguyễn Văn Khảo Sát",
          "companyLeaderShip": "Lê Văn Quản Lý",
          "planningTechnicalHead": "Trần Trưởng Phòng"
-       }'),
+       }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg1036', '88 Võ Nguyên Giáp, Nam Định', 1, 1200000,
         'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Võ Văn Thành', 1, 240000,
         'https://example.com/design36.png', 1, 340000, 1, 'Lắp mới đồng hồ D15', 'METER-036', 1, '2024-05-01',
@@ -837,7 +838,7 @@ VALUES ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', '456 Lê Hồng Phong, Nam Đị
          "surveyStaff": "Nguyễn Văn Khảo Sát",
          "companyLeaderShip": "Lê Văn Quản Lý",
          "planningTechnicalHead": "Trần Trưởng Phòng"
-       }'),
+       }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg1037', '99 Trường Chinh, Nam Định', 1, 1000000,
         'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Đặng Thị Hồng', 1, 200000,
         'https://example.com/design37.png', 1, 300000, 1, 'Lắp mới đồng hồ D15', 'METER-037', 1, '2024-05-01',
@@ -845,7 +846,7 @@ VALUES ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', '456 Lê Hồng Phong, Nam Đị
          "surveyStaff": "Nguyễn Văn Khảo Sát",
          "companyLeaderShip": "Lê Văn Quản Lý",
          "planningTechnicalHead": "Trần Trưởng Phòng"
-       }'),
+       }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg1038', '111 Điện Biên, Nam Định', 1, 1000000,
         'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Phan Văn Minh', 1, 200000,
         'https://example.com/design38.png', 1, 300000, 1, 'Lắp mới đồng hồ D15', 'METER-038', 1, '2024-05-01',
@@ -853,7 +854,7 @@ VALUES ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', '456 Lê Hồng Phong, Nam Đị
          "surveyStaff": "Nguyễn Văn Khảo Sát",
          "companyLeaderShip": "Lê Văn Quản Lý",
          "planningTechnicalHead": "Trần Trưởng Phòng"
-       }');
+       }', '00000000-0000-0000-0000-900000000006');
 
 INSERT INTO public.receipt (installation_form_form_code, installation_form_form_number, address, customer_name,
                             is_paid, payment_date, payment_reason, receipt_number, total_money_in_digits,
@@ -991,7 +992,7 @@ values ('CTR-2024-0019', current_timestamp, current_timestamp, '80000001019', '2
        ]'::jsonb, null);
 
 INSERT INTO construction_request (id, contract_id, created_at, updated_at,
-                                  installation_form_form_code, installation_form_form_number)
+                                  installation_form_code, installation_form_number)
 VALUES ('7a8192a3-7000-4aaa-9bbb-cccccccc0019', 'CTR-2024-0019', now(), now(),
         80000001019, 20240019),
        ('7a8192a3-7000-4aaa-9bbb-cccccccc0020', 'CTR-2024-0020', now(), now(),
@@ -1084,7 +1085,7 @@ VALUES ('C-1022', '404 Võ Nguyên Giáp, Nam Định', 'TRAN VAN THANH', '19031
         'CTR-2024-0038');
 
 INSERT INTO public.settlement (settlement_id, address, connection_fee, created_at, job_content, note, registration_at,
-                               significance, updated_at, installation_form_form_code, installation_form_form_number)
+                               significance, updated_at, installation_form_code, installation_form_number)
 VALUES ('SETTLE-2024-0022', '404 Võ Nguyên Giáp, Nam Định', 1500000, now(), 'Lắp đặt đường ống nhánh và đồng hồ D15',
         'Công trình hoàn thành đúng thiết kế, đã nghiệm thu.', '2024-03-25', '{
     "materialStaff": "Nguyễn Văn Kho",
@@ -1278,7 +1279,7 @@ VALUES ('00000000-0000-0000-0000-500000000001', '1', '{
 
 INSERT INTO public.material (material_id, labor_code, construction_machinery_price,
                              construction_machinery_price_at_rural_commune, created_at, job_content, labor_price,
-                             labor_price_at_rural_commune, price, updated_at, supplies_group_id, calculation_unit_id)
+                             labor_price_at_rural_commune, price, updated_at, materials_group_id, calculation_unit_id)
 VALUES ('00000000-0000-0000-0000-600000000001', 'DKT225', 0.00, 0.00, NOW(), 'Đai khởi thủy HDPE OD225x1/2"', 0.00,
         0.00, 490000.00, NOW(), '00000000-0000-0000-0000-200000000008', '00000000-0000-0000-0000-300000000004'),
        ('00000000-0000-0000-0000-600000000002', 'TT', 0.00, 0.00, NOW(), 'Băng cao su (2350)', 0.00, 0.00, 2350.00,
@@ -1406,7 +1407,7 @@ VALUES ('00000000-0000-0000-0000-900000000001', NOW(), 100.0, '999999', 'WPD-DN1
        ('00000000-0000-0000-0000-900000000020', NOW(), 15.0, '999999', 'Mẫu tiêu chuẩn', 'Quốc Phòng', 'Quốc Phòng',
         '1.5', '2.5', '3.5', 15, NOW());
 
-INSERT INTO public.water_meter (meter_code, installation_date, size, water_meter_type_id)
+INSERT INTO public.water_meter (meter_id, installation_date, size, water_meter_type_id)
 VALUES ('00000000-0000-0000-0000-A00000000001', '2023-01-01', 21, '00000000-0000-0000-0000-900000000001'),
        ('00000000-0000-0000-0000-A00000000002', '2023-01-01', 22, '00000000-0000-0000-0000-900000000002'),
        ('00000000-0000-0000-0000-A00000000003', '2023-01-01', 23, '00000000-0000-0000-0000-900000000003'),

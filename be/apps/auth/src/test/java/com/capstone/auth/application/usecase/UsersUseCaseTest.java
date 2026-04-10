@@ -16,7 +16,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.slf4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -41,9 +40,6 @@ class UsersUseCaseTest {
 
   @InjectMocks
   private UsersUseCase usersUseCase;
-
-  @Mock
-  private Logger log;
 
   private static final String UPDATE_ROUTING_KEY = "update-key";
   private static final String DELETE_ROUTING_KEY = "delete-key";

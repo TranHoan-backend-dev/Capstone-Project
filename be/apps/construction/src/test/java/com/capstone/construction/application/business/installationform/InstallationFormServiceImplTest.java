@@ -2,10 +2,10 @@ package com.capstone.construction.application.business.installationform;
 
 import com.capstone.common.enumerate.*;
 import com.capstone.common.response.WrapperApiResponse;
-import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.construction.application.business.estimate.CostEstimateService;
 import com.capstone.construction.application.dto.request.estimate.CreateRequest;
 import com.capstone.construction.application.dto.request.installationform.ApproveRequest;
+import com.capstone.construction.application.dto.request.installationform.InstallationFormFilterRequest;
 import com.capstone.construction.application.dto.request.installationform.NewOrderRequest;
 import com.capstone.construction.domain.model.*;
 import com.capstone.construction.domain.model.utils.*;
@@ -142,7 +142,7 @@ class InstallationFormServiceImplTest {
   void should_GetInstallationForms_When_NoFilters() {
     // Given
     var pageable = PageRequest.of(0, 10);
-    var request = new BaseFilterRequest(null, null, null);
+    var request = new InstallationFormFilterRequest();
     var entity = createMockEntity();
 
     when(ifRepo.findAllNotRejectedInstallationForms(pageable)).thenReturn(new PageImpl<>(List.of(entity)));
@@ -161,7 +161,8 @@ class InstallationFormServiceImplTest {
   void should_GetInstallationForms_When_KeywordProvided() {
     // Given
     var pageable = PageRequest.of(0, 10);
-    var request = new BaseFilterRequest("test", null, null);
+    var request = new InstallationFormFilterRequest();
+    request.setKeyword("test");
     var entity = createMockEntity();
 
     when(ifRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(new PageImpl<>(List.of(entity)));
@@ -180,7 +181,9 @@ class InstallationFormServiceImplTest {
   void should_GetInstallationForms_When_DateRangeProvided() {
     // Given
     var pageable = PageRequest.of(0, 10);
-    var request = new BaseFilterRequest(null, "2024-01-01", "2024-01-31");
+    var request = new InstallationFormFilterRequest();
+    request.setFrom("2024-01-01");
+    request.setTo("2024-01-31");
     var entity = createMockEntity();
 
     when(ifRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(new PageImpl<>(List.of(entity)));
@@ -199,7 +202,8 @@ class InstallationFormServiceImplTest {
   void should_GetInstallationForms_When_KeywordIsBlank() {
     // Given
     var pageable = PageRequest.of(0, 10);
-    var request = new BaseFilterRequest("   ", null, null);
+    var request = new InstallationFormFilterRequest();
+    request.setKeyword("   ");
     var entity = createMockEntity();
 
     when(ifRepo.findAllNotRejectedInstallationForms(pageable)).thenReturn(new PageImpl<>(List.of(entity)));
@@ -218,7 +222,7 @@ class InstallationFormServiceImplTest {
   void should_MapToResponse_When_EmployeeDataIsNull() {
     // Given
     var pageable = PageRequest.of(0, 10);
-    var request = new BaseFilterRequest(null, null, null);
+    var request = new InstallationFormFilterRequest();
     var entity = createMockEntity();
 
     when(ifRepo.findAllNotRejectedInstallationForms(pageable)).thenReturn(new PageImpl<>(List.of(entity)));
@@ -235,7 +239,7 @@ class InstallationFormServiceImplTest {
   void should_MapToResponse_When_EmployeeNameNotFound() {
     // Given
     var pageable = PageRequest.of(0, 10);
-    var request = new BaseFilterRequest(null, null, null);
+    var request = new InstallationFormFilterRequest();
     var entity = createMockEntity();
 
     when(ifRepo.findAllNotRejectedInstallationForms(pageable)).thenReturn(new PageImpl<>(List.of(entity)));
@@ -320,7 +324,7 @@ class InstallationFormServiceImplTest {
   void should_MapToResponse_When_ScheduleSurveyAtIsNull() {
     // Given
     var pageable = PageRequest.of(0, 10);
-    var request = new BaseFilterRequest(null, null, null);
+    var request = new InstallationFormFilterRequest();
     var entity = createMockEntity();
     when(entity.getScheduleSurveyAt()).thenReturn(null);
 
@@ -364,7 +368,8 @@ class InstallationFormServiceImplTest {
   void should_GetInstallationForms_When_KeywordProvided_But_DatesNull() {
     // Given
     var pageable = PageRequest.of(0, 10);
-    var request = new BaseFilterRequest("keyword", null, null);
+    var request = new InstallationFormFilterRequest();
+    request.setKeyword("keyword");
     var entity = createMockEntity();
 
     when(ifRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(new PageImpl<>(List.of(entity)));
@@ -383,7 +388,8 @@ class InstallationFormServiceImplTest {
   void should_GetInstallationForms_When_OnlyToDateProvided() {
     // Given
     var pageable = PageRequest.of(0, 10);
-    var request = new BaseFilterRequest(null, null, "2024-01-31");
+    var request = new InstallationFormFilterRequest();
+    request.setTo("2024-01-31");
     var entity = createMockEntity();
 
     when(ifRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(new PageImpl<>(List.of(entity)));

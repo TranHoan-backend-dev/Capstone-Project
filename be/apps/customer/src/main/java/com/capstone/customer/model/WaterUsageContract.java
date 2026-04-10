@@ -34,7 +34,7 @@ public class WaterUsageContract {
   @Column(nullable = false, unique = true)
   String formCode;
 
-  @Column(nullable = false)
+  @Column(nullable = false, unique = true)
   String formNumber;
 
   @JdbcTypeCode(SqlTypes.JSON)

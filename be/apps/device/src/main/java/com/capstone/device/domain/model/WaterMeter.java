@@ -29,7 +29,7 @@ public class WaterMeter {
   Integer size;
 
   @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "water_meter_type_id")
+  @JoinColumn(name = "water_meter_type_id", nullable = false)
   WaterMeterType type;
 
   public void setInstallationDate(LocalDate installationDate) {

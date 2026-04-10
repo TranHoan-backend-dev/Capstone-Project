@@ -25,12 +25,12 @@ public class Roadmap {
   @Column(nullable = false, unique = true)
   String name;
 
-  @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "lateral_id")
+  @ManyToOne(fetch = FetchType.EAGER, optional = false)
+  @JoinColumn(name = "lateral_id", nullable = false)
   Lateral lateral;
 
-  @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "water_supply_network_id")
+  @ManyToOne(fetch = FetchType.EAGER, optional = false)
+  @JoinColumn(name = "water_supply_network_id", nullable = false)
   WaterSupplyNetwork network;
 
   @Column(nullable = false)

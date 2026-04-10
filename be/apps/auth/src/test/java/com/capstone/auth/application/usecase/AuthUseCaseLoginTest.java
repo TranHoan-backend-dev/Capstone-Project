@@ -3,21 +3,15 @@ package com.capstone.auth.application.usecase;
 import com.capstone.auth.application.business.dto.ProfileDTO;
 import com.capstone.auth.application.business.dto.UserDTO;
 import com.capstone.auth.application.business.profile.ProfileService;
-import com.capstone.auth.application.business.roles.RoleService;
 import com.capstone.auth.application.business.users.UserService;
 import com.capstone.auth.application.dto.request.keycloakparam.TokenParam;
 import com.capstone.auth.application.dto.response.TokenExchangeResponse;
-import com.capstone.auth.application.event.producer.MessageProducer;
 import com.capstone.auth.application.exception.AccountBlockedException;
-import com.capstone.auth.infrastructure.service.NetworkService;
-import com.capstone.auth.infrastructure.service.OrganizationService;
 import com.capstone.auth.infrastructure.service.keycloak.KeycloakFeignClient;
-import com.capstone.auth.infrastructure.service.keycloak.KeycloakService;
 import com.capstone.auth.infrastructure.utils.Message;
 import com.capstone.common.exception.NotExistingException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.keycloak.admin.client.Keycloak;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -39,25 +33,7 @@ class AuthUseCaseLoginTest {
   ProfileService pSrv;
 
   @Mock
-  RoleService rSrv;
-
-  @Mock
-  MessageProducer template;
-
-  @Mock
-  Keycloak keycloak;
-
-  @Mock
   KeycloakFeignClient keycloakFeignClient;
-
-  @Mock
-  KeycloakService keycloakService;
-
-  @Mock
-  NetworkService netWorkService;
-
-  @Mock
-  OrganizationService organizationService;
 
   @InjectMocks
   AuthUseCase authUseCase;
@@ -84,7 +60,7 @@ class AuthUseCaseLoginTest {
     when(pSrv.getProfileById(userId)).thenReturn(profile);
     when(keycloakFeignClient.token(any(TokenParam.class))).thenReturn(tokenExchangeResponse);
 
-    var response = authUseCase.login(username, password);
+    var response = authUseCase.login(username, password, null, null, null);
 
     assertNotNull(response);
     assertNotNull(response.userDetails());
@@ -109,7 +85,7 @@ class AuthUseCaseLoginTest {
 
     NotExistingException ex = assertThrows(
       NotExistingException.class,
-      () -> authUseCase.login(username, password));
+      () -> authUseCase.login(username, password, null, null, null));
 
     assertEquals(Message.SE_04, ex.getMessage());
   }
@@ -127,7 +103,7 @@ class AuthUseCaseLoginTest {
 
     AccountBlockedException ex = assertThrows(
       AccountBlockedException.class,
-      () -> authUseCase.login(username, password));
+      () -> authUseCase.login(username, password, null, null, null));
 
     assertEquals(Message.SE_06, ex.getMessage());
   }
@@ -146,7 +122,7 @@ class AuthUseCaseLoginTest {
 
     NullPointerException ex = assertThrows(
       NullPointerException.class,
-      () -> authUseCase.login(username, password));
+      () -> authUseCase.login(username, password, null, null, null));
 
     assertEquals(Message.SE_05, ex.getMessage());
   }

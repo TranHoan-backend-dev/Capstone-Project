@@ -54,7 +54,7 @@ class CostEstimateControllerTest {
 
     updateRequest = new UpdateRequest(
       new UpdateRequest.GeneralInformation(
-        "Customer", "Address", "Note", 1000, 100, 1, 1000, 1, 1, 1, 1, 1, 1, 100, null, "SN", "METER"),
+        "Customer", "Address", "Note", 1000, 100, 1, 1000, 1, 1, 1, 1, 1, 1, 100, null, "SN", "METER", null),
       Collections.emptyList(),
       false);
 
@@ -65,7 +65,7 @@ class CostEstimateControllerTest {
         new InstallationFormId("1001", "1"),
         new FormProcessingStatus(
           ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING, ProcessingStatus.PROCESSING,
-          ProcessingStatus.PROCESSING)),
+          ProcessingStatus.PROCESSING), null),
       Collections.emptyList());
   }
 

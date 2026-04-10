@@ -28,89 +28,89 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class WaterMeterServiceImplTest {
 
-    @Mock
-    WaterMeterRepository waterMeterRepository;
-    @Mock
-    WaterMeterTypeRepository waterMeterTypeRepository;
-    @Mock
-    OverallWaterMeterRepository overallWaterMeterRepository;
+  @Mock
+  WaterMeterRepository waterMeterRepository;
+  @Mock
+  WaterMeterTypeRepository waterMeterTypeRepository;
+  @Mock
+  OverallWaterMeterRepository overallWaterMeterRepository;
 
-    @InjectMocks
-    WaterMeterServiceImpl waterMeterService;
+  @InjectMocks
+  WaterMeterServiceImpl waterMeterService;
 
-    @Test
-    void should_CreateWaterMeter_When_Valid() {
-        // Given
-        var request = new WaterMeterRequest(LocalDate.now(), 20, "type-id");
-        var type = new WaterMeterType();
-        ReflectionTestUtils.setField(type, "name", "Type A");
+  @Test
+  void should_CreateWaterMeter_When_Valid() {
+    // Given
+    var request = new WaterMeterRequest("meter-01", LocalDate.now(), 20, "type-id");
+    var type = new WaterMeterType();
+    ReflectionTestUtils.setField(type, "name", "Type A");
 
-        when(waterMeterTypeRepository.findById("type-id")).thenReturn(Optional.of(type));
-        when(waterMeterRepository.save(any(WaterMeter.class))).thenAnswer(invocation -> {
-            WaterMeter m = invocation.getArgument(0);
-            ReflectionTestUtils.setField(m, "id", "m-id");
-            return m;
-        });
+    when(waterMeterTypeRepository.findById("type-id")).thenReturn(Optional.of(type));
+    when(waterMeterRepository.save(any(WaterMeter.class))).thenAnswer(invocation -> {
+      WaterMeter m = invocation.getArgument(0);
+      ReflectionTestUtils.setField(m, "id", "m-id");
+      return m;
+    });
 
-        // When
-        var response = waterMeterService.createWaterMeter(request);
+    // When
+    var response = waterMeterService.createWaterMeter(request);
 
-        // Then
-        assertThat(response.id()).isEqualTo("m-id");
-        assertThat(response.typeName()).isEqualTo("Type A");
-        verify(waterMeterRepository).save(any());
-    }
+    // Then
+    assertThat(response.id()).isEqualTo("m-id");
+    assertThat(response.typeName()).isEqualTo("Type A");
+    verify(waterMeterRepository).save(any());
+  }
 
-    @Test
-    void should_ThrowException_When_UpdateNotFound() {
-        // Given
-        var id = "id";
-        var request = new WaterMeterRequest(null, 0, "type");
-        when(waterMeterRepository.findById(id)).thenReturn(Optional.empty());
+  @Test
+  void should_ThrowException_When_UpdateNotFound() {
+    // Given
+    var id = "id";
+    var request = new WaterMeterRequest(null, null, 0, "type");
+    when(waterMeterRepository.findById(id)).thenReturn(Optional.empty());
 
-        // When & Then
-        assertThatThrownBy(() -> waterMeterService.updateWaterMeter(id, request))
-                .isExactlyInstanceOf(IllegalArgumentException.class);
-    }
+    // When & Then
+    assertThatThrownBy(() -> waterMeterService.updateWaterMeter(id, request))
+      .isExactlyInstanceOf(IllegalArgumentException.class);
+  }
 
-    @Test
-    void should_DeleteOverallWaterMeter_When_Exists() {
-        // Given
-        var lateralId = "lat-id";
-        when(overallWaterMeterRepository.existsByLateralId(lateralId)).thenReturn(true);
+  @Test
+  void should_DeleteOverallWaterMeter_When_Exists() {
+    // Given
+    var lateralId = "lat-id";
+    when(overallWaterMeterRepository.existsByLateralId(lateralId)).thenReturn(true);
 
-        // When
-        waterMeterService.deleteOverallWaterMeterByLateralId(lateralId);
+    // When
+    waterMeterService.deleteOverallWaterMeterByLateralId(lateralId);
 
-        // Then
-        verify(overallWaterMeterRepository).deleteByLateralId(lateralId);
-    }
+    // Then
+    verify(overallWaterMeterRepository).deleteByLateralId(lateralId);
+  }
 
-    @Test
-    void should_NotDeleteOverallWaterMeter_When_NotExists() {
-        // Given
-        var lateralId = "lat-id";
-        when(overallWaterMeterRepository.existsByLateralId(lateralId)).thenReturn(false);
+  @Test
+  void should_NotDeleteOverallWaterMeter_When_NotExists() {
+    // Given
+    var lateralId = "lat-id";
+    when(overallWaterMeterRepository.existsByLateralId(lateralId)).thenReturn(false);
 
-        // When
-        waterMeterService.deleteOverallWaterMeterByLateralId(lateralId);
+    // When
+    waterMeterService.deleteOverallWaterMeterByLateralId(lateralId);
 
-        // Then
-        verify(overallWaterMeterRepository, never()).deleteByLateralId(any());
-    }
+    // Then
+    verify(overallWaterMeterRepository, never()).deleteByLateralId(any());
+  }
 
-    @Test
-    void should_GetAllWaterMeters_Success() {
-        // Given
-        var pageable = Pageable.unpaged();
-        var meter = new WaterMeter();
-        var page = new PageImpl<>(List.of(meter));
-        when(waterMeterRepository.findAll(pageable)).thenReturn(page);
+  @Test
+  void should_GetAllWaterMeters_Success() {
+    // Given
+    var pageable = Pageable.unpaged();
+    var meter = new WaterMeter();
+    var page = new PageImpl<>(List.of(meter));
+    when(waterMeterRepository.findAll(pageable)).thenReturn(page);
 
-        // When
-        var result = waterMeterService.getAllWaterMeters(pageable);
+    // When
+    var result = waterMeterService.getAllWaterMeters(pageable);
 
-        // Then
-        assertThat(result.getContent()).hasSize(1);
-    }
+    // Then
+    assertThat(result.getContent()).hasSize(1);
+  }
 }

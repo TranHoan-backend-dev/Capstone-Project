@@ -91,7 +91,7 @@ class NotificationServiceImplTest {
     // Then
     assertThat(response).isNotNull();
     assertThat(response.items()).hasSize(1);
-    assertThat(response.items().get(0).title()).isEqualTo(notificationEntity.getTitle());
+    assertThat(response.items().getFirst().title()).isEqualTo(notificationEntity.getTitle());
     assertThat(response.totalFound()).isEqualTo(1);
     verify(authService, times(1)).getIndividualNotificationsOfAnEmployee(pageable, userId);
     verify(notificationRepo, times(1)).findById(notificationId);

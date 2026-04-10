@@ -5,9 +5,7 @@ import com.capstone.customer.dto.request.customer.CreateRequest;
 import com.capstone.customer.dto.request.customer.CustomerFilterRequest;
 import com.capstone.customer.dto.request.customer.UpdateRequest;
 import com.capstone.customer.dto.response.CustomerResponse;
-import com.capstone.customer.dto.request.customer.CustomerFilterRequest;
 import com.capstone.customer.service.boundary.CustomerService;
-import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -143,7 +141,7 @@ class CustomerControllerTest {
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(Objects.requireNonNull(response.getBody()).data()).isEqualTo(page);
     assertThat(response.getBody().message()).isEqualTo("Lấy danh sách khách hàng thành công");
-    
+
     verify(customerService).getAllCustomers(pageable, null);
   }
 
@@ -152,7 +150,7 @@ class CustomerControllerTest {
   void should_ReturnOk_When_GetAllCustomersWithSearch_IsSuccessful() {
     Pageable pageable = PageRequest.of(0, 10);
     CustomerFilterRequest filter = new CustomerFilterRequest(
-      "test", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null
+      "test", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null
     );
     Page<CustomerResponse> page = new PageImpl<>(List.of(customerResponse));
     when(customerService.getAllCustomers(pageable, filter)).thenReturn(page);

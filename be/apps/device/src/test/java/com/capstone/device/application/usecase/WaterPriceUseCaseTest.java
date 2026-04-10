@@ -22,6 +22,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,12 +47,10 @@ class WaterPriceUseCaseTest {
   WaterPriceUseCase waterPriceUseCase;
 
   private final String UPDATE_KEY = "update-key";
-  private final String DELETE_KEY = "delete-key";
 
   @BeforeEach
   void setUp() {
     ReflectionTestUtils.setField(waterPriceUseCase, "UPDATE_ROUTING_KEY", UPDATE_KEY);
-    ReflectionTestUtils.setField(waterPriceUseCase, "DELETE_ROUTING_KEY", DELETE_KEY);
   }
 
   @Test
@@ -116,7 +115,7 @@ class WaterPriceUseCaseTest {
   void should_deleteWaterPrice_When_NotAppliedToCustomers() {
     // Given
     String id = "some-id";
-    WrapperApiResponse apiResponse = new WrapperApiResponse(200, "Success", "false", LocalDateTime.now());
+    WrapperApiResponse apiResponse = new WrapperApiResponse(200, "Success", "false", OffsetDateTime.now());
     when(customerService.checkWhetherCustomersAreApplied(id)).thenReturn(apiResponse);
 
     // When
@@ -131,7 +130,7 @@ class WaterPriceUseCaseTest {
   void should_throwException_When_deleteWaterPrice_AndAppliedToCustomers() {
     // Given
     String id = "some-id";
-    WrapperApiResponse apiResponse = new WrapperApiResponse(200, "Success", "true", LocalDateTime.now());
+    WrapperApiResponse apiResponse = new WrapperApiResponse(200, "Success", "true", OffsetDateTime.now());
     when(customerService.checkWhetherCustomersAreApplied(id)).thenReturn(apiResponse);
 
     // When & Then

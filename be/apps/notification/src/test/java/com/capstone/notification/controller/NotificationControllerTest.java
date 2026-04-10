@@ -15,7 +15,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -52,10 +51,10 @@ class NotificationControllerTest {
     when(notificationService.createNotification(any())).thenReturn(response);
 
     mockMvc.perform(post("/notification")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request)))
-        .andExpect(status().isCreated())
-        .andExpect(jsonPath("$.message").value("Tạo thông báo thành công"));
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(request)))
+      .andExpect(status().isCreated())
+      .andExpect(jsonPath("$.message").value("Tạo thông báo thành công"));
   }
 
   @Test
@@ -63,9 +62,9 @@ class NotificationControllerTest {
     var request = new CreateNotificationRequest("", "", "/link");
 
     mockMvc.perform(post("/notification")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request)))
-        .andExpect(status().isBadRequest());
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(request)))
+      .andExpect(status().isBadRequest());
   }
 
   @Test
@@ -76,27 +75,27 @@ class NotificationControllerTest {
     when(notificationService.getNotificationsOfAnEmployee(any(), eq(userId))).thenReturn(response);
 
     mockMvc.perform(get("/notification")
-            .with(jwt().jwt(j -> j.subject(userId)))
-            .param("page", "0")
-            .param("size", "10"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.message").value("Lấy danh sách thông báo thành công"));
+        .with(jwt().jwt(j -> j.subject(userId)))
+        .param("page", "0")
+        .param("size", "10"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.message").value("Lấy danh sách thông báo thành công"));
   }
 
   @Test
   void createDepartmentNotification_ShouldReturnCreated() throws Exception {
     var departmentRequest = new CreateDepartmentNotificationRequest(
-        "Dept Title", "Dept Message", "/dept-link", List.of(Topic.IT)
+      "Dept Title", "Dept Message", "/dept-link", List.of(Topic.IT)
     );
     var notificationResponse = new NotificationResponse("id", "Dept Title", "/dept-link", "Dept Message", false, LocalDateTime.now());
 
     when(notificationService.createNotification(any())).thenReturn(notificationResponse);
 
     mockMvc.perform(post("/notification/departments")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(departmentRequest)))
-        .andExpect(status().isCreated())
-        .andExpect(jsonPath("$.message").value("Tạo thông báo phòng ban thành công"));
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(departmentRequest)))
+      .andExpect(status().isCreated())
+      .andExpect(jsonPath("$.message").value("Tạo thông báo phòng ban thành công"));
 
     verify(messagingTemplate).convertAndSend(eq("/topic/IT"), any(NotificationResponse.class));
   }

@@ -54,18 +54,9 @@ class UsageHistoryServiceImplTest {
 
   @BeforeEach
   void setUp() {
-    meter = WaterMeter.create(builder -> builder.id("WM-001"));
-    history = UsageHistory.builder()
-      .usageHistory("WM-001")
-      .meter(meter)
-      .usages(new ArrayList<>())
-      .customerId("CUST-001")
-      .build();
-    price = WaterPrice.create(builder -> builder
-      .priceId("PRICE-001")
-      .priceTypes(new ArrayList<>())
-      .tax(BigDecimal.ZERO)
-      .environmentPrice(BigDecimal.ZERO));
+    meter = WaterMeter.create(builder -> builder.meterId("WM-001"));
+    history = UsageHistory.builder().usageHistory("WM-001").meter(meter).usages(new ArrayList<>()).customerId("CUST-001").build();
+    price = WaterPrice.create(builder -> builder.priceId("PRICE-001").priceTypes(new ArrayList<>()).tax(BigDecimal.ZERO).environmentPrice(BigDecimal.ZERO));
   }
 
   @Test
@@ -82,8 +73,7 @@ class UsageHistoryServiceImplTest {
     when(objectMapper.convertValue(any(), eq(CustomerWaterPriceRefResponse.class))).thenReturn(customerInfo);
     when(waterPriceRepository.findById("PRICE-001")).thenReturn(Optional.of(price));
 
-    WaterChargeBreakdown breakdown = new WaterChargeBreakdown(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-      BigDecimal.ZERO);
+    WaterChargeBreakdown breakdown = new WaterChargeBreakdown(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
     when(waterChargeCalculator.calculateProgressiveCharge(any(), any())).thenReturn(breakdown);
     when(repository.save(any())).thenReturn(history);
 
@@ -98,15 +88,13 @@ class UsageHistoryServiceImplTest {
   @Test
   void should_ThrowException_When_IndexIsInvalid() {
     // Given
-    history.getUsages()
-      .add(Usage.builder().index(new BigDecimal("100")).recordingDate(LocalDate.now().minusDays(1)).build());
+    history.getUsages().add(Usage.builder().index(new BigDecimal("100")).recordingDate(LocalDate.now().minusDays(1)).build());
 
     when(waterMeterRepository.findWaterMeterByMeterId("WM-001")).thenReturn(meter);
     when(repository.findByMeter(meter)).thenReturn(Optional.of(history));
 
     // When & Then - New index (50) < Previous index (100)
-    assertThrows(IllegalArgumentException.class,
-      () -> service.addWaterIndexOfThisMonth("url", "WM-001", new BigDecimal("50"), LocalDate.now(), "PENDING"));
+    assertThrows(IllegalArgumentException.class, () -> service.addWaterIndexOfThisMonth("url", "WM-001", new BigDecimal("50"), LocalDate.now(), "PENDING"));
   }
 
   @Test

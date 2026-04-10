@@ -137,7 +137,7 @@ class ReceiptServiceImplTest {
   @DisplayName("Update receipt successfully")
   void should_UpdateReceipt_Fully() {
     // UpdateRequest(formCode, formNumber, receiptNumber, customerName, address, paymentDate, isPaid, significanceOfTreasurer)
-    var update = new UpdateRequest(1L, 1001L, "NEW-BL", "New Name", "New Addr", LocalDate.now(), false, "http://treasurer-sign");
+    var update = new UpdateRequest("1", "1001", "NEW-BL", "New Name", "New Addr", LocalDate.now(), false, "http://treasurer-sign");
     var receipt = new Receipt();
     ReflectionTestUtils.setField(receipt, "installationForm", form);
     ReflectionTestUtils.setField(receipt, "installationFormId", formId);
@@ -157,7 +157,7 @@ class ReceiptServiceImplTest {
   void should_Delete_When_Exists() {
     when(receiptRepo.existsById(formId)).thenReturn(true);
 
-    receiptService.deleteReceipt(1L, 1001L);
+    receiptService.deleteReceipt("1", "1001");
 
     verify(receiptRepo).deleteById(formId);
   }
@@ -171,7 +171,7 @@ class ReceiptServiceImplTest {
 
     when(receiptRepo.findById(formId)).thenReturn(Optional.of(receipt));
 
-    var response = receiptService.getReceipt(1L, 1001L);
+    var response = receiptService.getReceipt("1", "1001");
     assertThat(response.receiptNumber()).isEqualTo("BL123");
   }
 }

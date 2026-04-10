@@ -105,24 +105,6 @@ public class CustomerServiceImpl implements CustomerService {
       customer.setWaterPriceId(s3);
     }
     if (s4 != null) {
-      // 1. Kiểm tra xem số serial này đã được gán cho khách hàng nào khác chưa
-      if (customerRepository.existsByWaterMeterId(s4) && !s4.equals(customer.getWaterMeterId())) {
-        throw new IllegalArgumentException(Message.ENT_30);
-      }
-
-      // 2. Nếu không tìm thấy đồng hồ trong hệ thống thiết bị, tiến hành tạo mới
-      if (!deviceService.checkExistenceOfWaterMeter(s4)) {
-        log.info("Water meter {} not found, creating new one with type {}", s4, customer.getWaterMeterType());
-        
-        java.util.Map<String, Object> meterReq = new java.util.HashMap<>();
-        meterReq.put("meterId", s4);
-        meterReq.put("installationDate", java.time.LocalDate.now().toString());
-        meterReq.put("size", 15); // Default size, could be improved by fetching from type
-        meterReq.put("typeId", customer.getWaterMeterType());
-        
-        deviceService.createWaterMeter(meterReq);
-      }
-      
       customer.setWaterMeterId(s4);
     }
   }

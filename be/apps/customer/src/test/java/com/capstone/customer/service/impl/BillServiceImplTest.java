@@ -5,9 +5,7 @@ import com.capstone.customer.dto.response.BillResponse;
 import com.capstone.customer.dto.response.CustomerResponse;
 import com.capstone.customer.model.Bill;
 import com.capstone.customer.model.Customer;
-import com.capstone.customer.repository.BillRepository;
 import com.capstone.customer.repository.CustomerRepository;
-import com.capstone.customer.service.boundary.ConstructionService;
 import com.capstone.customer.service.boundary.CustomerService;
 import com.capstone.customer.service.boundary.DeviceService;
 import org.junit.jupiter.api.DisplayName;
@@ -33,9 +31,6 @@ import static org.mockito.Mockito.*;
 class BillServiceImplTest {
 
   @Mock
-  BillRepository billRepository;
-
-  @Mock
   CustomerRepository customerRepository;
 
   @Mock
@@ -43,9 +38,6 @@ class BillServiceImplTest {
 
   @Mock
   DeviceService deviceService;
-
-  @Mock
-  ConstructionService constructionService;
 
   @InjectMocks
   BillServiceImpl billService;

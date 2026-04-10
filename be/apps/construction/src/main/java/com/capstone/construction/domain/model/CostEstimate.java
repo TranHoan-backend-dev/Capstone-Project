@@ -74,10 +74,17 @@ public class CostEstimate implements Serializable {
 
   String waterMeterSerial;
 
+  @Setter
+  String waterMeterTypeId;
+
   @Column(nullable = false)
   String overallWaterMeterId;
 
-  @OneToOne
+  @OneToOne(optional = false)
+  @JoinColumns({
+    @JoinColumn(name = "installation_form_code", referencedColumnName = "form_code", nullable = false),
+    @JoinColumn(name = "installation_form_number", referencedColumnName = "form_number", nullable = false)
+  })
   InstallationForm installationForm;
 
   @JdbcTypeCode(SqlTypes.JSON)

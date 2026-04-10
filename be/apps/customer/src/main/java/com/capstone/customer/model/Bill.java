@@ -96,9 +96,8 @@ public class Bill {
       return this;
     }
 
-    public BillBuilder exportAddress(String exportAddress) {
+    public void exportAddress(String exportAddress) {
       bill.setExportAddress(exportAddress);
-      return this;
     }
 
     public BillBuilder customer(Customer customer) {

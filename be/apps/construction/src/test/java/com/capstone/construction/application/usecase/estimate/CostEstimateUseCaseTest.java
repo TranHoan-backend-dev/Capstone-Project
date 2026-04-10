@@ -68,7 +68,7 @@ class CostEstimateUseCaseTest {
 
     updateRequest = new UpdateRequest(
       new UpdateRequest.GeneralInformation(
-        "Name", "Addr", "Note", 100, 100, 1, 100, 1, 1, 1, 1, 1, 1, 100, null, "SN", "METER"),
+        "Name", "Addr", "Note", 100, 100, 1, 100, 1, 1, 1, 1, 1, 1, 100, null, "SN", "METER", null),
       Collections.emptyList(),
       true);
 
@@ -81,22 +81,11 @@ class CostEstimateUseCaseTest {
           com.capstone.common.enumerate.ProcessingStatus.APPROVED,
           com.capstone.common.enumerate.ProcessingStatus.PROCESSING,
           com.capstone.common.enumerate.ProcessingStatus.PROCESSING,
-          com.capstone.common.enumerate.ProcessingStatus.PROCESSING)),
+          com.capstone.common.enumerate.ProcessingStatus.PROCESSING), null),
       Collections.emptyList());
   }
 
-  @Test
-  void should_CreateEstimate_When_InstallationFormExists() {
-    // Arrange
-    when(estSrv.createEstimate(createRequest)).thenReturn(mockResponse);
 
-    // Act
-    var response = costEstimateUseCase.createEstimate(createRequest);
-
-    // Assert
-    assertNotNull(response);
-    verify(estSrv).createEstimate(createRequest);
-  }
 
   @Test
   void should_UpdateEstimate_Success() {

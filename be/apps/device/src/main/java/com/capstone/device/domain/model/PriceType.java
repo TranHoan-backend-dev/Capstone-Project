@@ -21,9 +21,10 @@ public class PriceType {
   @GeneratedValue(strategy = GenerationType.UUID)
   String priceTypeId;
 
+  @Column(nullable = false)
   String area;
 
   @JdbcTypeCode(SqlTypes.JSON)
-  @Column(columnDefinition = "jsonb")
+  @Column(columnDefinition = "jsonb", nullable = false)
   Map<String, BigDecimal> price;
 }

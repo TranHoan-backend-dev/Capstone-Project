@@ -22,17 +22,19 @@ public class MaterialsOfSettlement {
   @EmbeddedId
   MaterialsOfSettlementId id;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.EAGER, optional = false)
   @MapsId("materialId")
   Material material;
 
-  @Column(nullable = false)
   String laborCost;
 
-  @Column(nullable = false)
   String materialCost;
 
   String note;
+
+  @Setter
+  @Column(nullable = false)
+  Float mass;
 
   public void setId(MaterialsOfSettlementId id) {
     this.id = Objects.requireNonNull(id, SharedMessage.MES_07);
@@ -53,6 +55,11 @@ public class MaterialsOfSettlement {
 
     public MaterialsOfSettlementBuilder id(MaterialsOfSettlementId id) {
       instance.setId(id);
+      return this;
+    }
+
+    public MaterialsOfSettlementBuilder mass(Float value) {
+      instance.setMass(value);
       return this;
     }
 

@@ -47,11 +47,11 @@ public class Material {
   BigDecimal constructionMachineryPriceAtRuralCommune;
 
   @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "supplies_group_id")
+  @JoinColumn(name = "materials_group_id", nullable = false)
   MaterialsGroup group;
 
   @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "calculation_unit_id")
+  @JoinColumn(name = "calculation_unit_id", nullable = false)
   Unit unit;
 
   @Column(nullable = false)

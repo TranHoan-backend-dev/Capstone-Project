@@ -2,7 +2,6 @@ package com.capstone.construction.application.usecase;
 
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.construction.application.business.installationform.InstallationFormService;
-import com.capstone.common.request.BaseFilterRequest;
 import com.capstone.construction.application.dto.request.installationform.*;
 import com.capstone.construction.application.dto.response.installationform.*;
 import com.capstone.construction.application.event.producer.MessageProducer;
@@ -54,7 +53,8 @@ class InstallationFormHandlingUseCaseTest {
   @DisplayName("Should return paginated forms")
   void should_ReturnPaginatedForms_When_ServiceReturnsData() {
     var pageable = Pageable.unpaged();
-    var request = new BaseFilterRequest("keyword", null, null);
+    var request = new InstallationFormFilterRequest();
+    request.setKeyword("keyword");
     var responseItem = mock(InstallationFormListResponse.class);
     var expectedPage = new PageImpl<>(List.of(responseItem));
 

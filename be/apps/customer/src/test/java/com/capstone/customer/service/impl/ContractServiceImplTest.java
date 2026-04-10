@@ -6,7 +6,6 @@ import com.capstone.customer.dto.response.ContractResponse;
 import com.capstone.customer.model.Customer;
 import com.capstone.customer.model.WaterUsageContract;
 import com.capstone.customer.repository.ContractRepository;
-import com.capstone.customer.repository.CustomerRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,9 +36,6 @@ class ContractServiceImplTest {
 
   @Mock
   private ContractRepository contractRepository;
-
-  @Mock
-  private CustomerRepository customerRepository;
 
   @InjectMocks
   private ContractServiceImpl contractService;
