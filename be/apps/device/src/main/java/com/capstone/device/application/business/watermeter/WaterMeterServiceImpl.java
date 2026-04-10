@@ -36,6 +36,7 @@ public class WaterMeterServiceImpl implements WaterMeterService {
       .orElseThrow(() -> new IllegalArgumentException("Water meter type not found: " + request.typeId()));
 
     var meter = WaterMeter.create(builder -> builder
+      .meterId(request.meterId())
       .installationDate(request.installationDate())
       .size(request.size())
       .type(type));
