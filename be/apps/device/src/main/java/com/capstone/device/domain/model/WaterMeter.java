@@ -19,9 +19,8 @@ import java.util.function.Consumer;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class WaterMeter {
   @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
-  @Column(name = "meter_code")
-  String id;
+  @Column(name = "meter_id")
+  String meterId;
 
   @Column(nullable = false)
   LocalDate installationDate;
@@ -58,8 +57,8 @@ public class WaterMeter {
   public static class WaterMeterBuilder {
     private final WaterMeter meter = new WaterMeter();
 
-    public WaterMeterBuilder id(String id) {
-      meter.id = id;
+    public WaterMeterBuilder meterId(String meterId) {
+      meter.meterId = meterId;
       return this;
     }
 

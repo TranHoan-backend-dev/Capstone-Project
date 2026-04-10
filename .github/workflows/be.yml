@@ -135,6 +135,12 @@ jobs:
             cp .env.example .env
           fi
 
+          # Fill default values for ports if they are empty (to prevent "no port specified" error in CI)
+          sed -i 's/POSTGRES_PORT=$/POSTGRES_PORT=5432/g' .env
+          sed -i 's/MONGO_PORT=$/MONGO_PORT=27017/g' .env
+          sed -i 's/RABBITMQ_PROTOCOL=$/RABBITMQ_PROTOCOL=5672/g' .env
+          sed -i 's/RABBITMQ_WEB_PORT=$/RABBITMQ_WEB_PORT=15672/g' .env
+
           # Pull images defined in your compose files
           docker compose -f docker-compose-db.yml -f docker-compose-other.yml --env-file .env pull
 
