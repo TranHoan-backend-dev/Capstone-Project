@@ -20,7 +20,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -76,7 +75,7 @@ class UsageHistoryServiceImplTest {
     var wrappedCustomer = new WrapperApiResponse(200, "Success", data, OffsetDateTime.now());
     var customerInfo = new CustomerWaterPriceRefResponse("CUST-001", "Hoàn", "PRICE-001", "RM-001", "Serial-001", "Addr-001");
 
-    when(waterMeterRepository.findWaterMeterById("WM-001")).thenReturn(meter);
+    when(waterMeterRepository.findWaterMeterByMeterId("WM-001")).thenReturn(meter);
     when(repository.findByMeter(meter)).thenReturn(Optional.of(history));
     when(customerService.getCustomerIdByMeterId("WM-001")).thenReturn("CUST-001");
     when(customerService.getCustomerById("CUST-001")).thenReturn(wrappedCustomer);
@@ -102,7 +101,7 @@ class UsageHistoryServiceImplTest {
     history.getUsages()
       .add(Usage.builder().index(new BigDecimal("100")).recordingDate(LocalDate.now().minusDays(1)).build());
 
-    when(waterMeterRepository.findWaterMeterById("WM-001")).thenReturn(meter);
+    when(waterMeterRepository.findWaterMeterByMeterId("WM-001")).thenReturn(meter);
     when(repository.findByMeter(meter)).thenReturn(Optional.of(history));
 
     // When & Then - New index (50) < Previous index (100)
@@ -115,7 +114,7 @@ class UsageHistoryServiceImplTest {
     // Given
     var latest = Usage.builder().recordingDate(LocalDate.now()).isPaid(false).build();
     history.getUsages().add(latest);
-    when(waterMeterRepository.findWaterMeterById("WM-001")).thenReturn(meter);
+    when(waterMeterRepository.findWaterMeterByMeterId("WM-001")).thenReturn(meter);
     when(repository.findByMeter(meter)).thenReturn(Optional.of(history));
 
     // When
