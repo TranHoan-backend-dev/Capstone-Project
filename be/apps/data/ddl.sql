@@ -230,7 +230,7 @@ create table public.installation_form
         (status ->> 'estimate' IN ('PROCESSING', 'PENDING_FOR_APPROVAL', 'APPROVED', 'REJECTED')) AND
         (status ->> 'construction' IN ('PROCESSING', 'PENDING_FOR_APPROVAL', 'APPROVED', 'REJECTED')) AND
         (status ->> 'registration' IN ('PROCESSING', 'PENDING_FOR_APPROVAL', 'APPROVED', 'REJECTED'))
-      ),
+        ),
   tax_code                                varchar(255),
   updated_at                              timestamp(6) not null,
   usage_target                            varchar(255) not null
@@ -419,7 +419,10 @@ create table public.customer
              ((ARRAY ['DOMESTIC'::character varying, 'INSTITUTIONAL'::character varying, 'INDUSTRIAL'::character varying, 'COMMERCIAL'::character varying])::text[])),
   water_meter_id                    varchar(255) not null,
   water_meter_type                  varchar(255) not null,
-  water_price_id                    varchar(255) not null
+  water_price_id                    varchar(255) not null,
+  contract_contract_id              varchar(255)
+    constraint uk7jogikiuj4g970rd9cmqw40ix
+      unique
 );
 
 drop table if exists public.bill cascade;
@@ -440,22 +443,21 @@ create table public.bill
 drop table if exists public.water_usage_contract cascade;
 create table public.water_usage_contract
 (
-  contract_id          varchar(255) not null
+  contract_id    varchar(255) not null
     primary key,
-  appendix             jsonb,
-  created_at           timestamp(6) not null,
-  form_code            varchar(255) not null
+  appendix       jsonb,
+  created_at     timestamp(6) not null,
+  form_code      varchar(255) not null
     constraint uksw7dgrq62u722rxtmt7aurx6i
       unique,
-  form_number          varchar(255) not null,
-  representative       jsonb,
-  updated_at           timestamp(6) not null,
-  customer_customer_id varchar(255)
-    constraint ukfj7clu6vnl01ucvn75sdsc6c5
-      unique
-    constraint fkhkvv0d391ffy1gndonpy5k0p1
-      references public.customer
+  form_number    varchar(255) not null,
+  representative jsonb,
+  updated_at     timestamp(6) not null
 );
+
+alter table public.customer
+  add constraint fkephc09kiw1hcg1loxnnhnwh3q
+    foreign key (contract_contract_id) references public.water_usage_contract;
 
 -- device
 drop table if exists public.materials_group cascade;

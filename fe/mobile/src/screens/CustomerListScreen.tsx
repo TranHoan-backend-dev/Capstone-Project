@@ -35,7 +35,6 @@ const CustomerListScreen = () => {
       // 2. Lấy danh sách khách hàng từ roadmap (customer service)
       console.log('[CustomerListScreen.tsx] getCustomersByRoadmap')
       const resCustomers = await customerService.getCustomersByRoadmap(routeId);
-      console.log('[CustomerListScreen.tsx] data: ' + resCustomers)
       const customerData = resCustomers.content || [];
 
       if (customerData.length === 0) {
@@ -55,7 +54,12 @@ const CustomerListScreen = () => {
 
       // 3. Join dữ liệu
       const joinedData = customerData.map((c: any) => {
-        const usageRes = resUsages.find((u: any) => u.customerId === c.customerId);
+        const usageRes = resUsages.find((u: any) => String(u.customerId) === String(c.customerId));
+        if (!usageRes) {
+          console.warn(`[CustomerListScreen.tsx] No usage history found for customerId: ${c.customerId}`);
+        } else {
+           console.log(`[CustomerListScreen.tsx] Matched serial ${usageRes.serial} for customer ${c.customerId}`);
+        }
         // Lấy bản ghi cuối cùng của tháng này (nếu có)
         const currentMonth = new Date().getMonth() + 1;
         const currentYear = new Date().getFullYear();
@@ -89,9 +93,17 @@ const CustomerListScreen = () => {
           ...c,
           latestUsage,
           status: status, // Dùng 'status' thay vì 'displayStatus' để đồng nhất với CustomerCard
+          waterMeterId: c.waterMeterId || usageRes?.serial,
         };
       });
 
+      console.log(`[CustomerListScreen.tsx] Final joined data length: ${joinedData.length}`);
+      if (joinedData.length > 0) {
+        console.log(`[CustomerListScreen.tsx] Sample data check:`, {
+          id: joinedData[0].customerId,
+          originalSerial: joinedData[0].waterMeterId
+        });
+      }
       setCustomers(joinedData);
       cacheService.set(cacheKey, joinedData);
     } catch (error: any) {

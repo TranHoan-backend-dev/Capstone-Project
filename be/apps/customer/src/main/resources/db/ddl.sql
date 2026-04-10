@@ -1,6 +1,3 @@
-CREATE
-  EXTENSION IF NOT EXISTS unaccent;
-
 create table public.customer
 (
   customer_id                       varchar(255) not null
@@ -47,7 +44,10 @@ create table public.customer
              ((ARRAY ['DOMESTIC'::character varying, 'INSTITUTIONAL'::character varying, 'INDUSTRIAL'::character varying, 'COMMERCIAL'::character varying])::text[])),
   water_meter_id                    varchar(255) not null,
   water_meter_type                  varchar(255) not null,
-  water_price_id                    varchar(255) not null
+  water_price_id                    varchar(255) not null,
+  contract_contract_id              varchar(255)
+    constraint uk7jogikiuj4g970rd9cmqw40ix
+      unique
 );
 
 alter table public.customer
@@ -72,22 +72,22 @@ alter table public.bill
 
 create table public.water_usage_contract
 (
-  contract_id          varchar(255) not null
+  contract_id    varchar(255) not null
     primary key,
-  appendix             jsonb,
-  created_at           timestamp(6) not null,
-  form_code            varchar(255) not null
+  appendix       jsonb,
+  created_at     timestamp(6) not null,
+  form_code      varchar(255) not null
     constraint uksw7dgrq62u722rxtmt7aurx6i
       unique,
-  form_number          varchar(255) not null,
-  representative       jsonb,
-  updated_at           timestamp(6) not null,
-  customer_customer_id varchar(255)
-    constraint ukfj7clu6vnl01ucvn75sdsc6c5
-      unique
-    constraint fkhkvv0d391ffy1gndonpy5k0p1
-      references public.customer
+  form_number    varchar(255) not null,
+  representative jsonb,
+  updated_at     timestamp(6) not null
 );
 
 alter table public.water_usage_contract
   owner to postgres;
+
+alter table public.customer
+  add constraint fkephc09kiw1hcg1loxnnhnwh3q
+    foreign key (contract_contract_id) references public.water_usage_contract;
+

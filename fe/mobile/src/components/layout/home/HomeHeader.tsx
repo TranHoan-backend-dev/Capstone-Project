@@ -8,9 +8,10 @@ import styles from './home.styles';
 export default function HomeHeader() {
   const [visible, setVisible] = useState(false);
   const navigation = useNavigation<any>();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
 
   const toggleMenu = () => setVisible(v => !v);
+  const displayName = user?.fullName || user?.username || user?.email || 'Tài khoản';
 
   return (
     <Appbar.Header style={styles.header}>
@@ -61,7 +62,7 @@ export default function HomeHeader() {
         />
       </Menu>
 
-      <Text style={styles.userName}>Nguyễn Thu Trang</Text>
+      <Text style={styles.userName}>{displayName}</Text>
 
       <Pressable style={styles.notificationBtn} onPress={() => navigation.navigate('Notification')}>
         <IconButton icon="bell-outline" size={24} iconColor="#333" style={{ margin: 0 }} />

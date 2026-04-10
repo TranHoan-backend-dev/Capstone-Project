@@ -226,4 +226,14 @@ export default StyleSheet.create({
   detailValueRed: {
     color: '#E53935',
   },
+  loadingContainer: {
+    padding: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyText: {
+    textAlign: 'center',
+    padding: 20,
+    color: '#666',
+  },
 });

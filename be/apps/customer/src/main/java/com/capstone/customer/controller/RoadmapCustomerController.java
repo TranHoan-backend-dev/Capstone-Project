@@ -1,6 +1,5 @@
 package com.capstone.customer.controller;
 
-import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
 import com.capstone.customer.dto.request.customer.CustomerFilterRequest;
@@ -14,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-@AppLog
+@Slf4j
 @RestController
 @RequestMapping("/roadmap-customers")
 @RequiredArgsConstructor
@@ -45,6 +45,7 @@ public class RoadmapCustomerController {
     @PageableDefault @ParameterObject Pageable pageable,
     @RequestParam(required = false) @Parameter(description = "Từ khóa tìm kiếm (tên, SĐT, địa chỉ, mã đồng hồ)", example = "Số 1 Phố Huế") String search
   ) {
+    log.info("getCustomersByRoadmap");
     var filter = CustomerFilterRequest.fromRoadmapId(roadmapId, search);
     Page<CustomerResponse> response = customerService.getAllCustomers(pageable, filter);
     return Utils.returnOkResponse("Lấy danh sách khách hàng theo lộ trình thành công", response);

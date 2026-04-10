@@ -10,6 +10,7 @@ export interface AuditRecord {
   aiIndex: number | string;
   aiSerial: string;
   customerName?: string;
+  address?: string;
   timestamp: string;
 }
 
@@ -102,5 +103,23 @@ export const localCapturedService = {
     } catch (e) {
       console.error('Failed to remove audit record:', e);
     }
-  }
+  },
+
+  /**
+   * Cập nhật một phần bản ghi (ví dụ gán khách hàng khi thiếu serial)
+   */
+  async updateAuditRecord(id: string, patch: Partial<AuditRecord>): Promise<void> {
+    try {
+      const records = await this.getAuditRecords();
+      const index = records.findIndex(r => r.id === id);
+      if (index < 0) return;
+      records[index] = { ...records[index], ...patch };
+      await AsyncStorage.setItem(AUDIT_RECORDS_KEY, JSON.stringify(records));
+      if (patch.customerId) {
+        await this.markAsCaptured(patch.customerId);
+      }
+    } catch (e) {
+      console.error('Failed to update audit record:', e);
+    }
+  },
 };

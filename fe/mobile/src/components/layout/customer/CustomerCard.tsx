@@ -9,6 +9,10 @@ export default function CustomerCard({ data, allCustomerIds, currentIndex }: any
   const navigation = useNavigation<any>();
 
   const handleCardPress = () => {
+    console.log('[CustomerCard.tsx] Navigating to MeterInput with data:', {
+      id: data.id,
+      waterMeterId: data.waterMeterId
+    });
     navigation.navigate('MeterInput', {
       customerId: data.id,
       customerName: data.name,
@@ -20,11 +24,15 @@ export default function CustomerCard({ data, allCustomerIds, currentIndex }: any
   };
 
   const handleTakePhoto = () => {
+    console.log('[CustomerCard.tsx] Navigating to CaptureWaterMeter with data:', {
+      id: data.id,
+      waterMeterId: data.waterMeterId || data.meterId
+    });
     navigation.navigate('CaptureWaterMeter', {
       customerId: data.id,
       customerName: data.name,
       address: data.address,
-      serial: data.waterMeterId,
+      serial: data.waterMeterId || data.meterId,
       stt: data.stt,
       source: 'customer',
     });
