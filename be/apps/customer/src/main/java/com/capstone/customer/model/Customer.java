@@ -14,6 +14,7 @@ import com.capstone.customer.utils.Message;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import java.time.LocalDateTime;
 
@@ -75,9 +76,8 @@ public class Customer {
   String deductionPeriod;
   Integer monthlyRent;
 
-  @Builder.Default
-  @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
-  List<CustomerWaterMeter> meters = new ArrayList<>();
+  @Column(nullable = false)
+  String waterMeterType;
 
   @Column(nullable = false)
   String citizenIdentificationNumber;
@@ -119,6 +119,9 @@ public class Customer {
 
   @Column(nullable = false)
   String waterPriceId;
+
+  @Column(nullable = false, unique = true)
+  String waterMeterId;
 
   @Setter
   @Column(nullable = false)
@@ -195,6 +198,11 @@ public class Customer {
   public void setUsageTarget(String usageTarget) {
     requireText(usageTarget, Message.ENT_06);
     this.usageTarget = UsageTarget.valueOf(usageTarget.trim().toUpperCase());
+  }
+
+  public void setWaterMeterType(String waterMeterType) {
+    requireText(waterMeterType, Message.ENT_07);
+    this.waterMeterType = waterMeterType;
   }
 
   public void setCitizenIdentificationNumber(String value) {
@@ -287,6 +295,11 @@ public class Customer {
   public void setWaterPriceId(String value) {
     requireId(value, Message.ENT_17);
     this.waterPriceId = value;
+  }
+
+  public void setWaterMeterId(String value) {
+    requireId(value, Message.ENT_18);
+    this.waterMeterId = value;
   }
 
   public void setM3Sale(String value) {
