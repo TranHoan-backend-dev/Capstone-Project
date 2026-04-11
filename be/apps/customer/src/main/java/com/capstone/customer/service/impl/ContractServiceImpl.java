@@ -112,6 +112,12 @@ public class ContractServiceImpl implements ContractService {
     return maxId != null && !maxId.isBlank() ? maxId : null;
   }
 
+  @Override
+  public ContractResponse getByFormCode(String formCode) {
+    log.info("Getting contract by formCode: {}", formCode);
+    return mapToResponse(contractRepository.findByFormCode(formCode));
+  }
+
   private @NonNull ContractResponse mapToResponse(@NonNull WaterUsageContract contract) {
     return new ContractResponse(
       contract.getContractId(),
