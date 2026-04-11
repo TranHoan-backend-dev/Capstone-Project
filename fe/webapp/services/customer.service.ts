@@ -153,3 +153,17 @@ export const getContractByFormCodeAndFormNumber = (
     },
   });
 };
+
+export const getContractByFormCode = (
+  accessToken: string,
+  formCode: string,
+) => {
+  return axios.get(
+    `${API_GATEWAY_URL}/customer/contracts/form/${encodeURIComponent(formCode)}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+};

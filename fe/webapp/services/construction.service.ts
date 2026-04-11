@@ -448,7 +448,7 @@ export const getInstallationForms = (
   accessToken: string,
   page: number,
   size: number,
-  sort: string,
+  // sort: string,
   keyword?: string | null,
   from?: string | null,
   to?: string | null,
@@ -458,7 +458,7 @@ export const getInstallationForms = (
     params: {
       page,
       size,
-      sort,
+      // sort,
       keyword,
       from,
       to,
@@ -772,20 +772,30 @@ export const getAllEstimates = (
   keyword?: string | null,
   from?: string,
   to?: string,
-) =>
-  axios.get(`${API_GATEWAY_URL}/construction/estimates`, {
-    params: {
-      page,
-      size,
-      sort,
-      keyword,
-      from,
-      to,
-    },
+) => {
+  const params: Record<string, any> = {
+    page,
+    size,
+    sort,
+  };
+
+  if (keyword && keyword.trim() !== "") {
+    params.keyword = keyword;
+  }
+  if (from && from.trim() !== "") {
+    params.from = from;
+  }
+  if (to && to.trim() !== "") {
+    params.to = to;
+  }
+
+  return axios.get(`${API_GATEWAY_URL}/construction/estimates`, {
+    params,
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
   });
+};
 
 export const getEstimateById = (accessToken: string, estimateId: string) =>
   axios.get(`${API_GATEWAY_URL}/construction/estimates/${estimateId}`, {
@@ -793,6 +803,16 @@ export const getEstimateById = (accessToken: string, estimateId: string) =>
       Authorization: `Bearer ${accessToken}`,
     },
   });
+
+export const getEstimateMeterType = (accessToken: string, formCode: string) =>
+  axios.get(
+    `${API_GATEWAY_URL}/construction/estimates/meter-type/${formCode}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
 
 // export const updateEstimate = (
 //   accessToken: string,

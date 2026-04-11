@@ -40,6 +40,7 @@ public record CostEstimateResponse(
     LocalDate registrationAt,
     String createBy,
     String waterMeterSerial,
+    String waterMeterType,
     String overallWaterMeterId,
     String meterTypeId,
     InstallationFormId installationFormId,
