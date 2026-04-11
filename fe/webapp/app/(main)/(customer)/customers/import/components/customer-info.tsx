@@ -1,16 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Checkbox, Divider } from "@heroui/react";
+import { Divider } from "@heroui/react";
 
 import CustomInput from "@/components/ui/custom/CustomInput";
 import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
-import CustomDatePicker from "@/components/ui/custom/CustomDatePicker";
 import { TitleDarkColor } from "@/config/chip-and-icon";
 import { CustomerInfoProps, usageTargetMap } from "@/types";
 import { LookupModal } from "@/components/ui/modal/LookupModal";
 import { authFetch } from "@/utils/authFetch";
-import { CallToast } from "@/components/ui/CallToast";
 
 export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
   const [showFormModal, setShowFormModal] = useState(false);
@@ -90,7 +88,66 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
     fetchRoadmapDetails();
   }, [formData.roadmapId, displayRoadmap]);
 
-  // Add handler for roadmap selection:
+  const fetchWaterMeterDetailsById = async (waterMeterId: string) => {
+    try {
+      const response = await authFetch(
+        `/api/device/water-meter-type/${waterMeterId}`,
+      );
+      const result = await response.json();
+      if (result.data) {
+        setDisplayWaterMeter(
+          `Tên: ${result.data.name} - Nguồn gốc: ${result.data.origin} - Loại: ${result.data.meterModel}`,
+        );
+      }
+    } catch (error) {
+      console.error("Failed to fetch water meter:", error);
+    }
+  };
+
+  /** formCode + formNumber: lấy contractId và (nếu có) waterMeterTypeId từ dự toán */
+  const syncContractAndEstimateMeter = async (
+    formCode: string,
+    formNumber: string,
+  ) => {
+    try {
+      const [contractRes, meterRes] = await Promise.all([
+        authFetch(
+          `/api/customer/contracts/form/${encodeURIComponent(formCode)}`,
+        ),
+        authFetch(
+          `/api/construction/estimates/meter-type/${encodeURIComponent(formCode)}?formNumber=${encodeURIComponent(formNumber)}`,
+        ),
+      ]);
+
+      if (contractRes.ok) {
+        const contractJson = await contractRes.json();
+        const payload = contractJson?.data;
+        const cid =
+          payload && typeof payload === "object" && "contractId" in payload
+            ? (payload as { contractId?: string }).contractId
+            : undefined;
+        if (cid) {
+          onUpdate("contractId", cid);
+        }
+      }
+
+      if (meterRes.ok) {
+        const meterJson = await meterRes.json();
+        const raw = meterJson?.data;
+        const meterTypeId =
+          raw !== undefined && raw !== null && String(raw).trim() !== ""
+            ? String(raw)
+            : null;
+        if (meterTypeId) {
+          onUpdate("waterMeterId", meterTypeId);
+          await fetchWaterMeterDetailsById(meterTypeId);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to sync contract / estimate meter type:", error);
+    }
+  };
+
   const handleSelectRoadmap = (item: any) => {
     onUpdate("roadmapId", item.id);
     setDisplayRoadmap(`${item.lateralName} - ${item.networkName}`);
@@ -134,7 +191,7 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
 
       if (selectedForm.overallWaterMeterId) {
         onUpdate("waterMeterId", selectedForm.overallWaterMeterId);
-        fetchWaterMeterDetailsById(selectedForm.overallWaterMeterId);
+        await fetchWaterMeterDetailsById(selectedForm.overallWaterMeterId);
       }
       if (selectedForm.customerType) {
         onUpdate("type", selectedForm.customerType);
@@ -170,24 +227,16 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
         );
       }
 
+      if (selectedForm.formCode && selectedForm.formNumber) {
+        await syncContractAndEstimateMeter(
+          selectedForm.formCode,
+          selectedForm.formNumber,
+        );
+      }
+
       setShowFormModal(false);
     } catch (error) {
       console.error("Failed to process form data:", error);
-    }
-  };
-  const fetchWaterMeterDetailsById = async (waterMeterId: string) => {
-    try {
-      const response = await authFetch(
-        `/api/device/water-meter-type/${waterMeterId}`,
-      );
-      const result = await response.json();
-      if (result.data) {
-        setDisplayWaterMeter(
-          `Tên: ${result.data.name} - Nguồn gốc: ${result.data.origin} - Loại: ${result.data.meterModel}`,
-        );
-      }
-    } catch (error) {
-      console.error("Failed to fetch water meter:", error);
     }
   };
   const handleSelectWaterPrice = (item: any) => {
@@ -222,7 +271,32 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
           isRequired
           value={formData.formNumber}
           onValueChange={(value) => onUpdate("formNumber", value)}
-          onSearch={() => setShowFormModal(true)}
+          onSearch={async () => {
+            const code = formData.formCode?.trim();
+            if (code) {
+              try {
+                const res = await authFetch(
+                  `/api/customer/contracts/form/${encodeURIComponent(code)}`,
+                );
+                if (res.ok) {
+                  const json = await res.json();
+                  const payload = json?.data;
+                  const cid =
+                    payload &&
+                    typeof payload === "object" &&
+                    "contractId" in payload
+                      ? (payload as { contractId?: string }).contractId
+                      : undefined;
+                  if (cid) {
+                    onUpdate("contractId", cid);
+                  }
+                }
+              } catch (e) {
+                console.error("Failed to prefetch contract by form code:", e);
+              }
+            }
+            setShowFormModal(true);
+          }}
         />
         <CustomInput
           label="Mã đơn"
@@ -230,6 +304,12 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
           isRequired
           value={formData.formCode}
           onValueChange={(value) => onUpdate("formCode", value)}
+        />
+        <CustomInput
+          label="contractId"
+          type="hidden"
+          value={formData.contractId ?? ""}
+          onValueChange={(value) => onUpdate("contractId", value)}
         />
         <LookupModal
           enableSearch={false}
@@ -275,6 +355,8 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
             // Thông tin ngân hàng
             bankAccountNumber: item.bankAccountNumber,
             bankAccountProviderLocation: item.bankAccountProviderLocation,
+
+            overallWaterMeterId: item.overallWaterMeterId,
           })}
           onSelect={handleSelectForm}
         />

@@ -24,6 +24,7 @@ const initialFormData: CreateCustomerPayload = {
 
   formNumber: "",
   formCode: "",
+  contractId: "",
   waterPriceId: "",
   waterMeterId: "",
 
