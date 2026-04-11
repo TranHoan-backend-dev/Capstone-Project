@@ -51,12 +51,12 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
       if (formData.waterMeterId && !displayWaterMeter) {
         try {
           const response = await authFetch(
-            `/api/device/water-meters/${formData.waterMeterId}`,
+            `/api/device/water-meter-type/${formData.waterMeterId}`,
           );
           const result = await response.json();
           if (result.data) {
             setDisplayWaterMeter(
-              `Loại: ${result.data.typeName} - Size: ${result.data.size} - Lắp: ${result.data.installationDate}`,
+              `Tên: ${result.data.name} - Nguồn gốc: ${result.data.origin} - Loại: ${result.data.meterModel}`,
             );
           }
         } catch (error) {
@@ -178,12 +178,12 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
   const fetchWaterMeterDetailsById = async (waterMeterId: string) => {
     try {
       const response = await authFetch(
-        `/api/device/water-meters/${waterMeterId}`,
+        `/api/device/water-meter-type/${waterMeterId}`,
       );
       const result = await response.json();
       if (result.data) {
         setDisplayWaterMeter(
-          `Loại: ${result.data.typeName} - Size: ${result.data.size} - Lắp: ${result.data.installationDate}`,
+          `Tên: ${result.data.name} - Nguồn gốc: ${result.data.origin} - Loại: ${result.data.meterModel}`,
         );
       }
     } catch (error) {
@@ -201,7 +201,7 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
   const handleSelectWaterMeter = (item: any) => {
     onUpdate("waterMeterId", item.id);
     setDisplayWaterMeter(
-      `Loại: ${item.typeName} - Size: ${item.size} - Lắp: ${item.installationDate}`,
+      `Tên: ${item.name} - Nguồn gốc: ${item.origin} - Loại: ${item.meterModel}`,
     );
     setShowWaterMeterModal(false);
   };
@@ -369,19 +369,19 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
           isOpen={showWaterMeterModal}
           onClose={() => setShowWaterMeterModal(false)}
           title="Chọn đồng hồ nước"
-          api="/api/device/water-meters"
+          api="/api/device/water-meter-type"
           columns={[
             { key: "stt", label: "STT" },
-            { key: "typeName", label: "Loại đồng hồ" },
-            { key: "size", label: "Cỡ đồng hồ" },
-            { key: "installationDate", label: "Ngày lắp đặt" },
+            { key: "name", label: "Tên" },
+            { key: "origin", label: "Nguồn gốc" },
+            { key: "meterModel", label: "Loại" },
           ]}
           mapData={(item: any, index: number) => ({
             stt: index + 1,
-            id: item.id,
-            typeName: item.typeName,
-            size: item.size,
-            installationDate: item.installationDate,
+            id: item.typeId,
+            name: item.name,
+            origin: item.origin,
+            meterModel: item.meterModel,
           })}
           onSelect={handleSelectWaterMeter}
         />

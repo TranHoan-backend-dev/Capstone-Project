@@ -161,7 +161,7 @@ public class InstallationFormController {
 
   @Operation(summary = "Lấy danh sách đơn chờ duyệt khảo sát", description = "Lấy các đơn lắp đặt mới có trạng thái registration là PENDING_FOR_APPROVAL")
   @GetMapping("/registration/pending")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD')")
   public ResponseEntity<WrapperApiResponse> getPendingRegistrationForms(Pageable pageable) {
     var response = installationFormHandlingUseCase.findByRegistrationStatusPending(pageable);
     return Utils.returnOkResponse("Lấy danh sách thành công", response);
