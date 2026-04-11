@@ -83,4 +83,10 @@ public class OverallWaterMeterController {
     log.info("Meter is existed? {}", response);
     return Utils.returnOkResponse("Kiểm tra sự tồn tại của đồng hồ nước thành công", response);
   }
+
+  @GetMapping("/name/{id}")
+  public String getName(@PathVariable @Parameter(description = "") String id) {
+    log.info("REST request to get overall water meter with id: {}", id);
+    return waterMeterService.getNameById(id);
+  }
 }

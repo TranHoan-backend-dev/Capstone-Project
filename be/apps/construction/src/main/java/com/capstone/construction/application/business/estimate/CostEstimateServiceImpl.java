@@ -321,6 +321,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
         estimate.getWaterMeterSerial(),
         estimate.getWaterMeterTypeId(),
         estimate.getOverallWaterMeterId(),
+        deviceSrv.getNameById(estimate.getOverallWaterMeterId()),
         estimate.getWaterMeterTypeId(),
         estimate.getInstallationForm().getId(),
         estimate.getInstallationForm().getStatus(),

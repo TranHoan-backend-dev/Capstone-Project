@@ -38,4 +38,7 @@ public interface DeviceService {
 
   @GetMapping("/meter-types/exist/{id}")
   boolean isMeterTypeExist(@PathVariable String id);
+
+  @GetMapping("/water-meters/overall/name/{id}")
+  String getNameById(@PathVariable String id);
 }
