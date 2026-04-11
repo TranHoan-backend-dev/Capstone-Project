@@ -70,6 +70,7 @@ public class CustomerServiceImpl implements CustomerService {
       .bankAccountName(request.bankAccountName())
       .isActive(request.isActive() != null ? request.isActive() : true)
       .roadmapId(request.roadmapId())
+      .contract(contractRepository.findById(request.contractId()).orElseThrow(() -> new NotExistingException("Hop dong khong ton tai")))
       .build();
 
     setProperties2(

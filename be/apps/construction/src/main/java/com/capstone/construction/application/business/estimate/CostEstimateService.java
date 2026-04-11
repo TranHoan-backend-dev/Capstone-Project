@@ -23,5 +23,5 @@ public interface CostEstimateService {
 
   boolean isExisting(String id);
 
-  String getMeterTypeByEstimateId(String estimateId);
+  String getMeterTypeByFormCode(String formCode);
 }

@@ -151,8 +151,9 @@ public class CostEstimateController {
   }
 
   @GetMapping("/meter-type/{id}")
-  public ResponseEntity<WrapperApiResponse> getMeterType(@PathVariable @Parameter(description = "ID cua du toan") String id) {
-    log.info("REST request to get meter type by estimate id: {}", id);
-    return Utils.returnOkResponse("", costEstimateService.getMeterTypeByEstimateId(id));
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF')")
+  public ResponseEntity<WrapperApiResponse> getMeterType(@PathVariable @Parameter(description = "Form code") String id) {
+    log.info("REST request to get meter type by form code: {}", id);
+    return Utils.returnOkResponse("", costEstimateService.getMeterTypeByFormCode(id));
   }
 }
