@@ -270,6 +270,12 @@ public class CostEstimateServiceImpl implements CostEstimateService {
     return eRepo.existsById(id);
   }
 
+  @Override
+  public String getMeterTypeByEstimateId(String estimateId) {
+    log.info("getMeterTypeByEstimateId with estimateId: {}", estimateId);
+    return getById(estimateId).getWaterMeterTypeId();
+  }
+
   private List<BaseMaterial> mapMaterials(List<MaterialsOfCostEstimateResponse> materials) {
     if (materials == null) {
       return new ArrayList<>();
@@ -314,6 +320,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
         estimate.getCreateBy(),
         estimate.getWaterMeterSerial(),
         estimate.getOverallWaterMeterId(),
+        estimate.getWaterMeterTypeId(),
         estimate.getInstallationForm().getId(),
         estimate.getInstallationForm().getStatus(),
         estimate.getSignificance() != null ? new CostEstimateResponse.Significance(

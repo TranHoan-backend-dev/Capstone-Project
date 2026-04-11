@@ -3,6 +3,7 @@ package com.capstone.construction.adapter;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
+import com.capstone.construction.application.business.estimate.CostEstimateService;
 import com.capstone.construction.application.dto.request.estimate.EstimateFilterRequest;
 import com.capstone.construction.application.dto.request.estimate.AssignTheSignificanceRequest;
 import com.capstone.construction.application.dto.request.estimate.SignRequest;
@@ -39,6 +40,7 @@ import org.springframework.web.bind.annotation.*;
 public class CostEstimateController {
   Logger log;
   final CostEstimateUseCase estimateUseCase;
+  final CostEstimateService costEstimateService;
 
   @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @Operation(summary = "Cập nhật dự toán", description = """
@@ -54,7 +56,7 @@ public class CostEstimateController {
     @PathVariable @Parameter(description = "ID của dự toán", required = true) String id,
     @ModelAttribute @Valid UpdateRequest request
   ) {
-    
+
     log.info("REST request to update cost estimate with id: {}", id);
     log.info(request.generalInformation().designImage().getName());
     var response = estimateUseCase.updateEstimate(id, request);
@@ -146,5 +148,11 @@ public class CostEstimateController {
     estimateUseCase.signForInstallationRequest(id, request);
 
     return Utils.returnOkResponse("Ký dự toán thành công", null);
+  }
+
+  @GetMapping("/meter-type/{id}")
+  public ResponseEntity<WrapperApiResponse> getMeterType(@PathVariable @Parameter(description = "ID cua du toan") String id) {
+    log.info("REST request to get meter type by estimate id: {}", id);
+    return Utils.returnOkResponse("", costEstimateService.getMeterTypeByEstimateId(id));
   }
 }
