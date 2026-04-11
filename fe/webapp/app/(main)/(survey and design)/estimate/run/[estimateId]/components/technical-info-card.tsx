@@ -825,7 +825,7 @@ export const TechnicalInfoCard = ({
           Đồng hồ & đơn vị liên quan
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <SearchInputWithButton
               label="Loại đồng hồ nước"
@@ -854,58 +854,58 @@ export const TechnicalInfoCard = ({
             isInvalid={!!errors.waterMeterSerial}
             errorMessage={errors.waterMeterSerial}
           />
-        </div>
 
-        <LookupModal
-          enableSearch={false}
-          dataKey="content"
-          isOpen={showWaterMeterModal}
-          onClose={() => setShowWaterMeterModal(false)}
-          title="Chọn loại đồng hồ nước"
-          api="/api/device/water-meter-type"
-          columns={[
-            { key: "stt", label: "STT" },
-            { key: "name", label: "Tên" },
-            { key: "origin", label: "Nguồn gốc" },
-            { key: "meterModel", label: "Kiểu đồng hồ" },
-          ]}
-          mapData={(item: any, index: number) => ({
-            stt: index + 1,
-            id: item.typeId ?? item.id,
-            name: item.name,
-            origin: item.origin,
-            meterModel: item.meterModel,
-          })}
-          onSelect={handleSelectWaterMeter}
-        />
+          <LookupModal
+            enableSearch={false}
+            dataKey="content"
+            isOpen={showWaterMeterModal}
+            onClose={() => setShowWaterMeterModal(false)}
+            title="Chọn loại đồng hồ nước"
+            api="/api/device/water-meter-type"
+            columns={[
+              { key: "stt", label: "STT" },
+              { key: "name", label: "Tên" },
+              { key: "origin", label: "Nguồn gốc" },
+              { key: "meterModel", label: "Kiểu đồng hồ" },
+            ]}
+            mapData={(item: any, index: number) => ({
+              stt: index + 1,
+              id: item.typeId ?? item.id,
+              name: item.name,
+              origin: item.origin,
+              meterModel: item.meterModel,
+            })}
+            onSelect={handleSelectWaterMeter}
+          />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <SearchInputWithButton
-            label="Đồng hồ nước tổng"
-            value={displayOverallWaterMeter}
-            onValueChange={() => {}}
-            onSearch={() => setShowOverallModal(true)}
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+            <SearchInputWithButton
+              label="Đồng hồ nước tổng"
+              value={displayOverallWaterMeter}
+              onValueChange={() => {}}
+              onSearch={() => setShowOverallModal(true)}
+            />
+          </div>
+
+          <LookupModal
+            dataKey="content"
+            isOpen={showOverallModal}
+            onClose={() => setShowOverallModal(false)}
+            title="Chọn đồng hồ nước tổng"
+            api="/api/device/water-meters/overall"
+            searchKey="keyword"
+            columns={[
+              { key: "stt", label: "STT" },
+              { key: "name", label: "Tên đồng hồ" },
+            ]}
+            mapData={(item: any, index: number) => ({
+              stt: index + 1,
+              id: item.serial,
+              name: item.name,
+            })}
+            onSelect={handleSelectOverallMeter}
           />
         </div>
-
-        <LookupModal
-          dataKey="content"
-          isOpen={showOverallModal}
-          onClose={() => setShowOverallModal(false)}
-          title="Chọn đồng hồ nước tổng"
-          api="/api/device/water-meters/overall"
-          searchKey="keyword"
-          columns={[
-            { key: "stt", label: "STT" },
-            { key: "name", label: "Tên đồng hồ" },
-          ]}
-          mapData={(item: any, index: number) => ({
-            stt: index + 1,
-            id: item.serial,
-            name: item.name,
-          })}
-          onSelect={handleSelectOverallMeter}
-        />
       </div>
     </GenericSearchFilter>
   );
