@@ -120,16 +120,16 @@ public class SettlementServiceImpl implements SettlementService {
       throw new ForbiddenException(SharedMessage.MES_23);
     }
     if (request.url() != null && !request.url().isBlank()) {
-      if (role.equalsIgnoreCase(RoleName.COMPANY_LEADERSHIP.name())) {
+      if (role.equalsIgnoreCase(RoleName.COMPANY_LEADERSHIP.name()) && request.status() != null && !request.status()) {
         significance.setConstructionPresident(request.url());
       }
-      if (role.equalsIgnoreCase(RoleName.COMPANY_LEADERSHIP.name())) {
+      if (role.equalsIgnoreCase(RoleName.COMPANY_LEADERSHIP.name()) && request.status() != null && request.status()) {
         significance.setPresident(request.url());
       }
-      if (role.equalsIgnoreCase(RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD.name())) {
+      if (role.equalsIgnoreCase(RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD.name()) && request.status() == null) {
         significance.setPtHead(request.url());
       }
-      if (role.equalsIgnoreCase(RoleName.SURVEY_STAFF.name())) {
+      if (role.equalsIgnoreCase(RoleName.SURVEY_STAFF.name()) && request.status() == null) {
         significance.setSurveyStaff(request.url());
       }
     }
