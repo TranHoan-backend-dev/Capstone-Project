@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.slf4j.Logger;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,14 +27,15 @@ public class CostEstimateController {
 
   @Operation(hidden = true)
   @GetMapping("/{id}")
-  public List<MaterialsOfCostEstimateResponse> getMaterialsOfCostEstimate(
-    @PathVariable String id
-  ) {
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'SURVEY_STAFF')")
+  public List<MaterialsOfCostEstimateResponse> getMaterialsOfCostEstimate(@PathVariable String id) {
+    log.info("Get material of cost estimate with id: {}", id);
     return mOfCostEstimateService.getByEstimateId(id);
   }
 
   @Operation(hidden = true)
   @PutMapping("/{id}")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'SURVEY_STAFF')")
   public ResponseEntity<?> updateMaterialsOfCostEstimate(
     @PathVariable String id,
     @RequestBody List<BaseMaterial> request
@@ -45,6 +47,7 @@ public class CostEstimateController {
 
   @Operation(hidden = true)
   @GetMapping("/default")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'SURVEY_STAFF', 'CONSTRUCTION_DEPARTMENT_STAFF')")
   public List<MaterialsOfCostEstimateResponse> getDefaultMaterial() {
     log.info("REST request to get default material");
     return mOfCostEstimateService.getDefaultMaterial();

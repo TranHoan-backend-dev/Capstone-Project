@@ -62,7 +62,7 @@ public class OverallWaterMeterController {
     }
   )
   @GetMapping
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF', 'SURVEY_STAFF')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'ORDER_RECEIVING_STAFF', 'SURVEY_STAFF')")
   public ResponseEntity<WrapperApiResponse> getAll(
       @Parameter(description = "Tham số phân trang (trang, kích thước, sắp xếp)")
       Pageable pageable,
