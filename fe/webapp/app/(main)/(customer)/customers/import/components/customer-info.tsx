@@ -115,7 +115,7 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
           `/api/customer/contracts/form/${encodeURIComponent(formCode)}`,
         ),
         authFetch(
-          `/api/construction/estimates/meter-type/${encodeURIComponent(formCode)}?formNumber=${encodeURIComponent(formNumber)}`,
+          `/api/construction/estimates/meter-type/${encodeURIComponent(formCode)}`,
         ),
       ]);
 

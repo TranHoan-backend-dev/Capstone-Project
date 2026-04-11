@@ -14,9 +14,8 @@ export async function GET(
     }
 
     const { id } = await params;
-    const formNumber = req.nextUrl.searchParams.get("formNumber") ?? undefined;
 
-    const response = await getEstimateMeterType(accessToken, id, formNumber);
+    const response = await getEstimateMeterType(accessToken, id);
 
     return NextResponse.json(response.data, { status: 200 });
   } catch (error: any) {

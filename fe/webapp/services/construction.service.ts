@@ -804,19 +804,10 @@ export const getEstimateById = (accessToken: string, estimateId: string) =>
     },
   });
 
-/** id = formCode khi truyền formNumber (lấy loại đồng hồ từ dự toán); không formNumber = id dự toán (UUID). */
-export const getEstimateMeterType = (
-  accessToken: string,
-  id: string,
-  formNumber?: string,
-) =>
+export const getEstimateMeterType = (accessToken: string, formCode: string) =>
   axios.get(
-    `${API_GATEWAY_URL}/construction/estimates/meter-type/${encodeURIComponent(id)}`,
+    `${API_GATEWAY_URL}/construction/estimates/meter-type/${formCode}`,
     {
-      params:
-        formNumber !== undefined && formNumber !== ""
-          ? { formNumber }
-          : undefined,
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },

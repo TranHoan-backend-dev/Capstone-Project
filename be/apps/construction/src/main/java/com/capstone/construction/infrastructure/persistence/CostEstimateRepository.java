@@ -65,5 +65,5 @@ public interface CostEstimateRepository extends JpaRepository<CostEstimate, Stri
 
   Optional<CostEstimate> findByInstallationForm(InstallationForm installationForm);
 
-  CostEstimate findByInstallationForm_FormCode(String formCode);
+  CostEstimate findByInstallationForm_Id_FormCode(String formCode);
 }
