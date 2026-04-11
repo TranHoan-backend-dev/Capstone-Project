@@ -271,9 +271,9 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   }
 
   @Override
-  public String getMeterTypeByEstimateId(String estimateId) {
-    log.info("getMeterTypeByEstimateId with estimateId: {}", estimateId);
-    return getById(estimateId).getWaterMeterTypeId();
+  public String getMeterTypeByFormCode(String formCode) {
+    log.info("getMeterTypeByEstimateId with formCode: {}", formCode);
+    return eRepo.findByInstallationForm_FormCode(formCode).getWaterMeterTypeId();
   }
 
   private List<BaseMaterial> mapMaterials(List<MaterialsOfCostEstimateResponse> materials) {

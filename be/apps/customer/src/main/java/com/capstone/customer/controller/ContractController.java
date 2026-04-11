@@ -125,6 +125,7 @@ public class ContractController {
   }
 
   @GetMapping("/form/{code}")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF')")
   public ResponseEntity<WrapperApiResponse> getContractByFormCode(@PathVariable String code) {
     log.info("REST request to get contract by form code: {}", code);
     var response = contractService.getByFormCode(code);
