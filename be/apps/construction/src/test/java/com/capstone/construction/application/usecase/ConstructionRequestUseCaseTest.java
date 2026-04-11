@@ -43,7 +43,7 @@ class ConstructionRequestUseCaseTest {
   void should_AssignSuccessfully_When_ValidInput() {
     // Arrange
     var empId = "EMP001";
-    var request = new AssignRequest(1001L, 1L, "CON1");
+    var request = new AssignRequest("1001", "1", "CON1");
 
     // ConstructionRequestUseCase itself doesn't validate the role.
     // If we want to simulate role validation failure, we need to mock the service behavior.
@@ -62,7 +62,7 @@ class ConstructionRequestUseCaseTest {
   void should_ThrowException_When_ServiceThrows() {
     // Arrange
     var empId = "EMP001";
-    var request = new AssignRequest(1001L, 1L, "CON1");
+    var request = new AssignRequest("1001", "1", "CON1");
 
     // Simulating Service layer throwing an error
     doThrow(new IllegalArgumentException("Role invalid"))

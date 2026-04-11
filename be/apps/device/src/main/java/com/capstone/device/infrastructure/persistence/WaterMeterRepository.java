@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 public interface WaterMeterRepository extends JpaRepository<WaterMeter, String> {
   boolean existsByType_TypeId(String typeTypeId);
 
-  WaterMeter findWaterMeterById(String id);
+  WaterMeter findWaterMeterByMeterId(String id);
 }
 

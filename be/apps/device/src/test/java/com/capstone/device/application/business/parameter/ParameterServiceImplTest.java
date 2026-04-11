@@ -21,6 +21,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -55,7 +56,7 @@ class ParameterServiceImplTest {
     Page<Parameters> page = new PageImpl<>(Collections.singletonList(param));
 
     when(repository.findAll(pageable)).thenReturn(page);
-    when(employeeService.getEmployeeName(any())).thenReturn(new WrapperApiResponse(200, "Admin", true, LocalDateTime.now()));
+    when(employeeService.getEmployeeName(any())).thenReturn(new WrapperApiResponse(200, "Admin", true, OffsetDateTime.now()));
 
     Page<ParameterResponse> result = parameterService.getParameters(pageable, null);
 
@@ -71,7 +72,7 @@ class ParameterServiceImplTest {
     Page<Parameters> page = new PageImpl<>(Collections.singletonList(param));
 
     when(repository.findAllByNameContainingIgnoreCase(filter, pageable)).thenReturn(page);
-    when(employeeService.getEmployeeName(any())).thenReturn(new WrapperApiResponse(200, "Admin", true, LocalDateTime.now()));
+    when(employeeService.getEmployeeName(any())).thenReturn(new WrapperApiResponse(200, "Admin", true, OffsetDateTime.now()));
 
     Page<ParameterResponse> result = parameterService.getParameters(pageable, filter);
 
@@ -87,9 +88,9 @@ class ParameterServiceImplTest {
     var existingParam = createMockParam(id, "Old Name", new BigDecimal("0.1"));
 
     when(repository.findById(id)).thenReturn(Optional.of(existingParam));
-    when(employeeService.checkAuthorExisting(updatorId)).thenReturn(new WrapperApiResponse(200, "Success", true, LocalDateTime.now()));
+    when(employeeService.checkAuthorExisting(updatorId)).thenReturn(new WrapperApiResponse(200, "Success", true, OffsetDateTime.now()));
     when(repository.save(any(Parameters.class))).thenAnswer(invocation -> invocation.getArgument(0));
-    when(employeeService.getEmployeeName(any())).thenReturn(new WrapperApiResponse(200, "Admin", true, LocalDateTime.now()));
+    when(employeeService.getEmployeeName(any())).thenReturn(new WrapperApiResponse(200, "Admin", true, OffsetDateTime.now()));
 
     var result = parameterService.updateParameter(updatorId, id, request);
 
@@ -116,7 +117,7 @@ class ParameterServiceImplTest {
     var existingParam = createMockParam(id, "Old Name", new BigDecimal("0.1"));
 
     when(repository.findById(id)).thenReturn(Optional.of(existingParam));
-    when(employeeService.checkAuthorExisting(updatorId)).thenReturn(new WrapperApiResponse(200, "Not Found", false, LocalDateTime.now()));
+    when(employeeService.checkAuthorExisting(updatorId)).thenReturn(new WrapperApiResponse(200, "Not Found", false, OffsetDateTime.now()));
 
     assertThrows(IllegalArgumentException.class, () -> parameterService.updateParameter(updatorId, id, request));
   }
@@ -126,7 +127,7 @@ class ParameterServiceImplTest {
     var id = "1";
     var param = createMockParam(id, "VAT", new BigDecimal("0.1"));
     when(repository.findById(id)).thenReturn(Optional.of(param));
-    when(employeeService.getEmployeeName(any())).thenReturn(new WrapperApiResponse(200, "Admin", true, LocalDateTime.now()));
+    when(employeeService.getEmployeeName(any())).thenReturn(new WrapperApiResponse(200, "Admin", true, OffsetDateTime.now()));
 
     ParameterResponse result = parameterService.getParameterById(id);
 

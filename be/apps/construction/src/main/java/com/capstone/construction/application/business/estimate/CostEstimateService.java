@@ -22,4 +22,6 @@ public interface CostEstimateService {
   boolean signForCostEstimate(String significance, RoleName role, String estimateId);
 
   boolean isExisting(String id);
+
+  String getMeterTypeByFormCode(String formCode);
 }

@@ -67,6 +67,9 @@ public record UpdateRequest(
     @Schema(description = "Số sê-ri đồng hồ nước", example = "SN12345678")
     String waterMeterSerial,
 
+    @Schema(description = "Loai dong ho nuoc")
+    String waterMeterType,
+
     @Schema(description = "ID đồng hồ nước tổng", example = "OWM-98765")
     String overallWaterMeterId
   ) {

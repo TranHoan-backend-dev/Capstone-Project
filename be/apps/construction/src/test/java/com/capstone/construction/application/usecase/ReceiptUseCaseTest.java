@@ -73,7 +73,7 @@ class ReceiptUseCaseTest {
   @Test
   @DisplayName("Update receipt should return response and publish event when fully signed")
   void updateReceipt_ShouldReturnResponseAndPublishEvent() {
-    var request = new UpdateRequest(1001L, 1L, "BL001", "C", "A", LocalDate.now(), true, "S2");
+    var request = new UpdateRequest("1001", "1", "BL001", "C", "A", LocalDate.now(), true, "S2");
     when(receiptService.updateReceipt(request)).thenReturn(mockResponse);
 
     var result = receiptUseCase.updateReceipt(request);
@@ -86,16 +86,16 @@ class ReceiptUseCaseTest {
   @Test
   @DisplayName("Delete receipt successfully")
   void deleteReceipt_ShouldInvokeService() {
-    receiptUseCase.deleteReceipt(1001L, 1L);
-    verify(receiptService).deleteReceipt(1001L, 1L);
+    receiptUseCase.deleteReceipt("1001", "1");
+    verify(receiptService).deleteReceipt("1001", "1");
   }
 
   @Test
   @DisplayName("Get receipt successfully")
   void getReceipt_ShouldReturnResponse() {
-    when(receiptService.getReceipt(1001L, 1L)).thenReturn(mockResponse);
-    var result = receiptUseCase.getReceipt(1001L, 1L);
+    when(receiptService.getReceipt("1001", "1")).thenReturn(mockResponse);
+    var result = receiptUseCase.getReceipt("1001", "1");
     assertThat(result).isNotNull();
-    verify(receiptService).getReceipt(1001L, 1L);
+    verify(receiptService).getReceipt("1001", "1");
   }
 }

@@ -282,7 +282,7 @@ class WaterSupplyNetworkServiceImplTest {
     // Then
     assertThat(response).isNotNull();
     assertThat(response.totalElements()).isEqualTo(1);
-    assertThat(response.content().get(0).name()).isEqualTo("Network 1");
+    assertThat(response.content().getFirst().name()).isEqualTo("Network 1");
 
     verify(networkRepository, times(1)).findAll(pageable);
     verify(networkRepository, never()).findAllByNameContainsIgnoreCase(anyString(), any(Pageable.class));
@@ -305,7 +305,7 @@ class WaterSupplyNetworkServiceImplTest {
     // Then
     assertThat(response).isNotNull();
     assertThat(response.totalElements()).isEqualTo(1);
-    assertThat(response.content().get(0).name()).isEqualTo("Test Network");
+    assertThat(response.content().getFirst().name()).isEqualTo("Test Network");
 
     verify(networkRepository, times(1)).findAllByNameContainsIgnoreCase(keyword, pageable);
     verify(networkRepository, never()).findAll(pageable);

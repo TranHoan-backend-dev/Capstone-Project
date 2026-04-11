@@ -328,8 +328,8 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
           BigDecimal oldIndex = (i > 0) ? sortedUsages.get(i - 1).getIndex() : BigDecimal.ZERO;
 
           pendingReviews.add(PendingReviewResponse.builder()
-              .id(history.getMeter().getId() + "_" + u.getId()) // Globally unique ID
-              .serial(history.getMeter().getId())
+              .id(history.getMeter().getMeterId() + "_" + u.getId()) // Globally unique ID
+              .serial(history.getMeter().getMeterId())
               .customerId(customerInfo.customerId())
               .customerName(customerInfo.name())
               .address(customerInfo.address())

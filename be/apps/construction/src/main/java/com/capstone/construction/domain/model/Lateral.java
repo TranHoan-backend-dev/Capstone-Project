@@ -26,8 +26,8 @@ public class Lateral {
   @Column(nullable = false, unique = true)
   String name;
 
-  @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "water_supply_network_id")
+  @ManyToOne(fetch = FetchType.EAGER, optional = false)
+  @JoinColumn(name = "water_supply_network_id", nullable = false)
   WaterSupplyNetwork network;
 
   @Column(nullable = false)

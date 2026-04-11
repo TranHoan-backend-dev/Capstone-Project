@@ -216,4 +216,6 @@ public interface ContractRepository extends JpaRepository<WaterUsageContract, St
       }
     }
   }
+
+  WaterUsageContract findByFormCode(String formCode);
 }

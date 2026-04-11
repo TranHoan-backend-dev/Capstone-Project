@@ -5,7 +5,6 @@ import com.capstone.common.exception.ExistingException;
 import com.capstone.device.application.dto.request.price.CreateRequest;
 import com.capstone.device.application.dto.request.price.UpdateRequest;
 import com.capstone.device.domain.model.WaterPrice;
-import com.capstone.device.infrastructure.persistence.PriceTypeRepository;
 import com.capstone.device.infrastructure.persistence.WaterPriceRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,8 +30,6 @@ import static org.mockito.Mockito.*;
 class WaterPriceServiceImplTest {
   @Mock
   WaterPriceRepository waterPriceRepository;
-  @Mock
-  PriceTypeRepository ptRepo;
   @InjectMocks
   WaterPriceServiceImpl waterPriceService;
 

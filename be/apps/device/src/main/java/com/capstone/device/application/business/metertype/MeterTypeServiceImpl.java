@@ -128,6 +128,12 @@ public class MeterTypeServiceImpl implements MeterTypeService {
     return PageResponse.fromPage(page, this::mapToResponse);
   }
 
+  @Override
+  public boolean isExist(String id) {
+    log.info("Check if water meter type with id: {} exists", id);
+    return waterMeterTypeRepository.existsByTypeId(id);
+  }
+
   private @NonNull WaterMeterTypeResponse mapToResponse(@NonNull WaterMeterType meterType) {
     return new WaterMeterTypeResponse(
       meterType.getTypeId(),

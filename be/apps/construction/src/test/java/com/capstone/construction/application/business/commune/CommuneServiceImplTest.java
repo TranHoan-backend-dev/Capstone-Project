@@ -3,7 +3,6 @@ package com.capstone.construction.application.business.commune;
 import com.capstone.construction.application.dto.request.commune.CreateRequest;
 import com.capstone.construction.application.dto.request.commune.UpdateRequest;
 import com.capstone.construction.application.exception.ExistingItemException;
-import com.capstone.common.utils.TextNormalizer;
 import com.capstone.construction.domain.enumerate.CommuneType;
 import com.capstone.construction.domain.model.Commune;
 import com.capstone.construction.infrastructure.persistence.CommuneRepository;
@@ -15,11 +14,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
@@ -42,9 +39,6 @@ class CommuneServiceImplTest {
 
   @Mock
   NeighborhoodUnitRepository neighborhoodUnitRepository;
-
-  @Mock
-  Logger log;
 
   @InjectMocks
   CommuneServiceImpl communeService;

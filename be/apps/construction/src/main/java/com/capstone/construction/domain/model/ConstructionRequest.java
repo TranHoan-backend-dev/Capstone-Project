@@ -23,7 +23,11 @@ public class ConstructionRequest {
   @Column(nullable = false)
   String contractId;
 
-  @OneToOne(fetch = FetchType.EAGER)
+  @OneToOne(fetch = FetchType.EAGER, optional = false)
+  @JoinColumns({
+    @JoinColumn(name = "installation_form_code", referencedColumnName = "form_code", nullable = false),
+    @JoinColumn(name = "installation_form_number", referencedColumnName = "form_number", nullable = false)
+  })
   InstallationForm installationForm;
 
   @Column(nullable = false)

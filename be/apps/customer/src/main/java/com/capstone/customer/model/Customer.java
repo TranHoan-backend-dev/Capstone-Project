@@ -14,7 +14,6 @@ import com.capstone.customer.utils.Message;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 import java.time.LocalDateTime;
 
@@ -111,7 +110,7 @@ public class Customer {
   @Column(nullable = false)
   LocalDateTime updatedAt;
 
-  @Column(nullable = false)
+  @Column(nullable = false, unique = true)
   String formNumber;
 
   @Column(nullable = false, unique = true)
@@ -128,7 +127,8 @@ public class Customer {
   String roadmapId;
 
   @Setter
-  @OneToOne(fetch = FetchType.EAGER)
+  @OneToOne(fetch = FetchType.EAGER, optional = false)
+  @JoinColumn(nullable = false)
   WaterUsageContract contract;
 
   @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.EAGER)

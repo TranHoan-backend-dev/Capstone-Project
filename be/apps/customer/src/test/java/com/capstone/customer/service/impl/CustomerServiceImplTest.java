@@ -394,7 +394,7 @@ class CustomerServiceImplTest {
   void should_ReturnCustomerId_When_MeterIdExists() {
     // Given
     String meterId = "WM001";
-    when(customerRepository.findByWaterMeterId(meterId)).thenReturn(Optional.of(customer));
+    when(customerRepository.findTopByWaterMeterId(meterId)).thenReturn(Optional.of(customer));
     when(customer.getCustomerId()).thenReturn("CUST-123");
 
     // When
@@ -409,7 +409,7 @@ class CustomerServiceImplTest {
   void should_ThrowNotExistingException_When_MeterIdNotFound() {
     // Given
     String meterId = "M_UNKNOWN";
-    when(customerRepository.findByWaterMeterId(meterId)).thenReturn(Optional.empty());
+    when(customerRepository.findTopByWaterMeterId(meterId)).thenReturn(Optional.empty());
 
     // When & Then
     assertThrows(NotExistingException.class, () -> customerService.getIdByMeterId(meterId));

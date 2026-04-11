@@ -3,6 +3,7 @@ package com.capstone.device.adapter;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
+import com.capstone.device.application.business.metertype.MeterTypeService;
 import com.capstone.device.application.dto.request.metertype.CreateRequest;
 import com.capstone.device.application.dto.request.metertype.SearchWaterMeterTypeRequest;
 import com.capstone.device.application.dto.request.metertype.UpdateRequest;
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Quản lý Loại đồng hồ", description = "Các API quản lý danh mục Loại đồng hồ nước")
 public class WaterMeterTypeController {
   MeterTypeUseCase mtUseCase;
+  MeterTypeService meterTypeService;
   @NonFinal
   Logger log;
 
@@ -120,10 +122,17 @@ public class WaterMeterTypeController {
   @PostMapping("/search")
   @Operation(summary = "Tìm kiếm và lọc loại đồng hồ", description = "Tìm kiếm và lọc loại đồng hồ theo nhiều tiêu chí với phân trang")
   public ResponseEntity<WrapperApiResponse> searchTypes(
-      @RequestBody SearchWaterMeterTypeRequest request,
-      @PageableDefault Pageable pageable) {
+    @RequestBody SearchWaterMeterTypeRequest request,
+    @PageableDefault Pageable pageable) {
     log.info("REST request to search water meter types: {}", request);
     var response = mtUseCase.searchMeterTypes(request, pageable);
     return Utils.returnOkResponse("Tìm kiếm chủng loại đồng hồ thành công", response);
+  }
+
+  @GetMapping("/exist/{id}")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF')")
+  public boolean isMeterTypeExist(@PathVariable String id) {
+    log.info("REST request to check if water meter type exist: {}", id);
+    return meterTypeService.isExist(id);
   }
 }

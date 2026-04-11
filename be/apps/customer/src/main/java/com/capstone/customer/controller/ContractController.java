@@ -123,4 +123,13 @@ public class ContractController {
     log.info(suffix);
     return Utils.returnOkResponse("Lấy mã hợp đồng gần nhất thành công", suffix);
   }
+
+  @GetMapping("/form/{code}")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF')")
+  public ResponseEntity<WrapperApiResponse> getContractByFormCode(@PathVariable String code) {
+    log.info("REST request to get contract by form code: {}", code);
+    var response = contractService.getByFormCode(code);
+    log.info("Response: {}", response);
+    return Utils.returnOkResponse("", response);
+  }
 }

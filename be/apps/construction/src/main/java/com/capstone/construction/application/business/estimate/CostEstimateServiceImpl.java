@@ -3,7 +3,6 @@ package com.capstone.construction.application.business.estimate;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.common.enumerate.RoleName;
-import com.capstone.common.utils.SharedConstant;
 import com.capstone.common.utils.SharedMessage;
 import com.capstone.common.request.BaseMaterial;
 import com.capstone.common.utils.Utils;
@@ -33,8 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -152,13 +149,26 @@ public class CostEstimateServiceImpl implements CostEstimateService {
       var url = gcsService.upload(generalInformation.designImage());
       estimate.setDesignImageUrl(url);
     }
+
+    // kiểm tra số seri đồng hồ
     if (generalInformation.waterMeterSerial() != null && !generalInformation.waterMeterSerial().isBlank()) {
       var meterStatus = deviceSrv.isMeterExisting(generalInformation.waterMeterSerial());
-      if (!meterStatus) {
-        throw new IllegalArgumentException("Đồng hồ nước không tồn tại");
+      if (meterStatus) {
+        throw new IllegalArgumentException("Đồng hồ nước đã được sử dụng bởi khách hàng khác");
       }
       estimate.setWaterMeterSerial(generalInformation.waterMeterSerial());
     }
+
+    // kiểm tra loại đồng hồ
+    if (generalInformation.waterMeterType() != null && !generalInformation.waterMeterType().isBlank()) {
+      var meterStatus = deviceSrv.isMeterTypeExist(generalInformation.waterMeterType());
+      if (!meterStatus) {
+        throw new IllegalArgumentException("Loại đồng hồ nước không tồn tại");
+      }
+      estimate.setWaterMeterTypeId(generalInformation.waterMeterType());
+    }
+
+    // kiểm tra đồng hồ tổng
     if (generalInformation.overallWaterMeterId() != null && !generalInformation.overallWaterMeterId().isBlank()) {
       var overallMeterStatus = deviceSrv.isOverallMeterExisting(generalInformation.overallWaterMeterId())
         .data().toString();
@@ -260,6 +270,12 @@ public class CostEstimateServiceImpl implements CostEstimateService {
     return eRepo.existsById(id);
   }
 
+  @Override
+  public String getMeterTypeByFormCode(String formCode) {
+    log.info("getMeterTypeByEstimateId with formCode: {}", formCode);
+    return eRepo.findByInstallationForm_FormCode(formCode).getWaterMeterTypeId();
+  }
+
   private List<BaseMaterial> mapMaterials(List<MaterialsOfCostEstimateResponse> materials) {
     if (materials == null) {
       return new ArrayList<>();
@@ -304,6 +320,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
         estimate.getCreateBy(),
         estimate.getWaterMeterSerial(),
         estimate.getOverallWaterMeterId(),
+        estimate.getWaterMeterTypeId(),
         estimate.getInstallationForm().getId(),
         estimate.getInstallationForm().getStatus(),
         estimate.getSignificance() != null ? new CostEstimateResponse.Significance(

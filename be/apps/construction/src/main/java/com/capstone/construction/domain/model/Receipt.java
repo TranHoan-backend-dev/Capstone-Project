@@ -26,7 +26,7 @@ public class Receipt {
   @EmbeddedId
   InstallationFormId installationFormId;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.EAGER, optional = false)
   @MapsId
   InstallationForm installationForm;
 

@@ -88,7 +88,7 @@ public class InstallationForm {
   CustomerType customerType;
 
   @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "water_supply_network_id")
+  @JoinColumn(name = "water_supply_network_id", nullable = false)
   WaterSupplyNetwork network;
 
   @Column(nullable = false)

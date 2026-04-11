@@ -93,7 +93,8 @@ class CostEstimateServiceImplTest {
         120,
         null,
         "SN123-UPDATED",
-        "METER-123-UPDATED"),
+        "METER-123-UPDATED",
+        null),
       Collections.emptyList(),
       true);
 
@@ -101,14 +102,14 @@ class CostEstimateServiceImplTest {
     installationForm.setFormCode(formCode);
     installationForm.setFormNumber(formNumber);
 
-    costEstimate = CostEstimate.create(b -> b
+    costEstimate = CostEstimate.builder()
       .customerName(createRequest.customerName())
       .address(createRequest.address())
       .registrationAt(createRequest.registrationAt().toLocalDate())
       .createBy(createRequest.createBy())
       .overallWaterMeterId(createRequest.overallWaterMeterId())
       .installationForm(installationForm)
-    );
+      .build();
   }
 
   @Test
@@ -168,7 +169,7 @@ class CostEstimateServiceImplTest {
     var image = new MockMultipartFile("designImage", "test.jpg", "image/jpeg", "test content".getBytes());
     var requestWithImage = new UpdateRequest(
       new UpdateRequest.GeneralInformation(
-        "Name", "Addr", "Note", 100, 100, 1, 100, 1, 1, 1, 1, 1, 1, 100, image, "SN", "METER"
+        "Name", "Addr", "Note", 100, 100, 1, 100, 1, 1, 1, 1, 1, 1, 100, image, "SN", "METER", null
       ),
       Collections.emptyList(),
       true
@@ -228,7 +229,7 @@ class CostEstimateServiceImplTest {
   void should_GetAllEstimates_WithFilter() {
     // Arrange
     var pageable = PageRequest.of(0, 10);
-    var filter = new EstimateFilterRequest("Keyword", "01-01-2023", "31-12-2023");
+    var filter = mock(EstimateFilterRequest.class);
     Page<CostEstimate> page = new PageImpl<>(List.of(costEstimate));
 
     when(eRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(page);

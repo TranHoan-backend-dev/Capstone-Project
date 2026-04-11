@@ -18,7 +18,7 @@ public class MaterialsOfCostEstimate {
   @EmbeddedId
   MaterialsOfCostEstimateId id;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.EAGER, optional = false)
   @MapsId("materialId")
   Material material;
 

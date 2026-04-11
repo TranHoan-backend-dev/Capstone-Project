@@ -35,4 +35,7 @@ public interface DeviceService {
     @PathVariable String id,
     @RequestBody List<BaseMaterial> request
   );
+
+  @GetMapping("/meter-types/exist/{id}")
+  boolean isMeterTypeExist(@PathVariable String id);
 }

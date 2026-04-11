@@ -7,7 +7,6 @@ import com.capstone.device.application.dto.request.history.UsageHistoryRequest;
 import com.capstone.device.application.dto.response.usagehistory.AnalysisResponse;
 import com.capstone.device.application.dto.response.usagehistory.UsageResponse;
 import com.capstone.device.domain.model.utils.Usage;
-import com.capstone.device.infrastructure.service.GcsService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,8 +29,6 @@ class UsageHistoryUseCaseTest {
   WaterMeterService waterMeterService;
   @Mock
   UsageHistoryService usageHistoryService;
-  @Mock
-  GcsService gcsService;
 
   @InjectMocks
   UsageHistoryUseCase usageHistoryUseCase;
