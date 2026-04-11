@@ -189,10 +189,6 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
         );
       }
 
-      if (selectedForm.overallWaterMeterId) {
-        onUpdate("waterMeterId", selectedForm.overallWaterMeterId);
-        await fetchWaterMeterDetailsById(selectedForm.overallWaterMeterId);
-      }
       if (selectedForm.customerType) {
         onUpdate("type", selectedForm.customerType);
       }
