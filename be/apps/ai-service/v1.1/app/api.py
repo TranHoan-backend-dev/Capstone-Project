@@ -18,7 +18,11 @@ from pydantic import BaseModel, Field
 from config.settings import Settings
 from app.pipeline import OCRPipeline
 
-DetectionLabel = Literal["meter", "Serial_number_region", "Current_pointer_reading_region"]
+DetectionLabel = Literal[
+    "meter",
+    "Serial_number_region",
+    "Current_pointer_reading_region",
+]
 
 
 class RootResponse(BaseModel):
@@ -49,7 +53,7 @@ class PredictionItem(BaseModel):
             "Detected region type. "
             "`meter` = whole meter face, "
             "`Serial_number_region` = serial number area, "
-            "`Current_pointer_reading_region` = meter reading area."
+            "`Current_pointer_reading_region` = current meter reading area."
         ),
         examples=["Current_pointer_reading_region"],
     )
@@ -59,7 +63,7 @@ class PredictionItem(BaseModel):
             "Final OCR text after post-processing. "
             "Clients should use this field as the main output value."
         ),
-        examples=["0008879"],
+        examples=["00088"],
     )
     conf: float | None = Field(
         default=None,
@@ -71,8 +75,18 @@ class PredictionItem(BaseModel):
     )
     yolo_conf: float | None = Field(
         default=None,
-        description="YOLO detection confidence for the bounding box.",
-        examples=[0.673],
+        description="YOLO detection confidence for this returned region.",
+        examples=[0.824],
+    )
+    reading_yolo_conf: float | None = Field(
+        default=None,
+        description="YOLO detection confidence of the reading-region box. Only populated for the reading region.",
+        examples=[0.823],
+    )
+    decimal_yolo_conf: float | None = Field(
+        default=None,
+        description="YOLO detection confidence of the matched decimal-region box. Only populated for the reading region.",
+        examples=[0.912],
     )
     ocr_conf: float | None = Field(
         default=None,
@@ -86,8 +100,8 @@ class PredictionItem(BaseModel):
     )
     final_conf: float | None = Field(
         default=None,
-        description="Final fused confidence after combining YOLO, OCR, and heuristic scores.",
-        examples=[0.81],
+        description="Final fused confidence after combining YOLO, OCR confidence, and heuristic scores.",
+        examples=[0.837],
     )
     raw_texts: list[list[str | float]] = Field(
         default_factory=list,
@@ -113,6 +127,39 @@ class PredictResponse(BaseModel):
             "Consumers should identify the desired value by the `label` field, "
             "not by assuming a fixed array order."
         ),
+    )
+
+
+class ReadingCropProbeResponse(BaseModel):
+    label: Literal["Current_pointer_reading_region"] = Field(
+        ...,
+        description="Fixed label for OCR-only reading-crop probes.",
+        example="Current_pointer_reading_region",
+    )
+    text: str = Field(
+        ...,
+        description="Reading text obtained by running OCR directly on the supplied crop.",
+        example="00088",
+    )
+    ocr_conf: float = Field(
+        ...,
+        description="Highest PaddleOCR confidence found on the supplied crop.",
+        example=0.973,
+    )
+    heuristic: float = Field(
+        ...,
+        description="Reading heuristic score computed without detector involvement.",
+        example=1.0,
+    )
+    final_conf: float = Field(
+        ...,
+        description="OCR-only confidence score for the supplied crop.",
+        example=0.979,
+    )
+    raw_texts: list[list[str | float]] = Field(
+        default_factory=list,
+        description="Raw OCR outputs before reading post-processing.",
+        examples=[[["00088", 0.9727]]],
     )
 
 
@@ -213,7 +260,7 @@ def health():
         "### Label meanings\n"
         "- `meter`: whole meter face\n"
         "- `Serial_number_region`: serial number area\n"
-        "- `Current_pointer_reading_region`: meter reading area\n\n"
+        "- `Current_pointer_reading_region`: current meter reading area after cutting off the matched decimal region\n\n"
         "### Integration note\n"
         "Spring Boot should usually consume `text` as the business value and `final_conf` as the confidence score."
     ),
@@ -239,13 +286,15 @@ def health():
                             {
                                 "box": [258, 472, 721, 583],
                                 "label": "Current_pointer_reading_region",
-                                "text": "0008879",
+                                "text": "00088",
                                 "conf": None,
-                                "yolo_conf": 0.763,
+                                "yolo_conf": 0.824,
+                                "reading_yolo_conf": 0.823,
+                                "decimal_yolo_conf": 0.912,
                                 "ocr_conf": 0.986,
                                 "heuristic": 0.5,
                                 "final_conf": 0.837,
-                                "raw_texts": [["0008879", 0.966], ["M3", 0.986]],
+                                "raw_texts": [["00088", 0.966]],
                             },
                         ],
                     }
@@ -293,3 +342,42 @@ async def predict(
     image = decode_image(image_bytes)
     results = get_pipeline().process(image)
     return JSONResponse({"filename": file.filename, "results": results})
+
+
+@app.post(
+    "/debug/reading-crop-ocr",
+    response_model=ReadingCropProbeResponse,
+    tags=["prediction"],
+    summary="Run OCR directly on a reading crop",
+    description=(
+        "Debug endpoint that bypasses YOLO detection entirely. "
+        "Use it to evaluate PaddleOCR + reading post-processing on an already-cropped "
+        "meter-reading image region."
+    ),
+    responses={
+        400: {
+            "model": ErrorResponse,
+            "description": "Uploaded file is missing, empty, or cannot be decoded.",
+        },
+        500: {
+            "model": ErrorResponse,
+            "description": "Internal server error while running OCR inference.",
+        },
+    },
+)
+async def debug_reading_crop_ocr(
+    file: UploadFile = File(
+        ...,
+        description="Reading crop image sent as multipart/form-data under the field name `file`.",
+    )
+):
+    if not file.filename:
+        raise HTTPException(status_code=400, detail="Missing uploaded file")
+
+    image_bytes = await file.read()
+    if not image_bytes:
+        raise HTTPException(status_code=400, detail="Uploaded file is empty")
+
+    image = decode_image(image_bytes)
+    result = get_pipeline().process_reading_crop(image)
+    return JSONResponse(result)
