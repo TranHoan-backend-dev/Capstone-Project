@@ -1,0 +1,14 @@
+{
+  "source_images": 192,
+  "usable_images": 172,
+  "exact_match": 0,
+  "normalized_match": 0,
+  "skipped_images": 20,
+  "decimal_label_cuts": 159,
+  "ratio_fallback_cuts": 13,
+  "splits": [
+    "test"
+  ],
+  "exact_match_rate": 0.0,
+  "normalized_match_rate": 0.0
+}

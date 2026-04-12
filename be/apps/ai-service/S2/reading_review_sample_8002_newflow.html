@@ -1,0 +1,605 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8'>
+<title>Reading Review Sample 8002 New Flow</title>
+<style>
+body { font-family: Segoe UI, Arial, sans-serif; margin: 24px; background: #f5f6f8; color: #111; }
+h1 { margin-bottom: 8px; }
+p.note { margin-top: 0; color: #444; }
+.card { background: #fff; border: 1px solid #ddd; border-radius: 12px; padding: 16px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+.meta { display: grid; grid-template-columns: repeat(2, minmax(220px, 1fr)); gap: 6px 16px; margin-bottom: 12px; }
+.image-wrap { position: relative; display: inline-block; width: 100%; }
+.image-wrap img { width: 100%; height: auto; display: block; }
+.image-wrap svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.gt-polygon { fill: rgba(0, 180, 0, 0.08); stroke: #11a611; stroke-width: 3; }
+.reading-box { fill: rgba(255, 0, 0, 0.08); stroke: #ff3b30; stroke-width: 3; }
+.serial-box { fill: rgba(255, 165, 0, 0.06); stroke: #ff9800; stroke-width: 3; }
+.legend { display: flex; gap: 16px; margin: 16px 0 24px; flex-wrap: wrap; }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.swatch { width: 18px; height: 12px; display: inline-block; border: 2px solid; }
+.swatch.gt { border-color: #11a611; background: rgba(0, 180, 0, 0.08); }
+.swatch.reading { border-color: #ff3b30; background: rgba(255, 0, 0, 0.08); }
+.swatch.serial { border-color: #ff9800; background: rgba(255, 165, 0, 0.06); }
+</style>
+</head>
+<body>
+<h1>Reading Review Sample</h1>
+<p class='note'>Green polygon = ground-truth reading region from data.csv. Red box = predicted reading box. Orange box = predicted serial box.</p>
+<div class='legend'>
+  <span><i class='swatch gt'></i> Ground truth reading polygon</span>
+  <span><i class='swatch reading'></i> Predicted reading box</span>
+  <span><i class='swatch serial'></i> Predicted serial box</span>
+</div>
+<div class='card'>
+  <div class='meta'>
+    <div><strong>Category:</strong> A_missing_reading</div>
+    <div><strong>File:</strong> id_569_value_384_176.jpg</div>
+    <div><strong>Expected integer:</strong> 384</div>
+    <div><strong>Predicted reading:</strong> </div>
+    <div><strong>Predicted serial:</strong> 14689660</div>
+    <div><strong>Reading YOLO conf:</strong> 0.909</div>
+    <div><strong>Reading OCR conf:</strong> 0.0</div>
+  </div>
+  <div class='image-wrap' style='max-width:760px;'>
+    <img src='file:///D:/gi%C3%A1o%20tr%C3%ACnh%20%C4%91%E1%BA%A1i%20h%E1%BB%8Dc%20fpt/Dataset%20SEP490/WaterMeters/images/id_569_value_384_176.jpg' width='760' />
+    <svg viewBox='0 0 1333 1000' preserveAspectRatio='xMidYMid meet'>
+      <polygon points='480.01,585.67 861.72,596.04 862.48,645.32 479.24,635.38' class='gt-polygon' />
+      <rect x='347' y='773' width='305' height='93' class='reading-box' />
+      <rect x='486' y='605' width='216' height='148' class='serial-box' />
+    </svg>
+  </div>
+</div>
+<div class='card'>
+  <div class='meta'>
+    <div><strong>Category:</strong> A_missing_reading</div>
+    <div><strong>File:</strong> id_880_value_462_079.jpg</div>
+    <div><strong>Expected integer:</strong> 462</div>
+    <div><strong>Predicted reading:</strong> </div>
+    <div><strong>Predicted serial:</strong> </div>
+    <div><strong>Reading YOLO conf:</strong> </div>
+    <div><strong>Reading OCR conf:</strong> </div>
+  </div>
+  <div class='image-wrap' style='max-width:760px;'>
+    <img src='file:///D:/gi%C3%A1o%20tr%C3%ACnh%20%C4%91%E1%BA%A1i%20h%E1%BB%8Dc%20fpt/Dataset%20SEP490/WaterMeters/images/id_880_value_462_079.jpg' width='760' />
+    <svg viewBox='0 0 1778 1000' preserveAspectRatio='xMidYMid meet'>
+      <polygon points='1258.15,322.03 1348.03,343.25 1228.21,757.64 1138.33,740.17' class='gt-polygon' />
+      
+      
+    </svg>
+  </div>
+</div>
+<div class='card'>
+  <div class='meta'>
+    <div><strong>Category:</strong> A_missing_reading</div>
+    <div><strong>File:</strong> id_1193_value_147_365.jpg</div>
+    <div><strong>Expected integer:</strong> 147</div>
+    <div><strong>Predicted reading:</strong> </div>
+    <div><strong>Predicted serial:</strong> 25914211</div>
+    <div><strong>Reading YOLO conf:</strong> 0.903</div>
+    <div><strong>Reading OCR conf:</strong> 0.0</div>
+  </div>
+  <div class='image-wrap' style='max-width:760px;'>
+    <img src='file:///D:/gi%C3%A1o%20tr%C3%ACnh%20%C4%91%E1%BA%A1i%20h%E1%BB%8Dc%20fpt/Dataset%20SEP490/WaterMeters/images/id_1193_value_147_365.jpg' width='760' />
+    <svg viewBox='0 0 1000 1333' preserveAspectRatio='xMidYMid meet'>
+      <polygon points='266.76,689.08 709.82,680.44 711.55,784.72 271.95,794.52' class='gt-polygon' />
+      <rect x='253' y='672' width='464' height='124' class='reading-box' />
+      <rect x='538' y='430' width='205' height='111' class='serial-box' />
+    </svg>
+  </div>
+</div>
+<div class='card'>
+  <div class='meta'>
+    <div><strong>Category:</strong> A_missing_reading</div>
+    <div><strong>File:</strong> id_842_value_401_992.jpg</div>
+    <div><strong>Expected integer:</strong> 401</div>
+    <div><strong>Predicted reading:</strong> </div>
+    <div><strong>Predicted serial:</strong> 14610706</div>
+    <div><strong>Reading YOLO conf:</strong> 0.673</div>
+    <div><strong>Reading OCR conf:</strong> 0.571</div>
+  </div>
+  <div class='image-wrap' style='max-width:760px;'>
+    <img src='file:///D:/gi%C3%A1o%20tr%C3%ACnh%20%C4%91%E1%BA%A1i%20h%E1%BB%8Dc%20fpt/Dataset%20SEP490/WaterMeters/images/id_842_value_401_992.jpg' width='760' />
+    <svg viewBox='0 0 1000 1333' preserveAspectRatio='xMidYMid meet'>
+      <polygon points='188.41,584.89 725.97,728.66 695.61,854.57 152.7,712.58' class='gt-polygon' />
+      <rect x='131' y='572' width='594' height='263' class='reading-box' />
+      <rect x='580' y='384' width='253' height='185' class='serial-box' />
+    </svg>
+  </div>
+</div>
+<div class='card'>
+  <div class='meta'>
+    <div><strong>Category:</strong> A_missing_reading</div>
+    <div><strong>File:</strong> id_737_value_119_002.jpg</div>
+    <div><strong>Expected integer:</strong> 119</div>
+    <div><strong>Predicted reading:</strong> </div>
+    <div><strong>Predicted serial:</strong> 20100917</div>
+    <div><strong>Reading YOLO conf:</strong> 0.732</div>
+    <div><strong>Reading OCR conf:</strong> 0.0</div>
+  </div>
+  <div class='image-wrap' style='max-width:760px;'>
+    <img src='file:///D:/gi%C3%A1o%20tr%C3%ACnh%20%C4%91%E1%BA%A1i%20h%E1%BB%8Dc%20fpt/Dataset%20SEP490/WaterMeters/images/id_737_value_119_002.jpg' width='760' />
+    <svg viewBox='0 0 1000 1333' preserveAspectRatio='xMidYMid meet'>
+      <polygon points='252.96,559.22 249.39,633.32 597.83,651.13 602.82,577.03' class='gt-polygon' />
+      <rect x='243' y='555' width='356' height='101' class='reading-box' />
+      <rect x='490' y='383' width='162' height='87' class='serial-box' />
+    </svg>
+  </div>
+</div>
+<div class='card'>
+  <div class='meta'>
+    <div><strong>Category:</strong> A_missing_reading</div>
+    <div><strong>File:</strong> id_721_value_134_634.jpg</div>
+    <div><strong>Expected integer:</strong> 134</div>
+    <div><strong>Predicted reading:</strong> </div>
+    <div><strong>Predicted serial:</strong> 34483206</div>
+    <div><strong>Reading YOLO conf:</strong> 0.674</div>
+    <div><strong>Reading OCR conf:</strong> 0.0</div>
+  </div>
+  <div class='image-wrap' style='max-width:760px;'>
+    <img src='file:///D:/gi%C3%A1o%20tr%C3%ACnh%20%C4%91%E1%BA%A1i%20h%E1%BB%8Dc%20fpt/Dataset%20SEP490/WaterMeters/images/id_721_value_134_634.jpg' width='760' />
+    <svg viewBox='0 0 1333 1000' preserveAspectRatio='xMidYMid meet'>
+      <polygon points='510.73,659.73 890.9,660.5 890.9,746.52 510.73,746.52' class='gt-polygon' />
+      <rect x='495' y='653' width='407' height='102' class='reading-box' />
+      <rect x='765' y='437' width='180' height='101' class='serial-box' />
+    </svg>
+  </div>
+</div>
+<div class='card'>
+  <div class='meta'>
+    <div><strong>Category:</strong> B_leading_zero_only</div>
+    <div><strong>File:</strong> id_1061_value_572_883.jpg</div>
+    <div><strong>Expected integer:</strong> 572</div>
+    <div><strong>Predicted reading:</strong> 00572</div>
+    <div><strong>Predicted serial:</strong> 151059707</div>
+    <div><strong>Reading YOLO conf:</strong> 0.651</div>
+    <div><strong>Reading OCR conf:</strong> 0.733</div>
+  </div>
+  <div class='image-wrap' style='max-width:760px;'>
+    <img src='file:///D:/gi%C3%A1o%20tr%C3%ACnh%20%C4%91%E1%BA%A1i%20h%E1%BB%8Dc%20fpt/Dataset%20SEP490/WaterMeters/images/id_1061_value_572_883.jpg' width='760' />
+    <svg viewBox='0 0 1000 1333' preserveAspectRatio='xMidYMid meet'>
+      <polygon points='143.58,486.6 686.87,477.91 686.45,574.32 643.01,575.56 642.59,555.7 146.48,565.22' class='gt-polygon' />
+      <rect x='110' y='441' width='616' height='170' class='reading-box' />
+      <rect x='255' y='312' width='371' height='103' class='serial-box' />
+    </svg>
+  </div>
+</div>
+<div class='card'>
+  <div class='meta'>
+    <div><strong>Category:</strong> B_leading_zero_only</div>
+    <div><strong>File:</strong> id_71_value_90_216.jpg</div>
+    <div><strong>Expected integer:</strong> 90</div>
+    <div><strong>Predicted reading:</strong> 00090</div>
+    <div><strong>Predicted serial:</strong> 160357308</div>
+    <div><strong>Reading YOLO conf:</strong> 0.884</div>
+    <div><strong>Reading OCR conf:</strong> 0.901</div>
+  </div>
+  <div class='image-wrap' style='max-width:760px;'>
+    <img src='file:///D:/gi%C3%A1o%20tr%C3%ACnh%20%C4%91%E1%BA%A1i%20h%E1%BB%8Dc%20fpt/Dataset%20SEP490/WaterMeters/images/id_71_value_90_216.jpg' width='760' />
+    <svg viewBox='0 0 1000 1333' preserveAspectRatio='xMidYMid meet'>
+      <polygon points='302.47,574.74 612.39,581.77 610.73,646.73 583.42,645.91 582.6,631.43 299.57,625.63' class='gt-polygon' />
+      <rect x='285' y='556' width='335' height='99' class='reading-box' />
+      <rect x='366' y='504' width='193' height='41' class='serial-box' />
+    </svg>
+  </div>
+</div>
+<div class='card'>
+  <div class='meta'>
+    <div><strong>Category:</strong> B_leading_zero_only</div>
+    <div><strong>File:</strong> id_502_value_35_581.jpg</div>
+    <div><strong>Expected integer:</strong> 35</div>
+    <div><strong>Predicted reading:</strong> 00035</div>
+    <div><strong>Predicted serial:</strong> </div>
+    <div><strong>Reading YOLO conf:</strong> 0.735</div>
+    <div><strong>Reading OCR conf:</strong> 0.943</div>
+  </div>
+  <div class='image-wrap' style='max-width:760px;'>
+    <img src='file:///D:/gi%C3%A1o%20tr%C3%ACnh%20%C4%91%E1%BA%A1i%20h%E1%BB%8Dc%20fpt/Dataset%20SEP490/WaterMeters/images/id_502_value_35_581.jpg' width='760' />
+    <svg viewBox='0 0 1000 1333' preserveAspectRatio='xMidYMid meet'>
+      <polygon points='138.95,557.93 614.94,525.87 622.06,609.95 580.02,615.65 575.74,601.4 144.65,629.19' class='gt-polygon' />
+      <rect x='115' y='492' width='550' height='164' class='reading-box' />
+      
+    </svg>
+  </div>
+</div>
+<div class='card'>
+  <div class='meta'>
+    <div><strong>Category:</strong> B_leading_zero_only</div>
+    <div><strong>File:</strong> id_551_value_569_424.jpg</div>
+    <div><strong>Expected integer:</strong> 569</div>
+    <div><strong>Predicted reading:</strong> 00569</div>
+    <div><strong>Predicted serial:</strong> 11371068</div>
+    <div><strong>Reading YOLO conf:</strong> 0.877</div>
+    <div><strong>Reading OCR conf:</strong> 0.984</div>
+  </div>
+  <div class='image-wrap' style='max-width:760px;'>
+    <img src='file:///D:/gi%C3%A1o%20tr%C3%ACnh%20%C4%91%E1%BA%A1i%20h%E1%BB%8Dc%20fpt/Dataset%20SEP490/WaterMeters/images/id_551_value_569_424.jpg' width='760' />
+    <svg viewBox='0 0 1778 1000' preserveAspectRatio='xMidYMid meet'>
+      <polygon points='495.87,461.48 1056.45,468.23 1050.57,507.56 495.12,500.58' class='gt-polygon' />
+      <rect x='268' y='812' width='324' height='93' class='reading-box' />
+      <rect x='476' y='642' width='150' height='78' class='serial-box' />
+    </svg>
+  </div>
+</div>
+<div class='card'>
+  <div class='meta'>
+    <div><strong>Category:</strong> B_leading_zero_only</div>
+    <div><strong>File:</strong> id_363_value_370_127.jpg</div>
+    <div><strong>Expected integer:</strong> 370</div>
+    <div><strong>Predicted reading:</strong> 00370</div>
+    <div><strong>Predicted serial:</strong> 2764773R15</div>
+    <div><strong>Reading YOLO conf:</strong> 0.59</div>
+    <div><strong>Reading OCR conf:</strong> 0.997</div>
+  </div>
+  <div class='image-wrap' style='max-width:760px;'>
+    <img src='file:///D:/gi%C3%A1o%20tr%C3%ACnh%20%C4%91%E1%BA%A1i%20h%E1%BB%8Dc%20fpt/Dataset%20SEP490/WaterMeters/images/id_363_value_370_127.jpg' width='760' />
+    <svg viewBox='0 0 1333 1000' preserveAspectRatio='xMidYMid meet'>
+      <polygon points='518.66,430.47 957.36,432.06 955.24,476.66 919.16,476.27 918.45,467.5 520.78,465.12' class='gt-polygon' />
+      <rect x='296' y='413' width='529' height='535' class='reading-box' />
+      <rect x='338' y='671' width='172' height='37' class='serial-box' />
+    </svg>
+  </div>
+</div>
+<div class='card'>
+  <div class='meta'>
+    <div><strong>Category:</strong> B_leading_zero_only</div>
+    <div><strong>File:</strong> id_695_value_93_701.jpg</div>
+    <div><strong>Expected integer:</strong> 93</div>
+    <div><strong>Predicted reading:</strong> 00093</div>
+    <div><strong>Predicted serial:</strong> D200222266</div>
+    <div><strong>Reading YOLO conf:</strong> 0.828</div>
+    <div><strong>Reading OCR conf:</strong> 0.866</div>
+  </div>
+  <div class='image-wrap' style='max-width:760px;'>
+    <img src='file:///D:/gi%C3%A1o%20tr%C3%ACnh%20%C4%91%E1%BA%A1i%20h%E1%BB%8Dc%20fpt/Dataset%20SEP490/WaterMeters/images/id_695_value_93_701.jpg' width='760' />
+    <svg viewBox='0 0 1333 1000' preserveAspectRatio='xMidYMid meet'>
+      <polygon points='651.48,450.85 599.57,448.52 591.83,437.68 185.14,426.83 178.94,358.66 595.7,375.71 601.89,371.06 654.57,372.61' class='gt-polygon' />
+      <rect x='184' y='361' width='471' height='81' class='reading-box' />
+      <rect x='206' y='650' width='250' height='89' class='serial-box' />
+    </svg>
+  </div>
+</div>
+<div class='card'>
+  <div class='meta'>
+    <div><strong>Category:</strong> C_decimal_leak_or_extra_suffix</div>
+    <div><strong>File:</strong> id_398_value_8_898.jpg</div>
+    <div><strong>Expected integer:</strong> 8</div>
+    <div><strong>Predicted reading:</strong> 00008898</div>
+    <div><strong>Predicted serial:</strong> 3441261A16</div>
+    <div><strong>Reading YOLO conf:</strong> 0.934</div>
+    <div><strong>Reading OCR conf:</strong> 0.932</div>
+  </div>
+  <div class='image-wrap' style='max-width:760px;'>
+    <img src='file:///D:/gi%C3%A1o%20tr%C3%ACnh%20%C4%91%E1%BA%A1i%20h%E1%BB%8Dc%20fpt/Dataset%20SEP490/WaterMeters/images/id_398_value_8_898.jpg' width='760' />
+    <svg viewBox='0 0 1000 1333' preserveAspectRatio='xMidYMid meet'>
+      <polygon points='607.81,293.58 535.13,313.52 649.14,791.66 630.61,795.21 639.87,837.96 734.64,819.44' class='gt-polygon' />
+      <rect x='517' y='235' width='226' height='640' class='reading-box' />
+      <rect x='359' y='260' width='127' height='276' class='serial-box' />
+    </svg>
+  </div>
+</div>
+<div class='card'>
+  <div class='meta'>
+    <div><strong>Category:</strong> C_decimal_leak_or_extra_suffix</div>
+    <div><strong>File:</strong> id_924_value_625_593.jpg</div>
+    <div><strong>Expected integer:</strong> 625</div>
+    <div><strong>Predicted reading:</strong> 062559</div>
+    <div><strong>Predicted serial:</strong> 0182397</div>
+    <div><strong>Reading YOLO conf:</strong> 0.736</div>
+    <div><strong>Reading OCR conf:</strong> 0.984</div>
+  </div>
+  <div class='image-wrap' style='max-width:760px;'>
+    <img src='file:///D:/gi%C3%A1o%20tr%C3%ACnh%20%C4%91%E1%BA%A1i%20h%E1%BB%8Dc%20fpt/Dataset%20SEP490/WaterMeters/images/id_924_value_625_593.jpg' width='760' />
+    <svg viewBox='0 0 1333 1000' preserveAspectRatio='xMidYMid meet'>
+      <polygon points='385.9,324.01 914.89,316.44 915.58,332.95 947.22,332.26 952.72,206.38 923.84,207.07 922.46,228.39 378.35,233.21' class='gt-polygon' />
+      <rect x='374' y='220' width='587' height='114' class='reading-box' />
+      <rect x='426' y='584' width='286' height='88' class='serial-box' />
+    </svg>
+  </div>
+</div>
+<div class='card'>
+  <div class='meta'>
+    <div><strong>Category:</strong> C_decimal_leak_or_extra_suffix</div>
+    <div><strong>File:</strong> id_953_value_66_584.jpg</div>
+    <div><strong>Expected integer:</strong> 66</div>
+    <div><strong>Predicted reading:</strong> 00066584</div>
+    <div><strong>Predicted serial:</strong> </div>
+    <div><strong>Reading YOLO conf:</strong> 0.962</div>
+    <div><strong>Reading OCR conf:</strong> 0.953</div>
+  </div>
+  <div class='image-wrap' style='max-width:760px;'>
+    <img src='file:///D:/gi%C3%A1o%20tr%C3%ACnh%20%C4%91%E1%BA%A1i%20h%E1%BB%8Dc%20fpt/Dataset%20SEP490/WaterMeters/images/id_953_value_66_584.jpg' width='760' />
+    <svg viewBox='0 0 1000 1333' preserveAspectRatio='xMidYMid meet'>
+      <polygon points='320.57,642.93 649.18,725.09 634.89,785.8 606.32,777.77 607.21,768.85 308.07,693.83' class='gt-polygon' />
+      <rect x='304' y='632' width='351' height='155' class='reading-box' />
+      
+    </svg>
+  </div>
+</div>
+<div class='card'>
+  <div class='meta'>
+    <div><strong>Category:</strong> C_decimal_leak_or_extra_suffix</div>
+    <div><strong>File:</strong> id_261_value_80_19.jpg</div>
+    <div><strong>Expected integer:</strong> 80</div>
+    <div><strong>Predicted reading:</strong> 0008090</div>
+    <div><strong>Predicted serial:</strong> 827003316</div>
+    <div><strong>Reading YOLO conf:</strong> 0.827</div>
+    <div><strong>Reading OCR conf:</strong> 0.912</div>
+  </div>
+  <div class='image-wrap' style='max-width:760px;'>
+    <img src='file:///D:/gi%C3%A1o%20tr%C3%ACnh%20%C4%91%E1%BA%A1i%20h%E1%BB%8Dc%20fpt/Dataset%20SEP490/WaterMeters/images/id_261_value_80_19.jpg' width='760' />
+    <svg viewBox='0 0 1000 1333' preserveAspectRatio='xMidYMid meet'>
+      <polygon points='169.27,541.84 831.78,528.88 835.83,432.49 162.79,444.65' class='gt-polygon' />
+      <rect x='155' y='429' width='696' height='123' class='reading-box' />
+      <rect x='223' y='232' width='606' height='189' class='serial-box' />
+    </svg>
+  </div>
+</div>
+<div class='card'>
+  <div class='meta'>
+    <div><strong>Category:</strong> C_decimal_leak_or_extra_suffix</div>
+    <div><strong>File:</strong> id_794_value_1078_458.jpg</div>
+    <div><strong>Expected integer:</strong> 1078</div>
+    <div><strong>Predicted reading:</strong> 01078458</div>
+    <div><strong>Predicted serial:</strong> </div>
+    <div><strong>Reading YOLO conf:</strong> 0.864</div>
+    <div><strong>Reading OCR conf:</strong> 0.921</div>
+  </div>
+  <div class='image-wrap' style='max-width:760px;'>
+    <img src='file:///D:/gi%C3%A1o%20tr%C3%ACnh%20%C4%91%E1%BA%A1i%20h%E1%BB%8Dc%20fpt/Dataset%20SEP490/WaterMeters/images/id_794_value_1078_458.jpg' width='760' />
+    <svg viewBox='0 0 1000 1333' preserveAspectRatio='xMidYMid meet'>
+      <polygon points='359.84,681.2 613.51,709.7 612.08,752.47 592.13,750.32 589.28,743.91 359.84,715.41' class='gt-polygon' />
+      <rect x='352' y='668' width='280' height='92' class='reading-box' />
+      
+    </svg>
+  </div>
+</div>
+<div class='card'>
+  <div class='meta'>
+    <div><strong>Category:</strong> C_decimal_leak_or_extra_suffix</div>
+    <div><strong>File:</strong> id_933_value_121_779.jpg</div>
+    <div><strong>Expected integer:</strong> 121</div>
+    <div><strong>Predicted reading:</strong> 00121079</div>
+    <div><strong>Predicted serial:</strong> </div>
+    <div><strong>Reading YOLO conf:</strong> 0.892</div>
+    <div><strong>Reading OCR conf:</strong> 0.914</div>
+  </div>
+  <div class='image-wrap' style='max-width:760px;'>
+    <img src='file:///D:/gi%C3%A1o%20tr%C3%ACnh%20%C4%91%E1%BA%A1i%20h%E1%BB%8Dc%20fpt/Dataset%20SEP490/WaterMeters/images/id_933_value_121_779.jpg' width='760' />
+    <svg viewBox='0 0 1333 1000' preserveAspectRatio='xMidYMid meet'>
+      <polygon points='234.25,422.29 935.45,435.69 927.77,502.68 870.16,500.52 870.16,490.58 235.78,477.18' class='gt-polygon' />
+      <rect x='145' y='516' width='593' height='185' class='reading-box' />
+      
+    </svg>
+  </div>
+</div>
+<div class='card'>
+  <div class='meta'>
+    <div><strong>Category:</strong> D_too_short_or_truncated</div>
+    <div><strong>File:</strong> id_53_value_595_825.jpg</div>
+    <div><strong>Expected integer:</strong> 595</div>
+    <div><strong>Predicted reading:</strong> 0055</div>
+    <div><strong>Predicted serial:</strong> 005LG585</div>
+    <div><strong>Reading YOLO conf:</strong> 0.871</div>
+    <div><strong>Reading OCR conf:</strong> 0.743</div>
+  </div>
+  <div class='image-wrap' style='max-width:760px;'>
+    <img src='file:///D:/gi%C3%A1o%20tr%C3%ACnh%20%C4%91%E1%BA%A1i%20h%E1%BB%8Dc%20fpt/Dataset%20SEP490/WaterMeters/images/id_53_value_595_825.jpg' width='760' />
+    <svg viewBox='0 0 1000 1333' preserveAspectRatio='xMidYMid meet'>
+      <polygon points='307.88,402.66 306.76,436.3 535.01,440.8 534.45,449.21 565.29,449.77 566.97,397.05 535.01,397.05 534.45,405.46' class='gt-polygon' />
+      <rect x='296' y='389' width='276' height='62' class='reading-box' />
+      <rect x='295' y='387' width='280' height='65' class='serial-box' />
+    </svg>
+  </div>
+</div>
+<div class='card'>
+  <div class='meta'>
+    <div><strong>Category:</strong> D_too_short_or_truncated</div>
+    <div><strong>File:</strong> id_252_value_313_322.jpg</div>
+    <div><strong>Expected integer:</strong> 313</div>
+    <div><strong>Predicted reading:</strong> 2</div>
+    <div><strong>Predicted serial:</strong> 11045413</div>
+    <div><strong>Reading YOLO conf:</strong> 0.849</div>
+    <div><strong>Reading OCR conf:</strong> 0.991</div>
+  </div>
+  <div class='image-wrap' style='max-width:760px;'>
+    <img src='file:///D:/gi%C3%A1o%20tr%C3%ACnh%20%C4%91%E1%BA%A1i%20h%E1%BB%8Dc%20fpt/Dataset%20SEP490/WaterMeters/images/id_252_value_313_322.jpg' width='760' />
+    <svg viewBox='0 0 1333 1000' preserveAspectRatio='xMidYMid meet'>
+      <polygon points='292.82,508.45 943.91,532.56 933.21,612.95 289.25,588.83' class='gt-polygon' />
+      <rect x='204' y='670' width='511' height='148' class='reading-box' />
+      <rect x='564' y='463' width='227' height='126' class='serial-box' />
+    </svg>
+  </div>
+</div>
+<div class='card'>
+  <div class='meta'>
+    <div><strong>Category:</strong> D_too_short_or_truncated</div>
+    <div><strong>File:</strong> id_851_value_305_162.jpg</div>
+    <div><strong>Expected integer:</strong> 305</div>
+    <div><strong>Predicted reading:</strong> 00</div>
+    <div><strong>Predicted serial:</strong> </div>
+    <div><strong>Reading YOLO conf:</strong> 0.887</div>
+    <div><strong>Reading OCR conf:</strong> 0.973</div>
+  </div>
+  <div class='image-wrap' style='max-width:760px;'>
+    <img src='file:///D:/gi%C3%A1o%20tr%C3%ACnh%20%C4%91%E1%BA%A1i%20h%E1%BB%8Dc%20fpt/Dataset%20SEP490/WaterMeters/images/id_851_value_305_162.jpg' width='760' />
+    <svg viewBox='0 0 1000 1333' preserveAspectRatio='xMidYMid meet'>
+      <polygon points='69.83,579.74 347.63,563.66 346.63,557.13 366.22,554.62 371.25,616.91 349.64,619.92 348.14,612.39 72.34,626.46' class='gt-polygon' />
+      <rect x='64' y='555' width='306' height='73' class='reading-box' />
+      
+    </svg>
+  </div>
+</div>
+<div class='card'>
+  <div class='meta'>
+    <div><strong>Category:</strong> D_too_short_or_truncated</div>
+    <div><strong>File:</strong> id_83_value_1336_114.jpg</div>
+    <div><strong>Expected integer:</strong> 1336</div>
+    <div><strong>Predicted reading:</strong> 008</div>
+    <div><strong>Predicted serial:</strong> </div>
+    <div><strong>Reading YOLO conf:</strong> 0.92</div>
+    <div><strong>Reading OCR conf:</strong> 0.782</div>
+  </div>
+  <div class='image-wrap' style='max-width:760px;'>
+    <img src='file:///D:/gi%C3%A1o%20tr%C3%ACnh%20%C4%91%E1%BA%A1i%20h%E1%BB%8Dc%20fpt/Dataset%20SEP490/WaterMeters/images/id_83_value_1336_114.jpg' width='760' />
+    <svg viewBox='0 0 1333 1000' preserveAspectRatio='xMidYMid meet'>
+      <polygon points='419.19,325.93 886.37,399.81 893.54,395.15 915.04,398.26 889.12,452.27 864.3,448.23 868.72,439.23 400.99,364.11' class='gt-polygon' />
+      <rect x='280' y='422' width='421' height='171' class='reading-box' />
+      
+    </svg>
+  </div>
+</div>
+<div class='card'>
+  <div class='meta'>
+    <div><strong>Category:</strong> D_too_short_or_truncated</div>
+    <div><strong>File:</strong> id_672_value_350_806.jpg</div>
+    <div><strong>Expected integer:</strong> 350</div>
+    <div><strong>Predicted reading:</strong> 006</div>
+    <div><strong>Predicted serial:</strong> 18235136</div>
+    <div><strong>Reading YOLO conf:</strong> 0.532</div>
+    <div><strong>Reading OCR conf:</strong> 0.994</div>
+  </div>
+  <div class='image-wrap' style='max-width:760px;'>
+    <img src='file:///D:/gi%C3%A1o%20tr%C3%ACnh%20%C4%91%E1%BA%A1i%20h%E1%BB%8Dc%20fpt/Dataset%20SEP490/WaterMeters/images/id_672_value_350_806.jpg' width='760' />
+    <svg viewBox='0 0 1333 1000' preserveAspectRatio='xMidYMid meet'>
+      <polygon points='482.21,593.18 478.77,628.8 790.39,636.93 792.44,600.93' class='gt-polygon' />
+      <rect x='286' y='513' width='428' height='434' class='reading-box' />
+      <rect x='509' y='659' width='108' height='62' class='serial-box' />
+    </svg>
+  </div>
+</div>
+<div class='card'>
+  <div class='meta'>
+    <div><strong>Category:</strong> D_too_short_or_truncated</div>
+    <div><strong>File:</strong> id_2_value_495_341.jpg</div>
+    <div><strong>Expected integer:</strong> 495</div>
+    <div><strong>Predicted reading:</strong> 0049</div>
+    <div><strong>Predicted serial:</strong> 25022791</div>
+    <div><strong>Reading YOLO conf:</strong> 0.754</div>
+    <div><strong>Reading OCR conf:</strong> 0.788</div>
+  </div>
+  <div class='image-wrap' style='max-width:760px;'>
+    <img src='file:///D:/gi%C3%A1o%20tr%C3%ACnh%20%C4%91%E1%BA%A1i%20h%E1%BB%8Dc%20fpt/Dataset%20SEP490/WaterMeters/images/id_2_value_495_341.jpg' width='760' />
+    <svg viewBox='0 0 1778 1000' preserveAspectRatio='xMidYMid meet'>
+      <polygon points='471.54,518.3 1451.13,515.79 1457.48,579.57 481.07,584.09' class='gt-polygon' />
+      <rect x='250' y='916' width='555' height='127' class='reading-box' />
+      <rect x='591' y='604' width='282' height='140' class='serial-box' />
+    </svg>
+  </div>
+</div>
+<div class='card'>
+  <div class='meta'>
+    <div><strong>Category:</strong> E_severely_wrong</div>
+    <div><strong>File:</strong> id_553_value_65_475.jpg</div>
+    <div><strong>Expected integer:</strong> 65</div>
+    <div><strong>Predicted reading:</strong> 9009</div>
+    <div><strong>Predicted serial:</strong> </div>
+    <div><strong>Reading YOLO conf:</strong> 0.908</div>
+    <div><strong>Reading OCR conf:</strong> 0.992</div>
+  </div>
+  <div class='image-wrap' style='max-width:760px;'>
+    <img src='file:///D:/gi%C3%A1o%20tr%C3%ACnh%20%C4%91%E1%BA%A1i%20h%E1%BB%8Dc%20fpt/Dataset%20SEP490/WaterMeters/images/id_553_value_65_475.jpg' width='760' />
+    <svg viewBox='0 0 1333 1000' preserveAspectRatio='xMidYMid meet'>
+      <polygon points='348.35,240.71 418.63,234.73 423.11,266.88 408.91,267.63 453.02,608.51 391.72,614.49' class='gt-polygon' />
+      <rect x='331' y='202' width='142' height='438' class='reading-box' />
+      
+    </svg>
+  </div>
+</div>
+<div class='card'>
+  <div class='meta'>
+    <div><strong>Category:</strong> E_severely_wrong</div>
+    <div><strong>File:</strong> id_407_value_21_86.jpg</div>
+    <div><strong>Expected integer:</strong> 21</div>
+    <div><strong>Predicted reading:</strong> 010121</div>
+    <div><strong>Predicted serial:</strong> 34729105</div>
+    <div><strong>Reading YOLO conf:</strong> 0.802</div>
+    <div><strong>Reading OCR conf:</strong> 0.918</div>
+  </div>
+  <div class='image-wrap' style='max-width:760px;'>
+    <img src='file:///D:/gi%C3%A1o%20tr%C3%ACnh%20%C4%91%E1%BA%A1i%20h%E1%BB%8Dc%20fpt/Dataset%20SEP490/WaterMeters/images/id_407_value_21_86.jpg' width='760' />
+    <svg viewBox='0 0 1333 1000' preserveAspectRatio='xMidYMid meet'>
+      <polygon points='367.17,191.34 499.65,182.82 519,760.71 375.71,766.13' class='gt-polygon' />
+      <rect x='358' y='159' width='164' height='431' class='reading-box' />
+      <rect x='706' y='546' width='130' height='263' class='serial-box' />
+    </svg>
+  </div>
+</div>
+<div class='card'>
+  <div class='meta'>
+    <div><strong>Category:</strong> E_severely_wrong</div>
+    <div><strong>File:</strong> id_1204_value_78_677.jpg</div>
+    <div><strong>Expected integer:</strong> 78</div>
+    <div><strong>Predicted reading:</strong> 9091176</div>
+    <div><strong>Predicted serial:</strong> 909117617</div>
+    <div><strong>Reading YOLO conf:</strong> 0.624</div>
+    <div><strong>Reading OCR conf:</strong> 0.998</div>
+  </div>
+  <div class='image-wrap' style='max-width:760px;'>
+    <img src='file:///D:/gi%C3%A1o%20tr%C3%ACnh%20%C4%91%E1%BA%A1i%20h%E1%BB%8Dc%20fpt/Dataset%20SEP490/WaterMeters/images/id_1204_value_78_677.jpg' width='760' />
+    <svg viewBox='0 0 2057 1000' preserveAspectRatio='xMidYMid meet'>
+      <polygon points='552.39,388.12 1172.02,331.09 1177.12,414.51 563.45,474.09' class='gt-polygon' />
+      <rect x='455' y='22' width='906' height='965' class='reading-box' />
+      <rect x='619' y='174' width='514' height='159' class='serial-box' />
+    </svg>
+  </div>
+</div>
+<div class='card'>
+  <div class='meta'>
+    <div><strong>Category:</strong> E_severely_wrong</div>
+    <div><strong>File:</strong> id_112_value_365_387.jpg</div>
+    <div><strong>Expected integer:</strong> 365</div>
+    <div><strong>Predicted reading:</strong> 100365</div>
+    <div><strong>Predicted serial:</strong> 1011104103305</div>
+    <div><strong>Reading YOLO conf:</strong> 0.918</div>
+    <div><strong>Reading OCR conf:</strong> 0.843</div>
+  </div>
+  <div class='image-wrap' style='max-width:760px;'>
+    <img src='file:///D:/gi%C3%A1o%20tr%C3%ACnh%20%C4%91%E1%BA%A1i%20h%E1%BB%8Dc%20fpt/Dataset%20SEP490/WaterMeters/images/id_112_value_365_387.jpg' width='760' />
+    <svg viewBox='0 0 1778 1000' preserveAspectRatio='xMidYMid meet'>
+      <polygon points='1303.49,364.12 1216.15,365.12 1216.15,356.08 390.57,365.62 376.28,324.94 1303.49,315.9' class='gt-polygon' />
+      <rect x='189' y='521' width='571' height='167' class='reading-box' />
+      <rect x='264' y='405' width='362' height='110' class='serial-box' />
+    </svg>
+  </div>
+</div>
+<div class='card'>
+  <div class='meta'>
+    <div><strong>Category:</strong> E_severely_wrong</div>
+    <div><strong>File:</strong> id_988_value_108_494.jpg</div>
+    <div><strong>Expected integer:</strong> 108</div>
+    <div><strong>Predicted reading:</strong> 8494</div>
+    <div><strong>Predicted serial:</strong> 0370465307</div>
+    <div><strong>Reading YOLO conf:</strong> 0.936</div>
+    <div><strong>Reading OCR conf:</strong> 0.936</div>
+  </div>
+  <div class='image-wrap' style='max-width:760px;'>
+    <img src='file:///D:/gi%C3%A1o%20tr%C3%ACnh%20%C4%91%E1%BA%A1i%20h%E1%BB%8Dc%20fpt/Dataset%20SEP490/WaterMeters/images/id_988_value_108_494.jpg' width='760' />
+    <svg viewBox='0 0 1333 1000' preserveAspectRatio='xMidYMid meet'>
+      <polygon points='689.43,375.71 1072.11,326.9 1070.56,315.28 1123.23,309.09 1124.79,391.97 1072.11,397.4 1070.56,388.1 696.4,433.8' class='gt-polygon' />
+      <rect x='678' y='313' width='444' height='125' class='reading-box' />
+      <rect x='753' y='228' width='263' height='126' class='serial-box' />
+    </svg>
+  </div>
+</div>
+<div class='card'>
+  <div class='meta'>
+    <div><strong>Category:</strong> E_severely_wrong</div>
+    <div><strong>File:</strong> id_1090_value_309_531.jpg</div>
+    <div><strong>Expected integer:</strong> 309</div>
+    <div><strong>Predicted reading:</strong> 81532</div>
+    <div><strong>Predicted serial:</strong> 011082680201</div>
+    <div><strong>Reading YOLO conf:</strong> 0.559</div>
+    <div><strong>Reading OCR conf:</strong> 0.991</div>
+  </div>
+  <div class='image-wrap' style='max-width:760px;'>
+    <img src='file:///D:/gi%C3%A1o%20tr%C3%ACnh%20%C4%91%E1%BA%A1i%20h%E1%BB%8Dc%20fpt/Dataset%20SEP490/WaterMeters/images/id_1090_value_309_531.jpg' width='760' />
+    <svg viewBox='0 0 1333 1000' preserveAspectRatio='xMidYMid meet'>
+      <polygon points='626.67,477.4 928.65,514.55 927.95,522.11 956.85,524.18 965.11,475.34 630.8,435.44' class='gt-polygon' />
+      <rect x='521' y='275' width='517' height='544' class='reading-box' />
+      <rect x='689' y='358' width='211' height='69' class='serial-box' />
+    </svg>
+  </div>
+</div>
+</body>
+</html>
