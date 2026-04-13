@@ -18,10 +18,10 @@ export const validateProfile = (data: {
   }
 
   if (data.phoneNumber) {
-    const phoneRegex = /^[0-9]{10}$/;
+    const phoneRegex = /^0[0-9]{9}$/;
 
     if (!phoneRegex.test(data.phoneNumber)) {
-      return "Số điện thoại phải gồm đúng 10 chữ số";
+      return "Số điện thoại phải bắt đầu bằng 0 và gồm đúng 10 chữ số";
     }
   }
 

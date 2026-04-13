@@ -11,11 +11,13 @@ import { RelatedOrdersTable } from "./components/related-orders-table";
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { NewInstallationFormPayload } from "@/types";
 import {
+  validateDigitsOnly,
   validateName,
   validateNotFutureDate,
   validateNotPastDate,
   validatePhone,
   validateRequiredFields,
+  validateText255,
 } from "@/utils/validation";
 import { CallToast } from "@/components/ui/CallToast";
 import { authFetch } from "@/utils/authFetch";
@@ -25,8 +27,8 @@ const validateCitizenId = (value: string): string | null => {
     return "Số CCCD không được để trống";
   }
   const cleanValue = value.replace(/\s/g, "");
-  if (!/^\d{12}$/.test(cleanValue)) {
-    return "Số CCCD phải gồm đúng 12 chữ số";
+  if (!/^\d{1,12}$/.test(cleanValue)) {
+    return "Số CCCD chỉ được chứa số và tối đa 12 chữ số";
   }
   return null;
 };
@@ -173,6 +175,36 @@ const NewInstallationForm = () => {
         "Họ tên khách hàng",
       );
       if (nameError) return showError(nameError);
+
+      const maxLengthFields: Array<{ value: string; fieldName: string }> = [
+        { value: formData.address, fieldName: "Địa chỉ" },
+        { value: formData.taxCode, fieldName: "Mã số thuế" },
+        { value: formData.formCode, fieldName: "Mã biểu mẫu" },
+        { value: formData.formNumber, fieldName: "Số hồ sơ" },
+        { value: formData.bankAccountNumber, fieldName: "Số tài khoản ngân hàng" },
+        {
+          value: formData.bankAccountProviderLocation,
+          fieldName: "Ngân hàng và chi nhánh",
+        },
+        {
+          value: formData.citizenIdentificationProvideLocation,
+          fieldName: "Nơi cấp CCCD",
+        },
+      ];
+
+      for (const field of maxLengthFields) {
+        const fieldError = validateText255(field.value || "", field.fieldName);
+        if (fieldError) return showError(fieldError);
+      }
+
+      const householdError =
+        formData.householdRegistrationNumber &&
+        validateDigitsOnly(
+          formData.householdRegistrationNumber,
+          "Số nhân khẩu",
+          12,
+        );
+      if (householdError) return showError(householdError);
 
       // const representativeError = validateName(
       //   formData.representative?.[0]?.name ?? "",

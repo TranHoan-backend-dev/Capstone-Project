@@ -38,7 +38,7 @@ export const RelatedOrdersTable = ({
     field: string;
     direction: "asc" | "desc";
   }>({
-    field: "",
+    field: "createdAt",
     direction: "desc",
   });
   const [assignPopup, setAssignPopup] = useState<{

@@ -15,6 +15,12 @@ import { useCustomerForm } from "@/hooks/useCustomerForm";
 import { CallToast } from "@/components/ui/CallToast";
 import { authFetch } from "@/utils/authFetch";
 import { CustomerRegistrationProps } from "@/types";
+import {
+  validateDigitsOnly,
+  validateMoneyInput,
+  validatePhone,
+  validateText255,
+} from "@/utils/validation";
 
 const CustomerRegistration = ({
   initialData,
@@ -32,6 +38,93 @@ const CustomerRegistration = ({
         CallToast({
           title: "Lỗi validation",
           message: "Vui lòng điền đầy đủ thông tin bắt buộc",
+          color: "warning",
+        });
+        return;
+      }
+
+      const text255Fields: Array<{ value: string; name: string }> = [
+        { value: formData.name, name: "Tên khách hàng" },
+        { value: formData.address, name: "Địa chỉ" },
+        { value: formData.citizenIdentificationProvideAt, name: "Nơi cấp CCCD" },
+        {
+          value: formData.bankAccountProviderLocation,
+          name: "Ngân hàng và chi nhánh",
+        },
+        { value: formData.bankAccountName, name: "Tên tài khoản" },
+        { value: formData.budgetRelationshipCode, name: "Mã số quan hệ ngân sách" },
+        { value: formData.passportCode, name: "Mã hộ chiếu" },
+        { value: formData.connectionPoint, name: "Điểm đấu nối" },
+        { value: formData.taxCode, name: "Mã số thuế" },
+      ];
+
+      for (const field of text255Fields) {
+        const textError = validateText255(field.value || "", field.name);
+        if (textError) {
+          CallToast({
+            title: "Lỗi validation",
+            message: textError,
+            color: "warning",
+          });
+          return;
+        }
+      }
+
+      if (formData.phoneNumber) {
+        const phoneError = validatePhone(formData.phoneNumber);
+        if (phoneError) {
+          CallToast({
+            title: "Lỗi validation",
+            message: phoneError,
+            color: "warning",
+          });
+          return;
+        }
+      }
+
+      if (formData.citizenIdentificationNumber) {
+        const cccdError = validateDigitsOnly(
+          formData.citizenIdentificationNumber,
+          "Số CCCD",
+          12,
+        );
+        if (cccdError) {
+          CallToast({
+            title: "Lỗi validation",
+            message: cccdError,
+            color: "warning",
+          });
+          return;
+        }
+      }
+
+      const moneyFields: Array<{ value: string | number; name: string }> = [
+        { value: formData.protectEnvironmentFee, name: "Phí bảo vệ môi trường" },
+        { value: formData.fixRate, name: "Giá cố định" },
+        { value: formData.installationFee, name: "Phí lắp đặt" },
+        { value: formData.monthlyRent, name: "Tiền thuê hàng tháng" },
+        { value: formData.m3Sale, name: "M3 khuyến mãi" },
+      ];
+
+      for (const field of moneyFields) {
+        const moneyError = validateMoneyInput(field.value, field.name);
+        if (moneyError) {
+          CallToast({
+            title: "Lỗi validation",
+            message: moneyError,
+            color: "warning",
+          });
+          return;
+        }
+      }
+
+      const bankNumberError =
+        formData.bankAccountNumber &&
+        validateDigitsOnly(formData.bankAccountNumber, "Số tài khoản ngân hàng");
+      if (bankNumberError) {
+        CallToast({
+          title: "Lỗi validation",
+          message: bankNumberError,
           color: "warning",
         });
         return;
