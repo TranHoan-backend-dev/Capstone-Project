@@ -61,8 +61,12 @@ export const EmployeeTable = ({
         const json = await res.json();
         const pageData = json?.data;
         const items = pageData?.content ?? [];
-        setTotalItems(pageData?.page?.totalElements ?? 0);
-        setTotalPages(pageData?.page?.totalPages ?? 1);
+        const totalElements =
+          pageData?.totalElements ?? pageData?.page?.totalElements ?? 0;
+        const pages =
+          pageData?.totalPages ?? pageData?.page?.totalPages ?? 1;
+        setTotalItems(totalElements);
+        setTotalPages(Math.max(1, pages));
 
         const mapped = items.map((item: EmployeeItem, index: number) => ({
           id: item.id,

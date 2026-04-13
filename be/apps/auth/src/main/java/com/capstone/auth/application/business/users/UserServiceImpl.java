@@ -173,7 +173,7 @@ public class UserServiceImpl implements UserService {
       }
       return mapToEmployeeResponse(c);
     }).toList();
-    return new PageImpl<>(content, pageable, content.size());
+    return new PageImpl<>(content, pageable, usersList.getTotalElements());
   }
 
   @Override

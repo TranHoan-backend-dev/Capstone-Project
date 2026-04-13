@@ -74,10 +74,13 @@ export const AccessRightsTable = ({ username }: Props) => {
         const json = await res.json();
         const pageData = json?.data;
         const items = pageData?.content ?? [];
-        const pageInfo = pageData?.page;
+        const totalElements =
+          pageData?.totalElements ?? pageData?.page?.totalElements ?? 0;
+        const pages =
+          pageData?.totalPages ?? pageData?.page?.totalPages ?? 1;
 
-        setTotalItems(pageInfo?.totalElements ?? 0);
-        setTotalPages(pageInfo?.totalPages ?? 1);
+        setTotalItems(totalElements);
+        setTotalPages(Math.max(1, pages));
 
         const mapped = items.map((item: any, index: number) => ({
           id: item.id,
