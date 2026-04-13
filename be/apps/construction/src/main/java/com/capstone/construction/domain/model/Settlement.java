@@ -40,7 +40,7 @@ public class Settlement implements Serializable {
   @Column(nullable = false)
   String note;
 
-  @Column(nullable = false)
+  @Column(name = "created_at", nullable = false)
   LocalDateTime createdAt;
 
   @Column(nullable = false)

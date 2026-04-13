@@ -200,7 +200,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   @Override
   public PageResponse<CostEstimateResponse> getAllEstimates(Pageable pageable, EstimateFilterRequest request) {
     log.info("Fetching all cost estimates with pageable: {}", pageable);
-    var sortedPageable = Utility.sortByCreatedAtAttributeDesc(pageable);
+    var sortedPageable = Utility.sortByAttributeDesc(pageable, "createdAt");
 
     // Convert string dates to LocalDateTime
     var startDate = Utils.parseFrom(request != null ? request.from() : null);

@@ -6,11 +6,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 public class Utility {
-  public static @NonNull Pageable sortByCreatedAtAttributeDesc(@NonNull Pageable pageable) {
+  public static @NonNull Pageable sortByAttributeDesc(@NonNull Pageable pageable, String attribute) {
     return PageRequest.of(
       pageable.getPageNumber(),
       pageable.getPageSize(),
-      Sort.by(Sort.Direction.DESC, "createdAt")
+      Sort.by(Sort.Direction.DESC, attribute)
     );
   }
 }

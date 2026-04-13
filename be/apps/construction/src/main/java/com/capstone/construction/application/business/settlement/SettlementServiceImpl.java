@@ -86,7 +86,7 @@ public class SettlementServiceImpl implements SettlementService {
   @Override
   public PageResponse<SettlementResponse> getAllSettlements(Pageable pageable) {
     log.info("Fetching all settlements with pageable: {}", pageable);
-    var sortedPageable = Utility.sortByCreatedAtAttributeDesc(pageable);
+    var sortedPageable = Utility.sortByAttributeDesc(pageable, "createdAt");
 
     // Use specification with fetch join
     Specification<Settlement> spec = (root, query, cb) -> {
@@ -100,7 +100,7 @@ public class SettlementServiceImpl implements SettlementService {
   @Override
   public PageResponse<SettlementResponse> filterSettlements(SettlementFilterRequest filterRequest, Pageable pageable) {
     log.info("Filtering settlements with filterRequest: {}", filterRequest);
-    var sortedPageable = Utility.sortByCreatedAtAttributeDesc(pageable);
+    var sortedPageable = Utility.sortByAttributeDesc(pageable, "createdAt");
     Specification<Settlement> spec = SettlementRepository.filter(filterRequest);
     // Add fetch join to the existing spec
 

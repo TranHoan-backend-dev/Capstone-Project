@@ -107,7 +107,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
     log.info("Fetching paginated installation forms with status: {}", request.getStatus());
     var startDate = Utils.parseFrom(request.getFrom());
     var endDate = Utils.parseTo(request.getTo());
-    var sortedPageable = Utility.sortByCreatedAtAttributeDesc(pageable);
+    var sortedPageable = Utility.sortByAttributeDesc(pageable, "created_at");
 
     var statusRegistration = ProcessingStatus.PROCESSING;
 
@@ -188,14 +188,14 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   @Override
   public Page<InstallationFormListResponse> findByEstimateStatusPending(Pageable pageable) {
     log.info("Fetching installation forms with estimate status PENDING_FOR_APPROVAL");
-    var sortedPageable = Utility.sortByCreatedAtAttributeDesc(pageable);
+    var sortedPageable = Utility.sortByAttributeDesc(pageable, "created_at");
     var result = ifRepo.findByEstimateStatus_Pending(sortedPageable);
     return result.map(this::mapToResponse);
   }
 
   @Override
   public Page<InstallationFormListResponse> findByRegistrationStatusPending(Pageable pageable) {
-    var sortedPageable = Utility.sortByCreatedAtAttributeDesc(pageable);
+    var sortedPageable = Utility.sortByAttributeDesc(pageable, "created_at");
     log.info("Fetching installation forms with registration status PENDING_FOR_APPROVAL");
     var result = ifRepo.findByRegistrationStatus_Pending(sortedPageable);
     return result.map(this::mapToResponse);
@@ -218,7 +218,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   @Override
   public Page<InstallationFormListResponse> findByHandoverByIsNotNull(Pageable pageable) {
     log.info("Fetching installation forms that have been assigned to survey staff");
-    var sortedPageable = Utility.sortByCreatedAtAttributeDesc(pageable);
+    var sortedPageable = Utility.sortByAttributeDesc(pageable, "created_at");
     var result = ifRepo.findByHandoverByIsNotNull(sortedPageable);
     return result.map(this::mapToResponse);
   }
@@ -320,7 +320,8 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       entity.getHouseholdRegistrationNumber(),
       entity.getUsageTarget(),
       entity.getCustomerType(),
-      entity.getRepresentative()
+      entity.getRepresentative(),
+      entity.getCreatedAt().toString()
     );
   }
 
