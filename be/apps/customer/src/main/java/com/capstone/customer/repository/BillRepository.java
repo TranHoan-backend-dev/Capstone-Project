@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BillRepository extends JpaRepository<Bill, String> {
-  Bill findByCustomer_CustomerId(String s);
 }

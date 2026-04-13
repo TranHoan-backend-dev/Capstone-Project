@@ -3,7 +3,7 @@ package com.capstone.customer.controller;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
-import com.capstone.customer.dto.request.ContractFilterRequest;
+import com.capstone.customer.dto.request.contract.ContractFilterRequest;
 import com.capstone.customer.dto.request.contract.CreateRequest;
 import com.capstone.customer.dto.response.ContractResponse;
 import com.capstone.customer.service.boundary.ContractService;

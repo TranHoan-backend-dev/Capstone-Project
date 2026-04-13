@@ -8,8 +8,8 @@ import java.time.LocalDate;
 
 @Schema(description = "Request DTO for Water Meter")
 public record WaterMeterRequest(
-    @Schema(description = "Water meter ID", example = "METER-001") String meterId,
-    @Schema(description = "Installation date", example = "2023-10-27") @NotNull(message = "Installation date is required") LocalDate installationDate,
+  @Schema(description = "Water meter ID", example = "METER-001") String meterId,
+  @Schema(description = "Installation date", example = "2023-10-27") @NotNull(message = "Installation date is required") LocalDate installationDate,
 
   @Schema(description = "Meter size", example = "15") @NotNull(message = "Size is required") @Min(value = 1, message = "Size must be greater than 0") Integer size,
 

@@ -1,6 +1,6 @@
 package com.capstone.customer.service.boundary;
 
-import com.capstone.customer.dto.request.ContractFilterRequest;
+import com.capstone.customer.dto.request.contract.ContractFilterRequest;
 import com.capstone.customer.dto.request.contract.CreateRequest;
 import com.capstone.customer.dto.response.ContractResponse;
 import org.springframework.data.domain.Page;

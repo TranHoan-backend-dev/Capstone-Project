@@ -243,7 +243,19 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   @Override
   public OrderIdResponse getLastFormCode() {
     log.info("Fetching installation form with last form code");
-    return ifRepo.findFirstByOrderByCreatedAtDesc()
+//    return ifRepo.findFirstByOrderByCreatedAtDesc()
+//      .map(result -> {
+//        log.info("Last form code: {}, form number: {}", result.getFormCode(), result.getFormNumber());
+//        return OrderIdResponse.builder()
+//          .formCode(result.getFormCode())
+//          .formNumber(result.getFormNumber())
+//          .build();
+//      })
+//      .orElseGet(() -> {
+//        log.warn("No installation forms found");
+//        return OrderIdResponse.builder().build();
+//      });
+    return ifRepo.findFirstByOrderByFormCodeDesc()
       .map(result -> {
         log.info("Last form code: {}, form number: {}", result.getFormCode(), result.getFormNumber());
         return OrderIdResponse.builder()

@@ -18,22 +18,22 @@ import java.time.LocalDateTime;
 @Table(name = "verification_codes")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class VerificationCode {
-    @Id
-    @Column(name = "email", nullable = false, unique = true)
-    String email;
+  @Id
+  @Column(name = "email", nullable = false, unique = true)
+  String email;
 
-    @Column(name = "otp_code", nullable = false)
-    String otpCode;
+  @Column(name = "otp_code", nullable = false)
+  String otpCode;
 
-    @Column(name = "expired_at", nullable = false)
-    LocalDateTime expiredAt;
+  @Column(name = "expired_at", nullable = false)
+  LocalDateTime expiredAt;
 
-    @Column(name = "attempt_count", nullable = false)
-    int attemptCount;
+  @Column(name = "attempt_count", nullable = false)
+  int attemptCount;
 
-    @Column(name = "last_generated_time")
-    LocalDateTime lastGeneratedTime;
+  @Column(name = "last_generated_time")
+  LocalDateTime lastGeneratedTime;
 
-    @Column(name = "blocked_until")
-    LocalDateTime blockedUntil;
+  @Column(name = "blocked_until")
+  LocalDateTime blockedUntil;
 }

@@ -50,4 +50,6 @@ public interface UserService {
   List<NameAndIdResponse> getAllLeaderShips();
 
   List<NameAndIdResponse> getAllConstructionStaffs();
+
+  String getDepartment(String id);
 }

@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { launchCamera } from 'react-native-image-picker';
 import { meterService } from '../services/meterService';
 import { showToast } from '../utils/toast';
-
+// TODO: Ngan ngua luu anhr vao thu vien anh
 export default function CaptureWaterMeterScreen({ route }: any) {
   const navigation = useNavigation();
   const [photoUri, setPhotoUri] = useState<string | null>(null);

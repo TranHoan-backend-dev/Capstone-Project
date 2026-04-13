@@ -3,7 +3,7 @@ package com.capstone.device.application.usecase;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.device.application.business.unit.UnitService;
 import com.capstone.device.application.dto.request.unit.CreateUnitRequest;
-import com.capstone.device.application.dto.request.UpdateUnitRequest;
+import com.capstone.device.application.dto.request.unit.UpdateUnitRequest;
 import com.capstone.device.application.dto.response.UnitResponse;
 import com.capstone.device.application.event.producer.MessageProducer;
 import com.capstone.device.application.event.producer.unit.UnitDeleteEvent;
@@ -12,6 +12,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -41,7 +42,7 @@ public class UnitUseCase {
     return unitService.getPaginatedUnits(pageable, filter);
   }
 
-  public UnitResponse createUnit(CreateUnitRequest request) {
+  public UnitResponse createUnit(@NonNull CreateUnitRequest request) {
     log.info("UseCase: Creating unit: {}", request.name());
     return unitService.createUnit(request);
   }

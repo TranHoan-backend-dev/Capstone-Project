@@ -13,7 +13,6 @@ import java.util.Optional;
 
 @Repository
 public interface JobRepository extends JpaRepository<Job, String> {
-  
   @Query(value = "SELECT * FROM job j WHERE " +
                  "(CAST(:name AS TEXT) IS NULL OR unaccent(lower(j.name)) LIKE concat('%', unaccent(lower(CAST(:name AS TEXT))), '%')) AND " +
                  "(CAST(:start AS TIMESTAMP) IS NULL OR j.created_at >= CAST(:start AS TIMESTAMP)) AND " +
@@ -23,9 +22,9 @@ public interface JobRepository extends JpaRepository<Job, String> {
                       "(CAST(:start AS TIMESTAMP) IS NULL OR j.created_at >= CAST(:start AS TIMESTAMP)) AND " +
                       "(CAST(:end AS TIMESTAMP) IS NULL OR j.created_at <= CAST(:end AS TIMESTAMP))",
          nativeQuery = true)
-  Page<Job> searchJobs(@Param("name") String name, 
-                       @Param("start") LocalDateTime start, 
-                       @Param("end") LocalDateTime end, 
+  Page<Job> searchJobs(@Param("name") String name,
+                       @Param("start") LocalDateTime start,
+                       @Param("end") LocalDateTime end,
                        Pageable pageable);
 
   boolean existsByNameIgnoreCase(String name);

@@ -125,4 +125,6 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
   Page<InstallationForm> findAllNotRejectedInstallationForms(Pageable pageable);
 
   Optional<InstallationForm> findFirstByOrderByCreatedAtDesc();
+
+  Optional<InstallationForm> findFirstByOrderByFormCodeDesc();
 }

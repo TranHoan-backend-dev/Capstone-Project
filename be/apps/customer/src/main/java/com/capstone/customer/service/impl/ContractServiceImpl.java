@@ -1,7 +1,7 @@
 package com.capstone.customer.service.impl;
 
 import com.capstone.common.annotation.AppLog;
-import com.capstone.customer.dto.request.ContractFilterRequest;
+import com.capstone.customer.dto.request.contract.ContractFilterRequest;
 import com.capstone.customer.dto.request.contract.CreateRequest;
 import com.capstone.customer.dto.response.ContractResponse;
 import com.capstone.customer.model.WaterUsageContract;

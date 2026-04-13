@@ -8,6 +8,7 @@ import com.capstone.auth.application.dto.request.UpdateProfileRequest;
 import com.capstone.auth.application.dto.response.UserProfileResponse;
 import com.capstone.auth.application.exception.InternalServerError;
 import com.capstone.auth.domain.model.Profile;
+import com.capstone.auth.infrastructure.service.OrganizationService;
 import com.capstone.auth.infrastructure.utils.Message;
 import com.capstone.auth.infrastructure.service.GcsService;
 import com.capstone.auth.infrastructure.utils.AuthUtils;
@@ -38,6 +39,7 @@ import java.time.format.DateTimeFormatter;
 public class ProfileUseCase {
   UserService uSrv;
   ProfileService pSrv;
+  OrganizationService oSrv;
   Keycloak keycloak;
   GcsService gcsSrv;
   @NonFinal
@@ -194,6 +196,8 @@ public class ProfileUseCase {
   }
 
   private @NonNull UserProfileResponse returnUserProfile(@NonNull ProfileDTO profile, @NonNull UserDTO user) {
+    var department = oSrv.getDepartmentName(user.departmentId());
+    log.info(department);
     return new UserProfileResponse(
       profile.fullname(),
       profile.avatarUrl(),
@@ -205,7 +209,8 @@ public class ProfileUseCase {
       user.username(),
       user.email(),
       user.userId(),
-      user.electronicSigningUrl()
+      user.electronicSigningUrl(),
+      department
     );
   }
 }

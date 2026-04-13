@@ -8,7 +8,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MaterialsGroupRepository extends JpaRepository<MaterialsGroup, String> {
-    Page<MaterialsGroup> findByNameContainsIgnoreCase(String name, Pageable pageable);
-    boolean existsByNameIgnoreCase(String name);
+  Page<MaterialsGroup> findByNameContainsIgnoreCase(String name, Pageable pageable);
+
+  boolean existsByNameIgnoreCase(String name);
 }
 

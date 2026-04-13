@@ -37,7 +37,7 @@ public class MaterialsOfCostEstimateServiceImpl implements MaterialsOfCostEstima
   @Override
   @Transactional(rollbackFor = Exception.class)
   public void update(@NonNull List<BaseMaterial> materials, String estimateId) {
-    log.info("Updating materials of cost estimate " + estimateId);
+    log.info("Updating materials of cost estimate {}", estimateId);
     repo.deleteById_CostEstId(estimateId);
     materials.forEach(material -> {
       var materialsOfCostEstimate = MaterialsOfCostEstimate.builder()
