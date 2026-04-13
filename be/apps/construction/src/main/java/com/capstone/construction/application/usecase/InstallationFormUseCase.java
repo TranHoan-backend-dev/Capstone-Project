@@ -68,6 +68,10 @@ public class InstallationFormUseCase {
   public Page<InstallationFormListResponse> findByHandoverByIsNotNull(Pageable pageable) {
     return ifSrv.findByHandoverByIsNotNull(pageable);
   }
+  
+  public Page<InstallationFormListResponse> findCompletedFormsWithoutSettlement(Pageable pageable) {
+    return ifSrv.findCompletedFormsWithoutSettlement(pageable);
+  }
 
   @Transactional(rollbackFor = Exception.class)
   public NewInstallationFormResponse createNewInstallationRequest(String userId, @NonNull NewOrderRequest request) {

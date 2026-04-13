@@ -150,6 +150,17 @@ public class SettlementServiceImpl implements SettlementService {
     return settlementRepository.existsById(id);
   }
 
+  @Override
+  public void checkSettlementExists(String formCode, String formNumber) {
+    log.info("Fetching settlement with formCode: {}, formNumber: {}", formCode, formNumber);
+    var form = formRepository.findById(new InstallationFormId(formCode, formNumber))
+      .orElseThrow(() -> new NotExistingException(Message.PT_38));
+    var status = settlementRepository.existsByInstallationForm(form);
+    if (!status) {
+      throw new NotExistingException(Message.PT_03);
+    }
+  }
+
   private @NonNull SettlementResponse mapToResponse(@NonNull Settlement settlement) {
     var installationForm = settlement.getInstallationForm();
     return new SettlementResponse(

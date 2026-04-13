@@ -1,0 +1,222 @@
+### TC01 - Get completed forms without settlement successfully (Default pagination)
+GET http://localhost:9004/api/v1/installation-forms/completed-without-settlement
+Authorization: Bearer {{access_token}}
+
+> {%
+  client.test("Status is 200", function() {
+    client.assert(response.status === 200);
+  });
+  client.test("Check response structure", function() {
+    client.assert(response.body.hasOwnProperty("data"), "Response should contain data");
+    client.assert(response.body.hasOwnProperty("message"), "Response should contain message");
+  });
+%}
+
+
+### TC02 - Get completed forms with custom pagination (page=0, size=10)
+GET http://localhost:9004/api/v1/installation-forms/completed-without-settlement?page=0&size=10
+Authorization: Bearer {{access_token}}
+
+> {%
+  client.test("Status is 200", function() {
+    client.assert(response.status === 200);
+  });
+%}
+
+
+### TC03 - Get completed forms with specific sorting (created_at,asc)
+GET http://localhost:9004/api/v1/installation-forms/completed-without-settlement?sort=created_at,asc
+Authorization: Bearer {{auth_token}}
+
+> {%
+  client.test("Status is 200", function() {
+    client.assert(response.status === 200);
+  });
+%}
+
+
+### TC04 - Get completed forms with specific sorting (created_at,desc)
+GET http://localhost:9004/api/v1/installation-forms/completed-without-settlement?sort=created_at,desc
+Authorization: Bearer {{auth_token}}
+
+> {%
+  client.test("Status is 200", function() {
+    client.assert(response.status === 200);
+  });
+%}
+
+
+### TC05 - Invalid page number (negative)
+GET http://localhost:9004/api/v1/installation-forms/completed-without-settlement?page=-1
+Authorization: Bearer {{auth_token}}
+
+> {%
+  client.test("Status is 400 or system default handling", function() {
+    client.assert(response.status === 400 || response.status === 500);
+  });
+%}
+
+
+### TC06 - Invalid size (negative)
+GET http://localhost:9004/api/v1/installation-forms/completed-without-settlement?size=-5
+Authorization: Bearer {{auth_token}}
+
+> {%
+  client.test("Status is 400 or system default handling", function() {
+    client.assert(response.status === 400 || response.status === 500);
+  });
+%}
+
+
+### TC07 - Size exceeds limit (if applicable)
+GET http://localhost:9004/api/v1/installation-forms/completed-without-settlement?size=1000000
+Authorization: Bearer {{auth_token}}
+
+> {%
+  client.test("Status is 200 or 400 depending on limit policy", function() {
+    client.assert(response.status === 200 || response.status === 400);
+  });
+%}
+
+
+### TC08 - Invalid sort property
+GET http://localhost:9004/api/v1/installation-forms/completed-without-settlement?sort=non_existent_field,desc
+Authorization: Bearer {{auth_token}}
+
+> {%
+  client.test("Status is 400 or 500 due to invalid property", function() {
+    client.assert(response.status === 400 || response.status === 500);
+  });
+%}
+
+
+### TC09 - Unauthenticated request (Missing Token)
+GET http://localhost:9004/api/v1/installation-forms/completed-without-settlement
+
+> {%
+  client.test("Status is 401", function() {
+    client.assert(response.status === 401);
+  });
+%}
+
+
+### TC10 - Forbidden request (Invalid Role - e.g. SURVEY_STAFF)
+# Assuming token for a user with SURVEY_STAFF role which is not in the allowed list
+GET http://localhost:9004/api/v1/installation-forms/completed-without-settlement
+Authorization: Bearer {{survey_staff_token}}
+
+> {%
+  client.test("Status is 403", function() {
+    client.assert(response.status === 403);
+  });
+%}
+
+
+### TC11 - Forbidden request (Invalid Role - e.g. ORDER_RECEIVING_STAFF)
+GET http://localhost:9004/api/v1/installation-forms/completed-without-settlement
+Authorization: Bearer {{order_receiving_staff_token}}
+
+> {%
+  client.test("Status is 403", function() {
+    client.assert(response.status === 403);
+  });
+%}
+
+
+### TC12 - Authenticated with IT_STAFF (Allowed Role)
+GET http://localhost:9004/api/v1/installation-forms/completed-without-settlement
+Authorization: Bearer {{it_staff_token}}
+
+> {%
+  client.test("Status is 200", function() {
+    client.assert(response.status === 200);
+  });
+%}
+
+
+### TC13 - Authenticated with FINANCE_DEPARTMENT (Allowed Role)
+GET http://localhost:9004/api/v1/installation-forms/completed-without-settlement
+Authorization: Bearer {{finance_dept_token}}
+
+> {%
+  client.test("Status is 200", function() {
+    client.assert(response.status === 200);
+  });
+%}
+
+
+### TC14 - Authenticated with CONSTRUCTION_DEPARTMENT_HEAD (Allowed Role)
+GET http://localhost:9004/api/v1/installation-forms/completed-without-settlement
+Authorization: Bearer {{construction_head_token}}
+
+> {%
+  client.test("Status is 200", function() {
+    client.assert(response.status === 200);
+  });
+%}
+
+
+### TC15 - Malformed Authorization Header
+GET http://localhost:9004/api/v1/installation-forms/completed-without-settlement
+Authorization: Basic admin:admin
+
+> {%
+  client.test("Status is 401", function() {
+    client.assert(response.status === 401);
+  });
+%}
+
+
+### TC16 - Empty Page Number
+GET http://localhost:9004/api/v1/installation-forms/completed-without-settlement?page=
+Authorization: Bearer {{auth_token}}
+
+> {%
+  client.test("Status is 200 or 400", function() {
+    client.assert(response.status === 200 || response.status === 400);
+  });
+%}
+
+
+### TC17 - Non-numeric page number
+GET http://localhost:9004/api/v1/installation-forms/completed-without-settlement?page=abc
+Authorization: Bearer {{auth_token}}
+
+> {%
+  client.test("Status is 400", function() {
+    client.assert(response.status === 400);
+  });
+%}
+
+
+### TC18 - Unicode characters in query params
+GET http://localhost:9004/api/v1/installation-forms/completed-without-settlement?page=0&size=10&sort=created_at,desc&test=😊
+Authorization: Bearer {{auth_token}}
+
+> {%
+  client.test("Status is 200", function() {
+    client.assert(response.status === 200);
+  });
+%}
+
+
+### TC19 - Multiple sort parameters
+GET http://localhost:9004/api/v1/installation-forms/completed-without-settlement?sort=created_at,desc&sort=form_code,asc
+Authorization: Bearer {{auth_token}}
+
+> {%
+  client.test("Status is 200", function() {
+    client.assert(response.status === 200);
+  });
+%}
+
+
+### TC20 - Large page number (assuming out of bounds)
+GET http://localhost:9004/api/v1/installation-forms/completed-without-settlement?page=999999
+Authorization: Bearer {{auth_token}}
+
+> {%
+  client.test("Status is 200 (Empty list)", function() {
+    client.assert(response.status === 200);
+  });
+%}

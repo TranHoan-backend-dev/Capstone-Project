@@ -48,6 +48,8 @@ public class SettlementUseCase {
     if (!Boolean.parseBoolean(constructionRequest.isApproved())) {
       throw new IllegalStateException("Công trình chưa được phê duyệt, chưa thể lập quyết toán");
     }
+    // kiem tra xem settlement da ton tai voi installation form nay hay chua
+    settlementService.checkSettlementExists(request.formCode(), request.formNumber());
 
     return settlementService.createSettlement(request);
   }

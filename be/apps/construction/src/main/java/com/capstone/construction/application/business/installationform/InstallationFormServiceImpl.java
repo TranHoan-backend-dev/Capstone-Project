@@ -261,6 +261,14 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   }
 
   @Override
+  public Page<InstallationFormListResponse> findCompletedFormsWithoutSettlement(Pageable pageable) {
+    log.info("Fetching completed installation forms WITHOUT settlement");
+    var sortedPageable = Utility.sortByAttributeDesc(pageable, "created_at");
+    var result = ifRepo.findCompletedFormsWithoutSettlement(sortedPageable);
+    return result.map(this::mapToResponse);
+  }
+
+  @Override
   public boolean isInstallationFormExisting(String formNumber, String formCode) {
     var status = ifRepo.existsById_FormNumberAndId_FormCode(formNumber, formCode);
     log.info("Installation form with form number: {} and form code {} is exist: {}", formNumber, formCode, status);
@@ -302,12 +310,15 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       entity.getHandoverBy(),
       (handoverByFullName != null && handoverByFullName.data() != null) ? handoverByFullName.data().toString()
         : unknown,
+//      unknown,
       entity.getCreatedBy(),
       (creatorFullName != null && creatorFullName.data() != null) ? creatorFullName.data().toString() : unknown,
+//      unknown,
       entity.getConstructedBy(),
       (constructionEmployeeName != null && constructionEmployeeName.data() != null)
         ? constructionEmployeeName.data().toString()
         : unknown,
+//      unknown,
       entity.getStatus(),
       entity.getOverallWaterMeterId(),
       entity.getTaxCode(),

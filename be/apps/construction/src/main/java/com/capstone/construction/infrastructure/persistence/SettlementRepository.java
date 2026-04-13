@@ -1,5 +1,6 @@
 package com.capstone.construction.infrastructure.persistence;
 
+import com.capstone.construction.domain.model.InstallationForm;
 import com.capstone.construction.domain.model.Settlement;
 import com.capstone.construction.application.dto.request.settlement.SettlementFilterRequest;
 import jakarta.persistence.criteria.Predicate;
@@ -77,4 +78,6 @@ public interface SettlementRepository extends JpaRepository<Settlement, String>,
       return cb.and(predicates.toArray(new Predicate[0]));
     };
   }
+
+  boolean existsByInstallationForm(InstallationForm form);
 }

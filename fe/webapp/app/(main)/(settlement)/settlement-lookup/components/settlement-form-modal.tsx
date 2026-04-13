@@ -250,7 +250,7 @@ export const SettlementFormModal = ({
         isOpen={showFormModal}
         onClose={() => setShowFormModal(false)}
         title="Chọn đơn lắp đặt"
-        api="/api/construction/installation-forms"
+        api="/api/construction/installation-forms/completed-without-settlement"
         columns={[
           { key: "stt", label: "STT" },
           { key: "formNumber", label: "Số đơn" },
