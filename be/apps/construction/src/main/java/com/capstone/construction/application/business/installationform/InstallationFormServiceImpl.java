@@ -255,7 +255,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
 //        log.warn("No installation forms found");
 //        return OrderIdResponse.builder().build();
 //      });
-    return ifRepo.findFirstByOrderByFormCodeDesc()
+    return ifRepo.findFirstByOrderById_FormCodeDesc()
       .map(result -> {
         log.info("Last form code: {}, form number: {}", result.getFormCode(), result.getFormNumber());
         return OrderIdResponse.builder()
