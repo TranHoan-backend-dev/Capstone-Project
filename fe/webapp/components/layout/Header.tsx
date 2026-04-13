@@ -33,6 +33,7 @@ import { useProfile } from "@/hooks/useLogin";
 import { filterNavItems, siteConfig } from "@/config/site";
 import CustomButton from "../ui/custom/CustomButton";
 import GlobalWebSocket from "../GlobalWebSocket";
+import { getRoleVietnamese } from "@/utils/getRoleVietnamese";
 
 export interface SubMenuItemChild {
   key: string;
@@ -210,17 +211,31 @@ const Header = () => {
                 <Dropdown placement="bottom-end">
                   <DropdownTrigger>
                     <div className="flex items-center gap-2 px-2 py-2 cursor-pointer rounded-lg transition-colors hover:bg-default-100">
-                      <Tooltip
-                        className="max-w-xs"
-                        content={profile.fullname}
-                        delay={500}
-                        placement="bottom"
-                      >
-                        <span className="hidden md:block text-sm font-bold">
-                          {profile.fullname}
-                        </span>
-                      </Tooltip>
+                      <div className="hidden md:flex flex-col">
+                        <Tooltip
+                          className="max-w-xs"
+                          content={profile.fullname}
+                          delay={500}
+                          placement="bottom"
+                        >
+                          <span className="text-sm font-bold">
+                            {profile.fullname}
+                          </span>
+                        </Tooltip>
 
+                        <Tooltip
+                          className="max-w-xs"
+                          content={profile.fullname}
+                          delay={500}
+                          placement="bottom"
+                        >
+                          <span className="text-xs text-gray-500">
+                            {getRoleVietnamese(
+                              profile.role.toLocaleUpperCase(),
+                            )}
+                          </span>
+                        </Tooltip>
+                      </div>
                       <Avatar
                         src={profile.avatarUrl}
                         name={profile.fullname}
