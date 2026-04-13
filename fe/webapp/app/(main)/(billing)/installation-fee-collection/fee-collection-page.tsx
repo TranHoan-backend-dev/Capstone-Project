@@ -90,7 +90,7 @@ const FeeCollectionPage = () => {
       <Modal
         isOpen={showAddForm}
         onClose={handleCloseForm}
-        size="3xl"
+        size="5xl"
         placement="top-center"
         scrollBehavior="inside"
       >

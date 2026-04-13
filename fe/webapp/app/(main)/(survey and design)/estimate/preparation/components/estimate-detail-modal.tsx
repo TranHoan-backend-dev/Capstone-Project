@@ -196,7 +196,7 @@ export const EstimateDetailModal = ({ isOpen, onClose, data }: any) => {
               label="Tổng giá trị công trình"
               value={
                 <PriceBox
-                  text={numberToVietnamese(data.totalPrice) + " đồng"}
+                  text={numberToVietnamese(data.totalPrice)}
                   value={data.totalPrice}
                 />
               }
