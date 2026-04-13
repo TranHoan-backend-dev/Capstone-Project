@@ -10,6 +10,9 @@ import { BillingInfoProps } from "@/types";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
 
 export const BillingInfo = ({ formData, onUpdate }: BillingInfoProps) => {
+  const normalizeBankAccountNumber = (value: string) =>
+    value.replace(/\D/g, "").slice(0, 16);
+
   const parseDateString = (dateString: string) => {
     if (!dateString) return null;
     try {
@@ -50,7 +53,10 @@ export const BillingInfo = ({ formData, onUpdate }: BillingInfoProps) => {
           <CustomInput
             label="Số tài khoản ngân hàng"
             value={formData.bankAccountNumber}
-            onValueChange={(value) => onUpdate("bankAccountNumber", value)}
+            maxLength={16}
+            onValueChange={(value) =>
+              onUpdate("bankAccountNumber", normalizeBankAccountNumber(value))
+            }
           />
 
           <CustomInput

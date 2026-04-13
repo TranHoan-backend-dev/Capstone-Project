@@ -120,7 +120,11 @@ const CustomerRegistration = ({
 
       const bankNumberError =
         formData.bankAccountNumber &&
-        validateDigitsOnly(formData.bankAccountNumber, "Số tài khoản ngân hàng");
+        validateDigitsOnly(
+          formData.bankAccountNumber,
+          "Số tài khoản ngân hàng",
+          16,
+        );
       if (bankNumberError) {
         CallToast({
           title: "Lỗi validation",

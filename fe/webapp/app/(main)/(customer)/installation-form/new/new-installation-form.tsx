@@ -170,6 +170,13 @@ const NewInstallationForm = () => {
       const phoneError = validatePhone(formData.phoneNumber);
       if (phoneError) return showError(phoneError);
 
+      const bankAccountError = validateDigitsOnly(
+        formData.bankAccountNumber,
+        "Số tài khoản ngân hàng",
+        16,
+      );
+      if (bankAccountError) return showError(bankAccountError);
+
       const nameError = validateName(
         formData.customerName,
         "Họ tên khách hàng",

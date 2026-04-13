@@ -47,7 +47,6 @@ export function LookupModal<T extends { id: string }>({
       const params = new URLSearchParams({
         page: String(page - 1),
         size: String(pageSize),
-        sort: "createdAt,desc",
       });
 
       if (enableSearch && search) {
