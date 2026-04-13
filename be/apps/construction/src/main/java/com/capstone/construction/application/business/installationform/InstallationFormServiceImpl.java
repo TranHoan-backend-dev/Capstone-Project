@@ -22,15 +22,14 @@ import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRe
 import com.capstone.construction.infrastructure.utils.Message;
 import com.capstone.construction.infrastructure.service.EmployeeService;
 import com.capstone.construction.infrastructure.service.DeviceService;
+import com.capstone.construction.infrastructure.utils.Utility;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -103,11 +102,12 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   }
 
   @Override
-  public Page<InstallationFormListResponse> getInstallationForms(Pageable pageable,
+  public Page<InstallationFormListResponse> getInstallationForms(@NonNull Pageable pageable,
                                                                  @NonNull InstallationFormFilterRequest request) {
     log.info("Fetching paginated installation forms with status: {}", request.getStatus());
     var startDate = Utils.parseFrom(request.getFrom());
     var endDate = Utils.parseTo(request.getTo());
+    var sortedPageable = Utility.sortByCreatedAtAttributeDesc(pageable);
 
     var statusRegistration = ProcessingStatus.PROCESSING;
 
@@ -123,16 +123,16 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       || (request.getKeyword() != null && !request.getKeyword().isBlank()) || request.getStatus() != null)
       ? ifRepo.findAll(InstallationFormRepository.search(
       request.getKeyword(), startDate, endDate, ProcessingStatus.PROCESSING, ProcessingStatus.PROCESSING,
-      statusRegistration), pageable)
+      statusRegistration), sortedPageable)
 
-      : ifRepo.findAllNotRejectedInstallationForms(pageable);
+      : ifRepo.findAllNotRejectedInstallationForms(sortedPageable);
 
     var content = result.getContent()
       .stream()
       .map(this::mapToResponse)
       .toList();
 
-    return new PageImpl<>(content, pageable, result.getTotalElements());
+    return new PageImpl<>(content, sortedPageable, result.getTotalElements());
   }
 
   @Override
@@ -188,14 +188,16 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   @Override
   public Page<InstallationFormListResponse> findByEstimateStatusPending(Pageable pageable) {
     log.info("Fetching installation forms with estimate status PENDING_FOR_APPROVAL");
-    var result = ifRepo.findByEstimateStatus_Pending(pageable);
+    var sortedPageable = Utility.sortByCreatedAtAttributeDesc(pageable);
+    var result = ifRepo.findByEstimateStatus_Pending(sortedPageable);
     return result.map(this::mapToResponse);
   }
 
   @Override
   public Page<InstallationFormListResponse> findByRegistrationStatusPending(Pageable pageable) {
+    var sortedPageable = Utility.sortByCreatedAtAttributeDesc(pageable);
     log.info("Fetching installation forms with registration status PENDING_FOR_APPROVAL");
-    var result = ifRepo.findByRegistrationStatus_Pending(pageable);
+    var result = ifRepo.findByRegistrationStatus_Pending(sortedPageable);
     return result.map(this::mapToResponse);
   }
 
@@ -216,7 +218,8 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   @Override
   public Page<InstallationFormListResponse> findByHandoverByIsNotNull(Pageable pageable) {
     log.info("Fetching installation forms that have been assigned to survey staff");
-    var result = ifRepo.findByHandoverByIsNotNull(pageable);
+    var sortedPageable = Utility.sortByCreatedAtAttributeDesc(pageable);
+    var result = ifRepo.findByHandoverByIsNotNull(sortedPageable);
     return result.map(this::mapToResponse);
   }
 
@@ -243,18 +246,6 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   @Override
   public OrderIdResponse getLastFormCode() {
     log.info("Fetching installation form with last form code");
-//    return ifRepo.findFirstByOrderByCreatedAtDesc()
-//      .map(result -> {
-//        log.info("Last form code: {}, form number: {}", result.getFormCode(), result.getFormNumber());
-//        return OrderIdResponse.builder()
-//          .formCode(result.getFormCode())
-//          .formNumber(result.getFormNumber())
-//          .build();
-//      })
-//      .orElseGet(() -> {
-//        log.warn("No installation forms found");
-//        return OrderIdResponse.builder().build();
-//      });
     return ifRepo.findFirstByOrderById_FormCodeDesc()
       .map(result -> {
         log.info("Last form code: {}, form number: {}", result.getFormCode(), result.getFormNumber());

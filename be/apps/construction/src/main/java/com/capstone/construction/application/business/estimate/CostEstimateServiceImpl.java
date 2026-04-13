@@ -20,6 +20,7 @@ import com.capstone.construction.infrastructure.persistence.InstallationFormRepo
 import com.capstone.construction.infrastructure.service.GcsService;
 import com.capstone.construction.infrastructure.service.DeviceService;
 import com.capstone.construction.infrastructure.utils.Message;
+import com.capstone.construction.infrastructure.utils.Utility;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -31,7 +32,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -200,10 +200,11 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   @Override
   public PageResponse<CostEstimateResponse> getAllEstimates(Pageable pageable, EstimateFilterRequest request) {
     log.info("Fetching all cost estimates with pageable: {}", pageable);
+    var sortedPageable = Utility.sortByCreatedAtAttributeDesc(pageable);
 
     // Convert string dates to LocalDateTime
-    LocalDateTime startDate = Utils.parseFrom(request != null ? request.from() : null);
-    LocalDateTime endDate = Utils.parseTo(request != null ? request.to() : null);
+    var startDate = Utils.parseFrom(request != null ? request.from() : null);
+    var endDate = Utils.parseTo(request != null ? request.to() : null);
 
     var keyword = request == null ? null : request.keyword();
 
@@ -212,7 +213,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
         keyword,
         startDate,
         endDate),
-      pageable) : eRepo.findAll(pageable);
+      sortedPageable) : eRepo.findAll(sortedPageable);
 
     return PageResponse.fromPage(page, estimate -> mapToResponse(estimate, getMaterials(estimate.getEstimationId())));
   }
