@@ -8,14 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
 @Repository
 public interface HamletRepository extends JpaRepository<Hamlet, String> {
-  Optional<Hamlet> findByName(String name);
-
-  boolean existsByName(String name);
-
   boolean existsByCommune_CommuneId(String communeCommuneId);
 
   void deleteByCommune_CommuneId(String id);

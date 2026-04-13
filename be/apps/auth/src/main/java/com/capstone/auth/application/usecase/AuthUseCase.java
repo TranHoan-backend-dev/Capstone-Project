@@ -28,6 +28,7 @@ import com.capstone.common.enumerate.RoleName;
 import com.capstone.auth.infrastructure.utils.Message;
 import com.capstone.auth.infrastructure.service.keycloak.KeycloakFeignClient;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,7 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -141,7 +143,7 @@ public class AuthUseCase {
       .refreshToken(refreshToken)
       .build());
   }
-  
+
   public void logout(String refreshToken) {
     keycloakFeignClient.logout(TokenParam.builder()
       .clientId(clientId)
@@ -256,6 +258,8 @@ public class AuthUseCase {
   // </editor-fold>
 
   private @NonNull UserProfileResponse returnUserProfile(@NonNull ProfileDTO profile, @NonNull UserDTO user) {
+    var department = organizationService.getDepartmentName(user.departmentId());
+    log.info("Department name: " + department);
     return new UserProfileResponse(
       profile.fullname(),
       profile.avatarUrl(),
@@ -267,7 +271,8 @@ public class AuthUseCase {
       user.username(),
       user.email(),
       user.userId(),
-      user.electronicSigningUrl());
+      user.electronicSigningUrl(),
+      department);
   }
 
   private void validateNewUserInformation(@NonNull NewUserRequest request) {

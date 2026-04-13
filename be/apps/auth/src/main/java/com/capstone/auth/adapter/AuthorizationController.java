@@ -206,6 +206,12 @@ public class AuthorizationController {
     log.info("Get construction staffs");
     return Utils.returnOkResponse("", usersUseCase.getListOfConstructionStaffs());
   }
+
+  @GetMapping("/department")
+  public String getDepartmentNameByUserId(@RequestParam("userId") String id) {
+    log.info("Get department name: {}", id);
+    return userService.getDepartment(id);
+  }
   // </editor-fold>
 
   // <editor-fold> desc="business pages"

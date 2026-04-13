@@ -307,6 +307,12 @@ public class UserServiceImpl implements UserService {
     return getNameAndId(RoleName.CONSTRUCTION_DEPARTMENT_STAFF);
   }
 
+  @Override
+  public String getDepartment(String id) {
+    log.info("Getting department {}", id);
+    return organizationService.getDepartmentName(getById(id).getDepartmentId());
+  }
+
   private List<NameAndIdResponse> getNameAndId(@NonNull RoleName roleName) {
     var role = roleRepo.findRolesByName(roleName);
     var users = repo.findByRole(role);
@@ -354,8 +360,6 @@ public class UserServiceImpl implements UserService {
   }
 
   private @NonNull EmployeeResponse mapToEmployeeResponse(@NonNull Users user) {
-    var profile = profileRepo.findById(user.getUserId())
-      .orElseThrow(() -> new NotExistingException(String.format(Message.SE_15, user.getUserId())));
     var organization = organizationService.getDepartmentName(user.getDepartmentId());
     log.info("Department: {}", organization);
     var network = networkService.getNameById(user.getWaterSupplyNetworkId());
@@ -364,7 +368,7 @@ public class UserServiceImpl implements UserService {
     log.info("Page: {}", page);
     return new EmployeeResponse(
       user.getUserId(),
-      null,
+      user.getUsername(),
       pSrv.getFullName(user.getUserId()),
       organizationService.getDepartmentName(user.getDepartmentId()),
       networkService.getNameById(user.getWaterSupplyNetworkId()),

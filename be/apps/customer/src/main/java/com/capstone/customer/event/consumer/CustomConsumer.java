@@ -1,4 +1,4 @@
-package com.capstone.customer.event.consumer;
-
-public class CustomConsumer {
-}
+//package com.capstone.customer.event.consumer;
+//
+//public class CustomConsumer {
+//}

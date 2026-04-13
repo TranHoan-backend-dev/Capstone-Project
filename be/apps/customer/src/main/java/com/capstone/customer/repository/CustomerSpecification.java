@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CustomerSpecification {
-
   public static @NonNull Specification<Customer> filter(CustomerFilterRequest filter) {
     return (root, query, cb) -> {
       List<Predicate> predicates = new ArrayList<>();

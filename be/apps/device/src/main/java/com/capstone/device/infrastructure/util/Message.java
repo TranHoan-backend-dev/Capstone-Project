@@ -32,7 +32,7 @@ public final class Message {
   public static final String ENT_20 = "Phí bảo vệ môi trường không được là số âm";
   public static final String ENT_22 = "Thời hạn áp dụng không được để trống";
   public static final String ENT_23 = "Mô tả không được để trống";
-  public static final String ENT_24 = "Danh sách đồng hồ nước không được để trống";
+  public static final String ENT_24 = "";
   public static final String ENT_25 = "Danh sách Qmin không được để trống";
   public static final String ENT_26 = "Danh sách Qn không được để trống";
   public static final String ENT_27 = "Danh sách Qt không được để trống";

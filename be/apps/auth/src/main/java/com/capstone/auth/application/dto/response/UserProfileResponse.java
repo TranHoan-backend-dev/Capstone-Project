@@ -12,6 +12,7 @@ public record UserProfileResponse(
   String username,
   String email,
   String id,
-  String significanceUrl
+  String significanceUrl,
+  String departmentName
 ) {
 }

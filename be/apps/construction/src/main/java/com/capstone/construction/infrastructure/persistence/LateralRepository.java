@@ -8,14 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
 @Repository
 public interface LateralRepository extends JpaRepository<Lateral, String> {
-  Optional<Lateral> findByName(String name);
-
-  boolean existsByName(String name);
-
   boolean existsByNameIgnoreCase(String name);
 
   @Query("""
