@@ -22,4 +22,6 @@ public interface SettlementService {
   boolean signSettlement(String userId, String id, SignificanceRequest significance);
 
   boolean isExistingSettlement(String id);
+
+  void checkSettlementExists(String formCode, String formNumber);
 }

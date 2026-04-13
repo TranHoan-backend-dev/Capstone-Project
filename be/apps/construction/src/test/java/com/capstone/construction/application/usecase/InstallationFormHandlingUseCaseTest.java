@@ -68,6 +68,22 @@ class InstallationFormHandlingUseCaseTest {
   }
 
   @Test
+  @DisplayName("Should return completed forms without settlement")
+  void should_ReturnCompletedFormsWithoutSettlement_When_ServiceReturnsData() {
+    var pageable = PageRequest.of(0, 10);
+    var responseItem = mock(InstallationFormListResponse.class);
+    var expectedPage = new PageImpl<>(List.of(responseItem));
+
+    when(ifSrv.findCompletedFormsWithoutSettlement(pageable)).thenReturn(expectedPage);
+
+    var actualPage = useCase.findCompletedFormsWithoutSettlement(pageable);
+
+    assertThat(actualPage).isNotNull();
+    assertThat(actualPage.getContent()).hasSize(1);
+    verify(ifSrv).findCompletedFormsWithoutSettlement(pageable);
+  }
+
+  @Test
   @DisplayName("Should return pending estimate forms")
   void should_ReturnPendingEstimateForms_When_ServiceReturnsData() {
     var pageable = PageRequest.of(0, 10);

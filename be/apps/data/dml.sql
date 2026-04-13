@@ -752,7 +752,97 @@ VALUES (80000001001, '123 Lê Lợi, Quận 1, TP.HCM', '190312345678', 'Techcom
          "estimate": "APPROVED",
          "construction": "APPROVED",
          "registration": "APPROVED"
-       }', NULL, '550e8400-e29b-41d4-a716-446655440002');
+       }', NULL, '550e8400-e29b-41d4-a716-446655440002'),
+       (80000001039, '123 Đường Test 1, Nam Định', '190312345750', 'Techcombank Nam Định',
+        '079090000050', '2020-06-01', 'CA Nam Định', '2024-06-01 08:30:00', 'd75e221e-d150-4962-9afb-687062bfbcc8',
+        'Nguyễn Văn Test 1', 20240039, 501, 4, '40000001', '0901234701', '2024-06-01 08:27:15',
+        '2024-06-01 08:30:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
+         "contract": "APPROVED",
+         "estimate": "APPROVED",
+         "construction": "APPROVED",
+         "registration": "APPROVED"
+       }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
+       (80000001040, '456 Đường Test 2, Nam Định', '190312345751', 'Vietcombank Nam Định',
+        '079090000051', '2020-06-02', 'CA Nam Định', '2024-06-02 08:30:00', 'd75e221e-d150-4962-9afb-687062bfbcc8',
+        'Trần Thị Test 2', 20240040, 502, 3, '40000002', '0901234702', '2024-06-02 08:27:15',
+        '2024-06-02 08:30:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
+         "contract": "APPROVED",
+         "estimate": "APPROVED",
+         "construction": "APPROVED",
+         "registration": "APPROVED"
+       }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
+       (80000001041, '789 Đường Test 3, Nam Định', '190312345752', 'ACB Nam Định',
+        '079090000052', '2020-06-03', 'CA Nam Định', '2024-06-03 08:30:00', 'd75e221e-d150-4962-9afb-687062bfbcc8',
+        'Lê Văn Test 3', 20240041, 503, 5, '40000003', '0901234703', '2024-06-03 08:27:15',
+        '2024-06-03 08:30:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
+         "contract": "APPROVED",
+         "estimate": "APPROVED",
+         "construction": "APPROVED",
+         "registration": "APPROVED"
+       }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
+       (80000001042, '101 Đường Test 4, Nam Định', '190312345753', 'BIDV Nam Định',
+        '079090000053', '2020-06-04', 'CA Nam Định', '2024-06-04 08:30:00', 'f018b804-12fc-41ec-87c1-08b6aa6f542d',
+        'Phạm Thị Test 4', 20240042, 504, 2, '40000004', '0901234704', '2024-06-04 08:27:15',
+        '2024-06-04 08:30:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
+         "contract": "APPROVED",
+         "estimate": "APPROVED",
+         "construction": "APPROVED",
+         "registration": "APPROVED"
+       }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
+       (80000001043, '202 Đường Test 5, Nam Định', '190312345754', 'VPBank Nam Định',
+        '079090000054', '2020-06-05', 'CA Nam Định', '2024-06-05 08:30:00', 'f018b804-12fc-41ec-87c1-08b6aa6f542d',
+        'Hoàng Thị Test 5', 20240043, 505, 3, '40000005', '0901234705', '2024-06-05 08:27:15',
+        '2024-06-05 08:30:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
+         "contract": "APPROVED",
+         "estimate": "APPROVED",
+         "construction": "APPROVED",
+         "registration": "APPROVED"
+       }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
+       (80000001044, '303 Đường Test 6, Nam Định', '190312345755', 'MB Nam Định',
+        '079090000055', '2020-06-06', 'CA Nam Định', '2024-06-06 08:30:00', 'f018b804-12fc-41ec-87c1-08b6aa6f542d',
+        'Nguyễn Văn Test 6', 20240044, 506, 4, '40000006', '0901234706', '2024-06-06 08:27:15',
+        '2024-06-06 08:30:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
+         "contract": "APPROVED",
+         "estimate": "APPROVED",
+         "construction": "APPROVED",
+         "registration": "APPROVED"
+       }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
+       (80000001045, '404 Đường Test 7, Nam Định', '190312345756', 'Techcombank Nam Định',
+        '079090000056', '2020-06-07', 'CA Nam Định', '2024-06-07 08:30:00', '91e138a1-824f-4db7-a073-e35fc24ec96f',
+        'Trần Văn Test 7', 20240045, 507, 2, '40000007', '0901234707', '2024-06-07 08:27:15',
+        '2024-06-07 08:30:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
+         "contract": "APPROVED",
+         "estimate": "APPROVED",
+         "construction": "APPROVED",
+         "registration": "APPROVED"
+       }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
+       (80000001046, '505 Đường Test 8, Nam Định', '190312345757', 'Vietcombank Nam Định',
+        '079090000057', '2020-06-08', 'CA Nam Định', '2024-06-08 08:30:00', '91e138a1-824f-4db7-a073-e35fc24ec96f',
+        'Phạm Thị Test 8', 20240046, 508, 5, '40000008', '0901234708', '2024-06-08 08:27:15',
+        '2024-06-08 08:30:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
+         "contract": "APPROVED",
+         "estimate": "APPROVED",
+         "construction": "APPROVED",
+         "registration": "APPROVED"
+       }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
+       (80000001047, '606 Đường Test 9, Nam Định', '190312345758', 'ACB Nam Định',
+        '079090000058', '2020-06-09', 'CA Nam Định', '2024-06-09 08:30:00', '91e138a1-824f-4db7-a073-e35fc24ec96f',
+        'Bùi Văn Test 9', 20240047, 509, 4, '40000009', '0901234709', '2024-06-09 08:27:15',
+        '2024-06-09 08:30:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
+         "contract": "APPROVED",
+         "estimate": "APPROVED",
+         "construction": "APPROVED",
+         "registration": "APPROVED"
+       }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
+       (80000001048, '707 Đường Test 10, Nam Định', '190312345759', 'BIDV Nam Định',
+        '079090000059', '2020-06-10', 'CA Nam Định', '2024-06-10 08:30:00', '91e138a1-824f-4db7-a073-e35fc24ec96f',
+        'Đặng Thị Test 10', 20240048, 510, 3, '40000010', '0901234710', '2024-06-10 08:27:15',
+        '2024-06-10 08:30:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
+         "contract": "APPROVED",
+         "estimate": "APPROVED",
+         "construction": "APPROVED",
+         "registration": "APPROVED"
+       }', NULL, '550e8400-e29b-41d4-a716-446655440001');
 
 INSERT INTO cost_estimate (estimation_id, address, construction_machinery_coefficient,
                            contract_fee, create_by, created_at, customer_name,

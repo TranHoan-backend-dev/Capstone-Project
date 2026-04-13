@@ -321,6 +321,24 @@ class InstallationFormServiceImplTest {
   }
 
   @Test
+  void should_ReturnCompletedWithoutSettlement_When_RepositoryReturnsData() {
+    // Given
+    var pageable = PageRequest.of(0, 10);
+    var entity = createMockEntity();
+
+    when(ifRepo.findCompletedFormsWithoutSettlement(any(Pageable.class)))
+      .thenReturn(new PageImpl<>(List.of(entity)));
+    when(empSrv.getEmployeeNameById(any())).thenReturn(new WrapperApiResponse(200, "OK", "Staff", OffsetDateTime.now()));
+
+    // When
+    var result = service.findCompletedFormsWithoutSettlement(pageable);
+
+    // Then
+    assertThat(result.getContent()).hasSize(1);
+    verify(ifRepo).findCompletedFormsWithoutSettlement(any(Pageable.class));
+  }
+
+  @Test
   void should_MapToResponse_When_ScheduleSurveyAtIsNull() {
     // Given
     var pageable = PageRequest.of(0, 10);
