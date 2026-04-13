@@ -42,6 +42,7 @@ public record CostEstimateResponse(
     String waterMeterSerial,
     String waterMeterType,
     String overallWaterMeterId,
+    String overallWaterMeterName,
     String meterTypeId,
     InstallationFormId installationFormId,
     FormProcessingStatus status,

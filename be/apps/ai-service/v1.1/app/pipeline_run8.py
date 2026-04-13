@@ -149,6 +149,9 @@ def _extract_reading_integer(raw_text: str) -> str:
 
     digits = _extract_digits(integer_part)
 
+    # Water meter counter pattern: if OCR reads 6-8 raw digits and the string
+    # starts with at least one leading zero, it's likely the full 5-integer +
+    # 1-3 decimal counter display. Extract only the first 5 digits (integer part).
     if 6 <= len(digits) <= 8 and digits[0] == "0":
         digits = digits[:5]
     elif len(digits) > 6:
@@ -267,14 +270,10 @@ def _select_reading_joined(texts) -> str:
         if _is_valid_reading(stripped):
             # Realistic water meter readings are 1-5 digits (0 to 99999 m³)
             length = len(stripped)
-            if 1 <= length <= 3:
+            if 1 <= length <= 5:
                 length_bonus = 0.3
-            elif length == 4:
-                length_bonus = 0.15
-            elif length == 5:
-                length_bonus = 0.1
             elif length == 6:
-                length_bonus = 0.05
+                length_bonus = 0.1
             else:
                 length_bonus = -0.2 * (length - 6)
 
@@ -343,10 +342,8 @@ def _score_text_variant(label: str, texts) -> float:
         if joined:
             if _is_valid_reading(joined):
                 length = len(joined)
-                if 2 <= length <= 3:
+                if 2 <= length <= 4:
                     score += 1.0
-                elif length == 4:
-                    score += 0.8  # 4-digit readings are rare (3.8% of GT)
                 elif length == 1:
                     score += 0.4  # single digit is plausible but suspicious
                 elif length == 5:
@@ -520,6 +517,11 @@ class OCRPipeline:
         return best_crop, best_texts
 
     def _read_reading_with_cell_split(self, crop, num_cells: int = 5):
+        """
+        Alternative reading strategy: split crop into individual digit cells
+        and OCR each separately. This works better for clear mechanical meters
+        where whole-line OCR fails.
+        """
         cell_results = self.ocr.read_text_cells(crop, num_cells=num_cells)
         if not cell_results:
             return []
@@ -747,64 +749,6 @@ class OCRPipeline:
                     elif cell_joined and not main_joined:
                         texts = cell_texts
 
-                # Wider-crop retry: when result is suspiciously short (1-2 digits),
-                # expand the YOLO box by 25% and re-OCR to capture edge digits
-                retry_joined = _select_reading_joined(texts) if texts else ""
-                if retry_joined and 1 <= len(retry_joined) <= 2:
-                    orig_x1, orig_y1, orig_x2, orig_y2 = box
-                    orig_w = orig_x2 - orig_x1
-                    orig_h = orig_y2 - orig_y1
-                    expand_x = max(10, int(orig_w * 0.25))
-                    expand_y = max(5, int(orig_h * 0.15))
-
-                    wide_x1 = max(0, orig_x1 - expand_x)
-                    wide_y1 = max(0, orig_y1 - expand_y)
-                    wide_x2 = min(image.shape[1], orig_x2 + expand_x)
-                    wide_y2 = min(image.shape[0], orig_y2 + expand_y)
-
-                    # Apply decimal boundary on wider crop
-                    if decimal_detection is not None:
-                        dec_x1 = decimal_detection["box"][0]
-                        wide_x2 = min(wide_x2, max(wide_x1 + 1, dec_x1 - max(2, pad)))
-
-                    wide_crop = image[wide_y1:wide_y2, wide_x1:wide_x2]
-                    if wide_crop.size > 0:
-                        # Red boundary fallback on wider crop
-                        wide_red_x = _detect_red_boundary(wide_crop)
-                        if wide_red_x is not None and wide_red_x > wide_crop.shape[1] * 0.3:
-                            wide_crop = wide_crop[:, :wide_red_x]
-
-                        # Upscale wider crop
-                        wh, ww = wide_crop.shape[:2]
-                        w_min = min(wh, ww)
-                        if w_min < 32:
-                            w_scale = max(4, 128 // max(w_min, 1))
-                        elif w_min < 64:
-                            w_scale = 3
-                        else:
-                            w_scale = 2
-                        wide_crop = cv2.resize(wide_crop, None, fx=w_scale, fy=w_scale,
-                                               interpolation=cv2.INTER_CUBIC)
-
-                        _, wide_texts = self._read_text_with_variants(READING_LABEL, wide_crop)
-                        wide_joined = _select_reading_joined(wide_texts) if wide_texts else ""
-                        wide_score = _score_text_variant(READING_LABEL, wide_texts)
-                        curr_score = _score_text_variant(READING_LABEL, texts)
-
-                        # Use wider crop if it gives a longer result with competitive score
-                        # For 2-digit source: require noticeably better score (avoid overriding correct short readings)
-                        # For 1-digit source: permissive threshold (almost certainly wrong)
-                        score_threshold = curr_score - 0.1  # DEBUG: permissive to log all cases
-                        print(f"[WIDER_CROP] orig='{retry_joined}' wide='{wide_joined}' "
-                              f"curr_score={curr_score:.3f} wide_score={wide_score:.3f} "
-                              f"threshold={score_threshold:.3f} "
-                              f"accept={wide_joined and len(wide_joined) >= 3 and wide_score >= score_threshold}")
-                        if wide_texts:
-                            for wt, wc in wide_texts:
-                                print(f"  wide_text: '{wt}' conf={wc:.3f}")
-                        if (wide_joined and len(wide_joined) >= 3
-                                and wide_score >= score_threshold):
-                            texts = wide_texts
 
 
             debug_dir = "debug_crops"

@@ -149,6 +149,9 @@ def _extract_reading_integer(raw_text: str) -> str:
 
     digits = _extract_digits(integer_part)
 
+    # Water meter counter pattern: if OCR reads 6-8 raw digits and the string
+    # starts with at least one leading zero, it's likely the full 5-integer +
+    # 1-3 decimal counter display. Extract only the first 5 digits (integer part).
     if 6 <= len(digits) <= 8 and digits[0] == "0":
         digits = digits[:5]
     elif len(digits) > 6:
@@ -520,6 +523,11 @@ class OCRPipeline:
         return best_crop, best_texts
 
     def _read_reading_with_cell_split(self, crop, num_cells: int = 5):
+        """
+        Alternative reading strategy: split crop into individual digit cells
+        and OCR each separately. This works better for clear mechanical meters
+        where whole-line OCR fails.
+        """
         cell_results = self.ocr.read_text_cells(crop, num_cells=num_cells)
         if not cell_results:
             return []
@@ -792,18 +800,8 @@ class OCRPipeline:
                         curr_score = _score_text_variant(READING_LABEL, texts)
 
                         # Use wider crop if it gives a longer result with competitive score
-                        # For 2-digit source: require noticeably better score (avoid overriding correct short readings)
-                        # For 1-digit source: permissive threshold (almost certainly wrong)
-                        score_threshold = curr_score - 0.1  # DEBUG: permissive to log all cases
-                        print(f"[WIDER_CROP] orig='{retry_joined}' wide='{wide_joined}' "
-                              f"curr_score={curr_score:.3f} wide_score={wide_score:.3f} "
-                              f"threshold={score_threshold:.3f} "
-                              f"accept={wide_joined and len(wide_joined) >= 3 and wide_score >= score_threshold}")
-                        if wide_texts:
-                            for wt, wc in wide_texts:
-                                print(f"  wide_text: '{wt}' conf={wc:.3f}")
                         if (wide_joined and len(wide_joined) >= 3
-                                and wide_score >= score_threshold):
+                                and wide_score >= curr_score - 0.1):
                             texts = wide_texts
 
 
