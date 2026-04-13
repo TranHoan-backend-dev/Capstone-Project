@@ -273,7 +273,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   @Override
   public String getMeterTypeByFormCode(String formCode) {
     log.info("getMeterTypeByEstimateId with formCode: {}", formCode);
-    return eRepo.findByInstallationForm_FormCode(formCode).getWaterMeterTypeId();
+    return eRepo.findByInstallationForm_Id_FormCode(formCode).getWaterMeterTypeId();
   }
 
   private List<BaseMaterial> mapMaterials(List<MaterialsOfCostEstimateResponse> materials) {
@@ -319,7 +319,9 @@ public class CostEstimateServiceImpl implements CostEstimateService {
         estimate.getRegistrationAt(),
         estimate.getCreateBy(),
         estimate.getWaterMeterSerial(),
+        estimate.getWaterMeterTypeId(),
         estimate.getOverallWaterMeterId(),
+        deviceSrv.getNameById(estimate.getOverallWaterMeterId()),
         estimate.getWaterMeterTypeId(),
         estimate.getInstallationForm().getId(),
         estimate.getInstallationForm().getStatus(),

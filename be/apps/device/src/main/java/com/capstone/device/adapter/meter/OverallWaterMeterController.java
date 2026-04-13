@@ -62,7 +62,7 @@ public class OverallWaterMeterController {
     }
   )
   @GetMapping
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF', 'SURVEY_STAFF')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'ORDER_RECEIVING_STAFF', 'SURVEY_STAFF')")
   public ResponseEntity<WrapperApiResponse> getAll(
       @Parameter(description = "Tham số phân trang (trang, kích thước, sắp xếp)")
       Pageable pageable,
@@ -82,5 +82,11 @@ public class OverallWaterMeterController {
     var response = waterMeterService.isOverallWaterMeterExisting(id);
     log.info("Meter is existed? {}", response);
     return Utils.returnOkResponse("Kiểm tra sự tồn tại của đồng hồ nước thành công", response);
+  }
+
+  @GetMapping("/name/{id}")
+  public String getName(@PathVariable @Parameter(description = "") String id) {
+    log.info("REST request to get overall water meter with id: {}", id);
+    return waterMeterService.getNameById(id);
   }
 }

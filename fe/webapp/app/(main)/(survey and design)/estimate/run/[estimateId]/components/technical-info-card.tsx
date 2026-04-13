@@ -78,6 +78,8 @@ export const TechnicalInfoCard = ({
 
   const [overallMeters, setOverallMeters] = useState<any[]>([]);
 
+  /** ID loại đồng hồ (meter type), gửi lên API dưới `generalInformation.waterMeterType` */
+  const [waterMeterType, setWaterMeterType] = useState("");
   const [waterMeterSerial, setWaterMeterSerial] = useState("");
   const [displayWaterMeter, setDisplayWaterMeter] = useState("");
 
@@ -113,8 +115,18 @@ export const TechnicalInfoCard = ({
     const customerNameError = validateRequired(customerName, "Tên khách hàng");
     if (customerNameError) newErrors.customerName = customerNameError;
 
-    const waterMeterError = validateRequired(waterMeterSerial, "Đồng hồ nước");
-    if (waterMeterError) newErrors.waterMeterSerial = waterMeterError;
+    const waterMeterTypeError = validateRequired(
+      waterMeterType,
+      "Loại đồng hồ nước",
+    );
+    if (waterMeterTypeError) newErrors.waterMeterType = waterMeterTypeError;
+
+    const waterMeterSerialError = validateRequired(
+      waterMeterSerial,
+      "Số sê-ri đồng hồ",
+    );
+    if (waterMeterSerialError)
+      newErrors.waterMeterSerial = waterMeterSerialError;
 
     // Image validation
     const imageError = validateImage();
@@ -236,26 +248,33 @@ export const TechnicalInfoCard = ({
   }, []);
 
   useEffect(() => {
-    const fetchWaterMeterDetails = async () => {
-      if (waterMeterSerial && !displayWaterMeter) {
-        try {
-          const response = await authFetch(
-            `/api/device/water-meters/${waterMeterSerial}`,
-          );
-          const result = await response.json();
-          if (result.data) {
-            setDisplayWaterMeter(
-              `Loại: ${result.data.typeName} - Size: ${result.data.size} - Lắp: ${result.data.installationDate}`,
-            );
-          }
-        } catch (error) {
-          console.error("Failed to fetch water meter:", error);
-        }
+    let cancelled = false;
+
+    const fetchWaterMeterTypeLabel = async () => {
+      if (!waterMeterType) {
+        setDisplayWaterMeter("");
+        return;
+      }
+      try {
+        const response = await authFetch(
+          `/api/device/water-meter-type/${waterMeterType}`,
+        );
+        const result = await response.json();
+        if (cancelled || !result.data) return;
+        const d = result.data;
+        setDisplayWaterMeter(
+          `Tên: ${d.name} - Nguồn gốc: ${d.origin} - Loại: ${d.meterModel}`,
+        );
+      } catch (error) {
+        console.error("Failed to fetch water meter type:", error);
       }
     };
 
-    fetchWaterMeterDetails();
-  }, [waterMeterSerial, displayWaterMeter]);
+    fetchWaterMeterTypeLabel();
+    return () => {
+      cancelled = true;
+    };
+  }, [waterMeterType]);
 
   useEffect(() => {
     if (overallWaterMeterId && overallMeters.length > 0) {
@@ -324,6 +343,7 @@ export const TechnicalInfoCard = ({
       }
 
       setDesignFee(info.designFee?.toString() || "");
+      setWaterMeterType(info.waterMeterType || "");
       setWaterMeterSerial(info.waterMeterSerial || "");
       setOverallWaterMeterId(info.overallWaterMeterId || "");
       setDesignImageUrl(info.designImageUrl || "");
@@ -430,6 +450,10 @@ export const TechnicalInfoCard = ({
         waterMeterSerial || "",
       );
       formData.append(
+        "generalInformation.waterMeterType",
+        waterMeterType || "",
+      );
+      formData.append(
         "generalInformation.overallWaterMeterId",
         overallWaterMeterId || "",
       );
@@ -520,10 +544,12 @@ export const TechnicalInfoCard = ({
   };
 
   const handleSelectWaterMeter = (item: any) => {
-    setWaterMeterSerial(item.id);
-    setDisplayWaterMeter(`Loại: ${item.typeName} - Size: ${item.size}`);
+    setWaterMeterType(item.id);
+    setDisplayWaterMeter(
+      `Tên: ${item.name} - Nguồn gốc: ${item.origin} - Loại: ${item.meterModel}`,
+    );
     setShowWaterMeterModal(false);
-    clearFieldError("waterMeterSerial");
+    clearFieldError("waterMeterType");
   };
 
   const handleSelectOverallMeter = (item: any) => {
@@ -799,49 +825,68 @@ export const TechnicalInfoCard = ({
           Đồng hồ & đơn vị liên quan
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <SearchInputWithButton
-              label="Đồng hồ nước"
+              label="Loại đồng hồ nước"
               isRequired
               value={displayWaterMeter}
               onValueChange={() => {}}
               onSearch={() => setShowWaterMeterModal(true)}
             />
-            {errors.waterMeterSerial && (
+            {errors.waterMeterType && (
               <p className="text-danger text-tiny mt-1">
-                {errors.waterMeterSerial}
+                {errors.waterMeterType}
               </p>
             )}
           </div>
+          <CustomInput
+            isRequired
+            label="Số sê-ri đồng hồ"
+            value={waterMeterSerial}
+            onChange={(e) =>
+              handleFieldChange(
+                setWaterMeterSerial,
+                "waterMeterSerial",
+                e.target.value,
+              )
+            }
+            isInvalid={!!errors.waterMeterSerial}
+            errorMessage={errors.waterMeterSerial}
+          />
+
           <LookupModal
             enableSearch={false}
             dataKey="content"
             isOpen={showWaterMeterModal}
             onClose={() => setShowWaterMeterModal(false)}
-            title="Chọn đồng hồ nước"
-            api="/api/device/water-meters"
+            title="Chọn loại đồng hồ nước"
+            api="/api/device/water-meter-type"
             columns={[
               { key: "stt", label: "STT" },
-              { key: "typeName", label: "Loại đồng hồ" },
-              { key: "size", label: "Cỡ đồng hồ" },
-              { key: "installationDate", label: "Ngày lắp đặt" },
+              { key: "name", label: "Tên" },
+              { key: "origin", label: "Nguồn gốc" },
+              { key: "meterModel", label: "Kiểu đồng hồ" },
             ]}
             mapData={(item: any, index: number) => ({
               stt: index + 1,
-              id: item.id,
-              typeName: item.typeName,
-              size: item.size,
-              installationDate: item.installationDate,
+              id: item.typeId ?? item.id,
+              name: item.name,
+              origin: item.origin,
+              meterModel: item.meterModel,
             })}
             onSelect={handleSelectWaterMeter}
           />
-          <SearchInputWithButton
-            label="Đồng hồ nước tổng"
-            value={displayOverallWaterMeter}
-            onValueChange={() => {}}
-            onSearch={() => setShowOverallModal(true)}
-          />
+
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+            <SearchInputWithButton
+              label="Đồng hồ nước tổng"
+              value={displayOverallWaterMeter}
+              onValueChange={() => {}}
+              onSearch={() => setShowOverallModal(true)}
+            />
+          </div>
+
           <LookupModal
             dataKey="content"
             isOpen={showOverallModal}

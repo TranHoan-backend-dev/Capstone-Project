@@ -99,8 +99,7 @@ public class Settlement implements Serializable {
   }
 
   public void setNote(String note) {
-    requireNonNullAndNotEmpty(note, SharedMessage.MES_08);
-    this.note = note;
+    this.note = note == null ? "" : note.trim();
   }
 
   private void requireNonNullAndNotEmpty(String value, String message) {

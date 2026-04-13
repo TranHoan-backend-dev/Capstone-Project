@@ -75,7 +75,7 @@ class CostEstimateUseCaseTest {
     mockResponse = new CostEstimateResponse(
       new CostEstimateResponse.GeneralInformation(
         "id-123", "Customer Name", "Address", "Note", 1000, 500, 1, 2000, 10, 5, 10, 5, 10, 2, 100, "url",
-        LocalDateTime.now(), LocalDateTime.now(), LocalDate.now(), "user-123", "SN123", "METER-123",
+        LocalDateTime.now(), LocalDateTime.now(), LocalDate.now(), "user-123", "SN123", "TYPE-1", "METER-123",
         new InstallationFormId(formCode, formNumber),
         new com.capstone.construction.domain.model.utils.FormProcessingStatus(
           com.capstone.common.enumerate.ProcessingStatus.APPROVED,

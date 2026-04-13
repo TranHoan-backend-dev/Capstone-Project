@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/customers")
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF')")
 @Tag(name = "Quản lý khách hàng", description = "Các API phục vụ việc quản lý thông tin khách hàng, bao cập nhật, truy vấn và xóa khách hàng.")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CustomerController {
@@ -47,6 +46,7 @@ public class CustomerController {
     @ApiResponse(responseCode = "500", description = "Lỗi hệ thống nội bộ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PostMapping
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF')")
   public ResponseEntity<WrapperApiResponse> createCustomer(@RequestBody @Valid CreateRequest request) {
     log.info("REST request to create customer: {}", request.email());
     var response = customerService.createCustomer(request);
@@ -59,6 +59,7 @@ public class CustomerController {
     @ApiResponse(responseCode = "404", description = "Không tìm thấy khách hàng với ID đã cung cấp", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PutMapping("/{id}")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF')")
   public ResponseEntity<WrapperApiResponse> updateCustomer(
     @PathVariable @Parameter(description = "Id của khách hàng", example = "550e8400-e29b-41d4-a716-446655440000") String id,
     @RequestBody @Valid UpdateRequest request
@@ -73,6 +74,7 @@ public class CustomerController {
     @ApiResponse(responseCode = "404", description = "Không tìm thấy khách hàng để xóa", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @DeleteMapping("/{id}")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF')")
   public ResponseEntity<WrapperApiResponse> deleteCustomer(
     @PathVariable @Parameter(description = "Mã khách hàng cần xóa", example = "550e8400-e29b-41d4-a716-446655440000") String id) {
     log.info("REST request to delete customer: {}", id);
@@ -85,6 +87,7 @@ public class CustomerController {
     @ApiResponse(responseCode = "404", description = "Khách hàng không tồn tại", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @GetMapping("/{id}")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF', 'COMPANY_LEADERSHIP')")
   public ResponseEntity<WrapperApiResponse> getCustomerById(
     @PathVariable @Parameter(description = "Mã khách hàng cần lấy thông tin", example = "550e8400-e29b-41d4-a716-446655440000") String id) {
     log.info("REST request to get customer: {}", id);
@@ -96,6 +99,7 @@ public class CustomerController {
     @ApiResponse(responseCode = "200", description = "Lấy danh sách thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = CustomerResponse.class)))
   })
   @GetMapping
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF', 'COMPANY_LEADERSHIP')")
   public ResponseEntity<WrapperApiResponse> getAllCustomers(
     @PageableDefault @ParameterObject Pageable pageable,
     @ParameterObject CustomerFilterRequest filter) {
@@ -106,6 +110,7 @@ public class CustomerController {
 
   @Operation(hidden = true)
   @GetMapping("/water-price/{price}")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF')")
   public ResponseEntity<?> checkWhetherCustomersAreApplied(@PathVariable("price") @NonNull String waterPriceId) {
     log.info("REST request to check whether customers applied: {}", waterPriceId);
     var response = customerService.areCustomersAppliedThisPrice(waterPriceId);
@@ -115,18 +120,21 @@ public class CustomerController {
 
   @Operation(hidden = true)
   @GetMapping("/exist")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF')")
   public Boolean checkExistenceOfCustomer(@RequestParam String customerId) {
     return customerService.isExistingCustomer(customerId);
   }
 
   @Operation(hidden = true)
   @GetMapping("/meter/{meterId}")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF')")
   public String getCustomerIdByMeterId(@PathVariable String meterId) {
     log.info("REST request to get customer id: {}", meterId);
     return customerService.getIdByMeterId(meterId);
   }
 
   @GetMapping("/count/{id}")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF')")
   public int countCustomersInTheRoadmap(@PathVariable String id) {
     log.info("REST request to get customer count: {}", id);
     return customerService.countCustomersOfRoadmap(id);

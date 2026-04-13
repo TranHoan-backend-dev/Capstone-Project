@@ -172,6 +172,8 @@ export interface CreateCustomerPayload {
   citizenIdentificationProvideAt: string;
   formNumber: string;
   formCode: string;
+  /** Mã hợp đồng — lấy từ /contracts/form/{formCode} khi chọn đơn */
+  contractId: string;
   waterPriceId: string;
   waterMeterId: string;
   isFree: boolean;

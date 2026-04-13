@@ -1,5 +1,6 @@
 package com.capstone.device.application.business.watermeter;
 
+import com.capstone.common.exception.NotExistingException;
 import com.capstone.device.application.dto.request.WaterMeterRequest;
 import com.capstone.device.application.dto.response.water.OverallWaterMeterResponse;
 import com.capstone.device.application.dto.response.water.WaterMeterResponse;
@@ -112,9 +113,17 @@ public class WaterMeterServiceImpl implements WaterMeterService {
     log.info("Fetching all overall water meters with keyword: {} and pagination: {}", keyword, pageable);
     var response = (keyword != null && !keyword.isBlank()) ?
       overallWaterMeterRepository.findByNameContainingIgnoreCase(keyword, pageable)
-    : overallWaterMeterRepository.findAll(pageable);
+      : overallWaterMeterRepository.findAll(pageable);
 
     return response.map(this::mapToOverallWaterMeterResponse);
+  }
+
+  @Override
+  public String getNameById(String id) {
+    log.info("Fetching name of water meter ID: {}", id);
+    return overallWaterMeterRepository.findById(id)
+      .orElseThrow(() -> new NotExistingException("Water meter not found: " + id))
+      .getName();
   }
 
   private @NonNull WaterMeterResponse mapToResponse(@NonNull WaterMeter meter) {

@@ -69,6 +69,11 @@ public class SettlementUseCase {
 
   public void significance(String userId, String id, SignificanceRequest request) {
     // du 4 chu ky thi thong bao cho phong tai vu de phong tai vu yeu cau khach hang toi thanh toan quyet toan
+    var settlement = settlementService.getSettlementById(id);
+    if (settlement.significance().isSettlementFullySigned()) {
+      throw new IllegalArgumentException("Tài liệu đã được ký đầy đủ");
+    }
+
     var status = settlementService.signSettlement(userId, id, request);
     if (status) {
       var routingKey = QUEUE_NAME + PREFIX + APPROVE_ACTION;

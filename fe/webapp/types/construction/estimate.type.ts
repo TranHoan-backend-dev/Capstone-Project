@@ -144,6 +144,7 @@ export interface EstimateGeneralInformation {
   registrationAt?: string;
   createBy?: string;
   waterMeterSerial?: string;
+  waterMeterType?: string;
   overallWaterMeterId?: string;
   installationFormId?: {
     formCode: string;
@@ -208,6 +209,7 @@ export interface UpdateEstimateRequest {
     designFee?: number;
     designImage?: string; // URL sau khi upload
     waterMeterSerial?: string;
+    waterMeterType?: string;
     overallWaterMeterId?: string;
     designImageUrl?: string;
   };

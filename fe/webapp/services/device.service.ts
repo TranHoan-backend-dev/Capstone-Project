@@ -299,6 +299,13 @@ export const getAllTypes = (
     },
   });
 
+export const getMeterTypeById = (accessToken: string, id: string) =>
+  axios.get(`${API_GATEWAY_URL}/d/meter-types/${id}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
 export const createType = (
   accessToken: string,
   name: string,
