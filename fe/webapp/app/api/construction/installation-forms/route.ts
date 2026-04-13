@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
       accessToken,
       page,
       size,
-      // sort,
+      sort,
       keyword,
       from,
       to,

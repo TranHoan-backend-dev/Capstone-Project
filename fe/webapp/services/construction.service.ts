@@ -448,7 +448,7 @@ export const getInstallationForms = (
   accessToken: string,
   page: number,
   size: number,
-  // sort: string,
+  sort: string,
   keyword?: string | null,
   from?: string | null,
   to?: string | null,
@@ -458,7 +458,7 @@ export const getInstallationForms = (
     params: {
       page,
       size,
-      // sort,
+      sort,
       keyword,
       from,
       to,
