@@ -1,30 +1,16 @@
-@keycloak = http://localhost:8080/realms/cmsn/protocol/openid-connect
-@client_secret =
-
-### username is username
-POST {{keycloak}}/token
-Content-Type: application/x-www-form-urlencoded
-Accept: application/json
-
-grant_type = password &
-client_id =  &
-client_secret = {{client_secret}} &
-username =  &
-password =  &
-scope = openid
-
-> {%
-  client.global.set("access_token", response.body.access_token);
-  client.global.set("refresh_token", response.body.refresh_token);
-%}
+### Variables
+@baseUrl = http://localhost:9003/api/v1
 
 ### login
-POST http://localhost:9003/api/v1/auth/login
+POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
 {
-  "username": "survey_staff1",
-  "password": "12345678"
+  "username": "test",
+  "password": "12345678",
+  "deviceId": "c4793617-640f-4886-905c-7d9a8f4604a7",
+  "deviceInfo": "Chrome on Windows 11",
+  "ipAddress": "127.0.0.1"
 }
 
 ### logout

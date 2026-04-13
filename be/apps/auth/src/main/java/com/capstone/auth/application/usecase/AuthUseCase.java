@@ -30,6 +30,9 @@ import com.capstone.auth.infrastructure.service.keycloak.KeycloakFeignClient;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -57,6 +60,8 @@ public class AuthUseCase {
   NetworkService netWorkService;
   OrganizationService organizationService;
   DeviceService deviceService;
+  JwtDecoder jwtDecoder;
+  JwtAuthenticationConverter jwtAuthenticationConverter;
 
   // <editor-fold> desc="creating new account"
   @NonFinal
@@ -128,6 +133,11 @@ public class AuthUseCase {
       .password(password)
       .scope("openid")
       .build());
+
+    // Lưu vào security context để các feign client có thể tự lấy ra dùng qua interceptor
+    var jwt = jwtDecoder.decode(token.accessToken());
+    var auth = jwtAuthenticationConverter.convert(jwt);
+    SecurityContextHolder.getContext().setAuthentication(auth);
 
     // Check device login
     deviceService.checkLoginDevice(user.userId(), user.email(), profile.fullname(), deviceId, deviceInfo, ipAddress);
@@ -259,7 +269,7 @@ public class AuthUseCase {
 
   private @NonNull UserProfileResponse returnUserProfile(@NonNull ProfileDTO profile, @NonNull UserDTO user) {
     var department = organizationService.getDepartmentName(user.departmentId());
-    log.info("Department name: " + department);
+    log.info("Department name: {}", department);
     return new UserProfileResponse(
       profile.fullname(),
       profile.avatarUrl(),
