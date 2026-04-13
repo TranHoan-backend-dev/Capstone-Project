@@ -579,6 +579,7 @@ create table public.water_meter_type
   qn          varchar(255),          -- Detection limit threshold (Nominal)
   qt          varchar(255),          -- Detection limit threshold (Transitional)
   size        integer,               -- Commercial size code
+  index_length integer,               -- Number of integer digits (black characters)
   updated_at  timestamp(6) not null  -- Timestamp of last update
 );
 

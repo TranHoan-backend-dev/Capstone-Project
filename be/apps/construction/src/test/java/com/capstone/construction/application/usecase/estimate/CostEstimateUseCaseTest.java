@@ -68,14 +68,15 @@ class CostEstimateUseCaseTest {
 
     updateRequest = new UpdateRequest(
       new UpdateRequest.GeneralInformation(
-        "Name", "Addr", "Note", 100, 100, 1, 100, 1, 1, 1, 1, 1, 1, 100, null, "SN", "METER", null),
+        "Name", "Addr", "Note", 100, 100, 1, 100, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 100, null, "SN", "METER", null),
       Collections.emptyList(),
       true);
 
     mockResponse = new CostEstimateResponse(
       new CostEstimateResponse.GeneralInformation(
-        "id-123", "Customer Name", "Address", "Note", 1000, 500, 1, 2000, 10, 5, 10, 5, 10, 2, 100, "url",
-        LocalDateTime.now(), LocalDateTime.now(), LocalDate.now(), "user-123", "SN123", "TYPE-1", "METER-123",
+        "id-123", "Customer Name", "Address", "Note", 1000, 500, 1, 2000, 10.0, 5.0, 10.0, 5.0, 10.0, 2.0, 100, "url",
+        LocalDateTime.now(), LocalDateTime.now(), LocalDate.now(), "user-123", "SN123", "TYPE-1", "OWM-ID", "OWM-NAME",
+        "METER-TYPE-ID",
         new InstallationFormId(formCode, formNumber),
         new com.capstone.construction.domain.model.utils.FormProcessingStatus(
           com.capstone.common.enumerate.ProcessingStatus.APPROVED,

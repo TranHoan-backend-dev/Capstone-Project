@@ -13,6 +13,7 @@ public record WaterMeterTypeResponse(
   String qt,
   String qmin,
   Float diameter,
+  Integer indexLength,
   LocalDateTime createdAt,
   LocalDateTime updatedAt
 ) {

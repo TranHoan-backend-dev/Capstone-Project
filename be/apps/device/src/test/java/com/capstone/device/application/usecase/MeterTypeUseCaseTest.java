@@ -29,9 +29,9 @@ class MeterTypeUseCaseTest {
 
   @Test
   void should_CreateMeterType_Success() {
-    var request = new CreateRequest("Name", "Origin", "Model", 20, "1000", "Qn", "Qt", "Qmin", 15.0F);
+    var request = new CreateRequest("Name", "Origin", "Model", 20, "1000", "Qn", "Qt", "Qmin", 15.0F, 5);
     var response = new WaterMeterTypeResponse(null, "Name", null, null, null, null, null, null, null, null, null,
-      null);
+      null, null);
     when(meterTypeService.createMeterType(request)).thenReturn(response);
 
     var result = meterTypeUseCase.createMeterType(request);
@@ -42,9 +42,9 @@ class MeterTypeUseCaseTest {
   @Test
   void should_UpdateMeterType_Success() {
     var id = "id";
-    var request = new UpdateRequest("New", null, null, null, null, null, null, null, null);
+    var request = new UpdateRequest("New", null, null, null, null, null, null, null, null, null);
     var response = new WaterMeterTypeResponse(id, "New", null, null, null, null, null, null, null, null, null,
-      null);
+      null, null);
     when(meterTypeService.updateMeterType(id, request)).thenReturn(response);
 
     var result = meterTypeUseCase.updateMeterType(id, request);
@@ -63,7 +63,7 @@ class MeterTypeUseCaseTest {
   void should_GetMeterType_Success() {
     var id = "id";
     var response = new WaterMeterTypeResponse(id, "Name", null, null, null, null, null, null, null, null, null,
-      null);
+      null, null);
     when(meterTypeService.getMeterTypeById(id)).thenReturn(response);
 
     var result = meterTypeUseCase.getMeterTypeById(id);

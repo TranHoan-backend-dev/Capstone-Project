@@ -84,12 +84,12 @@ class CostEstimateServiceImplTest {
         600,
         2,
         2200,
-        15,
-        6,
-        10,
-        6,
-        10,
-        3,
+        15.0,
+        6.0,
+        10.0,
+        6.0,
+        10.0,
+        3.0,
         120,
         null,
         "SN123-UPDATED",
@@ -169,7 +169,7 @@ class CostEstimateServiceImplTest {
     var image = new MockMultipartFile("designImage", "test.jpg", "image/jpeg", "test content".getBytes());
     var requestWithImage = new UpdateRequest(
       new UpdateRequest.GeneralInformation(
-        "Name", "Addr", "Note", 100, 100, 1, 100, 1, 1, 1, 1, 1, 1, 100, image, "SN", "METER", null
+        "Name", "Addr", "Note", 100, 100, 1, 100, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 100, image, "SN", "METER", null
       ),
       Collections.emptyList(),
       true

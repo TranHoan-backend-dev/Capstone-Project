@@ -48,7 +48,8 @@ public class MeterTypeServiceImpl implements MeterTypeService {
       .qn(request.qn())
       .qt(request.qt())
       .qmin(request.qmin())
-      .diameter(request.diameter()));
+      .diameter(request.diameter())
+      .indexLength(request.indexLength()));
 
     var response = waterMeterTypeRepository.save(meterType);
     return mapToResponse(response);
@@ -87,6 +88,9 @@ public class MeterTypeServiceImpl implements MeterTypeService {
     }
     if (request.diameter() != null) {
       meterType.setDiameter(request.diameter());
+    }
+    if (request.indexLength() != null) {
+      meterType.setIndexLength(request.indexLength());
     }
 
     var saved = waterMeterTypeRepository.save(meterType);
@@ -146,6 +150,7 @@ public class MeterTypeServiceImpl implements MeterTypeService {
       meterType.getQt(),
       meterType.getQmin(),
       meterType.getDiameter(),
+      meterType.getIndexLength(),
       meterType.getCreatedAt(),
       meterType.getUpdatedAt());
   }

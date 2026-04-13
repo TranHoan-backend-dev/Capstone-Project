@@ -7,10 +7,7 @@ import com.capstone.construction.domain.model.utils.Representative;
 import com.capstone.common.utils.SharedMessage;
 import com.capstone.construction.infrastructure.utils.Message;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 
 import java.util.List;
 
@@ -70,17 +67,21 @@ public record NewOrderRequest(
   @Schema(description = "Ngày tiếp nhận hồ sơ (ISO)", example = "2024-02-01")
   @NotBlank(message = Message.PT_33)
   @NotEmpty(message = Message.PT_33)
+  @Pattern(regexp = SharedConstant.DATE_PATTERN, message = "Ngày tháng phải đúng định dạng dd-MM-yyyy")
   String receivedFormAt,
 
   @Schema(description = "Ngày dự kiến khảo sát (ISO)", example = "2024-02-05")
   @NotBlank(message = Message.PT_51)
   @NotEmpty(message = Message.PT_51)
+  @Pattern(regexp = SharedConstant.DATE_PATTERN, message = "Ngày tháng phải đúng định dạng dd-MM-yyyy")
   String scheduleSurveyAt,
 
   @Schema(description = "Số hộ sử dụng chung đồng hồ", example = "1")
+  @Positive(message = "Số hộ sử dụng phải lớn hơn 1")
   Integer numberOfHousehold,
 
-  @Schema(description = "Số nhân khẩu", example = "1")
+  @Schema(description = "Số hộ khẩu", example = "1123128398749812")
+  @Positive(message = "Số hộ khẩu phải đúng định dạng")
   Integer householdRegistrationNumber,
 
   @Schema(description = "Danh sách người đại diện (dành cho tổ chức/doanh nghiệp)")

@@ -6,7 +6,8 @@ import com.capstone.common.exception.ForbiddenException;
 import com.capstone.common.exception.NotExistingException;
 import com.capstone.common.utils.SharedMessage;
 import com.capstone.construction.application.dto.request.settlement.SettlementFilterRequest;
-import com.capstone.construction.application.dto.request.settlement.SettlementRequest;
+import com.capstone.construction.application.dto.request.settlement.CreateSettlementRequest;
+import com.capstone.construction.application.dto.request.settlement.UpdateSettlementRequest;
 import com.capstone.construction.application.dto.request.settlement.SignificanceRequest;
 import com.capstone.construction.application.dto.response.settlement.SettlementResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
@@ -42,7 +43,7 @@ public class SettlementServiceImpl implements SettlementService {
 
   @Override
   @Transactional(rollbackFor = Exception.class)
-  public SettlementResponse createSettlement(@NonNull SettlementRequest request) {
+  public SettlementResponse createSettlement(@NonNull CreateSettlementRequest request) {
     log.info("Creating new settlement for address: {}", request.address());
     var form = formRepository.findById(new InstallationFormId(request.formCode(), request.formNumber()))
       .orElseThrow(() -> new NotExistingException(Message.PT_38));
@@ -61,15 +62,15 @@ public class SettlementServiceImpl implements SettlementService {
 
   @Override
   @Transactional(rollbackFor = Exception.class)
-  public SettlementResponse updateSettlement(String id, @NonNull SettlementRequest request) {
+  public SettlementResponse updateSettlement(String id, @NonNull UpdateSettlementRequest request) {
     log.info("Updating settlement with id: {}", id);
     var settlement = settlementRepository.findById(id)
       .orElseThrow(() -> new IllegalArgumentException("Settlement not found with id: " + id));
-    settlement.setJobContent(request.jobContent());
-    settlement.setAddress(request.address());
-    settlement.setConnectionFee(request.connectionFee());
-    settlement.setNote(request.note());
-    settlement.setRegistrationAt(request.registrationAt());
+    if (request.jobContent() != null) settlement.setJobContent(request.jobContent());
+    if (request.address() != null) settlement.setAddress(request.address());
+    if (request.connectionFee() != null) settlement.setConnectionFee(request.connectionFee());
+    if (request.note() != null) settlement.setNote(request.note());
+    if (request.registrationAt() != null) settlement.setRegistrationAt(request.registrationAt());
 
     var saved = settlementRepository.save(settlement);
     return mapToResponse(saved);

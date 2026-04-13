@@ -31,6 +31,9 @@ public record UpdateRequest(
   String qmin,
 
   @Schema(description = "Đường kính (mm)", example = "21.0")
-  @Positive(message = Message.ENT_16) Float diameter
+  @Positive(message = Message.ENT_16) Float diameter,
+
+  @Schema(description = "Số ký tự phần nguyên", example = "5")
+  @Positive(message = "Số ký tự phần nguyên phải là số dương") Integer indexLength
 ) {
 }

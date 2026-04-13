@@ -44,17 +44,17 @@ public class CostEstimate implements Serializable {
 
   Integer installationFee;
 
-  Integer laborCoefficient;
+  Double laborCoefficient;
 
-  Integer generalCostCoefficient;
+  Double generalCostCoefficient;
 
-  Integer precalculatedTaxCoefficient;
+  Double precalculatedTaxCoefficient;
 
-  Integer constructionMachineryCoefficient;
+  Double constructionMachineryCoefficient;
 
-  Integer vatCoefficient;
+  Double vatCoefficient;
 
-  Integer designCoefficient;
+  Double designCoefficient;
 
   Integer designFee;
 
@@ -153,32 +153,32 @@ public class CostEstimate implements Serializable {
     this.installationFee = installationFee;
   }
 
-  public void setLaborCoefficient(Integer laborCoefficient) {
+  public void setLaborCoefficient(Double laborCoefficient) {
     Objects.requireNonNull(laborCoefficient, Message.PT_18);
     this.laborCoefficient = laborCoefficient;
   }
 
-  public void setGeneralCostCoefficient(Integer generalCostCoefficient) {
+  public void setGeneralCostCoefficient(Double generalCostCoefficient) {
     Objects.requireNonNull(generalCostCoefficient, Message.PT_19);
     this.generalCostCoefficient = generalCostCoefficient;
   }
 
-  public void setPrecalculatedTaxCoefficient(Integer precalculatedTaxCoefficient) {
+  public void setPrecalculatedTaxCoefficient(Double precalculatedTaxCoefficient) {
     Objects.requireNonNull(precalculatedTaxCoefficient, Message.PT_20);
     this.precalculatedTaxCoefficient = precalculatedTaxCoefficient;
   }
 
-  public void setConstructionMachineryCoefficient(Integer constructionMachineryCoefficient) {
+  public void setConstructionMachineryCoefficient(Double constructionMachineryCoefficient) {
     Objects.requireNonNull(constructionMachineryCoefficient, Message.PT_21);
     this.constructionMachineryCoefficient = constructionMachineryCoefficient;
   }
 
-  public void setVatCoefficient(Integer vatCoefficient) {
+  public void setVatCoefficient(Double vatCoefficient) {
     Objects.requireNonNull(vatCoefficient, Message.PT_22);
     this.vatCoefficient = vatCoefficient;
   }
 
-  public void setDesignCoefficient(Integer designCoefficient) {
+  public void setDesignCoefficient(Double designCoefficient) {
     Objects.requireNonNull(designCoefficient, Message.PT_23);
     this.designCoefficient = designCoefficient;
   }

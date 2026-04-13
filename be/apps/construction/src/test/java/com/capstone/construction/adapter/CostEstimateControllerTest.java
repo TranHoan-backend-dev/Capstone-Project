@@ -54,14 +54,15 @@ class CostEstimateControllerTest {
 
     updateRequest = new UpdateRequest(
       new UpdateRequest.GeneralInformation(
-        "Customer", "Address", "Note", 1000, 100, 1, 1000, 1, 1, 1, 1, 1, 1, 100, null, "SN", "METER", null),
+        "Customer", "Address", "Note", 1000, 100, 1, 1000, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 100, null, "SN", "METER", null),
       Collections.emptyList(),
       false);
 
     mockResponse = new CostEstimateResponse(
       new CostEstimateResponse.GeneralInformation(
-        "id", "Customer", "Address", "Note", 1000, 100, 1, 1000, 1, 1, 1, 1, 1, 1, 100, "url",
-        LocalDateTime.now(), LocalDateTime.now(), LocalDate.now(), "user", "SN", "METER-TYPE", "METER",
+        "id", "Customer", "Address", "Note", 1000, 100, 1, 1000, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 100, "url",
+        LocalDateTime.now(), LocalDateTime.now(), LocalDate.now(), "user", "SN", "METER-TYPE", "OWM-ID", "OWM-NAME",
+        "METER-TYPE-ID",
         new InstallationFormId("1001", "1"),
         new FormProcessingStatus(
           ProcessingStatus.APPROVED, ProcessingStatus.PROCESSING, ProcessingStatus.PROCESSING,
