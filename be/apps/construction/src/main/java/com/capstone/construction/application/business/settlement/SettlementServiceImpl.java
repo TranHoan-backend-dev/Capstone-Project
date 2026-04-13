@@ -16,6 +16,8 @@ import com.capstone.construction.infrastructure.persistence.InstallationFormRepo
 import com.capstone.construction.infrastructure.persistence.SettlementRepository;
 import com.capstone.construction.infrastructure.service.EmployeeService;
 import com.capstone.construction.infrastructure.utils.Message;
+import com.capstone.construction.infrastructure.utils.Utility;
+import jakarta.persistence.criteria.JoinType;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -84,25 +86,29 @@ public class SettlementServiceImpl implements SettlementService {
   @Override
   public PageResponse<SettlementResponse> getAllSettlements(Pageable pageable) {
     log.info("Fetching all settlements with pageable: {}", pageable);
+    var sortedPageable = Utility.sortByAttributeDesc(pageable, "createdAt");
+
     // Use specification with fetch join
     Specification<Settlement> spec = (root, query, cb) -> {
-      root.join("installationForm", jakarta.persistence.criteria.JoinType.LEFT);
+      root.join("installationForm", JoinType.LEFT);
       return cb.conjunction();
     };
-    var page = settlementRepository.findAll(spec, pageable);
+    var page = settlementRepository.findAll(spec, sortedPageable);
     return PageResponse.fromPage(page, this::mapToResponse);
   }
 
   @Override
   public PageResponse<SettlementResponse> filterSettlements(SettlementFilterRequest filterRequest, Pageable pageable) {
     log.info("Filtering settlements with filterRequest: {}", filterRequest);
+    var sortedPageable = Utility.sortByAttributeDesc(pageable, "createdAt");
     Specification<Settlement> spec = SettlementRepository.filter(filterRequest);
     // Add fetch join to the existing spec
+
     Specification<Settlement> specWithFetch = spec.and((root, query, cb) -> {
-      root.join("installationForm", jakarta.persistence.criteria.JoinType.LEFT);
+      root.join("installationForm", JoinType.LEFT);
       return cb.conjunction();
     });
-    var page = settlementRepository.findAll(specWithFetch, pageable);
+    var page = settlementRepository.findAll(specWithFetch, sortedPageable);
     return PageResponse.fromPage(page, this::mapToResponse);
   }
 
