@@ -3,7 +3,8 @@ package com.capstone.construction.application.business.settlement;
 import com.capstone.common.enumerate.RoleName;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.construction.application.dto.request.settlement.SettlementFilterRequest;
-import com.capstone.construction.application.dto.request.settlement.SettlementRequest;
+import com.capstone.construction.application.dto.request.settlement.CreateSettlementRequest;
+import com.capstone.construction.application.dto.request.settlement.UpdateSettlementRequest;
 import com.capstone.construction.application.dto.request.settlement.SignificanceRequest;
 import com.capstone.construction.domain.model.Settlement;
 import com.capstone.construction.domain.model.InstallationForm;
@@ -63,7 +64,7 @@ class SettlementServiceImplTest {
   @Test
   @DisplayName("Create settlement successfully")
   void createSettlement_ShouldSaveAndReturnResponse() {
-    var request = new SettlementRequest("1", "1001", "Job", "Addr", BigDecimal.TEN, "Note", LocalDate.now());
+    var request = new CreateSettlementRequest("1", "1001", "Job", "Addr", BigDecimal.TEN, "Note", LocalDate.now());
     var form = mock(InstallationForm.class);
     when(form.getFormCode()).thenReturn("1001");
     when(form.getFormNumber()).thenReturn("1");
@@ -89,7 +90,7 @@ class SettlementServiceImplTest {
   @DisplayName("Update settlement successfully")
   void updateSettlement_ShouldUpdateAndReturnResponse() {
     var id = "id123";
-    var request = new SettlementRequest("1", "1001", "New Job", "New Addr", BigDecimal.ONE, "New Note", LocalDate.now());
+    var request = new UpdateSettlementRequest("1", "1001", "New Job", "New Addr", BigDecimal.ONE, "New Note", LocalDate.now());
     var form = mock(InstallationForm.class);
     when(form.getFormCode()).thenReturn("1001");
     when(form.getFormNumber()).thenReturn("1");
@@ -109,8 +110,8 @@ class SettlementServiceImplTest {
   @DisplayName("Update settlement should throw if not found")
   void updateSettlement_ShouldThrow_WhenNotFound() {
     when(settlementRepository.findById(anyString())).thenReturn(Optional.empty());
-
-    assertThatThrownBy(() -> settlementService.updateSettlement("id", mock(SettlementRequest.class)))
+ 
+    assertThatThrownBy(() -> settlementService.updateSettlement("id", mock(UpdateSettlementRequest.class)))
       .isInstanceOf(IllegalArgumentException.class);
   }
 

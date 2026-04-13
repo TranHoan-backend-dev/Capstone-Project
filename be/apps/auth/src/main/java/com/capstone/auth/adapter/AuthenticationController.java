@@ -166,6 +166,10 @@ public class AuthenticationController {
   }
 
   @PostMapping("/refresh-token")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF', " +
+    "'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'FINANCE_DEPARTMENT', " +
+    "'CONSTRUCTION_DEPARTMENT_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD', 'BUSINESS_DEPARTMENT_HEAD'" +
+    ", 'METER_INSPECTION_STAFF')")
   public ResponseEntity<?> getToken(@RequestBody RefreshTokenRequest request) {
     log.info("Get refresh token");
     return Utils.returnOkResponse("", authUC.refreshToken(request.token()));
@@ -173,6 +177,10 @@ public class AuthenticationController {
 
   @Operation(summary = "Đăng xuất", description = "Đăng xuất người dùng bằng cách hủy bỏ refresh token trên Keycloak. Data response rỗng.")
   @PostMapping("/logout")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF', " +
+    "'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'FINANCE_DEPARTMENT', " +
+    "'CONSTRUCTION_DEPARTMENT_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD', 'BUSINESS_DEPARTMENT_HEAD'" +
+    ", 'METER_INSPECTION_STAFF')")
   public ResponseEntity<?> logout(@RequestBody @Valid RefreshTokenRequest request) {
     log.info("Logout request");
     authUC.logout(request.token());

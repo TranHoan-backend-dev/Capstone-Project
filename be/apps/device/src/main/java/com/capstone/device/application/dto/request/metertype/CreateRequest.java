@@ -36,6 +36,10 @@ public record CreateRequest(
 
   @Schema(description = "Đường kính (mm)", example = "21.0")
   @NotNull(message = "Đường kính là bắt buộc")
-  @Positive(message = Message.ENT_16) Float diameter
+  @Positive(message = Message.ENT_16) Float diameter,
+
+  @Schema(description = "Số ký tự phần nguyên", example = "5")
+  @NotNull(message = "Số ký tự phần nguyên là bắt buộc")
+  @Positive(message = SharedMessage.MES_07) Integer indexLength
 ) {
 }

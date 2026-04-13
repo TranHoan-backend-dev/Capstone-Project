@@ -5,7 +5,8 @@ import com.capstone.common.utils.Utils;
 import com.capstone.construction.application.dto.request.settlement.AssignTheSignificanceRequest;
 import com.capstone.construction.application.dto.request.settlement.SignificanceRequest;
 import com.capstone.construction.application.dto.request.settlement.SettlementFilterRequest;
-import com.capstone.construction.application.dto.request.settlement.SettlementRequest;
+import com.capstone.construction.application.dto.request.settlement.CreateSettlementRequest;
+import com.capstone.construction.application.dto.request.settlement.UpdateSettlementRequest;
 import com.capstone.construction.application.dto.response.settlement.SettlementResponse;
 import com.capstone.construction.application.usecase.SettlementUseCase;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,7 +43,7 @@ public class SettlementController {
     @ApiResponse(responseCode = "400", description = "Dữ liệu yêu cầu không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'CONSTRUCTION_DEPARTMENT_STAFF')")
-  public ResponseEntity<WrapperApiResponse> createSettlement(@RequestBody @Valid SettlementRequest request) {
+  public ResponseEntity<WrapperApiResponse> createSettlement(@RequestBody @Valid CreateSettlementRequest request) {
     log.info("REST request to create settlement for address: {}", request.address());
     var response = settlementUseCase.createSettlement(request);
     log.info(response.toString());
@@ -58,7 +59,7 @@ public class SettlementController {
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'CONSTRUCTION_DEPARTMENT_STAFF')")
   public ResponseEntity<WrapperApiResponse> updateSettlement(
     @PathVariable @Parameter(description = "ID của bản quyết toán cần cập nhật", required = true) String id,
-    @RequestBody @Valid SettlementRequest request) {
+    @RequestBody @Valid UpdateSettlementRequest request) {
     log.info("REST request to update settlement with id: {}", id);
     var response = settlementUseCase.updateSettlement(id, request);
     return Utils.returnOkResponse("Cập nhật quyết toán công trình thành công", response);

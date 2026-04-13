@@ -46,6 +46,9 @@ public class WaterMeterType {
 
   Float diameter;
 
+  @Column(nullable = false)
+  Integer indexLength;
+
   @JsonIgnore
   @OneToMany(mappedBy = "type")
   List<WaterMeter> waterMeter;
@@ -116,6 +119,13 @@ public class WaterMeterType {
     this.diameter = diameter;
   }
 
+  public void setIndexLength(Integer indexLength) {
+    if (indexLength != null && indexLength <= 0) {
+      throw new IllegalArgumentException(SharedMessage.MES_07); // Using MES_07 as a generic "invalid" placeholder if no specific error exists
+    }
+    this.indexLength = indexLength;
+  }
+
   private void requireNonNullAndNotEmpty(String value, String message) {
     Objects.requireNonNull(value, message);
     if (value.trim().isEmpty()) {
@@ -174,6 +184,11 @@ public class WaterMeterType {
 
     public WaterMeterTypeBuilder diameter(Float diameter) {
       type.setDiameter(diameter);
+      return this;
+    }
+
+    public WaterMeterTypeBuilder indexLength(Integer indexLength) {
+      type.setIndexLength(indexLength);
       return this;
     }
 

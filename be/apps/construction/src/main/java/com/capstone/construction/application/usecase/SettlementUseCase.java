@@ -5,7 +5,8 @@ import com.capstone.construction.application.business.constructionrequest.Constr
 import com.capstone.construction.application.business.settlement.SettlementService;
 import com.capstone.construction.application.dto.request.settlement.AssignTheSignificanceRequest;
 import com.capstone.construction.application.dto.request.settlement.SettlementFilterRequest;
-import com.capstone.construction.application.dto.request.settlement.SettlementRequest;
+import com.capstone.construction.application.dto.request.settlement.CreateSettlementRequest;
+import com.capstone.construction.application.dto.request.settlement.UpdateSettlementRequest;
 import com.capstone.construction.application.dto.request.settlement.SignificanceRequest;
 import com.capstone.construction.application.dto.response.settlement.SettlementResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
@@ -42,7 +43,7 @@ public class SettlementUseCase {
   @Value("${rabbit-mq-config.queue_name}")
   String QUEUE_NAME;
 
-  public SettlementResponse createSettlement(@NonNull SettlementRequest request) {
+  public SettlementResponse createSettlement(@NonNull CreateSettlementRequest request) {
     var constructionRequest = constructionRequestService.getByInstallationForm(request.formCode(), request.formNumber());
     if (!Boolean.parseBoolean(constructionRequest.isApproved())) {
       throw new IllegalStateException("Công trình chưa được phê duyệt, chưa thể lập quyết toán");
@@ -51,7 +52,7 @@ public class SettlementUseCase {
     return settlementService.createSettlement(request);
   }
 
-  public SettlementResponse updateSettlement(String id, SettlementRequest request) {
+  public SettlementResponse updateSettlement(String id, UpdateSettlementRequest request) {
     return settlementService.updateSettlement(id, request);
   }
 
