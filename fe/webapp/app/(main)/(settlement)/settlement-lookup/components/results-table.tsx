@@ -472,7 +472,7 @@ export const ResultsTable = ({
       case "formNumber":
         return (
           <Link
-            className="text-primary font-medium hover:underline p-0 h-auto min-w-0"
+            className="text-primary font-medium hover:underline p-0 h-auto min-w-0 cursor-pointer"
             onPress={() => fetchSettlementDetail(item.id)}
           >
             {item.formNumber}
