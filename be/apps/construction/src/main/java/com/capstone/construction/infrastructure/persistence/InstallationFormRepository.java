@@ -114,7 +114,7 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
   @Query(value = "SELECT * FROM installation_form i WHERE i.status->>'estimate' = :status", nativeQuery = true)
   List<InstallationForm> findByEstimateStatus(String status);
 
-  @Query(value = "SELECT * FROM installation_form i WHERE i.handover_by IS NOT NULL AND i.status->>'registration' = 'PENDING_FOR_APPROVAL'", nativeQuery = true)
+  @Query(value = "SELECT * FROM installation_form i WHERE i.handover_by IS NOT NULL", nativeQuery = true)
   Page<InstallationForm> findByHandoverByIsNotNull(Pageable pageable);
 
   @Query(value = """

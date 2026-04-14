@@ -7,7 +7,7 @@ GET {{uri}}/installation-forms
 Authorization: Bearer {{access_token}}
 
 ### 2. Pagination (page 1, size 10)
-GET {{uri}}/installation-forms?page=1&size=10
+GET {{uri}}/installation-forms?page=0&size=1
 Authorization: Bearer {{access_token}}
 
 ### 3. Sorting (Sort by createdAt descending)
