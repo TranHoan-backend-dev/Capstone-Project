@@ -33,7 +33,6 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @AppLog
@@ -68,14 +67,14 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       .address(request.address())
       .customerType(request.customerType())
       .citizenIdentificationNumber(request.citizenIdentificationNumber())
-      .citizenIdentificationProvideDate(request.citizenIdentificationProvideDate())
+      .citizenIdentificationProvideDate(request.citizenIdentificationProvideDate().toString())
       .citizenIdentificationProvideLocation(request.citizenIdentificationProvideLocation())
       .phoneNumber(request.phoneNumber())
       .bankAccountNumber(request.bankAccountNumber())
       .bankAccountProviderLocation(request.bankAccountProviderLocation())
       .usageTarget(request.usageTarget())
-      .receivedFormAt(LocalDate.parse(request.receivedFormAt()))
-      .scheduleSurveyAt(LocalDate.parse(request.scheduleSurveyAt()))
+      .receivedFormAt(request.receivedFormAt())
+      .scheduleSurveyAt(request.scheduleSurveyAt())
       .numberOfHousehold(request.numberOfHousehold())
       .citizenIdentificationProvideLocation(request.citizenIdentificationProvideLocation())
       .householdRegistrationNumber(request.householdRegistrationNumber())
