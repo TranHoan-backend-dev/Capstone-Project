@@ -9,6 +9,7 @@ import com.capstone.construction.infrastructure.utils.Message;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public record NewOrderRequest(
@@ -33,8 +34,8 @@ public record NewOrderRequest(
   String citizenIdentificationNumber,
 
   @Schema(description = "Ngày cấp Căn cước công dân (YYYY-MM-DD)", example = "2020-01-01")
-  @NotBlank(message = Message.PT_30)
-  String citizenIdentificationProvideDate,
+  @NotNull(message = Message.PT_30)
+  LocalDate citizenIdentificationProvideDate,
 
   @Schema(description = "Nơi cấp Căn cước công dân", example = "Cục Cảnh sát QLHC về TTXH")
   @NotBlank(message = SharedMessage.MES_16)
@@ -65,16 +66,12 @@ public record NewOrderRequest(
   CustomerType customerType,
 
   @Schema(description = "Ngày tiếp nhận hồ sơ (ISO)", example = "2024-02-01")
-  @NotBlank(message = Message.PT_33)
-  @NotEmpty(message = Message.PT_33)
-  @Pattern(regexp = SharedConstant.DATE_PATTERN, message = "Ngày tháng phải đúng định dạng dd-MM-yyyy")
-  String receivedFormAt,
+  @NotNull(message = Message.PT_33)
+  LocalDate receivedFormAt,
 
   @Schema(description = "Ngày dự kiến khảo sát (ISO)", example = "2024-02-05")
-  @NotBlank(message = Message.PT_51)
-  @NotEmpty(message = Message.PT_51)
-  @Pattern(regexp = SharedConstant.DATE_PATTERN, message = "Ngày tháng phải đúng định dạng dd-MM-yyyy")
-  String scheduleSurveyAt,
+  @NotNull(message = Message.PT_51)
+  LocalDate scheduleSurveyAt,
 
   @Schema(description = "Số hộ sử dụng chung đồng hồ", example = "1")
   @Positive(message = "Số hộ sử dụng phải lớn hơn 1")
