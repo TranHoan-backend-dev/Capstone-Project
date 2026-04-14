@@ -155,19 +155,17 @@ public class InstallationFormServiceImpl implements InstallationFormService {
         requestStatus.setRegistration(ProcessingStatus.APPROVED);
         requestStatus.setEstimate(ProcessingStatus.PENDING_FOR_APPROVAL);
 
-        if (costEstimateRepo.existsByInstallationForm(order)) {
-          throw new IllegalArgumentException(SharedMessage.MES_25);
+        if (!costEstimateRepo.existsByInstallationForm(order)) {
+          // tao san du toan rong
+          costEstimateService.createEstimate(new CreateRequest(
+            order.getCustomerName(),
+            order.getAddress(),
+            LocalDateTime.now(),
+            userId,
+            order.getFormCode(),
+            order.getFormNumber(),
+            order.getOverallWaterMeterId()));
         }
-
-        // tao san du toan rong
-        costEstimateService.createEstimate(new CreateRequest(
-          order.getCustomerName(),
-          order.getAddress(),
-          LocalDateTime.now(),
-          userId,
-          order.getFormCode(),
-          order.getFormNumber(),
-          order.getOverallWaterMeterId()));
       } else {
         // nvks hủy đơn
         var status = order.getStatus();
