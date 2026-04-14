@@ -1039,6 +1039,22 @@ VALUES ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', '456 Lê Hồng Phong, Nam Đị
          "surveyStaff": "Nguyễn Văn Khảo Sát",
          "companyLeaderShip": "Lê Văn Quản Lý",
          "planningTechnicalHead": "Trần Trưởng Phòng"
+       }', '00000000-0000-0000-0000-900000000006'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1039', '123 Đường Test 1, Nam Định', 1, 1000000,
+        'd75e221e-d150-4962-9afb-687062bfbcc8', '2024-06-02 08:30:00', 'Nguyễn Văn Test 1', 1, 200000,
+        'https://example.com/design39.png', 1, 300000, 1, 'Lắp mới đồng hồ D15', '40000001', 1, '2024-06-01 08:27:15',
+        1, 150000, '2024-06-02 08:30:00', 1, 'SN-2024-039', 80000001039, 20240039, '{
+         "surveyStaff": "Nguyễn Văn Khảo Sát",
+         "companyLeaderShip": "Lê Văn Quản Lý",
+         "planningTechnicalHead": "Trần Trưởng Phòng"
+       }', '00000000-0000-0000-0000-900000000006'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1048', '707 Đường Test 10, Nam Định', 1, 1000000,
+        'd75e221e-d150-4962-9afb-687062bfbcc8', '2024-06-10 08:30:00', 'Đặng Thị Test 10', 1, 200000,
+        'https://example.com/design48.png', 1, 300000, 1, 'Lắp mới đồng hồ D15', '40000010', 1, '2024-06-10 08:27:15',
+        1, 150000, '2024-06-10 08:30:00', 1, 'SN-2024-048', 80000001048, 20240048, '{
+         "surveyStaff": "Nguyễn Văn Khảo Sát",
+         "companyLeaderShip": "Lê Văn Quản Lý",
+         "planningTechnicalHead": "Trần Trưởng Phòng"
        }', '00000000-0000-0000-0000-900000000006');
 
 INSERT INTO public.receipt (installation_form_form_code, installation_form_form_number, address, customer_name,
@@ -1075,7 +1091,11 @@ VALUES (80000001019, 20240019, '456 Lê Hồng Phong, Nam Định', 'Phạm Th�
        (80000001037, 20240037, '99 Trường Chinh, Nam Định', 'Đặng Thị Hồng', true, '2024-05-02 10:00:00',
         'Phí lắp đặt nước', 'REC-2024-0037', '1500000', '2024-05-02 10:00:00', '2024-05-02 10:00:00'),
        (80000001038, 20240038, '111 Điện Biên, Nam Định', 'Phan Văn Minh', true, '2024-05-02 11:00:00',
-        'Phí lắp đặt nước', 'REC-2024-0038', '1500000', '2024-05-02 11:00:00', '2024-05-02 11:00:00');
+        'Phí lắp đặt nước', 'REC-2024-0038', '1500000', '2024-05-02 11:00:00', '2024-05-02 11:00:00'),
+       (80000001039, 20240039, '123 Đường Test 1, Nam Định', 'Nguyễn Văn Test 1', true, '2024-06-01 10:00:00',
+        'Phí lắp đặt nước', 'REC-2024-0039', '1500000', '2024-06-01 10:00:00', '2024-06-01 10:00:00'),
+       (80000001048, 20240048, '707 Đường Test 10, Nam Định', 'Đặng Thị Test 10', true, '2024-06-10 10:00:00',
+        'Phí lắp đặt nước', 'REC-2024-0048', '1500000', '2024-06-10 10:00:00', '2024-06-10 10:00:00');
 
 insert into public.water_usage_contract (contract_id, created_at, updated_at, form_code,
                                          form_number, representative, appendix)
@@ -1174,6 +1194,18 @@ values ('CTR-2024-0019', '2024-03-27 09:00:00', '2024-03-27 09:00:00', '80000001
            "name": "Phan Văn Minh",
            "position": "Chủ hộ"
          }
+       ]'::jsonb, null),
+       ('CTR-2024-0039', '2024-06-03 11:00:00', '2024-06-03 11:00:00', '80000001039', '20240039', '[
+         {
+           "name": "Nguyễn Văn Test 1",
+           "position": "Chủ hộ"
+         }
+       ]'::jsonb, null),
+       ('CTR-2024-0048', '2024-06-12 11:00:00', '2024-06-12 11:00:00', '80000001048', '20240048', '[
+         {
+           "name": "Đặng Thị Test 10",
+           "position": "Chủ hộ"
+         }
        ]'::jsonb, null);
 
 INSERT INTO construction_request (id, contract_id, created_at, updated_at,
@@ -1193,7 +1225,9 @@ VALUES ('7a8192a3-7000-4aaa-9bbb-cccccccc0019', 'CTR-2024-0019', '2024-03-28 09:
        ('7a8192a3-7000-4aaa-9bbb-cccccccc0035', 'CTR-2024-0035', '2024-04-07 14:00:00', '2024-04-07 14:00:00', 80000001035, 20240035),
        ('7a8192a3-7000-4aaa-9bbb-cccccccc0036', 'CTR-2024-0036', '2024-05-04 09:00:00', '2024-05-04 09:00:00', 80000001036, 20240036),
        ('7a8192a3-7000-4aaa-9bbb-cccccccc0037', 'CTR-2024-0037', '2024-05-04 10:00:00', '2024-05-04 10:00:00', 80000001037, 20240037),
-       ('7a8192a3-7000-4aaa-9bbb-cccccccc0038', 'CTR-2024-0038', '2024-05-04 11:00:00', '2024-05-04 11:00:00', 80000001038, 20240038);
+       ('7a8192a3-7000-4aaa-9bbb-cccccccc0038', 'CTR-2024-0038', '2024-05-04 11:00:00', '2024-05-04 11:00:00', 80000001038, 20240038),
+       ('7a8192a3-7000-4aaa-9bbb-cccccccc1039', 'CTR-2024-0039', '2024-06-05 09:00:00', '2024-06-05 09:00:00', 80000001039, 20240039),
+       ('7a8192a3-7000-4aaa-9bbb-cccccccc1048', 'CTR-2024-0048', '2024-06-14 09:00:00', '2024-06-14 09:00:00', 80000001048, 20240048);
 
 INSERT INTO public.customer (customer_id, address, bank_account_name, bank_account_number,
                              bank_account_provider_location,
@@ -1263,86 +1297,86 @@ VALUES ('C-1022', '404 Võ Nguyên Giáp, Nam Định', 'TRAN VAN THANH', '19031
         current_timestamp, 'DOMESTIC', '24000038', 'MECHANICAL', '00000000-0000-0000-0000-B00000000001',
         'CTR-2024-0038');
 
-INSERT INTO public.settlement (settlement_id, address, connection_fee, created_at, job_content, note, registration_at,
+INSERT INTO public.settlement (settlement_id, address, customer_name, connection_fee, created_at, job_content, note, registration_at,
                                significance, updated_at, installation_form_code, installation_form_number)
-VALUES ('SETTLE-2024-0022', '404 Võ Nguyên Giáp, Nam Định', 1500000, '2024-03-28 09:00:00', 'Lắp đặt đường ống nhánh và đồng hồ D15',
+VALUES ('SETTLE-2024-0022', '404 Võ Nguyên Giáp, Nam Định', 'Trần Văn Thành', 1500000, '2024-03-28 09:00:00', 'Lắp đặt đường ống nhánh và đồng hồ D15',
         'Công trình hoàn thành đúng thiết kế, đã nghiệm thu.', '2024-03-25 10:57:40', '{
     "president": "Nguyễn Văn Kho",
     "ptHead": "Trịnh Trưởng Phòng",
     "surveyStaff": "Lê Kế Toán",
     "constructionPresident": "Lê Kế Toán"
   }', '2024-03-28 09:00:00', '80000001022', '20240022'),
-       ('SETTLE-2024-0028', '1010 Hàng Thao, Nam Định', 1800000, '2024-03-29 10:15:00', 'Lắp đặt hệ thống cấp nước hộ gia đình',
+       ('SETTLE-2024-0028', '1010 Hàng Thao, Nam Định', 'Trần Văn K', 1800000, '2024-03-29 10:15:00', 'Lắp đặt hệ thống cấp nước hộ gia đình',
         'Nghiệm thu đạt chuẩn kỹ thuật, bàn giao sử dụng.', '2024-03-26 10:38:30', '{
          "president": "Nguyễn Văn Kho",
          "ptHead": "Trịnh Trưởng Phòng",
          "surveyStaff": "Lê Kế Toán",
          "constructionPresident": "Lê Kế Toán"
        }', '2024-03-29 10:15:00', '80000001028', '20240028'),
-       ('SETTLE-2024-0029', '11 Nguyễn Du, Nam Định', 1500000, '2024-04-10 14:20:00', 'Lắp mới đồng hồ D15', 'Hoàn thành', '2024-04-01 08:27:15',
+       ('SETTLE-2024-0029', '11 Nguyễn Du, Nam Định', 'Nguyễn Thị Tới', 1500000, '2024-04-10 14:20:00', 'Lắp mới đồng hồ D15', 'Hoàn thành', '2024-04-01 08:27:15',
         '{
           "president": "Nguyễn Văn Kho",
           "ptHead": "Trịnh Trưởng Phòng",
           "surveyStaff": "Lê Kế Toán",
           "constructionPresident": "Lê Kế Toán"
         }', '2024-04-10 14:20:00', 80000001029, 20240029),
-       ('SETTLE-2024-0030', '22 Trần Phú, Nam Định', 1500000, '2024-04-10 15:30:00', 'Lắp mới đồng hồ D15', 'Hoàn thành', '2024-04-01 08:38:20',
+       ('SETTLE-2024-0030', '22 Trần Phú, Nam Định', 'Lê Văn Thắng', 1500000, '2024-04-10 15:30:00', 'Lắp mới đồng hồ D15', 'Hoàn thành', '2024-04-01 08:38:20',
         '{
           "president": "Nguyễn Văn Kho",
           "ptHead": "Trịnh Trưởng Phòng",
           "surveyStaff": "Lê Kế Toán",
           "constructionPresident": "Lê Kế Toán"
         }', '2024-04-10 15:30:00', 80000001030, 20240030),
-       ('SETTLE-2024-0031', '33 Lý Thường Kiệt, Nam Định', 1500000, '2024-04-10 16:40:00', 'Lắp mới đồng hồ D15', 'Hoàn thành',
+       ('SETTLE-2024-0031', '33 Lý Thường Kiệt, Nam Định', 'Trần Thị Tuyết', 1500000, '2024-04-10 16:40:00', 'Lắp mới đồng hồ D15', 'Hoàn thành',
         '2024-04-01 08:47:45', '{
          "president": "Nguyễn Văn Kho",
          "ptHead": "Trịnh Trưởng Phòng",
          "surveyStaff": "Lê Kế Toán",
          "constructionPresident": "Lê Kế Toán"
        }', '2024-04-10 16:40:00', 80000001031, 20240031),
-       ('SETTLE-2024-0032', '44 Hàng Thao, Nam Định', 1800000, '2024-04-11 09:15:00', 'Lắp mới đồng hồ D15', 'Hoàn thành', '2024-04-01 08:28:15',
+       ('SETTLE-2024-0032', '44 Hàng Thao, Nam Định', 'Phạm Văn Hùng', 1800000, '2024-04-11 09:15:00', 'Lắp mới đồng hồ D15', 'Hoàn thành', '2024-04-01 08:28:15',
         '{
           "president": "Nguyễn Văn Kho",
           "ptHead": "Trịnh Trưởng Phòng",
           "surveyStaff": "Lê Kế Toán",
           "constructionPresident": "Lê Kế Toán"
         }', '2024-04-11 09:15:00', 80000001032, 20240032),
-       ('SETTLE-2024-0033', '55 Quang Trung, Nam Định', 1500000, '2024-04-11 10:20:00', 'Lắp mới đồng hồ D15', 'Hoàn thành',
+       ('SETTLE-2024-0033', '55 Quang Trung, Nam Định', 'Hoàng Thị Kim', 1500000, '2024-04-11 10:20:00', 'Lắp mới đồng hồ D15', 'Hoàn thành',
         '2024-04-02 08:36:20', '{
          "president": "Nguyễn Văn Kho",
          "ptHead": "Trịnh Trưởng Phòng",
          "surveyStaff": "Lê Kế Toán",
          "constructionPresident": "Lê Kế Toán"
        }', '2024-04-11 10:20:00', 80000001033, 20240033),
-       ('SETTLE-2024-0034', '66 Lê Hồng Phong, Nam Định', 1500000, '2024-04-11 11:30:00', 'Lắp mới đồng hồ D15', 'Hoàn thành',
+       ('SETTLE-2024-0034', '66 Lê Hồng Phong, Nam Định', 'Đỗ Văn Cường', 1500000, '2024-04-11 11:30:00', 'Lắp mới đồng hồ D15', 'Hoàn thành',
         '2024-04-02 08:47:30', '{
          "president": "Nguyễn Văn Kho",
          "ptHead": "Trịnh Trưởng Phòng",
          "surveyStaff": "Lê Kế Toán",
          "constructionPresident": "Lê Kế Toán"
        }', '2024-04-11 11:30:00', 80000001034, 20240034),
-       ('SETTLE-2024-0035', '77 Hùng Vương, Nam Định', 1500000, '2024-04-11 14:40:00', 'Lắp mới đồng hồ D15', 'Hoàn thành',
+       ('SETTLE-2024-0035', '77 Hùng Vương, Nam Định', 'Bùi Thị Ngọc', 1500000, '2024-04-11 14:40:00', 'Lắp mới đồng hồ D15', 'Hoàn thành',
         '2024-04-02 08:58:15', '{
          "president": "Nguyễn Văn Kho",
          "ptHead": "Trịnh Trưởng Phòng",
          "surveyStaff": "Lê Kế Toán",
          "constructionPresident": "Lê Kế Toán"
        }', '2024-04-11 14:40:00', 80000001035, 20240035),
-       ('SETTLE-2024-0036', '88 Võ Nguyên Giáp, Nam Định', 1800000, '2024-05-10 09:15:00', 'Lắp mới đồng hồ D15', 'Hoàn thành',
+       ('SETTLE-2024-0036', '88 Võ Nguyên Giáp, Nam Định', 'Võ Văn Thành', 1800000, '2024-05-10 09:15:00', 'Lắp mới đồng hồ D15', 'Hoàn thành',
         '2024-05-01 08:27:30', '{
          "president": "Nguyễn Văn Kho",
          "ptHead": "Trịnh Trưởng Phòng",
          "surveyStaff": "Lê Kế Toán",
          "constructionPresident": "Lê Kế Toán"
        }', '2024-05-10 09:15:00', 80000001036, 20240036),
-       ('SETTLE-2024-0037', '99 Trường Chinh, Nam Định', 1500000, '2024-05-10 10:20:00', 'Lắp mới đồng hồ D15', 'Hoàn thành',
+       ('SETTLE-2024-0037', '99 Trường Chinh, Nam Định', 'Đặng Thị Hồng', 1500000, '2024-05-10 10:20:00', 'Lắp mới đồng hồ D15', 'Hoàn thành',
         '2024-05-01 08:38:15', '{
          "president": "Nguyễn Văn Kho",
          "ptHead": "Trịnh Trưởng Phòng",
          "surveyStaff": "Lê Kế Toán",
          "constructionPresident": "Lê Kế Toán"
        }', '2024-05-10 10:20:00', 80000001037, 20240037),
-       ('SETTLE-2024-0038', '111 Điện Biên, Nam Định', 1500000, '2024-05-10 11:30:00', 'Lắp mới đồng hồ D15', 'Hoàn thành',
+       ('SETTLE-2024-0038', '111 Điện Biên, Nam Định', 'Phan Văn Minh', 1500000, '2024-05-10 11:30:00', 'Lắp mới đồng hồ D15', 'Hoàn thành',
         '2024-05-01 08:47:40', '{
          "president": "Nguyễn Văn Kho",
          "ptHead": "Trịnh Trưởng Phòng",
@@ -1434,38 +1468,42 @@ VALUES ('40000001', '4d5e6f70-3000-4ddd-9eee-dddddddd0002', '195'),
 
 INSERT INTO public.price_type (price_type_id, area, price)
 VALUES ('00000000-0000-0000-0000-500000000001', '1', '{
-  "price": 8000,
+  "price": 8600,
   "step": 1
 }'),
        ('00000000-0000-0000-0000-500000000002', '1', '{
-         "price": 9600,
+         "price": 10300,
          "step": 2
        }'),
        ('00000000-0000-0000-0000-500000000003', '1', '{
-         "price": 11200,
+         "price": 12700,
          "step": 3
        }'),
+       ('00000000-0000-0000-0000-500000000011', '1', '{
+         "price": 13500,
+         "step": 4
+       }'),
        ('00000000-0000-0000-0000-500000000004', '1', '{
-         "price": 11800
+         "price": 12800
        }'),
        ('00000000-0000-0000-0000-500000000005', '1', '{
-         "price": 12500
+         "price": 13500
        }'),
        ('00000000-0000-0000-0000-500000000006', '1', '{
-         "price": 20000
+         "price": 23000
        }'),
        ('00000000-0000-0000-0000-500000000007', '2', '{
-         "price": 7700,
+         "price": 8200,
          "step": 1
        }'),
        ('00000000-0000-0000-0000-500000000008', '2', '{
-         "price": 9600
+         "price": 12200
        }'),
        ('00000000-0000-0000-0000-500000000009', '2', '{
-         "price": 12000
+         "price": 13500
        }'),
        ('00000000-0000-0000-0000-500000000010', '2', '{
-         "price": 20000
+         "price": 22000
        }');
 
 INSERT INTO public.material (material_id, labor_code, construction_machinery_price,
@@ -1704,6 +1742,7 @@ INSERT INTO public.water_price_price_types (water_price_price_id, price_types_pr
 VALUES ('00000000-0000-0000-0000-B00000000001', '00000000-0000-0000-0000-500000000001'),
        ('00000000-0000-0000-0000-B00000000001', '00000000-0000-0000-0000-500000000002'),
        ('00000000-0000-0000-0000-B00000000001', '00000000-0000-0000-0000-500000000003'),
+       ('00000000-0000-0000-0000-B00000000001', '00000000-0000-0000-0000-500000000011'),
        ('00000000-0000-0000-0000-B00000000005', '00000000-0000-0000-0000-500000000002'),
        ('00000000-0000-0000-0000-B00000000009', '00000000-0000-0000-0000-500000000003'),
        ('00000000-0000-0000-0000-B00000000013', '00000000-0000-0000-0000-500000000007'),
@@ -2031,6 +2070,26 @@ VALUES ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', 10, 'Ống nhựa HDPE', '20000'
        ('7a8192a3-6000-4bbb-9ccc-gggggggg1038', 0.5, 'Nhân công đào đất', '80000', '0',
         '00000000-0000-0000-0000-600000000028'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg1038', 1, 'Van 2 chiều', '15000', '85000',
+        '00000000-0000-0000-0000-600000000033'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1039', 10, 'Ống nhựa HDPE', '20000', '50000',
+        '00000000-0000-0000-0000-600000000011'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1039', 1, 'Đồng hồ nước', '10000', '450000',
+        '00000000-0000-0000-0000-600000000014'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1039', 1, 'Hộp bảo vệ', '5000', '120000',
+        '00000000-0000-0000-0000-600000000017'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1039', 0.5, 'Nhân công đào đất', '80000', '0',
+        '00000000-0000-0000-0000-600000000028'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1039', 1, 'Van 2 chiều', '15000', '85000',
+        '00000000-0000-0000-0000-600000000033'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1048', 10, 'Ống nhựa HDPE', '20000', '50000',
+        '00000000-0000-0000-0000-600000000011'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1048', 1, 'Đồng hồ nước', '10000', '450000',
+        '00000000-0000-0000-0000-600000000014'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1048', 1, 'Hộp bảo vệ', '5000', '120000',
+        '00000000-0000-0000-0000-600000000017'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1048', 0.5, 'Nhân công đào đất', '80000', '0',
+        '00000000-0000-0000-0000-600000000028'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1048', 1, 'Van 2 chiều', '15000', '85000',
         '00000000-0000-0000-0000-600000000033');
 
 INSERT INTO public.materials_of_settlement (settlement_id, mass, note, labor_cost, material_cost, material_material_id)

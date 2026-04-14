@@ -10,7 +10,7 @@ import com.capstone.construction.application.dto.request.estimate.CreateRequest;
 import com.capstone.construction.application.dto.request.estimate.EstimateFilterRequest;
 import com.capstone.construction.application.dto.request.estimate.UpdateRequest;
 import com.capstone.construction.application.dto.response.estimate.CostEstimateResponse;
-import com.capstone.construction.application.dto.response.estimate.MaterialsOfCostEstimateResponse;
+import com.capstone.construction.application.dto.response.MaterialsResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.domain.model.CostEstimate;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
@@ -198,6 +198,14 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   }
 
   @Override
+  public CostEstimateResponse getByFormCode(String formCode) {
+    log.info("Fetching cost estimate with formCode: {}", formCode);
+    var ce = eRepo.findByInstallationForm_Id_FormCode(formCode);
+    var materials = getMaterials(ce.getEstimationId());
+    return mapToResponse(ce, materials);
+  }
+
+  @Override
   public PageResponse<CostEstimateResponse> getAllEstimates(Pageable pageable, EstimateFilterRequest request) {
     log.info("Fetching all cost estimates with pageable: {}", pageable);
     var sortedPageable = Utility.sortByAttributeDesc(pageable, "createdAt");
@@ -277,7 +285,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
     return eRepo.findByInstallationForm_Id_FormCode(formCode).getWaterMeterTypeId();
   }
 
-  private List<BaseMaterial> mapMaterials(List<MaterialsOfCostEstimateResponse> materials) {
+  private List<BaseMaterial> mapMaterials(List<MaterialsResponse> materials) {
     if (materials == null) {
       return new ArrayList<>();
     }

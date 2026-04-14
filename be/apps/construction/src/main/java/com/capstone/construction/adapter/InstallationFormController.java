@@ -129,7 +129,8 @@ public class InstallationFormController {
     @ApiResponse(responseCode = "500", description = "Lỗi hệ thống.", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @GetMapping
-  @PreAuthorize("hasAnyAuthority('PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'IT_STAFF', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF', 'CONSTRUCTION_DEPARTMENT_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'FINANCE_DEPARTMENT')")
+  @PreAuthorize("hasAnyAuthority('PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'IT_STAFF', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF', " +
+    "'CONSTRUCTION_DEPARTMENT_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'FINANCE_DEPARTMENT')")
   public ResponseEntity<WrapperApiResponse> getInstallationForms(
     @Parameter(description = "Thông tin phân trang (page, size, sort)", schema = @Schema(implementation = Pageable.class)) Pageable pageable,
     @Parameter(description = "Thông tin lọc (từ khóa, khoảng thời gian, trạng thái)") InstallationFormFilterRequest request
@@ -153,7 +154,7 @@ public class InstallationFormController {
 
   @Operation(summary = "Lấy danh sách đơn chờ duyệt dự toán", description = "Lấy các đơn lắp đặt có trạng thái của estimate là PENDING_FOR_APPROVAL")
   @GetMapping("/estimate/pending")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'COMPANY_LEADERSHIP', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD')")
   public ResponseEntity<WrapperApiResponse> getPendingEstimateForms(Pageable pageable) {
     var response = installationFormHandlingUseCase.findByEstimateStatusPending(pageable);
     return Utils.returnOkResponse("Lấy danh sách thành công", response);
@@ -161,7 +162,7 @@ public class InstallationFormController {
 
   @Operation(summary = "Lấy danh sách đơn chờ duyệt khảo sát", description = "Lấy các đơn lắp đặt mới có trạng thái registration là PENDING_FOR_APPROVAL")
   @GetMapping("/registration/pending")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP')")
   public ResponseEntity<WrapperApiResponse> getPendingRegistrationForms(Pageable pageable) {
     var response = installationFormHandlingUseCase.findByRegistrationStatusPending(pageable);
     return Utils.returnOkResponse("Lấy danh sách thành công", response);
@@ -169,7 +170,7 @@ public class InstallationFormController {
 
   @Operation(summary = "Lấy danh sách đơn đã duyệt dự toán", description = "Lấy các đơn lắp đặt mới có trạng thái estimate là APPROVED và REJECTED (Tách riêng)")
   @GetMapping("/reviewed")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'FINANCE_DEPARTMENT')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'FINANCE_DEPARTMENT', 'COMPANY_LEADERSHIP', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD')")
   public ResponseEntity<WrapperApiResponse> getReviewedEstimateForms() {
     var response = installationFormHandlingUseCase.getReviewedInstallationFormsList();
     return Utils.returnOkResponse("Lấy danh sách thành công", response);
@@ -177,15 +178,15 @@ public class InstallationFormController {
 
   @Operation(summary = "Lấy danh sách đơn đã giao khảo sát", description = "Lấy các đơn lắp đặt mới đã được giao cho nhân viên khảo sát")
   @GetMapping("/assigned")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'COMPANY_LEADERSHIP', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD')")
   public ResponseEntity<WrapperApiResponse> getAssignedForms(Pageable pageable) {
     var response = installationFormHandlingUseCase.findByHandoverByIsNotNull(pageable);
     return Utils.returnOkResponse("Lấy danh sách thành công", response);
   }
 
-  @Operation(summary = "Lấy danh sách đơn hoàn thành chưa quyết toán", description = "Lấy các đơn lắp đặt có 4 thành phần trạng thái là APPROVED và chưa lập quyết toán")
+  @Operation(summary = "Lấy danh sách đơn hoàn thành nhưng chưa lập quyết toán", description = "Lấy các đơn lắp đặt có 4 thành phần trạng thái là APPROVED và chưa lập quyết toán")
   @GetMapping("/completed-without-settlement")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'FINANCE_DEPARTMENT', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'FINANCE_DEPARTMENT', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF', 'COMPANY_LEADERSHIP')")
   public ResponseEntity<WrapperApiResponse> getCompletedFormsWithoutSettlement(Pageable pageable) {
     var response = installationFormHandlingUseCase.findCompletedFormsWithoutSettlement(pageable);
     return Utils.returnOkResponse("Lấy danh sách thành công", response);
@@ -217,7 +218,7 @@ public class InstallationFormController {
   }
 
   @GetMapping("/details/{formCode}/{formNumber}")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF', 'COMPANY_LEADERSHIP')")
   public ResponseEntity<WrapperApiResponse> getDetails(
     @PathVariable String formCode,
     @PathVariable String formNumber

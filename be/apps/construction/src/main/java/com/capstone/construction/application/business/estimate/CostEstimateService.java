@@ -15,6 +15,8 @@ public interface CostEstimateService {
 
   CostEstimateResponse getEstimateById(String id);
 
+  CostEstimateResponse getByFormCode(String formCode);
+
   PageResponse<CostEstimateResponse> getAllEstimates(Pageable pageable, EstimateFilterRequest request);
 
   void approveEstimate(String id, Boolean status);

@@ -1,7 +1,7 @@
 package com.capstone.device.application.business.material.estimate;
 
 import com.capstone.common.request.BaseMaterial;
-import com.capstone.device.application.dto.response.material.MaterialsOfCostEstimateResponse;
+import com.capstone.device.application.dto.response.material.MaterialsListResponse;
 import com.capstone.device.domain.model.Material;
 import com.capstone.device.domain.model.MaterialsOfCostEstimate;
 import com.capstone.device.domain.model.utils.MaterialsOfCostEstimateId;
@@ -28,7 +28,7 @@ public class MaterialsOfCostEstimateServiceImpl implements MaterialsOfCostEstima
   MaterialRepository materialRepository;
 
   @Override
-  public List<MaterialsOfCostEstimateResponse> getByEstimateId(String id) {
+  public List<MaterialsListResponse> getByEstimateId(String id) {
     var result = repo.findById_CostEstId(id);
     log.info(result.toString());
     return result.stream().map(this::mapToResponse).collect(Collectors.toList());
@@ -53,13 +53,13 @@ public class MaterialsOfCostEstimateServiceImpl implements MaterialsOfCostEstima
   }
 
   @Override
-  public List<MaterialsOfCostEstimateResponse> getDefaultMaterial() {
+  public List<MaterialsListResponse> getDefaultMaterial() {
     return materialRepository.findAll(PageRequest.of(0, 20))
       .getContent().stream().map(this::mapToResponse).toList();
   }
 
-  private @NonNull MaterialsOfCostEstimateResponse mapToResponse(@NonNull Material m) {
-    return new MaterialsOfCostEstimateResponse(
+  private @NonNull MaterialsListResponse mapToResponse(@NonNull Material m) {
+    return new MaterialsListResponse(
       m.getMaterialId(),
       m.getJobContent(),
       null,
@@ -73,10 +73,10 @@ public class MaterialsOfCostEstimateServiceImpl implements MaterialsOfCostEstima
     );
   }
 
-  private @NonNull MaterialsOfCostEstimateResponse mapToResponse(@NonNull MaterialsOfCostEstimate m) {
+  private @NonNull MaterialsListResponse mapToResponse(@NonNull MaterialsOfCostEstimate m) {
     var material = m.getMaterial();
 
-    return new MaterialsOfCostEstimateResponse(
+    return new MaterialsListResponse(
       m.getId().getMaterialId(),
       material.getJobContent(),
       m.getNote(),

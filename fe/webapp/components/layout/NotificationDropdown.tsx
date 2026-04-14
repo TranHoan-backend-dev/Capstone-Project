@@ -1,21 +1,6 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
-import {
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownSection,
-  DropdownItem,
-  Badge,
-  Avatar,
-  ScrollShadow,
-  Button,
-  Skeleton,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  useDisclosure,
-} from "@heroui/react";
+import { Avatar, Badge, Button, Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger, Modal, ModalBody, ModalContent, ModalHeader, ScrollShadow, Skeleton, useDisclosure } from "@heroui/react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { authFetch } from "@/utils/authFetch";
 import {
   BellIcon,
   CheckCircleIcon,
@@ -207,7 +192,7 @@ const NotificationDropdown = () => {
   // Fetch total unread count
   const fetchUnreadCount = useCallback(async () => {
     try {
-      const response = await fetch("/api/notifications/unread-count");
+      const response = await authFetch("/api/notifications/unread-count");
       if (response.ok) {
         const data = await response.json();
         setTotalUnreadCount(data.data || 0);
@@ -228,7 +213,7 @@ const NotificationDropdown = () => {
       setHasError(false);
 
       try {
-        const response = await fetch(`/api/notifications?page=0&size=5`);
+        const response = await authFetch(`/api/notifications?page=0&size=5`);
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -275,7 +260,7 @@ const NotificationDropdown = () => {
       setModalHasError(false);
 
       try {
-        const response = await fetch(
+        const response = await authFetch(
           `/api/notifications?page=${page - 1}&size=10`,
         );
 
@@ -521,7 +506,7 @@ const NotificationDropdown = () => {
   const markAsRead = useCallback(
     async (notificationId: string) => {
       try {
-        const response = await fetch(
+        const response = await authFetch(
           `/api/notifications/${notificationId}/read`,
           {
             method: "PATCH",
@@ -551,7 +536,7 @@ const NotificationDropdown = () => {
   // Mark all as read
   const markAllAsRead = useCallback(async () => {
     try {
-      const response = await fetch("/api/notifications/read-all", {
+      const response = await authFetch("/api/notifications/read-all", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -576,7 +561,7 @@ const NotificationDropdown = () => {
       e.stopPropagation();
 
       try {
-        const response = await fetch(`/api/notifications/${notificationId}`, {
+        const response = await authFetch(`/api/notifications/${notificationId}`, {
           method: "DELETE",
         });
 

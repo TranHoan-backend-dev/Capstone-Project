@@ -2,7 +2,7 @@ package com.capstone.device.application.dto.response.material;
 
 import java.math.BigDecimal;
 
-public record MaterialsOfCostEstimateResponse(
+public record MaterialsListResponse(
   String id,
   String jobContent,
   String note,

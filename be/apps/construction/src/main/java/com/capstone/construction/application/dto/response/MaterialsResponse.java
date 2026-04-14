@@ -1,6 +1,6 @@
-package com.capstone.construction.application.dto.response.estimate;
+package com.capstone.construction.application.dto.response;
 
-public record MaterialsOfCostEstimateResponse(
+public record MaterialsResponse(
   String id,
   String jobContent, // noi dung cong viec
   String note,
