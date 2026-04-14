@@ -237,8 +237,22 @@ const NewInstallationForm = () => {
       );
       if (citizenDateError) return showError(citizenDateError);
 
+      const numberOfHousehold = Number(formData.numberOfHousehold);
+      const householdRegistrationNumber = Number(
+        formData.householdRegistrationNumber,
+      );
+
+      if (
+        Number.isNaN(numberOfHousehold) ||
+        Number.isNaN(householdRegistrationNumber)
+      ) {
+        return showError("Số hộ sử dụng và số nhân khẩu phải là số hợp lệ");
+      }
+
       const payload = {
         ...formData,
+        numberOfHousehold,
+        householdRegistrationNumber,
         receivedFormAt: formData.receivedFormAt
           ? new Date(formData.receivedFormAt).toISOString().split("T")[0]
           : "",
@@ -263,12 +277,32 @@ const NewInstallationForm = () => {
         let userFriendlyMsg = "Có lỗi xảy ra khi tạo đơn. Vui lòng thử lại.";
         try {
           const errJson = await res.json();
+          const validationData =
+            errJson?.data && typeof errJson.data === "object"
+              ? errJson.data
+              : errJson?.error?.data && typeof errJson.error.data === "object"
+                ? errJson.error.data
+                : null;
+          let hasValidationDetails = false;
+
+          if (validationData) {
+            const validationErrors = Object.entries(validationData)
+              .map(([field, message]) => `${field}: ${String(message)}`)
+              .join("\n");
+            if (validationErrors) {
+              userFriendlyMsg = validationErrors;
+              hasValidationDetails = true;
+            }
+          }
+
           if (errJson?.message?.includes("duplicate key")) {
             userFriendlyMsg = "Số hồ sơ đã tồn tại. Vui lòng nhập số khác.";
           } else if (
             errJson?.message?.includes("citizenIdentificationNumber")
           ) {
             userFriendlyMsg = "Số CCCD đã tồn tại trong hệ thống.";
+          } else if (!hasValidationDetails && errJson?.message) {
+            userFriendlyMsg = errJson.message;
           }
         } catch {}
 
@@ -319,7 +353,10 @@ const NewInstallationForm = () => {
         icon={<DocumentPlusIcon className="w-6 h-6" />}
         title="Đơn lắp đặt mới"
       >
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div
+          className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+          data-enter-navigation
+        >
           <OrderInfoSection formData={formData} updateField={updateField} />
           <CustomerInfoSection formData={formData} updateField={updateField} />
           <AddressContactSection

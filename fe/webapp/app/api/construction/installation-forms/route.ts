@@ -67,11 +67,14 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(response.data, { status: 201 });
   } catch (error: any) {
+    const backendError = error?.response?.data;
     return NextResponse.json(
       {
-        message: error?.response?.data?.message || "Tạo đơn thất bại",
+        message: backendError?.message || "Tạo đơn thất bại",
+        data: backendError?.data ?? null,
+        error: backendError ?? null,
       },
-      { status: error.response?.status || 500 },
+      { status: error?.response?.status || 500 },
     );
   }
 }

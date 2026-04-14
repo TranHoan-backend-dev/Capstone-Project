@@ -2,6 +2,7 @@
 
 import { Input, InputProps } from "@heroui/react";
 import React from "react";
+import { focusNextFieldOnEnter } from "@/utils/focusNextFieldOnEnter";
 
 interface CustomInputProps extends InputProps {
   type?: string;
@@ -14,6 +15,7 @@ const CustomInput = ({
   label,
   isRequired,
   className = "",
+  onKeyDown,
   ...props
 }: CustomInputProps) => {
   return (
@@ -26,6 +28,16 @@ const CustomInput = ({
       type={type}
       variant="bordered"
       className={`w-full ${className}`}
+      onKeyDown={(e) => {
+        onKeyDown?.(e);
+        if (!e.defaultPrevented) {
+          focusNextFieldOnEnter(
+            e as React.KeyboardEvent<
+              HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+            >,
+          );
+        }
+      }}
       {...props}
     />
   );

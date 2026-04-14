@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Input, InputProps } from "@heroui/react";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
+import { focusNextFieldOnEnter } from "@/utils/focusNextFieldOnEnter";
 
 interface PasswordInputProps extends InputProps {
   placeholder?: string;
@@ -12,6 +13,7 @@ interface PasswordInputProps extends InputProps {
 const PasswordInput = ({
   placeholder,
   label,
+  onKeyDown,
   ...props
 }: PasswordInputProps) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -44,6 +46,16 @@ const PasswordInput = ({
       placeholder={placeholder}
       size="md"
       type={showPassword ? "text" : "password"}
+      onKeyDown={(e) => {
+        onKeyDown?.(e);
+        if (!e.defaultPrevented) {
+          focusNextFieldOnEnter(
+            e as React.KeyboardEvent<
+              HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+            >,
+          );
+        }
+      }}
     />
   );
 };
