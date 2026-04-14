@@ -1,7 +1,10 @@
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 import { signinService } from "@/services/auth.service";
-import { IS_PRODUCTION } from "@/constants/auth.constants";
+import {
+  IS_PRODUCTION,
+  MAX_AGE_REFRESH_TOKEN,
+} from "@/constants/auth.constants";
 
 export async function POST(req: NextRequest) {
   try {
@@ -81,6 +84,12 @@ export async function POST(req: NextRequest) {
     }
 
     const tokenResponse = backendData.data?.token;
+    const accessToken =
+      tokenResponse?.access_token || tokenResponse?.accessToken;
+    const refreshToken =
+      tokenResponse?.refresh_token || tokenResponse?.refreshToken;
+    const accessTokenMaxAge =
+      Number(tokenResponse?.expires_in ?? tokenResponse?.expiredTime) || 300;
     const res = NextResponse.json(backendData.data);
 
     const cookieOptions = {
@@ -90,23 +99,24 @@ export async function POST(req: NextRequest) {
       path: "/",
     };
 
-    if (tokenResponse?.access_token) {
+    if (accessToken) {
       res.cookies.set(
         IS_PRODUCTION ? "__Secure-access_token" : "access_token",
-        tokenResponse.access_token,
+        accessToken,
         {
           ...cookieOptions,
-          maxAge: tokenResponse.expires_in || 300,
+          maxAge: accessTokenMaxAge,
         },
       );
     }
 
-    if (tokenResponse?.refresh_token) {
+    if (refreshToken) {
       res.cookies.set(
         IS_PRODUCTION ? "__Secure-refresh_token" : "refresh_token",
-        tokenResponse.refresh_token,
+        refreshToken,
         {
           ...cookieOptions,
+          maxAge: MAX_AGE_REFRESH_TOKEN,
         },
       );
     }

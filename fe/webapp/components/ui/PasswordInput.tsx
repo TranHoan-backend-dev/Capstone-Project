@@ -27,7 +27,7 @@ const PasswordInput = ({
         <div className="flex items-center h-full">
           <button
             aria-label="toggle password visibility"
-            className="focus:outline-solid outline-transparent"
+            className="cursor-pointer focus:outline-solid outline-transparent"
             type="button"
             onClick={togglePasswordVisibility}
           >
