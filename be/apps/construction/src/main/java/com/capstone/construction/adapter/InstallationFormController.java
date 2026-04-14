@@ -186,7 +186,7 @@ public class InstallationFormController {
 
   @Operation(summary = "Lấy danh sách đơn hoàn thành nhưng chưa lập quyết toán", description = "Lấy các đơn lắp đặt có 4 thành phần trạng thái là APPROVED và chưa lập quyết toán")
   @GetMapping("/completed-without-settlement")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'FINANCE_DEPARTMENT', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'FINANCE_DEPARTMENT', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF', 'COMPANY_LEADERSHIP')")
   public ResponseEntity<WrapperApiResponse> getCompletedFormsWithoutSettlement(Pageable pageable) {
     var response = installationFormHandlingUseCase.findCompletedFormsWithoutSettlement(pageable);
     return Utils.returnOkResponse("Lấy danh sách thành công", response);
@@ -218,7 +218,7 @@ public class InstallationFormController {
   }
 
   @GetMapping("/details/{formCode}/{formNumber}")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF', 'COMPANY_LEADERSHIP')")
   public ResponseEntity<WrapperApiResponse> getDetails(
     @PathVariable String formCode,
     @PathVariable String formNumber

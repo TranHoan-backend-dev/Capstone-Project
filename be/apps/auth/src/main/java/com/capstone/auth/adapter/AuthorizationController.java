@@ -99,7 +99,7 @@ public class AuthorizationController {
     @ApiResponse(responseCode = "500", description = "Lỗi hệ thống", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @GetMapping(EMPLOYEE_PREFIX + "/{authorId}")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF', 'SURVEY_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF', 'SURVEY_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF', 'COMPANY_LEADERSHIP')")
   public ResponseEntity<WrapperApiResponse> checkAuthorExisting(
     @Parameter(description = "ID của nhân viên cần kiểm tra", required = true)
     @PathVariable String authorId
@@ -193,7 +193,7 @@ public class AuthorizationController {
 
   @Operation
   @GetMapping(EMPLOYEE_PREFIX + "/leadership")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF', 'COMPANY_LEADERSHIP')")
   public ResponseEntity<?> getLeaderships() {
     log.info("Get planning leaderships");
     return Utils.returnOkResponse("", usersUseCase.getListOfCompanyLeaderShips());
