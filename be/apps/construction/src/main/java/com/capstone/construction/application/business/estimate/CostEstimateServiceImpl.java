@@ -303,7 +303,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   }
 
   private @NonNull CostEstimateResponse mapToResponse(
-    @NonNull CostEstimate estimate, List<BaseMaterial> material
+    @NonNull CostEstimate estimate, List<BaseMaterial> materials
   ) {
     return new CostEstimateResponse(
       new CostEstimateResponse.GeneralInformation(
@@ -339,7 +339,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
           estimate.getSignificance().getSurveyStaff(),
           estimate.getSignificance().getPlanningTechnicalHead()) : null
       ),
-      material);
+      materials);
   }
 
   private CostEstimate getById(String id) {

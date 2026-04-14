@@ -63,12 +63,6 @@ public class InstallationFormController {
     log.info("Received request to create installation form: {}", request.formNumber());
     var id = jwt.getSubject();
 
-    if (!Utils.isLocalDate(request.receivedFormAt(), DateTimeFormatter.ISO_LOCAL_DATE) ||
-      !Utils.isLocalDate(request.citizenIdentificationProvideDate(), DateTimeFormatter.ISO_LOCAL_DATE) ||
-      !Utils.isLocalDate(request.scheduleSurveyAt(), DateTimeFormatter.ISO_LOCAL_DATE)) {
-      throw new IllegalArgumentException(Message.PT_05);
-    }
-
     var response = installationFormHandlingUseCase.createNewInstallationRequest(id, request);
     log.info("Successfully created installation form: {}", response.formNumber());
 
