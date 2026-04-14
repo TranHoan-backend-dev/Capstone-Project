@@ -12,7 +12,10 @@ import com.capstone.construction.domain.model.utils.InstallationFormId;
 import com.capstone.construction.domain.model.utils.significance.SettlementSignificance;
 import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
 import com.capstone.construction.infrastructure.persistence.SettlementRepository;
+import com.capstone.construction.application.business.estimate.CostEstimateService;
+import com.capstone.construction.infrastructure.service.DeviceService;
 import com.capstone.construction.infrastructure.service.EmployeeService;
+import com.capstone.construction.application.dto.response.estimate.CostEstimateResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -26,16 +29,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,6 +51,12 @@ class SettlementServiceImplTest {
 
   @Mock
   EmployeeService empSrv;
+
+  @Mock
+  CostEstimateService costEstimateService;
+
+  @Mock
+  DeviceService deviceSrv;
 
   @InjectMocks
   SettlementServiceImpl settlementService;
@@ -64,13 +72,15 @@ class SettlementServiceImplTest {
   @Test
   @DisplayName("Create settlement successfully")
   void createSettlement_ShouldSaveAndReturnResponse() {
-    var request = new CreateSettlementRequest("1", "1001", "Job", "Addr", BigDecimal.TEN, "Note", LocalDate.now());
+    var request = new CreateSettlementRequest("SETTLE-001", "1001", "1", "Job", "Customer A", "Addr", BigDecimal.TEN, "Note", LocalDate.now());
     var form = mock(InstallationForm.class);
     when(form.getFormCode()).thenReturn("1001");
     when(form.getFormNumber()).thenReturn("1");
 
     var settlement = Settlement.create(b -> b
+      .settlementId(request.settlementId())
       .jobContent(request.jobContent())
+      .customerName(request.customerName())
       .address(request.address())
       .connectionFee(request.connectionFee())
       .note(request.note())
@@ -79,38 +89,43 @@ class SettlementServiceImplTest {
 
     when(formRepository.findById(any(InstallationFormId.class))).thenReturn(Optional.of(form));
     when(settlementRepository.save(any(Settlement.class))).thenReturn(settlement);
+    var ceResponse = mock(CostEstimateResponse.class);
+    when(ceResponse.material()).thenReturn(List.of());
+    when(costEstimateService.getByFormCode(anyString())).thenReturn(ceResponse);
+    when(deviceSrv.updateMaterialsOfSettlement(anyString(), anyList())).thenReturn(new WrapperApiResponse(200, "ok", null, null));
 
     var result = settlementService.createSettlement(request);
 
-    assertThat(result.jobContent()).isEqualTo(request.jobContent());
+    assertThat(result.generalInformation().jobContent()).isEqualTo(request.jobContent());
     verify(settlementRepository).save(any(Settlement.class));
   }
 
   @Test
   @DisplayName("Update settlement successfully")
   void updateSettlement_ShouldUpdateAndReturnResponse() {
-    var id = "id123";
-    var request = new UpdateSettlementRequest("1", "1001", "New Job", "New Addr", BigDecimal.ONE, "New Note", LocalDate.now());
+    var id = "SETTLE-001";
+    var request = new UpdateSettlementRequest(id, "New Job", "New Customer", "New Addr", BigDecimal.ONE, "New Note", LocalDate.now(), null);
     var form = mock(InstallationForm.class);
     when(form.getFormCode()).thenReturn("1001");
     when(form.getFormNumber()).thenReturn("1");
 
-    var existing = Settlement.create(b -> b.jobContent("Old").address("Old").connectionFee(BigDecimal.ZERO).note("Old").installationForm(form).registrationAt(LocalDate.now()));
+    var existing = Settlement.create(b -> b.settlementId(id).jobContent("Old").customerName("Old").address("Old").connectionFee(BigDecimal.ZERO).note("Old").installationForm(form).registrationAt(LocalDate.now()));
 
     when(settlementRepository.findById(id)).thenReturn(Optional.of(existing));
     when(settlementRepository.save(any(Settlement.class))).thenAnswer(invocation -> invocation.getArgument(0));
+    when(deviceSrv.getMaterialsOfSettlement(anyString())).thenReturn(List.of());
 
     var result = settlementService.updateSettlement(id, request);
 
-    assertThat(result.jobContent()).isEqualTo("New Job");
-    assertThat(existing.getJobContent()).isEqualTo("New Job");
+    assertThat(result.generalInformation().jobContent()).isEqualTo("New Job");
+    assertThat(existing.getCustomerName()).isEqualTo("New Customer");
   }
 
   @Test
   @DisplayName("Update settlement should throw if not found")
   void updateSettlement_ShouldThrow_WhenNotFound() {
     when(settlementRepository.findById(anyString())).thenReturn(Optional.empty());
- 
+
     assertThatThrownBy(() -> settlementService.updateSettlement("id", mock(UpdateSettlementRequest.class)))
       .isInstanceOf(IllegalArgumentException.class);
   }
@@ -123,13 +138,13 @@ class SettlementServiceImplTest {
     when(form.getFormCode()).thenReturn("1001");
     when(form.getFormNumber()).thenReturn("1");
 
-    var existing = Settlement.create(b -> b.jobContent("Job").address("Addr").connectionFee(BigDecimal.ZERO).note("Note").installationForm(form).registrationAt(LocalDate.now()));
+    var existing = Settlement.create(b -> b.settlementId(id).jobContent("Job").customerName("Customer").address("Addr").connectionFee(BigDecimal.ZERO).note("Note").installationForm(form).registrationAt(LocalDate.now()));
 
-    when(settlementRepository.findById(id)).thenReturn(Optional.of(existing));
-
+    when(settlementRepository.findByIdWithInstallationForm(id)).thenReturn(Optional.of(existing));
+    when(deviceSrv.getMaterialsOfSettlement(anyString())).thenReturn(List.of());
     var result = settlementService.getSettlementById(id);
 
-    assertThat(result.jobContent()).isEqualTo("Job");
+    assertThat(result.generalInformation().jobContent()).isEqualTo("Job");
   }
 
   @Test
@@ -138,7 +153,7 @@ class SettlementServiceImplTest {
     var pageable = mock(Pageable.class);
     Page<Settlement> page = new PageImpl<>(List.of());
 
-    when(settlementRepository.findAll(pageable)).thenReturn(page);
+    when(settlementRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
 
     var result = settlementService.getAllSettlements(pageable);
 
@@ -152,7 +167,7 @@ class SettlementServiceImplTest {
     var pageable = mock(Pageable.class);
     Page<Settlement> page = new PageImpl<>(List.of());
 
-    when(settlementRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(page);
+    when(settlementRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
 
     var result = settlementService.filterSettlements(filter, pageable);
 
@@ -164,7 +179,7 @@ class SettlementServiceImplTest {
   void signSettlement_ShouldReturnTrue_WhenFullySigned() {
     var id = "id123";
     var userId = "User1";
-    var request = new SignificanceRequest("URL");
+    var request = new SignificanceRequest("URL", null);
     var significance = mock(SettlementSignificance.class);
     var settlement = mock(Settlement.class);
 
@@ -183,7 +198,7 @@ class SettlementServiceImplTest {
   void signSettlement_ShouldReturnFalse_WhenPartiallySigned() {
     var id = "id123";
     var userId = "User1";
-    var request = new SignificanceRequest("URL");
+    var request = new SignificanceRequest("URL", null);
     var significance = mock(SettlementSignificance.class);
     var settlement = mock(Settlement.class);
 

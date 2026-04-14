@@ -12,6 +12,10 @@ import java.time.LocalDate;
 
 @Schema(description = "Yêu cầu tạo thông tin quyết toán công trình")
 public record CreateSettlementRequest(
+  @NotBlank(message = "Mã quyết toán không được để trống")
+  @NotEmpty(message = "Mã quyết toán không được để trống")
+  String settlementId,
+
   @NotBlank(message = SharedMessage.MES_21)
   @NotEmpty(message = SharedMessage.MES_21)
   String formCode,
@@ -24,6 +28,11 @@ public record CreateSettlementRequest(
   @NotBlank(message = "Nội dung công việc là bắt buộc")
   @NotEmpty(message = "Nội dung công việc là bắt buộc")
   String jobContent,
+
+  @Schema(description = "Tên khách hàng", example = "Nguyễn Văn A")
+  @NotBlank(message = "Tên khách hàng không được để trống")
+  @NotEmpty(message = "Tên khách hàng không được để trống")
+  String customerName,
 
   @Schema(description = "Địa chỉ thi công công trình", example = "123 Đường ABC, Quận 1, TP.HCM")
   @NotBlank(message = "Địa chỉ là bắt buộc")

@@ -70,8 +70,8 @@ class SettlementUseCaseTest {
   @Test
   @DisplayName("Create settlement successfully")
   void createSettlement_ShouldReturnResponse() {
-    var request = new CreateSettlementRequest("1", "1001", "Job", "Addr", BigDecimal.ZERO, "Note", LocalDate.now());
-    var response1 = new SettlementResponse("id", "Job", "Addr", BigDecimal.ZERO, "Note", null, null, LocalDate.now(), "1001", "1", null, null);
+    var request = new CreateSettlementRequest("SETTLE-001", "1001", "1", "Job", "Customer A", "Addr", BigDecimal.ZERO, "Note", LocalDate.now());
+    var response1 = new SettlementResponse(new SettlementResponse.GeneralInformation("id", "Job", "Customer A", "Addr", BigDecimal.ZERO, "Note", null, null, LocalDate.now(), "1001", "1", null, null), null);
     var installationForm = mock(InstallationForm.class);
     var constructionRequest = mock(ConstructionResponse.class);
 
@@ -88,9 +88,9 @@ class SettlementUseCaseTest {
   @Test
   @DisplayName("Update settlement successfully")
   void updateSettlement_ShouldReturnResponse() {
-    var id = "id123";
-    var request = new UpdateSettlementRequest("1", "1001", "Job", "Addr", BigDecimal.ZERO, "Note", LocalDate.now());
-    var response2 = new SettlementResponse(id, "Job", "Addr", BigDecimal.ZERO, "Note", null, null, LocalDate.now(), "1001", "1", null, null);
+    var id = "SETTLE-001";
+    var request = new UpdateSettlementRequest(id, "Job", "Customer A", "Addr", BigDecimal.ZERO, "Note", LocalDate.now(), null);
+    var response2 = new SettlementResponse(new SettlementResponse.GeneralInformation(id, "Job", "Customer A", "Addr", BigDecimal.ZERO, "Note", null, null, LocalDate.now(), "1001", "1", null, null), null);
     when(settlementService.updateSettlement(id, request)).thenReturn(response2);
     var result2 = settlementUseCase.updateSettlement(id, request);
     assertThat(result2).isEqualTo(response2);
@@ -101,7 +101,7 @@ class SettlementUseCaseTest {
   @DisplayName("Get settlement by id successfully")
   void getSettlementById_ShouldReturnResponse() {
     var id = "id123";
-    var response3 = new SettlementResponse(id, "Job", "Addr", BigDecimal.ZERO, "Note", null, null, LocalDate.now(), "1001", "1", null, null);
+    var response3 = new SettlementResponse(new SettlementResponse.GeneralInformation(id, "Job", "Customer A", "Addr", BigDecimal.ZERO, "Note", null, null, LocalDate.now(), "1001", "1", null, null), null);
     when(settlementService.getSettlementById(id)).thenReturn(response3);
     var result3 = settlementUseCase.getSettlementById(id);
     assertThat(result3).isEqualTo(response3);
@@ -127,7 +127,7 @@ class SettlementUseCaseTest {
   void significance_ShouldSendMessage_WhenFullySigned() {
     var id = "id123";
     var userId = "User1";
-    var request = new SignificanceRequest("URL");
+    var request = new SignificanceRequest("URL", null);
 
     when(settlementService.signSettlement(userId, id, request)).thenReturn(true);
 
@@ -141,7 +141,7 @@ class SettlementUseCaseTest {
   void significance_ShouldNotSendMessage_WhenNotFullySigned() {
     var id = "id123";
     var userId = "User1";
-    var request = new SignificanceRequest("URL");
+    var request = new SignificanceRequest("URL", null);
 
     when(settlementService.signSettlement(userId, id, request)).thenReturn(false);
 

@@ -44,22 +44,32 @@ public class SettlementUseCase {
   String QUEUE_NAME;
 
   public SettlementResponse createSettlement(@NonNull CreateSettlementRequest request) {
+    if (settlementService.isExistingSettlement(request.settlementId())) {
+      throw new IllegalStateException("Quyết toán đã tồn tại");
+    }
+
     var constructionRequest = constructionRequestService.getByInstallationForm(request.formCode(), request.formNumber());
+    if (constructionRequest == null) {
+      throw new IllegalStateException("Công trình chưa được giao thi công, không thể lập quyết toán");
+    }
     if (!Boolean.parseBoolean(constructionRequest.isApproved())) {
       throw new IllegalStateException("Công trình chưa được phê duyệt, chưa thể lập quyết toán");
     }
     // kiem tra xem settlement da ton tai voi installation form nay hay chua
-    settlementService.checkSettlementExists(request.formCode(), request.formNumber());
+    var status = settlementService.checkSettlementExists(request.formCode(), request.formNumber());
+    if (status) {
+      throw new NotExistingException("Quyet toan da ton tai");
+    }
 
     return settlementService.createSettlement(request);
   }
 
-  public SettlementResponse updateSettlement(String id, UpdateSettlementRequest request) {
-    return settlementService.updateSettlement(id, request);
+  public SettlementResponse updateSettlement(String settlementId, UpdateSettlementRequest request) {
+    return settlementService.updateSettlement(settlementId, request);
   }
 
-  public SettlementResponse getSettlementById(String id) {
-    return settlementService.getSettlementById(id);
+  public SettlementResponse getSettlementById(String settlementId) {
+    return settlementService.getSettlementById(settlementId);
   }
 
   public PageResponse<SettlementResponse> getAllSettlements(Pageable pageable) {
@@ -73,7 +83,7 @@ public class SettlementUseCase {
   public void significance(String userId, String id, SignificanceRequest request) {
     // du 4 chu ky thi thong bao cho phong tai vu de phong tai vu yeu cau khach hang toi thanh toan quyet toan
     var settlement = settlementService.getSettlementById(id);
-    if (settlement.significance().isSettlementFullySigned()) {
+    if (settlement.generalInformation().significance().isSettlementFullySigned()) {
       throw new IllegalArgumentException("Tài liệu đã được ký đầy đủ");
     }
 

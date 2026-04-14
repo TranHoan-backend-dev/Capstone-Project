@@ -11,9 +11,9 @@ import org.springframework.data.domain.Pageable;
 public interface SettlementService {
   SettlementResponse createSettlement(CreateSettlementRequest request);
 
-  SettlementResponse updateSettlement(String id, UpdateSettlementRequest request);
+  SettlementResponse updateSettlement(String settlementId, UpdateSettlementRequest request);
 
-  SettlementResponse getSettlementById(String id);
+  SettlementResponse getSettlementById(String settlementId);
 
   PageResponse<SettlementResponse> getAllSettlements(Pageable pageable);
 
@@ -23,5 +23,5 @@ public interface SettlementService {
 
   boolean isExistingSettlement(String id);
 
-  void checkSettlementExists(String formCode, String formNumber);
+  boolean checkSettlementExists(String formCode, String formNumber);
 }

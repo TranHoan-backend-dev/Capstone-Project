@@ -1,0 +1,62 @@
+[
+  {
+    "materialCode": "00000000-0000-0000-0000-600000000011",
+    "jobContent": "Ống nhựa HDPE - PE80-OD20 PN12,5",
+    "note": "Ống nhựa HDPE",
+    "unit": "Mét",
+    "mass": "10.0",
+    "materialCost": "7500.00",
+    "laborPrice": "12500.00",
+    "laborPriceAtRuralCommune": "11250.00",
+    "totalMaterialPrice": "50000.0",
+    "totalLaborPrice": "20000.0"
+  },
+  {
+    "materialCode": "00000000-0000-0000-0000-600000000014",
+    "jobContent": "Đồng hồ đo nước MultimagS DN15 cấp C (đã bao gồm phí kiểm định ĐH)",
+    "note": "Đồng hồ nước",
+    "unit": "Cái",
+    "mass": "1.0",
+    "materialCost": "450000.00",
+    "laborPrice": "55000.00",
+    "laborPriceAtRuralCommune": "49500.00",
+    "totalMaterialPrice": "450000.0",
+    "totalLaborPrice": "10000.0"
+  },
+  {
+    "materialCode": "00000000-0000-0000-0000-600000000017",
+    "jobContent": "Hộp nhựa bảo vệ đồng hồ KT: 350x150x170",
+    "note": "Hộp bảo vệ",
+    "unit": "Cái",
+    "mass": "1.0",
+    "materialCost": "85000.00",
+    "laborPrice": "15000.00",
+    "laborPriceAtRuralCommune": "13500.00",
+    "totalMaterialPrice": "120000.0",
+    "totalLaborPrice": "5000.0"
+  },
+  {
+    "materialCode": "00000000-0000-0000-0000-600000000028",
+    "jobContent": "Nhân công đào đất cấp 3",
+    "note": "Nhân công đào đất",
+    "unit": "M3",
+    "mass": "0.5",
+    "materialCost": "380000.00",
+    "laborPrice": "450000.00",
+    "laborPriceAtRuralCommune": "405000.00",
+    "totalMaterialPrice": "0.0",
+    "totalLaborPrice": "80000.0"
+  },
+  {
+    "materialCode": "00000000-0000-0000-0000-600000000033",
+    "jobContent": "Van 2 chiều hiệu MIHA DN15",
+    "note": "Van 2 chiều",
+    "unit": "Cái",
+    "mass": "1.0",
+    "materialCost": "85000.00",
+    "laborPrice": "35000.00",
+    "laborPriceAtRuralCommune": "31500.00",
+    "totalMaterialPrice": "85000.0",
+    "totalLaborPrice": "15000.0"
+  }
+]

@@ -4,7 +4,7 @@ import com.capstone.common.annotation.AppLog;
 import com.capstone.common.request.BaseMaterial;
 import com.capstone.common.utils.Utils;
 import com.capstone.device.application.business.material.estimate.MaterialsOfCostEstimateService;
-import com.capstone.device.application.dto.response.material.MaterialsOfCostEstimateResponse;
+import com.capstone.device.application.dto.response.material.MaterialsListResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -21,14 +21,14 @@ import java.util.List;
 @RequestMapping("/materials/estimate")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CostEstimateController {
+public class MaterialsOfCostEstimateController {
   final MaterialsOfCostEstimateService mOfCostEstimateService;
   Logger log;
 
   @Operation(hidden = true)
   @GetMapping("/{id}")
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'SURVEY_STAFF')")
-  public List<MaterialsOfCostEstimateResponse> getMaterialsOfCostEstimate(@PathVariable String id) {
+  public List<MaterialsListResponse> getMaterialsOfCostEstimate(@PathVariable String id) {
     log.info("Get material of cost estimate with id: {}", id);
     return mOfCostEstimateService.getByEstimateId(id);
   }
@@ -48,7 +48,7 @@ public class CostEstimateController {
   @Operation(hidden = true)
   @GetMapping("/default")
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'SURVEY_STAFF', 'CONSTRUCTION_DEPARTMENT_STAFF')")
-  public List<MaterialsOfCostEstimateResponse> getDefaultMaterial() {
+  public List<MaterialsListResponse> getDefaultMaterial() {
     log.info("REST request to get default material");
     return mOfCostEstimateService.getDefaultMaterial();
   }
