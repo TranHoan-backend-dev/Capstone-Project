@@ -27,7 +27,7 @@ public class MaterialsOfCostEstimateController {
 
   @Operation(hidden = true)
   @GetMapping("/{id}")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'SURVEY_STAFF')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'SURVEY_STAFF', 'COMPANY_LEADERSHIP')")
   public List<MaterialsListResponse> getMaterialsOfCostEstimate(@PathVariable String id) {
     log.info("Get material of cost estimate with id: {}", id);
     return mOfCostEstimateService.getByEstimateId(id);

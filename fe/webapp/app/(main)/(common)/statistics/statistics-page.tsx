@@ -55,7 +55,7 @@ const COLORS: Record<StatKey, string> = {
   unassigned: "hsl(210 20% 85%)",
 };
 
-const ORDER: StatKey[] = [
+const ORDER: (keyof DetailedStats)[] = [
   "installation",
   "estimate",
   "settlement",

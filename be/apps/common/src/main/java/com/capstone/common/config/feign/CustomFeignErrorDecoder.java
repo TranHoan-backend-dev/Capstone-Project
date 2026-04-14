@@ -22,20 +22,49 @@ public class CustomFeignErrorDecoder implements ErrorDecoder {
 
   @Override
   public Exception decode(String methodKey, @NonNull Response response) {
+    // Log endpoint and request details to know exactly which endpoint failed
+    String httpMethod = "UNKNOWN";
+    String url = "UNKNOWN";
+    try {
+      if (response.request() != null) {
+        if (response.request().httpMethod() != null) {
+          httpMethod = response.request().httpMethod().name();
+        }
+        if (response.request().url() != null) {
+          url = response.request().url();
+        }
+      }
+    } catch (Exception ignored) {
+      // ignore metadata extraction issues
+    }
+
+    int status = response.status();
+    String reason = response.reason();
+    log.error("Feign error -> [{}] {} | status={}{} | methodKey={}",
+      httpMethod,
+      url,
+      status,
+      reason != null ? " (" + reason + ")" : "",
+      methodKey);
+
+    // If body is null or unreadable, fall back to default decoder
+    if (response.body() == null) {
+      return defaultErrorDecoder.decode(methodKey, response);
+    }
+
     try (InputStream bodyIs = response.body().asInputStream()) {
       WrapperApiResponse apiResponse = objectMapper.readValue(bodyIs, WrapperApiResponse.class);
-      String message = apiResponse.message();
-      log.info("Response: {}", response);
+      String message = apiResponse != null ? apiResponse.message() : null;
 
       return switch (response.status()) {
         case 400 -> {
-          if (message.contains("NotExistingException")) {
+          if (message != null && message.contains("NotExistingException")) {
              yield new NotExistingException(extractCleanMessage(message));
           }
           yield new IllegalArgumentException(extractCleanMessage(message));
         }
-        case 403 -> new ForbiddenException(message);
-        case 404 -> new NotExistingException(message);
+        case 403 -> new ForbiddenException(message != null ? message : "Forbidden");
+        case 404 -> new NotExistingException(message != null ? message : "Not Found");
         default -> defaultErrorDecoder.decode(methodKey, response);
       };
     } catch (IOException e) {

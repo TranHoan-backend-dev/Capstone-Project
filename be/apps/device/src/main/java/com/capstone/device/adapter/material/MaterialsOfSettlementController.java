@@ -25,7 +25,7 @@ public class MaterialsOfSettlementController {
 
   @Operation(hidden = true)
   @GetMapping("/{id}")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF', 'COMPANY_LEADERSHIP')")
   public List<MaterialsListResponse> getMaterialsOfSettlement(@PathVariable String id) {
     log.info("Get material of settlement with id: {}", id);
     return materialsOfSettlementService.getByEstimateId(id);
