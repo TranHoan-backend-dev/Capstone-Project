@@ -1,6 +1,6 @@
 package com.capstone.auth.infrastructure.service.keycloak;
 
-import com.capstone.auth.application.dto.response.UserNamesResponse;
+import com.capstone.auth.application.dto.response.FullNamesResponse;
 import com.capstone.auth.infrastructure.utils.Message;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -66,10 +66,10 @@ public class KeycloakService {
     }
   }
 
-  public UserNamesResponse getUserNames(String userId) {
+  public FullNamesResponse getFullName(String userId) {
     try {
       var user = keycloak.realm(realm).users().get(userId).toRepresentation();
-      return new UserNamesResponse(user.getFirstName(), user.getLastName());
+      return new FullNamesResponse(user.getFirstName(), user.getLastName());
     } catch (Exception e) {
       throw new IllegalArgumentException(String.format("User with id %s not found in Keycloak: %s", userId, e.getMessage()));
     }

@@ -1,6 +1,6 @@
 package com.capstone.auth.application.dto.response;
 
-public record UserNamesResponse(
+public record FullNamesResponse(
   String firstName,
   String lastName
 ) {

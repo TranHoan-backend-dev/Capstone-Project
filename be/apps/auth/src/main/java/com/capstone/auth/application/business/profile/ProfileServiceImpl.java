@@ -76,8 +76,8 @@ public class ProfileServiceImpl implements ProfileService {
 
   @Override
   public String getFullName(String id) {
-    var userNames = keycloakService.getUserNames(id);
-    return (userNames.firstName() + " " + userNames.lastName()).trim();
+    var fullNames = keycloakService.getFullName(id);
+    return (fullNames.firstName() + " " + fullNames.lastName()).trim();
   }
 
   private @NonNull ProfileDTO convertToResponse(@NonNull Optional<Profile> profile) {
@@ -85,7 +85,7 @@ public class ProfileServiceImpl implements ProfileService {
       throw new NotExistingException("Profile does not exist");
     }
     var p = profile.get();
-    var userNames = keycloakService.getUserNames(p.getProfileId());
+    var userNames = keycloakService.getFullName(p.getProfileId());
     var fullname = (userNames.firstName() + " " + userNames.lastName()).trim();
     return new ProfileDTO(
       profile.get().getProfileId(),

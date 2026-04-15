@@ -102,14 +102,15 @@ public class CostEstimateUseCase {
 
   public void assignStaffForSignCostEstimate(@NonNull AssignTheSignificanceRequest request, String userId) {
     var status = estSrv.isExisting(request.estId());
+    if (!status) {
+      throw new NotExistingException(String.format(Message.PT_61, request.estId()));
+    }
+
     var status1 = empSrv.isEmployeeExisting(request.surveyStaff()).data().toString();
     var status2 = empSrv.isEmployeeExisting(request.plHead()).data().toString();
     var status3 = empSrv.isEmployeeExisting(request.companyLeadership()).data().toString();
     var currentUser = empSrv.getRoleOfEmployeeById(userId).data().toString();
 
-    if (!status) {
-      throw new NotExistingException(String.format(Message.PT_61, request.estId()));
-    }
     if ((currentUser.equalsIgnoreCase(RoleName.SURVEY_STAFF.name()) && !Boolean.parseBoolean(status2) && !Boolean.parseBoolean(status3)) ||
       (currentUser.equalsIgnoreCase(RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD.name()) && !Boolean.parseBoolean(status1) && !Boolean.parseBoolean(status3)) ||
       (currentUser.equalsIgnoreCase(RoleName.COMPANY_LEADERSHIP.name()) && !Boolean.parseBoolean(status2) && !Boolean.parseBoolean(status1))
