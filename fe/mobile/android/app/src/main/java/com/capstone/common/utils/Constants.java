@@ -11,7 +11,7 @@ public final class Constants {
      * Base URL cho các API của hệ thống.
      * Sử dụng 10.0.2.2 cho Android Emulator.
      */
-    public static final String BASE_URL = "http://14.225.198.198:8000/";
+    public static final String BASE_URL = "https://api.nawaco.duckdns.org/";
 
     /**
      * Google Maps API Key placeholder.
