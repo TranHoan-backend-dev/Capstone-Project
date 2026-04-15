@@ -3,7 +3,8 @@ package com.capstone.construction.adapter;
 import com.capstone.common.enumerate.ProcessingStatus;
 import com.capstone.construction.application.dto.request.settlement.AssignTheSignificanceRequest;
 import com.capstone.construction.application.dto.request.settlement.SettlementFilterRequest;
-import com.capstone.construction.application.dto.request.settlement.SettlementRequest;
+import com.capstone.construction.application.dto.request.settlement.CreateSettlementRequest;
+import com.capstone.construction.application.dto.request.settlement.UpdateSettlementRequest;
 import com.capstone.construction.application.dto.request.settlement.SignificanceRequest;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.application.dto.response.settlement.SettlementResponse;
@@ -45,14 +46,19 @@ class SettlementControllerTest {
   @InjectMocks
   private SettlementController settlementController;
 
-  private SettlementRequest settlementRequest;
+  private CreateSettlementRequest createRequest;
+  private UpdateSettlementRequest updateRequest;
   private SettlementResponse mockResponse;
 
   @BeforeEach
   void setUp() {
     ReflectionTestUtils.setField(settlementController, "log", log);
 
-    settlementRequest = new SettlementRequest(
+    createRequest = new CreateSettlementRequest(
+      "1001", "1", "Job Content", "Address", BigDecimal.TEN, "Note", LocalDate.now()
+    );
+ 
+    updateRequest = new UpdateSettlementRequest(
       "1001", "1", "Job Content", "Address", BigDecimal.TEN, "Note", LocalDate.now()
     );
 
@@ -69,26 +75,26 @@ class SettlementControllerTest {
   @Test
   @DisplayName("Create settlement successfully via controller")
   void createSettlement_ShouldReturnCreated() {
-    when(settlementUseCase.createSettlement(any(SettlementRequest.class))).thenReturn(mockResponse);
-
-    var responseEntity = settlementController.createSettlement(settlementRequest);
-
+    when(settlementUseCase.createSettlement(any(CreateSettlementRequest.class))).thenReturn(mockResponse);
+ 
+    var responseEntity = settlementController.createSettlement(createRequest);
+ 
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     assertThat(Objects.requireNonNull(responseEntity.getBody()).message()).isEqualTo("Tạo quyết toán công trình thành công");
-    verify(settlementUseCase).createSettlement(settlementRequest);
+    verify(settlementUseCase).createSettlement(createRequest);
   }
 
   @Test
   @DisplayName("Update settlement successfully via controller")
   void updateSettlement_ShouldReturnOk() {
     var id = "id-123";
-    when(settlementUseCase.updateSettlement(eq(id), any(SettlementRequest.class))).thenReturn(mockResponse);
-
-    var responseEntity = settlementController.updateSettlement(id, settlementRequest);
-
+    when(settlementUseCase.updateSettlement(eq(id), any(UpdateSettlementRequest.class))).thenReturn(mockResponse);
+ 
+    var responseEntity = settlementController.updateSettlement(id, updateRequest);
+ 
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(Objects.requireNonNull(responseEntity.getBody()).message()).isEqualTo("Cập nhật quyết toán công trình thành công");
-    verify(settlementUseCase).updateSettlement(id, settlementRequest);
+    verify(settlementUseCase).updateSettlement(id, updateRequest);
   }
 
   @Test

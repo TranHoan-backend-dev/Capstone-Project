@@ -5,7 +5,8 @@ import com.capstone.common.utils.Utils;
 import com.capstone.construction.application.dto.request.settlement.AssignTheSignificanceRequest;
 import com.capstone.construction.application.dto.request.settlement.SignificanceRequest;
 import com.capstone.construction.application.dto.request.settlement.SettlementFilterRequest;
-import com.capstone.construction.application.dto.request.settlement.SettlementRequest;
+import com.capstone.construction.application.dto.request.settlement.CreateSettlementRequest;
+import com.capstone.construction.application.dto.request.settlement.UpdateSettlementRequest;
 import com.capstone.construction.application.dto.response.settlement.SettlementResponse;
 import com.capstone.construction.application.usecase.SettlementUseCase;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,14 +43,14 @@ public class SettlementController {
     @ApiResponse(responseCode = "400", description = "Dữ liệu yêu cầu không hợp lệ", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'CONSTRUCTION_DEPARTMENT_STAFF')")
-  public ResponseEntity<WrapperApiResponse> createSettlement(@RequestBody @Valid SettlementRequest request) {
+  public ResponseEntity<WrapperApiResponse> createSettlement(@RequestBody @Valid CreateSettlementRequest request) {
     log.info("REST request to create settlement for address: {}", request.address());
     var response = settlementUseCase.createSettlement(request);
     log.info(response.toString());
     return Utils.returnCreatedResponse("Tạo quyết toán công trình thành công");
   }
 
-  @PutMapping("/{id}")
+  @PutMapping("/{settlementId}")
   @Operation(summary = "Cập nhật thông tin quyết toán công trình", description = "Cập nhật lại các thông tin của bản quyết toán đã tồn tại thông qua ID.", responses = {
     @ApiResponse(responseCode = "200", description = "Cập nhật thành công", content = @Content(schema = @Schema(implementation = SettlementResponse.class))),
     @ApiResponse(responseCode = "404", description = "Không tìm thấy bản quyết toán", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class))),
@@ -57,23 +58,23 @@ public class SettlementController {
   })
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'CONSTRUCTION_DEPARTMENT_STAFF')")
   public ResponseEntity<WrapperApiResponse> updateSettlement(
-    @PathVariable @Parameter(description = "ID của bản quyết toán cần cập nhật", required = true) String id,
-    @RequestBody @Valid SettlementRequest request) {
-    log.info("REST request to update settlement with id: {}", id);
-    var response = settlementUseCase.updateSettlement(id, request);
+    @PathVariable @Parameter(description = "ID của bản quyết toán cần cập nhật", required = true) String settlementId,
+    @RequestBody @Valid UpdateSettlementRequest request) {
+    log.info("REST request to update settlement with id: {}", settlementId);
+    var response = settlementUseCase.updateSettlement(settlementId, request);
     return Utils.returnOkResponse("Cập nhật quyết toán công trình thành công", response);
   }
 
-  @GetMapping("/{id}")
+  @GetMapping("/{settlementId}")
   @Operation(summary = "Lấy thông tin chi tiết quyết toán theo ID", description = "Truy xuất đầy đủ thông tin của một bản quyết toán công trình cụ thể.", responses = {
     @ApiResponse(responseCode = "200", description = "Tìm thấy bản quyết toán", content = @Content(schema = @Schema(implementation = SettlementResponse.class))),
     @ApiResponse(responseCode = "404", description = "Không tìm thấy bản quyết toán", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'CONSTRUCTION_DEPARTMENT_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'CONSTRUCTION_DEPARTMENT_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP')")
   public ResponseEntity<WrapperApiResponse> getSettlementById(
-    @PathVariable @Parameter(description = "ID của bản quyết toán cần tra cứu", required = true) String id) {
-    log.info("REST request to get settlement with id: {}", id);
-    var response = settlementUseCase.getSettlementById(id);
+    @PathVariable @Parameter(description = "ID của bản quyết toán cần tra cứu", required = true) String settlementId) {
+    log.info("REST request to get settlement with id: {}", settlementId);
+    var response = settlementUseCase.getSettlementById(settlementId);
     return Utils.returnOkResponse("Lấy thông tin quyết toán công trình thành công", response);
   }
 
@@ -102,7 +103,7 @@ public class SettlementController {
     return Utils.returnOkResponse("Lấy danh sách quyết toán công trình thành công", response);
   }
 
-  @PostMapping("/sign/{id}")
+  @PostMapping("/sign/{settlementId}")
   @Operation(summary = "Ký duyệt bản quyết toán", description = """
     Thực hiện ký duyệt điện tử lên bản quyết toán bởi các bên có thẩm quyền liên quan.
     Luồng này sẽ kích hoạt thông báo đến các nhân viên được chỉ định.
@@ -116,12 +117,12 @@ public class SettlementController {
   public ResponseEntity<WrapperApiResponse> sign(
     @AuthenticationPrincipal Jwt jwt,
     @RequestBody SignificanceRequest request,
-    @PathVariable @Parameter(description = "ID của bản quyết toán cần ký", required = true) String id
+    @PathVariable @Parameter(description = "ID của bản quyết toán cần ký", required = true) String settlementId
   ) {
     log.info("Received request to sign settlement: {}", request);
 
     var userId = jwt.getSubject();
-    settlementUseCase.significance(userId, id, request);
+    settlementUseCase.significance(userId, settlementId, request);
     return Utils.returnOkResponse("Ký quyết toán thành công", null);
   }
 

@@ -10,7 +10,7 @@ import com.capstone.construction.application.dto.request.estimate.CreateRequest;
 import com.capstone.construction.application.dto.request.estimate.EstimateFilterRequest;
 import com.capstone.construction.application.dto.request.estimate.UpdateRequest;
 import com.capstone.construction.application.dto.response.estimate.CostEstimateResponse;
-import com.capstone.construction.application.dto.response.estimate.MaterialsOfCostEstimateResponse;
+import com.capstone.construction.application.dto.response.MaterialsResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.domain.model.CostEstimate;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
@@ -20,6 +20,7 @@ import com.capstone.construction.infrastructure.persistence.InstallationFormRepo
 import com.capstone.construction.infrastructure.service.GcsService;
 import com.capstone.construction.infrastructure.service.DeviceService;
 import com.capstone.construction.infrastructure.utils.Message;
+import com.capstone.construction.infrastructure.utils.Utility;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -31,7 +32,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -198,12 +198,21 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   }
 
   @Override
+  public CostEstimateResponse getByFormCode(String formCode) {
+    log.info("Fetching cost estimate with formCode: {}", formCode);
+    var ce = eRepo.findByInstallationForm_Id_FormCode(formCode);
+    var materials = getMaterials(ce.getEstimationId());
+    return mapToResponse(ce, materials);
+  }
+
+  @Override
   public PageResponse<CostEstimateResponse> getAllEstimates(Pageable pageable, EstimateFilterRequest request) {
     log.info("Fetching all cost estimates with pageable: {}", pageable);
+    var sortedPageable = Utility.sortByAttributeDesc(pageable, "createdAt");
 
     // Convert string dates to LocalDateTime
-    LocalDateTime startDate = Utils.parseFrom(request != null ? request.from() : null);
-    LocalDateTime endDate = Utils.parseTo(request != null ? request.to() : null);
+    var startDate = Utils.parseFrom(request != null ? request.from() : null);
+    var endDate = Utils.parseTo(request != null ? request.to() : null);
 
     var keyword = request == null ? null : request.keyword();
 
@@ -212,7 +221,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
         keyword,
         startDate,
         endDate),
-      pageable) : eRepo.findAll(pageable);
+      sortedPageable) : eRepo.findAll(sortedPageable);
 
     return PageResponse.fromPage(page, estimate -> mapToResponse(estimate, getMaterials(estimate.getEstimationId())));
   }
@@ -276,7 +285,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
     return eRepo.findByInstallationForm_Id_FormCode(formCode).getWaterMeterTypeId();
   }
 
-  private List<BaseMaterial> mapMaterials(List<MaterialsOfCostEstimateResponse> materials) {
+  private List<BaseMaterial> mapMaterials(List<MaterialsResponse> materials) {
     if (materials == null) {
       return new ArrayList<>();
     }
@@ -294,7 +303,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   }
 
   private @NonNull CostEstimateResponse mapToResponse(
-    @NonNull CostEstimate estimate, List<BaseMaterial> material
+    @NonNull CostEstimate estimate, List<BaseMaterial> materials
   ) {
     return new CostEstimateResponse(
       new CostEstimateResponse.GeneralInformation(
@@ -330,7 +339,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
           estimate.getSignificance().getSurveyStaff(),
           estimate.getSignificance().getPlanningTechnicalHead()) : null
       ),
-      material);
+      materials);
   }
 
   private CostEstimate getById(String id) {

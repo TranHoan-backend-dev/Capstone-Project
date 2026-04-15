@@ -5,5 +5,5 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface MaterialsGroupService {
-    Page<MaterialsGroupResponse> getPaginatedGroups(Pageable pageable, String filterName);
+  Page<MaterialsGroupResponse> getPaginatedGroups(Pageable pageable, String filterName);
 }

@@ -21,6 +21,7 @@ import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
@@ -56,6 +57,10 @@ public class ProfileController {
     @ApiResponse(responseCode = "403", description = "Bị cấm - Tài khoản người dùng bị khóa hoặc vô hiệu hóa", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "500", description = "Lỗi máy chủ nội bộ - Đã xảy ra lỗi không mong muốn", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))})
   @GetMapping()
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF', " +
+    "'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'FINANCE_DEPARTMENT', " +
+    "'CONSTRUCTION_DEPARTMENT_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD', 'BUSINESS_DEPARTMENT_HEAD'" +
+    ", 'METER_INSPECTION_STAFF')")
   public ResponseEntity<WrapperApiResponse> me(@AuthenticationPrincipal Jwt jwt) {
     var id = jwt.getSubject();
 
@@ -82,6 +87,10 @@ public class ProfileController {
     @ApiResponse(responseCode = "403", description = "Bị cấm - Tài khoản người dùng bị khóa hoặc vô hiệu hóa", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "500", description = "Lỗi máy chủ nội bộ - Đã xảy ra lỗi không mong muốn", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))})
   @PatchMapping()
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF', " +
+    "'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'FINANCE_DEPARTMENT', " +
+    "'CONSTRUCTION_DEPARTMENT_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD', 'BUSINESS_DEPARTMENT_HEAD'" +
+    ", 'METER_INSPECTION_STAFF')")
   public ResponseEntity<WrapperApiResponse> updateProfile(
     @AuthenticationPrincipal Jwt jwt,
     @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Thông tin hồ sơ cập nhật", required = true, content = @Content(schema = @Schema(implementation = UpdateProfileRequest.class))) @NonNull @RequestBody UpdateProfileRequest request) {
@@ -111,6 +120,10 @@ public class ProfileController {
     @ApiResponse(responseCode = "403", description = "Bị cấm - Tài khoản người dùng bị khóa hoặc vô hiệu hóa", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class))),
     @ApiResponse(responseCode = "500", description = "Lỗi máy chủ nội bộ - Đã xảy ra lỗi không mong muốn trong quá trình tải lên ảnh đại diện", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))})
   @PatchMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF', " +
+    "'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'FINANCE_DEPARTMENT', " +
+    "'CONSTRUCTION_DEPARTMENT_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD', 'BUSINESS_DEPARTMENT_HEAD'" +
+    ", 'METER_INSPECTION_STAFF')")
   public ResponseEntity<WrapperApiResponse> updateAvatar(
     @AuthenticationPrincipal Jwt jwt,
     @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Tệp ảnh đại diện để tải lên. Các định dạng hỗ trợ: JPEG, PNG, GIF", required = true) @RequestParam(value = "avatar") MultipartFile file) {

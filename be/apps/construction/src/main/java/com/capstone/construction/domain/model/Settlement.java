@@ -16,6 +16,7 @@ import java.time.*;
 import java.util.*;
 import java.util.function.Consumer;
 
+@Builder
 @Table
 @Getter
 @Entity
@@ -25,11 +26,13 @@ import java.util.function.Consumer;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Settlement implements Serializable {
   @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
   String settlementId;
 
   @Column(nullable = false)
   String jobContent;
+
+  @Column(nullable = false)
+  String customerName;
 
   @Column(nullable = false)
   String address;
@@ -40,7 +43,7 @@ public class Settlement implements Serializable {
   @Column(nullable = false)
   String note;
 
-  @Column(nullable = false)
+  @Column(name = "created_at", nullable = false)
   LocalDateTime createdAt;
 
   @Column(nullable = false)
@@ -88,6 +91,11 @@ public class Settlement implements Serializable {
     this.jobContent = jobContent;
   }
 
+  public void setCustomerName(String value) {
+    requireNonNullAndNotEmpty(value, SharedMessage.MES_26);
+    this.customerName = value;
+  }
+
   public void setAddress(String address) {
     requireNonNullAndNotEmpty(address, SharedMessage.MES_06);
     this.address = address;
@@ -99,7 +107,8 @@ public class Settlement implements Serializable {
   }
 
   public void setNote(String note) {
-    this.note = note == null ? "" : note.trim();
+    Objects.requireNonNull(note, Message.PT_60);
+    this.note = note;
   }
 
   private void requireNonNullAndNotEmpty(String value, String message) {
@@ -113,46 +122,6 @@ public class Settlement implements Serializable {
     var instance = new SettlementBuilder();
     builder.accept(instance);
     return instance.build();
-  }
-  // </editor-fold>
-
-  // <editor-fold> desc="builder"
-  public static class SettlementBuilder {
-    private final Settlement instance = new Settlement();
-
-    public SettlementBuilder jobContent(String jobContent) {
-      instance.setJobContent(jobContent);
-      return this;
-    }
-
-    public SettlementBuilder registrationAt(LocalDate address) {
-      instance.setRegistrationAt(address);
-      return this;
-    }
-
-    public SettlementBuilder address(String address) {
-      instance.setAddress(address);
-      return this;
-    }
-
-    public SettlementBuilder connectionFee(BigDecimal connectionFee) {
-      instance.setConnectionFee(connectionFee);
-      return this;
-    }
-
-    public SettlementBuilder installationForm(InstallationForm value) {
-      instance.setInstallationForm(value);
-      return this;
-    }
-
-    public SettlementBuilder note(String note) {
-      instance.setNote(note);
-      return this;
-    }
-
-    public Settlement build() {
-      return instance;
-    }
   }
   // </editor-fold>
 }

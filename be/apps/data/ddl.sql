@@ -440,6 +440,7 @@ create table public.settlement
   settlement_id            varchar(255)   not null  -- Unique identifier for the financial settlement document
     primary key,
   address                  varchar(255)   not null, -- Site address of final construction
+  customer_name            varchar(255)   not null, -- Name of the customer/applicant
   connection_fee           numeric(19, 2) not null, -- Final connection/installation fee confirmed
   created_at               timestamp(6)   not null, -- Timestamp of record creation
   job_content              varchar(255)   not null, -- Summary of actual tasks performed
@@ -579,6 +580,7 @@ create table public.water_meter_type
   qn          varchar(255),          -- Detection limit threshold (Nominal)
   qt          varchar(255),          -- Detection limit threshold (Transitional)
   size        integer,               -- Commercial size code
+  index_length integer,               -- Number of integer digits (black characters)
   updated_at  timestamp(6) not null  -- Timestamp of last update
 );
 

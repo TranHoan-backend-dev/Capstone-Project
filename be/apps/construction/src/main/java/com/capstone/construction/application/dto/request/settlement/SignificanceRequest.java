@@ -7,7 +7,7 @@ public record SignificanceRequest(
   @Schema(description = "Chữ ký", example = "http://localhost")
   String url,
 
-  @Schema(description = "Cờ đánh dấu giám đốc chi nhánh thi công. Mặc định là null, nếu là pt-head = true, ngược thì là giám đốc chi nhánh thi công")
+  @Schema(description = "Cờ đánh dấu giám đốc chi nhánh thi công. Mặc định là null; True là giám đốc chi nhánh thi công")
   Boolean status
 ) {
 }

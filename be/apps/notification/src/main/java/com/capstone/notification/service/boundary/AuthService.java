@@ -15,22 +15,25 @@ import java.util.List;
 
 @FeignClient(
   name = "auth",
-  path = "/api/v1/in",
+  path = "/api/v1",
   configuration = FeignAuthInterceptor.class
 )
 public interface AuthService {
-  @GetMapping("/{userId}")
+  @GetMapping("/in/{userId}")
   List<IndividualNotificationResponse> getIndividualNotificationsOfAnEmployee(
     @SpringQueryMap Pageable pageable,
     @PathVariable String userId
   );
 
-  @GetMapping("/{userId}/unread-count")
+  @GetMapping("/in/{userId}/unread-count")
   long getUnreadCount(@PathVariable String userId);
 
-  @PatchMapping("/{userId}/mark-read/{notificationId}")
+  @PatchMapping("/in/{userId}/mark-read/{notificationId}")
   void markAsRead(@PathVariable String userId, @PathVariable String notificationId);
 
-  @DeleteMapping("/{userId}/{notificationId}")
+  @DeleteMapping("/in/{userId}/{notificationId}")
   void deleteNotification(@PathVariable String userId, @PathVariable String notificationId);
+
+  @GetMapping("/authorization/employees/department")
+  String getDepartmentIdByUserId(@RequestParam String userId);
 }

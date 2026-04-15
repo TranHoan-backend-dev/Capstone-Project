@@ -2,7 +2,7 @@ package com.capstone.device.application.business.unit;
 
 import com.capstone.common.annotation.AppLog;
 import com.capstone.device.application.dto.request.unit.CreateUnitRequest;
-import com.capstone.device.application.dto.request.UpdateUnitRequest;
+import com.capstone.device.application.dto.request.unit.UpdateUnitRequest;
 import com.capstone.device.application.dto.response.UnitResponse;
 import com.capstone.device.domain.model.Unit;
 import com.capstone.device.infrastructure.persistence.MaterialRepository;

@@ -1,20 +1,23 @@
 ### Settlement API Test Suit
 
-@baseUrl = http://localhost:9005/construction/settlements
+@baseUrl = http://localhost:9004/api/v1/settlements
 
 ### 1. Tạo mới bản quyết toán công trình (Happy Path)
+# Lưu ý: formCode và formNumber phải tồn tại và đã được duyệt trong hệ thống
 POST {{baseUrl}}
 Content-Type: application/json
-Authorization: Bearer {{it_staff_token}}
+Authorization: Bearer {{access_token}}
 
 {
-  "formCode": "CODE-001",
-  "formNumber": "FORM-001",
-  "jobContent": "Lắp đặt hệ thống cấp nước D110 cho khu dân cư A",
-  "address": "123 Đường ABC, Quận 1, TP.HCM",
-  "connectionFee": 500000.00,
-  "note": "Hoàn thành giai đoạn 1",
-  "registrationAt": "2023-10-27"
+  "settlementId": "SETTLE-2024-0039",
+  "formCode": "80000001039",
+  "formNumber": "20240039",
+  "jobContent": "Lắp đặt hệ thống cấp nước D15 cho hộ dân",
+  "customerName": "Nguyễn Văn A",
+  "address": "404 Võ Nguyên Giáp, Nam Định",
+  "connectionFee": 1500000.00,
+  "note": "Khởi tạo quyết toán từ khảo sát",
+  "registrationAt": "2024-03-25"
 }
 
 > {%
@@ -32,6 +35,7 @@ Authorization: Bearer {{it_staff_token}}
   "formCode": "",
   "formNumber": "",
   "jobContent": "",
+  "customerName": "",
   "address": "",
   "connectionFee": -100,
   "registrationAt": null
@@ -43,33 +47,59 @@ Authorization: Bearer {{it_staff_token}}
  });
  %}
 
-### 3. Cập nhật thông tin quyết toán
-# Thay {{settlement_id}} bằng ID thực tế từ phản hồi bước 1
-PUT {{baseUrl}}/{{settlement_id}}
+### 3. Cập nhật thông tin quyết toán (Kèm danh sách vật tư)
+# Thay SETTLE-2024-0022 bằng ID thực tế nếu cần
+PUT {{baseUrl}}/SETTLE-2024-0022
 Content-Type: application/json
-Authorization: Bearer {{it_staff_token}}
+Authorization: Bearer {{access_token}}
 
 {
-  "formCode": "CODE-001",
-  "formNumber": "FORM-001",
-  "jobContent": "Cập nhật: Lắp đặt hệ thống cấp nước D150",
-  "address": "124 Đường ABC, Quận 1, TP.HCM",
-  "connectionFee": 750000.00,
-  "note": "Đã điều chỉnh phí",
-  "registrationAt": "2023-10-28"
+  "settlementId": "SETTLE-2024-0039",
+  "jobContent": "Cập nhật: Hoàn thành lắp đặt hệ thống cấp nước",
+  "customerName": "Nguyễn Văn B",
+  "address": "404 Võ Nguyên Giáp, Nam Định",
+  "connectionFee": 1500000.00,
+  "note": "Đã điều chỉnh khối lượng vật tư thực tế",
+  "registrationAt": "2024-03-28",
+  "materials": [
+    {
+      "materialCode": "00000000-0000-0000-0000-600000000011",
+      "jobContent": "Ống nhựa HDPE - PE80-OD20 PN12,5",
+      "note": "Khối lượng thực tế thi công",
+      "unit": "Mét",
+      "mass": "15.5",
+      "materialCost": "7500",
+      "laborPrice": "12500",
+      "laborPriceAtRuralCommune": "11250",
+      "totalMaterialPrice": "116250",
+      "totalLaborPrice": "193750"
+    },
+    {
+      "materialCode": "00000000-0000-0000-0000-600000000014",
+      "jobContent": "Đồng hồ đo nước MultimagS DN15 cấp C",
+      "note": "Lắp mới",
+      "unit": "Cái",
+      "mass": "1",
+      "materialCost": "450000",
+      "laborPrice": "55000",
+      "laborPriceAtRuralCommune": "49500",
+      "totalMaterialPrice": "450000",
+      "totalLaborPrice": "55000"
+    }
+  ]
 }
 
 ### 4. Lấy chi tiết quyết toán theo ID
-GET {{baseUrl}}/{{settlement_id}}
-Authorization: Bearer {{user_token}}
+GET {{baseUrl}}/SETTLE-2024-0022
+Authorization: Bearer {{it_staff_token}}
 
 ### 5. Lấy danh sách tất cả quyết toán
 GET {{baseUrl}}?page=0&size=10
-Authorization: Bearer {{user_token}}
+Authorization: Bearer {{it_staff_token}}
 
 ### 6. Lọc quyết toán theo tiêu chí
-GET {{baseUrl}}/filter?search=hệ thống&status=PENDING&connectionFeeMin=100000&registrationFrom=2023-01-01
-Authorization: Bearer {{user_token}}
+GET {{baseUrl}}/filter?search=Võ Nguyên Giáp&registrationFrom=2024-01-01
+Authorization: Bearer {{it_staff_token}}
 
 ### 7. Phân công các bên ký duyệt
 POST {{baseUrl}}/sign
@@ -77,23 +107,22 @@ Content-Type: application/json
 Authorization: Bearer {{it_staff_token}}
 
 {
-  "settlementId": "{{settlement_id}}",
-  "surveyStaff": "EMP001",
-  "plHead": "EMP002",
-  "companyLeadership": "EMP003",
-  "constructionPresident": "EMP004"
+  "settlementId": "SETTLE-2024-0022",
+  "surveyStaff": "6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20",
+  "plHead": "6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb21",
+  "companyLeadership": "6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb22",
+  "constructionPresident": "6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb23"
 }
 
 ### 8. Thực hiện ký duyệt (Lãnh đạo hoặc bên liên quan)
-POST {{baseUrl}}/sign/{{settlement_id}}
+# Thay userId bằng ID của người ký tương ứng
+POST {{baseUrl}}/sign/SETTLE-2024-0022
 Content-Type: application/json
-Authorization: Bearer {{leadership_token}}
+Authorization: Bearer {{it_staff_token}}
 
 {
-  "president": "NGUYEN_VAN_A",
-  "ptHead": null,
-  "surveyStaff": null,
-  "constructionPresident": null
+  "url": "https://signature-storage.com/sig123.png",
+  "status": true
 }
 
 ### 9. Thử truy cập không có quyền (Forbidden)
@@ -101,7 +130,7 @@ POST {{baseUrl}}
 Content-Type: application/json
 Authorization: Bearer {{user_token}}
 
-# Expect 403 because users don't have IT_STAFF authority for creation
+# Expect 403 because regular users don't have IT_STAFF authority for creation
 
 ### 10. Truy cập không có Token (Unauthorized)
 GET {{baseUrl}}

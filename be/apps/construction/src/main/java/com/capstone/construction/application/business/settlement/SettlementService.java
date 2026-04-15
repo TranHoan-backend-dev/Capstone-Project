@@ -1,18 +1,19 @@
 package com.capstone.construction.application.business.settlement;
 
 import com.capstone.construction.application.dto.request.settlement.SettlementFilterRequest;
-import com.capstone.construction.application.dto.request.settlement.SettlementRequest;
+import com.capstone.construction.application.dto.request.settlement.CreateSettlementRequest;
+import com.capstone.construction.application.dto.request.settlement.UpdateSettlementRequest;
 import com.capstone.construction.application.dto.request.settlement.SignificanceRequest;
 import com.capstone.construction.application.dto.response.settlement.SettlementResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
 import org.springframework.data.domain.Pageable;
 
 public interface SettlementService {
-  SettlementResponse createSettlement(SettlementRequest request);
+  SettlementResponse createSettlement(CreateSettlementRequest request);
 
-  SettlementResponse updateSettlement(String id, SettlementRequest request);
+  SettlementResponse updateSettlement(String settlementId, UpdateSettlementRequest request);
 
-  SettlementResponse getSettlementById(String id);
+  SettlementResponse getSettlementById(String settlementId);
 
   PageResponse<SettlementResponse> getAllSettlements(Pageable pageable);
 
@@ -21,4 +22,6 @@ public interface SettlementService {
   boolean signSettlement(String userId, String id, SignificanceRequest significance);
 
   boolean isExistingSettlement(String id);
+
+  boolean checkSettlementExists(String formCode, String formNumber);
 }

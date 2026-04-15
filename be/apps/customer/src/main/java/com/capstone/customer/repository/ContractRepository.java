@@ -1,6 +1,6 @@
 package com.capstone.customer.repository;
 
-import com.capstone.customer.dto.request.ContractFilterRequest;
+import com.capstone.customer.dto.request.contract.ContractFilterRequest;
 import com.capstone.customer.model.WaterUsageContract;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;

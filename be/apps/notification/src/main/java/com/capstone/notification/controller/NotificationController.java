@@ -105,6 +105,7 @@ public class NotificationController {
 
     return Utils.returnCreatedResponse("Tạo thông báo phòng ban thành công");
   }
+
   @Operation(summary = "Lấy số lượng thông báo chưa đọc", description = "Trả về tổng số lượng thông báo chưa đọc của nhân viên.")
   @GetMapping("/unread-count")
   @PreAuthorize("isAuthenticated()")

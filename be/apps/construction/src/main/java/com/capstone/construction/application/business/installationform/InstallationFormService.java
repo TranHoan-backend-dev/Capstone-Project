@@ -49,4 +49,6 @@ public interface InstallationFormService {
   void assignInstallationForm(String id, InstallationFormId installationFormId, Boolean status);
 
   OrderIdResponse getLastFormCode();
+
+  Page<InstallationFormListResponse> findCompletedFormsWithoutSettlement(Pageable pageable);
 }

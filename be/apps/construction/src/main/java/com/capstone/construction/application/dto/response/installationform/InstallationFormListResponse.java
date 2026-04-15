@@ -33,6 +33,7 @@ public record InstallationFormListResponse(
   Integer householdRegistrationNumber,
   UsageTarget usageTarget,
   CustomerType customerType,
-  List<Representative> representatives
+  List<Representative> representatives,
+  String createdAt
 ) {
 }

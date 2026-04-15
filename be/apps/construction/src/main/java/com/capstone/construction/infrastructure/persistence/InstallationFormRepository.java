@@ -114,7 +114,7 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
   @Query(value = "SELECT * FROM installation_form i WHERE i.status->>'estimate' = :status", nativeQuery = true)
   List<InstallationForm> findByEstimateStatus(String status);
 
-  @Query(value = "SELECT * FROM installation_form i WHERE i.handover_by IS NOT NULL AND i.status->>'registration' = 'PENDING_FOR_APPROVAL'", nativeQuery = true)
+  @Query(value = "SELECT * FROM installation_form i WHERE i.handover_by IS NOT NULL", nativeQuery = true)
   Page<InstallationForm> findByHandoverByIsNotNull(Pageable pageable);
 
   @Query(value = """
@@ -124,5 +124,20 @@ public interface InstallationFormRepository extends JpaRepository<InstallationFo
     """, nativeQuery = true)
   Page<InstallationForm> findAllNotRejectedInstallationForms(Pageable pageable);
 
-  Optional<InstallationForm> findFirstByOrderByCreatedAtDesc();
+  Optional<InstallationForm> findFirstByOrderById_FormCodeDesc();
+
+  @Query(value = """
+    SELECT * FROM installation_form i
+    WHERE i.status->>'registration' = 'APPROVED'
+      AND i.status->>'estimate' = 'APPROVED'
+      AND i.status->>'contract' = 'APPROVED'
+      AND i.status->>'construction' = 'APPROVED'
+      AND NOT EXISTS (
+        SELECT 1 FROM settlement s
+        WHERE s.installation_form_code = i.form_code
+          AND s.installation_form_number = i.form_number
+      )
+    ORDER BY i.created_at DESC
+    """, nativeQuery = true)
+  Page<InstallationForm> findCompletedFormsWithoutSettlement(Pageable pageable);
 }

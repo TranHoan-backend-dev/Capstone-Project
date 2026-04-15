@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+// TODO: Tim cach tao 1 client chung cho cac service
 @FeignClient(
   name = "image",
   path = "/gcs",

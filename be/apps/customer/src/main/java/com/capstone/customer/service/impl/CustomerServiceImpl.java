@@ -89,7 +89,7 @@ public class CustomerServiceImpl implements CustomerService {
     return mapToResponse(saved);
   }
 
-  private void setProperties2(Customer customer, String formCode, String formNumber, String s3, String s4) {
+  private void setProperties2(Customer customer, String formCode, String formNumber, String waterPriceId, String waterMeterId) {
     if (formCode != null && !formCode.isBlank() &&
       formNumber != null && !formNumber.isBlank()) {
       var status = constructionService.checkExistence(formCode, formNumber);
@@ -99,50 +99,56 @@ public class CustomerServiceImpl implements CustomerService {
       customer.setFormNumber(formNumber);
       customer.setFormCode(formCode);
     }
-    if (s3 != null) {
-      if (!deviceService.checkExistenceOfWaterPrice(s3)) {
+    if (waterPriceId != null) {
+      if (!deviceService.checkExistenceOfWaterPrice(waterPriceId)) {
         throw new IllegalArgumentException(Message.ENT_28);
       }
-      customer.setWaterPriceId(s3);
+      customer.setWaterPriceId(waterPriceId);
     }
-    if (s4 != null) {
-      customer.setWaterMeterId(s4);
+    if (waterMeterId != null) {
+      customer.setWaterMeterId(waterMeterId);
     }
   }
 
-  private void setProperties(Customer customer, Boolean free, Boolean sale, String s, String s2, Integer integer, String s3, Integer integer2) {
+  private void setProperties(
+    Customer customer, Boolean free, Boolean sale, String m3Sale,
+    String fixRate, Integer installationFee, String deductionPeriod, Integer monthlyRent
+  ) {
     if (free != null) {
       customer.setIsFree(free);
     }
     if (sale != null) {
       customer.setIsSale(sale);
     }
-    if (s != null) {
-      customer.setM3Sale(s);
+    if (m3Sale != null) {
+      customer.setM3Sale(m3Sale);
     }
-    if (s2 != null) {
-      customer.setFixRate(s2);
+    if (fixRate != null) {
+      customer.setFixRate(fixRate);
     }
-    if (integer != null) {
-      customer.setInstallationFee(integer);
+    if (installationFee != null) {
+      customer.setInstallationFee(installationFee);
     }
-    if (s3 != null) {
-      customer.setDeductionPeriod(s3);
+    if (deductionPeriod != null) {
+      customer.setDeductionPeriod(deductionPeriod);
     }
-    if (integer2 != null) {
-      customer.setMonthlyRent(integer2);
+    if (monthlyRent != null) {
+      customer.setMonthlyRent(monthlyRent);
     }
   }
 
-  private void setProperties1(Customer customer, String s, String s2, String s3) {
-    if (s != null) {
-      customer.setBudgetRelationshipCode(s);
+  private void setProperties1(
+    Customer customer, String budgetRelationshipCode,
+    String passportCode, String connectionPoint
+  ) {
+    if (budgetRelationshipCode != null) {
+      customer.setBudgetRelationshipCode(budgetRelationshipCode);
     }
-    if (s2 != null) {
-      customer.setPassportCode(s2);
+    if (passportCode != null) {
+      customer.setPassportCode(passportCode);
     }
-    if (s3 != null) {
-      customer.setConnectionPoint(s3);
+    if (connectionPoint != null) {
+      customer.setConnectionPoint(connectionPoint);
     }
   }
 
@@ -314,7 +320,7 @@ public class CustomerServiceImpl implements CustomerService {
       customer.getCancelReason(),
       customer.getCreatedAt(),
       customer.getUpdatedAt(),
-      customer.getFormNumber(),
+      customer.getFormCode(),
       customer.getWaterPriceId(),
       waterPrice,
       customer.getWaterMeterId(),

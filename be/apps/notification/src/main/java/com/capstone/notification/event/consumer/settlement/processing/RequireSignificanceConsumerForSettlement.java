@@ -21,7 +21,7 @@ public class RequireSignificanceConsumerForSettlement extends GeneralEventConsum
   }
 
   @RabbitListener(queues = "${rabbit-mq-config.queue}.${rabbit-mq-config.entities[16]}.${rabbit-mq-config.actions[5]}")
-  public void handle(RequireSignificanceEvent event) {
+  public void handle(@NonNull RequireSignificanceEvent event) {
     super.handle(
       event,
       List.of(
@@ -31,7 +31,7 @@ public class RequireSignificanceConsumerForSettlement extends GeneralEventConsum
         Topic.getTopic(Topic.LEADERSHIP) + "/" + event.data.constructionPresident()
       ),
       "Ký quyết toán mới",
-      null
+      "https://capstone-project-chi-rouge.vercel.app/settlement-lookup"
     );
   }
 

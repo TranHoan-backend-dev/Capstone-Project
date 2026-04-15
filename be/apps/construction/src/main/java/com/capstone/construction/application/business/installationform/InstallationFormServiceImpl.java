@@ -22,19 +22,17 @@ import com.capstone.construction.infrastructure.persistence.WaterSupplyNetworkRe
 import com.capstone.construction.infrastructure.utils.Message;
 import com.capstone.construction.infrastructure.service.EmployeeService;
 import com.capstone.construction.infrastructure.service.DeviceService;
+import com.capstone.construction.infrastructure.utils.Utility;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @AppLog
@@ -69,14 +67,14 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       .address(request.address())
       .customerType(request.customerType())
       .citizenIdentificationNumber(request.citizenIdentificationNumber())
-      .citizenIdentificationProvideDate(request.citizenIdentificationProvideDate())
+      .citizenIdentificationProvideDate(request.citizenIdentificationProvideDate().toString())
       .citizenIdentificationProvideLocation(request.citizenIdentificationProvideLocation())
       .phoneNumber(request.phoneNumber())
       .bankAccountNumber(request.bankAccountNumber())
       .bankAccountProviderLocation(request.bankAccountProviderLocation())
       .usageTarget(request.usageTarget())
-      .receivedFormAt(LocalDate.parse(request.receivedFormAt()))
-      .scheduleSurveyAt(LocalDate.parse(request.scheduleSurveyAt()))
+      .receivedFormAt(request.receivedFormAt())
+      .scheduleSurveyAt(request.scheduleSurveyAt())
       .numberOfHousehold(request.numberOfHousehold())
       .citizenIdentificationProvideLocation(request.citizenIdentificationProvideLocation())
       .householdRegistrationNumber(request.householdRegistrationNumber())
@@ -103,11 +101,12 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   }
 
   @Override
-  public Page<InstallationFormListResponse> getInstallationForms(Pageable pageable,
+  public Page<InstallationFormListResponse> getInstallationForms(@NonNull Pageable pageable,
                                                                  @NonNull InstallationFormFilterRequest request) {
     log.info("Fetching paginated installation forms with status: {}", request.getStatus());
     var startDate = Utils.parseFrom(request.getFrom());
     var endDate = Utils.parseTo(request.getTo());
+    var sortedPageable = Utility.sortByAttributeDesc(pageable, "created_at");
 
     var statusRegistration = ProcessingStatus.PROCESSING;
 
@@ -123,16 +122,16 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       || (request.getKeyword() != null && !request.getKeyword().isBlank()) || request.getStatus() != null)
       ? ifRepo.findAll(InstallationFormRepository.search(
       request.getKeyword(), startDate, endDate, ProcessingStatus.PROCESSING, ProcessingStatus.PROCESSING,
-      statusRegistration), pageable)
+      statusRegistration), sortedPageable)
 
-      : ifRepo.findAllNotRejectedInstallationForms(pageable);
+      : ifRepo.findAllNotRejectedInstallationForms(sortedPageable);
 
     var content = result.getContent()
       .stream()
       .map(this::mapToResponse)
       .toList();
 
-    return new PageImpl<>(content, pageable, result.getTotalElements());
+    return new PageImpl<>(content, sortedPageable, result.getTotalElements());
   }
 
   @Override
@@ -155,19 +154,17 @@ public class InstallationFormServiceImpl implements InstallationFormService {
         requestStatus.setRegistration(ProcessingStatus.APPROVED);
         requestStatus.setEstimate(ProcessingStatus.PENDING_FOR_APPROVAL);
 
-        if (costEstimateRepo.existsByInstallationForm(order)) {
-          throw new IllegalArgumentException(SharedMessage.MES_25);
+        if (!costEstimateRepo.existsByInstallationForm(order)) {
+          // tao san du toan rong
+          costEstimateService.createEstimate(new CreateRequest(
+            order.getCustomerName(),
+            order.getAddress(),
+            LocalDateTime.now(),
+            userId,
+            order.getFormCode(),
+            order.getFormNumber(),
+            order.getOverallWaterMeterId()));
         }
-
-        // tao san du toan rong
-        costEstimateService.createEstimate(new CreateRequest(
-          order.getCustomerName(),
-          order.getAddress(),
-          LocalDateTime.now(),
-          userId,
-          order.getFormCode(),
-          order.getFormNumber(),
-          order.getOverallWaterMeterId()));
       } else {
         // nvks hủy đơn
         var status = order.getStatus();
@@ -188,14 +185,16 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   @Override
   public Page<InstallationFormListResponse> findByEstimateStatusPending(Pageable pageable) {
     log.info("Fetching installation forms with estimate status PENDING_FOR_APPROVAL");
-    var result = ifRepo.findByEstimateStatus_Pending(pageable);
+    var sortedPageable = Utility.sortByAttributeDesc(pageable, "created_at");
+    var result = ifRepo.findByEstimateStatus_Pending(sortedPageable);
     return result.map(this::mapToResponse);
   }
 
   @Override
   public Page<InstallationFormListResponse> findByRegistrationStatusPending(Pageable pageable) {
+    var sortedPageable = Utility.sortByAttributeDesc(pageable, "created_at");
     log.info("Fetching installation forms with registration status PENDING_FOR_APPROVAL");
-    var result = ifRepo.findByRegistrationStatus_Pending(pageable);
+    var result = ifRepo.findByRegistrationStatus_Pending(sortedPageable);
     return result.map(this::mapToResponse);
   }
 
@@ -216,7 +215,8 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   @Override
   public Page<InstallationFormListResponse> findByHandoverByIsNotNull(Pageable pageable) {
     log.info("Fetching installation forms that have been assigned to survey staff");
-    var result = ifRepo.findByHandoverByIsNotNull(pageable);
+    var sortedPageable = Utility.sortByAttributeDesc(pageable, "created_at");
+    var result = ifRepo.findByHandoverByIsNotNull(sortedPageable);
     return result.map(this::mapToResponse);
   }
 
@@ -243,7 +243,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
   @Override
   public OrderIdResponse getLastFormCode() {
     log.info("Fetching installation form with last form code");
-    return ifRepo.findFirstByOrderByCreatedAtDesc()
+    return ifRepo.findFirstByOrderById_FormCodeDesc()
       .map(result -> {
         log.info("Last form code: {}, form number: {}", result.getFormCode(), result.getFormNumber());
         return OrderIdResponse.builder()
@@ -255,6 +255,14 @@ public class InstallationFormServiceImpl implements InstallationFormService {
         log.warn("No installation forms found");
         return OrderIdResponse.builder().build();
       });
+  }
+
+  @Override
+  public Page<InstallationFormListResponse> findCompletedFormsWithoutSettlement(Pageable pageable) {
+    log.info("Fetching completed installation forms WITHOUT settlement");
+    var sortedPageable = Utility.sortByAttributeDesc(pageable, "created_at");
+    var result = ifRepo.findCompletedFormsWithoutSettlement(sortedPageable);
+    return result.map(this::mapToResponse);
   }
 
   @Override
@@ -299,12 +307,15 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       entity.getHandoverBy(),
       (handoverByFullName != null && handoverByFullName.data() != null) ? handoverByFullName.data().toString()
         : unknown,
+//      unknown,
       entity.getCreatedBy(),
       (creatorFullName != null && creatorFullName.data() != null) ? creatorFullName.data().toString() : unknown,
+//      unknown,
       entity.getConstructedBy(),
       (constructionEmployeeName != null && constructionEmployeeName.data() != null)
         ? constructionEmployeeName.data().toString()
         : unknown,
+//      unknown,
       entity.getStatus(),
       entity.getOverallWaterMeterId(),
       entity.getTaxCode(),
@@ -317,7 +328,8 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       entity.getHouseholdRegistrationNumber(),
       entity.getUsageTarget(),
       entity.getCustomerType(),
-      entity.getRepresentative()
+      entity.getRepresentative(),
+      entity.getCreatedAt().toString()
     );
   }
 

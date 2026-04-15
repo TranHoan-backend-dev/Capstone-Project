@@ -7,7 +7,7 @@ GET {{uri}}/installation-forms
 Authorization: Bearer {{access_token}}
 
 ### 2. Pagination (page 1, size 10)
-GET {{uri}}/installation-forms?page=1&size=10
+GET {{uri}}/installation-forms?page=0&size=1
 Authorization: Bearer {{access_token}}
 
 ### 3. Sorting (Sort by createdAt descending)
@@ -287,3 +287,17 @@ Authorization: Bearer {{access_token}}
 
 ### 6. Error Case - Unauthorized (Missing Token)
 GET {{uri}}/construction/construction
+
+### TC01 - Get last form code successfully with IT_STAFF role
+GET http://localhost:9004/api/v1/installation-forms/last-code
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+> {%
+  client.test("Status is 200", function() {
+    client.assert(response.status === 200);
+  });
+  client.test("Response contains success message", function() {
+    client.assert(response.body.message === "Lấy ra mã đơn và số đơn gần nhất thành công");
+  });
+%}

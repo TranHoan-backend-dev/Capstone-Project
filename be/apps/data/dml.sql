@@ -1,45 +1,45 @@
 -- TRUNCATE all tables
 TRUNCATE TABLE public.materials_of_settlement,
-               public.materials_of_cost_estimate,
-               public.usage_history,
-               public.customer,
-               public.bill,
-               public.construction_request,
-               public.water_usage_contract,
-               public.receipt,
-               public.settlement,
-               public.cost_estimate,
-               public.installation_form,
-               public.roadmap,
-               public.laterals,
-               public.overall_water_meter,
-               public.road,
-               public.neighborhood_unit,
-               public.hamlet,
-               public.commune,
-               public.water_supply_network,
-               public.profile,
-               public.employee_job,
-               public.business_pages_of_employees,
-               public.users,
-               public.user_roles,
-               public.user_devices,
-               public.individual_notification,
-               public.temp,
-               public.verification_codes,
-               public.parameters,
-               public.materials_group,
-               public.unit,
-               public.price_type,
-               public.material,
-               public.water_meter,
-               public.water_meter_type,
-               public.water_price_price_types,
-               public.water_price,
-               public.business_page,
-               public.department,
-               public.job
-CASCADE;
+  public.materials_of_cost_estimate,
+  public.usage_history,
+  public.customer,
+  public.bill,
+  public.construction_request,
+  public.water_usage_contract,
+  public.receipt,
+  public.settlement,
+  public.cost_estimate,
+  public.installation_form,
+  public.roadmap,
+  public.laterals,
+  public.overall_water_meter,
+  public.road,
+  public.neighborhood_unit,
+  public.hamlet,
+  public.commune,
+  public.water_supply_network,
+  public.profile,
+  public.employee_job,
+  public.business_pages_of_employees,
+  public.users,
+  public.user_roles,
+  public.user_devices,
+  public.individual_notification,
+  public.temp,
+  public.verification_codes,
+  public.parameters,
+  public.materials_group,
+  public.unit,
+  public.price_type,
+  public.material,
+  public.water_meter,
+  public.water_meter_type,
+  public.water_price_price_types,
+  public.water_price,
+  public.business_page,
+  public.department,
+  public.job
+  CASCADE;
 
 -- auth
 INSERT INTO public.user_roles (role_id, name)
@@ -89,7 +89,7 @@ VALUES ('d75e221e-d150-4962-9afb-687062bfbcc8', 'survey_staff1', '2026-03-25 08:
         'd1767664-9f79-4416-952b-7c70ae1c97a5', 'argear', 'h@gmail.com', true, false, null, null,
         '2026-03-31 22:29:57.883438', '550e8400-e29b-41d4-a716-446655440001', '47c469de-21fd-4a32-a468-01a50f4aced6'),
        ('de8bf961-aed1-4b86-898f-32a96e84f8ea', 'president_construction', '2026-03-31 22:29:57.883438',
-        '307791fc-d4b8-4325-bbfb-776ff3605179', 'argear', 'g@gmail.com', true, false, null, null,
+        '85c2c776-6927-4402-8616-562ec874b321', 'argear', 'g@gmail.com', true, false, null, null,
         '2026-03-31 22:29:57.883438', '550e8400-e29b-41d4-a716-446655440001', '8ec56833-edd5-4a52-9fc8-256b91e2daca'),
        ('f018b804-12fc-41ec-87c1-08b6aa6f542d', 'survey_staff2', '2026-03-31 22:34:53.769677',
         '29f12d88-7517-482a-9f44-8d9124443183', 'argear', 'j@gmail.com', true, false, null, null,
@@ -396,27 +396,28 @@ INSERT INTO installation_form (form_code, address, bank_account_number, bank_acc
                                phone_number, received_form_at, updated_at, usage_target, customer_type, handover_by,
                                representative, schedule_survey_at, status, tax_code, water_supply_network_id)
 VALUES (80000001001, '123 Lê Lợi, Quận 1, TP.HCM', '190312345678', 'Techcombank TP.HCM',
-        '079090000001', '2020-01-01', 'CA TPHCM', '2024-01-01 10:00:00', 'd75e221e-d150-4962-9afb-687062bfbcc8',
-        'Nguyễn Văn A', 20240001, 123456, 4, '00000000-0000-0000-0000-400000000001', '0901234567', '2024-01-01 09:00:00',
-        '2024-01-01 10:00:00', 'DOMESTIC', 'COMPANY', NULL, NULL, NULL, '{
+        '079090000001', '2020-01-01', 'CA TPHCM', '2024-01-01 10:10:00', 'd75e221e-d150-4962-9afb-687062bfbcc8',
+        'Nguyễn Văn A', 20240001, 123456, 4, '40000001', '0901234567',
+        '2024-01-01 10:08:15',
+        '2024-01-01 10:10:00', 'DOMESTIC', 'COMPANY', NULL, NULL, NULL, '{
     "contract": "PROCESSING",
     "estimate": "PROCESSING",
     "construction": "PROCESSING",
-    "registration": "PROCESSING"
+    "registration": "PENDING_FOR_APPROVAL"
   }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001002, '456 Nguyễn Huệ, Quận 1, TP.HCM', '190312345679', 'Vietcombank TP.HCM',
-        '079090000002', '2020-01-02', 'CA TPHCM', '2024-01-02 10:00:00', 'd75e221e-d150-4962-9afb-687062bfbcc8',
-        'Trần Thị B', 20240002, 223456, 3, '00000000-0000-0000-0000-400000000002', '0901234568', '2024-01-02 09:00:00',
-        '2024-01-02 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
+        '079090000002', '2020-01-02', 'CA TPHCM', '2024-01-02 08:23:45', 'd75e221e-d150-4962-9afb-687062bfbcc8',
+        'Trần Thị B', 20240002, 223456, 3, '40000002', '0901234568', '2024-01-02 08:21:30',
+        '2024-01-02 08:23:45', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "PROCESSING",
          "estimate": "PROCESSING",
          "construction": "PROCESSING",
-         "registration": "PROCESSING"
+         "registration": "PENDING_FOR_APPROVAL"
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001003, '789 Hai Bà Trưng, Quận 3, TP.HCM', '190312345680', 'ACB TP.HCM',
-        '079090000003', '2020-01-03', 'CA TPHCM', '2024-01-03 10:00:00', 'd75e221e-d150-4962-9afb-687062bfbcc8',
-        'Lê Văn C', 20240003, 323456, 5, '00000000-0000-0000-0000-400000000003', '0901234569', '2024-01-03 09:00:00',
-        '2024-01-03 10:00:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
+        '079090000003', '2020-01-03', 'CA TPHCM', '2024-01-03 10:07:00', 'd75e221e-d150-4962-9afb-687062bfbcc8',
+        'Lê Văn C', 20240003, 323456, 5, '40000003', '0901234569', '2024-01-03 10:04:20',
+        '2024-01-03 10:07:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
          "contract": "PROCESSING",
          "estimate": "PROCESSING",
          "construction": "PROCESSING",
@@ -424,116 +425,121 @@ VALUES (80000001001, '123 Lê Lợi, Quận 1, TP.HCM', '190312345678', 'Techcom
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001004, '101 Điện Biên Phủ, Bình Thạnh, TP.HCM', '190312345681', 'BIDV TP.HCM',
         '079090000004', '2020-01-04', 'CA TPHCM', '2024-01-04 10:00:00', 'd75e221e-d150-4962-9afb-687062bfbcc8',
-        'Phạm Thị D', 20240004, 423456, 2, '00000000-0000-0000-0000-400000000004', '0901234570', '2024-01-04 09:00:00',
+        'Phạm Thị D', 20240004, 423456, 2, '40000004', '0901234570', '2024-01-04 09:56:45',
         '2024-01-04 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "PROCESSING",
          "estimate": "PROCESSING",
          "construction": "PROCESSING",
-         "registration": "PROCESSING"
+         "registration": "PENDING_FOR_APPROVAL"
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001005, '202 Nguyễn Thị Minh Khai, Quận 1, TP.HCM', '190312345682', 'VPBank TP.HCM',
         '079090000005', '2020-01-05', 'CA TPHCM', '2024-01-05 10:00:00', 'd75e221e-d150-4962-9afb-687062bfbcc8',
-        'Hoàng Thị E', 20240005, 523456, 3, '00000000-0000-0000-0000-400000000005', '0901234571', '2024-01-05 09:00:00',
+        'Hoàng Thị E', 20240005, 523456, 3, '40000005', '0901234571', '2024-01-05 09:55:10',
         '2024-01-05 10:00:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
          "contract": "PROCESSING",
          "estimate": "PROCESSING",
          "construction": "PROCESSING",
-         "registration": "PROCESSING"
+         "registration": "PENDING_FOR_APPROVAL"
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001006, '303 Cách Mạng Tháng Tám, Quận 10, TP.HCM', '190312345683', 'MBBank TP.HCM',
         '079090000006', '2020-01-06', 'CA TPHCM', '2024-01-06 10:00:00', 'd75e221e-d150-4962-9afb-687062bfbcc8',
-        'Nguyễn Văn F', 20240006, 623456, 4, '00000000-0000-0000-0000-400000000006', '0901234572', '2024-01-06 09:00:00',
+        'Nguyễn Văn F', 20240006, 623456, 4, '40000006', '0901234572',
+        '2024-01-06 09:58:30',
         '2024-01-06 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "PROCESSING",
          "estimate": "PROCESSING",
          "construction": "PROCESSING",
-         "registration": "PROCESSING"
+         "registration": "PENDING_FOR_APPROVAL"
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001007, '404 Lê Đức Thọ, Gò Vấp, TP.HCM', '190312345684', 'TPBank TP.HCM',
         '079090000007', '2020-01-07', 'CA TPHCM', '2024-01-07 10:00:00', 'd75e221e-d150-4962-9afb-687062bfbcc8',
-        'Trần Thị G', 20240007, 723456, 1, '00000000-0000-0000-0000-400000000007', '0901234573', '2024-01-07 09:00:00',
+        'Trần Thị G', 20240007, 723456, 1, '40000007', '0901234573', '2024-01-07 09:57:45',
         '2024-01-07 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "PROCESSING",
          "estimate": "PROCESSING",
          "construction": "PROCESSING",
-         "registration": "PROCESSING"
+         "registration": "PENDING_FOR_APPROVAL"
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001008, '505 Hoàng Văn Thụ, Tân Bình, TP.HCM', '190312345685', 'VIB TP.HCM',
         '079090000008', '2020-01-08', 'CA TPHCM', '2024-01-08 10:00:00', 'd75e221e-d150-4962-9afb-687062bfbcc8',
-        'Lê Văn H', 20240008, 823456, 5, '00000000-0000-0000-0000-400000000008', '0901234574', '2024-01-08 09:00:00',
+        'Lê Văn H', 20240008, 823456, 5, '40000008', '0901234574', '2024-01-08 09:58:20',
         '2024-01-08 10:00:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
          "contract": "PROCESSING",
          "estimate": "PROCESSING",
          "construction": "PROCESSING",
-         "registration": "PROCESSING"
+         "registration": "PENDING_FOR_APPROVAL"
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001009, '606 Âu Cơ, Tân Bình, TP.HCM', '190312345686', 'SHB TP.HCM',
         '079090000009', '2020-01-09', 'CA TPHCM', '2024-01-09 10:00:00', 'd75e221e-d150-4962-9afb-687062bfbcc8',
-        'Phạm Thị I', 20240009, 923456, 2, '00000000-0000-0000-0000-400000000009', '0901234575', '2024-01-09 09:00:00',
+        'Phạm Thị I', 20240009, 923456, 2, '40000009', '0901234575', '2024-01-09 09:56:40',
         '2024-01-09 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "PROCESSING",
          "estimate": "PROCESSING",
          "construction": "PROCESSING",
-         "registration": "PROCESSING"
+         "registration": "PENDING_FOR_APPROVAL"
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        -- survey_staff2
        (80000001010, '707 Trường Chinh, Tân Bình, TP.HCM', '190312345687', 'HDBank TP.HCM',
         '079090000010', '2020-01-10', 'CA TPHCM', '2024-01-10 10:00:00', 'f018b804-12fc-41ec-87c1-08b6aa6f542d',
-        'Nguyễn Văn J', 20240010, 1023456, 3, '00000000-0000-0000-0000-400000000010', '0901234576', '2024-01-10 09:00:00',
+        'Nguyễn Văn J', 20240010, 1023456, 3, '40000010', '0901234576',
+        '2024-01-10 09:58:30',
         '2024-01-10 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "PROCESSING",
          "estimate": "PROCESSING",
          "construction": "PROCESSING",
-         "registration": "PROCESSING"
+         "registration": "PENDING_FOR_APPROVAL"
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001011, '808 Cộng Hòa, Tân Bình, TP.HCM', '190312345688', 'Eximbank TP.HCM',
         '079090000011', '2020-01-11', 'CA TPHCM', '2024-01-11 10:00:00', 'f018b804-12fc-41ec-87c1-08b6aa6f542d',
-        'Nguyễn Văn K', 20240011, 1123456, 4, '00000000-0000-0000-0000-400000000001', '0901234577', '2024-01-11 09:00:00',
+        'Nguyễn Văn K', 20240011, 1123456, 4, '40000001', '0901234577',
+        '2024-01-11 09:56:45',
         '2024-01-11 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "PROCESSING",
          "estimate": "PROCESSING",
          "construction": "PROCESSING",
-         "registration": "PROCESSING"
+         "registration": "PENDING_FOR_APPROVAL"
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001012, '909 Phan Văn Trị, Gò Vấp, TP.HCM', '190312345689', 'Maritime Bank TP.HCM',
         '079090000012', '2020-01-12', 'CA TPHCM', '2024-01-12 10:00:00', 'f018b804-12fc-41ec-87c1-08b6aa6f542d',
-        'Trần Thị L', 20240012, 1223456, 2, '00000000-0000-0000-0000-400000000002', '0901234578', '2024-01-12 09:00:00',
+        'Trần Thị L', 20240012, 1223456, 2, '40000002', '0901234578', '2024-01-12 09:58:10',
         '2024-01-12 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "PROCESSING",
          "estimate": "PROCESSING",
          "construction": "PROCESSING",
-         "registration": "PROCESSING"
+         "registration": "PENDING_FOR_APPROVAL"
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001013, '111 Lê Lai, Quận 1, TP.HCM', '190312345690', 'LienVietPostBank TP.HCM',
         '079090000013', '2020-01-13', 'CA TPHCM', '2024-01-13 10:00:00', 'f018b804-12fc-41ec-87c1-08b6aa6f542d',
-        'Lê Văn M', 20240013, 1323456, 3, '00000000-0000-0000-0000-400000000003', '0901234579', '2024-01-13 09:00:00',
+        'Lê Văn M', 20240013, 1323456, 3, '40000003', '0901234579', '2024-01-13 09:57:15',
         '2024-01-13 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "PROCESSING",
          "estimate": "PROCESSING",
          "construction": "PROCESSING",
-         "registration": "PROCESSING"
+         "registration": "PENDING_FOR_APPROVAL"
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001014, '222 Lê Thánh Tôn, Quận 1, TP.HCM', '190312345691', 'SeaBank TP.HCM',
         '079090000014', '2020-01-14', 'CA TPHCM', '2024-01-14 10:00:00', 'f018b804-12fc-41ec-87c1-08b6aa6f542d',
-        'Phạm Thị N', 20240014, 1423456, 4, '00000000-0000-0000-0000-400000000004', '0901234580', '2024-01-14 09:00:00',
+        'Phạm Thị N', 20240014, 1423456, 4, '40000004', '0901234580', '2024-01-14 09:58:30',
         '2024-01-14 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "PROCESSING",
          "estimate": "PROCESSING",
          "construction": "PROCESSING",
-         "registration": "PROCESSING"
+         "registration": "PENDING_FOR_APPROVAL"
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001015, '333 Lí Tự Trọng, Quận 1, TP.HCM', '190312345692', 'OCB TP.HCM',
         '079090000015', '2020-01-15', 'CA TPHCM', '2024-01-15 10:00:00', 'f018b804-12fc-41ec-87c1-08b6aa6f542d',
-        'Hoàng Thị O', 20240015, 1523456, 1, '00000000-0000-0000-0000-400000000005', '0901234581', '2024-01-15 09:00:00',
+        'Hoàng Thị O', 20240015, 1523456, 1, '40000005', '0901234581',
+        '2024-01-15 09:56:45',
         '2024-01-15 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "PROCESSING",
          "estimate": "PROCESSING",
          "construction": "PROCESSING",
-         "registration": "PROCESSING"
+         "registration": "PENDING_FOR_APPROVAL"
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001016, '123 Trần Hưng Đạo, Nam Định', '190312345693', 'Techcombank Nam Định',
         '079090000016', '2020-02-01', 'CA Nam Định', '2024-03-25 10:00:00', 'f018b804-12fc-41ec-87c1-08b6aa6f542d',
-        'Nguyễn Văn Nam', 20240016, 654321, 4, '00000000-0000-0000-0000-400000000006', '0901234582', '2024-03-25 09:00:00',
+        'Nguyễn Văn Nam', 20240016, 654321, 4, '40000006', '0901234582',
+        '2024-03-25 09:58:20',
         '2024-03-25 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "PROCESSING",
          "estimate": "PROCESSING",
@@ -541,18 +547,19 @@ VALUES (80000001001, '123 Lê Lợi, Quận 1, TP.HCM', '190312345678', 'Techcom
          "registration": "PENDING_FOR_APPROVAL"
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001017, '456 Lê Hồng Phong, Nam Định', '190312345694', 'Vietcombank Nam Định',
-        '079090000017', '2020-02-02', 'CA Nam Định', '2024-03-25 10:00:00', 'f018b804-12fc-41ec-87c1-08b6aa6f542d',
-        'Trần Thị Lan', 20240017, 754321, 3, '00000000-0000-0000-0000-400000000007', '0901234583', '2024-03-25 09:00:00',
-        '2024-03-25 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
+        '079090000017', '2020-02-02', 'CA Nam Định', '2024-03-25 10:10:00', 'f018b804-12fc-41ec-87c1-08b6aa6f542d',
+        'Trần Thị Lan', 20240017, 754321, 3, '40000007', '0901234583',
+        '2024-03-25 10:08:15',
+        '2024-03-25 10:10:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "PROCESSING",
          "estimate": "PENDING_FOR_APPROVAL",
          "construction": "PROCESSING",
          "registration": "APPROVED"
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001018, '789 Quang Trung, Nam Định', '190312345695', 'ACB Nam Định',
-        '079090000018', '2020-02-03', 'CA Nam Định', '2024-03-25 10:00:00', 'f018b804-12fc-41ec-87c1-08b6aa6f542d',
-        'Lê Văn Bình', 20240018, 854321, 5, '00000000-0000-0000-0000-400000000008', '0901234584', '2024-03-25 09:00:00',
-        '2024-03-25 10:00:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
+        '079090000018', '2020-02-03', 'CA Nam Định', '2024-03-25 10:20:00', 'f018b804-12fc-41ec-87c1-08b6aa6f542d',
+        'Lê Văn Bình', 20240018, 854321, 5, '40000008', '0901234584', '2024-03-25 10:18:40',
+        '2024-03-25 10:20:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
          "contract": "PROCESSING",
          "estimate": "PROCESSING",
          "construction": "PROCESSING",
@@ -560,45 +567,50 @@ VALUES (80000001001, '123 Lê Lợi, Quận 1, TP.HCM', '190312345678', 'Techcom
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        -- survey_staff3
        (80000001019, '101 Nguyễn Du, Nam Định', '190312345696', 'BIDV Nam Định',
-        '079090000019', '2020-02-04', 'CA Nam Định', '2024-03-25 10:00:00', '91e138a1-824f-4db7-a073-e35fc24ec96f',
-        'Phạm Thị Mai', 20240019, 954321, 2, '00000000-0000-0000-0000-400000000009', '0901234585', '2024-03-25 09:00:00',
-        '2024-03-25 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
+        '079090000019', '2020-02-04', 'CA Nam Định', '2024-03-25 10:30:00', '91e138a1-824f-4db7-a073-e35fc24ec96f',
+        'Phạm Thị Mai', 20240019, 954321, 2, '40000009', '0901234585',
+        '2024-03-25 10:28:40',
+        '2024-03-25 10:30:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "PROCESSING",
          "estimate": "APPROVED",
          "construction": "PROCESSING",
          "registration": "APPROVED"
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001020, '202 Hùng Vương, Nam Định', '190312345697', 'VPBank Nam Định',
-        '079090000020', '2020-02-05', 'CA Nam Định', '2024-03-25 10:00:00', '91e138a1-824f-4db7-a073-e35fc24ec96f',
-        'Hoàng Văn Dũng', 20240020, 1054321, 3, '00000000-0000-0000-0000-400000000010', '0901234586', '2024-03-25 09:00:00',
-        '2024-03-25 10:00:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
+        '079090000020', '2020-02-05', 'CA Nam Định', '2024-03-25 10:40:00', '91e138a1-824f-4db7-a073-e35fc24ec96f',
+        'Hoàng Văn Dũng', 20240020, 1054321, 3, '40000010', '0901234586',
+        '2024-03-25 10:37:30',
+        '2024-03-25 10:40:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
          "contract": "APPROVED",
          "estimate": "APPROVED",
          "construction": "PROCESSING",
          "registration": "APPROVED"
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001021, '303 Trường Chinh, Nam Định', '190312345698', 'MB Nam Định',
-        '079090000021', '2020-02-06', 'CA Nam Định', '2024-03-25 10:00:00', '91e138a1-824f-4db7-a073-e35fc24ec96f',
-        'Nguyễn Thị Hoa', 20240021, 1154321, 4, '00000000-0000-0000-0000-400000000001', '0901234587', '2024-03-25 09:00:00',
-        '2024-03-25 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
+        '079090000021', '2020-02-06', 'CA Nam Định', '2024-03-25 10:50:00', '91e138a1-824f-4db7-a073-e35fc24ec96f',
+        'Nguyễn Thị Hoa', 20240021, 1154321, 4, '40000001', '0901234587',
+        '2024-03-25 10:48:15',
+        '2024-03-25 10:50:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "APPROVED",
          "estimate": "APPROVED",
          "construction": "PENDING_FOR_APPROVAL",
          "registration": "APPROVED"
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001022, '404 Võ Nguyên Giáp, Nam Định', '190312345699', 'Sacombank Nam Định',
-        '079090000022', '2020-02-07', 'CA Nam Định', '2024-03-25 10:00:00', '91e138a1-824f-4db7-a073-e35fc24ec96f',
-        'Trần Văn Thành', 20240022, 1254321, 2, '00000000-0000-0000-0000-400000000002', '0901234588', '2024-03-25 09:00:00',
-        '2024-03-25 10:00:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
+        '079090000022', '2020-02-07', 'CA Nam Định', '2024-03-25 11:00:00', '91e138a1-824f-4db7-a073-e35fc24ec96f',
+        'Trần Văn Thành', 20240022, 1254321, 2, '40000002', '0901234588',
+        '2024-03-25 10:57:40',
+        '2024-03-25 11:00:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
          "contract": "APPROVED",
          "estimate": "APPROVED",
          "construction": "APPROVED",
          "registration": "APPROVED"
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001023, '505 Điện Biên, Nam Định', '190312345700', 'Techcombank Nam Định',
-        '079090000023', '2020-02-08', 'CA Nam Định', '2024-03-25 10:00:00', '91e138a1-824f-4db7-a073-e35fc24ec96f',
-        'Phạm Thị Hồng', 20240023, 1354321, 5, '00000000-0000-0000-0000-400000000003', '0901234589', '2024-03-25 09:00:00',
-        '2024-03-25 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
+        '079090000023', '2020-02-08', 'CA Nam Định', '2024-03-25 11:10:00', '91e138a1-824f-4db7-a073-e35fc24ec96f',
+        'Phạm Thị Hồng', 20240023, 1354321, 5, '40000003', '0901234589',
+        '2024-03-25 11:08:25',
+        '2024-03-25 11:10:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "PROCESSING",
          "estimate": "PROCESSING",
          "construction": "PROCESSING",
@@ -606,7 +618,8 @@ VALUES (80000001001, '123 Lê Lợi, Quận 1, TP.HCM', '190312345678', 'Techcom
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001024, '606 Giải Phóng, Nam Định', '190312345701', 'Techcombank Nam Định',
         '079090000024', '2020-03-01', 'CA Nam Định', '2024-03-26 10:00:00', '91e138a1-824f-4db7-a073-e35fc24ec96f',
-        'Bùi Văn Cường', 20240024, 654322, 4, '00000000-0000-0000-0000-400000000004', '0901234590', '2024-03-26 09:00:00',
+        'Bùi Văn Cường', 20240024, 654322, 4, '40000004', '0901234590',
+        '2024-03-26 09:58:30',
         '2024-03-26 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "PROCESSING",
          "estimate": "REJECTED",
@@ -614,131 +627,222 @@ VALUES (80000001001, '123 Lê Lợi, Quận 1, TP.HCM', '190312345678', 'Techcom
          "registration": "APPROVED"
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001025, '707 Trường Chinh, Nam Định', '190312345702', 'Vietcombank Nam Định',
-        '079090000025', '2020-03-02', 'CA Nam Định', '2024-03-26 10:00:00', '91e138a1-824f-4db7-a073-e35fc24ec96f',
-        'Đặng Thị B', 20240025, 754322, 3, '00000000-0000-0000-0000-400000000005', '0901234591', '2024-03-26 09:00:00',
-        '2024-03-26 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
+        '079090000025', '2020-03-02', 'CA Nam Định', '2024-03-26 10:10:00', '91e138a1-824f-4db7-a073-e35fc24ec96f',
+        'Đặng Thị B', 20240025, 754322, 3, '40000005', '0901234591', '2024-03-26 10:08:15',
+        '2024-03-26 10:10:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "APPROVED",
          "estimate": "APPROVED",
          "construction": "PENDING_FOR_APPROVAL",
          "registration": "APPROVED"
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001026, '808 Hoàng Hoa Thám, Nam Định', '190312345703', 'ACB Nam Định',
-        '079090000026', '2020-03-03', 'CA Nam Định', '2024-03-26 10:00:00', '91e138a1-824f-4db7-a073-e35fc24ec96f',
-        'Vũ Văn T', 20240026, 854322, 5, '00000000-0000-0000-0000-400000000006', '0901234592', '2024-03-26 09:00:00',
-        '2024-03-26 10:00:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
+        '079090000026', '2020-03-03', 'CA Nam Định', '2024-03-26 10:20:00', '91e138a1-824f-4db7-a073-e35fc24ec96f',
+        'Vũ Văn T', 20240026, 854322, 5, '40000006', '0901234592', '2024-03-26 10:18:40',
+        '2024-03-26 10:20:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
          "contract": "PROCESSING",
          "estimate": "PROCESSING",
          "construction": "PROCESSING",
          "registration": "PENDING_FOR_APPROVAL"
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001027, '909 Mạc Thị Bưởi, Nam Định', '190312345704', 'BIDV Nam Định',
-        '079090000027', '2020-03-04', 'CA Nam Định', '2024-03-26 10:00:00', '91e138a1-824f-4db7-a073-e35fc24ec96f',
-        'Nguyễn Thị Q', 20240027, 954322, 2, '00000000-0000-0000-0000-400000000007', '0901234593', '2024-03-26 09:00:00',
-        '2024-03-26 10:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
+        '079090000027', '2020-03-04', 'CA Nam Định', '2024-03-26 10:30:00', '91e138a1-824f-4db7-a073-e35fc24ec96f',
+        'Nguyễn Thị Q', 20240027, 954322, 2, '40000007', '0901234593',
+        '2024-03-26 10:27:15',
+        '2024-03-26 10:30:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "PROCESSING",
          "estimate": "PENDING_FOR_APPROVAL",
          "construction": "PROCESSING",
          "registration": "APPROVED"
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001028, '1010 Hàng Thao, Nam Định', '190312345705', 'VPBank Nam Định',
-        '079090000028', '2020-03-05', 'CA Nam Định', '2024-03-26 10:00:00', '91e138a1-824f-4db7-a073-e35fc24ec96f',
-        'Trần Văn K', 20240028, 1054322, 3, '00000000-0000-0000-0000-400000000008', '0901234594', '2024-03-26 09:00:00',
-        '2024-03-26 10:00:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
+        '079090000028', '2020-03-05', 'CA Nam Định', '2024-03-26 10:40:00', '91e138a1-824f-4db7-a073-e35fc24ec96f',
+        'Trần Văn K', 20240028, 1054322, 3, '40000008', '0901234594', '2024-03-26 10:38:30',
+        '2024-03-26 10:40:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
          "contract": "APPROVED",
          "estimate": "APPROVED",
          "construction": "APPROVED",
          "registration": "APPROVED"
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001029, '11 Nguyễn Du, Nam Định', '190312345706', 'Agribank Nam Định',
-        '079090000029', '2020-04-01', 'CA Nam Định', now(), 'd75e221e-d150-4962-9afb-687062bfbcc8',
-        'Nguyễn Thị Tới', 20240029, 101, 4, '00000000-0000-0000-0000-400000000009', '0901234601', '2024-04-01',
-        now(), 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
+        '079090000029', '2020-04-01', 'CA Nam Định', '2024-04-01 08:30:00', 'd75e221e-d150-4962-9afb-687062bfbcc8',
+        'Nguyễn Thị Tới', 20240029, 101, 4, '40000009', '0901234601', '2024-04-01 08:27:15',
+        '2024-04-01 08:30:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "APPROVED",
          "estimate": "APPROVED",
          "construction": "APPROVED",
          "registration": "APPROVED"
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001030, '22 Trần Phú, Nam Định', '190312345707', 'BIDV Nam Định',
-        '079090000030', '2020-04-02', 'CA Nam Định', now(), 'd75e221e-d150-4962-9afb-687062bfbcc8',
-        'Lê Văn Thắng', 20240030, 102, 3, '00000000-0000-0000-0000-400000000010', '0901234602', '2024-04-01',
-        now(), 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
+        '079090000030', '2020-04-02', 'CA Nam Định', '2024-04-01 08:40:00', 'd75e221e-d150-4962-9afb-687062bfbcc8',
+        'Lê Văn Thắng', 20240030, 102, 3, '40000010', '0901234602', '2024-04-01 08:38:20',
+        '2024-04-01 08:40:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "APPROVED",
          "estimate": "APPROVED",
          "construction": "APPROVED",
          "registration": "APPROVED"
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001031, '33 Lý Thường Kiệt, Nam Định', '190312345708', 'Vietcombank Nam Định',
-        '079090000031', '2020-04-03', 'CA Nam Định', now(), 'd75e221e-d150-4962-9afb-687062bfbcc8',
-        'Trần Thị Tuyết', 20240031, 103, 5, '00000000-0000-0000-0000-400000000001', '0901234603', '2024-04-01',
-        now(), 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
+        '079090000031', '2020-04-03', 'CA Nam Định', '2024-04-01 08:50:00', 'd75e221e-d150-4962-9afb-687062bfbcc8',
+        'Trần Thị Tuyết', 20240031, 103, 5, '40000001', '0901234603', '2024-04-01 08:47:45',
+        '2024-04-01 08:50:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "APPROVED",
          "estimate": "APPROVED",
          "construction": "APPROVED",
          "registration": "APPROVED"
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001032, '44 Hàng Thao, Nam Định', '190312345709', 'Techcombank Nam Định',
-        '079090000032', '2020-04-04', 'CA Nam Định', now(), 'd75e221e-d150-4962-9afb-687062bfbcc8',
-        'Phạm Văn Hùng', 20240032, 104, 2, '00000000-0000-0000-0000-400000000002', '0901234604', '2024-04-01',
-        now(), 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
+        '079090000032', '2020-04-04', 'CA Nam Định', '2024-04-02 08:30:00', 'd75e221e-d150-4962-9afb-687062bfbcc8',
+        'Phạm Văn Hùng', 20240032, 104, 2, '40000002', '0901234604', '2024-04-02 08:28:15',
+        '2024-04-02 08:30:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
          "contract": "APPROVED",
          "estimate": "APPROVED",
          "construction": "APPROVED",
          "registration": "APPROVED"
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001033, '55 Quang Trung, Nam Định', '190312345710', 'VPBank Nam Định',
-        '079090000033', '2020-04-05', 'CA Nam Định', now(), 'd75e221e-d150-4962-9afb-687062bfbcc8',
-        'Hoàng Thị Kim', 20240033, 105, 4, '00000000-0000-0000-0000-400000000003', '0901234605', '2024-04-02',
-        now(), 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
+        '079090000033', '2020-04-05', 'CA Nam Định', '2024-04-02 08:40:00', 'd75e221e-d150-4962-9afb-687062bfbcc8',
+        'Hoàng Thị Kim', 20240033, 105, 4, '40000003', '0901234605', '2024-04-02 08:36:20',
+        '2024-04-02 08:40:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "APPROVED",
          "estimate": "APPROVED",
          "construction": "APPROVED",
          "registration": "APPROVED"
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001034, '66 Lê Hồng Phong, Nam Định', '190312345711', 'ACB Nam Định',
-        '079090000034', '2020-04-06', 'CA Nam Định', now(), 'd75e221e-d150-4962-9afb-687062bfbcc8',
-        'Đỗ Văn Cường', 20240034, 106, 3, '00000000-0000-0000-0000-400000000004', '0901234606', '2024-04-02',
-        now(), 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
+        '079090000034', '2020-04-06', 'CA Nam Định', '2024-04-02 08:50:00', 'd75e221e-d150-4962-9afb-687062bfbcc8',
+        'Đỗ Văn Cường', 20240034, 106, 3, '40000004', '0901234606', '2024-04-02 08:47:30',
+        '2024-04-02 08:50:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "APPROVED",
          "estimate": "APPROVED",
          "construction": "APPROVED",
          "registration": "APPROVED"
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001035, '77 Hùng Vương, Nam Định', '190312345712', 'Sacombank Nam Định',
-        '079090000035', '2020-04-07', 'CA Nam Định', now(), 'd75e221e-d150-4962-9afb-687062bfbcc8',
-        'Bùi Thị Ngọc', 20240035, 107, 5, '00000000-0000-0000-0000-400000000005', '0901234607', '2024-04-02',
-        now(), 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
+        '079090000035', '2020-04-07', 'CA Nam Định', '2024-04-02 09:00:00', 'd75e221e-d150-4962-9afb-687062bfbcc8',
+        'Bùi Thị Ngọc', 20240035, 107, 5, '40000005', '0901234607', '2024-04-02 08:58:15',
+        '2024-04-02 09:00:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "APPROVED",
          "estimate": "APPROVED",
          "construction": "APPROVED",
          "registration": "APPROVED"
        }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
        (80000001036, '88 Võ Nguyên Giáp, Nam Định', '190312345713', 'Maritime Bank',
-        '079090000036', '2020-05-01', 'CA Nam Định', now(), 'd75e221e-d150-4962-9afb-687062bfbcc8',
-        'Võ Văn Thành', 20240036, 108, 2, '00000000-0000-0000-0000-400000000006', '0901234608', '2024-05-01',
-        now(), 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
+        '079090000036', '2020-05-01', 'CA Nam Định', '2024-05-01 08:30:00', 'd75e221e-d150-4962-9afb-687062bfbcc8',
+        'Võ Văn Thành', 20240036, 108, 2, '40000006', '0901234608', '2024-05-01 08:27:30',
+        '2024-05-01 08:30:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
          "contract": "APPROVED",
          "estimate": "APPROVED",
          "construction": "APPROVED",
          "registration": "APPROVED"
        }', NULL, '550e8400-e29b-41d4-a716-446655440002'),
        (80000001037, '99 Trường Chinh, Nam Định', '190312345714', 'SeABank',
-        '079090000037', '2020-05-02', 'CA Nam Định', now(), 'd75e221e-d150-4962-9afb-687062bfbcc8',
-        'Đặng Thị Hồng', 20240037, 109, 4, '00000000-0000-0000-0000-400000000007', '0901234609', '2024-05-01',
-        now(), 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
+        '079090000037', '2020-05-02', 'CA Nam Định', '2024-05-01 08:40:00', 'd75e221e-d150-4962-9afb-687062bfbcc8',
+        'Đặng Thị Hồng', 20240037, 109, 4, '40000007', '0901234609', '2024-05-01 08:38:15',
+        '2024-05-01 08:40:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "APPROVED",
          "estimate": "APPROVED",
          "construction": "APPROVED",
          "registration": "APPROVED"
        }', NULL, '550e8400-e29b-41d4-a716-446655440002'),
        (80000001038, '111 Điện Biên, Nam Định', '190312345715', 'TPBank',
-        '079090000038', '2020-05-03', 'CA Nam Định', now(), 'd75e221e-d150-4962-9afb-687062bfbcc8',
-        'Phan Văn Minh', 20240038, 110, 3, '00000000-0000-0000-0000-400000000008', '0901234610', '2024-05-01',
-        now(), 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
+        '079090000038', '2020-05-03', 'CA Nam Định', '2024-05-01 08:50:00', 'd75e221e-d150-4962-9afb-687062bfbcc8',
+        'Phan Văn Minh', 20240038, 110, 3, '40000008', '0901234610', '2024-05-01 08:47:40',
+        '2024-05-01 08:50:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
          "contract": "APPROVED",
          "estimate": "APPROVED",
          "construction": "APPROVED",
          "registration": "APPROVED"
-       }', NULL, '550e8400-e29b-41d4-a716-446655440002');
+       }', NULL, '550e8400-e29b-41d4-a716-446655440002'),
+       (80000001039, '123 Đường Test 1, Nam Định', '190312345750', 'Techcombank Nam Định',
+        '079090000050', '2020-06-01', 'CA Nam Định', '2024-06-01 08:30:00', 'd75e221e-d150-4962-9afb-687062bfbcc8',
+        'Nguyễn Văn Test 1', 20240039, 501, 4, '40000001', '0901234701', '2024-06-01 08:27:15',
+        '2024-06-01 08:30:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
+         "contract": "APPROVED",
+         "estimate": "APPROVED",
+         "construction": "APPROVED",
+         "registration": "APPROVED"
+       }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
+       (80000001040, '456 Đường Test 2, Nam Định', '190312345751', 'Vietcombank Nam Định',
+        '079090000051', '2020-06-02', 'CA Nam Định', '2024-06-02 08:30:00', 'd75e221e-d150-4962-9afb-687062bfbcc8',
+        'Trần Thị Test 2', 20240040, 502, 3, '40000002', '0901234702', '2024-06-02 08:27:15',
+        '2024-06-02 08:30:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
+         "contract": "APPROVED",
+         "estimate": "APPROVED",
+         "construction": "APPROVED",
+         "registration": "APPROVED"
+       }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
+       (80000001041, '789 Đường Test 3, Nam Định', '190312345752', 'ACB Nam Định',
+        '079090000052', '2020-06-03', 'CA Nam Định', '2024-06-03 08:30:00', 'd75e221e-d150-4962-9afb-687062bfbcc8',
+        'Lê Văn Test 3', 20240041, 503, 5, '40000003', '0901234703', '2024-06-03 08:27:15',
+        '2024-06-03 08:30:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
+         "contract": "APPROVED",
+         "estimate": "APPROVED",
+         "construction": "APPROVED",
+         "registration": "APPROVED"
+       }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
+       (80000001042, '101 Đường Test 4, Nam Định', '190312345753', 'BIDV Nam Định',
+        '079090000053', '2020-06-04', 'CA Nam Định', '2024-06-04 08:30:00', 'f018b804-12fc-41ec-87c1-08b6aa6f542d',
+        'Phạm Thị Test 4', 20240042, 504, 2, '40000004', '0901234704', '2024-06-04 08:27:15',
+        '2024-06-04 08:30:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
+         "contract": "APPROVED",
+         "estimate": "APPROVED",
+         "construction": "APPROVED",
+         "registration": "APPROVED"
+       }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
+       (80000001043, '202 Đường Test 5, Nam Định', '190312345754', 'VPBank Nam Định',
+        '079090000054', '2020-06-05', 'CA Nam Định', '2024-06-05 08:30:00', 'f018b804-12fc-41ec-87c1-08b6aa6f542d',
+        'Hoàng Thị Test 5', 20240043, 505, 3, '40000005', '0901234705', '2024-06-05 08:27:15',
+        '2024-06-05 08:30:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
+         "contract": "APPROVED",
+         "estimate": "APPROVED",
+         "construction": "APPROVED",
+         "registration": "APPROVED"
+       }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
+       (80000001044, '303 Đường Test 6, Nam Định', '190312345755', 'MB Nam Định',
+        '079090000055', '2020-06-06', 'CA Nam Định', '2024-06-06 08:30:00', 'f018b804-12fc-41ec-87c1-08b6aa6f542d',
+        'Nguyễn Văn Test 6', 20240044, 506, 4, '40000006', '0901234706', '2024-06-06 08:27:15',
+        '2024-06-06 08:30:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
+         "contract": "APPROVED",
+         "estimate": "APPROVED",
+         "construction": "APPROVED",
+         "registration": "APPROVED"
+       }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
+       (80000001045, '404 Đường Test 7, Nam Định', '190312345756', 'Techcombank Nam Định',
+        '079090000056', '2020-06-07', 'CA Nam Định', '2024-06-07 08:30:00', '91e138a1-824f-4db7-a073-e35fc24ec96f',
+        'Trần Văn Test 7', 20240045, 507, 2, '40000007', '0901234707', '2024-06-07 08:27:15',
+        '2024-06-07 08:30:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
+         "contract": "APPROVED",
+         "estimate": "APPROVED",
+         "construction": "APPROVED",
+         "registration": "APPROVED"
+       }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
+       (80000001046, '505 Đường Test 8, Nam Định', '190312345757', 'Vietcombank Nam Định',
+        '079090000057', '2020-06-08', 'CA Nam Định', '2024-06-08 08:30:00', '91e138a1-824f-4db7-a073-e35fc24ec96f',
+        'Phạm Thị Test 8', 20240046, 508, 5, '40000008', '0901234708', '2024-06-08 08:27:15',
+        '2024-06-08 08:30:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
+         "contract": "APPROVED",
+         "estimate": "APPROVED",
+         "construction": "APPROVED",
+         "registration": "APPROVED"
+       }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
+       (80000001047, '606 Đường Test 9, Nam Định', '190312345758', 'ACB Nam Định',
+        '079090000058', '2020-06-09', 'CA Nam Định', '2024-06-09 08:30:00', '91e138a1-824f-4db7-a073-e35fc24ec96f',
+        'Bùi Văn Test 9', 20240047, 509, 4, '40000009', '0901234709', '2024-06-09 08:27:15',
+        '2024-06-09 08:30:00', 'DOMESTIC', 'FAMILY', NULL, NULL, NULL, '{
+         "contract": "APPROVED",
+         "estimate": "APPROVED",
+         "construction": "APPROVED",
+         "registration": "APPROVED"
+       }', NULL, '550e8400-e29b-41d4-a716-446655440001'),
+       (80000001048, '707 Đường Test 10, Nam Định', '190312345759', 'BIDV Nam Định',
+        '079090000059', '2020-06-10', 'CA Nam Định', '2024-06-10 08:30:00', '91e138a1-824f-4db7-a073-e35fc24ec96f',
+        'Đặng Thị Test 10', 20240048, 510, 3, '40000010', '0901234710', '2024-06-10 08:27:15',
+        '2024-06-10 08:30:00', 'COMMERCIAL', 'COMPANY', NULL, NULL, NULL, '{
+         "contract": "APPROVED",
+         "estimate": "APPROVED",
+         "construction": "APPROVED",
+         "registration": "APPROVED"
+       }', NULL, '550e8400-e29b-41d4-a716-446655440001');
 
 INSERT INTO cost_estimate (estimation_id, address, construction_machinery_coefficient,
                            contract_fee, create_by, created_at, customer_name,
@@ -749,171 +853,205 @@ INSERT INTO cost_estimate (estimation_id, address, construction_machinery_coeffi
                            survey_effort, survey_fee, updated_at, vat_coefficient, water_meter_serial,
                            installation_form_code, installation_form_number, significance, water_meter_type_id)
 VALUES ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', '456 Lê Hồng Phong, Nam Định', 1, 1000000,
-        'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Trần Thị Lan', 1, 200000,
-        'https://example.com/design1.png', 1, 300000, 1, 'Kế hoạch lắp đặt khu vực ngõ', '00000000-0000-0000-0000-400000000001', 1, '2024-03-25',
-        1, 150000, now(), 1, 'SN-2024-017',
+        'd75e221e-d150-4962-9afb-687062bfbcc8', '2024-03-26 09:15:00', 'Trần Thị Lan', 1, 200000,
+        'https://example.com/design1.png', 1, 300000, 1, 'Kế hoạch lắp đặt khu vực ngõ',
+        '40000001', 1, '2024-03-25 10:08:15',
+        1, 150000, '2024-03-26 09:15:00', 1, 'SN-2024-017',
         80000001017, 20240017, '{
     "surveyStaff": "Nguyễn Văn Khảo Sát",
     "companyLeaderShip": "Lê Văn Quản Lý",
     "planningTechnicalHead": "Trần Trưởng Phòng"
   }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg0002', '789 Quang Trung, Nam Định', 1, 1200000,
-        'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Lê Văn Bình', 1, 250000,
-        'https://example.com/design2.png', 1, 350000, 1, 'Nhà mặt phố, cần khoan hạ tầng', '00000000-0000-0000-0000-400000000002', 1, '2024-03-25',
-        1, 180000, now(), 1, 'SN-2024-018',
+        'd75e221e-d150-4962-9afb-687062bfbcc8', '2024-03-26 10:20:00', 'Lê Văn Bình', 1, 250000,
+        'https://example.com/design2.png', 1, 350000, 1, 'Nhà mặt phố, cần khoan hạ tầng',
+        '40000002', 1, '2024-03-25 10:18:40',
+        1, 180000, '2024-03-26 10:20:00', 1, 'SN-2024-018',
         80000001018, 20240018, '{
          "surveyStaff": "Phạm Văn Điều Tra",
          "companyLeaderShip": "Hoàng Văn Giám Đốc",
          "planningTechnicalHead": "Vũ Kỹ Thuật"
        }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg0003', '101 Nguyễn Du, Nam Định', 1, 1000000,
-        'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Phạm Thị Mai', 1, 200000,
-        'https://example.com/design3.png', 1, 300000, 1, 'Lắp đặt mới hoàn toàn', '00000000-0000-0000-0000-400000000003', 1, '2024-03-25', 1,
-        150000, now(), 1, 'SN-2024-019',
+        'd75e221e-d150-4962-9afb-687062bfbcc8', '2024-03-26 11:30:00', 'Phạm Thị Mai', 1, 200000,
+        'https://example.com/design3.png', 1, 300000, 1, 'Lắp đặt mới hoàn toàn',
+        '40000003', 1, '2024-03-25 10:28:40', 1,
+        150000, '2024-03-26 11:30:00', 1, 'SN-2024-019',
         80000001019, 20240019, '{
          "surveyStaff": "Nguyễn Văn Khảo Sát",
          "companyLeaderShip": "Lê Văn Quản Lý",
          "planningTechnicalHead": "Trần Trưởng Phòng"
        }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg0004', '202 Hùng Vương, Nam Định', 1, 1500000,
-        'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Hoàng Văn Dũng', 1, 300000,
-        'https://example.com/design20.png', 1, 400000, 1, 'Thi công khu dân cư mới', '00000000-0000-0000-0000-400000000004', 1, '2024-03-25', 1,
-        200000, now(), 1, 'SN-2024-020',
+        'd75e221e-d150-4962-9afb-687062bfbcc8', '2024-03-26 14:40:00', 'Hoàng Văn Dũng', 1, 300000,
+        'https://example.com/design20.png', 1, 400000, 1, 'Thi công khu dân cư mới',
+        '40000004', 1, '2024-03-25 10:37:30', 1,
+        200000, '2024-03-26 14:40:00', 1, 'SN-2024-020',
         80000001020, 20240020, '{
          "surveyStaff": "Trần Văn Kiểm Tra",
          "companyLeaderShip": "Lê Quản Lý",
          "planningTechnicalHead": "Nguyễn Trưởng Phòng"
        }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg0005', '303 Trường Chinh, Nam Định', 1, 1100000,
-        'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Nguyễn Thị Hoa', 1, 220000,
-        'https://example.com/design21.png', 1, 320000, 1, 'Nâng cấp hệ thống hiện có', '00000000-0000-0000-0000-400000000005', 1, '2024-03-25', 1,
-        160000, now(), 1, 'SN-2024-021',
+        'd75e221e-d150-4962-9afb-687062bfbcc8', '2024-03-26 15:50:00', 'Nguyễn Thị Hoa', 1, 220000,
+        'https://example.com/design21.png', 1, 320000, 1, 'Nâng cấp hệ thống hiện có',
+        '40000005', 1, '2024-03-25 10:48:15', 1,
+        160000, '2024-03-26 15:50:00', 1, 'SN-2024-021',
         80000001021, 20240021, '{
          "surveyStaff": "Lê Văn Thẩm Định",
          "companyLeaderShip": "Trần Ban Giám Đốc",
          "planningTechnicalHead": "Hoàng Kỹ Thuật"
        }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg0006', '404 Võ Nguyên Giáp, Nam Định', 1, 1400000,
-        'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Trần Văn Thành', 1, 280000,
-        'https://example.com/design22.png', 1, 380000, 1, 'Lắp đặt tại cơ sở kinh doanh', '00000000-0000-0000-0000-400000000006', 1, '2024-03-25',
-        1, 190000, now(), 1, 'SN-2024-022',
+        'd75e221e-d150-4962-9afb-687062bfbcc8', '2024-03-26 16:00:00', 'Trần Văn Thành', 1, 280000,
+        'https://example.com/design22.png', 1, 380000, 1, 'Lắp đặt tại cơ sở kinh doanh',
+        '40000006', 1, '2024-03-25 10:57:40',
+        1, 190000, '2024-03-26 16:00:00', 1, 'SN-2024-022',
         80000001022, 20240022, '{
          "surveyStaff": "Phạm Văn Đo Đạc",
          "companyLeaderShip": "Vũ Lãnh Đạo",
          "planningTechnicalHead": "Bùi Trưởng Ban"
        }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg0007', '606 Giải Phóng, Nam Định', 1, 1000000,
-        'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Bùi Văn Cường', 1, 200000,
-        'https://example.com/design4.png', 1, 300000, 1, 'Hồ sơ dự toán bị từ chối, cần khảo sát lại', '00000000-0000-0000-0000-400000000007', 1,
-        '2024-03-26', 1, 150000, now(),
+        'd75e221e-d150-4962-9afb-687062bfbcc8', '2024-03-27 10:00:00', 'Bùi Văn Cường', 1, 200000,
+        'https://example.com/design4.png', 1, 300000, 1, 'Hồ sơ dự toán bị từ chối, cần khảo sát lại',
+        '40000007', 1,
+        '2024-03-26 09:58:30', 1, 150000, '2024-03-27 10:00:00',
         1, 'SN-2024-024', 80000001024, 20240024, '{
          "surveyStaff": "Nguyễn Văn Khảo Sát",
          "companyLeaderShip": "Lê Văn Quản Lý",
          "planningTechnicalHead": "Trần Trưởng Phòng"
        }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg0008', '707 Trường Chinh, Nam Định', 1, 1050000,
-        'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Đặng Thị B', 1, 210000,
-        'https://example.com/design25.png', 1, 310000, 1, 'Khảo sát lắp đặt hộ gia đình', '00000000-0000-0000-0000-400000000008', 1, '2024-03-26',
-        1, 155000, now(), 1, 'SN-2024-025',
+        'd75e221e-d150-4962-9afb-687062bfbcc8', '2024-03-27 11:10:00', 'Đặng Thị B', 1, 210000,
+        'https://example.com/design25.png', 1, 310000, 1, 'Khảo sát lắp đặt hộ gia đình',
+        '40000008', 1, '2024-03-26 10:08:15',
+        1, 155000, '2024-03-27 11:10:00', 1, 'SN-2024-025',
         80000001025, 20240025, '{
          "surveyStaff": "Đỗ Văn Hiện Trường",
          "companyLeaderShip": "Lý Ban Điều Hành",
          "planningTechnicalHead": "Ngô Trưởng Phòng"
        }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg0009', '909 Mạc Thị Bưởi, Nam Định', 1, 1000000,
-        'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Nguyễn Thị Q', 1, 200000,
-        'https://example.com/design27.png', 1, 300000, 1, 'Kết quả khảo sát ban đầu', '00000000-0000-0000-0000-400000000009', 1, '2024-03-26', 1,
-        150000, now(), 1, 'SN-2024-027',
+        'd75e221e-d150-4962-9afb-687062bfbcc8', '2024-03-27 14:20:00', 'Nguyễn Thị Q', 1, 200000,
+        'https://example.com/design27.png', 1, 300000, 1, 'Kết quả khảo sát ban đầu',
+        '40000009', 1, '2024-03-26 10:27:15', 1,
+        150000, '2024-03-27 14:20:00', 1, 'SN-2024-027',
         80000001027, 20240027, '{
          "surveyStaff": "Nguyễn Văn Khảo Sát",
          "companyLeaderShip": "Lê Văn Quản Lý",
          "planningTechnicalHead": "Trần Trưởng Phòng"
        }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg0010', '1010 Hàng Thao, Nam Định', 1, 1300000,
-        'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Trần Văn K', 1, 260000,
-        'https://example.com/design5.png', 1, 360000, 1, 'Công trình đã có dự toán được duyệt', '00000000-0000-0000-0000-400000000010', 1,
-        '2024-03-26', 1, 170000, now(), 1, 'SN-2024-028',
+        'd75e221e-d150-4962-9afb-687062bfbcc8', '2024-03-27 15:30:00', 'Trần Văn K', 1, 260000,
+        'https://example.com/design5.png', 1, 360000, 1, 'Công trình đã có dự toán được duyệt',
+        '40000010', 1,
+        '2024-03-26 10:38:30', 1, 170000, '2024-03-27 15:30:00', 1, 'SN-2024-028',
         80000001028, 20240028, '{
          "surveyStaff": "Phan Văn Thực Địa",
          "companyLeaderShip": "Bùi Giám Đốc",
          "planningTechnicalHead": "Đinh Trưởng Phòng"
        }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg1029', '11 Nguyễn Du, Nam Định', 1, 1000000,
-        'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Nguyễn Thị Tới', 1, 200000,
-        'https://example.com/design29.png', 1, 300000, 1, 'Lắp mới đồng hồ D15', '00000000-0000-0000-0000-400000000001', 1, '2024-04-01',
-        1, 150000, now(), 1, 'SN-2024-029', 80000001029, 20240029, '{
+        'd75e221e-d150-4962-9afb-687062bfbcc8', '2024-04-02 09:15:00', 'Nguyễn Thị Tới', 1, 200000,
+        'https://example.com/design29.png', 1, 300000, 1, 'Lắp mới đồng hồ D15', '40000001',
+        1, '2024-04-01 08:27:15',
+        1, 150000, '2024-04-02 09:15:00', 1, 'SN-2024-029', 80000001029, 20240029, '{
          "surveyStaff": "Nguyễn Văn Khảo Sát",
          "companyLeaderShip": "Lê Văn Quản Lý",
          "planningTechnicalHead": "Trần Trưởng Phòng"
        }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg1030', '22 Trần Phú, Nam Định', 1, 1000000,
-        'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Lê Văn Thắng', 1, 200000,
-        'https://example.com/design30.png', 1, 300000, 1, 'Lắp mới đồng hồ D15', '00000000-0000-0000-0000-400000000002', 1, '2024-04-01',
-        1, 150000, now(), 1, 'SN-2024-030', 80000001030, 20240030, '{
+        'd75e221e-d150-4962-9afb-687062bfbcc8', '2024-04-02 10:20:00', 'Lê Văn Thắng', 1, 200000,
+        'https://example.com/design30.png', 1, 300000, 1, 'Lắp mới đồng hồ D15', '40000002',
+        1, '2024-04-01 08:38:20',
+        1, 150000, '2024-04-02 10:20:00', 1, 'SN-2024-030', 80000001030, 20240030, '{
          "surveyStaff": "Nguyễn Văn Khảo Sát",
          "companyLeaderShip": "Lê Văn Quản Lý",
          "planningTechnicalHead": "Trần Trưởng Phòng"
        }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg1031', '33 Lý Thường Kiệt, Nam Định', 1, 1000000,
-        'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Trần Thị Tuyết', 1, 200000,
-        'https://example.com/design31.png', 1, 300000, 1, 'Lắp mới đồng hồ D15', '00000000-0000-0000-0000-400000000003', 1, '2024-04-01',
-        1, 150000, now(), 1, 'SN-2024-031', 80000001031, 20240031, '{
+        'd75e221e-d150-4962-9afb-687062bfbcc8', '2024-04-02 11:30:00', 'Trần Thị Tuyết', 1, 200000,
+        'https://example.com/design31.png', 1, 300000, 1, 'Lắp mới đồng hồ D15', '40000003',
+        1, '2024-04-01 08:47:45',
+        1, 150000, '2024-04-02 11:30:00', 1, 'SN-2024-031', 80000001031, 20240031, '{
          "surveyStaff": "Nguyễn Văn Khảo Sát",
          "companyLeaderShip": "Lê Văn Quản Lý",
          "planningTechnicalHead": "Trần Trưởng Phòng"
        }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg1032', '44 Hàng Thao, Nam Định', 1, 1200000,
-        'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Phạm Văn Hùng', 1, 240000,
-        'https://example.com/design32.png', 1, 340000, 1, 'Lắp mới đồng hồ D15', '00000000-0000-0000-0000-400000000004', 1, '2024-04-01',
-        1, 160000, now(), 1, 'SN-2024-032', 80000001032, 20240032, '{
+        'd75e221e-d150-4962-9afb-687062bfbcc8', '2024-04-03 09:15:00', 'Phạm Văn Hùng', 1, 240000,
+        'https://example.com/design32.png', 1, 340000, 1, 'Lắp mới đồng hồ D15', '40000004',
+        1, '2024-04-02 08:28:15',
+        1, 160000, '2024-04-03 09:15:00', 1, 'SN-2024-032', 80000001032, 20240032, '{
          "surveyStaff": "Nguyễn Văn Khảo Sát",
          "companyLeaderShip": "Lê Văn Quản Lý",
          "planningTechnicalHead": "Trần Trưởng Phòng"
        }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg1033', '55 Quang Trung, Nam Định', 1, 1000000,
-        'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Hoàng Thị Kim', 1, 200000,
-        'https://example.com/design33.png', 1, 300000, 1, 'Lắp mới đồng hồ D15', '00000000-0000-0000-0000-400000000005', 1, '2024-04-02',
-        1, 150000, now(), 1, 'SN-2024-033', 80000001033, 20240033, '{
+        'd75e221e-d150-4962-9afb-687062bfbcc8', '2024-04-03 10:20:00', 'Hoàng Thị Kim', 1, 200000,
+        'https://example.com/design33.png', 1, 300000, 1, 'Lắp mới đồng hồ D15', '40000005',
+        1, '2024-04-02 08:36:20',
+        1, 150000, '2024-04-03 10:20:00', 1, 'SN-2024-033', 80000001033, 20240033, '{
          "surveyStaff": "Nguyễn Văn Khảo Sát",
          "companyLeaderShip": "Lê Văn Quản Lý",
          "planningTechnicalHead": "Trần Trưởng Phòng"
        }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg1034', '66 Lê Hồng Phong, Nam Định', 1, 1000000,
-        'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Đỗ Văn Cường', 1, 200000,
-        'https://example.com/design34.png', 1, 300000, 1, 'Lắp mới đồng hồ D15', '00000000-0000-0000-0000-400000000006', 1, '2024-04-02',
-        1, 150000, now(), 1, 'SN-2024-034', 80000001034, 20240034, '{
+        'd75e221e-d150-4962-9afb-687062bfbcc8', '2024-04-03 11:30:00', 'Đỗ Văn Cường', 1, 200000,
+        'https://example.com/design34.png', 1, 300000, 1, 'Lắp mới đồng hồ D15', '40000006',
+        1, '2024-04-02 08:47:30',
+        1, 150000, '2024-04-03 11:30:00', 1, 'SN-2024-034', 80000001034, 20240034, '{
          "surveyStaff": "Nguyễn Văn Khảo Sát",
          "companyLeaderShip": "Lê Văn Quản Lý",
          "planningTechnicalHead": "Trần Trưởng Phòng"
        }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg1035', '77 Hùng Vương, Nam Định', 1, 1000000,
-        'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Bùi Thị Ngọc', 1, 200000,
-        'https://example.com/design35.png', 1, 300000, 1, 'Lắp mới đồng hồ D15', '00000000-0000-0000-0000-400000000007', 1, '2024-04-02',
-        1, 150000, now(), 1, 'SN-2024-035', 80000001035, 20240035, '{
+        'd75e221e-d150-4962-9afb-687062bfbcc8', '2024-04-03 14:40:00', 'Bùi Thị Ngọc', 1, 200000,
+        'https://example.com/design35.png', 1, 300000, 1, 'Lắp mới đồng hồ D15', '40000007',
+        1, '2024-04-02 08:58:15',
+        1, 150000, '2024-04-03 14:40:00', 1, 'SN-2024-035', 80000001035, 20240035, '{
          "surveyStaff": "Nguyễn Văn Khảo Sát",
          "companyLeaderShip": "Lê Văn Quản Lý",
          "planningTechnicalHead": "Trần Trưởng Phòng"
        }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg1036', '88 Võ Nguyên Giáp, Nam Định', 1, 1200000,
-        'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Võ Văn Thành', 1, 240000,
-        'https://example.com/design36.png', 1, 340000, 1, 'Lắp mới đồng hồ D15', '00000000-0000-0000-0000-400000000008', 1, '2024-05-01',
-        1, 160000, now(), 1, 'SN-2024-036', 80000001036, 20240036, '{
+        'd75e221e-d150-4962-9afb-687062bfbcc8', '2024-05-02 09:15:00', 'Võ Văn Thành', 1, 240000,
+        'https://example.com/design36.png', 1, 340000, 1, 'Lắp mới đồng hồ D15', '40000008',
+        1, '2024-05-01 08:27:30',
+        1, 160000, '2024-05-02 09:15:00', 1, 'SN-2024-036', 80000001036, 20240036, '{
          "surveyStaff": "Nguyễn Văn Khảo Sát",
          "companyLeaderShip": "Lê Văn Quản Lý",
          "planningTechnicalHead": "Trần Trưởng Phòng"
        }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg1037', '99 Trường Chinh, Nam Định', 1, 1000000,
-        'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Đặng Thị Hồng', 1, 200000,
-        'https://example.com/design37.png', 1, 300000, 1, 'Lắp mới đồng hồ D15', 'METER-037', 1, '2024-05-01',
-        1, 150000, now(), 1, 'SN-2024-037', 80000001037, 20240037, '{
+        'd75e221e-d150-4962-9afb-687062bfbcc8', '2024-05-02 10:20:00', 'Đặng Thị Hồng', 1, 200000,
+        'https://example.com/design37.png', 1, 300000, 1, 'Lắp mới đồng hồ D15', '40000009', 1, '2024-05-01 08:38:15',
+        1, 150000, '2024-05-02 10:20:00', 1, 'SN-2024-037', 80000001037, 20240037, '{
          "surveyStaff": "Nguyễn Văn Khảo Sát",
          "companyLeaderShip": "Lê Văn Quản Lý",
          "planningTechnicalHead": "Trần Trưởng Phòng"
        }', '00000000-0000-0000-0000-900000000006'),
        ('7a8192a3-6000-4bbb-9ccc-gggggggg1038', '111 Điện Biên, Nam Định', 1, 1000000,
-        'd75e221e-d150-4962-9afb-687062bfbcc8', now(), 'Phan Văn Minh', 1, 200000,
-        'https://example.com/design38.png', 1, 300000, 1, 'Lắp mới đồng hồ D15', 'METER-038', 1, '2024-05-01',
-        1, 150000, now(), 1, 'SN-2024-038', 80000001038, 20240038, '{
+        'd75e221e-d150-4962-9afb-687062bfbcc8', '2024-05-02 11:30:00', 'Phan Văn Minh', 1, 200000,
+        'https://example.com/design38.png', 1, 300000, 1, 'Lắp mới đồng hồ D15', '40000010', 1, '2024-05-01 08:47:40',
+        1, 150000, '2024-05-02 11:30:00', 1, 'SN-2024-038', 80000001038, 20240038, '{
+         "surveyStaff": "Nguyễn Văn Khảo Sát",
+         "companyLeaderShip": "Lê Văn Quản Lý",
+         "planningTechnicalHead": "Trần Trưởng Phòng"
+       }', '00000000-0000-0000-0000-900000000006'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1039', '123 Đường Test 1, Nam Định', 1, 1000000,
+        'd75e221e-d150-4962-9afb-687062bfbcc8', '2024-06-02 08:30:00', 'Nguyễn Văn Test 1', 1, 200000,
+        'https://example.com/design39.png', 1, 300000, 1, 'Lắp mới đồng hồ D15', '40000001', 1, '2024-06-01 08:27:15',
+        1, 150000, '2024-06-02 08:30:00', 1, 'SN-2024-039', 80000001039, 20240039, '{
+         "surveyStaff": "Nguyễn Văn Khảo Sát",
+         "companyLeaderShip": "Lê Văn Quản Lý",
+         "planningTechnicalHead": "Trần Trưởng Phòng"
+       }', '00000000-0000-0000-0000-900000000006'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1048', '707 Đường Test 10, Nam Định', 1, 1000000,
+        'd75e221e-d150-4962-9afb-687062bfbcc8', '2024-06-10 08:30:00', 'Đặng Thị Test 10', 1, 200000,
+        'https://example.com/design48.png', 1, 300000, 1, 'Lắp mới đồng hồ D15', '40000010', 1, '2024-06-10 08:27:15',
+        1, 150000, '2024-06-10 08:30:00', 1, 'SN-2024-048', 80000001048, 20240048, '{
          "surveyStaff": "Nguyễn Văn Khảo Sát",
          "companyLeaderShip": "Lê Văn Quản Lý",
          "planningTechnicalHead": "Trần Trưởng Phòng"
@@ -922,162 +1060,174 @@ VALUES ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', '456 Lê Hồng Phong, Nam Đị
 INSERT INTO public.receipt (installation_form_form_code, installation_form_form_number, address, customer_name,
                             is_paid, payment_date, payment_reason, receipt_number, total_money_in_digits,
                             created_at, updated_at)
-VALUES (80000001019, 20240019, '456 Lê Hồng Phong, Nam Định', 'Phạm Thị Mai', true, '2024-03-26',
-        'Phí lắp đặt nước', 'REC-2024-0019', '1500000', now(), now()),
-       (80000001020, 20240020, '202 Hùng Vương, Nam Định', 'Hoàng Văn Dũng', true, '2024-03-26',
-        'Phí lắp đặt nước', 'REC-2024-0020', '1500000', now(), now()),
-       (80000001021, 20240021, '303 Trường Chinh, Nam Định', 'Nguyễn Thị Hoa', true, '2024-03-26',
-        'Phí lắp đặt nước', 'REC-2024-0021', '1500000', now(), now()),
-       (80000001022, 20240022, '404 Võ Nguyên Giáp, Nam Định', 'Trần Văn Thành', true, '2024-03-26',
-        'Phí lắp đặt nước', 'REC-2024-0022', '1500000', now(), now()),
-       (80000001025, 20240025, '707 Trường Chinh, Nam Định', 'Đặng Thị B', true, '2024-03-26',
-        'Phí lắp đặt nước', 'REC-2024-0025', '1500000', now(), now()),
-       (80000001028, 20240028, '1010 Hàng Thao, Nam Định', 'Trần Văn K', true, '2024-03-26',
-        'Phí lắp đặt nước', 'REC-2024-0028', '1500000', now(), now()),
-       (80000001029, 20240029, '11 Nguyễn Du, Nam Định', 'Nguyễn Thị Tới', true, '2024-04-02',
-        'Phí lắp đặt nước', 'REC-2024-0029', '1500000', now(), now()),
-       (80000001030, 20240030, '22 Trần Phú, Nam Định', 'Lê Văn Thắng', true, '2024-04-02',
-        'Phí lắp đặt nước', 'REC-2024-0030', '1500000', now(), now()),
-       (80000001031, 20240031, '33 Lý Thường Kiệt, Nam Định', 'Trần Thị Tuyết', true, '2024-04-02',
-        'Phí lắp đặt nước', 'REC-2024-0031', '1500000', now(), now()),
-       (80000001032, 20240032, '44 Hàng Thao, Nam Định', 'Phạm Văn Hùng', true, '2024-04-02',
-        'Phí lắp đặt nước', 'REC-2024-0032', '1800000', now(), now()),
-       (80000001033, 20240033, '55 Quang Trung, Nam Định', 'Hoàng Thị Kim', true, '2024-04-03',
-        'Phí lắp đặt nước', 'REC-2024-0033', '1500000', now(), now()),
-       (80000001034, 20240034, '66 Lê Hồng Phong, Nam Định', 'Đỗ Văn Cường', true, '2024-04-03',
-        'Phí lắp đặt nước', 'REC-2024-0034', '1500000', now(), now()),
-       (80000001035, 20240035, '77 Hùng Vương, Nam Định', 'Bùi Thị Ngọc', true, '2024-04-03',
-        'Phí lắp đặt nước', 'REC-2024-0035', '1500000', now(), now()),
-       (80000001036, 20240036, '88 Võ Nguyên Giáp, Nam Định', 'Võ Văn Thành', true, '2024-05-02',
-        'Phí lắp đặt nước', 'REC-2024-0036', '1800000', now(), now()),
-       (80000001037, 20240037, '99 Trường Chinh, Nam Định', 'Đặng Thị Hồng', true, '2024-05-02',
-        'Phí lắp đặt nước', 'REC-2024-0037', '1500000', now(), now()),
-       (80000001038, 20240038, '111 Điện Biên, Nam Định', 'Phan Văn Minh', true, '2024-05-02',
-        'Phí lắp đặt nước', 'REC-2024-0038', '1500000', now(), now());
+VALUES (80000001019, 20240019, '456 Lê Hồng Phong, Nam Định', 'Phạm Thị Mai', true, '2024-03-26 09:00:00',
+        'Phí lắp đặt nước', 'REC-2024-0019', '1500000', '2024-03-26 09:00:00', '2024-03-26 09:00:00'),
+       (80000001020, 20240020, '202 Hùng Vương, Nam Định', 'Hoàng Văn Dũng', true, '2024-03-26 10:00:00',
+        'Phí lắp đặt nước', 'REC-2024-0020', '1500000', '2024-03-26 10:00:00', '2024-03-26 10:00:00'),
+       (80000001021, 20240021, '303 Trường Chinh, Nam Định', 'Nguyễn Thị Hoa', true, '2024-03-26 11:00:00',
+        'Phí lắp đặt nước', 'REC-2024-0021', '1500000', '2024-03-26 11:00:00', '2024-03-26 11:00:00'),
+       (80000001022, 20240022, '404 Võ Nguyên Giáp, Nam Định', 'Trần Văn Thành', true, '2024-03-26 14:00:00',
+        'Phí lắp đặt nước', 'REC-2024-0022', '1500000', '2024-03-26 14:00:00', '2024-03-26 14:00:00'),
+       (80000001025, 20240025, '707 Trường Chinh, Nam Định', 'Đặng Thị B', true, '2024-03-27 10:00:00',
+        'Phí lắp đặt nước', 'REC-2024-0025', '1500000', '2024-03-27 10:00:00', '2024-03-27 10:00:00'),
+       (80000001028, 20240028, '1010 Hàng Thao, Nam Định', 'Trần Văn K', true, '2024-03-27 15:00:00',
+        'Phí lắp đặt nước', 'REC-2024-0028', '1500000', '2024-03-27 15:00:00', '2024-03-27 15:00:00'),
+       (80000001029, 20240029, '11 Nguyễn Du, Nam Định', 'Nguyễn Thị Tới', true, '2024-04-02 09:00:00',
+        'Phí lắp đặt nước', 'REC-2024-0029', '1500000', '2024-04-02 09:00:00', '2024-04-02 09:00:00'),
+       (80000001030, 20240030, '22 Trần Phú, Nam Định', 'Lê Văn Thắng', true, '2024-04-02 10:00:00',
+        'Phí lắp đặt nước', 'REC-2024-0030', '1500000', '2024-04-02 10:00:00', '2024-04-02 10:00:00'),
+       (80000001031, 20240031, '33 Lý Thường Kiệt, Nam Định', 'Trần Thị Tuyết', true, '2024-04-02 11:00:00',
+        'Phí lắp đặt nước', 'REC-2024-0031', '1500000', '2024-04-02 11:00:00', '2024-04-02 11:00:00'),
+       (80000001032, 20240032, '44 Hàng Thao, Nam Định', 'Phạm Văn Hùng', true, '2024-04-03 09:00:00',
+        'Phí lắp đặt nước', 'REC-2024-0032', '1800000', '2024-04-03 09:00:00', '2024-04-03 09:00:00'),
+       (80000001033, 20240033, '55 Quang Trung, Nam Định', 'Hoàng Thị Kim', true, '2024-04-03 10:00:00',
+        'Phí lắp đặt nước', 'REC-2024-0033', '1500000', '2024-04-03 10:00:00', '2024-04-03 10:00:00'),
+       (80000001034, 20240034, '66 Lê Hồng Phong, Nam Định', 'Đỗ Văn Cường', true, '2024-04-03 11:00:00',
+        'Phí lắp đặt nước', 'REC-2024-0034', '1500000', '2024-04-03 11:00:00', '2024-04-03 11:00:00'),
+       (80000001035, 20240035, '77 Hùng Vương, Nam Định', 'Bùi Thị Ngọc', true, '2024-04-03 14:00:00',
+        'Phí lắp đặt nước', 'REC-2024-0035', '1500000', '2024-04-03 14:00:00', '2024-04-03 14:00:00'),
+       (80000001036, 20240036, '88 Võ Nguyên Giáp, Nam Định', 'Võ Văn Thành', true, '2024-05-02 09:00:00',
+        'Phí lắp đặt nước', 'REC-2024-0036', '1800000', '2024-05-02 09:00:00', '2024-05-02 09:00:00'),
+       (80000001037, 20240037, '99 Trường Chinh, Nam Định', 'Đặng Thị Hồng', true, '2024-05-02 10:00:00',
+        'Phí lắp đặt nước', 'REC-2024-0037', '1500000', '2024-05-02 10:00:00', '2024-05-02 10:00:00'),
+       (80000001038, 20240038, '111 Điện Biên, Nam Định', 'Phan Văn Minh', true, '2024-05-02 11:00:00',
+        'Phí lắp đặt nước', 'REC-2024-0038', '1500000', '2024-05-02 11:00:00', '2024-05-02 11:00:00'),
+       (80000001039, 20240039, '123 Đường Test 1, Nam Định', 'Nguyễn Văn Test 1', true, '2024-06-01 10:00:00',
+        'Phí lắp đặt nước', 'REC-2024-0039', '1500000', '2024-06-01 10:00:00', '2024-06-01 10:00:00'),
+       (80000001048, 20240048, '707 Đường Test 10, Nam Định', 'Đặng Thị Test 10', true, '2024-06-10 10:00:00',
+        'Phí lắp đặt nước', 'REC-2024-0048', '1500000', '2024-06-10 10:00:00', '2024-06-10 10:00:00');
 
 insert into public.water_usage_contract (contract_id, created_at, updated_at, form_code,
                                          form_number, representative, appendix)
-values ('CTR-2024-0019', current_timestamp, current_timestamp, '80000001019', '20240019', '[
+values ('CTR-2024-0019', '2024-03-27 09:00:00', '2024-03-27 09:00:00', '80000001019', '20240019', '[
   {
     "name": "Phạm Thị Mai",
     "position": "Chủ hộ"
   }
 ]'::jsonb, null),
-       ('CTR-2024-0020', current_timestamp, current_timestamp, '80000001020', '20240020', '[
+       ('CTR-2024-0020', '2024-03-27 10:00:00', '2024-03-27 10:00:00', '80000001020', '20240020', '[
          {
            "name": "Hoàng Văn Dũng",
            "position": "Chủ hộ"
          }
        ]'::jsonb, null),
-       ('CTR-2024-0021', current_timestamp, current_timestamp, '80000001021', '20240021', '[
+       ('CTR-2024-0021', '2024-03-27 11:00:00', '2024-03-27 11:00:00', '80000001021', '20240021', '[
          {
            "name": "Nguyễn Thị Hoa",
            "position": "Chủ hộ"
          }
        ]'::jsonb, null),
-       ('CTR-2024-0022', current_timestamp, current_timestamp, '80000001022', '20240022', '[
+       ('CTR-2024-0022', '2024-03-27 14:00:00', '2024-03-27 14:00:00', '80000001022', '20240022', '[
          {
            "name": "Trần Văn Thành",
            "position": "Chủ hộ"
          }
        ]'::jsonb, null),
-       ('CTR-2024-0025', current_timestamp, current_timestamp, '80000001025', '20240025', '[
+       ('CTR-2024-0025', '2024-03-28 10:00:00', '2024-03-28 10:00:00', '80000001025', '20240025', '[
          {
            "name": "Đặng Thị B",
            "position": "Chủ hộ"
          }
        ]'::jsonb, null),
-       ('CTR-2024-0028', current_timestamp, current_timestamp, '80000001028', '20240028', '[
+       ('CTR-2024-0028', '2024-03-28 15:00:00', '2024-03-28 15:00:00', '80000001028', '20240028', '[
          {
            "name": "Trần Văn K",
            "position": "Chủ hộ"
          }
        ]'::jsonb, null),
-       ('CTR-2024-0029', current_timestamp, current_timestamp, '80000001029', '20240029', '[
+       ('CTR-2024-0029', '2024-04-03 09:00:00', '2024-04-03 09:00:00', '80000001029', '20240029', '[
          {
            "name": "Nguyễn Thị Tới",
            "position": "Chủ hộ"
          }
        ]'::jsonb, null),
-       ('CTR-2024-0030', current_timestamp, current_timestamp, '80000001030', '20240030', '[
+       ('CTR-2024-0030', '2024-04-03 10:00:00', '2024-04-03 10:00:00', '80000001030', '20240030', '[
          {
            "name": "Lê Văn Thắng",
            "position": "Chủ hộ"
          }
        ]'::jsonb, null),
-       ('CTR-2024-0031', current_timestamp, current_timestamp, '80000001031', '20240031', '[
+       ('CTR-2024-0031', '2024-04-03 11:00:00', '2024-04-03 11:00:00', '80000001031', '20240031', '[
          {
            "name": "Trần Thị Tuyết",
            "position": "Chủ hộ"
          }
        ]'::jsonb, null),
-       ('CTR-2024-0032', current_timestamp, current_timestamp, '80000001032', '20240032', '[
+       ('CTR-2024-0032', '2024-04-04 09:00:00', '2024-04-04 09:00:00', '80000001032', '20240032', '[
          {
            "name": "Phạm Văn Hùng",
            "position": "Giám đốc"
          }
        ]'::jsonb, null),
-       ('CTR-2024-0033', current_timestamp, current_timestamp, '80000001033', '20240033', '[
+       ('CTR-2024-0033', '2024-04-04 10:00:00', '2024-04-04 10:00:00', '80000001033', '20240033', '[
          {
            "name": "Hoàng Thị Kim",
            "position": "Chủ hộ"
          }
        ]'::jsonb, null),
-       ('CTR-2024-0034', current_timestamp, current_timestamp, '80000001034', '20240034', '[
+       ('CTR-2024-0034', '2024-04-04 11:00:00', '2024-04-04 11:00:00', '80000001034', '20240034', '[
          {
            "name": "Đỗ Văn Cường",
            "position": "Chủ hộ"
          }
        ]'::jsonb, null),
-       ('CTR-2024-0035', current_timestamp, current_timestamp, '80000001035', '20240035', '[
+       ('CTR-2024-0035', '2024-04-04 14:00:00', '2024-04-04 14:00:00', '80000001035', '20240035', '[
          {
            "name": "Bùi Thị Ngọc",
            "position": "Chủ hộ"
          }
        ]'::jsonb, null),
-       ('CTR-2024-0036', current_timestamp, current_timestamp, '80000001036', '20240036', '[
+       ('CTR-2024-0036', '2024-05-03 09:00:00', '2024-05-03 09:00:00', '80000001036', '20240036', '[
          {
            "name": "Võ Văn Thành",
            "position": "Giám đốc"
          }
        ]'::jsonb, null),
-       ('CTR-2024-0037', current_timestamp, current_timestamp, '80000001037', '20240037', '[
+       ('CTR-2024-0037', '2024-05-03 10:00:00', '2024-05-03 10:00:00', '80000001037', '20240037', '[
          {
            "name": "Đặng Thị Hồng",
            "position": "Chủ hộ"
          }
        ]'::jsonb, null),
-       ('CTR-2024-0038', current_timestamp, current_timestamp, '80000001038', '20240038', '[
+       ('CTR-2024-0038', '2024-05-03 11:00:00', '2024-05-03 11:00:00', '80000001038', '20240038', '[
          {
            "name": "Phan Văn Minh",
+           "position": "Chủ hộ"
+         }
+       ]'::jsonb, null),
+       ('CTR-2024-0039', '2024-06-03 11:00:00', '2024-06-03 11:00:00', '80000001039', '20240039', '[
+         {
+           "name": "Nguyễn Văn Test 1",
+           "position": "Chủ hộ"
+         }
+       ]'::jsonb, null),
+       ('CTR-2024-0048', '2024-06-12 11:00:00', '2024-06-12 11:00:00', '80000001048', '20240048', '[
+         {
+           "name": "Đặng Thị Test 10",
            "position": "Chủ hộ"
          }
        ]'::jsonb, null);
 
 INSERT INTO construction_request (id, contract_id, created_at, updated_at,
                                   installation_form_code, installation_form_number)
-VALUES ('7a8192a3-7000-4aaa-9bbb-cccccccc0019', 'CTR-2024-0019', now(), now(),
-        80000001019, 20240019),
-       ('7a8192a3-7000-4aaa-9bbb-cccccccc0020', 'CTR-2024-0020', now(), now(),
-        80000001020, 20240020),
-       ('7a8192a3-7000-4aaa-9bbb-cccccccc0021', 'CTR-2024-0021', now(), now(),
-        80000001021, 20240021),
-       ('7a8192a3-7000-4aaa-9bbb-cccccccc0022', 'CTR-2024-0022', now(), now(),
-        80000001022, 20240022),
-       ('7a8192a3-7000-4aaa-9bbb-cccccccc0025', 'CTR-2024-0025', now(), now(),
-        80000001025, 20240025),
-       ('7a8192a3-7000-4aaa-9bbb-cccccccc0028', 'CTR-2024-0028', now(), now(),
-        80000001028, 20240028),
-       ('7a8192a3-7000-4aaa-9bbb-cccccccc0029', 'CTR-2024-0029', now(), now(), 80000001029, 20240029),
-       ('7a8192a3-7000-4aaa-9bbb-cccccccc0030', 'CTR-2024-0030', now(), now(), 80000001030, 20240030),
-       ('7a8192a3-7000-4aaa-9bbb-cccccccc0031', 'CTR-2024-0031', now(), now(), 80000001031, 20240031),
-       ('7a8192a3-7000-4aaa-9bbb-cccccccc0032', 'CTR-2024-0032', now(), now(), 80000001032, 20240032),
-       ('7a8192a3-7000-4aaa-9bbb-cccccccc0033', 'CTR-2024-0033', now(), now(), 80000001033, 20240033),
-       ('7a8192a3-7000-4aaa-9bbb-cccccccc0034', 'CTR-2024-0034', now(), now(), 80000001034, 20240034),
-       ('7a8192a3-7000-4aaa-9bbb-cccccccc0035', 'CTR-2024-0035', now(), now(), 80000001035, 20240035),
-       ('7a8192a3-7000-4aaa-9bbb-cccccccc0036', 'CTR-2024-0036', now(), now(), 80000001036, 20240036),
-       ('7a8192a3-7000-4aaa-9bbb-cccccccc0037', 'CTR-2024-0037', now(), now(), 80000001037, 20240037),
-       ('7a8192a3-7000-4aaa-9bbb-cccccccc0038', 'CTR-2024-0038', now(), now(), 80000001038, 20240038);
+VALUES ('7a8192a3-7000-4aaa-9bbb-cccccccc0019', 'CTR-2024-0019', '2024-03-28 09:00:00', '2024-03-28 09:00:00', 80000001019, 20240019),
+       ('7a8192a3-7000-4aaa-9bbb-cccccccc0020', 'CTR-2024-0020', '2024-03-28 10:00:00', '2024-03-28 10:00:00', 80000001020, 20240020),
+       ('7a8192a3-7000-4aaa-9bbb-cccccccc0021', 'CTR-2024-0021', '2024-03-28 11:00:00', '2024-03-28 11:00:00', 80000001021, 20240021),
+       ('7a8192a3-7000-4aaa-9bbb-cccccccc0022', 'CTR-2024-0022', '2024-03-28 14:00:00', '2024-03-28 14:00:00', 80000001022, 20240022),
+       ('7a8192a3-7000-4aaa-9bbb-cccccccc0025', 'CTR-2024-0025', '2024-03-28 16:00:00', '2024-03-28 16:00:00', 80000001025, 20240025),
+       ('7a8192a3-7000-4aaa-9bbb-cccccccc0028', 'CTR-2024-0028', '2024-03-29 10:00:00', '2024-03-29 10:00:00', 80000001028, 20240028),
+       ('7a8192a3-7000-4aaa-9bbb-cccccccc0029', 'CTR-2024-0029', '2024-04-06 09:00:00', '2024-04-06 09:00:00', 80000001029, 20240029),
+       ('7a8192a3-7000-4aaa-9bbb-cccccccc0030', 'CTR-2024-0030', '2024-04-06 10:00:00', '2024-04-06 10:00:00', 80000001030, 20240030),
+       ('7a8192a3-7000-4aaa-9bbb-cccccccc0031', 'CTR-2024-0031', '2024-04-06 11:00:00', '2024-04-06 11:00:00', 80000001031, 20240031),
+       ('7a8192a3-7000-4aaa-9bbb-cccccccc0032', 'CTR-2024-0032', '2024-04-07 09:00:00', '2024-04-07 09:00:00', 80000001032, 20240032),
+       ('7a8192a3-7000-4aaa-9bbb-cccccccc0033', 'CTR-2024-0033', '2024-04-07 10:00:00', '2024-04-07 10:00:00', 80000001033, 20240033),
+       ('7a8192a3-7000-4aaa-9bbb-cccccccc0034', 'CTR-2024-0034', '2024-04-07 11:00:00', '2024-04-07 11:00:00', 80000001034, 20240034),
+       ('7a8192a3-7000-4aaa-9bbb-cccccccc0035', 'CTR-2024-0035', '2024-04-07 14:00:00', '2024-04-07 14:00:00', 80000001035, 20240035),
+       ('7a8192a3-7000-4aaa-9bbb-cccccccc0036', 'CTR-2024-0036', '2024-05-04 09:00:00', '2024-05-04 09:00:00', 80000001036, 20240036),
+       ('7a8192a3-7000-4aaa-9bbb-cccccccc0037', 'CTR-2024-0037', '2024-05-04 10:00:00', '2024-05-04 10:00:00', 80000001037, 20240037),
+       ('7a8192a3-7000-4aaa-9bbb-cccccccc0038', 'CTR-2024-0038', '2024-05-04 11:00:00', '2024-05-04 11:00:00', 80000001038, 20240038),
+       ('7a8192a3-7000-4aaa-9bbb-cccccccc1039', 'CTR-2024-0039', '2024-06-05 09:00:00', '2024-06-05 09:00:00', 80000001039, 20240039),
+       ('7a8192a3-7000-4aaa-9bbb-cccccccc1048', 'CTR-2024-0048', '2024-06-14 09:00:00', '2024-06-14 09:00:00', 80000001048, 20240048);
 
 INSERT INTO public.customer (customer_id, address, bank_account_name, bank_account_number,
                              bank_account_provider_location,
@@ -1089,150 +1239,150 @@ INSERT INTO public.customer (customer_id, address, bank_account_name, bank_accou
 VALUES ('C-1022', '404 Võ Nguyên Giáp, Nam Định', 'TRAN VAN THANH', '190312345699', 'Sacombank Nam Định',
         'QH1022', '079090000022', '2020-02-07', current_timestamp, 'thanh.tv@gmail.com', '80000001022', '20240022',
         1254321, true, false, 'Trần Văn Thành', 2, 'BANK_TRANSFER', '0901234588', 50000,
-        '5e6f7081-4000-4eee-9fff-eeee4eee0003', 'FAMILY', current_timestamp, 'DOMESTIC', 'METER-022', 'MECHANICAL',
+        '5e6f7081-4000-4eee-9fff-eeee4eee0003', 'FAMILY', current_timestamp, 'DOMESTIC', '24000022', 'MECHANICAL',
         '00000000-0000-0000-0000-B00000000001', 'CTR-2024-0020'),
        ('C-1028', '1010 Hàng Thao, Nam Định', 'TRAN VAN K', '190312345705', 'VPBank Nam Định',
         'QH1028', '079090000028', '2020-03-05', current_timestamp, 'k.tv@gmail.com', '80000001028', '20240028',
         1054322, true, false, 'Trần Văn K', 3, 'BANK_TRANSFER', '0901234594', 50000,
-        '5e6f7081-4000-4eee-9fff-eeee4eee0003', 'FAMILY', current_timestamp, 'DOMESTIC', 'METER-028', 'MECHANICAL',
+        '5e6f7081-4000-4eee-9fff-eeee4eee0003', 'FAMILY', current_timestamp, 'DOMESTIC', '24000028', 'MECHANICAL',
         '00000000-0000-0000-0000-B00000000001', 'CTR-2024-0028'),
        ('C-1029', '11 Nguyễn Du, Nam Định', 'NGUYEN THI TOI', '190312345706', 'Agribank Nam Định', 'QH1029',
         '079090000029', '2020-04-01', current_timestamp, 'toi.nt@gmail.com', '80000001029', '20240029', 101, true,
         false, 'Nguyễn Thị Tới', 4, 'BANK_TRANSFER', '0901234601', 50000, '5e6f7081-4000-4eee-9fff-eeee4eee0001',
-        'FAMILY', current_timestamp, 'DOMESTIC', 'METER-029', 'MECHANICAL', '00000000-0000-0000-0000-B00000000001',
+        'FAMILY', current_timestamp, 'DOMESTIC', '24000029', 'MECHANICAL', '00000000-0000-0000-0000-B00000000001',
         'CTR-2024-0029'),
        ('C-1030', '22 Trần Phú, Nam Định', 'LE VAN THANG', '190312345707', 'BIDV Nam Định', 'QH1030', '079090000030',
         '2020-04-02', current_timestamp, 'thang.lv@gmail.com', '80000001030', '20240030', 102, true, false,
         'Lê Văn Thắng', 3, 'BANK_TRANSFER', '0901234602', 50000, '5e6f7081-4000-4eee-9fff-eeee4eee0001', 'FAMILY',
-        current_timestamp, 'DOMESTIC', 'METER-030', 'MECHANICAL', '00000000-0000-0000-0000-B00000000001',
+        current_timestamp, 'DOMESTIC', '24000030', 'MECHANICAL', '00000000-0000-0000-0000-B00000000001',
         'CTR-2024-0030'),
        ('C-1031', '33 Lý Thường Kiệt, Nam Định', 'TRAN THI TUYET', '190312345708', 'Vietcombank Nam Định', 'QH1031',
         '079090000031', '2020-04-03', current_timestamp, 'tuyet.tt@gmail.com', '80000001031', '20240031', 103, true,
         false, 'Trần Thị Tuyết', 5, 'BANK_TRANSFER', '0901234603', 50000, '5e6f7081-4000-4eee-9fff-eeee4eee0001',
-        'FAMILY', current_timestamp, 'DOMESTIC', 'METER-031', 'MECHANICAL', '00000000-0000-0000-0000-B00000000001',
+        'FAMILY', current_timestamp, 'DOMESTIC', '24000031', 'MECHANICAL', '00000000-0000-0000-0000-B00000000001',
         'CTR-2024-0031'),
        ('C-1032', '44 Hàng Thao, Nam Định', 'PHAM VAN HUNG', '190312345709', 'Techcombank Nam Định', 'QH1032',
         '079090000032', '2020-04-04', current_timestamp, 'hung.pv@gmail.com', '80000001032', '20240032', 104, true,
         false, 'Phạm Văn Hùng', 2, 'BANK_TRANSFER', '0901234604', 50000, '5e6f7081-4000-4eee-9fff-eeee4eee0001',
-        'COMPANY', current_timestamp, 'COMMERCIAL', 'METER-032', 'MECHANICAL', '00000000-0000-0000-0000-B00000000001',
+        'COMPANY', current_timestamp, 'COMMERCIAL', '24000032', 'MECHANICAL', '00000000-0000-0000-0000-B00000000001',
         'CTR-2024-0032'),
        ('C-1033', '55 Quang Trung, Nam Định', 'HOANG THI KIM', '190312345710', 'VPBank Nam Định', 'QH1033',
         '079090000033', '2020-04-05', current_timestamp, 'kim.ht@gmail.com', '80000001033', '20240033', 105, true,
         false, 'Hoàng Thị Kim', 4, 'BANK_TRANSFER', '0901234605', 50000, '5e6f7081-4000-4eee-9fff-eeee4eee0001',
-        'FAMILY', current_timestamp, 'DOMESTIC', 'METER-033', 'MECHANICAL', '00000000-0000-0000-0000-B00000000001',
+        'FAMILY', current_timestamp, 'DOMESTIC', '24000033', 'MECHANICAL', '00000000-0000-0000-0000-B00000000001',
         'CTR-2024-0033'),
        ('C-1034', '66 Lê Hồng Phong, Nam Định', 'DO VAN CUONG', '190312345711', 'ACB Nam Định', 'QH1034',
         '079090000034', '2020-04-06', current_timestamp, 'cuong.dv@gmail.com', '80000001034', '20240034', 106, true,
         false, 'Đỗ Văn Cường', 3, 'BANK_TRANSFER', '0901234606', 50000, '5e6f7081-4000-4eee-9fff-eeee4eee0001',
-        'FAMILY', current_timestamp, 'DOMESTIC', 'METER-034', 'MECHANICAL', '00000000-0000-0000-0000-B00000000001',
+        'FAMILY', current_timestamp, 'DOMESTIC', '24000034', 'MECHANICAL', '00000000-0000-0000-0000-B00000000001',
         'CTR-2024-0034'),
        ('C-1035', '77 Hùng Vương, Nam Định', 'BUI THI NGOC', '190312345712', 'Sacombank Nam Định', 'QH1035',
         '079090000035', '2020-04-07', current_timestamp, 'ngoc.bt@gmail.com', '80000001035', '20240035', 107, true,
         false, 'Bùi Thị Ngọc', 5, 'BANK_TRANSFER', '0901234607', 50000, '5e6f7081-4000-4eee-9fff-eeee4eee0001',
-        'FAMILY', current_timestamp, 'DOMESTIC', 'METER-035', 'MECHANICAL', '00000000-0000-0000-0000-B00000000001',
+        'FAMILY', current_timestamp, 'DOMESTIC', '24000035', 'MECHANICAL', '00000000-0000-0000-0000-B00000000001',
         'CTR-2024-0035'),
        ('C-1036', '88 Võ Nguyên Giáp, Nam Định', 'VO VAN THANH', '190312345713', 'Maritime Bank', 'QH1036',
         '079090000036', '2020-05-01', current_timestamp, 'thanh.vv@gmail.com', '80000001036', '20240036', 108, true,
         false, 'Võ Văn Thành', 2, 'BANK_TRANSFER', '0901234608', 50000, '5e6f7081-4000-4eee-9fff-eeee4eee0002',
-        'COMPANY', current_timestamp, 'COMMERCIAL', 'METER-036', 'MECHANICAL', '00000000-0000-0000-0000-B00000000001',
+        'COMPANY', current_timestamp, 'COMMERCIAL', '24000036', 'MECHANICAL', '00000000-0000-0000-0000-B00000000001',
         'CTR-2024-0036'),
        ('C-1037', '99 Trường Chinh, Nam Định', 'DANG THI HONG', '190312345714', 'SeABank', 'QH1037', '079090000037',
         '2020-05-02', current_timestamp, 'hong.dt@gmail.com', '80000001037', '20240037', 109, true, false,
         'Đặng Thị Hồng', 4, 'BANK_TRANSFER', '0901234609', 50000, '5e6f7081-4000-4eee-9fff-eeee4eee0002', 'FAMILY',
-        current_timestamp, 'DOMESTIC', 'METER-037', 'MECHANICAL', '00000000-0000-0000-0000-B00000000001',
+        current_timestamp, 'DOMESTIC', '24000037', 'MECHANICAL', '00000000-0000-0000-0000-B00000000001',
         'CTR-2024-0037'),
        ('C-1038', '111 Điện Biên, Nam Định', 'PHAN VAN MINH', '190312345715', 'TPBank', 'QH1038', '079090000038',
         '2020-05-03', current_timestamp, 'minh.pv@gmail.com', '80000001038', '20240038', 110, true, false,
         'Phan Văn Minh', 3, 'BANK_TRANSFER', '0901234610', 50000, '5e6f7081-4000-4eee-9fff-eeee4eee0002', 'FAMILY',
-        current_timestamp, 'DOMESTIC', 'METER-038', 'MECHANICAL', '00000000-0000-0000-0000-B00000000001',
+        current_timestamp, 'DOMESTIC', '24000038', 'MECHANICAL', '00000000-0000-0000-0000-B00000000001',
         'CTR-2024-0038');
 
-INSERT INTO public.settlement (settlement_id, address, connection_fee, created_at, job_content, note, registration_at,
+INSERT INTO public.settlement (settlement_id, address, customer_name, connection_fee, created_at, job_content, note, registration_at,
                                significance, updated_at, installation_form_code, installation_form_number)
-VALUES ('SETTLE-2024-0022', '404 Võ Nguyên Giáp, Nam Định', 1500000, now(), 'Lắp đặt đường ống nhánh và đồng hồ D15',
-        'Công trình hoàn thành đúng thiết kế, đã nghiệm thu.', '2024-03-25', '{
+VALUES ('SETTLE-2024-0022', '404 Võ Nguyên Giáp, Nam Định', 'Trần Văn Thành', 1500000, '2024-03-28 09:00:00', 'Lắp đặt đường ống nhánh và đồng hồ D15',
+        'Công trình hoàn thành đúng thiết kế, đã nghiệm thu.', '2024-03-25 10:57:40', '{
     "president": "Nguyễn Văn Kho",
     "ptHead": "Trịnh Trưởng Phòng",
     "surveyStaff": "Lê Kế Toán",
     "constructionPresident": "Lê Kế Toán"
-  }', now(), '80000001022', '20240022'),
-       ('SETTLE-2024-0028', '1010 Hàng Thao, Nam Định', 1800000, now(), 'Lắp đặt hệ thống cấp nước hộ gia đình',
-        'Nghiệm thu đạt chuẩn kỹ thuật, bàn giao sử dụng.', '2024-03-26', '{
+  }', '2024-03-28 09:00:00', '80000001022', '20240022'),
+       ('SETTLE-2024-0028', '1010 Hàng Thao, Nam Định', 'Trần Văn K', 1800000, '2024-03-29 10:15:00', 'Lắp đặt hệ thống cấp nước hộ gia đình',
+        'Nghiệm thu đạt chuẩn kỹ thuật, bàn giao sử dụng.', '2024-03-26 10:38:30', '{
          "president": "Nguyễn Văn Kho",
          "ptHead": "Trịnh Trưởng Phòng",
          "surveyStaff": "Lê Kế Toán",
          "constructionPresident": "Lê Kế Toán"
-       }', now(), '80000001028', '20240028'),
-       ('SETTLE-2024-0029', '11 Nguyễn Du, Nam Định', 1500000, now(), 'Lắp mới đồng hồ D15', 'Hoàn thành', '2024-04-01',
+       }', '2024-03-29 10:15:00', '80000001028', '20240028'),
+       ('SETTLE-2024-0029', '11 Nguyễn Du, Nam Định', 'Nguyễn Thị Tới', 1500000, '2024-04-10 14:20:00', 'Lắp mới đồng hồ D15', 'Hoàn thành', '2024-04-01 08:27:15',
         '{
           "president": "Nguyễn Văn Kho",
           "ptHead": "Trịnh Trưởng Phòng",
           "surveyStaff": "Lê Kế Toán",
           "constructionPresident": "Lê Kế Toán"
-        }', now(), 80000001029, 20240029),
-       ('SETTLE-2024-0030', '22 Trần Phú, Nam Định', 1500000, now(), 'Lắp mới đồng hồ D15', 'Hoàn thành', '2024-04-01',
+        }', '2024-04-10 14:20:00', 80000001029, 20240029),
+       ('SETTLE-2024-0030', '22 Trần Phú, Nam Định', 'Lê Văn Thắng', 1500000, '2024-04-10 15:30:00', 'Lắp mới đồng hồ D15', 'Hoàn thành', '2024-04-01 08:38:20',
         '{
           "president": "Nguyễn Văn Kho",
           "ptHead": "Trịnh Trưởng Phòng",
           "surveyStaff": "Lê Kế Toán",
           "constructionPresident": "Lê Kế Toán"
-        }', now(), 80000001030, 20240030),
-       ('SETTLE-2024-0031', '33 Lý Thường Kiệt, Nam Định', 1500000, now(), 'Lắp mới đồng hồ D15', 'Hoàn thành',
-        '2024-04-01', '{
+        }', '2024-04-10 15:30:00', 80000001030, 20240030),
+       ('SETTLE-2024-0031', '33 Lý Thường Kiệt, Nam Định', 'Trần Thị Tuyết', 1500000, '2024-04-10 16:40:00', 'Lắp mới đồng hồ D15', 'Hoàn thành',
+        '2024-04-01 08:47:45', '{
          "president": "Nguyễn Văn Kho",
          "ptHead": "Trịnh Trưởng Phòng",
          "surveyStaff": "Lê Kế Toán",
          "constructionPresident": "Lê Kế Toán"
-       }', now(), 80000001031, 20240031),
-       ('SETTLE-2024-0032', '44 Hàng Thao, Nam Định', 1800000, now(), 'Lắp mới đồng hồ D15', 'Hoàn thành', '2024-04-01',
+       }', '2024-04-10 16:40:00', 80000001031, 20240031),
+       ('SETTLE-2024-0032', '44 Hàng Thao, Nam Định', 'Phạm Văn Hùng', 1800000, '2024-04-11 09:15:00', 'Lắp mới đồng hồ D15', 'Hoàn thành', '2024-04-01 08:28:15',
         '{
           "president": "Nguyễn Văn Kho",
           "ptHead": "Trịnh Trưởng Phòng",
           "surveyStaff": "Lê Kế Toán",
           "constructionPresident": "Lê Kế Toán"
-        }', now(), 80000001032, 20240032),
-       ('SETTLE-2024-0033', '55 Quang Trung, Nam Định', 1500000, now(), 'Lắp mới đồng hồ D15', 'Hoàn thành',
-        '2024-04-02', '{
+        }', '2024-04-11 09:15:00', 80000001032, 20240032),
+       ('SETTLE-2024-0033', '55 Quang Trung, Nam Định', 'Hoàng Thị Kim', 1500000, '2024-04-11 10:20:00', 'Lắp mới đồng hồ D15', 'Hoàn thành',
+        '2024-04-02 08:36:20', '{
          "president": "Nguyễn Văn Kho",
          "ptHead": "Trịnh Trưởng Phòng",
          "surveyStaff": "Lê Kế Toán",
          "constructionPresident": "Lê Kế Toán"
-       }', now(), 80000001033, 20240033),
-       ('SETTLE-2024-0034', '66 Lê Hồng Phong, Nam Định', 1500000, now(), 'Lắp mới đồng hồ D15', 'Hoàn thành',
-        '2024-04-02', '{
+       }', '2024-04-11 10:20:00', 80000001033, 20240033),
+       ('SETTLE-2024-0034', '66 Lê Hồng Phong, Nam Định', 'Đỗ Văn Cường', 1500000, '2024-04-11 11:30:00', 'Lắp mới đồng hồ D15', 'Hoàn thành',
+        '2024-04-02 08:47:30', '{
          "president": "Nguyễn Văn Kho",
          "ptHead": "Trịnh Trưởng Phòng",
          "surveyStaff": "Lê Kế Toán",
          "constructionPresident": "Lê Kế Toán"
-       }', now(), 80000001034, 20240034),
-       ('SETTLE-2024-0035', '77 Hùng Vương, Nam Định', 1500000, now(), 'Lắp mới đồng hồ D15', 'Hoàn thành',
-        '2024-04-02', '{
+       }', '2024-04-11 11:30:00', 80000001034, 20240034),
+       ('SETTLE-2024-0035', '77 Hùng Vương, Nam Định', 'Bùi Thị Ngọc', 1500000, '2024-04-11 14:40:00', 'Lắp mới đồng hồ D15', 'Hoàn thành',
+        '2024-04-02 08:58:15', '{
          "president": "Nguyễn Văn Kho",
          "ptHead": "Trịnh Trưởng Phòng",
          "surveyStaff": "Lê Kế Toán",
          "constructionPresident": "Lê Kế Toán"
-       }', now(), 80000001035, 20240035),
-       ('SETTLE-2024-0036', '88 Võ Nguyên Giáp, Nam Định', 1800000, now(), 'Lắp mới đồng hồ D15', 'Hoàn thành',
-        '2024-05-01', '{
+       }', '2024-04-11 14:40:00', 80000001035, 20240035),
+       ('SETTLE-2024-0036', '88 Võ Nguyên Giáp, Nam Định', 'Võ Văn Thành', 1800000, '2024-05-10 09:15:00', 'Lắp mới đồng hồ D15', 'Hoàn thành',
+        '2024-05-01 08:27:30', '{
          "president": "Nguyễn Văn Kho",
          "ptHead": "Trịnh Trưởng Phòng",
          "surveyStaff": "Lê Kế Toán",
          "constructionPresident": "Lê Kế Toán"
-       }', now(), 80000001036, 20240036),
-       ('SETTLE-2024-0037', '99 Trường Chinh, Nam Định', 1500000, now(), 'Lắp mới đồng hồ D15', 'Hoàn thành',
-        '2024-05-01', '{
+       }', '2024-05-10 09:15:00', 80000001036, 20240036),
+       ('SETTLE-2024-0037', '99 Trường Chinh, Nam Định', 'Đặng Thị Hồng', 1500000, '2024-05-10 10:20:00', 'Lắp mới đồng hồ D15', 'Hoàn thành',
+        '2024-05-01 08:38:15', '{
          "president": "Nguyễn Văn Kho",
          "ptHead": "Trịnh Trưởng Phòng",
          "surveyStaff": "Lê Kế Toán",
          "constructionPresident": "Lê Kế Toán"
-       }', now(), 80000001037, 20240037),
-       ('SETTLE-2024-0038', '111 Điện Biên, Nam Định', 1500000, now(), 'Lắp mới đồng hồ D15', 'Hoàn thành',
-        '2024-05-01', '{
+       }', '2024-05-10 10:20:00', 80000001037, 20240037),
+       ('SETTLE-2024-0038', '111 Điện Biên, Nam Định', 'Phan Văn Minh', 1500000, '2024-05-10 11:30:00', 'Lắp mới đồng hồ D15', 'Hoàn thành',
+        '2024-05-01 08:47:40', '{
          "president": "Nguyễn Văn Kho",
          "ptHead": "Trịnh Trưởng Phòng",
          "surveyStaff": "Lê Kế Toán",
          "constructionPresident": "Lê Kế Toán"
-       }', now(), 80000001038, 20240038);
+       }', '2024-05-10 11:30:00', 80000001038, 20240038);
 
 -- device
 INSERT INTO public.parameters (param_id, created_at, creator, name, updated_at, updator, value)
@@ -1305,51 +1455,55 @@ VALUES ('00000000-0000-0000-0000-300000000001', NOW(), 'Bình', NOW()),
        ('00000000-0000-0000-0000-300000000026', NOW(), 'Đợt', NOW());
 
 INSERT INTO public.overall_water_meter (serial, lateral_id, name)
-VALUES ('00000000-0000-0000-0000-400000000001', '4d5e6f70-3000-4ddd-9eee-dddddddd0002', '195'),
-       ('00000000-0000-0000-0000-400000000002', '4d5e6f70-3000-4ddd-9eee-dddddddd0002', '195 (CQ)'),
-       ('00000000-0000-0000-0000-400000000003', '4d5e6f70-3000-4ddd-9eee-dddddddd0001', '14'),
-       ('00000000-0000-0000-0000-400000000004', '4d5e6f70-3000-4ddd-9eee-dddddddd0001', '14CQ'),
-       ('00000000-0000-0000-0000-400000000005', '4d5e6f70-3000-4ddd-9eee-dddddddd0001', '13'),
-       ('00000000-0000-0000-0000-400000000006', '4d5e6f70-3000-4ddd-9eee-dddddddd0001', '07V'),
-       ('00000000-0000-0000-0000-400000000007', '4d5e6f70-3000-4ddd-9eee-dddddddd0001', '08V'),
-       ('00000000-0000-0000-0000-400000000008', '4d5e6f70-3000-4ddd-9eee-dddddddd0001', '10V'),
-       ('00000000-0000-0000-0000-400000000009', '4d5e6f70-3000-4ddd-9eee-dddddddd0001', '06V'),
-       ('00000000-0000-0000-0000-400000000010', '4d5e6f70-3000-4ddd-9eee-dddddddd0001', '172');
+VALUES ('40000001', '4d5e6f70-3000-4ddd-9eee-dddddddd0002', '195'),
+       ('40000002', '4d5e6f70-3000-4ddd-9eee-dddddddd0002', '195 (CQ)'),
+       ('40000003', '4d5e6f70-3000-4ddd-9eee-dddddddd0001', '14'),
+       ('40000004', '4d5e6f70-3000-4ddd-9eee-dddddddd0001', '14CQ'),
+       ('40000005', '4d5e6f70-3000-4ddd-9eee-dddddddd0001', '13'),
+       ('40000006', '4d5e6f70-3000-4ddd-9eee-dddddddd0001', '07V'),
+       ('40000007', '4d5e6f70-3000-4ddd-9eee-dddddddd0001', '08V'),
+       ('40000008', '4d5e6f70-3000-4ddd-9eee-dddddddd0001', '10V'),
+       ('40000009', '4d5e6f70-3000-4ddd-9eee-dddddddd0001', '06V'),
+       ('40000010', '4d5e6f70-3000-4ddd-9eee-dddddddd0001', '172');
 
 INSERT INTO public.price_type (price_type_id, area, price)
 VALUES ('00000000-0000-0000-0000-500000000001', '1', '{
-  "price": 8000,
+  "price": 8600,
   "step": 1
 }'),
        ('00000000-0000-0000-0000-500000000002', '1', '{
-         "price": 9600,
+         "price": 10300,
          "step": 2
        }'),
        ('00000000-0000-0000-0000-500000000003', '1', '{
-         "price": 11200,
+         "price": 12700,
          "step": 3
        }'),
+       ('00000000-0000-0000-0000-500000000011', '1', '{
+         "price": 13500,
+         "step": 4
+       }'),
        ('00000000-0000-0000-0000-500000000004', '1', '{
-         "price": 11800
+         "price": 12800
        }'),
        ('00000000-0000-0000-0000-500000000005', '1', '{
-         "price": 12500
+         "price": 13500
        }'),
        ('00000000-0000-0000-0000-500000000006', '1', '{
-         "price": 20000
+         "price": 23000
        }'),
        ('00000000-0000-0000-0000-500000000007', '2', '{
-         "price": 7700,
+         "price": 8200,
          "step": 1
        }'),
        ('00000000-0000-0000-0000-500000000008', '2', '{
-         "price": 9600
+         "price": 12200
        }'),
        ('00000000-0000-0000-0000-500000000009', '2', '{
-         "price": 12000
+         "price": 13500
        }'),
        ('00000000-0000-0000-0000-500000000010', '2', '{
-         "price": 20000
+         "price": 22000
        }');
 
 INSERT INTO public.material (material_id, labor_code, construction_machinery_price,
@@ -1399,7 +1553,8 @@ VALUES ('00000000-0000-0000-0000-600000000001', 'DKT225', 12000.00, 10800.00, NO
        ('00000000-0000-0000-0000-600000000017', 'LC-17', 5500.00, 4950.00, NOW(),
         'Hộp nhựa bảo vệ đồng hồ KT: 350x150x170', 15000.00, 13500.00, 85000.00, NOW(),
         '00000000-0000-0000-0000-200000000009', '00000000-0000-0000-0000-300000000004'),
-       ('00000000-0000-0000-0000-600000000018', 'LC-18', 6500.00, 5850.00, NOW(), 'Cút Côn Inox 90 độ DN20x15', 22500.00,
+       ('00000000-0000-0000-0000-600000000018', 'LC-18', 6500.00, 5850.00, NOW(), 'Cút Côn Inox 90 độ DN20x15',
+        22500.00,
         20250.00, 45000.00, NOW(), '00000000-0000-0000-0000-200000000004', '00000000-0000-0000-0000-300000000004'),
        ('00000000-0000-0000-0000-600000000019', 'LC-19', 4500.00, 4050.00, NOW(), 'Kép inox DN15', 12500.00, 11250.00,
         15000.00, NOW(), '00000000-0000-0000-0000-200000000014', '00000000-0000-0000-0000-300000000004'),
@@ -1429,128 +1584,136 @@ VALUES ('00000000-0000-0000-0000-600000000001', 'DKT225', 12000.00, 10800.00, NO
        ('00000000-0000-0000-0000-600000000029', 'LC-29', 3500.00, 3150.00, NOW(), 'Ống nhựa HDPE - PE80-OD25 PN10',
         14500.00, 13050.00, 9500.00, NOW(), '00000000-0000-0000-0000-200000000011',
         '00000000-0000-0000-0000-300000000019'),
-       ('00000000-0000-0000-0000-600000000030', 'LC-30', 6500.00, 5850.00, NOW(), 'Tê Nhựa 25 x 25 Malaysia', 28500.00, 25650.00,
+       ('00000000-0000-0000-0000-600000000030', 'LC-30', 6500.00, 5850.00, NOW(), 'Tê Nhựa 25 x 25 Malaysia', 28500.00,
+        25650.00,
         22000.00, NOW(), '00000000-0000-0000-0000-200000000021', '00000000-0000-0000-0000-300000000004'),
-       ('00000000-0000-0000-0000-600000000031', 'LC-31', 4500.00, 4050.00, NOW(), 'Măng sông nhựa HDPE OD 20x20 Malaysia',
+       ('00000000-0000-0000-0000-600000000031', 'LC-31', 4500.00, 4050.00, NOW(),
+        'Măng sông nhựa HDPE OD 20x20 Malaysia',
         18500.00, 16650.00, 15000.00, NOW(), '00000000-0000-0000-0000-200000000012',
         '00000000-0000-0000-0000-300000000004'),
-       ('00000000-0000-0000-0000-600000000032', 'LC-32', 3500.00, 3150.00, NOW(), 'Măng sông', 12500.00, 11250.00, 10000.00,
+       ('00000000-0000-0000-0000-600000000032', 'LC-32', 3500.00, 3150.00, NOW(), 'Măng sông', 12500.00, 11250.00,
+        10000.00,
         NOW(), '00000000-0000-0000-0000-200000000012', '00000000-0000-0000-0000-300000000004'),
-       ('00000000-0000-0000-0000-600000000033', 'LC-33', 12500.00, 11250.00, NOW(), 'Van 2 chiều hiệu MIHA DN15', 35000.00,
+       ('00000000-0000-0000-0000-600000000033', 'LC-33', 12500.00, 11250.00, NOW(), 'Van 2 chiều hiệu MIHA DN15',
+        35000.00,
         31500.00, 85000.00, NOW(), '00000000-0000-0000-0000-200000000013', '00000000-0000-0000-0000-300000000004'),
-       ('00000000-0000-0000-0000-600000000034', 'LC-34', 12500.00, 11250.00, NOW(), 'Van 1 chiều hiệu MIHA DN15', 35000.00,
+       ('00000000-0000-0000-0000-600000000034', 'LC-34', 12500.00, 11250.00, NOW(), 'Van 1 chiều hiệu MIHA DN15',
+        35000.00,
         31500.00, 95000.00, NOW(), '00000000-0000-0000-0000-200000000013', '00000000-0000-0000-0000-300000000004'),
-       ('00000000-0000-0000-0000-600000000035', 'LC-35', 8500.00, 7650.00, NOW(), 'Hộp nhựa bảo vệ đồng hồ KT: 400x200x200',
+       ('00000000-0000-0000-0000-600000000035', 'LC-35', 8500.00, 7650.00, NOW(),
+        'Hộp nhựa bảo vệ đồng hồ KT: 400x200x200',
         18500.00, 16650.00, 110000.00, NOW(), '00000000-0000-0000-0000-200000000009',
         '00000000-0000-0000-0000-300000000004'),
-       ('00000000-0000-0000-0000-600000000036', 'LC-36', 7500.00, 6750.00, NOW(), 'Cút Inox 90 độ DN15 - 1 đầu ren ngoài',
+       ('00000000-0000-0000-0000-600000000036', 'LC-36', 7500.00, 6750.00, NOW(),
+        'Cút Inox 90 độ DN15 - 1 đầu ren ngoài',
         22500.00, 20250.00, 25000.00, NOW(), '00000000-0000-0000-0000-200000000004',
         '00000000-0000-0000-0000-300000000004'),
        ('00000000-0000-0000-0000-600000000037', 'LC-37', 4500.00, 4050.00, NOW(), 'Măng sông thép DN 15', 12500.00,
         11250.00, 12000.00, NOW(), '00000000-0000-0000-0000-200000000012', '00000000-0000-0000-0000-300000000004'),
-       ('00000000-0000-0000-0000-600000000038', 'LC-38', 8500.00, 7650.00, NOW(), 'Rắc co đồng hồ DN15', 35000.00, 31500.00,
+       ('00000000-0000-0000-0000-600000000038', 'LC-38', 8500.00, 7650.00, NOW(), 'Rắc co đồng hồ DN15', 35000.00,
+        31500.00,
         45000.00, NOW(), '00000000-0000-0000-0000-200000000022', '00000000-0000-0000-0000-300000000004'),
        ('00000000-0000-0000-0000-600000000039', 'LC-39', 5000.00, 4500.00, NOW(), 'Hợp đồng lắp đặt đồng hồ', 25000.00,
         22500.00, 50000.00, NOW(), '00000000-0000-0000-0000-200000000010', '00000000-0000-0000-0000-300000000004');
 
 INSERT INTO public.water_meter_type (type_id, created_at, diameter, max_index, meter_model, name, origin, qmin, qn, qt,
-                                     size, updated_at)
+                                     size, index_length, updated_at)
 VALUES ('00000000-0000-0000-0000-900000000001', NOW(), 100.0, '999999', 'WPD-DN100', 'Sensus', 'Sensus', '1.5', '2.5',
-        '3.5', 100, NOW()),
+        '3.5', 100, 5, NOW()),
        ('00000000-0000-0000-0000-900000000002', NOW(), 50.0, '999999', 'DN50 cấp B', 'Woltek', 'Woltek', '1.5', '2.5',
-        '3.5', 50, NOW()),
+        '3.5', 50, 5, NOW()),
        ('00000000-0000-0000-0000-900000000003', NOW(), 25.0, '999999', 'DN25 cấp C', 'Flodis', 'Flodis', '1.5', '2.5',
-        '3.5', 25, NOW()),
+        '3.5', 25, 5, NOW()),
        ('00000000-0000-0000-0000-900000000004', NOW(), 32.0, '999999', 'DN32 cấp C', 'Flodis', 'Flodis', '1.5', '2.5',
-        '3.5', 32, NOW()),
+        '3.5', 32, 5, NOW()),
        ('00000000-0000-0000-0000-900000000005', NOW(), 50.0, '999999', 'DN50 cấp C', 'Flostar', 'Flostar', '1.5', '2.5',
-        '3.5', 50, NOW()),
+        '3.5', 50, 5, NOW()),
        ('00000000-0000-0000-0000-900000000006', NOW(), 15.0, '999999', 'Mẫu tiêu chuẩn', 'Woltex', 'Indonesia', '1.5',
-        '2.5', '3.5', 15, NOW()),
+        '2.5', '3.5', 15, 5, NOW()),
        ('00000000-0000-0000-0000-900000000007', NOW(), 25.0, '999999', 'Tốc độ-Đa tia',
-        'Đồng hồ đo nước Multimag Cyble', 'Itron', '1.5', '2.5', '3.5', 25, NOW()),
+        'Đồng hồ đo nước Multimag Cyble', 'Itron', '1.5', '2.5', '3.5', 25, 5, NOW()),
        ('00000000-0000-0000-0000-900000000008', NOW(), 15.0, '999999',
         'Đồng hồ CD SD Plus là đồng hồ đơn tia mặt số khô', 'Đồng hồ đo nước Maddalena-Italia DN15 Cấp C', 'Italia',
-        '1.5', '2.5', '10.0', 15, NOW()),
+        '1.5', '2.5', '10.0', 15, 5, NOW()),
        ('00000000-0000-0000-0000-900000000009', NOW(), 15.0, '999999', 'Mẫu tiêu chuẩn', 'Bồ Đào Nha', 'Bồ Đào Nha',
-        '1.5', '2.5', '3.5', 15, NOW()),
+        '1.5', '2.5', '3.5', 15, 5, NOW()),
        ('00000000-0000-0000-0000-900000000010', NOW(), 15.0, '999999', 'Mẫu tiêu chuẩn', 'Kent KSM (bảo dưỡng)',
-        'Malaysia', '1.5', '2.5', '3.5', 15, NOW()),
+        'Malaysia', '1.5', '2.5', '3.5', 15, 5, NOW()),
        ('00000000-0000-0000-0000-900000000011', NOW(), 15.0, '999999', 'Sima', 'Multimag S - Cấp C', 'PHÁP', '1.5',
-        '2.5', '3.5', 15, NOW()),
+        '2.5', '3.5', 15, 5, NOW()),
        ('00000000-0000-0000-0000-900000000012', NOW(), 32.0, '999999', 'Mẫu tiêu chuẩn', 'Multimag (32)', 'Pháp', '1.5',
-        '2.5', '3.5', 32, NOW()),
+        '2.5', '3.5', 32, 5, NOW()),
        ('00000000-0000-0000-0000-900000000013', NOW(), 50.0, '999999', 'Mẫu tiêu chuẩn',
-        'Đồng hồ đo nước hãng Itron hiệu Woltex cấp B', 'Pháp', '1.5', '2.5', '3.5', 50, NOW()),
+        'Đồng hồ đo nước hãng Itron hiệu Woltex cấp B', 'Pháp', '1.5', '2.5', '3.5', 50, 5, NOW()),
        ('00000000-0000-0000-0000-900000000014', NOW(), 15.0, '999999', 'cơ điện tử', 'Thái Aichi', 'Thái Lan', '1.5',
-        '2.5', '3.5', 15, NOW()),
+        '2.5', '3.5', 15, 5, NOW()),
        ('00000000-0000-0000-0000-900000000015', NOW(), 15.0, '999999', 'Mẫu tiêu chuẩn', 'Pháp Multimag', 'Pháp', '1.5',
-        '2.5', '3.5', 15, NOW()),
+        '2.5', '3.5', 15, 5, NOW()),
        ('00000000-0000-0000-0000-900000000016', NOW(), 15.0, '999999', 'Mẫu tiêu chuẩn', 'Arad-Israel', 'Israel', '1.5',
-        '2.5', '3.5', 15, NOW()),
+        '2.5', '3.5', 15, 5, NOW()),
        ('00000000-0000-0000-0000-900000000017', NOW(), 15.0, '999999', 'Mẫu tiêu chuẩn', 'Klepsan - Cấp C',
-        'Thổ Nhĩ Kỳ', '1.5', '2.5', '3.5', 15, NOW()),
+        'Thổ Nhĩ Kỳ', '1.5', '2.5', '3.5', 15, 5, NOW()),
        ('00000000-0000-0000-0000-900000000018', NOW(), 15.0, '999999', 'Mẫu tiêu chuẩn', 'Malaysia Ken', 'Malaysia',
-        '1.5', '2.5', '3.5', 15, NOW()),
+        '1.5', '2.5', '3.5', 15, 5, NOW()),
        ('00000000-0000-0000-0000-900000000019', NOW(), 15.0, '999999', 'Mẫu tiêu chuẩn', 'Đồng hồ xuất xứ từ Đức',
-        'Đức', '1.5', '2.5', '3.5', 15, NOW()),
+        'Đức', '1.5', '2.5', '3.5', 15, 5, NOW()),
        ('00000000-0000-0000-0000-900000000020', NOW(), 15.0, '999999', 'Mẫu tiêu chuẩn', 'Quốc Phòng', 'Quốc Phòng',
-        '1.5', '2.5', '3.5', 15, NOW());
+        '1.5', '2.5', '3.5', 15, 5, NOW());
 
 INSERT INTO public.water_meter (meter_id, installation_date, size, water_meter_type_id)
-VALUES ('00000000-0000-0000-0000-A00000000001', '2023-01-01', 21, '00000000-0000-0000-0000-900000000001'),
-       ('00000000-0000-0000-0000-A00000000002', '2023-01-01', 22, '00000000-0000-0000-0000-900000000002'),
-       ('00000000-0000-0000-0000-A00000000003', '2023-01-01', 23, '00000000-0000-0000-0000-900000000003'),
-       ('00000000-0000-0000-0000-A00000000004', '2023-01-01', 24, '00000000-0000-0000-0000-900000000004'),
-       ('00000000-0000-0000-0000-A00000000005', '2023-01-01', 25, '00000000-0000-0000-0000-900000000005'),
-       ('00000000-0000-0000-0000-A00000000006', '2023-01-01', 26, '00000000-0000-0000-0000-900000000006'),
-       ('00000000-0000-0000-0000-A00000000007', '2023-01-01', 27, '00000000-0000-0000-0000-900000000007'),
-       ('00000000-0000-0000-0000-A00000000008', '2023-01-01', 28, '00000000-0000-0000-0000-900000000008'),
-       ('00000000-0000-0000-0000-A00000000009', '2023-01-01', 29, '00000000-0000-0000-0000-900000000009'),
-       ('00000000-0000-0000-0000-A00000000010', '2023-01-01', 30, '00000000-0000-0000-0000-900000000010'),
-       ('00000000-0000-0000-0000-A00000000011', '2023-01-01', 31, '00000000-0000-0000-0000-900000000011'),
-       ('00000000-0000-0000-0000-A00000000012', '2023-01-01', 32, '00000000-0000-0000-0000-900000000012'),
-       ('00000000-0000-0000-0000-A00000000013', '2023-01-01', 33, '00000000-0000-0000-0000-900000000013'),
-       ('00000000-0000-0000-0000-A00000000014', '2023-01-01', 34, '00000000-0000-0000-0000-900000000014'),
-       ('00000000-0000-0000-0000-A00000000015', '2023-01-01', 35, '00000000-0000-0000-0000-900000000015'),
-       ('METER-001', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-002', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-003', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-004', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-005', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-006', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-007', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-008', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-009', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-010', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-011', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-012', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-013', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-014', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-015', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-016', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-017', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-018', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-019', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-020', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-021', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-022', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-023', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-024', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-025', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-026', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-027', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-028', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-029', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-030', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-031', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-032', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-033', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-034', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-035', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-036', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-037', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
-       ('METER-038', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006');
+VALUES ('2178583', '2023-01-01', 21, '00000000-0000-0000-0000-900000000001'),
+       ('20000002', '2023-01-01', 22, '00000000-0000-0000-0000-900000000002'),
+       ('20000003', '2023-01-01', 23, '00000000-0000-0000-0000-900000000003'),
+       ('20000004', '2023-01-01', 24, '00000000-0000-0000-0000-900000000004'),
+       ('20000005', '2023-01-01', 25, '00000000-0000-0000-0000-900000000005'),
+       ('20000006', '2023-01-01', 26, '00000000-0000-0000-0000-900000000006'),
+       ('20000007', '2023-01-01', 27, '00000000-0000-0000-0000-900000000007'),
+       ('20000008', '2023-01-01', 28, '00000000-0000-0000-0000-900000000008'),
+       ('20000009', '2023-01-01', 29, '00000000-0000-0000-0000-900000000009'),
+       ('20000010', '2023-01-01', 30, '00000000-0000-0000-0000-900000000010'),
+       ('20000011', '2023-01-01', 31, '00000000-0000-0000-0000-900000000011'),
+       ('20000012', '2023-01-01', 32, '00000000-0000-0000-0000-900000000012'),
+       ('20000013', '2023-01-01', 33, '00000000-0000-0000-0000-900000000013'),
+       ('20000014', '2023-01-01', 34, '00000000-0000-0000-0000-900000000014'),
+       ('20000015', '2023-01-01', 35, '00000000-0000-0000-0000-900000000015'),
+       ('24000001', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000002', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000003', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000004', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000005', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000006', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000007', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000008', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000009', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000010', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000011', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000012', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000013', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000014', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000015', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000016', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000017', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000018', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000019', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000020', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000021', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000022', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000023', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000024', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000025', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000026', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000027', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000028', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000029', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000030', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000031', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000032', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000033', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000034', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000035', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000036', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000037', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
+       ('24000038', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006');
 
 INSERT INTO public.water_price (price_id, application_period, created_at, description, environment_price,
                                 expiration_date, tax, updated_at, usage_target)
@@ -1579,6 +1742,7 @@ INSERT INTO public.water_price_price_types (water_price_price_id, price_types_pr
 VALUES ('00000000-0000-0000-0000-B00000000001', '00000000-0000-0000-0000-500000000001'),
        ('00000000-0000-0000-0000-B00000000001', '00000000-0000-0000-0000-500000000002'),
        ('00000000-0000-0000-0000-B00000000001', '00000000-0000-0000-0000-500000000003'),
+       ('00000000-0000-0000-0000-B00000000001', '00000000-0000-0000-0000-500000000011'),
        ('00000000-0000-0000-0000-B00000000005', '00000000-0000-0000-0000-500000000002'),
        ('00000000-0000-0000-0000-B00000000009', '00000000-0000-0000-0000-500000000003'),
        ('00000000-0000-0000-0000-B00000000013', '00000000-0000-0000-0000-500000000007'),
@@ -1615,7 +1779,7 @@ VALUES ('86088520-f274-4ac2-a94b-b761995abf4a', true, 'admin', 'Trang chủ', 'a
 
 INSERT INTO public.department (department_id, name, phone_number)
 VALUES ('29f12d88-7517-482a-9f44-8d9124443183', 'Phòng Kế hoạch Kỹ Thuật', '02283638708'),
-       ('85c2c776-6927-4402-8616-562ec874b321', 'Phòng Thi công', null),
+       ('85c2c776-6927-4402-8616-562ec874b321', 'Chi nhánh Xây lắp', null),
        ('d1767664-9f79-4416-952b-7c70ae1c97a5', 'Phòng Kinh doanh', null),
        ('e1823908-0125-468b-9831-5079a4055577', 'Phòng Tài vụ', null),
        ('f3c6507c-38d7-463d-8280-975940c61159', 'Phòng Tin học', '02283636681'),
@@ -1673,29 +1837,20 @@ INSERT INTO public.customer (customer_id, address, bank_account_name, bank_accou
                              citizen_identification_number, citizen_identification_provide_at, contract_contract_id)
 VALUES ('CUST-001', '123 Đường ABC, Hà Nội', 'NGUYEN VAN A', '123456789', 'Hà Nội', NOW(), 'customer1@example.com',
         'FORM-TEST-001', 'FN-001', 1, true, false, 'Nguyễn Văn A', 1, 'CASH', '0987654321', 10,
-        '5e6f7081-4000-4eee-9fff-eeee4eee0001', 'FAMILY', NOW(), 'DOMESTIC', '00000000-0000-0000-0000-A00000000001',
+        '5e6f7081-4000-4eee-9fff-eeee4eee0001', 'FAMILY', NOW(), 'DOMESTIC', '2178583',
         'Sensus', '00000000-0000-0000-0000-B00000000001', '123456789', 'Hà Nội', 'CONT-001'),
        ('CUST-002', '456 Đường XYZ, TP.HCM', 'TRAN THI B', '987654321', 'TP.HCM', NOW(), 'customer2@example.com',
         'FORM-TEST-002', 'FN-002', 2, true, false, 'Trần Thị B', 1, 'CASH', '0123456789', 10,
-        '5e6f7081-4000-4eee-9fff-eeee4eee0001', 'FAMILY', NOW(), 'DOMESTIC', '00000000-0000-0000-0000-A00000000002',
+        '5e6f7081-4000-4eee-9fff-eeee4eee0001', 'FAMILY', NOW(), 'DOMESTIC', '20000002',
         'Woltek', '00000000-0000-0000-0000-B00000000001', '987654321', 'TP.HCM', 'CONT-002'),
        ('CUST-003', '789 Đường LMN, Đà Nẵng', 'LE VAN C', '456789123', 'Đà Nẵng', NOW(), 'customer3@example.com',
         'FORM-TEST-003', 'FN-003', 3, true, false, 'Lê Văn C', 1, 'CASH', '0900000000', 10,
-        '5e6f7081-4000-4eee-9fff-eeee4eee0001', 'FAMILY', NOW(), 'DOMESTIC', '00000000-0000-0000-0000-A00000000003',
+        '5e6f7081-4000-4eee-9fff-eeee4eee0001', 'FAMILY', NOW(), 'DOMESTIC', '20000003',
         'Flodis', '00000000-0000-0000-0000-B00000000001', '456789123', 'Đà Nẵng', 'CONT-003');
 
 -- usage_history
 INSERT INTO public.usage_history (customer_id, meter_code, usages)
-VALUES ('CUST-001', '00000000-0000-0000-0000-A00000000001', '[
-  {
-    "id": "usage-test-001",
-    "recordingDate": "2024-04-01",
-    "index": 1050,
-    "status": "PENDING",
-    "meterImageUrl": "https://images.unsplash.com/photo-1585702138250-afe07474776e"
-  }
-]'),
-       ('CUST-002', '00000000-0000-0000-0000-A00000000002', '[
+VALUES ('CUST-002', '20000002', '[
          {
            "id": "usage-test-002",
            "recordingDate": "2024-04-01",
@@ -1704,117 +1859,238 @@ VALUES ('CUST-001', '00000000-0000-0000-0000-A00000000001', '[
            "meterImageUrl": "https://images.unsplash.com/photo-1590496793907-4e96395b0c79"
          }
        ]'),
-       ('CUST-003', '00000000-0000-0000-0000-A00000000003', '[
+       ('CUST-003', '20000003', '[
          {
            "id": "usage-test-003",
-           "recordingDate": "2024-04-01",
+           "recordingACDate": "2024-04-01",
            "index": 3345,
            "status": "PENDING",
            "meterImageUrl": "https://images.unsplash.com/photo-1610492470714-539031eb09d2"
          }
        ]');
 
-INSERT INTO public.materials_of_cost_estimate (cost_est_id, mass, note, total_labor_cost, total_material_cost, material_material_id)
-VALUES ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', 10, 'Ống nhựa HDPE', '20000', '50000', '00000000-0000-0000-0000-600000000011'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', 1, 'Đồng hồ nước', '10000', '450000', '00000000-0000-0000-0000-600000000014'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', 1, 'Hộp bảo vệ', '5000', '120000', '00000000-0000-0000-0000-600000000017'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', 0.5, 'Nhân công đào đất', '80000', '0', '00000000-0000-0000-0000-600000000028'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', 1, 'Van 2 chiều', '15000', '85000', '00000000-0000-0000-0000-600000000033'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0002', 10, 'Ống nhựa HDPE', '20000', '50000', '00000000-0000-0000-0000-600000000011'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0002', 1, 'Đồng hồ nước', '10000', '450000', '00000000-0000-0000-0000-600000000014'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0002', 1, 'Hộp bảo vệ', '5000', '120000', '00000000-0000-0000-0000-600000000017'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0002', 0.5, 'Nhân công đào đất', '80000', '0', '00000000-0000-0000-0000-600000000028'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0002', 1, 'Van 2 chiều', '15000', '85000', '00000000-0000-0000-0000-600000000033'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0003', 10, 'Ống nhựa HDPE', '20000', '50000', '00000000-0000-0000-0000-600000000011'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0003', 1, 'Đồng hồ nước', '10000', '450000', '00000000-0000-0000-0000-600000000014'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0003', 1, 'Hộp bảo vệ', '5000', '120000', '00000000-0000-0000-0000-600000000017'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0003', 0.5, 'Nhân công đào đất', '80000', '0', '00000000-0000-0000-0000-600000000028'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0003', 1, 'Van 2 chiều', '15000', '85000', '00000000-0000-0000-0000-600000000033'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0004', 10, 'Ống nhựa HDPE', '20000', '50000', '00000000-0000-0000-0000-600000000011'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0004', 1, 'Đồng hồ nước', '10000', '450000', '00000000-0000-0000-0000-600000000014'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0004', 1, 'Hộp bảo vệ', '5000', '120000', '00000000-0000-0000-0000-600000000017'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0004', 0.5, 'Nhân công đào đất', '80000', '0', '00000000-0000-0000-0000-600000000028'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0004', 1, 'Van 2 chiều', '15000', '85000', '00000000-0000-0000-0000-600000000033'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0005', 10, 'Ống nhựa HDPE', '20000', '50000', '00000000-0000-0000-0000-600000000011'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0005', 1, 'Đồng hồ nước', '10000', '450000', '00000000-0000-0000-0000-600000000014'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0005', 1, 'Hộp bảo vệ', '5000', '120000', '00000000-0000-0000-0000-600000000017'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0005', 0.5, 'Nhân công đào đất', '80000', '0', '00000000-0000-0000-0000-600000000028'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0005', 1, 'Van 2 chiều', '15000', '85000', '00000000-0000-0000-0000-600000000033'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0006', 10, 'Ống nhựa HDPE', '20000', '50000', '00000000-0000-0000-0000-600000000011'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0006', 1, 'Đồng hồ nước', '10000', '450000', '00000000-0000-0000-0000-600000000014'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0006', 1, 'Hộp bảo vệ', '5000', '120000', '00000000-0000-0000-0000-600000000017'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0006', 0.5, 'Nhân công đào đất', '80000', '0', '00000000-0000-0000-0000-600000000028'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0006', 1, 'Van 2 chiều', '15000', '85000', '00000000-0000-0000-0000-600000000033'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0007', 10, 'Ống nhựa HDPE', '20000', '50000', '00000000-0000-0000-0000-600000000011'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0007', 1, 'Đồng hồ nước', '10000', '450000', '00000000-0000-0000-0000-600000000014'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0007', 1, 'Hộp bảo vệ', '5000', '120000', '00000000-0000-0000-0000-600000000017'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0007', 0.5, 'Nhân công đào đất', '80000', '0', '00000000-0000-0000-0000-600000000028'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0007', 1, 'Van 2 chiều', '15000', '85000', '00000000-0000-0000-0000-600000000033'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0008', 10, 'Ống nhựa HDPE', '20000', '50000', '00000000-0000-0000-0000-600000000011'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0008', 1, 'Đồng hồ nước', '10000', '450000', '00000000-0000-0000-0000-600000000014'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0008', 1, 'Hộp bảo vệ', '5000', '120000', '00000000-0000-0000-0000-600000000017'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0008', 0.5, 'Nhân công đào đất', '80000', '0', '00000000-0000-0000-0000-600000000028'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0008', 1, 'Van 2 chiều', '15000', '85000', '00000000-0000-0000-0000-600000000033'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0009', 10, 'Ống nhựa HDPE', '20000', '50000', '00000000-0000-0000-0000-600000000011'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0009', 1, 'Đồng hồ nước', '10000', '450000', '00000000-0000-0000-0000-600000000014'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0009', 1, 'Hộp bảo vệ', '5000', '120000', '00000000-0000-0000-0000-600000000017'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0009', 0.5, 'Nhân công đào đất', '80000', '0', '00000000-0000-0000-0000-600000000028'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0009', 1, 'Van 2 chiều', '15000', '85000', '00000000-0000-0000-0000-600000000033'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0010', 10, 'Ống nhựa HDPE', '20000', '50000', '00000000-0000-0000-0000-600000000011'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0010', 1, 'Đồng hồ nước', '10000', '450000', '00000000-0000-0000-0000-600000000014'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0010', 1, 'Hộp bảo vệ', '5000', '120000', '00000000-0000-0000-0000-600000000017'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0010', 0.5, 'Nhân công đào đất', '80000', '0', '00000000-0000-0000-0000-600000000028'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg0010', 1, 'Van 2 chiều', '15000', '85000', '00000000-0000-0000-0000-600000000033'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1029', 10, 'Ống nhựa HDPE', '20000', '50000', '00000000-0000-0000-0000-600000000011'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1029', 1, 'Đồng hồ nước', '10000', '450000', '00000000-0000-0000-0000-600000000014'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1029', 1, 'Hộp bảo vệ', '5000', '120000', '00000000-0000-0000-0000-600000000017'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1029', 0.5, 'Nhân công đào đất', '80000', '0', '00000000-0000-0000-0000-600000000028'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1029', 1, 'Van 2 chiều', '15000', '85000', '00000000-0000-0000-0000-600000000033'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1030', 10, 'Ống nhựa HDPE', '20000', '50000', '00000000-0000-0000-0000-600000000011'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1030', 1, 'Đồng hồ nước', '10000', '450000', '00000000-0000-0000-0000-600000000014'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1030', 1, 'Hộp bảo vệ', '5000', '120000', '00000000-0000-0000-0000-600000000017'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1030', 0.5, 'Nhân công đào đất', '80000', '0', '00000000-0000-0000-0000-600000000028'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1030', 1, 'Van 2 chiều', '15000', '85000', '00000000-0000-0000-0000-600000000033'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1031', 10, 'Ống nhựa HDPE', '20000', '50000', '00000000-0000-0000-0000-600000000011'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1031', 1, 'Đồng hồ nước', '10000', '450000', '00000000-0000-0000-0000-600000000014'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1031', 1, 'Hộp bảo vệ', '5000', '120000', '00000000-0000-0000-0000-600000000017'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1031', 0.5, 'Nhân công đào đất', '80000', '0', '00000000-0000-0000-0000-600000000028'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1031', 1, 'Van 2 chiều', '15000', '85000', '00000000-0000-0000-0000-600000000033'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1032', 10, 'Ống nhựa HDPE', '20000', '50000', '00000000-0000-0000-0000-600000000011'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1032', 1, 'Đồng hồ nước', '10000', '450000', '00000000-0000-0000-0000-600000000014'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1032', 1, 'Hộp bảo vệ', '5000', '120000', '00000000-0000-0000-0000-600000000017'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1032', 0.5, 'Nhân công đào đất', '80000', '0', '00000000-0000-0000-0000-600000000028'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1032', 1, 'Van 2 chiều', '15000', '85000', '00000000-0000-0000-0000-600000000033'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1033', 10, 'Ống nhựa HDPE', '20000', '50000', '00000000-0000-0000-0000-600000000011'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1033', 1, 'Đồng hồ nước', '10000', '450000', '00000000-0000-0000-0000-600000000014'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1033', 1, 'Hộp bảo vệ', '5000', '120000', '00000000-0000-0000-0000-600000000017'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1033', 0.5, 'Nhân công đào đất', '80000', '0', '00000000-0000-0000-0000-600000000028'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1033', 1, 'Van 2 chiều', '15000', '85000', '00000000-0000-0000-0000-600000000033'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1034', 10, 'Ống nhựa HDPE', '20000', '50000', '00000000-0000-0000-0000-600000000011'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1034', 1, 'Đồng hồ nước', '10000', '450000', '00000000-0000-0000-0000-600000000014'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1034', 1, 'Hộp bảo vệ', '5000', '120000', '00000000-0000-0000-0000-600000000017'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1034', 0.5, 'Nhân công đào đất', '80000', '0', '00000000-0000-0000-0000-600000000028'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1034', 1, 'Van 2 chiều', '15000', '85000', '00000000-0000-0000-0000-600000000033'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1035', 10, 'Ống nhựa HDPE', '20000', '50000', '00000000-0000-0000-0000-600000000011'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1035', 1, 'Đồng hồ nước', '10000', '450000', '00000000-0000-0000-0000-600000000014'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1035', 1, 'Hộp bảo vệ', '5000', '120000', '00000000-0000-0000-0000-600000000017'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1035', 0.5, 'Nhân công đào đất', '80000', '0', '00000000-0000-0000-0000-600000000028'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1035', 1, 'Van 2 chiều', '15000', '85000', '00000000-0000-0000-0000-600000000033'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1036', 10, 'Ống nhựa HDPE', '20000', '50000', '00000000-0000-0000-0000-600000000011'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1036', 1, 'Đồng hồ nước', '10000', '450000', '00000000-0000-0000-0000-600000000014'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1036', 1, 'Hộp bảo vệ', '5000', '120000', '00000000-0000-0000-0000-600000000017'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1036', 0.5, 'Nhân công đào đất', '80000', '0', '00000000-0000-0000-0000-600000000028'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1036', 1, 'Van 2 chiều', '15000', '85000', '00000000-0000-0000-0000-600000000033'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1037', 10, 'Ống nhựa HDPE', '20000', '50000', '00000000-0000-0000-0000-600000000011'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1037', 1, 'Đồng hồ nước', '10000', '450000', '00000000-0000-0000-0000-600000000014'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1037', 1, 'Hộp bảo vệ', '5000', '120000', '00000000-0000-0000-0000-600000000017'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1037', 0.5, 'Nhân công đào đất', '80000', '0', '00000000-0000-0000-0000-600000000028'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1037', 1, 'Van 2 chiều', '15000', '85000', '00000000-0000-0000-0000-600000000033'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1038', 10, 'Ống nhựa HDPE', '20000', '50000', '00000000-0000-0000-0000-600000000011'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1038', 1, 'Đồng hồ nước', '10000', '450000', '00000000-0000-0000-0000-600000000014'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1038', 1, 'Hộp bảo vệ', '5000', '120000', '00000000-0000-0000-0000-600000000017'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1038', 0.5, 'Nhân công đào đất', '80000', '0', '00000000-0000-0000-0000-600000000028'),
-       ('7a8192a3-6000-4bbb-9ccc-gggggggg1038', 1, 'Van 2 chiều', '15000', '85000', '00000000-0000-0000-0000-600000000033');
+INSERT INTO public.materials_of_cost_estimate (cost_est_id, mass, note, total_labor_cost, total_material_cost,
+                                               material_material_id)
+VALUES ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', 10, 'Ống nhựa HDPE', '20000', '50000',
+        '00000000-0000-0000-0000-600000000011'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', 1, 'Đồng hồ nước', '10000', '450000',
+        '00000000-0000-0000-0000-600000000014'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', 1, 'Hộp bảo vệ', '5000', '120000',
+        '00000000-0000-0000-0000-600000000017'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', 0.5, 'Nhân công đào đất', '80000', '0',
+        '00000000-0000-0000-0000-600000000028'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0001', 1, 'Van 2 chiều', '15000', '85000',
+        '00000000-0000-0000-0000-600000000033'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0002', 10, 'Ống nhựa HDPE', '20000', '50000',
+        '00000000-0000-0000-0000-600000000011'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0002', 1, 'Đồng hồ nước', '10000', '450000',
+        '00000000-0000-0000-0000-600000000014'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0002', 1, 'Hộp bảo vệ', '5000', '120000',
+        '00000000-0000-0000-0000-600000000017'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0002', 0.5, 'Nhân công đào đất', '80000', '0',
+        '00000000-0000-0000-0000-600000000028'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0002', 1, 'Van 2 chiều', '15000', '85000',
+        '00000000-0000-0000-0000-600000000033'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0003', 10, 'Ống nhựa HDPE', '20000', '50000',
+        '00000000-0000-0000-0000-600000000011'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0003', 1, 'Đồng hồ nước', '10000', '450000',
+        '00000000-0000-0000-0000-600000000014'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0003', 1, 'Hộp bảo vệ', '5000', '120000',
+        '00000000-0000-0000-0000-600000000017'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0003', 0.5, 'Nhân công đào đất', '80000', '0',
+        '00000000-0000-0000-0000-600000000028'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0003', 1, 'Van 2 chiều', '15000', '85000',
+        '00000000-0000-0000-0000-600000000033'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0004', 10, 'Ống nhựa HDPE', '20000', '50000',
+        '00000000-0000-0000-0000-600000000011'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0004', 1, 'Đồng hồ nước', '10000', '450000',
+        '00000000-0000-0000-0000-600000000014'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0004', 1, 'Hộp bảo vệ', '5000', '120000',
+        '00000000-0000-0000-0000-600000000017'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0004', 0.5, 'Nhân công đào đất', '80000', '0',
+        '00000000-0000-0000-0000-600000000028'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0004', 1, 'Van 2 chiều', '15000', '85000',
+        '00000000-0000-0000-0000-600000000033'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0005', 10, 'Ống nhựa HDPE', '20000', '50000',
+        '00000000-0000-0000-0000-600000000011'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0005', 1, 'Đồng hồ nước', '10000', '450000',
+        '00000000-0000-0000-0000-600000000014'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0005', 1, 'Hộp bảo vệ', '5000', '120000',
+        '00000000-0000-0000-0000-600000000017'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0005', 0.5, 'Nhân công đào đất', '80000', '0',
+        '00000000-0000-0000-0000-600000000028'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0005', 1, 'Van 2 chiều', '15000', '85000',
+        '00000000-0000-0000-0000-600000000033'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0006', 10, 'Ống nhựa HDPE', '20000', '50000',
+        '00000000-0000-0000-0000-600000000011'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0006', 1, 'Đồng hồ nước', '10000', '450000',
+        '00000000-0000-0000-0000-600000000014'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0006', 1, 'Hộp bảo vệ', '5000', '120000',
+        '00000000-0000-0000-0000-600000000017'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0006', 0.5, 'Nhân công đào đất', '80000', '0',
+        '00000000-0000-0000-0000-600000000028'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0006', 1, 'Van 2 chiều', '15000', '85000',
+        '00000000-0000-0000-0000-600000000033'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0007', 10, 'Ống nhựa HDPE', '20000', '50000',
+        '00000000-0000-0000-0000-600000000011'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0007', 1, 'Đồng hồ nước', '10000', '450000',
+        '00000000-0000-0000-0000-600000000014'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0007', 1, 'Hộp bảo vệ', '5000', '120000',
+        '00000000-0000-0000-0000-600000000017'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0007', 0.5, 'Nhân công đào đất', '80000', '0',
+        '00000000-0000-0000-0000-600000000028'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0007', 1, 'Van 2 chiều', '15000', '85000',
+        '00000000-0000-0000-0000-600000000033'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0008', 10, 'Ống nhựa HDPE', '20000', '50000',
+        '00000000-0000-0000-0000-600000000011'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0008', 1, 'Đồng hồ nước', '10000', '450000',
+        '00000000-0000-0000-0000-600000000014'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0008', 1, 'Hộp bảo vệ', '5000', '120000',
+        '00000000-0000-0000-0000-600000000017'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0008', 0.5, 'Nhân công đào đất', '80000', '0',
+        '00000000-0000-0000-0000-600000000028'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0008', 1, 'Van 2 chiều', '15000', '85000',
+        '00000000-0000-0000-0000-600000000033'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0009', 10, 'Ống nhựa HDPE', '20000', '50000',
+        '00000000-0000-0000-0000-600000000011'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0009', 1, 'Đồng hồ nước', '10000', '450000',
+        '00000000-0000-0000-0000-600000000014'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0009', 1, 'Hộp bảo vệ', '5000', '120000',
+        '00000000-0000-0000-0000-600000000017'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0009', 0.5, 'Nhân công đào đất', '80000', '0',
+        '00000000-0000-0000-0000-600000000028'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0009', 1, 'Van 2 chiều', '15000', '85000',
+        '00000000-0000-0000-0000-600000000033'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0010', 10, 'Ống nhựa HDPE', '20000', '50000',
+        '00000000-0000-0000-0000-600000000011'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0010', 1, 'Đồng hồ nước', '10000', '450000',
+        '00000000-0000-0000-0000-600000000014'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0010', 1, 'Hộp bảo vệ', '5000', '120000',
+        '00000000-0000-0000-0000-600000000017'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0010', 0.5, 'Nhân công đào đất', '80000', '0',
+        '00000000-0000-0000-0000-600000000028'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg0010', 1, 'Van 2 chiều', '15000', '85000',
+        '00000000-0000-0000-0000-600000000033'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1029', 10, 'Ống nhựa HDPE', '20000', '50000',
+        '00000000-0000-0000-0000-600000000011'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1029', 1, 'Đồng hồ nước', '10000', '450000',
+        '00000000-0000-0000-0000-600000000014'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1029', 1, 'Hộp bảo vệ', '5000', '120000',
+        '00000000-0000-0000-0000-600000000017'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1029', 0.5, 'Nhân công đào đất', '80000', '0',
+        '00000000-0000-0000-0000-600000000028'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1029', 1, 'Van 2 chiều', '15000', '85000',
+        '00000000-0000-0000-0000-600000000033'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1030', 10, 'Ống nhựa HDPE', '20000', '50000',
+        '00000000-0000-0000-0000-600000000011'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1030', 1, 'Đồng hồ nước', '10000', '450000',
+        '00000000-0000-0000-0000-600000000014'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1030', 1, 'Hộp bảo vệ', '5000', '120000',
+        '00000000-0000-0000-0000-600000000017'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1030', 0.5, 'Nhân công đào đất', '80000', '0',
+        '00000000-0000-0000-0000-600000000028'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1030', 1, 'Van 2 chiều', '15000', '85000',
+        '00000000-0000-0000-0000-600000000033'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1031', 10, 'Ống nhựa HDPE', '20000', '50000',
+        '00000000-0000-0000-0000-600000000011'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1031', 1, 'Đồng hồ nước', '10000', '450000',
+        '00000000-0000-0000-0000-600000000014'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1031', 1, 'Hộp bảo vệ', '5000', '120000',
+        '00000000-0000-0000-0000-600000000017'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1031', 0.5, 'Nhân công đào đất', '80000', '0',
+        '00000000-0000-0000-0000-600000000028'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1031', 1, 'Van 2 chiều', '15000', '85000',
+        '00000000-0000-0000-0000-600000000033'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1032', 10, 'Ống nhựa HDPE', '20000', '50000',
+        '00000000-0000-0000-0000-600000000011'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1032', 1, 'Đồng hồ nước', '10000', '450000',
+        '00000000-0000-0000-0000-600000000014'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1032', 1, 'Hộp bảo vệ', '5000', '120000',
+        '00000000-0000-0000-0000-600000000017'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1032', 0.5, 'Nhân công đào đất', '80000', '0',
+        '00000000-0000-0000-0000-600000000028'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1032', 1, 'Van 2 chiều', '15000', '85000',
+        '00000000-0000-0000-0000-600000000033'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1033', 10, 'Ống nhựa HDPE', '20000', '50000',
+        '00000000-0000-0000-0000-600000000011'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1033', 1, 'Đồng hồ nước', '10000', '450000',
+        '00000000-0000-0000-0000-600000000014'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1033', 1, 'Hộp bảo vệ', '5000', '120000',
+        '00000000-0000-0000-0000-600000000017'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1033', 0.5, 'Nhân công đào đất', '80000', '0',
+        '00000000-0000-0000-0000-600000000028'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1033', 1, 'Van 2 chiều', '15000', '85000',
+        '00000000-0000-0000-0000-600000000033'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1034', 10, 'Ống nhựa HDPE', '20000', '50000',
+        '00000000-0000-0000-0000-600000000011'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1034', 1, 'Đồng hồ nước', '10000', '450000',
+        '00000000-0000-0000-0000-600000000014'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1034', 1, 'Hộp bảo vệ', '5000', '120000',
+        '00000000-0000-0000-0000-600000000017'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1034', 0.5, 'Nhân công đào đất', '80000', '0',
+        '00000000-0000-0000-0000-600000000028'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1034', 1, 'Van 2 chiều', '15000', '85000',
+        '00000000-0000-0000-0000-600000000033'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1035', 10, 'Ống nhựa HDPE', '20000', '50000',
+        '00000000-0000-0000-0000-600000000011'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1035', 1, 'Đồng hồ nước', '10000', '450000',
+        '00000000-0000-0000-0000-600000000014'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1035', 1, 'Hộp bảo vệ', '5000', '120000',
+        '00000000-0000-0000-0000-600000000017'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1035', 0.5, 'Nhân công đào đất', '80000', '0',
+        '00000000-0000-0000-0000-600000000028'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1035', 1, 'Van 2 chiều', '15000', '85000',
+        '00000000-0000-0000-0000-600000000033'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1036', 10, 'Ống nhựa HDPE', '20000', '50000',
+        '00000000-0000-0000-0000-600000000011'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1036', 1, 'Đồng hồ nước', '10000', '450000',
+        '00000000-0000-0000-0000-600000000014'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1036', 1, 'Hộp bảo vệ', '5000', '120000',
+        '00000000-0000-0000-0000-600000000017'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1036', 0.5, 'Nhân công đào đất', '80000', '0',
+        '00000000-0000-0000-0000-600000000028'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1036', 1, 'Van 2 chiều', '15000', '85000',
+        '00000000-0000-0000-0000-600000000033'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1037', 10, 'Ống nhựa HDPE', '20000', '50000',
+        '00000000-0000-0000-0000-600000000011'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1037', 1, 'Đồng hồ nước', '10000', '450000',
+        '00000000-0000-0000-0000-600000000014'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1037', 1, 'Hộp bảo vệ', '5000', '120000',
+        '00000000-0000-0000-0000-600000000017'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1037', 0.5, 'Nhân công đào đất', '80000', '0',
+        '00000000-0000-0000-0000-600000000028'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1037', 1, 'Van 2 chiều', '15000', '85000',
+        '00000000-0000-0000-0000-600000000033'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1038', 10, 'Ống nhựa HDPE', '20000', '50000',
+        '00000000-0000-0000-0000-600000000011'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1038', 1, 'Đồng hồ nước', '10000', '450000',
+        '00000000-0000-0000-0000-600000000014'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1038', 1, 'Hộp bảo vệ', '5000', '120000',
+        '00000000-0000-0000-0000-600000000017'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1038', 0.5, 'Nhân công đào đất', '80000', '0',
+        '00000000-0000-0000-0000-600000000028'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1038', 1, 'Van 2 chiều', '15000', '85000',
+        '00000000-0000-0000-0000-600000000033'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1039', 10, 'Ống nhựa HDPE', '20000', '50000',
+        '00000000-0000-0000-0000-600000000011'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1039', 1, 'Đồng hồ nước', '10000', '450000',
+        '00000000-0000-0000-0000-600000000014'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1039', 1, 'Hộp bảo vệ', '5000', '120000',
+        '00000000-0000-0000-0000-600000000017'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1039', 0.5, 'Nhân công đào đất', '80000', '0',
+        '00000000-0000-0000-0000-600000000028'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1039', 1, 'Van 2 chiều', '15000', '85000',
+        '00000000-0000-0000-0000-600000000033'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1048', 10, 'Ống nhựa HDPE', '20000', '50000',
+        '00000000-0000-0000-0000-600000000011'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1048', 1, 'Đồng hồ nước', '10000', '450000',
+        '00000000-0000-0000-0000-600000000014'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1048', 1, 'Hộp bảo vệ', '5000', '120000',
+        '00000000-0000-0000-0000-600000000017'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1048', 0.5, 'Nhân công đào đất', '80000', '0',
+        '00000000-0000-0000-0000-600000000028'),
+       ('7a8192a3-6000-4bbb-9ccc-gggggggg1048', 1, 'Van 2 chiều', '15000', '85000',
+        '00000000-0000-0000-0000-600000000033');
 
 INSERT INTO public.materials_of_settlement (settlement_id, mass, note, labor_cost, material_cost, material_material_id)
 VALUES ('SETTLE-2024-0022', 10, 'Ống nhựa HDPE', '20000', '50000', '00000000-0000-0000-0000-600000000011'),

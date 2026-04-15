@@ -1,7 +1,7 @@
 package com.capstone.device.application.business.unit;
 
 import com.capstone.device.application.dto.request.unit.CreateUnitRequest;
-import com.capstone.device.application.dto.request.UpdateUnitRequest;
+import com.capstone.device.application.dto.request.unit.UpdateUnitRequest;
 import com.capstone.device.application.dto.response.UnitResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

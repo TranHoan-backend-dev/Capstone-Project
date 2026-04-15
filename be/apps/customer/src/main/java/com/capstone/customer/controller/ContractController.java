@@ -3,7 +3,7 @@ package com.capstone.customer.controller;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
-import com.capstone.customer.dto.request.ContractFilterRequest;
+import com.capstone.customer.dto.request.contract.ContractFilterRequest;
 import com.capstone.customer.dto.request.contract.CreateRequest;
 import com.capstone.customer.dto.response.ContractResponse;
 import com.capstone.customer.service.boundary.ContractService;
@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/contracts")
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF')")
 @Tag(name = "Quản lý hợp đồng sử dụng nước", description = "API cho các thao tác liên quan đến hợp đồng sử dụng nước của khách hàng")
 public class ContractController {
   private Logger log;
@@ -38,6 +37,7 @@ public class ContractController {
     @ApiResponse(responseCode = "400", description = "Dữ liệu đầu vào không hợp lệ", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PostMapping
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF')")
   public ResponseEntity<WrapperApiResponse> createContract(@RequestBody @Valid CreateRequest request) {
     log.info("REST request to create contract: {}", request.contractId());
     var response = contractService.createContract(request);
@@ -50,6 +50,7 @@ public class ContractController {
     @ApiResponse(responseCode = "404", description = "Không tìm thấy hợp đồng", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @DeleteMapping("/{id}")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF')")
   public ResponseEntity<WrapperApiResponse> deleteContract(
     @PathVariable @Parameter(description = "Mã hợp đồng cần xóa", example = "HD001") String id) {
     log.info("REST request to delete contract: {}", id);
@@ -62,6 +63,7 @@ public class ContractController {
     @ApiResponse(responseCode = "404", description = "Không tìm thấy hợp đồng", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @GetMapping("/{id}")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF', 'COMPANY_LEADERSHIP')")
   public ResponseEntity<WrapperApiResponse> getContractById(
     @PathVariable @Parameter(description = "Mã hợp đồng cần lấy thông tin", example = "HD001") String id) {
     log.info("REST request to get contract: {}", id);
@@ -73,6 +75,7 @@ public class ContractController {
     @ApiResponse(responseCode = "200", description = "Lấy danh sách hợp đồng thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ContractResponse.class)))
   })
   @GetMapping
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF', 'COMPANY_LEADERSHIP')")
   public ResponseEntity<WrapperApiResponse> getAllContracts(
     @PageableDefault @ParameterObject Pageable pageable,
     @Parameter(description = "Thông tin lọc (từ khóa tìm kiếm, mã hợp đồng, mã form, số form, ID khách hàng, tên khách hàng, số điện thoại khách hàng, ngày bắt đầu, ngày kết thúc, đại diện, phụ lục)")
@@ -87,6 +90,7 @@ public class ContractController {
     @ApiResponse(responseCode = "200", description = "Lấy danh sách ID hợp đồng thành công", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)))
   })
   @GetMapping("/ids")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF')")
   public ResponseEntity<WrapperApiResponse> getContractIdsByForms(
     @RequestParam @Parameter(description = "Mã form", example = "CN01") String formCode,
     @RequestParam @Parameter(description = "Số form", example = "001/2024") String formNumber) {
@@ -96,6 +100,7 @@ public class ContractController {
   }
 
   @GetMapping("/exist")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF')")
   public Boolean isExisting(@RequestParam String id) {
     log.info("Check existence of contract: {}", id);
     return contractService.isExist(id);

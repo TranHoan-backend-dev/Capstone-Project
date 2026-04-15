@@ -3,7 +3,7 @@ package com.capstone.device.adapter;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
-import com.capstone.device.application.dto.request.UpdateUnitRequest;
+import com.capstone.device.application.dto.request.unit.UpdateUnitRequest;
 import com.capstone.device.application.dto.request.unit.CreateUnitRequest;
 import com.capstone.device.application.dto.response.UnitResponse;
 import com.capstone.device.application.usecase.UnitUseCase;

@@ -10,6 +10,7 @@ import {
   useRef,
   useCallback,
 } from "react";
+import { usePathname } from "next/navigation";
 
 import { websocketService } from "@/services/websocket.service";
 import { getClientAccessToken } from "@/utils/getClientAccessToken";
@@ -74,8 +75,18 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  const pathname = usePathname();
+
   // Khởi tạo WebSocket connection
   useEffect(() => {
+    // Không khởi tạo WebSocket ở các trang công khai (login, forgot-password, etc.)
+    const isPublicRoute =
+      pathname.startsWith("/login") ||
+      pathname.startsWith("/forgot-password") ||
+      pathname.startsWith("/reset-password");
+
+    if (isPublicRoute) return;
+
     let mounted = true;
 
     // Đăng ký callbacks với service để cập nhật state real-time
@@ -90,7 +101,9 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
         if (mounted) {
           setIsConnected(false);
           if (error) {
-            setConnectionError(typeof error === "string" ? error : "Connection error");
+            setConnectionError(
+              typeof error === "string" ? error : "Connection error",
+            );
           }
         }
       },
@@ -135,7 +148,7 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
       clearInterval(interval);
       // Không disconnect ở đây vì cần giữ connection cho toàn app
     };
-  }, []);
+  }, [pathname]);
 
   const reconnect = async () => {
     try {

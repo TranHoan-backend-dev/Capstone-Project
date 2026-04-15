@@ -1,12 +1,14 @@
 package com.capstone.construction.application.business.settlement;
 
-import com.capstone.common.annotation.AppLog;
 import com.capstone.common.enumerate.RoleName;
 import com.capstone.common.exception.ForbiddenException;
 import com.capstone.common.exception.NotExistingException;
+import com.capstone.common.request.BaseMaterial;
 import com.capstone.common.utils.SharedMessage;
+import com.capstone.construction.application.business.estimate.CostEstimateService;
 import com.capstone.construction.application.dto.request.settlement.SettlementFilterRequest;
-import com.capstone.construction.application.dto.request.settlement.SettlementRequest;
+import com.capstone.construction.application.dto.request.settlement.CreateSettlementRequest;
+import com.capstone.construction.application.dto.request.settlement.UpdateSettlementRequest;
 import com.capstone.construction.application.dto.request.settlement.SignificanceRequest;
 import com.capstone.construction.application.dto.response.settlement.SettlementResponse;
 import com.capstone.construction.application.dto.response.PageResponse;
@@ -14,116 +16,149 @@ import com.capstone.construction.domain.model.Settlement;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
 import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
 import com.capstone.construction.infrastructure.persistence.SettlementRepository;
+import com.capstone.construction.infrastructure.service.DeviceService;
 import com.capstone.construction.infrastructure.service.EmployeeService;
 import com.capstone.construction.infrastructure.utils.Message;
+import com.capstone.construction.infrastructure.utils.Utility;
+import jakarta.persistence.criteria.JoinType;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@AppLog
+import java.util.ArrayList;
+import java.util.List;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SettlementServiceImpl implements SettlementService {
   SettlementRepository settlementRepository;
   InstallationFormRepository formRepository;
+  CostEstimateService costEstimateService;
   EmployeeService empSrv;
-  @NonFinal
-  Logger log;
+  DeviceService deviceSrv;
 
   @Override
   @Transactional(rollbackFor = Exception.class)
-  public SettlementResponse createSettlement(@NonNull SettlementRequest request) {
+  public SettlementResponse createSettlement(@NonNull CreateSettlementRequest request) {
     log.info("Creating new settlement for address: {}", request.address());
     var form = formRepository.findById(new InstallationFormId(request.formCode(), request.formNumber()))
-      .orElseThrow(() -> new NotExistingException(Message.PT_38));
+        .orElseThrow(() -> new NotExistingException(Message.PT_38));
 
-    var settlement = Settlement.create(builder -> builder
-      .jobContent(request.jobContent())
-      .address(request.address())
-      .connectionFee(request.connectionFee())
-      .note(request.note())
-      .installationForm(form)
-      .registrationAt(request.registrationAt()));
+    var settlement = Settlement.builder()
+        .settlementId(request.settlementId())
+        .jobContent(request.jobContent())
+        .customerName(request.customerName())
+        .address(request.address())
+        .connectionFee(request.connectionFee())
+        .note(request.note())
+        .installationForm(form)
+        .registrationAt(request.registrationAt())
+        .build();
 
     var saved = settlementRepository.save(settlement);
-    return mapToResponse(saved);
+    var ce = costEstimateService.getByFormCode(request.formCode());
+
+    var response = deviceSrv.updateMaterialsOfSettlement(saved.getSettlementId(), ce.material());
+    if (response.status() != 200) {
+      throw new IllegalArgumentException(response.message());
+    }
+    return mapToResponse(saved, ce.material());
   }
 
   @Override
   @Transactional(rollbackFor = Exception.class)
-  public SettlementResponse updateSettlement(String id, @NonNull SettlementRequest request) {
-    log.info("Updating settlement with id: {}", id);
-    var settlement = settlementRepository.findById(id)
-      .orElseThrow(() -> new IllegalArgumentException("Settlement not found with id: " + id));
-    settlement.setJobContent(request.jobContent());
-    settlement.setAddress(request.address());
-    settlement.setConnectionFee(request.connectionFee());
-    settlement.setNote(request.note());
-    settlement.setRegistrationAt(request.registrationAt());
+  public SettlementResponse updateSettlement(String settlementId, @NonNull UpdateSettlementRequest request) {
+    log.info("Updating settlement with id: {}", settlementId);
+    var settlement = settlementRepository.findById(settlementId)
+        .orElseThrow(() -> new IllegalArgumentException("Settlement not found with id: " + settlementId));
+    if (request.jobContent() != null)
+      settlement.setJobContent(request.jobContent());
+    if (request.customerName() != null)
+      settlement.setCustomerName(request.customerName());
+    if (request.address() != null)
+      settlement.setAddress(request.address());
+    if (request.connectionFee() != null)
+      settlement.setConnectionFee(request.connectionFee());
+    if (request.note() != null)
+      settlement.setNote(request.note());
+    if (request.registrationAt() != null)
+      settlement.setRegistrationAt(request.registrationAt());
 
     var saved = settlementRepository.save(settlement);
-    return mapToResponse(saved);
+
+    if (request.materials() != null && !request.materials().isEmpty()) {
+      var response = deviceSrv.updateMaterialsOfSettlement(saved.getSettlementId(), request.materials());
+      if (response.status() != 200) {
+        throw new IllegalArgumentException(response.message());
+      }
+    }
+
+    return mapToResponse(saved, getMaterials(saved.getSettlementId()));
   }
 
   @Override
-  public SettlementResponse getSettlementById(String id) {
-    log.info("Fetching settlement with id: {}", id);
-    return settlementRepository.findByIdWithInstallationForm(id)
-      .map(this::mapToResponse)
-      .orElseThrow(() -> new IllegalArgumentException("Settlement not found with id: " + id));
+  public SettlementResponse getSettlementById(String settlementId) {
+    log.info("Fetching settlement with id: {}", settlementId);
+    return settlementRepository.findByIdWithInstallationForm(settlementId)
+        .map(s -> mapToResponse(s, getMaterials(s.getSettlementId())))
+        .orElseThrow(() -> new IllegalArgumentException("Settlement not found with id: " + settlementId));
   }
 
   @Override
   public PageResponse<SettlementResponse> getAllSettlements(Pageable pageable) {
     log.info("Fetching all settlements with pageable: {}", pageable);
+    var sortedPageable = Utility.sortByAttributeDesc(pageable, "createdAt");
+
     // Use specification with fetch join
     Specification<Settlement> spec = (root, query, cb) -> {
-      root.join("installationForm", jakarta.persistence.criteria.JoinType.LEFT);
+      root.join("installationForm", JoinType.LEFT);
       return cb.conjunction();
     };
-    var page = settlementRepository.findAll(spec, pageable);
-    return PageResponse.fromPage(page, this::mapToResponse);
+    var page = settlementRepository.findAll(spec, sortedPageable);
+    return PageResponse.fromPage(page, s -> mapToResponse(s, getMaterials(s.getSettlementId())));
   }
 
   @Override
   public PageResponse<SettlementResponse> filterSettlements(SettlementFilterRequest filterRequest, Pageable pageable) {
     log.info("Filtering settlements with filterRequest: {}", filterRequest);
+    var sortedPageable = Utility.sortByAttributeDesc(pageable, "createdAt");
     Specification<Settlement> spec = SettlementRepository.filter(filterRequest);
     // Add fetch join to the existing spec
+
     Specification<Settlement> specWithFetch = spec.and((root, query, cb) -> {
-      root.join("installationForm", jakarta.persistence.criteria.JoinType.LEFT);
+      root.join("installationForm", JoinType.LEFT);
       return cb.conjunction();
     });
-    var page = settlementRepository.findAll(specWithFetch, pageable);
-    return PageResponse.fromPage(page, this::mapToResponse);
+    var page = settlementRepository.findAll(specWithFetch, sortedPageable);
+    return PageResponse.fromPage(page, s -> mapToResponse(s, getMaterials(s.getSettlementId())));
   }
 
   @Override
   public boolean signSettlement(String userId, String id, SignificanceRequest request) {
     var settlement = settlementRepository.findById(id)
-      .orElseThrow(() -> new IllegalArgumentException("Settlement not found with id: " + id));
+        .orElseThrow(() -> new IllegalArgumentException("Settlement not found with id: " + id));
     var significance = settlement.getSignificance();
 
     var response = empSrv.getRoleOfEmployeeById(userId);
     var role = response.data().toString();
     if (!role.equalsIgnoreCase(RoleName.SURVEY_STAFF.name()) &&
-      !role.equalsIgnoreCase(RoleName.COMPANY_LEADERSHIP.name()) &&
-      !role.equalsIgnoreCase(RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD.name())) {
+        !role.equalsIgnoreCase(RoleName.COMPANY_LEADERSHIP.name()) &&
+        !role.equalsIgnoreCase(RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD.name())) {
       throw new ForbiddenException(SharedMessage.MES_23);
     }
     if (request.url() != null && !request.url().isBlank()) {
-      if (role.equalsIgnoreCase(RoleName.COMPANY_LEADERSHIP.name()) && request.status() != null && !request.status()) {
+      if (role.equalsIgnoreCase(RoleName.COMPANY_LEADERSHIP.name()) && request.status() != null && request.status()) {
         significance.setConstructionPresident(request.url());
       }
-      if (role.equalsIgnoreCase(RoleName.COMPANY_LEADERSHIP.name()) && request.status() != null && request.status()) {
+      if (role.equalsIgnoreCase(RoleName.COMPANY_LEADERSHIP.name())) {
         significance.setPresident(request.url());
       }
       if (role.equalsIgnoreCase(RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD.name()) && request.status() == null) {
@@ -143,21 +178,51 @@ public class SettlementServiceImpl implements SettlementService {
     return settlementRepository.existsById(id);
   }
 
-  private @NonNull SettlementResponse mapToResponse(@NonNull Settlement settlement) {
+  @Override
+  public boolean checkSettlementExists(String formCode, String formNumber) {
+    log.info("Fetching settlement with formCode: {}, formNumber: {}", formCode, formNumber);
+    var form = formRepository.findById(new InstallationFormId(formCode, formNumber))
+        .orElseThrow(() -> new NotExistingException(Message.PT_38));
+    return settlementRepository.existsByInstallationForm(form);
+  }
+
+  private @NonNull SettlementResponse mapToResponse(@NonNull Settlement settlement, List<BaseMaterial> material) {
     var installationForm = settlement.getInstallationForm();
     return new SettlementResponse(
-      settlement.getSettlementId(),
-      settlement.getJobContent(),
-      settlement.getAddress(),
-      settlement.getConnectionFee(),
-      settlement.getNote(),
-      settlement.getCreatedAt(),
-      settlement.getUpdatedAt(),
-      settlement.getRegistrationAt(),
-      installationForm.getFormCode(),
-      installationForm.getFormNumber(),
-      settlement.getSignificance(),
-      installationForm.getStatus()
-    );
+        new SettlementResponse.GeneralInformation(
+            settlement.getSettlementId(),
+            settlement.getJobContent(),
+            settlement.getCustomerName(),
+            settlement.getAddress(),
+            settlement.getConnectionFee(),
+            settlement.getNote(),
+            settlement.getCreatedAt(),
+            settlement.getUpdatedAt(),
+            settlement.getRegistrationAt(),
+            installationForm.getFormCode(),
+            installationForm.getFormNumber(),
+            settlement.getSignificance(),
+            installationForm.getStatus()),
+        material);
+  }
+
+  private @NonNull List<BaseMaterial> getMaterials(@NonNull String id) {
+    var defaultMaterials = deviceSrv.getMaterialsOfSettlement(id);
+    var materials = new ArrayList<BaseMaterial>();
+    defaultMaterials.forEach(defaultMaterial -> {
+      var m = new BaseMaterial(
+          defaultMaterial.id(),
+          defaultMaterial.jobContent(),
+          defaultMaterial.note(),
+          defaultMaterial.unitName(),
+          defaultMaterial.mass() != null ? defaultMaterial.mass().toString() : "0",
+          defaultMaterial.materialCost(),
+          defaultMaterial.laborPrice(),
+          defaultMaterial.laborPriceAtRuralCommune(),
+          defaultMaterial.totalMaterialCost(),
+          defaultMaterial.totalLaborCost());
+      materials.add(m);
+    });
+    return materials;
   }
 }

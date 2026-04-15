@@ -1,16 +1,16 @@
 {
   "yolo_weights_path": "models/yolov5s.pt",
-  "yolo_conf": 0.25,
+  "yolo_conf": 0.30,
   "yolo_iou": 0.45,
   "yolo_device": "cpu",
-  "yolo_img_size": 0,
+  "yolo_img_size": 640,
   "yolo_batch_size": 1,
   "yolo_quantize": true,
   "ocr_lang": "en",
   "ocr_use_angle_cls": true,
   "ocr_use_det": true,
-  "crop_min_width": 8,
-  "crop_min_height": 8,
+  "crop_min_width": 10,
+  "crop_min_height": 10,
   "video_source": "0",
   "frame_stride": 1,
   "frame_max_width": 800,
@@ -18,5 +18,3 @@
   "quit_key": "q",
   "max_label_len": 80
 }
-
-

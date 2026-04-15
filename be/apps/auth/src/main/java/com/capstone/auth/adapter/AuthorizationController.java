@@ -99,7 +99,7 @@ public class AuthorizationController {
     @ApiResponse(responseCode = "500", description = "Lỗi hệ thống", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @GetMapping(EMPLOYEE_PREFIX + "/{authorId}")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF', 'SURVEY_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF', 'SURVEY_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF', 'COMPANY_LEADERSHIP')")
   public ResponseEntity<WrapperApiResponse> checkAuthorExisting(
     @Parameter(description = "ID của nhân viên cần kiểm tra", required = true)
     @PathVariable String authorId
@@ -193,7 +193,7 @@ public class AuthorizationController {
 
   @Operation
   @GetMapping(EMPLOYEE_PREFIX + "/leadership")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF', 'COMPANY_LEADERSHIP')")
   public ResponseEntity<?> getLeaderships() {
     log.info("Get planning leaderships");
     return Utils.returnOkResponse("", usersUseCase.getListOfCompanyLeaderShips());
@@ -205,6 +205,16 @@ public class AuthorizationController {
   public ResponseEntity<?> getConstructionStaffs() {
     log.info("Get construction staffs");
     return Utils.returnOkResponse("", usersUseCase.getListOfConstructionStaffs());
+  }
+
+  @GetMapping("/department")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF', " +
+    "'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'FINANCE_DEPARTMENT', " +
+    "'CONSTRUCTION_DEPARTMENT_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD', 'BUSINESS_DEPARTMENT_HEAD'" +
+    ", 'METER_INSPECTION_STAFF')")
+  public String getDepartmentNameByUserId(@RequestParam("userId") String id) {
+    log.info("Get department name: {}", id);
+    return userService.getDepartment(id);
   }
   // </editor-fold>
 

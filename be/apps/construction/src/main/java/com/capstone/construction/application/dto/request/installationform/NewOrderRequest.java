@@ -7,11 +7,9 @@ import com.capstone.construction.domain.model.utils.Representative;
 import com.capstone.common.utils.SharedMessage;
 import com.capstone.construction.infrastructure.utils.Message;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public record NewOrderRequest(
@@ -36,8 +34,8 @@ public record NewOrderRequest(
   String citizenIdentificationNumber,
 
   @Schema(description = "Ngày cấp Căn cước công dân (YYYY-MM-DD)", example = "2020-01-01")
-  @NotBlank(message = Message.PT_30)
-  String citizenIdentificationProvideDate,
+  @NotNull(message = Message.PT_30)
+  LocalDate citizenIdentificationProvideDate,
 
   @Schema(description = "Nơi cấp Căn cước công dân", example = "Cục Cảnh sát QLHC về TTXH")
   @NotBlank(message = SharedMessage.MES_16)
@@ -68,19 +66,19 @@ public record NewOrderRequest(
   CustomerType customerType,
 
   @Schema(description = "Ngày tiếp nhận hồ sơ (ISO)", example = "2024-02-01")
-  @NotBlank(message = Message.PT_33)
-  @NotEmpty(message = Message.PT_33)
-  String receivedFormAt,
+  @NotNull(message = Message.PT_33)
+  LocalDate receivedFormAt,
 
   @Schema(description = "Ngày dự kiến khảo sát (ISO)", example = "2024-02-05")
-  @NotBlank(message = Message.PT_51)
-  @NotEmpty(message = Message.PT_51)
-  String scheduleSurveyAt,
+  @NotNull(message = Message.PT_51)
+  LocalDate scheduleSurveyAt,
 
   @Schema(description = "Số hộ sử dụng chung đồng hồ", example = "1")
+  @Positive(message = "Số hộ sử dụng phải lớn hơn 1")
   Integer numberOfHousehold,
 
-  @Schema(description = "Số nhân khẩu", example = "1")
+  @Schema(description = "Số hộ khẩu", example = "1123128398749812")
+  @Positive(message = "Số hộ khẩu phải đúng định dạng")
   Integer householdRegistrationNumber,
 
   @Schema(description = "Danh sách người đại diện (dành cho tổ chức/doanh nghiệp)")

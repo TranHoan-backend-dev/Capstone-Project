@@ -56,6 +56,12 @@ export const siteConfig = {
       label: "Trang chủ",
       href: "/home",
     },
+    {
+      key: "statistics",
+      label: "Thống kê",
+      href: "/statistics",
+      roles: ["it_staff", "company_leadership"],
+    },
 
     // Danh mục
     {
@@ -321,7 +327,6 @@ export const siteConfig = {
           href: "/settlement-lookup",
           roles: [
             "it_staff",
-            "finance_department",
             "construction_department_staff",
             "construction_department_head",
             "survey_staff",

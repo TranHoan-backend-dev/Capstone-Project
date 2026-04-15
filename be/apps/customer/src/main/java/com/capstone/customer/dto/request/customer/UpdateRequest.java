@@ -7,6 +7,7 @@ import com.capstone.common.utils.SharedMessage;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 
+// TODO: Cai nay voi CreateRequest dang bi lap thong tin. CustomerFilterRequest cx gan nhu the
 @Schema(description = "")
 public record UpdateRequest(
   @Schema(description = "", example = "Trần Văn A")
