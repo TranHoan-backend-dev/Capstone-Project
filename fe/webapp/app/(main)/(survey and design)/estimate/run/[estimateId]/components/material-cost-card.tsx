@@ -9,6 +9,7 @@ import { DeleteIcon } from "@/config/chip-and-icon";
 import { EstimateResponse, MaterialEstimateItem } from "@/types";
 import { ESTIMATE_COLUMN } from "@/config/table-columns";
 import { LookupModal } from "@/components/ui/modal/LookupModal";
+import { useIsPlanningTechnicalDepartmentHead } from "@/hooks/useHasRole";
 
 interface MaterialCostCardProps {
   estimateId: string;
@@ -27,8 +28,13 @@ export const MaterialCostCard = ({
   materials,
   setMaterials,
 }: MaterialCostCardProps) => {
+  const { isPlanningTechnicalDepartmentHead } =
+    useIsPlanningTechnicalDepartmentHead();
   const [showMaterialModal, setShowMaterialModal] = useState(false);
   const [loading, setLoading] = useState(true);
+  const isEstimateApproved =
+    estimateData?.generalInformation?.status?.estimate === "APPROVED";
+  const isReadOnly = isEstimateApproved || isPlanningTechnicalDepartmentHead;
 
   useEffect(() => {
     if (estimateData?.material) {
@@ -63,6 +69,7 @@ export const MaterialCostCard = ({
     field: keyof MaterialEstimateItem,
     value: any,
   ) => {
+    if (isReadOnly) return;
     setMaterials((prev) =>
       prev.map((item) => {
         if (item.id !== id) return item;
@@ -95,6 +102,7 @@ export const MaterialCostCard = ({
             size="sm"
             type="number"
             step="0.1"
+            isDisabled={isReadOnly}
           />
         );
       case "materialPrice":
@@ -107,6 +115,7 @@ export const MaterialCostCard = ({
             size="sm"
             type="number"
             step="1000"
+            isDisabled={isReadOnly}
           />
         );
       case "laborPrice":
@@ -119,6 +128,7 @@ export const MaterialCostCard = ({
             size="sm"
             type="number"
             step="1000"
+            isDisabled={isReadOnly}
           />
         );
       case "materialTotal":
@@ -139,6 +149,7 @@ export const MaterialCostCard = ({
             value={item.note || ""}
             onChange={(e) => handleChange(item.id, "note", e.target.value)}
             size="sm"
+            isDisabled={isReadOnly}
           />
         );
       case "actions":
@@ -152,6 +163,7 @@ export const MaterialCostCard = ({
               onClick={() =>
                 setMaterials((prev) => prev.filter((m) => m.id !== item.id))
               }
+              isDisabled={isReadOnly}
             >
               <DeleteIcon className="w-5 h-5" />
             </Button>
@@ -163,6 +175,7 @@ export const MaterialCostCard = ({
   };
 
   const handleSelectMaterial = (item: any) => {
+    if (isReadOnly) return;
     setMaterials((prev) => {
       if (prev.find((m) => m.id === item.id)) return prev;
 
@@ -200,7 +213,11 @@ export const MaterialCostCard = ({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
             <SearchInputWithButton
               label="Chọn vật tư"
-              onSearch={() => setShowMaterialModal(true)}
+              onSearch={() => {
+                if (isReadOnly) return;
+                setShowMaterialModal(true);
+              }}
+              isDisabled={isReadOnly}
             />
           </div>
         }
