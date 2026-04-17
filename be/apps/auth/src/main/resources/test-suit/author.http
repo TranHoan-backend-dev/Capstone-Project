@@ -172,3 +172,8 @@ GET {{uri}}/authorization/employees/survey-staff
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
+### 9. Xóa tài khoản nhân viên (Thất bại - ID không tồn tại)
+GET {{uri}}/authorization/employees/meter-inspection
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+

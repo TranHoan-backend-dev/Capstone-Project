@@ -51,5 +51,7 @@ public interface UserService {
 
   List<NameAndIdResponse> getAllConstructionStaffs();
 
+  List<NameAndIdResponse> getAllMeterInspectionStaffs();
+
   String getDepartment(String id);
 }

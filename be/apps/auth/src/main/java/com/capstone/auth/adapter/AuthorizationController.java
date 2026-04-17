@@ -207,6 +207,14 @@ public class AuthorizationController {
     return Utils.returnOkResponse("", usersUseCase.getListOfConstructionStaffs());
   }
 
+  @Operation
+  @GetMapping(EMPLOYEE_PREFIX + "/meter-inspection")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'BUSINESS_DEPARTMENT_HEAD')")
+  public ResponseEntity<?> getMeterInspectionStaffs() {
+    log.info("Get meter inspection staffs");
+    return Utils.returnOkResponse("", usersUseCase.getListOfConstructionStaffs());
+  }
+
   @GetMapping("/department")
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF', " +
     "'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'FINANCE_DEPARTMENT', " +
