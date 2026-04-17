@@ -41,7 +41,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="com.capstone" />
+                <data android:scheme="com.capstone.nawaco" />
             </intent-filter>
         </activity>
         <!--  Notification Service  -->
