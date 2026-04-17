@@ -177,7 +177,7 @@ public class AuthorizationController {
 
   @Operation
   @GetMapping(EMPLOYEE_PREFIX + "/pt-head")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF', 'SURVEY_STAFF')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF', 'SURVEY_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD')")
   public ResponseEntity<?> getPlanningTechnicalDepartmentHeads() {
     log.info("Get planning technical department heads");
     return Utils.returnOkResponse("", usersUseCase.getListOfPtHeads());
