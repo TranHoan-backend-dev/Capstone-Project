@@ -46,7 +46,6 @@ type MeterInspectionLookupItem = {
   id: string;
   stt: number;
   fullName: string;
-  role: string;
 };
 
 const columns = [
@@ -420,9 +419,9 @@ const RoadmapAssignmentPage = () => {
               onChange={() => {}}
               onSearch={() => setStaffLookupOpen(true)}
             />
-            <p className="text-xs text-default-500">
+            {/* <p className="text-xs text-default-500">
               Mã nhân viên đã chọn: {staffIdInput || "Chưa chọn"}
-            </p>
+            </p> */}
           </ModalBody>
           <ModalFooter>
             <Button variant="light" onPress={closeAssignmentModal}>
@@ -444,18 +443,14 @@ const RoadmapAssignmentPage = () => {
         onClose={() => setStaffLookupOpen(false)}
         title="Chọn nhân viên ghi thu"
         api="/api/auth/employees/meter-inspection-staff"
-        dataKey="content"
-        searchKey="username"
         columns={[
           { key: "stt", label: "STT" },
           { key: "fullName", label: "Nhân viên" },
-          { key: "role", label: "Vai trò" },
         ]}
         mapData={(item, index, currentPage) => ({
           id: item.id,
           stt: (currentPage - 1) * 10 + index + 1,
-          fullName: item.fullName,
-          role: item.role,
+          fullName: item.name,
         })}
         onSelect={(staff) => {
           setStaffIdInput(staff.id);

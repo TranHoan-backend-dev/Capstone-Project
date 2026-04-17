@@ -128,3 +128,13 @@ export const getConstructionStaff = (accessToken: string) =>
       },
     },
   );
+
+  export const getMeterInspectionStaff = (accessToken: string) =>
+  axios.get(
+    `${API_GATEWAY_URL}/auth/authorization/employees/meter-inspection`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
