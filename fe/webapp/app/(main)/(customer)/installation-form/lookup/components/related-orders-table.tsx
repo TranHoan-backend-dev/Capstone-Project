@@ -38,7 +38,7 @@ export const RelatedOrdersTable = ({
     field: string;
     direction: "asc" | "desc";
   }>({
-    field: "createdAt",
+    field: "",
     direction: "desc",
   });
   const [assignPopup, setAssignPopup] = useState<{
@@ -74,7 +74,6 @@ export const RelatedOrdersTable = ({
         const params = new URLSearchParams({
           page: String(page - 1),
           size: String(pageSize),
-          sort: `${sort.field},${sort.direction}`,
         });
         if (from) params.append("from", from);
         if (to) params.append("to", to);
