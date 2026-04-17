@@ -56,9 +56,13 @@ export const SettlementFormModal = ({
         formNumber: initialData.formNumber,
         jobContent: initialData.jobContent || "",
         address: initialData.address || "",
-        connectionFee: initialData.connectionFee || "",
-        note: initialData.note || "",
-        registrationAt: initialData.registrationAt || "",
+        connectionFee:
+          initialData.connectionFee === null ||
+          initialData.connectionFee === undefined
+            ? ""
+            : String(initialData.connectionFee),
+        note: initialData.note ?? "",
+        registrationAt: initialData.registrationAt ?? "",
       });
 
       setDisplayForm(initialData.formNumber);

@@ -21,7 +21,8 @@ export async function GET(req: NextRequest) {
     const size = Number(searchParams.get("size") ?? 10);
     // const sort = searchParams.get("sort") || ",desc";
 
-    const search = searchParams.get("search");
+    // FE có thể gửi cả `search` hoặc `keyword`
+    const search = searchParams.get("search") ?? searchParams.get("keyword");
     const fromDate = searchParams.get("fromDate");
     const toDate = searchParams.get("toDate");
     const status = searchParams.get("status");
@@ -87,10 +88,13 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
 
-    const payload = {
-      ...body,
-      status: Array.isArray(body.status) ? body.status : [body.status],
-    };
+    const payload =
+      body?.status === undefined
+        ? body
+        : {
+            ...body,
+            status: Array.isArray(body.status) ? body.status : [body.status],
+          };
 
     const response = await createSettlement(accessToken, payload);
 

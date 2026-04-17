@@ -204,16 +204,82 @@ export const ResultsTable = ({
         }
 
         const mapped = items.map((item: SettlementResponse, index: number) => ({
-          id: item.settlementId,
+          id:
+            // backend có thể trả về tên field khác nhau
+            (item as any)?.settlementId ??
+            (item as any)?.id ??
+            (item as any)?.settlement_id ??
+            "",
           stt: (page - 1) * pageSize + index + 1,
-          formCode: item.formCode,
-          formNumber: item.formNumber,
-          jobContent: item.jobContent,
-          address: item.address,
-          registrationAt: item.registrationAt,
-          connectionFee: item.connectionFee,
-          note: item.note,
-          status: item.status,
+          formCode:
+            (item as any)?.formCode ?? (item as any)?.code ?? (item as any)?.form_code ?? "",
+          formNumber:
+            (item as any)?.formNumber ??
+            (item as any)?.number ??
+            (item as any)?.form_no ??
+            "",
+          jobContent:
+            (item as any)?.jobContent ??
+            (item as any)?.content?.jobContent ??
+            (item as any)?.baseMaterials?.[0]?.jobContent ??
+            "",
+          address:
+            (item as any)?.address ??
+            (item as any)?.installationLocation ??
+            (item as any)?.location ??
+            "",
+          registrationAt:
+            (item as any)?.registrationAt ??
+            (item as any)?.registrationDate ??
+            (item as any)?.createdAt ??
+            "",
+          connectionFee:
+            (() => {
+              const itemAny = item as any;
+              const raw =
+                itemAny?.connectionFee ??
+                itemAny?.connection_fee ??
+                itemAny?.connectionFeeAmount ??
+                itemAny?.fee;
+              if (raw !== undefined && raw !== null && raw !== "") return raw;
+
+              const toNum = (v: any) => {
+                if (v === null || v === undefined) return 0;
+                if (typeof v === "number") return Number.isFinite(v) ? v : 0;
+                const str = String(v).trim();
+                if (!str) return 0;
+                const normalized = str.replace(/[^\d.-]/g, "");
+                const num = Number(normalized);
+                return Number.isFinite(num) ? num : 0;
+              };
+
+              const totalVL =
+                itemAny?.totalMaterialPrice ??
+                itemAny?.totalMaterialCost ??
+                itemAny?.totalVL;
+              const totalNC =
+                itemAny?.totalLaborPrice ??
+                itemAny?.totalLaborCost ??
+                itemAny?.totalNC;
+
+              if (totalVL !== undefined || totalNC !== undefined) {
+                return toNum(totalVL) + toNum(totalNC);
+              }
+
+              if (Array.isArray(itemAny?.baseMaterials)) {
+                return itemAny.baseMaterials.reduce((sum: number, r: any) => {
+                  return (
+                    sum +
+                    toNum(r?.totalMaterialPrice) +
+                    toNum(r?.totalLaborPrice)
+                  );
+                }, 0);
+              }
+
+              return "";
+            })(),
+          note: (item as any)?.note ?? (item as any)?.description ?? "",
+          status: (item as any)?.status ?? {},
         }));
         setData(mapped);
       } catch (error: any) {
@@ -233,8 +299,9 @@ export const ResultsTable = ({
       );
       if (!res.ok) throw new Error("Failed to fetch");
       const json = await res.json();
-      const settlementData = json?.data?.data;
-      setSelectedSettlementDetail(settlementData);
+      // backend mới có thể trả { data: <payload> } hoặc { data: { data: <payload> } }
+      const settlementData = json?.data?.data ?? json?.data;
+      setSelectedSettlementDetail(settlementData ?? undefined);
 
       setIsDetailModalOpen(true);
     } catch (error: any) {

@@ -307,7 +307,7 @@ export const siteConfig = {
           key: "roadmaps",
           label: "Quản lý Lộ trình ghi",
           href: "/roadmaps",
-          roles: ["it_staff"],
+          roles: ["it_staff", "business_department_head"],
         },
         {
           key: "roadmap-assignment",
