@@ -46,7 +46,6 @@ export const RelatedOrdersTable = ({ keyword, reloadKey }: Props) => {
         const params = new URLSearchParams({
           page: String(page - 1),
           size: String(pageSize),
-          sort: `${sort.field},${sort.direction}`,
         });
 
         const trimmedKeyword = keyword.trim();
