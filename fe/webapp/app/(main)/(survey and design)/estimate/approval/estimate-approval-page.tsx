@@ -26,8 +26,20 @@ import { calculateTotalAmount } from "@/utils/calculateTotalAmount";
 import { EstimateOrder } from "@/types";
 import CustomButton from "@/components/ui/custom/CustomButton";
 
-const PENDING_STATUSES = ["pending", "processing", "pending_for_approval"];
-const APPROVED_STATUS = "approved";
+type EstimateTabKey = "pending" | "approved";
+
+const formatCurrency = (value: unknown): string => {
+  const numeric =
+    typeof value === "number"
+      ? value
+      : Number(String(value ?? "").replace(/[^\d.-]/g, ""));
+
+  if (!Number.isFinite(numeric)) {
+    return "0";
+  }
+
+  return numeric.toLocaleString("vi-VN");
+};
 
 const EstimateApprovalPage = () => {
   const router = useRouter();
@@ -36,7 +48,7 @@ const EstimateApprovalPage = () => {
   const [from, setFrom] = useState<DateValue | null | undefined>(null);
   const [to, setTo] = useState<DateValue | null | undefined>(null);
 
-  const [activeTab, setActiveTab] = useState<string>("pending");
+  const [activeTab, setActiveTab] = useState<EstimateTabKey>("pending");
 
   const [isCreateSignModalOpen, setIsCreateSignModalOpen] = useState(false);
   const [selectedItemForSign, setSelectedItemForSign] =
@@ -62,8 +74,6 @@ const EstimateApprovalPage = () => {
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [orders, setOrders] = useState<EstimateOrder[]>([]);
-  const [totalItems, setTotalItems] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState<{
     field: string;
@@ -72,9 +82,13 @@ const EstimateApprovalPage = () => {
     field: "createdAt",
     direction: "desc",
   });
-  const [page, setPage] = useState(1);
+  const [pageByTab, setPageByTab] = useState<Record<EstimateTabKey, number>>({
+    pending: 1,
+    approved: 1,
+  });
   const [refetch, setRefetch] = useState(0);
   const pageSize = 10;
+  const currentPage = pageByTab[activeTab];
 
   const currentUser = profile
     ? {
@@ -164,10 +178,14 @@ const EstimateApprovalPage = () => {
       setLoading(true);
       try {
         const params = new URLSearchParams({
-          page: String(page - 1),
-          size: String(pageSize),
+          page: "0",
+          size: "1000",
           sort: `${sort.field},${sort.direction}`,
         });
+        const trimmedKeyword = keyword.trim();
+        if (trimmedKeyword) {
+          params.append("keyword", trimmedKeyword);
+        }
         const res = await authFetch(
           `/api/construction/estimates?${params.toString()}`,
         );
@@ -179,62 +197,79 @@ const EstimateApprovalPage = () => {
           items.map(async (item: any, index: number) => {
             const info = item.generalInformation;
             const form = info.installationFormId;
+            const materialItems = Array.isArray(item.material)
+              ? item.material
+              : Array.isArray(item.materials)
+                ? item.materials
+                : [];
+            const calculatedTotal = calculateTotalAmount(materialItems, info);
+            const fallbackTotal =
+              info.totalAmount ?? info.totalPrice ?? item.totalAmount ?? 0;
             return {
-              stt: (page - 1) * pageSize + index + 1,
+              stt: (currentPage - 1) * pageSize + index + 1,
               id: info.estimationId,
               code: form?.formNumber,
               designProfileName: info.customerName,
               phone: item.phoneNumber,
               installationAddress: info.address,
-              totalAmount: calculateTotalAmount(item.material, info),
+              totalAmount:
+                calculatedTotal !== "0"
+                  ? calculatedTotal
+                  : formatCurrency(fallbackTotal),
               createdDate: new Date(info.createdAt).toLocaleDateString("vi-VN"),
               status: info.status?.estimate?.toLowerCase() || "pending",
             };
           }),
         );
-
         setOrders(mapped);
-        setTotalPages(json?.data?.totalPages ?? 1);
-        setTotalItems(json?.data?.totalElements ?? 0);
       } catch (err) {
         console.error(err);
+        setOrders([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [page, sort, refetch]);
+  }, [sort, refetch, keyword]);
 
-  const filteredOrders = useMemo(() => {
-    let filtered = orders;
+  const pendingOrders = useMemo(
+    () => orders.filter((order) => order.status?.toUpperCase() !== "APPROVED"),
+    [orders],
+  );
 
-    if (activeTab === "pending") {
-      filtered = filtered.filter((o) => {
-        const status = o.status?.toLowerCase();
-        return PENDING_STATUSES.includes(status);
-      });
-    }
+  const approvedOrders = useMemo(
+    () => orders.filter((order) => order.status?.toUpperCase() === "APPROVED"),
+    [orders],
+  );
 
-    if (activeTab === "approved") {
-      filtered = filtered.filter((o) => {
-        const status = o.status?.toLowerCase();
-        return status === APPROVED_STATUS;
-      });
-    }
+  const totalItemsByTab = useMemo(
+    () => ({
+      pending: pendingOrders.length,
+      approved: approvedOrders.length,
+    }),
+    [pendingOrders.length, approvedOrders.length],
+  );
 
-    if (keyword) {
-      const lowerK = keyword.toLowerCase();
-      filtered = filtered.filter(
-        (o) =>
-          o.code?.toLowerCase().includes(lowerK) ||
-          o.designProfileName?.toLowerCase().includes(lowerK) ||
-          o.phone?.toLowerCase().includes(lowerK),
-      );
-    }
+  const totalPagesByTab = useMemo(
+    () => ({
+      pending: Math.max(1, Math.ceil(totalItemsByTab.pending / pageSize)),
+      approved: Math.max(1, Math.ceil(totalItemsByTab.approved / pageSize)),
+    }),
+    [totalItemsByTab, pageSize],
+  );
 
-    return filtered;
-  }, [orders, activeTab, keyword]);
+  const paginatedPendingOrders = useMemo(() => {
+    const start = (pageByTab.pending - 1) * pageSize;
+    return pendingOrders.slice(start, start + pageSize);
+  }, [pendingOrders, pageByTab.pending, pageSize]);
+
+  const paginatedApprovedOrders = useMemo(() => {
+    const start = (pageByTab.approved - 1) * pageSize;
+    return approvedOrders.slice(start, start + pageSize);
+  }, [approvedOrders, pageByTab.approved, pageSize]);
+
+  const tableData = activeTab === "pending" ? paginatedPendingOrders : paginatedApprovedOrders;
 
   const handleSearch = (query: string) => {
     setKeyword(query);
@@ -468,15 +503,8 @@ const EstimateApprovalPage = () => {
     setConfirmAction(null);
     setRejectReason("");
   };
-  const pendingCount = orders.filter((o) => {
-    const status = o.status?.toLowerCase();
-    return PENDING_STATUSES.includes(status);
-  }).length;
-
-  const approvedCount = orders.filter((o) => {
-    const status = o.status?.toLowerCase();
-    return status === APPROVED_STATUS;
-  }).length;
+  const pendingCount = totalItemsByTab.pending;
+  const approvedCount = totalItemsByTab.approved;
 
   const currentUserRole = profile?.role;
 
@@ -504,7 +532,7 @@ const EstimateApprovalPage = () => {
         }}
         selectedKey={activeTab}
         variant="underlined"
-        onSelectionChange={(key) => setActiveTab(key as string)}
+        onSelectionChange={(key) => setActiveTab(key as EstimateTabKey)}
       >
         <Tab
           key="pending"
@@ -519,12 +547,14 @@ const EstimateApprovalPage = () => {
         >
           <EstimateTable
             activeTab="pending"
-            data={filteredOrders}
+            data={tableData}
             loading={loading}
-            page={page}
-            totalPages={totalPages}
-            totalItems={totalItems}
-            onPageChange={setPage}
+            page={pageByTab.pending}
+            totalPages={totalPagesByTab.pending}
+            totalItems={totalItemsByTab.pending}
+            onPageChange={(nextPage) =>
+              setPageByTab((prev) => ({ ...prev, pending: nextPage }))
+            }
             onViewAction={handleView}
             onApproveAction={handleApproveClick}
             onRejectAction={handleRejectClick}
@@ -547,12 +577,14 @@ const EstimateApprovalPage = () => {
         >
           <EstimateTable
             activeTab="approved"
-            data={filteredOrders}
+            data={tableData}
             loading={loading}
-            page={page}
-            totalPages={totalPages}
-            totalItems={totalItems}
-            onPageChange={setPage}
+            page={pageByTab.approved}
+            totalPages={totalPagesByTab.approved}
+            totalItems={totalItemsByTab.approved}
+            onPageChange={(nextPage) =>
+              setPageByTab((prev) => ({ ...prev, approved: nextPage }))
+            }
             onViewAction={handleView}
             onApproveAction={handleApproveClick}
             onRejectAction={handleRejectClick}
