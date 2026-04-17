@@ -134,7 +134,7 @@ public class CustomerController {
   }
 
   @GetMapping("/count/{id}")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF', 'BUSINESS_DEPARTMENT_HEAD')")
   public int countCustomersInTheRoadmap(@PathVariable String id) {
     log.info("REST request to get customer count: {}", id);
     return customerService.countCustomersOfRoadmap(id);
