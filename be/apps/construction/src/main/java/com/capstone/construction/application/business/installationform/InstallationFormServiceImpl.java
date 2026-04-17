@@ -106,7 +106,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
     log.info("Fetching paginated installation forms with status: {}", request.getStatus());
     var startDate = Utils.parseFrom(request.getFrom());
     var endDate = Utils.parseTo(request.getTo());
-    var sortedPageable = Utility.sortByAttributeDesc(pageable, "created_at");
+    var sortedPageable = Utility.sortByAttributeDesc(pageable, "createdAt");
 
     var statusRegistration = ProcessingStatus.PROCESSING;
 

@@ -309,6 +309,12 @@ export const siteConfig = {
           href: "/roadmaps",
           roles: ["it_staff"],
         },
+        {
+          key: "roadmap-assignment",
+          label: "Phân công lộ trình ghi",
+          href: "/roadmap-assignment",
+          roles: ["it_staff", "business_department_head"],
+        },
 
         {
           key: "pending-construction",

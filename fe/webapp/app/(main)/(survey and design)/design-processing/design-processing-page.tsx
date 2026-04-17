@@ -1,24 +1,19 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Spinner, DateValue } from "@heroui/react";
-import { ActionsSection } from "./components/actions-section";
 import { OrdersToDesignTable } from "./components/orders-to-design-table";
 import { ProcessedDesignsTable } from "./components/processed-designs-table";
-import { WaitingInputTable } from "./components/waiting-input-table";
 import { FilterSection } from "./components/filter-section";
 import {
   DesignProcessingItem,
-  DesignProcessingStatus,
   NewInstallationLookupResponse,
 } from "@/types";
 import { authFetch } from "@/utils/authFetch";
 import {
   formatDate1,
-  formatDate2,
   formatDateValueToString,
 } from "@/utils/format";
-import { CallToast } from "@/components/ui/CallToast";
 
 const DesignProcessingPage = () => {
   const [from, setFrom] = useState<DateValue | null | undefined>(null);
@@ -32,7 +27,6 @@ const DesignProcessingPage = () => {
   const [waitingInput, setWaitingInput] = useState<DesignProcessingItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Pagination riêng cho từng bảng
   const [currentPageOrders, setCurrentPageOrders] = useState(0);
   const [currentPageProcessed, setCurrentPageProcessed] = useState(0);
   const [pageSize] = useState(10);
@@ -44,7 +38,6 @@ const DesignProcessingPage = () => {
   const [keyword, setKeyword] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Fetch orders to design (status = REGISTRATION_PENDING_FOR_APPROVAL)
   const fetchOrdersToDesign = async () => {
     try {
       const fromStr = formatDateValueToString(from);
@@ -53,7 +46,7 @@ const DesignProcessingPage = () => {
       const params = new URLSearchParams({
         page: String(currentPageOrders),
         size: String(pageSize),
-        status: "REGISTRATION_PENDING_FOR_APPROVAL", // Thêm status param
+        status: "REGISTRATION_PENDING_FOR_APPROVAL",
       });
 
       if (searchQuery?.trim()) {
@@ -105,7 +98,6 @@ const DesignProcessingPage = () => {
     }
   };
 
-  // Fetch processed designs (status = REGISTRATION_APPROVED)
   const fetchProcessedDesigns = async () => {
     try {
       const fromStr = formatDateValueToString(from);
@@ -114,7 +106,7 @@ const DesignProcessingPage = () => {
       const params = new URLSearchParams({
         page: String(currentPageProcessed),
         size: String(pageSize),
-        status: "REGISTRATION_APPROVED", // Thêm status param
+        status: "REGISTRATION_APPROVED",
       });
 
       if (searchQuery?.trim()) {

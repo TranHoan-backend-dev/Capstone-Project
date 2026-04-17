@@ -72,7 +72,7 @@ export const ResultsTable = ({
     field: string;
     direction: "asc" | "desc";
   }>({
-    field: "createdAt",
+    field: "",
     direction: "desc",
   });
   const router = useRouter();
@@ -178,7 +178,7 @@ export const ResultsTable = ({
         const params = new URLSearchParams({
           page: String(page - 1),
           size: String(pageSize),
-          sort: `${sort.field},${sort.direction}`,
+          // sort: `${sort.field},${sort.direction}`,
         });
         if (keyword?.trim()) params.append("keyword", keyword.trim());
         if (from) params.append("fromDate", from);
