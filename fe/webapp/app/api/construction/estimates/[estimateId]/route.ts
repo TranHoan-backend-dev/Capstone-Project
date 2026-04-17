@@ -6,6 +6,21 @@ import {
 import { getAccessToken } from "@/utils/getAccessToken";
 import { NextResponse, NextRequest } from "next/server";
 
+const getErrorPayload = (error: any) => {
+  const status = error?.response?.status ?? 500;
+  const backendError = error?.response?.data;
+  const message =
+    backendError?.message ||
+    backendError?.error?.message ||
+    error?.message ||
+    "Internal Server Error";
+
+  // prefer backendError.data (validation details) if present
+  const data = backendError?.data ?? backendError ?? null;
+
+  return { status, message, data, backendError };
+};
+
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ estimateId: string }> },
@@ -29,12 +44,13 @@ export async function GET(
       { status: 200 },
     );
   } catch (error: any) {
-    const status = error?.response?.status ?? 500;
+    const { status, message, data, backendError } = getErrorPayload(error);
 
     return NextResponse.json(
       {
-        message: error?.response?.data?.message ?? "Internal Server Error",
-        error: error?.response?.data ?? null,
+        message,
+        error: backendError,
+        data,
       },
       { status },
     );
@@ -65,12 +81,13 @@ export async function PUT(
       { status: 200 },
     );
   } catch (error: any) {
-    const status = error?.response?.status ?? 500;
+    const { status, message, data, backendError } = getErrorPayload(error);
 
     return NextResponse.json(
       {
-        message: error?.response?.data?.message ?? "Internal Server Error",
-        error: error?.response?.data ?? null,
+        message,
+        error: backendError,
+        data,
       },
       { status },
     );
@@ -99,12 +116,13 @@ export async function PATCH(
       { status: 200 },
     );
   } catch (error: any) {
-    const status = error?.response?.status ?? 500;
+    const { status, message, data, backendError } = getErrorPayload(error);
 
     return NextResponse.json(
       {
-        message: error?.response?.data?.message ?? "Internal Server Error",
-        error: error?.response?.data ?? null,
+        message,
+        error: backendError,
+        data,
       },
       { status },
     );

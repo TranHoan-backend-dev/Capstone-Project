@@ -37,8 +37,9 @@ export const MaterialCostCard = ({
   const isReadOnly = isEstimateApproved || isPlanningTechnicalDepartmentHead;
 
   useEffect(() => {
-    if (estimateData?.material) {
-      const mappedMaterials = estimateData.material.map(
+    const sourceMaterials = (estimateData as any)?.material ?? (estimateData as any)?.materials;
+    if (Array.isArray(sourceMaterials) && sourceMaterials.length > 0) {
+      const mappedMaterials = sourceMaterials.map(
         (item: any, index: number) => {
           const quantity = parseFloat(item.mass) || 0;
           const materialPrice = parseFloat(item.materialCost) || 0;

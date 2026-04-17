@@ -470,35 +470,52 @@ export const TechnicalInfoCard = ({
       } else if (isImageDeleted) {
         // If image was deleted, send a flag to remove it
         formData.append("generalInformation.removeImage", "true");
+        // Workaround: backend crashes when designImage is null in multipart binding
+        formData.append(
+          "generalInformation.designImage",
+          new Blob([]),
+          "empty",
+        );
+      } else {
+        // Workaround: backend crashes when designImage is null in multipart binding
+        // Send an empty file part so Spring binds MultipartFile instead of null.
+        formData.append(
+          "generalInformation.designImage",
+          new Blob([]),
+          "empty",
+        );
       }
 
       // Gửi materials - mỗi item là một object riêng
       const safeNumber = (v: any) => (isNaN(Number(v)) ? 0 : Number(v));
       materials.forEach((m, index) => {
-        formData.append(`material[${index}].materialCode`, m.id || "");
-        formData.append(`material[${index}].jobContent`, m.description || "");
-        formData.append(`material[${index}].note`, m.note || "");
-        formData.append(`material[${index}].unit`, m.unit || "");
-        formData.append(
-          `material[${index}].mass`,
-          String(safeNumber(m.quantity)),
-        );
-        formData.append(
-          `material[${index}].materialCost`,
-          String(safeNumber(m.materialPrice)),
-        );
-        formData.append(
-          `material[${index}].laborPrice`,
-          String(safeNumber(m.laborPrice)),
-        );
-        formData.append(
-          `material[${index}].totalMaterialPrice`,
-          String(m.materialTotal || 0),
-        );
-        formData.append(
-          `material[${index}].totalLaborPrice`,
-          String(m.laborTotal || 0),
-        );
+        const rows = ["material", "materials"];
+        rows.forEach((prefix) => {
+          formData.append(`${prefix}[${index}].materialCode`, m.id || "");
+          formData.append(`${prefix}[${index}].jobContent`, m.description || "");
+          formData.append(`${prefix}[${index}].note`, m.note || "");
+          formData.append(`${prefix}[${index}].unit`, m.unit || "");
+          formData.append(
+            `${prefix}[${index}].mass`,
+            String(safeNumber(m.quantity)),
+          );
+          formData.append(
+            `${prefix}[${index}].materialCost`,
+            String(safeNumber(m.materialPrice)),
+          );
+          formData.append(
+            `${prefix}[${index}].laborPrice`,
+            String(safeNumber(m.laborPrice)),
+          );
+          formData.append(
+            `${prefix}[${index}].totalMaterialPrice`,
+            String(m.materialTotal || 0),
+          );
+          formData.append(
+            `${prefix}[${index}].totalLaborPrice`,
+            String(m.laborTotal || 0),
+          );
+        });
       });
 
       // Thêm isFinished flag
@@ -510,11 +527,28 @@ export const TechnicalInfoCard = ({
         body: formData,
       });
 
-      const json = await res.json();
+      const getErrorMessageFromResponse = (body: any) => {
+        const fieldErrors = body?.data ?? body?.error?.data;
+        if (fieldErrors && typeof fieldErrors === "object") {
+          const details = Object.values(fieldErrors)
+            .filter((v) => typeof v === "string" && v.trim() !== "")
+            .join("; ");
+          if (details) return details;
+        }
+        return body?.message || body?.error?.message;
+      };
+
+      let json: any = null;
+      try {
+        json = await res.json();
+      } catch {
+        const text = await res.text();
+        json = { message: text };
+      }
 
       if (!res.ok) {
         throw new Error(
-          json?.error?.message || json?.message || "Có lỗi xảy ra",
+          getErrorMessageFromResponse(json) || "Có lỗi xảy ra khi lưu",
         );
       }
 
