@@ -1,8 +1,8 @@
-package com.capstone.domain.usecase;
+package com.capstone.nawaco.domain.usecase;
 
-import com.capstone.common.utils.Result;
-import com.capstone.domain.model.MeterReading;
-import com.capstone.domain.repository.MeterRepository;
+import com.capstone.nawaco.common.utils.Result;
+import com.capstone.nawaco.domain.model.MeterReading;
+import com.capstone.nawaco.domain.repository.MeterRepository;
 
 import java.util.List;
 

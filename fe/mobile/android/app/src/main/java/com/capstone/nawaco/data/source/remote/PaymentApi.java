@@ -1,7 +1,7 @@
-package com.capstone.data.source.remote;
+package com.capstone.nawaco.data.source.remote;
 
-import com.capstone.data.source.response.WrapperApiResponse;
-import com.capstone.domain.model.PaymentInfo;
+import com.capstone.nawaco.data.source.response.WrapperApiResponse;
+import com.capstone.nawaco.domain.model.PaymentInfo;
 
 import java.util.List;
 

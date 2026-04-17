@@ -1,10 +1,10 @@
-package com.capstone.di;
+package com.capstone.nawaco.di;
 
-import com.capstone.data.datasource.AuthRemoteDataSource;
-import com.capstone.data.repository.AuthRepositoryImpl;
-import com.capstone.domain.repository.AuthRepository;
-import com.capstone.infrastructure.security.AntiBruteForceManager;
-import com.capstone.infrastructure.security.TokenManager;
+import com.capstone.nawaco.data.datasource.AuthRemoteDataSource;
+import com.capstone.nawaco.data.repository.AuthRepositoryImpl;
+import com.capstone.nawaco.domain.repository.AuthRepository;
+import com.capstone.nawaco.infrastructure.security.AntiBruteForceManager;
+import com.capstone.nawaco.infrastructure.security.TokenManager;
 
 import dagger.Module;
 import dagger.Provides;

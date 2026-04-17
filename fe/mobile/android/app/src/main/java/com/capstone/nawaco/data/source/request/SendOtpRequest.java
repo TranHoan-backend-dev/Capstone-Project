@@ -1,4 +1,4 @@
-package com.capstone.data.source.request;
+package com.capstone.nawaco.data.source.request;
 
 public class SendOtpRequest {
     private final String email;

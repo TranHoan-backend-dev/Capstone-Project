@@ -1,4 +1,4 @@
-package com.capstone.domain.repository;
+package com.capstone.nawaco.domain.repository;
 
 import java.io.File;
 

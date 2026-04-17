@@ -1,11 +1,11 @@
-package com.capstone.ui.viewmodel;
+package com.capstone.nawaco.ui.viewmodel;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.capstone.domain.model.Notification;
-import com.capstone.domain.repository.NotificationRepository;
+import com.capstone.nawaco.domain.model.Notification;
+import com.capstone.nawaco.domain.repository.NotificationRepository;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 

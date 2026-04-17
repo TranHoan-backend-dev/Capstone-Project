@@ -1,13 +1,13 @@
-package com.capstone.data.repository;
+package com.capstone.nawaco.data.repository;
 
-import com.capstone.data.datasource.AuthRemoteDataSource;
-import com.capstone.data.source.request.ChangePasswordRequest;
-import com.capstone.data.source.request.ResetPasswordRequest;
-import com.capstone.data.source.request.UpdateProfileRequest;
-import com.capstone.domain.model.UserProfile;
-import com.capstone.domain.repository.AuthRepository;
-import com.capstone.infrastructure.security.AntiBruteForceManager;
-import com.capstone.infrastructure.security.TokenManager;
+import com.capstone.nawaco.data.datasource.AuthRemoteDataSource;
+import com.capstone.nawaco.data.source.request.ChangePasswordRequest;
+import com.capstone.nawaco.data.source.request.ResetPasswordRequest;
+import com.capstone.nawaco.data.source.request.UpdateProfileRequest;
+import com.capstone.nawaco.domain.model.UserProfile;
+import com.capstone.nawaco.domain.repository.AuthRepository;
+import com.capstone.nawaco.infrastructure.security.AntiBruteForceManager;
+import com.capstone.nawaco.infrastructure.security.TokenManager;
 
 import androidx.annotation.Nullable;
 

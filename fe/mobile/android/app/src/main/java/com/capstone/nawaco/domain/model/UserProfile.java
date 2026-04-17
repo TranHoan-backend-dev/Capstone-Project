@@ -1,8 +1,8 @@
-package com.capstone.domain.model;
+package com.capstone.nawaco.domain.model;
 
 import androidx.annotation.Nullable;
 
-import com.capstone.data.source.response.UserProfileResponse;
+import com.capstone.nawaco.data.source.response.UserProfileResponse;
 
 public class UserProfile {
     private final String fullName;

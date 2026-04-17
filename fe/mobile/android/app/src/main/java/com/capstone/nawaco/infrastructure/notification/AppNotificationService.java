@@ -1,4 +1,4 @@
-package com.capstone.infrastructure.notification;
+package com.capstone.nawaco.infrastructure.notification;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;

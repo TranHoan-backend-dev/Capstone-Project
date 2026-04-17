@@ -1,4 +1,4 @@
-package com.capstone.ui.views;
+package com.capstone.nawaco.ui.views;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -6,7 +6,7 @@ import android.util.Log;
 import androidx.activity.ComponentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.capstone.ui.viewmodel.AuthViewModel;
+import com.capstone.nawaco.ui.viewmodel.AuthViewModel;
 
 import dagger.hilt.android.AndroidEntryPoint;
 

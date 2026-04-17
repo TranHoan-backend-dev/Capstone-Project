@@ -1,9 +1,9 @@
-package com.capstone.bridge.meter;
+package com.capstone.nawaco.bridge.meter;
 
 import androidx.annotation.NonNull;
 
-import com.capstone.domain.repository.MeterRepository;
-import com.capstone.infrastructure.security.PermissionManager;
+import com.capstone.nawaco.domain.repository.MeterRepository;
+import com.capstone.nawaco.infrastructure.security.PermissionManager;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.ReactPackage;

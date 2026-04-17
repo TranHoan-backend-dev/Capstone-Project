@@ -1,8 +1,8 @@
-package com.capstone.bridge.notification;
+package com.capstone.nawaco.bridge.notification;
 
-import com.capstone.domain.model.Notification;
-import com.capstone.domain.repository.NotificationRepository;
-import com.capstone.infrastructure.security.PermissionManager;
+import com.capstone.nawaco.domain.model.Notification;
+import com.capstone.nawaco.domain.repository.NotificationRepository;
+import com.capstone.nawaco.infrastructure.security.PermissionManager;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;

@@ -1,4 +1,4 @@
-package com.capstone.common.utils;
+package com.capstone.nawaco.common.utils;
 
 import androidx.annotation.Nullable;
 

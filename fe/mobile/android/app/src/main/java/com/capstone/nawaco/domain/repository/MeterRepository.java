@@ -1,6 +1,6 @@
-package com.capstone.domain.repository;
+package com.capstone.nawaco.domain.repository;
 
-import com.capstone.domain.model.MeterReading;
+import com.capstone.nawaco.domain.model.MeterReading;
 
 import java.io.File;
 import java.util.List;

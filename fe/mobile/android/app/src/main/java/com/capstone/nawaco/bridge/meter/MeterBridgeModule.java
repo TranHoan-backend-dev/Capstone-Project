@@ -1,8 +1,8 @@
-package com.capstone.bridge.meter;
+package com.capstone.nawaco.bridge.meter;
 
-import com.capstone.domain.model.MeterReading;
-import com.capstone.domain.repository.MeterRepository;
-import com.capstone.infrastructure.security.PermissionManager;
+import com.capstone.nawaco.domain.model.MeterReading;
+import com.capstone.nawaco.domain.repository.MeterRepository;
+import com.capstone.nawaco.infrastructure.security.PermissionManager;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;

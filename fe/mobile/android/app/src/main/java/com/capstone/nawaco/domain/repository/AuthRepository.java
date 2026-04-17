@@ -1,6 +1,6 @@
-package com.capstone.domain.repository;
+package com.capstone.nawaco.domain.repository;
 
-import com.capstone.domain.model.UserProfile;
+import com.capstone.nawaco.domain.model.UserProfile;
 
 import androidx.annotation.Nullable;
 

@@ -1,4 +1,4 @@
-package com.capstone.data.source.response;
+package com.capstone.nawaco.data.source.response;
 
 public class WrapperApiResponse<T> {
     private final int status;

@@ -1,7 +1,7 @@
-package com.capstone.data.source.remote;
+package com.capstone.nawaco.data.source.remote;
 
-import com.capstone.data.source.response.NotificationResponse;
-import com.capstone.data.source.response.WrapperApiResponse;
+import com.capstone.nawaco.data.source.response.NotificationResponse;
+import com.capstone.nawaco.data.source.response.WrapperApiResponse;
 
 import java.util.List;
 

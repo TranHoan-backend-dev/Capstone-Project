@@ -1,12 +1,12 @@
-package com.capstone.data.source.remote;
+package com.capstone.nawaco.data.source.remote;
 
-import com.capstone.data.source.request.ChangePasswordRequest;
-import com.capstone.data.source.request.UpdateProfileRequest;
-import com.capstone.data.source.request.ResetPasswordRequest;
-import com.capstone.data.source.request.SendOtpRequest;
-import com.capstone.data.source.request.VerifyOtpRequest;
-import com.capstone.data.source.response.UserProfileResponse;
-import com.capstone.data.source.response.WrapperApiResponse;
+import com.capstone.nawaco.data.source.request.ChangePasswordRequest;
+import com.capstone.nawaco.data.source.request.UpdateProfileRequest;
+import com.capstone.nawaco.data.source.request.ResetPasswordRequest;
+import com.capstone.nawaco.data.source.request.SendOtpRequest;
+import com.capstone.nawaco.data.source.request.VerifyOtpRequest;
+import com.capstone.nawaco.data.source.response.UserProfileResponse;
+import com.capstone.nawaco.data.source.response.WrapperApiResponse;
 
 import okhttp3.MultipartBody;
 import retrofit2.Call;

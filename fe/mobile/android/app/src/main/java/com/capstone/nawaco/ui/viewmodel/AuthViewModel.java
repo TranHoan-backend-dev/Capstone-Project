@@ -1,13 +1,13 @@
-package com.capstone.ui.viewmodel;
+package com.capstone.nawaco.ui.viewmodel;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.capstone.common.utils.Result;
-import com.capstone.domain.model.UserProfile;
-import com.capstone.domain.usecase.*;
-import com.capstone.infrastructure.security.AntiBruteForceManager;
+import com.capstone.nawaco.common.utils.Result;
+import com.capstone.nawaco.domain.model.UserProfile;
+import com.capstone.nawaco.domain.usecase.*;
+import com.capstone.nawaco.infrastructure.security.AntiBruteForceManager;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 

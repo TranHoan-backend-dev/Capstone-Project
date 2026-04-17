@@ -1,4 +1,4 @@
-package com.capstone.domain.model;
+package com.capstone.nawaco.domain.model;
 
 import androidx.annotation.Nullable;
 

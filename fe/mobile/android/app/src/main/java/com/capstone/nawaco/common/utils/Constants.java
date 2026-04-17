@@ -1,4 +1,4 @@
-package com.capstone.common.utils;
+package com.capstone.nawaco.common.utils;
 
 /**
  * Lớp chứa các hằng số hệ thống (Environment strings, API Keys, URLs).
