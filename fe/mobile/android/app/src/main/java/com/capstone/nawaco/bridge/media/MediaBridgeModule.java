@@ -1,9 +1,9 @@
-package com.capstone.bridge.media;
+package com.capstone.nawaco.bridge.media;
 
 import androidx.annotation.NonNull;
 
-import com.capstone.domain.repository.MediaRepository;
-import com.capstone.infrastructure.security.PermissionManager;
+import com.capstone.nawaco.domain.repository.MediaRepository;
+import com.capstone.nawaco.infrastructure.security.PermissionManager;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;

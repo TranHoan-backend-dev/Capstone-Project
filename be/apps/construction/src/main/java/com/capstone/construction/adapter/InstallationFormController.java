@@ -200,7 +200,6 @@ public class InstallationFormController {
     @ApiResponse(responseCode = "404", description = "Không tìm thấy đơn lắp đặt", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
   @PostMapping("/contract-status")
-  @PatchMapping("/contract-status")
   @PreAuthorize("hasAnyAuthority('ORDER_RECEIVING_STAFF', 'IT_STAFF')")
   public ResponseEntity<WrapperApiResponse> updateContractStatus(
     @RequestParam String formCode,

@@ -1,8 +1,8 @@
-package com.capstone.bridge.auth;
+package com.capstone.nawaco.bridge.auth;
 
 import androidx.annotation.NonNull;
 
-import com.capstone.domain.repository.AuthRepository;
+import com.capstone.nawaco.domain.repository.AuthRepository;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;

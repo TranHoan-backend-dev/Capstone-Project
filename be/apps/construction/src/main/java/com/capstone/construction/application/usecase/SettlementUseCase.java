@@ -44,6 +44,8 @@ public class SettlementUseCase {
   String QUEUE_NAME;
 
   public SettlementResponse createSettlement(@NonNull CreateSettlementRequest request) {
+    // TODO: Toi uu lai khau kiem tra quyet toan da ton tai hay chua
+    // TODO: Toi uu lai khau lay ra installation form
     if (settlementService.isExistingSettlement(request.settlementId())) {
       throw new IllegalStateException("Quyết toán đã tồn tại");
     }

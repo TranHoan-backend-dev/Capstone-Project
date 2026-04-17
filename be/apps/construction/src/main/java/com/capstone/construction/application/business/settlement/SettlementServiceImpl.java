@@ -66,11 +66,11 @@ public class SettlementServiceImpl implements SettlementService {
     var saved = settlementRepository.save(settlement);
     var ce = costEstimateService.getByFormCode(request.formCode());
 
-    var response = deviceSrv.updateMaterialsOfSettlement(saved.getSettlementId(), ce.material());
+    var response = deviceSrv.updateMaterialsOfSettlement(saved.getSettlementId(), ce.materials());
     if (response.status() != 200) {
       throw new IllegalArgumentException(response.message());
     }
-    return mapToResponse(saved, ce.material());
+    return mapToResponse(saved, ce.materials());
   }
 
   @Override
@@ -186,7 +186,7 @@ public class SettlementServiceImpl implements SettlementService {
     return settlementRepository.existsByInstallationForm(form);
   }
 
-  private @NonNull SettlementResponse mapToResponse(@NonNull Settlement settlement, List<BaseMaterial> material) {
+  private @NonNull SettlementResponse mapToResponse(@NonNull Settlement settlement, List<BaseMaterial> materials) {
     var installationForm = settlement.getInstallationForm();
     return new SettlementResponse(
         new SettlementResponse.GeneralInformation(
@@ -203,7 +203,7 @@ public class SettlementServiceImpl implements SettlementService {
             installationForm.getFormNumber(),
             settlement.getSignificance(),
             installationForm.getStatus()),
-        material);
+        materials);
   }
 
   private @NonNull List<BaseMaterial> getMaterials(@NonNull String id) {
