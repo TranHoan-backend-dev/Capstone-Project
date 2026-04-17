@@ -20,7 +20,7 @@ export const focusNextFieldOnEnter = (
 
   const fields = Array.from(
     navigationScope.querySelectorAll<HTMLElement>(
-      "input:not([type='hidden']):not([disabled]), textarea:not([disabled]), select:not([disabled]), button:not([disabled])",
+      "input:not([type='hidden']):not([disabled]), textarea:not([disabled]), select:not([disabled]), button[type='submit']:not([disabled])",
     ),
   ).filter((el) => el.tabIndex !== -1);
 
