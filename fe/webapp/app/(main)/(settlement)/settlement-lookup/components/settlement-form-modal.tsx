@@ -37,8 +37,10 @@ export const SettlementFormModal = ({
   const [showFormModal, setShowFormModal] = useState(false);
   const [displayForm, setDisplayForm] = useState("");
   const [form, setForm] = useState({
+    settlementId: "",
     formCode: "",
     formNumber: "",
+    customerName: "",
     jobContent: "",
     address: "",
     connectionFee: "",
@@ -51,25 +53,30 @@ export const SettlementFormModal = ({
 
   useEffect(() => {
     if (mode === "update" && initialData) {
+      const dataSource = initialData?.generalInformation ?? initialData;
       setForm({
-        formCode: initialData.formCode,
-        formNumber: initialData.formNumber,
-        jobContent: initialData.jobContent || "",
-        address: initialData.address || "",
+        settlementId: dataSource.settlementId ?? "",
+        formCode: dataSource.formCode ?? "",
+        formNumber: dataSource.formNumber ?? "",
+        customerName: dataSource.customerName ?? "",
+        jobContent: dataSource.jobContent || "",
+        address: dataSource.address || "",
         connectionFee:
-          initialData.connectionFee === null ||
-          initialData.connectionFee === undefined
+          dataSource.connectionFee === null ||
+          dataSource.connectionFee === undefined
             ? ""
-            : String(initialData.connectionFee),
-        note: initialData.note ?? "",
-        registrationAt: initialData.registrationAt ?? "",
+            : String(dataSource.connectionFee),
+        note: dataSource.note ?? "",
+        registrationAt: (dataSource.registrationAt ?? "").split("T")[0],
       });
 
-      setDisplayForm(initialData.formNumber);
+      setDisplayForm(dataSource.formNumber ?? "");
     } else if (mode === "create") {
       setForm({
+        settlementId: "",
         formCode: "",
         formNumber: "",
+        customerName: "",
         jobContent: "",
         address: "",
         connectionFee: "",
@@ -86,6 +93,14 @@ export const SettlementFormModal = ({
 
     if (!form.formNumber) {
       newErrors.formNumber = "Vui lòng chọn số đơn";
+    }
+
+    if (!form.settlementId.trim()) {
+      newErrors.settlementId = "Vui lòng nhập mã quyết toán";
+    }
+
+    if (!form.customerName.trim()) {
+      newErrors.customerName = "Vui lòng nhập tên khách hàng";
     }
 
     if (!form.jobContent.trim()) {
@@ -128,8 +143,10 @@ export const SettlementFormModal = ({
       setLoading(true);
 
       const payload = {
+        settlementId: form.settlementId.trim(),
         formCode: form.formCode,
         formNumber: form.formNumber,
+        customerName: form.customerName.trim(),
         jobContent: form.jobContent,
         address: form.address,
         connectionFee: Number(form.connectionFee),
@@ -166,6 +183,16 @@ export const SettlementFormModal = ({
           <ModalBody className="gap-4">
             {form.formCode && <input type="hidden" value={form.formCode} />}
 
+            <CustomInput
+              label="Mã quyết toán"
+              value={form.settlementId}
+              onChange={(e) => handleChange("settlementId", e.target.value)}
+              isRequired
+              isInvalid={!!errors.settlementId}
+              errorMessage={errors.settlementId}
+              variant="bordered"
+            />
+
             <SearchInputWithButton
               label="Số đơn"
               value={form.formNumber}
@@ -174,6 +201,7 @@ export const SettlementFormModal = ({
                 handleChange("formNumber", e.target.value);
                 if (!e.target.value) {
                   handleChange("formCode", "");
+                  handleChange("customerName", "");
                   handleChange("address", "");
                   handleChange("jobContent", "");
                 }
@@ -181,6 +209,17 @@ export const SettlementFormModal = ({
               isInvalid={!!errors.formNumber}
               errorMessage={errors.formNumber}
               required
+            />
+
+            <CustomInput
+              label="Tên khách hàng"
+              value={form.customerName}
+              onChange={(e) => handleChange("customerName", e.target.value)}
+              isRequired
+              isInvalid={!!errors.customerName}
+              errorMessage={errors.customerName}
+              variant="bordered"
+              isDisabled={!form.formNumber}
             />
 
             <CustomInput
@@ -254,7 +293,7 @@ export const SettlementFormModal = ({
         isOpen={showFormModal}
         onClose={() => setShowFormModal(false)}
         title="Chọn đơn lắp đặt"
-        api="/api/construction/installation-forms/completed-without-settlement"
+        api="/api/construction/installation-forms"
         columns={[
           { key: "stt", label: "STT" },
           { key: "formNumber", label: "Số đơn" },
@@ -267,11 +306,16 @@ export const SettlementFormModal = ({
           formNumber: item.formNumber,
           customerName: item.customerName,
           address: item.address,
+          jobContent: item.jobContent,
         })}
         onSelect={(item) => {
           handleChange("formCode", item.id);
           handleChange("formNumber", item.formNumber);
+          handleChange("customerName", item.customerName ?? "");
           handleChange("address", item.address);
+          if (item.jobContent) {
+            handleChange("jobContent", item.jobContent);
+          }
           setShowFormModal(false);
         }}
       />

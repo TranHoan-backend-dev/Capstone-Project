@@ -8,8 +8,10 @@ export interface SettlementStatus {
 export interface SettlementItem {
   stt: string;
   id: string;
+  settlementId?: string;
   formCode: string;
   formNumber: string;
+  customerName?: string;
   jobContent: string;
   connectionFee: string | number;
   address: string;
@@ -114,8 +116,10 @@ export interface SettlementFilterRequest {
 }
 
 export interface SettlementRequest {
+  settlementId: string;
   formCode: string;
   formNumber: string;
+  customerName: string;
   jobContent: string;
   address: string;
   connectionFee: number;
@@ -140,4 +144,19 @@ export interface SettlementResponse {
   status?: SettlementStatus | any;
   updatedAt?: string;
   baseMaterials?: SettlementBaseMaterial[];
+  generalInformation?: {
+    settlementId?: string;
+    formCode?: string;
+    formNumber?: string;
+    customerName?: string;
+    jobContent?: string;
+    address?: string;
+    registrationAt?: string;
+    connectionFee?: SettlementNumberish;
+    note?: string;
+    status?: SettlementStatus | any;
+    createdAt?: string;
+    updatedAt?: string;
+    [key: string]: any;
+  };
 }

@@ -57,6 +57,7 @@ export const ResultsTable = ({
   reloadKey,
   from,
   to,
+  status,
   onEdit,
   onDeleted,
   onFilterStatus,
@@ -203,84 +204,95 @@ export const ResultsTable = ({
           return;
         }
 
-        const mapped = items.map((item: SettlementResponse, index: number) => ({
-          id:
-            // backend có thể trả về tên field khác nhau
-            (item as any)?.settlementId ??
-            (item as any)?.id ??
-            (item as any)?.settlement_id ??
-            "",
-          stt: (page - 1) * pageSize + index + 1,
-          formCode:
-            (item as any)?.formCode ?? (item as any)?.code ?? (item as any)?.form_code ?? "",
-          formNumber:
-            (item as any)?.formNumber ??
-            (item as any)?.number ??
-            (item as any)?.form_no ??
-            "",
-          jobContent:
-            (item as any)?.jobContent ??
-            (item as any)?.content?.jobContent ??
-            (item as any)?.baseMaterials?.[0]?.jobContent ??
-            "",
-          address:
-            (item as any)?.address ??
-            (item as any)?.installationLocation ??
-            (item as any)?.location ??
-            "",
-          registrationAt:
-            (item as any)?.registrationAt ??
-            (item as any)?.registrationDate ??
-            (item as any)?.createdAt ??
-            "",
-          connectionFee:
-            (() => {
-              const itemAny = item as any;
-              const raw =
-                itemAny?.connectionFee ??
-                itemAny?.connection_fee ??
-                itemAny?.connectionFeeAmount ??
-                itemAny?.fee;
-              if (raw !== undefined && raw !== null && raw !== "") return raw;
+        const mapped = items.map((item: SettlementResponse, index: number) => {
+          const itemAny = item as any;
+          const general = itemAny?.generalInformation ?? itemAny;
 
-              const toNum = (v: any) => {
-                if (v === null || v === undefined) return 0;
-                if (typeof v === "number") return Number.isFinite(v) ? v : 0;
-                const str = String(v).trim();
-                if (!str) return 0;
-                const normalized = str.replace(/[^\d.-]/g, "");
-                const num = Number(normalized);
-                return Number.isFinite(num) ? num : 0;
-              };
+          const toNum = (v: any) => {
+            if (v === null || v === undefined) return 0;
+            if (typeof v === "number") return Number.isFinite(v) ? v : 0;
+            const str = String(v).trim();
+            if (!str) return 0;
+            const normalized = str.replace(/[^\d.-]/g, "");
+            const num = Number(normalized);
+            return Number.isFinite(num) ? num : 0;
+          };
 
-              const totalVL =
-                itemAny?.totalMaterialPrice ??
-                itemAny?.totalMaterialCost ??
-                itemAny?.totalVL;
-              const totalNC =
-                itemAny?.totalLaborPrice ??
-                itemAny?.totalLaborCost ??
-                itemAny?.totalNC;
+          const rawConnectionFee =
+            general?.connectionFee ??
+            general?.connection_fee ??
+            general?.connectionFeeAmount ??
+            itemAny?.connectionFee ??
+            itemAny?.connection_fee ??
+            itemAny?.connectionFeeAmount ??
+            itemAny?.fee;
 
-              if (totalVL !== undefined || totalNC !== undefined) {
-                return toNum(totalVL) + toNum(totalNC);
-              }
+          const computedConnectionFee = Array.isArray(itemAny?.baseMaterials)
+            ? itemAny.baseMaterials.reduce((sum: number, row: any) => {
+                return (
+                  sum +
+                  toNum(row?.totalMaterialPrice) +
+                  toNum(row?.totalLaborPrice)
+                );
+              }, 0)
+            : 0;
 
-              if (Array.isArray(itemAny?.baseMaterials)) {
-                return itemAny.baseMaterials.reduce((sum: number, r: any) => {
-                  return (
-                    sum +
-                    toNum(r?.totalMaterialPrice) +
-                    toNum(r?.totalLaborPrice)
-                  );
-                }, 0);
-              }
-
-              return "";
-            })(),
-          note: (item as any)?.note ?? (item as any)?.description ?? "",
-          status: (item as any)?.status ?? {},
-        }));
+          return {
+            id:
+              general?.settlementId ??
+              itemAny?.settlementId ??
+              itemAny?.id ??
+              itemAny?.settlement_id ??
+              "",
+            settlementId:
+              general?.settlementId ??
+              itemAny?.settlementId ??
+              itemAny?.id ??
+              "",
+            stt: (page - 1) * pageSize + index + 1,
+            formCode:
+              general?.formCode ??
+              itemAny?.formCode ??
+              itemAny?.code ??
+              itemAny?.form_code ??
+              "",
+            formNumber:
+              general?.formNumber ??
+              itemAny?.formNumber ??
+              itemAny?.number ??
+              itemAny?.form_no ??
+              "",
+            customerName:
+              general?.customerName ?? itemAny?.customerName ?? "",
+            jobContent:
+              general?.jobContent ??
+              itemAny?.jobContent ??
+              itemAny?.content?.jobContent ??
+              itemAny?.baseMaterials?.[0]?.jobContent ??
+              "",
+            address:
+              general?.address ??
+              itemAny?.address ??
+              itemAny?.installationLocation ??
+              itemAny?.location ??
+              "",
+            registrationAt:
+              general?.registrationAt ??
+              itemAny?.registrationAt ??
+              itemAny?.registrationDate ??
+              general?.createdAt ??
+              itemAny?.createdAt ??
+              "",
+            connectionFee:
+              rawConnectionFee !== undefined &&
+              rawConnectionFee !== null &&
+              rawConnectionFee !== ""
+                ? rawConnectionFee
+                : computedConnectionFee,
+            note: general?.note ?? itemAny?.note ?? itemAny?.description ?? "",
+            status: general?.status ?? itemAny?.status ?? {},
+          };
+        });
         setData(mapped);
       } catch (error: any) {
         setData([]);
@@ -507,14 +519,14 @@ export const ResultsTable = ({
         },
       });
 
-      items.push({
-        content: "Xóa",
-        icon: TrashIcon,
-        className: "text-red-600 hover:bg-red-50",
-        onClick: (id: string) => {
-          setDeleteId(id);
-        },
-      });
+      // items.push({
+      //   content: "Xóa",
+      //   icon: TrashIcon,
+      //   className: "text-red-600 hover:bg-red-50",
+      //   onClick: (id: string) => {
+      //     setDeleteId(id);
+      //   },
+      // });
     }
 
     if (canSignSettlements) {
@@ -600,7 +612,7 @@ export const ResultsTable = ({
           total: totalPages,
           page: page,
           onChange: setPage,
-          summary: `${data.length}`,
+          summary: `${totalItems}`,
         }}
         renderCellAction={renderCell}
         title="Danh sách quyết toán"

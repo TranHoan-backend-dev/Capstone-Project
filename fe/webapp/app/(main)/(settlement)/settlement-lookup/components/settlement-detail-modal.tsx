@@ -61,19 +61,6 @@ export const SettlementDetailModal = ({
     return { day, month, year };
   };
 
-  const getSignerName = (value: any) => {
-    if (!value) return "";
-    if (typeof value === "string") return value;
-    return (
-      value.fullName ??
-      value.name ??
-      value.username ??
-      value.signerName ??
-      value.id ??
-      ""
-    );
-  };
-
   const baseMaterialsCandidate =
     (data as any)?.baseMaterials ??
     (data as any)?.data?.baseMaterials ??
@@ -102,29 +89,11 @@ export const SettlementDetailModal = ({
     return sum + parseNumber(v);
   }, 0);
 
-  const signRoles = [
-    {
-      title: "Nhân viên khảo sát",
-      name: getSignerName((data as any)?.significance?.surveyStaff),
-    },
-    {
-      title: "Trưởng phòng KHKT",
-      name: getSignerName((data as any)?.significance?.ptHead),
-    },
-    {
-      title: "Giám Đốc",
-      name: getSignerName((data as any)?.significance?.president),
-    },
-    {
-      title: "Nhân viên xây dựng",
-      name:
-        getSignerName((data as any)?.significance?.constructionPresident) ||
-        getSignerName((data as any)?.significance?.constructionStaff),
-    },
-  ];
-
   const headerDate = formatHeaderDate(
-    (data as any)?.createdAt ?? (data as any)?.registrationAt,
+    generalInformation?.createdAt ??
+      generalInformation?.registrationAt ??
+      (data as any)?.createdAt ??
+      (data as any)?.registrationAt,
   );
 
   return (
@@ -136,7 +105,7 @@ export const SettlementDetailModal = ({
         onClick={onClose}
       >
         <div
-          className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col"
+          className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] flex flex-col"
           onClick={(e) => e.stopPropagation()}
         >
           <ModalHeader title="Thông tin quyết toán" onClose={onClose} />
@@ -148,7 +117,7 @@ export const SettlementDetailModal = ({
               </div>
             ) : data ? (
               <div className="flex justify-center">
-                <DocumentPaper signRoles={signRoles}>
+                <DocumentPaper>
                   <div className="text-xs">
                     <div className="grid grid-cols-2 gap-8 mb-2">
                       <div>
@@ -159,10 +128,11 @@ export const SettlementDetailModal = ({
                           CHI NHÁNH XÂY LẮP
                         </div>
                         <div className="mt-3">
-                          <span className="font-semibold">Mã đơn:</span>{" "}
-                          {(data as any)?.formCode ??
-                            generalInformation?.settlementId ??
-                            (data as any)?.formNumber ??
+                          <span className="font-semibold">Mã quyết toán:</span>{" "}
+                          {generalInformation?.settlementId ??
+                            (data as any)?.settlementId ??
+                            generalInformation?.formCode ??
+                            generalInformation?.formNumber ??
                             "-"}
                         </div>
                       </div>
@@ -183,6 +153,7 @@ export const SettlementDetailModal = ({
                           <div className="italic mt-6">
                             {formatDate(
                               (data as any)?.createdAt ??
+                                generalInformation?.createdAt ??
                                 (data as any)?.registrationAt,
                             )}
                           </div>
@@ -202,16 +173,16 @@ export const SettlementDetailModal = ({
                             {generalInformation?.jobContent ??
                               (data as any)?.jobContent ??
                               "-"}{" "}
-                            {((data as any)?.customerName as string) ? (
+                            {(generalInformation?.customerName as string) ? (
                               <span className="font-normal">
-                                ({(data as any)?.customerName})
+                                ({generalInformation?.customerName})
                               </span>
                             ) : null}
                           </span>
                         </div>
                         <div>
                           <span className="font-semibold">Địa điểm lắp đặt:</span>{" "}
-                          <span>{(data as any)?.address ?? "-"}</span>
+                          <span>{generalInformation?.address ?? "-"}</span>
                         </div>
                       </div>
                     </div>
@@ -236,13 +207,13 @@ export const SettlementDetailModal = ({
                             rowSpan={2}
                             className="border border-black px-1 py-1 text-center font-semibold"
                           >
-                            Mã Hiệu
+                            Tên vật tư
                           </th>
                           <th
                             rowSpan={2}
                             className="border border-black px-1 py-1 text-left font-semibold"
                           >
-                            Tên công việc
+                            Ghi chú
                           </th>
                           <th
                             rowSpan={2}
@@ -291,10 +262,10 @@ export const SettlementDetailModal = ({
                               {index + 1}
                             </td>
                             <td className="border border-black px-1 py-1 text-center">
-                              {row?.materialCode ?? "-"}
+                              {row?.jobContent ?? "-"}
                             </td>
                             <td className="border border-black px-1 py-1 text-left">
-                              {row?.jobContent ?? row?.note ?? "-"}
+                              {row?.note ?? row?.note ?? "-"}
                             </td>
                             <td className="border border-black px-1 py-1 text-center">
                               {row?.unit ?? row?.uom ?? "-"}
@@ -331,7 +302,7 @@ export const SettlementDetailModal = ({
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="font-semibold">Tổng cộng</div>
+                        <div className="font-semibold">Tổng cộng (VL + NC)</div>
                         <div>{formatNumber(sumVL + sumNC, 3)}</div>
                       </div>
                     </div>
@@ -340,13 +311,13 @@ export const SettlementDetailModal = ({
                       <div className="flex gap-6 text-xs">
                         <div className="flex-1">
                           <span className="font-semibold">Phí kết nối:</span>{" "}
-                          {formatNumber((data as any)?.connectionFee ?? 0, 3)}
+                          {formatNumber(generalInformation?.connectionFee ?? 0, 3)}
                         </div>
                       </div>
-                      {(data as any)?.note ? (
+                      {generalInformation?.note ? (
                         <div className="mt-2">
                           <span className="font-semibold">Ghi chú:</span>{" "}
-                          <span>{(data as any)?.note}</span>
+                          <span>{generalInformation?.note}</span>
                         </div>
                       ) : null}
                     </div>
