@@ -141,19 +141,6 @@ public class ReceiptServiceImpl implements ReceiptService {
       .map(this::mapToListResponse);
   }
 
-  private @NonNull ReceiptListResponse mapToListResponse(@NonNull Receipt receipt) {
-    return new ReceiptListResponse(
-      receipt.getInstallationFormId().getFormCode(),
-      receipt.getInstallationFormId().getFormNumber(),
-      receipt.getReceiptNumber(),
-      receipt.getCustomerName(),
-      receipt.getAddress(),
-      receipt.getPaymentDate(),
-      receipt.getIsPaid(),
-      receipt.getCreatedAt(),
-      receipt.getUpdatedAt());
-  }
-
   @Override
   public ReceiptResponse getReceipt(String formCode, String formNumber) {
     log.info("Fetching receipt for form: {}/{}", formCode, formNumber);
@@ -176,6 +163,19 @@ public class ReceiptServiceImpl implements ReceiptService {
       receipt.getTotalMoneyInCharacters(),
       receipt.getAttach(),
       receipt.getSignificance(),
+      receipt.getCreatedAt(),
+      receipt.getUpdatedAt());
+  }
+
+  private @NonNull ReceiptListResponse mapToListResponse(@NonNull Receipt receipt) {
+    return new ReceiptListResponse(
+      receipt.getInstallationFormId().getFormCode(),
+      receipt.getInstallationFormId().getFormNumber(),
+      receipt.getReceiptNumber(),
+      receipt.getCustomerName(),
+      receipt.getAddress(),
+      receipt.getPaymentDate(),
+      receipt.getIsPaid(),
       receipt.getCreatedAt(),
       receipt.getUpdatedAt());
   }

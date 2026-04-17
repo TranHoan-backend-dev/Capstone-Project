@@ -10,7 +10,7 @@ import java.util.List;
 
 public record CostEstimateResponse(
   GeneralInformation generalInformation,
-  List<BaseMaterial> material
+  List<BaseMaterial> materials
 ) {
   public record Significance(
     String companyLeaderShip,

@@ -1,9 +1,10 @@
 package com.capstone.construction.application.dto.request.receipt;
 
-import com.capstone.common.request.BaseFilterRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Pattern;
 
+// TODO: keyword, from, to dang bi lap lai
+// TODO: formCode, formNumber, receiptNumber dang bi lap lai o CreateRequest va CreatedEvent, UpdateRequest, ReceiptListResponse, ReceiptResponse
 public record ReceiptFilterRequest(
   @Schema(description = "Từ khóa tìm kiếm", example = "Nguyễn Văn A")
   String keyword,
@@ -28,7 +29,4 @@ public record ReceiptFilterRequest(
   @Schema(description = "Số biên lai", example = "BL-2023-001")
   String receiptNumber
 ) {
-  public BaseFilterRequest toBaseFilterRequest() {
-    return new BaseFilterRequest(keyword, from, to);
-  }
 }

@@ -1,0 +1,38 @@
+package com.capstone.nawaco.bridge.meter;
+
+import androidx.annotation.NonNull;
+
+import com.capstone.nawaco.domain.repository.MeterRepository;
+import com.capstone.nawaco.infrastructure.security.PermissionManager;
+import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.ReactPackage;
+import com.facebook.react.uimanager.ViewManager;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class MeterBridgePackage implements ReactPackage {
+    private final MeterRepository meterRepository;
+    private final PermissionManager permissionManager;
+
+    public MeterBridgePackage(MeterRepository meterRepository, PermissionManager permissionManager) {
+        this.meterRepository = meterRepository;
+        this.permissionManager = permissionManager;
+    }
+
+    @NonNull
+    @Override
+    public List<NativeModule> createNativeModules(@NonNull ReactApplicationContext reactContext) {
+        List<NativeModule> modules = new ArrayList<>();
+        modules.add(new MeterBridgeModule(reactContext, meterRepository, permissionManager));
+        return modules;
+    }
+
+    @NonNull
+    @Override
+    public List<ViewManager> createViewManagers(@NonNull ReactApplicationContext reactContext) {
+        return Collections.emptyList();
+    }
+}

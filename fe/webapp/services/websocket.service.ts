@@ -1,7 +1,7 @@
 import { Client, IMessage, StompSubscription } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
 
 import { API_GATEWAY_URL } from "@/utils/constraints";
-// SockJS will be loaded dynamically in the webSocketFactory to avoid bundling issues
 
 class WebSocketService {
   private client: Client | null = null;
@@ -35,23 +35,19 @@ class WebSocketService {
 
     return new Promise((resolve, reject) => {
       if (!API_GATEWAY_URL) {
-        console.error("[WebSocket] API_GATEWAY_URL is not defined in environment variables");
+        console.error(
+          "[WebSocket] API_GATEWAY_URL is not defined in environment variables",
+        );
         this.isConnecting = false;
         reject(new Error("API_GATEWAY_URL is not defined"));
         return;
       }
 
-      // Chuyển đổi HTTP/HTTPS sang WS/WSS cho Pure WebSocket
-      let brokerUrl = API_GATEWAY_URL.replace("http://", "ws://").replace(
-        "https://",
-        "wss://",
-      );
-      brokerUrl = `${brokerUrl}/n/ws`;
-
-      console.log("[WebSocket] Connecting to Pure WebSocket:", brokerUrl);
+      const socketUrl = `${API_GATEWAY_URL}/n/ws`;
+      console.log("[WebSocket] Connecting to SockJS:", socketUrl);
 
       this.client = new Client({
-        brokerURL: brokerUrl,
+        webSocketFactory: () => new SockJS(socketUrl),
         connectHeaders: {
           Authorization: `Bearer ${accessToken}`,
         },

@@ -90,7 +90,7 @@ class SettlementServiceImplTest {
     when(formRepository.findById(any(InstallationFormId.class))).thenReturn(Optional.of(form));
     when(settlementRepository.save(any(Settlement.class))).thenReturn(settlement);
     var ceResponse = mock(CostEstimateResponse.class);
-    when(ceResponse.material()).thenReturn(List.of());
+    when(ceResponse.materials()).thenReturn(List.of());
     when(costEstimateService.getByFormCode(anyString())).thenReturn(ceResponse);
     when(deviceSrv.updateMaterialsOfSettlement(anyString(), anyList())).thenReturn(new WrapperApiResponse(200, "ok", null, null));
 
