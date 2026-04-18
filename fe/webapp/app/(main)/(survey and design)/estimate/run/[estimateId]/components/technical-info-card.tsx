@@ -220,6 +220,10 @@ export const TechnicalInfoCard = ({
     const vatParam = parameters.find((p) => p.name === "Hệ số thuế GTGT (VAT)");
     const designParam = parameters.find((p) => p.name === "Hệ số thiết kế");
     const contractFeeParam = parameters.find((p) => p.name === "Phí hợp đồng");
+    const surveyFeeParam = parameters.find((p) => p.name === "Phí khảo sát");
+    const installationFeeParam = parameters.find((p) => p.name === "Phí lắp đặt");
+    const designFeeParam = parameters.find((p) => p.name === "Phí thiết kế");
+    
     if (laborParam && laborParam.value) {
       setLaborCoefficient(laborParam.value);
     }
@@ -240,6 +244,15 @@ export const TechnicalInfoCard = ({
     }
     if (contractFeeParam && contractFeeParam.value) {
       setContractFee(contractFeeParam.value);
+    }
+    if (surveyFeeParam && surveyFeeParam.value) {
+      setSurveyFee(surveyFeeParam.value);
+    }
+    if (installationFeeParam && installationFeeParam.value) {
+      setInstallationFee(installationFeeParam.value);
+    }
+    if (designFeeParam && designFeeParam.value) {
+      setDesignFee(designFeeParam.value);
     }
   };
 
@@ -316,10 +329,18 @@ export const TechnicalInfoCard = ({
       setCustomerName(info.customerName || "");
       setAddress(info.address || "");
       setNote(info.note || "");
-      setContractFee(info.contractFee?.toString() || "");
-      setSurveyFee(info.surveyFee?.toString() || "");
-      setSurveyEffort(info.surveyEffort?.toString() || "");
-      setInstallationFee(info.installationFee?.toString() || "");
+      if (info.contractFee !== undefined && info.contractFee !== null) {
+        setContractFee(info.contractFee.toString());
+      }
+      if (info.surveyFee !== undefined && info.surveyFee !== null) {
+        setSurveyFee(info.surveyFee.toString());
+      }
+      if (info.surveyEffort !== undefined && info.surveyEffort !== null) {
+        setSurveyEffort(info.surveyEffort.toString());
+      }
+      if (info.installationFee !== undefined && info.installationFee !== null) {
+        setInstallationFee(info.installationFee.toString());
+      }
       if (
         info.laborCoefficient !== undefined &&
         info.laborCoefficient !== null
@@ -363,7 +384,9 @@ export const TechnicalInfoCard = ({
       ) {
         setDesignCoefficient(info.designCoefficient.toString());
       }
-      setDesignFee(info.designFee?.toString() || "");
+      if (info.designFee !== undefined && info.designFee !== null) {
+        setDesignFee(info.designFee.toString());
+      }
       setWaterMeterType(info.waterMeterType || "");
       setWaterMeterSerial(info.waterMeterSerial || "");
       setOverallWaterMeterId(info.overallWaterMeterId || "");
