@@ -121,6 +121,21 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
 
     var serial = extractTheMeterSerial(response.results());
     var index = extractTheMeterIndex(response.results());
+
+    if (serial != null && index != null) {
+      var meterOpt = waterMeterRepository.findById(serial);
+      if (meterOpt.isPresent()) {
+        var type = meterOpt.get().getType();
+        if (type != null && type.getIndexLength() != null) {
+          int length = type.getIndexLength();
+          if (index.length() > length) {
+            log.info("Trimming index from {} to {} based on meter type length {}", index, index.substring(0, length), length);
+            index = index.substring(0, length);
+          }
+        }
+      }
+    }
+
     log.info("detectedSerial: {}", serial);
     log.info("detectedIndex: {}", index);
 
@@ -319,8 +334,8 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
 
       // Sort usages to find previous index for "oldIndex"
       List<Usage> sortedUsages = history.getUsages().stream()
-          .sorted(java.util.Comparator.comparing(Usage::getRecordingDate))
-          .toList();
+        .sorted(Comparator.comparing(Usage::getRecordingDate))
+        .toList();
 
       for (int i = 0; i < sortedUsages.size(); i++) {
         var u = sortedUsages.get(i);
@@ -402,6 +417,7 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
 
   private UsageResponse mapToResponse(@NonNull UsageHistory entity, String customerId,
       @NonNull CustomerWaterPriceRefResponse customerInfo) {
+    var customer = customerService.isCustomerFree(customerId);
     var waterPrice = resolveWaterPrice(customerInfo.waterPriceId());
     log.info("Mapping usage response for price ID: {}", waterPrice != null ? waterPrice.getPriceId() : "null");
     List<PriceTypeResponse> priceTypeResponses = waterPrice != null && waterPrice.getPriceTypes() != null
@@ -426,11 +442,16 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
         }
 
         var calculatedPrice = BigDecimal.ZERO;
-        if (mass.compareTo(BigDecimal.ZERO) > 0 && waterChargeCalculator != null && waterPrice != null) {
-          try {
-            calculatedPrice = waterChargeCalculator.calculateProgressiveCharge(mass, waterPrice).totalAmount();
-          } catch (Exception e) {
-            log.warn("Lỗi tính tiền cho tháng {}: {}", u.getRecordingDate(), e.getMessage());
+
+        // neu khach hang thuoc dien duoc mien phi tien nuoc thi khong tinh tien nuoc nua
+        if (!customer) {
+          if (mass.compareTo(BigDecimal.ZERO) > 0 && waterChargeCalculator != null && waterPrice != null) {
+            try {
+              calculatedPrice = waterChargeCalculator.calculateProgressiveCharge(mass, waterPrice).totalAmount();
+              log.info("[mapToResponse] Calculated price: {}", calculatedPrice);
+            } catch (Exception e) {
+              log.warn("Lỗi tính tiền cho tháng {}: {}", u.getRecordingDate(), e.getMessage());
+            }
           }
         }
 
@@ -440,6 +461,7 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
         // Resolve Signed URL for Mobile display
         u.setMeterImageUrl(resolveSignedUrl(u.getMeterImageUrl()));
 
+        log.info("[mapToResponse] Mapping usage response: {}", u);
         usagesList.add(u);
         previousIndex = u.getIndex();
       }

@@ -25,4 +25,6 @@ public interface CustomerService {
   String getIdByMeterId(String meterId);
 
   int countCustomersOfRoadmap(String roadmapId);
+
+  boolean isFree(String customerId);
 }

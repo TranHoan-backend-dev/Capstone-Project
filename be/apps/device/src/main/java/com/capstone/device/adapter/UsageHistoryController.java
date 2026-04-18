@@ -66,6 +66,7 @@ public class UsageHistoryController {
   ) {
     log.info("Analysis the meter image with serial {}", serial);
     var response = useCase.analysisTheMeterImageWithSerial(request, serial);
+    log.info("[analysisTheMeterImageWithSerial] Result {}", response);
     return Utils.returnOkResponse("Phân tích thành công", response);
   }
 
@@ -82,6 +83,7 @@ public class UsageHistoryController {
   ) {
     log.info("Analysis the meter image without serial");
     var response = useCase.analysisTheMeterImageWithSerial(request, null);
+    log.info("[analysisTheMeterImageWithoutSerial] Result {}", response);
     return Utils.returnOkResponse("Phân tích thành công", response);
   }
 
