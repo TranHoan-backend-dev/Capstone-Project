@@ -121,6 +121,21 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
 
     var serial = extractTheMeterSerial(response.results());
     var index = extractTheMeterIndex(response.results());
+
+    if (serial != null && index != null) {
+      var meterOpt = waterMeterRepository.findById(serial);
+      if (meterOpt.isPresent()) {
+        var type = meterOpt.get().getType();
+        if (type != null && type.getIndexLength() != null) {
+          int length = type.getIndexLength();
+          if (index.length() > length) {
+            log.info("Trimming index from {} to {} based on meter type length {}", index, index.substring(0, length), length);
+            index = index.substring(0, length);
+          }
+        }
+      }
+    }
+
     log.info("detectedSerial: {}", serial);
     log.info("detectedIndex: {}", index);
 
