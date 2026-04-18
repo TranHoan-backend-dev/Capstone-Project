@@ -70,7 +70,7 @@ export const EstimateTable = ({
       case "actions":
         return (
           <div className="flex items-center justify-center gap-2">
-            {onApproveAction && canApproveOrReject(item.status) && (
+            {onApproveAction && canApproveOrReject(item.status) && currentUserRole === "planning_technical_department_head" && (
               <Tooltip color="success" content="Duyệt dự toán">
                 <ApprovalIcon
                   className={GreenIconColor}
@@ -79,7 +79,7 @@ export const EstimateTable = ({
               </Tooltip>
             )}
 
-            {onRejectAction && canApproveOrReject(item.status) && (
+            {onRejectAction && canApproveOrReject(item.status) && currentUserRole === "planning_technical_department_head" && (
               <Tooltip color="danger" content="Từ chối dự toán">
                 <RejectIcon
                   className={RedIconColor}
