@@ -68,7 +68,10 @@ const LoginForm = () => {
       if (data.userDetails) {
         localStorage.setItem("user", JSON.stringify(data.userDetails));
       }
-
+      setFormData({
+        username: "",
+        password: "",
+      });
       CallToast({
         title: "Thành công",
         message: "Đăng nhập thành công!",

@@ -312,11 +312,12 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
           dataKey="content"
           isOpen={showFormModal}
           onClose={() => setShowFormModal(false)}
-          title="Chọn Mã đơn"
+          title="Chọn Số đơn"
           api="/api/construction/installation-forms"
           columns={[
             { key: "stt", label: "STT" },
-            { key: "formNumber", label: "Mã đơn" },
+            { key: "formCode", label: "Mã đơn" },
+            { key: "formNumber", label: "Số đơn" },
             { key: "customerName", label: "Tên khách hàng" },
             { key: "address", label: "Địa chỉ" },
             { key: "phoneNumber", label: "Số điện thoại" },

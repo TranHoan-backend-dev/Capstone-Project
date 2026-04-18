@@ -17,7 +17,6 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const page = Number(searchParams.get("page") ?? 0);
     const size = Number(searchParams.get("size") ?? 10);
-    // const sort = searchParams.get("sort") || "created_at,desc";
     const keyword = searchParams.get("keyword") || undefined;
     const from = searchParams.get("from") || undefined;
     const to = searchParams.get("to") || undefined;
@@ -27,7 +26,6 @@ export async function GET(req: NextRequest) {
       accessToken,
       page,
       size,
-      // sort,
       keyword,
       from,
       to,
@@ -67,11 +65,14 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(response.data, { status: 201 });
   } catch (error: any) {
+    const backendError = error?.response?.data;
     return NextResponse.json(
       {
-        message: error?.response?.data?.message || "Tạo đơn thất bại",
+        message: backendError?.message || "Tạo đơn thất bại",
+        data: backendError?.data ?? null,
+        error: backendError ?? null,
       },
-      { status: error.response?.status || 500 },
+      { status: error?.response?.status || 500 },
     );
   }
 }

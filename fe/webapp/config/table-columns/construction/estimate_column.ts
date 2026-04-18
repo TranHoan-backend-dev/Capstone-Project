@@ -14,7 +14,7 @@ export const ESTIMATE_COLUMN = [
 
 export const ESTIMATE_PREPARATION_COLUMN = [
   { key: "stt", label: "STT", width: "40px", align: "center" as const },
-  { key: "formNumber", label: "Mã đơn" },
+  { key: "formNumber", label: "Số đơn" },
   { key: "customerName", label: "Tên khách hàng" },
   { key: "address", label: "Địa chỉ lắp đặt", width: "300px" },
   {
@@ -29,7 +29,7 @@ export const ESTIMATE_PREPARATION_COLUMN = [
 ];
 
 export const ESTIMATE_APPROVAL_COLUMN = [
-  { key: "code", label: "Mã đơn", align: "start" },
+  { key: "code", label: "Số đơn", align: "start" },
   { key: "designProfileName", label: "Tên hồ sơ thiết kế", align: "start" },
   { key: "installationAddress", label: "Địa chỉ lắp đặt", align: "start" },
   { key: "totalAmount", label: "Tổng tiền", align: "end" },

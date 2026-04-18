@@ -15,13 +15,13 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const page = Number(searchParams.get("page") ?? 0);
     const size = Number(searchParams.get("size") ?? 10);
-    const sort = searchParams.get("sort") || "created_at,desc";
+    // const sort = searchParams.get("sort") || "created_at,desc";
 
     const response = await getPendingEstimateForms(
       accessToken,
       page,
       size,
-      sort,
+      // sort,
     );
 
     return NextResponse.json(

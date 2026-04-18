@@ -17,6 +17,7 @@ import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
 import { LookupModal } from "@/components/ui/modal/LookupModal";
 import { authFetch } from "@/utils/authFetch";
 import { CallToast } from "@/components/ui/CallToast";
+import { useIsPlanningTechnicalDepartmentHead } from "@/hooks/useHasRole";
 
 interface TechnicalInfoCardProps {
   estimateData: EstimateResponse | null;
@@ -37,12 +38,29 @@ interface Parameter {
   updateAt: string;
 }
 
+const handleNumberInput = (
+  value: string,
+  setter: React.Dispatch<React.SetStateAction<string>>,
+) => {
+  if (value === "") {
+    setter("");
+    return;
+  }
+  const regex = /^\d*\.?\d*$/;
+
+  if (regex.test(value)) {
+    setter(value);
+  }
+};
+
 export const TechnicalInfoCard = ({
   estimateData,
   setEstimateData,
   estimateId,
   materials,
 }: TechnicalInfoCardProps) => {
+  const { isPlanningTechnicalDepartmentHead } =
+    useIsPlanningTechnicalDepartmentHead();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [customerName, setCustomerName] = useState("");
@@ -91,6 +109,7 @@ export const TechnicalInfoCard = ({
 
   const isEstimateApproved =
     estimateData?.generalInformation?.status?.estimate === "APPROVED";
+  const isReadOnly = isEstimateApproved || isPlanningTechnicalDepartmentHead;
 
   // Validation functions
   const validateRequired = (value: string, fieldName: string) => {
@@ -200,7 +219,11 @@ export const TechnicalInfoCard = ({
     );
     const vatParam = parameters.find((p) => p.name === "Hệ số thuế GTGT (VAT)");
     const designParam = parameters.find((p) => p.name === "Hệ số thiết kế");
-
+    const contractFeeParam = parameters.find((p) => p.name === "Phí hợp đồng");
+    const surveyFeeParam = parameters.find((p) => p.name === "Phí khảo sát");
+    const installationFeeParam = parameters.find((p) => p.name === "Phí lắp đặt");
+    const designFeeParam = parameters.find((p) => p.name === "Phí thiết kế");
+    
     if (laborParam && laborParam.value) {
       setLaborCoefficient(laborParam.value);
     }
@@ -218,6 +241,18 @@ export const TechnicalInfoCard = ({
     }
     if (designParam && designParam.value) {
       setDesignCoefficient(designParam.value);
+    }
+    if (contractFeeParam && contractFeeParam.value) {
+      setContractFee(contractFeeParam.value);
+    }
+    if (surveyFeeParam && surveyFeeParam.value) {
+      setSurveyFee(surveyFeeParam.value);
+    }
+    if (installationFeeParam && installationFeeParam.value) {
+      setInstallationFee(installationFeeParam.value);
+    }
+    if (designFeeParam && designFeeParam.value) {
+      setDesignFee(designFeeParam.value);
     }
   };
 
@@ -294,10 +329,18 @@ export const TechnicalInfoCard = ({
       setCustomerName(info.customerName || "");
       setAddress(info.address || "");
       setNote(info.note || "");
-      setContractFee(info.contractFee?.toString() || "");
-      setSurveyFee(info.surveyFee?.toString() || "");
-      setSurveyEffort(info.surveyEffort?.toString() || "");
-      setInstallationFee(info.installationFee?.toString() || "");
+      if (info.contractFee !== undefined && info.contractFee !== null) {
+        setContractFee(info.contractFee.toString());
+      }
+      if (info.surveyFee !== undefined && info.surveyFee !== null) {
+        setSurveyFee(info.surveyFee.toString());
+      }
+      if (info.surveyEffort !== undefined && info.surveyEffort !== null) {
+        setSurveyEffort(info.surveyEffort.toString());
+      }
+      if (info.installationFee !== undefined && info.installationFee !== null) {
+        setInstallationFee(info.installationFee.toString());
+      }
       if (
         info.laborCoefficient !== undefined &&
         info.laborCoefficient !== null
@@ -341,8 +384,9 @@ export const TechnicalInfoCard = ({
       ) {
         setDesignCoefficient(info.designCoefficient.toString());
       }
-
-      setDesignFee(info.designFee?.toString() || "");
+      if (info.designFee !== undefined && info.designFee !== null) {
+        setDesignFee(info.designFee.toString());
+      }
       setWaterMeterType(info.waterMeterType || "");
       setWaterMeterSerial(info.waterMeterSerial || "");
       setOverallWaterMeterId(info.overallWaterMeterId || "");
@@ -366,6 +410,7 @@ export const TechnicalInfoCard = ({
   };
 
   const handleSave = async (isFinished: boolean) => {
+    if (isReadOnly) return;
     // Validate before saving
     if (!validateForm()) {
       CallToast({
@@ -465,35 +510,55 @@ export const TechnicalInfoCard = ({
       } else if (isImageDeleted) {
         // If image was deleted, send a flag to remove it
         formData.append("generalInformation.removeImage", "true");
+        // Workaround: backend crashes when designImage is null in multipart binding
+        formData.append(
+          "generalInformation.designImage",
+          new Blob([]),
+          "empty",
+        );
+      } else {
+        // Workaround: backend crashes when designImage is null in multipart binding
+        // Send an empty file part so Spring binds MultipartFile instead of null.
+        formData.append(
+          "generalInformation.designImage",
+          new Blob([]),
+          "empty",
+        );
       }
 
       // Gửi materials - mỗi item là một object riêng
       const safeNumber = (v: any) => (isNaN(Number(v)) ? 0 : Number(v));
       materials.forEach((m, index) => {
-        formData.append(`material[${index}].materialCode`, m.id || "");
-        formData.append(`material[${index}].jobContent`, m.description || "");
-        formData.append(`material[${index}].note`, m.note || "");
-        formData.append(`material[${index}].unit`, m.unit || "");
-        formData.append(
-          `material[${index}].mass`,
-          String(safeNumber(m.quantity)),
-        );
-        formData.append(
-          `material[${index}].materialCost`,
-          String(safeNumber(m.materialPrice)),
-        );
-        formData.append(
-          `material[${index}].laborPrice`,
-          String(safeNumber(m.laborPrice)),
-        );
-        formData.append(
-          `material[${index}].totalMaterialPrice`,
-          String(m.materialTotal || 0),
-        );
-        formData.append(
-          `material[${index}].totalLaborPrice`,
-          String(m.laborTotal || 0),
-        );
+        const rows = ["material", "materials"];
+        rows.forEach((prefix) => {
+          formData.append(`${prefix}[${index}].materialCode`, m.id || "");
+          formData.append(
+            `${prefix}[${index}].jobContent`,
+            m.description || "",
+          );
+          formData.append(`${prefix}[${index}].note`, m.note || "");
+          formData.append(`${prefix}[${index}].unit`, m.unit || "");
+          formData.append(
+            `${prefix}[${index}].mass`,
+            String(safeNumber(m.quantity)),
+          );
+          formData.append(
+            `${prefix}[${index}].materialCost`,
+            String(safeNumber(m.materialPrice)),
+          );
+          formData.append(
+            `${prefix}[${index}].laborPrice`,
+            String(safeNumber(m.laborPrice)),
+          );
+          formData.append(
+            `${prefix}[${index}].totalMaterialPrice`,
+            String(m.materialTotal || 0),
+          );
+          formData.append(
+            `${prefix}[${index}].totalLaborPrice`,
+            String(m.laborTotal || 0),
+          );
+        });
       });
 
       // Thêm isFinished flag
@@ -505,11 +570,28 @@ export const TechnicalInfoCard = ({
         body: formData,
       });
 
-      const json = await res.json();
+      const getErrorMessageFromResponse = (body: any) => {
+        const fieldErrors = body?.data ?? body?.error?.data;
+        if (fieldErrors && typeof fieldErrors === "object") {
+          const details = Object.values(fieldErrors)
+            .filter((v) => typeof v === "string" && v.trim() !== "")
+            .join("; ");
+          if (details) return details;
+        }
+        return body?.message || body?.error?.message;
+      };
+
+      let json: any = null;
+      try {
+        json = await res.json();
+      } catch {
+        const text = await res.text();
+        json = { message: text };
+      }
 
       if (!res.ok) {
         throw new Error(
-          json?.error?.message || json?.message || "Có lỗi xảy ra",
+          getErrorMessageFromResponse(json) || "Có lỗi xảy ra khi lưu",
         );
       }
 
@@ -544,6 +626,7 @@ export const TechnicalInfoCard = ({
   };
 
   const handleSelectWaterMeter = (item: any) => {
+    if (isReadOnly) return;
     setWaterMeterType(item.id);
     setDisplayWaterMeter(
       `Tên: ${item.name} - Nguồn gốc: ${item.origin} - Loại: ${item.meterModel}`,
@@ -553,12 +636,14 @@ export const TechnicalInfoCard = ({
   };
 
   const handleSelectOverallMeter = (item: any) => {
+    if (isReadOnly) return;
     setOverallWaterMeterId(item.id);
     setDisplayOverallWaterMeter(item.name);
     setShowOverallModal(false);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (isReadOnly) return;
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -578,6 +663,7 @@ export const TechnicalInfoCard = ({
 
   // Sửa lại handleRemoveImage
   const handleRemoveImage = () => {
+    if (isReadOnly) return;
     setDesignImageFile(null);
     setDesignImageUrl("");
     setIsImageDeleted(true);
@@ -608,6 +694,7 @@ export const TechnicalInfoCard = ({
               hidden
               accept="image/*"
               onChange={handleFileChange}
+              disabled={isReadOnly}
             />
 
             <CustomButton
@@ -619,7 +706,7 @@ export const TechnicalInfoCard = ({
                   <DocumentMagnifyGlassIcon className="w-4 h-4" />
                 )
               }
-              isDisabled={isUploading || isEstimateApproved}
+              isDisabled={isUploading || isReadOnly}
             >
               {designImageFile ? "Đã chọn ảnh mới" : "Ảnh cụm đồng hồ"}
             </CustomButton>
@@ -648,6 +735,7 @@ export const TechnicalInfoCard = ({
                     color="danger"
                     onPress={handleRemoveImage}
                     className="min-w-unit-8 w-8 h-8"
+                    isDisabled={isReadOnly}
                   >
                     <DeleteIcon className="w-4 h-4" />
                   </CustomButton>
@@ -680,7 +768,7 @@ export const TechnicalInfoCard = ({
                   <SaveDocumentCheckIcon className="w-4 h-4" />
                 )
               }
-              isDisabled={isUploading || isEstimateApproved}
+              isDisabled={isUploading || isReadOnly}
             >
               {isUploading ? "Đang lưu..." : "Lưu"}
             </CustomButton>
@@ -694,7 +782,7 @@ export const TechnicalInfoCard = ({
                   <DocumentCheckedIcon className="w-4 h-4" />
                 )
               }
-              isDisabled={isUploading || isEstimateApproved}
+              isDisabled={isUploading || isReadOnly}
             >
               {isUploading ? "Đang lưu..." : "Gửi"}
             </CustomButton>
@@ -721,6 +809,7 @@ export const TechnicalInfoCard = ({
           }
           isInvalid={!!errors.customerName}
           errorMessage={errors.customerName}
+          isDisabled={isReadOnly}
         />
 
         <CustomInput
@@ -731,6 +820,7 @@ export const TechnicalInfoCard = ({
           }
           isInvalid={!!errors.address}
           errorMessage={errors.address}
+          isDisabled={isReadOnly}
         />
 
         <CustomTextarea
@@ -738,6 +828,7 @@ export const TechnicalInfoCard = ({
           rows={3}
           value={note}
           onChange={(e) => setNote(e.target.value)}
+          isDisabled={isReadOnly}
         />
       </div>
 
@@ -751,69 +842,92 @@ export const TechnicalInfoCard = ({
           <CustomInput
             label="Phí hợp đồng"
             value={contractFee}
-            onChange={(e) => setContractFee(e.target.value)}
+            onChange={(e) => handleNumberInput(e.target.value, setContractFee)}
+            isDisabled={isReadOnly}
           />
 
           <CustomInput
             label="Phí khảo sát"
             value={surveyFee}
-            onChange={(e) => setSurveyFee(e.target.value)}
+            onChange={(e) => handleNumberInput(e.target.value, setSurveyFee)}
+            isDisabled={isReadOnly}
           />
 
           <CustomInput
             label="Ngày công khảo sát"
             value={surveyEffort}
-            onChange={(e) => setSurveyEffort(e.target.value)}
+            onChange={(e) => handleNumberInput(e.target.value, setSurveyEffort)}
+            isDisabled={isReadOnly}
           />
 
           <CustomInput
             label="Phí lắp đặt"
             value={installationFee}
-            onChange={(e) => setInstallationFee(e.target.value)}
+            onChange={(e) =>
+              handleNumberInput(e.target.value, setInstallationFee)
+            }
+            isDisabled={isReadOnly}
           />
 
           <CustomInput
             label="Hệ số nhân công (%)"
             value={laborCoefficient}
-            onChange={(e) => setLaborCoefficient(e.target.value)}
+            onChange={(e) =>
+              handleNumberInput(e.target.value, setLaborCoefficient)
+            }
+            isDisabled={isReadOnly}
           />
 
           <CustomInput
             label="Hệ số chi phí chung (%)"
             value={generalCostCoefficient}
-            onChange={(e) => setGeneralCostCoefficient(e.target.value)}
+            onChange={(e) =>
+              handleNumberInput(e.target.value, setGeneralCostCoefficient)
+            }
+            isDisabled={isReadOnly}
           />
 
           <CustomInput
             label="Hệ số thuế tính trước (%)"
             value={precalculatedTaxCoefficient}
-            onChange={(e) => setPrecalculatedTaxCoefficient(e.target.value)}
+            onChange={(e) =>
+              handleNumberInput(e.target.value, setPrecalculatedTaxCoefficient)
+            }
+            isDisabled={isReadOnly}
           />
 
-          <CustomInput
+          {/* <CustomInput
             label="Hệ số máy thi công (%)"
             value={constructionMachineryCoefficient}
             onChange={(e) =>
               setConstructionMachineryCoefficient(e.target.value)
             }
-          />
+            isDisabled={isReadOnly}
+          /> */}
 
           <CustomInput
             label="Hệ số thuế GTGT (VAT) (%)"
             value={vatCoefficient}
-            onChange={(e) => setVatCoefficient(e.target.value)}
+            onChange={(e) =>
+              handleNumberInput(e.target.value, setVatCoefficient)
+            }
+            isDisabled={isReadOnly}
           />
 
           <CustomInput
             label="Hệ số thiết kế (%)"
             value={designCoefficient}
-            onChange={(e) => setDesignCoefficient(e.target.value)}
+            onChange={(e) =>
+              handleNumberInput(e.target.value, setDesignCoefficient)
+            }
+            isDisabled={isReadOnly}
           />
 
           <CustomInput
             label="Phí thiết kế"
             value={designFee}
-            onChange={(e) => setDesignFee(e.target.value)}
+            onChange={(e) => handleNumberInput(e.target.value, setDesignFee)}
+            isDisabled={isReadOnly}
           />
         </div>
       </div>
@@ -832,7 +946,11 @@ export const TechnicalInfoCard = ({
               isRequired
               value={displayWaterMeter}
               onValueChange={() => {}}
-              onSearch={() => setShowWaterMeterModal(true)}
+              onSearch={() => {
+                if (isReadOnly) return;
+                setShowWaterMeterModal(true);
+              }}
+              isDisabled={isReadOnly}
             />
             {errors.waterMeterType && (
               <p className="text-danger text-tiny mt-1">
@@ -853,6 +971,7 @@ export const TechnicalInfoCard = ({
             }
             isInvalid={!!errors.waterMeterSerial}
             errorMessage={errors.waterMeterSerial}
+            isDisabled={isReadOnly}
           />
 
           <LookupModal
@@ -883,7 +1002,11 @@ export const TechnicalInfoCard = ({
               label="Đồng hồ nước tổng"
               value={displayOverallWaterMeter}
               onValueChange={() => {}}
-              onSearch={() => setShowOverallModal(true)}
+              onSearch={() => {
+                if (isReadOnly) return;
+                setShowOverallModal(true);
+              }}
+              isDisabled={isReadOnly}
             />
           </div>
 

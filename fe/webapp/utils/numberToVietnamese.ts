@@ -13,7 +13,7 @@ export const numberToVietnamese = (num: number): string => {
   ];
   const scales = ["", "Nghìn", "Triệu", "Tỷ"];
 
-  if (num === 0) return "Không";
+  if (num === 0) return "Không Đồng";
 
   const readBlock = (n: number) => {
     let str = "";
@@ -33,7 +33,7 @@ export const numberToVietnamese = (num: number): string => {
       if (unit === 5) str += "Lăm";
       else if (unit > 0) str += units[unit];
     } else if (unit > 0) {
-      str += "Lẻ " + units[unit];
+      str += hundred > 0 ? "Lẻ " + units[unit] : units[unit];
     }
 
     return str.trim();
@@ -51,5 +51,5 @@ export const numberToVietnamese = (num: number): string => {
     scaleIndex++;
   }
 
-  return result.trim();
+  return `${result.trim()} Đồng`;
 };

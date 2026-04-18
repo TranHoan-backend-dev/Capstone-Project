@@ -1,24 +1,19 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Spinner, DateValue } from "@heroui/react";
-import { ActionsSection } from "./components/actions-section";
 import { OrdersToDesignTable } from "./components/orders-to-design-table";
 import { ProcessedDesignsTable } from "./components/processed-designs-table";
-import { WaitingInputTable } from "./components/waiting-input-table";
 import { FilterSection } from "./components/filter-section";
 import {
   DesignProcessingItem,
-  DesignProcessingStatus,
   NewInstallationLookupResponse,
 } from "@/types";
 import { authFetch } from "@/utils/authFetch";
 import {
   formatDate1,
-  formatDate2,
   formatDateValueToString,
 } from "@/utils/format";
-import { CallToast } from "@/components/ui/CallToast";
 
 const DesignProcessingPage = () => {
   const [from, setFrom] = useState<DateValue | null | undefined>(null);
@@ -32,7 +27,6 @@ const DesignProcessingPage = () => {
   const [waitingInput, setWaitingInput] = useState<DesignProcessingItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Pagination riêng cho từng bảng
   const [currentPageOrders, setCurrentPageOrders] = useState(0);
   const [currentPageProcessed, setCurrentPageProcessed] = useState(0);
   const [pageSize] = useState(10);
@@ -44,7 +38,24 @@ const DesignProcessingPage = () => {
   const [keyword, setKeyword] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Fetch orders to design (status = REGISTRATION_PENDING_FOR_APPROVAL)
+  const fetchInstallationForms = async (params: URLSearchParams) => {
+    const res = await authFetch(
+      `/api/construction/installation-forms?${params.toString()}`,
+    );
+    if (res.ok) return res;
+
+    // Fallback: some remote environments 500 when parsing `status` enum.
+    if (res.status === 500 && params.has("status")) {
+      const retryParams = new URLSearchParams(params);
+      retryParams.delete("status");
+      return await authFetch(
+        `/api/construction/installation-forms?${retryParams.toString()}`,
+      );
+    }
+
+    return res;
+  };
+
   const fetchOrdersToDesign = async () => {
     try {
       const fromStr = formatDateValueToString(from);
@@ -53,7 +64,7 @@ const DesignProcessingPage = () => {
       const params = new URLSearchParams({
         page: String(currentPageOrders),
         size: String(pageSize),
-        status: "REGISTRATION_PENDING_FOR_APPROVAL", // Thêm status param
+        status: "REGISTRATION_PENDING_FOR_APPROVAL",
       });
 
       if (searchQuery?.trim()) {
@@ -68,9 +79,7 @@ const DesignProcessingPage = () => {
         params.append("to", toStr);
       }
 
-      const res = await authFetch(
-        `/api/construction/installation-forms?${params.toString()}`,
-      );
+      const res = await fetchInstallationForms(params);
 
       if (!res.ok) {
         console.error("Fetch orders failed", res.status);
@@ -81,7 +90,14 @@ const DesignProcessingPage = () => {
       const result = json?.data;
       const items = result?.content ?? [];
 
-      const orders: DesignProcessingItem[] = items.map(
+      const filteredItems = params.has("status")
+        ? items
+        : items.filter(
+            (item: NewInstallationLookupResponse) =>
+              item?.status?.registration === "PENDING_FOR_APPROVAL",
+          );
+
+      const orders: DesignProcessingItem[] = filteredItems.map(
         (item: NewInstallationLookupResponse) => ({
           id: item.formCode,
           formNumber: item.formNumber,
@@ -96,7 +112,9 @@ const DesignProcessingPage = () => {
 
       setOrdersToDesign(orders);
       setTotalPagesOrders(result?.page?.totalPages ?? 1);
-      setTotalElementsOrders(result?.page?.totalElements ?? 0);
+      setTotalElementsOrders(
+        params.has("status") ? result?.page?.totalElements ?? 0 : orders.length,
+      );
     } catch (error) {
       console.error(error);
       setOrdersToDesign([]);
@@ -105,7 +123,6 @@ const DesignProcessingPage = () => {
     }
   };
 
-  // Fetch processed designs (status = REGISTRATION_APPROVED)
   const fetchProcessedDesigns = async () => {
     try {
       const fromStr = formatDateValueToString(from);
@@ -114,7 +131,7 @@ const DesignProcessingPage = () => {
       const params = new URLSearchParams({
         page: String(currentPageProcessed),
         size: String(pageSize),
-        status: "REGISTRATION_APPROVED", // Thêm status param
+        status: "REGISTRATION_APPROVED",
       });
 
       if (searchQuery?.trim()) {
@@ -129,9 +146,7 @@ const DesignProcessingPage = () => {
         params.append("to", toStr);
       }
 
-      const res = await authFetch(
-        `/api/construction/installation-forms?${params.toString()}`,
-      );
+      const res = await fetchInstallationForms(params);
 
       if (!res.ok) {
         console.error("Fetch processed failed", res.status);
@@ -142,7 +157,14 @@ const DesignProcessingPage = () => {
       const result = json?.data;
       const items = result?.content ?? [];
 
-      const processed: DesignProcessingItem[] = items.map(
+      const filteredItems = params.has("status")
+        ? items
+        : items.filter(
+            (item: NewInstallationLookupResponse) =>
+              item?.status?.registration === "APPROVED",
+          );
+
+      const processed: DesignProcessingItem[] = filteredItems.map(
         (item: NewInstallationLookupResponse) => ({
           id: item.formCode,
           formNumber: item.formNumber,
@@ -157,7 +179,9 @@ const DesignProcessingPage = () => {
 
       setProcessedDesigns(processed);
       setTotalPagesProcessed(result?.page?.totalPages ?? 1);
-      setTotalElementsProcessed(result?.page?.totalElements ?? 0);
+      setTotalElementsProcessed(
+        params.has("status") ? result?.page?.totalElements ?? 0 : processed.length,
+      );
     } catch (error) {
       console.error(error);
       setProcessedDesigns([]);

@@ -9,6 +9,7 @@ import { Card, CardBody } from "@heroui/react";
 import { EmployeeFormProps, Role, ROLE_META } from "@/types";
 import { authFetch } from "@/utils/authFetch";
 import { RoleSelect } from "./role-select";
+import { validatePhone, validateText255 } from "@/utils/validation";
 
 export const EmployeeForm = ({
   initialData,
@@ -43,11 +44,11 @@ export const EmployeeForm = ({
     try {
       setSubmitLoading(true);
 
-      const phoneRegex = /^0[0-9]{9}$/;
-      if (!phoneRegex.test(phoneNumber)) {
+      const phoneError = validatePhone(phoneNumber);
+      if (phoneError) {
         CallToast({
           title: "Lỗi",
-          message: "Số điện thoại phải bắt đầu bằng 0 và gồm đúng 10 chữ số",
+          message: phoneError,
           color: "danger",
         });
         return;
@@ -57,6 +58,26 @@ export const EmployeeForm = ({
         CallToast({
           title: "Lỗi",
           message: "Tên nhân viên không được để trống",
+          color: "danger",
+        });
+        return;
+      }
+
+      const fullNameMaxError = validateText255(fullName, "Tên nhân viên");
+      if (fullNameMaxError) {
+        CallToast({
+          title: "Lỗi",
+          message: fullNameMaxError,
+          color: "danger",
+        });
+        return;
+      }
+
+      const emailMaxError = validateText255(email, "Email");
+      if (emailMaxError) {
+        CallToast({
+          title: "Lỗi",
+          message: emailMaxError,
           color: "danger",
         });
         return;

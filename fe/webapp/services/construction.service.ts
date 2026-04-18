@@ -205,6 +205,53 @@ export const getRoadmapById = (accessToken: string, id: string) => {
   });
 };
 
+export const assignRoadmapStaff = (
+  accessToken: string,
+  roadmapId: string,
+  staffId: string,
+) => {
+  return axios.patch(
+    `${API_GATEWAY_URL}/construction/roadmaps/${roadmapId}/assign/${staffId}`,
+    null,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+};
+
+export const cancelRoadmapAssignment = (
+  accessToken: string,
+  roadmapId: string,
+) => {
+  return axios.patch(
+    `${API_GATEWAY_URL}/construction/roadmaps/${roadmapId}/cancel-assignment`,
+    null,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+};
+
+export const updateRoadmapAssignment = (
+  accessToken: string,
+  roadmapId: string,
+  staffId: string,
+) => {
+  return axios.patch(
+    `${API_GATEWAY_URL}/construction/roadmaps/${roadmapId}/update-assignment/${staffId}`,
+    null,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+};
+
 export const getAllCommunes = (
   accessToken: string,
   page: number,
@@ -448,7 +495,6 @@ export const getInstallationForms = (
   accessToken: string,
   page: number,
   size: number,
-  // sort: string,
   keyword?: string | null,
   from?: string | null,
   to?: string | null,
@@ -458,7 +504,6 @@ export const getInstallationForms = (
     params: {
       page,
       size,
-      // sort,
       keyword,
       from,
       to,
@@ -558,12 +603,12 @@ export const getPendingRegistrationForms = (
   accessToken: string,
   page: number,
   size: number,
-  sort: string,
+  // sort: string,
 ) => {
   return axios.get(
     `${API_GATEWAY_URL}/construction/installation-forms/registration/pending`,
     {
-      params: { page, size, sort },
+      params: { page, size },
       headers: { Authorization: `Bearer ${accessToken}` },
     },
   );
@@ -573,12 +618,12 @@ export const getPendingEstimateForms = (
   accessToken: string,
   page: number,
   size: number,
-  sort: string,
+  // sort: string,
 ) => {
   return axios.get(
     `${API_GATEWAY_URL}/construction/installation-forms/estimate/pending`,
     {
-      params: { page, size, sort },
+      params: { page, size },
       headers: { Authorization: `Bearer ${accessToken}` },
     },
   );

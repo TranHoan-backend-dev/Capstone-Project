@@ -184,7 +184,7 @@ export const PendingTable = ({
 
       case "formCode":
         return (
-          <span className="font-semibold text-blue-600">{item.formCode}</span>
+          <span className="font-mediun text-black-600">{item.formCode}</span>
         );
 
       case "contractId":

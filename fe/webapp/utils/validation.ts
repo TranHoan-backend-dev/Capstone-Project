@@ -29,6 +29,38 @@ export const validatePhone = (phone: string) => {
   return null;
 };
 
+const DIGITS_ONLY_REGEX = /^\d+$/;
+
+export const validateDigitsOnly = (
+  value: string | number,
+  fieldName: string,
+  maxDigits?: number,
+) => {
+  const normalizedValue = String(value ?? "").trim();
+
+  if (!normalizedValue) {
+    return `${fieldName} không được để trống`;
+  }
+
+  if (!DIGITS_ONLY_REGEX.test(normalizedValue)) {
+    return `${fieldName} chỉ được chứa ký tự số`;
+  }
+
+  if (maxDigits && normalizedValue.length > maxDigits) {
+    return `${fieldName} không được vượt quá ${maxDigits} ký tự số`;
+  }
+
+  return null;
+};
+
+export const validateMoneyInput = (value: string | number, fieldName: string) => {
+  return validateDigitsOnly(value, fieldName, 12);
+};
+
+export const validateText255 = (value: string, fieldName: string) => {
+  return validateMaxLength(value, 255, fieldName);
+};
+
 // Name (chỉ chữ cái)
 export const validateName = (value: string, fieldName: string) => {
   const requiredError = validateRequired(value, fieldName);

@@ -33,10 +33,6 @@ const AssigningSurveyPage = () => {
   const [pendingCount, setPendingCount] = useState(0);
   const [assignedCount, setAssignedCount] = useState(0);
 
-  const hasHandoverByValue = (handoverBy: any): boolean => {
-    return handoverBy && handoverBy.toString().trim() !== "";
-  };
-
   useEffect(() => {
     setLoading(true);
 
@@ -45,7 +41,6 @@ const AssigningSurveyPage = () => {
         const params = new URLSearchParams({
           page: String(page - 1),
           size: String(pageSize),
-          sort: `${sort.field},${sort.direction}`,
         });
 
         const trimmedKeyword = keyword.trim();
@@ -54,7 +49,7 @@ const AssigningSurveyPage = () => {
         if (to) params.append("to", formatDateValueToString(to));
 
         const pendingUrl = `/api/construction/installation-forms/registration/pending?${params.toString()}`;
-        const assignedUrl = `/api/construction/installation-forms?${params.toString()}`;
+        const assignedUrl = `/api/construction/installation-forms/assigned?${params.toString()}`;
 
         const [pendingRes, assignedRes] = await Promise.all([
           authFetch(pendingUrl),
@@ -98,20 +93,14 @@ const AssigningSurveyPage = () => {
         if (assignedRes.ok) {
           const assignedJson = await assignedRes.json();
           const assignedPageData = assignedJson?.data;
-
           const items = assignedPageData?.content ?? [];
-          setTotalItems(assignedPageData?.page?.totalElements ?? 0);
-          setTotalPages(assignedPageData?.page?.totalPages ?? 1);
-
-          const filteredItems = items.filter(
-            (item: SurveyAssignmentFormResponse) =>
-              hasHandoverByValue(item.handoverBy),
-          );
-
-          setAssignedCount(filteredItems.length);
+          setAssignedCount(assignedPageData?.page?.totalElements ?? 0);
 
           if (activeTab === "assigned") {
-            const mapped = filteredItems.map(
+            setTotalItems(assignedPageData?.page?.totalElements ?? 0);
+            setTotalPages(assignedPageData?.page?.totalPages ?? 1);
+
+            const mapped = items.map(
               (item: SurveyAssignmentFormResponse, index: number) => ({
                 id: item.formCode,
                 stt: (page - 1) * pageSize + index + 1,

@@ -3,12 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Card, CardBody, CardHeader, Spinner, Button } from "@heroui/react";
 import Link from "next/link";
-import {
-  Cell,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-} from "recharts";
+import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 
 import { useHasAnyRole } from "@/hooks/useHasRole";
 import { useProfile } from "@/hooks/useLogin";
@@ -90,16 +85,26 @@ const parsePagedTotal = (json: any, endpointName?: string) => {
   }
 
   // Trường hợp đặc biệt của endpoint reviewed (Trả về object {approved, rejected})
-  if (json?.data?.approved !== undefined && json?.data?.rejected !== undefined) {
+  if (
+    json?.data?.approved !== undefined &&
+    json?.data?.rejected !== undefined
+  ) {
     return {
-      approved: Array.isArray(json.data.approved) ? json.data.approved.length : 0,
-      rejected: Array.isArray(json.data.rejected) ? json.data.rejected.length : 0
+      approved: Array.isArray(json.data.approved)
+        ? json.data.approved.length
+        : 0,
+      rejected: Array.isArray(json.data.rejected)
+        ? json.data.rejected.length
+        : 0,
     };
   }
 
   // Log cảnh báo nếu không tìm thấy cấu trúc dữ liệu mong muốn
   if (json?.data && endpointName) {
-    console.warn(`[Stats] Unknown data structure for ${endpointName}:`, json.data);
+    console.warn(
+      `[Stats] Unknown data structure for ${endpointName}:`,
+      json.data,
+    );
   }
 
   return 0; // Luôn trả về 0 thay vì undefined để tránh lỗi toLocaleString
@@ -109,12 +114,22 @@ const fetchAllCounts = async (): Promise<DetailedStats> => {
   const base = "page=0&size=1";
 
   try {
-    const [instRes, estRes, setRes, contRes, estPendRes, estRevRes, instAssignRes] = await Promise.all([
+    const [
+      instRes,
+      estRes,
+      setRes,
+      contRes,
+      estPendRes,
+      estRevRes,
+      instAssignRes,
+    ] = await Promise.all([
       authFetch("/api/construction/installation-forms?page=0&size=1"),
       authFetch(`/api/construction/estimates?${base}&sort=createdAt,desc`),
       authFetch(`/api/construction/settlements?${base}&sort=createdAt,desc`),
       authFetch("/api/customer/contracts?page=0&size=1"),
-      authFetch("/api/construction/installation-forms/estimate/pending?page=0&size=1"),
+      authFetch(
+        "/api/construction/installation-forms/estimate/pending?page=0&size=1",
+      ),
       authFetch("/api/construction/installation-forms/reviewed"),
       authFetch("/api/construction/installation-forms/assigned?page=0&size=1"),
     ]);
@@ -127,10 +142,16 @@ const fetchAllCounts = async (): Promise<DetailedStats> => {
       estimate: parsePagedTotal(await estRes.json(), "estimate"),
       settlement: parsePagedTotal(await setRes.json(), "settlement"),
       contract: parsePagedTotal(await contRes.json(), "contract"),
-      estimatePending: parsePagedTotal(await estPendRes.json(), "estimatePending"),
+      estimatePending: parsePagedTotal(
+        await estPendRes.json(),
+        "estimatePending",
+      ),
       estimateApproved: (reviewed as any)?.approved ?? 0,
       estimateRejected: (reviewed as any)?.rejected ?? 0,
-      installationAssigned: parsePagedTotal(await instAssignRes.json(), "installationAssigned"),
+      installationAssigned: parsePagedTotal(
+        await instAssignRes.json(),
+        "installationAssigned",
+      ),
     };
 
     console.log("[Dashboard Stats] Final counts:", stats);
@@ -157,7 +178,10 @@ function BarChartBlock({
       {data.map((d) => {
         const height = (d.value / scale) * maxBarPx;
         return (
-          <div key={d.key} className="group relative flex flex-col items-center gap-3">
+          <div
+            key={d.key}
+            className="group relative flex flex-col items-center gap-3"
+          >
             <div className="flex flex-col items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
               <span className="text-xs font-bold text-default-500 bg-default-100 px-2 py-1 rounded-md">
                 {d.value.toLocaleString("vi-VN")}
@@ -204,10 +228,7 @@ function DonutChartBlock({
               animationDuration={800}
             >
               {data.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[entry.key]}
-                />
+                <Cell key={`cell-${index}`} fill={COLORS[entry.key]} />
               ))}
             </Pie>
           </PieChart>
@@ -226,7 +247,10 @@ function DonutChartBlock({
         {data.map(({ key, value }) => {
           const pct = total > 0 ? (value / total) * 100 : 0;
           return (
-            <div key={key} className="flex items-center justify-between gap-6 p-3 rounded-xl border border-default-100 hover:bg-default-50 transition-colors">
+            <div
+              key={key}
+              className="flex items-center justify-between gap-6 p-3 rounded-xl border border-default-100 hover:bg-default-50 transition-colors"
+            >
               <div className="flex items-center gap-3">
                 <div
                   className="w-3.5 h-3.5 rounded-full flex-shrink-0"
@@ -374,8 +398,12 @@ export default function StatisticsPage() {
   if (!canView) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
-        <h1 className="text-2xl font-bold text-danger">Không có quyền truy cập</h1>
-        <p className="mt-2 max-w-md text-default-500">Trang thống kê chỉ dành cho IT và lãnh đạo.</p>
+        <h1 className="text-2xl font-bold text-danger">
+          Không có quyền truy cập
+        </h1>
+        <p className="mt-2 max-w-md text-default-500">
+          Trang thống kê chỉ dành cho IT và lãnh đạo.
+        </p>
       </div>
     );
   }
@@ -387,7 +415,10 @@ export default function StatisticsPage() {
   ];
   const report1Donut = [
     { key: "estimatePending", value: counts.estimatePending },
-    { key: "processed", value: Math.max(0, counts.estimate - counts.estimatePending) },
+    {
+      key: "processed",
+      value: Math.max(0, counts.estimate - counts.estimatePending),
+    },
   ];
 
   // Báo cáo 2: Tỉ lệ phê duyệt thành công
@@ -398,7 +429,10 @@ export default function StatisticsPage() {
   ];
   const report2Donut = [
     { key: "estimateApproved", value: counts.estimateApproved },
-    { key: "pendingReview", value: Math.max(0, counts.estimate - counts.estimateApproved) },
+    {
+      key: "pendingReview",
+      value: Math.max(0, counts.estimate - counts.estimateApproved),
+    },
   ];
 
   // Báo cáo 3: Chi tiết phê duyệt
@@ -418,32 +452,44 @@ export default function StatisticsPage() {
   ];
   const report4Donut = [
     { key: "installationAssigned", value: counts.installationAssigned },
-    { key: "unassigned", value: Math.max(0, counts.installation - counts.installationAssigned) },
+    {
+      key: "unassigned",
+      value: Math.max(0, counts.installation - counts.installationAssigned),
+    },
   ];
 
   return (
     <div className="p-8 space-y-12 max-w-[1600px] mx-auto min-h-screen pb-24">
       {/* Header Section */}
       <div className="flex flex-col gap-2 border-b border-default-200 pb-10">
-        <h1 className="text-4xl font-extrabold tracking-tight text-default-900">
-          Dashboard Thống Kê Chi Tiết
+        <h1 className="text-2xl font-extrabold tracking-tight text-default-900">
+          Thống Kê Chi Tiết
         </h1>
         <p className="text-default-500 text-lg max-w-2xl font-medium">
-          Hệ thống theo dõi và phân tích hiệu suất xử lý hồ sơ, dự toán và thi công thời gian thực.
+          Hệ thống theo dõi và phân tích hiệu suất xử lý hồ sơ, dự toán và thi
+          công thời gian thực.
         </p>
       </div>
 
       {/* Top Summary Cards */}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {ORDER.map((key) => (
-          <Card key={key} className="border border-default-200 shadow-sm overflow-hidden">
+          <Card
+            key={key}
+            className="border border-default-200 shadow-sm overflow-hidden"
+          >
             <div
               className="h-1 w-full"
               style={{ backgroundColor: COLORS[key] }}
             />
             <CardBody className="p-6">
-              <span className="text-sm font-bold text-default-400 uppercase tracking-widest">{LABELS[key]}</span>
-              <p className="text-4xl font-black mt-2 tabular-nums" style={{ color: COLORS[key] }}>
+              <span className="text-sm font-bold text-default-400 uppercase tracking-widest">
+                {LABELS[key]}
+              </span>
+              <p
+                className="text-4xl font-black mt-2 tabular-nums"
+                style={{ color: COLORS[key] }}
+              >
                 {counts[key].toLocaleString("vi-VN")}
               </p>
             </CardBody>
