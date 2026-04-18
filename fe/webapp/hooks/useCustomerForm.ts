@@ -11,7 +11,7 @@ const initialFormData: CreateCustomerPayload = {
   usageTarget: "DOMESTIC",
   numberOfHouseholds: 1,
   householdRegistrationNumber: 0,
-  protectEnvironmentFee: 15000,
+  protectEnvironmentFee: 400000,
   waterMeterType: "MECHANICAL",
   citizenIdentificationNumber: "",
   citizenIdentificationProvideAt: "",

@@ -32,7 +32,7 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
           const result = await response.json();
           if (result.data) {
             setDisplayWaterPrice(
-              `${result.data.tax} - ${result.data.environmentPrice}%`,
+              `${result.data.tax}% - ${result.data.environmentPrice}`,
             );
           }
         } catch (error) {
@@ -421,8 +421,8 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
           columns={[
             { key: "stt", label: "STT" },
             { key: "usageTarget", label: "Mục đích sử dụng" },
-            { key: "tax", label: "Phí môi trường" },
-            { key: "environmentPrice", label: "Thuế (%)" },
+            { key: "tax", label: "Thuế (%)" },
+            { key: "environmentPrice", label: "Phí môi trường" },
             { key: "applicationPeriod", label: "Kỳ áp dụng" },
           ]}
           mapData={(item: any, index: number) => ({

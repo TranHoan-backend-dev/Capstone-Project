@@ -196,7 +196,7 @@ export const AssignConstructionPopup = ({
         <ModalBody>
           <div className="space-y-4">
             <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-              <p className="text-sm text-gray-500">Mã đơn</p>
+              <p className="text-sm text-gray-500">Số đơn</p>
               <p className="font-medium">{formNumber}</p>
             </div>
             <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">

@@ -223,7 +223,7 @@ export const ApprovedTable = ({
     switch (columnKey) {
       case "formCode":
         return (
-          <span className="font-medium text-blue-600">
+          <span className="font-mediun text-black-600">
             {item.installationForm?.formCode}
           </span>
         );
