@@ -38,6 +38,24 @@ const DesignProcessingPage = () => {
   const [keyword, setKeyword] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
+  const fetchInstallationForms = async (params: URLSearchParams) => {
+    const res = await authFetch(
+      `/api/construction/installation-forms?${params.toString()}`,
+    );
+    if (res.ok) return res;
+
+    // Fallback: some remote environments 500 when parsing `status` enum.
+    if (res.status === 500 && params.has("status")) {
+      const retryParams = new URLSearchParams(params);
+      retryParams.delete("status");
+      return await authFetch(
+        `/api/construction/installation-forms?${retryParams.toString()}`,
+      );
+    }
+
+    return res;
+  };
+
   const fetchOrdersToDesign = async () => {
     try {
       const fromStr = formatDateValueToString(from);
@@ -61,9 +79,7 @@ const DesignProcessingPage = () => {
         params.append("to", toStr);
       }
 
-      const res = await authFetch(
-        `/api/construction/installation-forms?${params.toString()}`,
-      );
+      const res = await fetchInstallationForms(params);
 
       if (!res.ok) {
         console.error("Fetch orders failed", res.status);
@@ -74,7 +90,14 @@ const DesignProcessingPage = () => {
       const result = json?.data;
       const items = result?.content ?? [];
 
-      const orders: DesignProcessingItem[] = items.map(
+      const filteredItems = params.has("status")
+        ? items
+        : items.filter(
+            (item: NewInstallationLookupResponse) =>
+              item?.status?.registration === "PENDING_FOR_APPROVAL",
+          );
+
+      const orders: DesignProcessingItem[] = filteredItems.map(
         (item: NewInstallationLookupResponse) => ({
           id: item.formCode,
           formNumber: item.formNumber,
@@ -89,7 +112,9 @@ const DesignProcessingPage = () => {
 
       setOrdersToDesign(orders);
       setTotalPagesOrders(result?.page?.totalPages ?? 1);
-      setTotalElementsOrders(result?.page?.totalElements ?? 0);
+      setTotalElementsOrders(
+        params.has("status") ? result?.page?.totalElements ?? 0 : orders.length,
+      );
     } catch (error) {
       console.error(error);
       setOrdersToDesign([]);
@@ -121,9 +146,7 @@ const DesignProcessingPage = () => {
         params.append("to", toStr);
       }
 
-      const res = await authFetch(
-        `/api/construction/installation-forms?${params.toString()}`,
-      );
+      const res = await fetchInstallationForms(params);
 
       if (!res.ok) {
         console.error("Fetch processed failed", res.status);
@@ -134,7 +157,14 @@ const DesignProcessingPage = () => {
       const result = json?.data;
       const items = result?.content ?? [];
 
-      const processed: DesignProcessingItem[] = items.map(
+      const filteredItems = params.has("status")
+        ? items
+        : items.filter(
+            (item: NewInstallationLookupResponse) =>
+              item?.status?.registration === "APPROVED",
+          );
+
+      const processed: DesignProcessingItem[] = filteredItems.map(
         (item: NewInstallationLookupResponse) => ({
           id: item.formCode,
           formNumber: item.formNumber,
@@ -149,7 +179,9 @@ const DesignProcessingPage = () => {
 
       setProcessedDesigns(processed);
       setTotalPagesProcessed(result?.page?.totalPages ?? 1);
-      setTotalElementsProcessed(result?.page?.totalElements ?? 0);
+      setTotalElementsProcessed(
+        params.has("status") ? result?.page?.totalElements ?? 0 : processed.length,
+      );
     } catch (error) {
       console.error(error);
       setProcessedDesigns([]);

@@ -38,6 +38,21 @@ interface Parameter {
   updateAt: string;
 }
 
+const handleNumberInput = (
+  value: string,
+  setter: React.Dispatch<React.SetStateAction<string>>,
+) => {
+  if (value === "") {
+    setter("");
+    return;
+  }
+  const regex = /^\d*\.?\d*$/;
+
+  if (regex.test(value)) {
+    setter(value);
+  }
+};
+
 export const TechnicalInfoCard = ({
   estimateData,
   setEstimateData,
@@ -204,7 +219,7 @@ export const TechnicalInfoCard = ({
     );
     const vatParam = parameters.find((p) => p.name === "Hệ số thuế GTGT (VAT)");
     const designParam = parameters.find((p) => p.name === "Hệ số thiết kế");
-
+    const contractFeeParam = parameters.find((p) => p.name === "Phí hợp đồng");
     if (laborParam && laborParam.value) {
       setLaborCoefficient(laborParam.value);
     }
@@ -222,6 +237,9 @@ export const TechnicalInfoCard = ({
     }
     if (designParam && designParam.value) {
       setDesignCoefficient(designParam.value);
+    }
+    if (contractFeeParam && contractFeeParam.value) {
+      setContractFee(contractFeeParam.value);
     }
   };
 
@@ -345,7 +363,6 @@ export const TechnicalInfoCard = ({
       ) {
         setDesignCoefficient(info.designCoefficient.toString());
       }
-
       setDesignFee(info.designFee?.toString() || "");
       setWaterMeterType(info.waterMeterType || "");
       setWaterMeterSerial(info.waterMeterSerial || "");
@@ -492,7 +509,10 @@ export const TechnicalInfoCard = ({
         const rows = ["material", "materials"];
         rows.forEach((prefix) => {
           formData.append(`${prefix}[${index}].materialCode`, m.id || "");
-          formData.append(`${prefix}[${index}].jobContent`, m.description || "");
+          formData.append(
+            `${prefix}[${index}].jobContent`,
+            m.description || "",
+          );
           formData.append(`${prefix}[${index}].note`, m.note || "");
           formData.append(`${prefix}[${index}].unit`, m.unit || "");
           formData.append(
@@ -799,79 +819,91 @@ export const TechnicalInfoCard = ({
           <CustomInput
             label="Phí hợp đồng"
             value={contractFee}
-            onChange={(e) => setContractFee(e.target.value)}
+            onChange={(e) => handleNumberInput(e.target.value, setContractFee)}
             isDisabled={isReadOnly}
           />
 
           <CustomInput
             label="Phí khảo sát"
             value={surveyFee}
-            onChange={(e) => setSurveyFee(e.target.value)}
+            onChange={(e) => handleNumberInput(e.target.value, setSurveyFee)}
             isDisabled={isReadOnly}
           />
 
           <CustomInput
             label="Ngày công khảo sát"
             value={surveyEffort}
-            onChange={(e) => setSurveyEffort(e.target.value)}
+            onChange={(e) => handleNumberInput(e.target.value, setSurveyEffort)}
             isDisabled={isReadOnly}
           />
 
           <CustomInput
             label="Phí lắp đặt"
             value={installationFee}
-            onChange={(e) => setInstallationFee(e.target.value)}
+            onChange={(e) =>
+              handleNumberInput(e.target.value, setInstallationFee)
+            }
             isDisabled={isReadOnly}
           />
 
           <CustomInput
             label="Hệ số nhân công (%)"
             value={laborCoefficient}
-            onChange={(e) => setLaborCoefficient(e.target.value)}
+            onChange={(e) =>
+              handleNumberInput(e.target.value, setLaborCoefficient)
+            }
             isDisabled={isReadOnly}
           />
 
           <CustomInput
             label="Hệ số chi phí chung (%)"
             value={generalCostCoefficient}
-            onChange={(e) => setGeneralCostCoefficient(e.target.value)}
+            onChange={(e) =>
+              handleNumberInput(e.target.value, setGeneralCostCoefficient)
+            }
             isDisabled={isReadOnly}
           />
 
           <CustomInput
             label="Hệ số thuế tính trước (%)"
             value={precalculatedTaxCoefficient}
-            onChange={(e) => setPrecalculatedTaxCoefficient(e.target.value)}
+            onChange={(e) =>
+              handleNumberInput(e.target.value, setPrecalculatedTaxCoefficient)
+            }
             isDisabled={isReadOnly}
           />
 
-          <CustomInput
+          {/* <CustomInput
             label="Hệ số máy thi công (%)"
             value={constructionMachineryCoefficient}
             onChange={(e) =>
               setConstructionMachineryCoefficient(e.target.value)
             }
             isDisabled={isReadOnly}
-          />
+          /> */}
 
           <CustomInput
             label="Hệ số thuế GTGT (VAT) (%)"
             value={vatCoefficient}
-            onChange={(e) => setVatCoefficient(e.target.value)}
+            onChange={(e) =>
+              handleNumberInput(e.target.value, setVatCoefficient)
+            }
             isDisabled={isReadOnly}
           />
 
           <CustomInput
             label="Hệ số thiết kế (%)"
             value={designCoefficient}
-            onChange={(e) => setDesignCoefficient(e.target.value)}
+            onChange={(e) =>
+              handleNumberInput(e.target.value, setDesignCoefficient)
+            }
             isDisabled={isReadOnly}
           />
 
           <CustomInput
             label="Phí thiết kế"
             value={designFee}
-            onChange={(e) => setDesignFee(e.target.value)}
+            onChange={(e) => handleNumberInput(e.target.value, setDesignFee)}
             isDisabled={isReadOnly}
           />
         </div>
