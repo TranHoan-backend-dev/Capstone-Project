@@ -116,6 +116,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       } else if (request.getStatus() == InstallationFormFilterRequest.Status.REGISTRATION_PENDING_FOR_APPROVAL) {
         statusRegistration = ProcessingStatus.PENDING_FOR_APPROVAL;
       }
+      sortedPageable = Utility.sortByAttributeDesc(pageable, "createdAt");
     }
 
     var result = (startDate != null || endDate != null
@@ -286,14 +287,13 @@ public class InstallationFormServiceImpl implements InstallationFormService {
 
   private @NonNull InstallationFormListResponse mapToResponse(@NonNull InstallationForm entity) {
     log.info("Get staff who will handle this request");
-    var creatorFullName = empSrv.getEmployeeNameById(entity.getCreatedBy());
-    var handoverByFullName = entity.getHandoverBy() != null ? empSrv.getEmployeeNameById(entity.getHandoverBy()) : null;
-    var constructionEmployeeName = entity.getConstructedBy() != null
-      ? empSrv.getEmployeeNameById(entity.getConstructedBy())
-      : null;
+//    var creatorFullName = empSrv.getEmployeeNameById(entity.getCreatedBy());
+//    var handoverByFullName = entity.getHandoverBy() != null ? empSrv.getEmployeeNameById(entity.getHandoverBy()) : null;
+//    var constructionEmployeeName = entity.getConstructedBy() != null
+//      ? empSrv.getEmployeeNameById(entity.getConstructedBy())
+//      : null;
     var unknown = "Trống";
-    log.info("Creator: {}, handover: {}, construction captain: {}", creatorFullName, handoverByFullName,
-      constructionEmployeeName);
+//    log.info("Creator: {}, handover: {}, construction captain: {}", creatorFullName, handoverByFullName, constructionEmployeeName);
 
     return new InstallationFormListResponse(
       null,
@@ -305,17 +305,19 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       entity.getScheduleSurveyAt() == null ? null : entity.getScheduleSurveyAt().toString(),
       entity.getCreatedAt().toString(),
       entity.getHandoverBy(),
-      (handoverByFullName != null && handoverByFullName.data() != null) ? handoverByFullName.data().toString()
-        : unknown,
-//      unknown,
+//      (handoverByFullName != null && handoverByFullName.data() != null) ?
+//        handoverByFullName.data().toString()
+//        : unknown,
+      unknown,
       entity.getCreatedBy(),
-      (creatorFullName != null && creatorFullName.data() != null) ? creatorFullName.data().toString() : unknown,
-//      unknown,
+//      (creatorFullName != null && creatorFullName.data() != null) ?
+//        creatorFullName.data().toString() : unknown,
+      unknown,
       entity.getConstructedBy(),
-      (constructionEmployeeName != null && constructionEmployeeName.data() != null)
-        ? constructionEmployeeName.data().toString()
-        : unknown,
-//      unknown,
+//      (constructionEmployeeName != null && constructionEmployeeName.data() != null)
+//        ? constructionEmployeeName.data().toString()
+//        : unknown,
+      unknown,
       entity.getStatus(),
       entity.getOverallWaterMeterId(),
       entity.getTaxCode(),
@@ -329,8 +331,7 @@ public class InstallationFormServiceImpl implements InstallationFormService {
       entity.getUsageTarget(),
       entity.getCustomerType(),
       entity.getRepresentative(),
-      entity.getCreatedAt().toString()
-    );
+      entity.getCreatedAt().toString());
   }
 
   private WaterSupplyNetwork getNetwork(String networkId) {

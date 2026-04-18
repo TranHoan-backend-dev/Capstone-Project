@@ -396,14 +396,14 @@ create table public.laterals
 DROP TABLE IF EXISTS public.receipt CASCADE;
 create table public.receipt
 (
---   address                       varchar(255) not null, -- Site or billing address
+  address                       varchar(255) not null, -- Site or billing address
   attach                        varchar(255),          -- Link to supporting documents or scan of the physical receipt
   created_at                    timestamp(6) not null, -- Timestamp of receipt generation
---   customer_name                 varchar(255) not null, -- Subject who completed the payment
---   is_paid                       boolean      not null, -- Status: true if payment is confirmed
---   payment_date                  date         not null, -- Official transaction date
+  customer_name                 varchar(255) not null, -- Subject who completed the payment
+  is_paid                       boolean      not null, -- Status: true if payment is confirmed
+  payment_date                  date         not null, -- Official transaction date
   payment_reason                varchar(255) not null, -- Category description of the payment
---   receipt_number                varchar(255) not null, -- Official sequence number from the receipt book
+  receipt_number                varchar(255) not null, -- Official sequence number from the receipt book
   significance                  jsonb,                 -- Approval/Processing metadata in JSON
   total_money_in_characters     varchar(255),          -- Amount worded out in textual format
   total_money_in_digits         varchar(255) not null, -- Standardized numerical value of payment

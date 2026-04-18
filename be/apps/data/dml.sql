@@ -1754,28 +1754,28 @@ VALUES ('00000000-0000-0000-0000-B00000000001', '00000000-0000-0000-0000-5000000
        ('00000000-0000-0000-0000-B00000000008', '00000000-0000-0000-0000-500000000010');
 
 -- organization
-INSERT INTO public.business_page (page_id, activate, creator, name, updator)
-VALUES ('86088520-f274-4ac2-a94b-b761995abf4a', true, 'admin', 'Trang chủ', 'admin'),
-       ('4c3cdd22-5018-482c-bc34-51331e7167a9', true, 'admin', 'Lập hợp đồng cấp nước mới', 'admin'),
-       ('b4758afc-f456-4538-aabe-3d09a4591f34', true, 'admin', 'Đơn lắp đặt mới', 'admin'),
-       ('b13d7531-4935-4da6-972e-04bbda46b47a', true, 'admin', 'Tra cứu đơn lắp đặt mới', 'admin'),
-       ('88e1d15b-2407-487f-b4e1-aa96e18f0d85', true, 'admin', 'Tra cứu khách hàng', 'admin'),
-       ('ceedf230-1a7a-4c9d-b0c1-ce635d301ff3', true, 'admin', 'Khôi phục khách hàng hủy', 'admin'),
-       ('739f3f11-6947-4135-98ed-f3e59e790d1b', true, 'admin', 'Nhập khách hàng mới', 'admin'),
-       ('f16aa118-8f06-42c6-93f8-22fd9e06e071', true, 'admin', 'Danh sách đơn chờ dự toán', 'admin'),
-       ('f16aa118-8f06-42c6-93f8-22fd9e06e072', true, 'admin', 'Danh sách đơn chờ duyệt dự toán', 'admin'),
-       ('c3d78a4c-f262-4d16-bee3-ffe0d7c50e78', true, 'admin', 'Danh sách đơn từ chối duyệt dự toán', 'admin'),
-       ('94d31724-2d18-4d93-be2a-6a3336fcf0ce', true, 'admin', 'Danh sách đơn đã phân công khảo sát', 'admin'),
-       ('9a8a209a-b8d5-44e1-b7ab-7ed6a5e6e37c', true, 'admin', 'Danh sách khách hàng gọi điện', 'admin'),
-       ('59ae463d-90dd-463e-beae-969df2c66272', true, 'admin', 'Xử lý đơn chờ thiết kế & Thiết kế', 'admin'),
-       ('b3b1d1ec-9c86-45ff-acb2-31c89b1a748c', true, 'admin', 'Phân công khảo sát thiết kế', 'admin'),
-       ('8b209371-21bf-4721-a390-12d1dcfc5d98', true, 'admin', 'Duyệt dự toán', 'admin'),
-       ('b81720dd-be50-4b31-8310-9e10f6d98198', true, 'admin', 'Chạy dự toán', 'admin'),
-       ('e617e074-18b1-4f20-8c19-beb815db7406', true, 'admin', 'Tra cứu dự toán', 'admin'),
-       ('a72a7a72-ef63-4e19-9a1d-294088fd91d1', true, 'admin', 'Quản lý mẫu bốc vật tư', 'admin'),
-       ('88384dc8-2150-44f9-9691-202794fb00e2', true, 'admin', 'Tra cứu quyết toán', 'admin'),
-       ('e70256d4-0ceb-4fe6-94bb-78fb2261fd88', true, 'admin', 'Kiểm tra chỉ số bằng hình ảnh', 'admin'),
-       ('bff81f4f-e6be-4750-8d4c-fb4d21b903ae', true, 'admin', 'Hồ sơ khách hàng', 'admin');
+INSERT INTO public.business_page (page_id, activate, creator, name, updator, created_at, updated_at)
+VALUES ('86088520-f274-4ac2-a94b-b761995abf4a', true, 'admin', 'Trang chủ', 'admin', now(), now()),
+       ('4c3cdd22-5018-482c-bc34-51331e7167a9', true, 'admin', 'Lập hợp đồng cấp nước mới', 'admin', now(), now()),
+       ('b4758afc-f456-4538-aabe-3d09a4591f34', true, 'admin', 'Đơn lắp đặt mới', 'admin', now(), now()),
+       ('b13d7531-4935-4da6-972e-04bbda46b47a', true, 'admin', 'Tra cứu đơn lắp đặt mới', 'admin', now(), now()),
+       ('88e1d15b-2407-487f-b4e1-aa96e18f0d85', true, 'admin', 'Tra cứu khách hàng', 'admin', now(), now()),
+       ('ceedf230-1a7a-4c9d-b0c1-ce635d301ff3', true, 'admin', 'Khôi phục khách hàng hủy', 'admin', now(), now()),
+       ('739f3f11-6947-4135-98ed-f3e59e790d1b', true, 'admin', 'Nhập khách hàng mới', 'admin', now(), now()),
+       ('f16aa118-8f06-42c6-93f8-22fd9e06e071', true, 'admin', 'Danh sách đơn chờ dự toán', 'admin', now(), now()),
+       ('f16aa118-8f06-42c6-93f8-22fd9e06e072', true, 'admin', 'Danh sách đơn chờ duyệt dự toán', 'admin', now(), now()),
+       ('c3d78a4c-f262-4d16-bee3-ffe0d7c50e78', true, 'admin', 'Danh sách đơn từ chối duyệt dự toán', 'admin', now(), now()),
+       ('94d31724-2d18-4d93-be2a-6a3336fcf0ce', true, 'admin', 'Danh sách đơn đã phân công khảo sát', 'admin', now(), now()),
+       ('9a8a209a-b8d5-44e1-b7ab-7ed6a5e6e37c', true, 'admin', 'Danh sách khách hàng gọi điện', 'admin', now(), now()),
+       ('59ae463d-90dd-463e-beae-969df2c66272', true, 'admin', 'Xử lý đơn chờ thiết kế & Thiết kế', 'admin', now(), now()),
+       ('b3b1d1ec-9c86-45ff-acb2-31c89b1a748c', true, 'admin', 'Phân công khảo sát thiết kế', 'admin', now(), now()),
+       ('8b209371-21bf-4721-a390-12d1dcfc5d98', true, 'admin', 'Duyệt dự toán', 'admin', now(), now()),
+       ('b81720dd-be50-4b31-8310-9e10f6d98198', true, 'admin', 'Chạy dự toán', 'admin', now(), now()),
+       ('e617e074-18b1-4f20-8c19-beb815db7406', true, 'admin', 'Tra cứu dự toán', 'admin', now(), now()),
+       ('a72a7a72-ef63-4e19-9a1d-294088fd91d1', true, 'admin', 'Quản lý mẫu bốc vật tư', 'admin', now(), now()),
+       ('88384dc8-2150-44f9-9691-202794fb00e2', true, 'admin', 'Tra cứu quyết toán', 'admin', now(), now()),
+       ('e70256d4-0ceb-4fe6-94bb-78fb2261fd88', true, 'admin', 'Kiểm tra chỉ số bằng hình ảnh', 'admin', now(), now()),
+       ('bff81f4f-e6be-4750-8d4c-fb4d21b903ae', true, 'admin', 'Hồ sơ khách hàng', 'admin', now(), now());
 
 INSERT INTO public.department (department_id, name, phone_number)
 VALUES ('29f12d88-7517-482a-9f44-8d9124443183', 'Phòng Kế hoạch Kỹ Thuật', '02283638708'),
