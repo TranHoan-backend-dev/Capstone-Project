@@ -1,6 +1,6 @@
-package com.capstone.data.source.remote;
+package com.capstone.nawaco.data.source.remote;
 
-import com.capstone.common.utils.Constants;
+import com.capstone.nawaco.common.utils.Constants;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;

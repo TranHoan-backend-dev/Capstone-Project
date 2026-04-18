@@ -1,9 +1,9 @@
-package com.capstone.domain.usecase;
+package com.capstone.nawaco.domain.usecase;
 
 import androidx.annotation.NonNull;
 
-import com.capstone.common.utils.Result;
-import com.capstone.domain.repository.AuthRepository;
+import com.capstone.nawaco.common.utils.Result;
+import com.capstone.nawaco.domain.repository.AuthRepository;
 
 import javax.inject.Inject;
 

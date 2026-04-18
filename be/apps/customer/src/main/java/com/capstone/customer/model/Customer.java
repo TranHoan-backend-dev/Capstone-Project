@@ -65,6 +65,7 @@ public class Customer {
   Integer protectEnvironmentFee;
 
   @Setter
+  @Column(nullable = false)
   Boolean isFree;
 
   @Setter

@@ -308,6 +308,12 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  public List<NameAndIdResponse> getAllMeterInspectionStaffs() {
+    log.info("Getting all meter inspection staffs");
+    return getNameAndId(RoleName.METER_INSPECTION_STAFF);
+  }
+
+  @Override
   public String getDepartment(String id) {
     log.info("Getting department {}", id);
     return organizationService.getDepartmentName(getById(id).getDepartmentId());

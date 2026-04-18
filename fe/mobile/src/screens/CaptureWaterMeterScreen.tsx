@@ -12,7 +12,6 @@ export default function CaptureWaterMeterScreen({ route }: any) {
   const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [isChecking, setIsChecking] = useState(false);
   const [isBlurry, setIsBlurry] = useState<boolean | null>(null);
-  const [isSending, setIsSending] = useState(false);
   const [currentCustomerIndex, setCurrentCustomerIndex] = useState(1);
 
   const requestCameraPermission = async () => {
@@ -85,72 +84,56 @@ export default function CaptureWaterMeterScreen({ route }: any) {
     (navigation.navigate as (name: string, params: any) => void)('MeterInput', route.params);
   };
 
-  const handleAccept = async () => {
+  const handleAccept = () => {
     if (!photoUri) return;
 
-    try {
-      setIsSending(true);
+    // Lấy thông tin từ params để dùng trong closure async
+    const { serial, source, customerId, customerName, address } = route.params || {};
+    const recordingDate = new Date().toISOString().split('T')[0];
+    const currentPhotoUri = photoUri; // Local reference
 
-      const { serial, source, totalCustomer } = route.params || {};
-      const recordingDate = new Date().toISOString().split('T')[0];
+    // 1. Phản hồi lập tức và thoát trang
+    showToast.success(`Đang gửi ảnh của ${customerName || 'khách hàng'} lên hệ thống...`);
+    navigation.goBack();
 
-      console.log("[CaptureWaterMeterScreen.tsx] handleAccept Params:", {
-        serial,
-        source,
-        customerId: route.params?.customerId
-      });
-
-      let response: any;
-      if (source === 'customer' && serial) {
-        console.log(`[CaptureWaterMeterScreen.tsx] Calling /analyze/${serial} (WITH SERIAL)`);
-        response = await meterService.analyzeMeterImageWithSerial(serial, recordingDate, { uri: photoUri });
-      } else {
-        console.log(`[CaptureWaterMeterScreen.tsx] Calling /analyze (WITHOUT SERIAL). Reason: source=${source}, serial=${serial}`);
-        response = await meterService.analyzeMeterImage(recordingDate, { uri: photoUri }, route.params?.customerId);
-      }
-
-      console.log("[CaptureWaterMeterScreen.tsx] AI Analyze Response:", response);
-
-      // Lưu chi tiết kết quả vào Local Cache để chuẩn bị cho bước Duyệt (Tinder UI)
-      if (response) {
-        try {
-          const { localCapturedService } = require('../services/localCapturedService');
-          await localCapturedService.saveAuditRecord({
-            id: response.id || `local_${Date.now()}`,
-            customerId: route.params?.customerId,
-            customerName: route.params?.customerName,
-            address: route.params?.address, // Preserve address for local review
-            photoUri: photoUri,
-            aiIndex: response.index || 0,
-            aiSerial: response.serial || route.params?.serial || '',
-            timestamp: new Date().toISOString(),
-          });
-          console.log("[Capture] Saved audit record to local cache. Data:", {
-            index: response.index,
-            serial: response.serial || route.params?.serial,
-            address: route.params?.address
-          });
-        } catch (e: any) {
-          console.warn('[Capture] Failed to save audit record: ' + e.message);
+    // 2. Thực hiện việc gửi ảnh ở background
+    (async () => {
+      try {
+        console.log(`[Capture Background] Starting upload for ${customerName || 'unknown'}`);
+        
+        let response: any;
+        if (source === 'customer' && serial) {
+          response = await meterService.analyzeMeterImageWithSerial(serial, recordingDate, { uri: currentPhotoUri });
+        } else {
+          response = await meterService.analyzeMeterImage(recordingDate, { uri: currentPhotoUri }, customerId);
         }
-      }
 
-      if (totalCustomer && currentCustomerIndex < totalCustomer) {
-        showToast.success(`Gửi ảnh thành công! Tiếp tục khách hàng ${currentCustomerIndex + 1}/${totalCustomer}`);
-        setCurrentCustomerIndex(prev => prev + 1);
-        setPhotoUri(null);
-        setIsBlurry(null);
-      } else {
-        showToast.success('Gửi ảnh thành công!');
-        navigation.goBack();
+        console.log("[Capture Background] AI Analyze Response:", response);
+
+        if (response) {
+          try {
+            const { localCapturedService } = require('../services/localCapturedService');
+            await localCapturedService.saveAuditRecord({
+              id: response.id || `local_${Date.now()}`,
+              customerId: customerId,
+              customerName: customerName,
+              address: address, // Preserve address for local review
+              photoUri: currentPhotoUri,
+              aiIndex: response.index || 0,
+              aiSerial: response.serial || serial || '',
+              timestamp: new Date().toISOString(),
+            });
+            console.log("[Capture Background] Saved audit record to local cache.");
+          } catch (e: any) {
+            console.warn('[Capture Background] Failed to save audit record: ' + e.message);
+          }
+        }
+        showToast.success(`Gửi ảnh cho khách hàng ${customerName || ''} thành công!`);
+      } catch (error: any) {
+        console.error('[Capture Background] Error:', error.message);
+        showToast.error(`Gửi ảnh thất bại: ${customerName || ''}. ${error.message}`);
       }
-    } catch (error: any) {
-      console.error(error.message)
-      showToast.error('Gửi ảnh thất bại. Vui lòng thử lại.');
-      showToast.error(error.message)
-    } finally {
-      setIsSending(false);
-    }
+    })();
   };
 
   return (
@@ -185,14 +168,8 @@ export default function CaptureWaterMeterScreen({ route }: any) {
           </View>
         )}
 
-        {isSending && (
-          <View style={styles.checkingContainer}>
-            <ActivityIndicator animating={true} color="#10B981" size="small" />
-            <Text style={styles.statusText}>Đang gửi ảnh về hệ thống...</Text>
-          </View>
-        )}
 
-        {!isChecking && !isSending && photoUri && isBlurry === true && (
+        {!isChecking && photoUri && isBlurry === true && (
 
           <View style={styles.resultContainer}>
             <Text style={styles.errorText}>Ảnh bị mờ đục, chưa đủ tiêu chuẩn!</Text>
@@ -207,7 +184,7 @@ export default function CaptureWaterMeterScreen({ route }: any) {
           </View>
         )}
 
-        {!isChecking && !isSending && photoUri && isBlurry === false && (
+        {!isChecking && photoUri && isBlurry === false && (
           <View style={styles.resultContainer}>
             <Text style={styles.successText}>Ảnh rõ nét, đạt tiêu chuẩn.</Text>
             <Button

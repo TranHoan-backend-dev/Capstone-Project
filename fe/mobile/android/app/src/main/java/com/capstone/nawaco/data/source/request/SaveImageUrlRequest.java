@@ -1,4 +1,4 @@
-package com.capstone.data.source.request;
+package com.capstone.nawaco.data.source.request;
 
 import androidx.annotation.Nullable;
 

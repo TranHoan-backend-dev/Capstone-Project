@@ -147,7 +147,7 @@ public class LateralController {
     @ApiResponse(responseCode = "200", description = "Lấy danh sách thành công", content = @Content(schema = @Schema(implementation = LateralResponse.class))),
     @ApiResponse(responseCode = "500", description = "Lỗi hệ thống", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
-  @PreAuthorize("hasAuthority('IT_STAFF')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'BUSINESS_DEPARTMENT_HEAD')")
   public ResponseEntity<WrapperApiResponse> getAllLaterals(
     @PageableDefault @Parameter(hidden = true) Pageable pageable,
     @RequestParam(required = false) String keyword,

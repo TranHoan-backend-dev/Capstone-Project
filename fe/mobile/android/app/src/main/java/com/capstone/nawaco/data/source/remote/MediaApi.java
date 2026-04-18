@@ -1,7 +1,7 @@
-package com.capstone.data.source.remote;
+package com.capstone.nawaco.data.source.remote;
 
-import com.capstone.data.source.request.SaveImageUrlRequest;
-import com.capstone.data.source.response.WrapperApiResponse;
+import com.capstone.nawaco.data.source.request.SaveImageUrlRequest;
+import com.capstone.nawaco.data.source.response.WrapperApiResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;

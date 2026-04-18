@@ -1,7 +1,7 @@
-package com.capstone.di;
+package com.capstone.nawaco.di;
 
-import com.capstone.data.datasource.AuthRemoteDataSource;
-import com.capstone.data.source.remote.AuthApi;
+import com.capstone.nawaco.data.datasource.AuthRemoteDataSource;
+import com.capstone.nawaco.data.source.remote.AuthApi;
 
 import dagger.Module;
 import dagger.Provides;

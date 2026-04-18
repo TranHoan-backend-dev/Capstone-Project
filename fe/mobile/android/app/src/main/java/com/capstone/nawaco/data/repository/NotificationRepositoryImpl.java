@@ -1,10 +1,10 @@
-package com.capstone.data.repository;
+package com.capstone.nawaco.data.repository;
 
-import com.capstone.data.source.remote.NotificationApi;
-import com.capstone.data.source.response.NotificationResponse;
-import com.capstone.data.source.response.WrapperApiResponse;
-import com.capstone.domain.model.Notification;
-import com.capstone.domain.repository.NotificationRepository;
+import com.capstone.nawaco.data.source.remote.NotificationApi;
+import com.capstone.nawaco.data.source.response.NotificationResponse;
+import com.capstone.nawaco.data.source.response.WrapperApiResponse;
+import com.capstone.nawaco.domain.model.Notification;
+import com.capstone.nawaco.domain.repository.NotificationRepository;
 
 import java.util.ArrayList;
 import java.util.List;

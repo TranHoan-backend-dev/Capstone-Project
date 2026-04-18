@@ -1,11 +1,11 @@
-package com.capstone.ui.views;
+package com.capstone.nawaco.ui.views;
 
 import android.os.Bundle;
 
 import androidx.activity.ComponentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.capstone.ui.viewmodel.MediaViewModel;
+import com.capstone.nawaco.ui.viewmodel.MediaViewModel;
 
 import dagger.hilt.android.AndroidEntryPoint;
 

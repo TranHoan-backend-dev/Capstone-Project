@@ -1,4 +1,4 @@
-package com.capstone.ui.views;
+package com.capstone.nawaco.ui.views;
 
 import android.os.Bundle;
 

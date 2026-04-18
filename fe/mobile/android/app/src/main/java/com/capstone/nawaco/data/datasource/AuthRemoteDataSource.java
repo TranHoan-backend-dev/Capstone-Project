@@ -1,13 +1,13 @@
-package com.capstone.data.datasource;
+package com.capstone.nawaco.data.datasource;
 
-import com.capstone.data.source.remote.AuthApi;
-import com.capstone.data.source.request.ChangePasswordRequest;
-import com.capstone.data.source.request.UpdateProfileRequest;
-import com.capstone.data.source.request.ResetPasswordRequest;
-import com.capstone.data.source.request.SendOtpRequest;
-import com.capstone.data.source.request.VerifyOtpRequest;
-import com.capstone.data.source.response.UserProfileResponse;
-import com.capstone.data.source.response.WrapperApiResponse;
+import com.capstone.nawaco.data.source.remote.AuthApi;
+import com.capstone.nawaco.data.source.request.ChangePasswordRequest;
+import com.capstone.nawaco.data.source.request.UpdateProfileRequest;
+import com.capstone.nawaco.data.source.request.ResetPasswordRequest;
+import com.capstone.nawaco.data.source.request.SendOtpRequest;
+import com.capstone.nawaco.data.source.request.VerifyOtpRequest;
+import com.capstone.nawaco.data.source.response.UserProfileResponse;
+import com.capstone.nawaco.data.source.response.WrapperApiResponse;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;

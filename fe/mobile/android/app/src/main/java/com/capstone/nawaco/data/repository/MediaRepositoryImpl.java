@@ -1,9 +1,9 @@
-package com.capstone.data.repository;
+package com.capstone.nawaco.data.repository;
 
-import com.capstone.data.source.remote.GoogleCloudUploader;
-import com.capstone.data.source.remote.MediaApi;
-import com.capstone.data.source.request.SaveImageUrlRequest;
-import com.capstone.domain.repository.MediaRepository;
+import com.capstone.nawaco.data.source.remote.GoogleCloudUploader;
+import com.capstone.nawaco.data.source.remote.MediaApi;
+import com.capstone.nawaco.data.source.request.SaveImageUrlRequest;
+import com.capstone.nawaco.domain.repository.MediaRepository;
 
 import java.io.File;
 

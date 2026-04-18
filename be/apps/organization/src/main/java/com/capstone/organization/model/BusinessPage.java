@@ -7,6 +7,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.jspecify.annotations.NonNull;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -33,6 +34,23 @@ public class BusinessPage {
 
   @Column(nullable = false)
   String updator;
+
+  @Column(nullable = false)
+  LocalDateTime createdAt;
+
+  @Column(nullable = false)
+  LocalDateTime updatedAt;
+
+  @PrePersist
+  public void onCreate() {
+    createdAt = LocalDateTime.now();
+    updatedAt = LocalDateTime.now();
+  }
+
+  @PreUpdate
+  public void onUpdate() {
+    updatedAt = LocalDateTime.now();
+  }
 
   public void setActivate(Boolean activate) {
     Objects.requireNonNull(activate, Message.ORG_01);

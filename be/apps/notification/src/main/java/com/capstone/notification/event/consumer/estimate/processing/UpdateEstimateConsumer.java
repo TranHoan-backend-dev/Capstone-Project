@@ -24,7 +24,7 @@ public class UpdateEstimateConsumer extends GeneralEventConsumer<UpdateEventMess
     super.handle(
       event,
       List.of(Topic.getTopic(Topic.GENERAL)),
-      "Cập nhật đơn vị hành chính xã",
+      "Cập nhật dự toán",
       null
     );
   }

@@ -151,7 +151,8 @@ public class AuthorizationController {
 
   @Operation(hidden = true)
   @GetMapping(EMPLOYEE_PREFIX + "/role/{id}")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD','CONSTRUCTION_DEPARTMENT_STAFF')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'SURVEY_STAFF', 'ORDER_RECEIVING_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD', " +
+    "'CONSTRUCTION_DEPARTMENT_STAFF', 'BUSINESS_DEPARTMENT_HEAD')")
   public ResponseEntity<?> getRoleOfEmployeeById(@PathVariable String id) {
     log.info("Getting role of employee by id: {}", id);
     return Utils.returnOkResponse("", userService.getRoleOfEmployee(id));
@@ -177,7 +178,7 @@ public class AuthorizationController {
 
   @Operation
   @GetMapping(EMPLOYEE_PREFIX + "/pt-head")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF', 'SURVEY_STAFF')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF', 'SURVEY_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD')")
   public ResponseEntity<?> getPlanningTechnicalDepartmentHeads() {
     log.info("Get planning technical department heads");
     return Utils.returnOkResponse("", usersUseCase.getListOfPtHeads());
@@ -204,6 +205,14 @@ public class AuthorizationController {
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD')")
   public ResponseEntity<?> getConstructionStaffs() {
     log.info("Get construction staffs");
+    return Utils.returnOkResponse("", usersUseCase.getListOfConstructionStaffs());
+  }
+
+  @Operation
+  @GetMapping(EMPLOYEE_PREFIX + "/meter-inspection")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'BUSINESS_DEPARTMENT_HEAD')")
+  public ResponseEntity<?> getMeterInspectionStaffs() {
+    log.info("Get meter inspection staffs");
     return Utils.returnOkResponse("", usersUseCase.getListOfConstructionStaffs());
   }
 

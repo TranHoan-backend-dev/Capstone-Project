@@ -1,10 +1,10 @@
-package com.capstone.ui.viewmodel;
+package com.capstone.nawaco.ui.viewmodel;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.capstone.domain.repository.MediaRepository;
+import com.capstone.nawaco.domain.repository.MediaRepository;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 

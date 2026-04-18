@@ -1,4 +1,4 @@
-package com.capstone.data.source.request;
+package com.capstone.nawaco.data.source.request;
 
 public class ChangePasswordRequest {
     private final String oldPassword;

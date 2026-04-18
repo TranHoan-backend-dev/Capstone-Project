@@ -1,12 +1,12 @@
-package com.capstone.di;
+package com.capstone.nawaco.di;
 
 import androidx.annotation.NonNull;
 
-import com.capstone.common.utils.Constants;
-import com.capstone.data.source.remote.AuthApi;
-import com.capstone.infrastructure.security.AuthInterceptor;
-import com.capstone.infrastructure.security.SecurityFilterInterceptor;
-import com.capstone.infrastructure.security.TokenAuthenticator;
+import com.capstone.nawaco.common.utils.Constants;
+import com.capstone.nawaco.data.source.remote.AuthApi;
+import com.capstone.nawaco.infrastructure.security.AuthInterceptor;
+import com.capstone.nawaco.infrastructure.security.SecurityFilterInterceptor;
+import com.capstone.nawaco.infrastructure.security.TokenAuthenticator;
 
 import dagger.Module;
 import dagger.Provides;

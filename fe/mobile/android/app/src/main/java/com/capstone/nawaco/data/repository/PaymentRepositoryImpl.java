@@ -1,9 +1,9 @@
-package com.capstone.data.repository;
+package com.capstone.nawaco.data.repository;
 
-import com.capstone.data.source.remote.PaymentApi;
-import com.capstone.data.source.response.WrapperApiResponse;
-import com.capstone.domain.model.PaymentInfo;
-import com.capstone.domain.repository.PaymentRepository;
+import com.capstone.nawaco.data.source.remote.PaymentApi;
+import com.capstone.nawaco.data.source.response.WrapperApiResponse;
+import com.capstone.nawaco.domain.model.PaymentInfo;
+import com.capstone.nawaco.domain.repository.PaymentRepository;
 
 import java.util.ArrayList;
 import java.util.List;
