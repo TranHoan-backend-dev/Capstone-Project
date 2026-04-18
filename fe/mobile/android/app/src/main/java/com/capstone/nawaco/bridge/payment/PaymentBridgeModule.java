@@ -1,10 +1,10 @@
-package com.capstone.bridge.payment;
+package com.capstone.nawaco.bridge.payment;
 
 import androidx.annotation.NonNull;
 
-import com.capstone.domain.model.PaymentInfo;
-import com.capstone.domain.repository.PaymentRepository;
-import com.capstone.infrastructure.security.PermissionManager;
+import com.capstone.nawaco.domain.model.PaymentInfo;
+import com.capstone.nawaco.domain.repository.PaymentRepository;
+import com.capstone.nawaco.infrastructure.security.PermissionManager;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;

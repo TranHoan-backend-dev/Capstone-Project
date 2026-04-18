@@ -1,9 +1,9 @@
-package com.capstone.di;
+package com.capstone.nawaco.di;
 
-import com.capstone.data.repository.MediaRepositoryImpl;
-import com.capstone.data.source.remote.GoogleCloudUploader;
-import com.capstone.data.source.remote.MediaApi;
-import com.capstone.domain.repository.MediaRepository;
+import com.capstone.nawaco.data.repository.MediaRepositoryImpl;
+import com.capstone.nawaco.data.source.remote.GoogleCloudUploader;
+import com.capstone.nawaco.data.source.remote.MediaApi;
+import com.capstone.nawaco.domain.repository.MediaRepository;
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;

@@ -1,18 +1,18 @@
-package com.capstone.common.app;
+package com.capstone.nawaco.common.app;
 
 import android.app.Application;
 
 import androidx.annotation.NonNull;
 
-import com.capstone.bridge.auth.AuthBridgePackage;
-import com.capstone.bridge.media.MediaBridgePackage;
-import com.capstone.bridge.meter.MeterBridgePackage;
-import com.capstone.bridge.notification.NotificationBridgePackage;
-import com.capstone.bridge.payment.PaymentBridgePackage;
-import com.capstone.bridge.permission.PermissionBridgePackage;
-import com.capstone.domain.repository.*;
-import com.capstone.infrastructure.security.PermissionManager;
-import com.capstone.BuildConfig;
+import com.capstone.nawaco.bridge.auth.AuthBridgePackage;
+import com.capstone.nawaco.bridge.media.MediaBridgePackage;
+import com.capstone.nawaco.bridge.meter.MeterBridgePackage;
+import com.capstone.nawaco.bridge.notification.NotificationBridgePackage;
+import com.capstone.nawaco.bridge.payment.PaymentBridgePackage;
+import com.capstone.nawaco.bridge.permission.PermissionBridgePackage;
+import com.capstone.nawaco.domain.repository.*;
+import com.capstone.nawaco.infrastructure.security.PermissionManager;
+import com.capstone.nawaco.BuildConfig;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactHost;

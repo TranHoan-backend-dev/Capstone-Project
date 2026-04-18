@@ -33,7 +33,7 @@ public class MaterialsOfSettlementController {
 
   @Operation(hidden = true)
   @PutMapping("/{id}")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD', 'CONSTRUCTION_DEPARTMENT_STAFF', 'SURVEY_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD')")
   public ResponseEntity<?> updateMaterialsOfSettlement(
     @PathVariable String id,
     @RequestBody List<BaseMaterial> request

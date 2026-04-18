@@ -1,7 +1,7 @@
-package com.capstone.bridge.payment;
+package com.capstone.nawaco.bridge.payment;
 
-import com.capstone.domain.repository.PaymentRepository;
-import com.capstone.infrastructure.security.PermissionManager;
+import com.capstone.nawaco.domain.repository.PaymentRepository;
+import com.capstone.nawaco.infrastructure.security.PermissionManager;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.ReactPackage;

@@ -1,6 +1,6 @@
-package com.capstone.domain.repository;
+package com.capstone.nawaco.domain.repository;
 
-import com.capstone.domain.model.Notification;
+import com.capstone.nawaco.domain.model.Notification;
 
 import java.util.List;
 

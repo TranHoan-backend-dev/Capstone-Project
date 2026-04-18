@@ -1,8 +1,8 @@
-package com.capstone.di;
+package com.capstone.nawaco.di;
 
-import com.capstone.data.repository.PaymentRepositoryImpl;
-import com.capstone.data.source.remote.PaymentApi;
-import com.capstone.domain.repository.PaymentRepository;
+import com.capstone.nawaco.data.repository.PaymentRepositoryImpl;
+import com.capstone.nawaco.data.source.remote.PaymentApi;
+import com.capstone.nawaco.domain.repository.PaymentRepository;
 
 import dagger.Module;
 import dagger.Provides;

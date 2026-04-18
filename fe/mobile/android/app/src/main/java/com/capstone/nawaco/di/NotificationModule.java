@@ -1,8 +1,8 @@
-package com.capstone.di;
+package com.capstone.nawaco.di;
 
-import com.capstone.data.repository.NotificationRepositoryImpl;
-import com.capstone.data.source.remote.NotificationApi;
-import com.capstone.domain.repository.NotificationRepository;
+import com.capstone.nawaco.data.repository.NotificationRepositoryImpl;
+import com.capstone.nawaco.data.source.remote.NotificationApi;
+import com.capstone.nawaco.domain.repository.NotificationRepository;
 
 import dagger.Module;
 import dagger.Provides;

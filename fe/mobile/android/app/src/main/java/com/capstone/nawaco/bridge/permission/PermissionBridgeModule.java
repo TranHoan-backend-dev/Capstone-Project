@@ -1,8 +1,8 @@
-package com.capstone.bridge.permission;
+package com.capstone.nawaco.bridge.permission;
 
 import androidx.annotation.NonNull;
 
-import com.capstone.infrastructure.security.PermissionManager;
+import com.capstone.nawaco.infrastructure.security.PermissionManager;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;

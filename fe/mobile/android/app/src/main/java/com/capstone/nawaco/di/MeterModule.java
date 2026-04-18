@@ -1,8 +1,8 @@
-package com.capstone.di;
+package com.capstone.nawaco.di;
 
-import com.capstone.data.repository.MeterRepositoryImpl;
-import com.capstone.domain.repository.MeterRepository;
-import com.capstone.infrastructure.meter.MeterCaptureManager;
+import com.capstone.nawaco.data.repository.MeterRepositoryImpl;
+import com.capstone.nawaco.domain.repository.MeterRepository;
+import com.capstone.nawaco.infrastructure.meter.MeterCaptureManager;
 
 import dagger.Module;
 import dagger.Provides;
