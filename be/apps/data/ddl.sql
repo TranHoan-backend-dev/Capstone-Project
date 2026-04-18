@@ -25,56 +25,56 @@ create table public.water_usage_contract
 DROP TABLE IF EXISTS public.customer CASCADE;
 create table public.customer
 (
-  customer_id                       varchar(255) not null  -- Unique identifier for the customer
+  customer_id                       varchar(255) not null                -- Unique identifier for the customer
     primary key,
-  address                           varchar(255) not null, -- Physical address of the customer
-  bank_account_name                 varchar(255) not null, -- Name of the bank account holder
-  bank_account_number               varchar(255) not null, -- Bank account number for transactions
-  bank_account_provider_location    varchar(255) not null, -- Branch or location of the bank provider
-  budget_relationship_code          varchar(255),          -- Code indicating the budget relationship
-  cancel_reason                     varchar(255),          -- Reason for cancellation if the service is terminated
-  citizen_identification_number     varchar(255) not null, -- Citizen ID or National ID number
-  citizen_identification_provide_at varchar(255) not null, -- Location/Date where the citizen ID was issued
-  connection_point                  varchar(255),          -- Point of connection to the water supply
-  created_at                        timestamp(6) not null, -- Timestamp when the customer record was created
-  deduction_period                  varchar(255),          -- Time period for deductions/payments
-  email                             varchar(255) not null, -- Customer's email address
-  fix_rate                          varchar(255),          -- Fixed billing rate if applicable
-  form_code                         varchar(255) not null  -- Code from the registration form
+  address                           varchar(255) not null,               -- Physical address of the customer
+  bank_account_name                 varchar(255) not null,               -- Name of the bank account holder
+  bank_account_number               varchar(255) not null,               -- Bank account number for transactions
+  bank_account_provider_location    varchar(255) not null,               -- Branch or location of the bank provider
+  budget_relationship_code          varchar(255),                        -- Code indicating the budget relationship
+  cancel_reason                     varchar(255),                        -- Reason for cancellation if the service is terminated
+  citizen_identification_number     varchar(255) not null,               -- Citizen ID or National ID number
+  citizen_identification_provide_at varchar(255) not null,               -- Location/Date where the citizen ID was issued
+  connection_point                  varchar(255),                        -- Point of connection to the water supply
+  created_at                        timestamp(6) not null,               -- Timestamp when the customer record was created
+  deduction_period                  varchar(255),                        -- Time period for deductions/payments
+  email                             varchar(255) not null,               -- Customer's email address
+  fix_rate                          varchar(255),                        -- Fixed billing rate if applicable
+  form_code                         varchar(255) not null                -- Code from the registration form
     constraint ukmcy3y2nfbclxl4b7u6gu6f1j
       unique,
-  form_number                       varchar(255) not null  -- Number from the registration form
+  form_number                       varchar(255) not null                -- Number from the registration form
     constraint uks5yfc8jitbpmhx96bq4v8affr
       unique,
-  household_registration_number     integer      not null, -- Number from the household registration book
-  installation_fee                  integer,               -- Fee charged for the initial installation
-  is_active                         boolean      not null, -- Flag indicating if the customer is active
-  is_big_customer                   boolean      not null, -- Flag indicating if the customer is a large-scale consumer
-  is_free                           boolean,               -- Flag indicating if the customer is exempt from certain fees
-  is_sale                           boolean,               -- Flag indicating if a sale/discount is applied
-  m3sale                            varchar(255),          -- Volume limit or criteria for sale rates
-  monthly_rent                      integer,               -- Monthly rental fee for the water meter
-  name                              varchar(255) not null, -- Full name of the customer
-  number_of_households              integer      not null, -- Total number of households using this connection
-  passport_code                     varchar(255),          -- Passport number if applicable
-  payment_method                    varchar(255) not null, -- Preferred method of payment
-  phone_number                      varchar(255) not null, -- Primary contact phone number
-  protect_environment_fee           integer      not null, -- Environmental protection fee amount
-  roadmap_id                        varchar(255) not null, -- ID of the assigned reading/billing roadmap
-  type                              varchar(255) not null  -- Category of the customer (FAMILY or COMPANY)
+  household_registration_number     integer      not null,               -- Number from the household registration book
+  installation_fee                  integer,                             -- Fee charged for the initial installation
+  is_active                         boolean      not null,               -- Flag indicating if the customer is active
+  is_big_customer                   boolean      not null,               -- Flag indicating if the customer is a large-scale consumer
+  is_free                           boolean      not null default false, -- Flag indicating if the customer is exempt from certain fees
+  is_sale                           boolean,                             -- Flag indicating if a sale/discount is applied
+  m3sale                            varchar(255),                        -- Volume limit or criteria for sale rates
+  monthly_rent                      integer,                             -- Monthly rental fee for the water meter
+  name                              varchar(255) not null,               -- Full name of the customer
+  number_of_households              integer      not null,               -- Total number of households using this connection
+  passport_code                     varchar(255),                        -- Passport number if applicable
+  payment_method                    varchar(255) not null,               -- Preferred method of payment
+  phone_number                      varchar(255) not null,               -- Primary contact phone number
+  protect_environment_fee           integer      not null,               -- Environmental protection fee amount
+  roadmap_id                        varchar(255) not null,               -- ID of the assigned reading/billing roadmap
+  type                              varchar(255) not null                -- Category of the customer (FAMILY or COMPANY)
     constraint customer_type_check
       check ((type)::text = ANY ((ARRAY ['FAMILY'::character varying, 'COMPANY'::character varying])::text[])),
-  updated_at                        timestamp(6) not null, -- Timestamp of the last update
-  usage_target                      varchar(255) not null  -- Intended use of water (DOMESTIC, COMMERCIAL, etc.)
+  updated_at                        timestamp(6) not null,               -- Timestamp of the last update
+  usage_target                      varchar(255) not null                -- Intended use of water (DOMESTIC, COMMERCIAL, etc.)
     constraint customer_usage_target_check
       check ((usage_target)::text = ANY
              ((ARRAY ['DOMESTIC'::character varying, 'INSTITUTIONAL'::character varying, 'INDUSTRIAL'::character varying, 'COMMERCIAL'::character varying])::text[])),
-  water_meter_id                    varchar(255) not null  -- Serial or ID of the installed water meter
+  water_meter_id                    varchar(255) not null                -- Serial or ID of the installed water meter
     constraint ukiqunauxnl5hcoukea9l94ajx0
       unique,
-  water_meter_type                  varchar(255) not null, -- Model or type of the water meter
-  water_price_id                    varchar(255) not null, -- ID of the applicable water price tier
-  contract_contract_id              varchar(255) not null  -- Reference to the water usage contract
+  water_meter_type                  varchar(255) not null,               -- Model or type of the water meter
+  water_price_id                    varchar(255) not null,               -- ID of the applicable water price tier
+  contract_contract_id              varchar(255) not null                -- Reference to the water usage contract
     constraint uk7jogikiuj4g970rd9cmqw40ix
       unique
     constraint fkephc09kiw1hcg1loxnnhnwh3q

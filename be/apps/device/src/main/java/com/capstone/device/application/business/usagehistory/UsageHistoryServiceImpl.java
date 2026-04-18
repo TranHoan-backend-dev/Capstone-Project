@@ -334,8 +334,8 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
 
       // Sort usages to find previous index for "oldIndex"
       List<Usage> sortedUsages = history.getUsages().stream()
-          .sorted(java.util.Comparator.comparing(Usage::getRecordingDate))
-          .toList();
+        .sorted(Comparator.comparing(Usage::getRecordingDate))
+        .toList();
 
       for (int i = 0; i < sortedUsages.size(); i++) {
         var u = sortedUsages.get(i);
@@ -448,6 +448,7 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
           if (mass.compareTo(BigDecimal.ZERO) > 0 && waterChargeCalculator != null && waterPrice != null) {
             try {
               calculatedPrice = waterChargeCalculator.calculateProgressiveCharge(mass, waterPrice).totalAmount();
+              log.info("[mapToResponse] Calculated price: {}", calculatedPrice);
             } catch (Exception e) {
               log.warn("Lỗi tính tiền cho tháng {}: {}", u.getRecordingDate(), e.getMessage());
             }
@@ -460,6 +461,7 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
         // Resolve Signed URL for Mobile display
         u.setMeterImageUrl(resolveSignedUrl(u.getMeterImageUrl()));
 
+        log.info("[mapToResponse] Mapping usage response: {}", u);
         usagesList.add(u);
         previousIndex = u.getIndex();
       }
