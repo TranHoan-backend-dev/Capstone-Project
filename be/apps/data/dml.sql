@@ -1755,8 +1755,8 @@ VALUES ('2178583', '2023-01-01', 21, '00000000-0000-0000-0000-900000000001'),
        ('24000037', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006'),
        ('24000038', '2024-01-01', 15, '00000000-0000-0000-0000-900000000006');
 
-INSERT INTO public.water_price (price_id, application_period, created_at, description, environment_price,
-                                expiration_date, tax, updated_at, usage_target)
+INSERT INTO public.water_price (price_id, application_period, created_at, description, tax,
+                                expiration_date, environment_price, updated_at, usage_target)
 VALUES ('00000000-0000-0000-0000-B00000000001', '2018-01-01', NOW(), 'Giá nước sinh hoạt dân cư mức 1 khu vực 1', 10.00,
         '2019-01-01', 400000.00, NOW(), 'DOMESTIC'),
        ('00000000-0000-0000-0000-B00000000005', '2019-02-01', NOW(), 'Giá nước sinh hoạt dân cư mức 2 khu vực 1', 10.00,
