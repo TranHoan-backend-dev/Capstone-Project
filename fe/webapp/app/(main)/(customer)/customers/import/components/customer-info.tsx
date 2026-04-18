@@ -32,7 +32,7 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
           const result = await response.json();
           if (result.data) {
             setDisplayWaterPrice(
-              `${result.data.tax}% - ${result.data.environmentPrice}`,
+              `${result.data.tax} - ${result.data.environmentPrice}%`,
             );
           }
         } catch (error) {
@@ -312,11 +312,12 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
           dataKey="content"
           isOpen={showFormModal}
           onClose={() => setShowFormModal(false)}
-          title="Chọn Mã đơn"
+          title="Chọn Số đơn"
           api="/api/construction/installation-forms"
           columns={[
             { key: "stt", label: "STT" },
-            { key: "formNumber", label: "Mã đơn" },
+            { key: "formCode", label: "Mã đơn" },
+            { key: "formNumber", label: "Số đơn" },
             { key: "customerName", label: "Tên khách hàng" },
             { key: "address", label: "Địa chỉ" },
             { key: "phoneNumber", label: "Số điện thoại" },
@@ -420,8 +421,8 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
           columns={[
             { key: "stt", label: "STT" },
             { key: "usageTarget", label: "Mục đích sử dụng" },
-            { key: "tax", label: "Thuế (%)" },
-            { key: "environmentPrice", label: "Phí môi trường" },
+            { key: "tax", label: "Phí môi trường" },
+            { key: "environmentPrice", label: "Thuế (%)" },
             { key: "applicationPeriod", label: "Kỳ áp dụng" },
           ]}
           mapData={(item: any, index: number) => ({

@@ -246,6 +246,15 @@ export const RelatedOrdersTable = ({
             {item.stt}
           </span>
         );
+      case "formCode":
+        return (
+          <button
+            onClick={() => handleOpenDetailPopup(item)}
+            className="font-bold text-blue-600 hover:underline hover:text-blue-800 cursor-pointer"
+          >
+            {item.formCode}
+          </button>
+        );
       case "formNumber":
         return (
           <button

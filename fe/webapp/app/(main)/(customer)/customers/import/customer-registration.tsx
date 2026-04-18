@@ -155,7 +155,51 @@ const CustomerRegistration = ({
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Save failed");
+        let errorMessage = data.message || "Lưu thất bại";
+        
+        try {
+          let errorData = data;
+          if (typeof data.message === "string" && data.message.includes("{")) {
+            const jsonStart = data.message.indexOf("{");
+            const jsonStr = data.message.substring(jsonStart);
+            const parsed = JSON.parse(jsonStr);
+            if (parsed.details && parsed.details.data) {
+              errorData = parsed;
+            }
+          }
+          
+          if (errorData?.details?.data) {
+            const errors = errorData.details.data;
+            const errorMsgs = Object.entries(errors).map(([key, value]) => {
+              let translatedKey = key;
+              const keyMap: Record<string, string> = {
+                contractId: "Mã hợp đồng",
+                name: "Tên khách hàng",
+                phoneNumber: "Số điện thoại",
+                citizenIdentificationNumber: "Số CCCD",
+                address: "Địa chỉ",
+                formCode: "Mã đơn",
+                formNumber: "Số đơn",
+                customerCode: "Mã khách hàng"
+              };
+              if (keyMap[key]) translatedKey = keyMap[key];
+
+              let translatedValue = String(value);
+              if (translatedValue === "must not be blank" || translatedValue === "must not be null" || translatedValue === "must not be empty") {
+                translatedValue = "không được để trống";
+              } else if (translatedValue.includes("size must be between")) {
+                translatedValue = "độ dài không hợp lệ";
+              }
+
+              return `${translatedKey} ${translatedValue}`;
+            });
+            errorMessage = `Lỗi xác thực: ${errorMsgs.join(", ")}`;
+          }
+        } catch (parseError) {
+          // Ignore parsing errors and keep the original message
+        }
+
+        throw new Error(errorMessage);
       }
 
       CallToast({

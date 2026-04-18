@@ -16,6 +16,7 @@ import { INSTALLATION_FORM_NEW_COLUMN } from "@/config/table-columns";
 import { NewInstallationFormItem, NewInstallationFormResponse } from "@/types";
 import { formatDate1 } from "@/utils/format";
 import { authFetch } from "@/utils/authFetch";
+import { InstallationFormDetailPopup } from "../../lookup/components/installation-form-detail-popup";
 
 interface Props {
   keyword: string;
@@ -37,7 +38,27 @@ export const RelatedOrdersTable = ({ keyword, reloadKey }: Props) => {
 
   const [page, setPage] = useState(1);
   const pageSize = 10;
+  const [assignPopup, setAssignPopup] = useState<{
+    isOpen: boolean;
+    formCode: string;
+    formNumber: string;
+    customerName: string;
+  }>({
+    isOpen: false,
+    formCode: "",
+    formNumber: "",
+    customerName: "",
+  });
 
+  const [detailPopup, setDetailPopup] = useState<{
+    isOpen: boolean;
+    formCode: string;
+    formNumber: string;
+  }>({
+    isOpen: false,
+    formCode: "",
+    formNumber: "",
+  });
   useEffect(() => {
     setLoading(true);
 
@@ -72,6 +93,7 @@ export const RelatedOrdersTable = ({ keyword, reloadKey }: Props) => {
           (item: NewInstallationFormResponse, index: number) => ({
             id: item.formCode,
             stt: (page - 1) * pageSize + index + 1,
+            formCode: item.formCode,
             formNumber: item.formNumber,
             customerName: item.customerName,
             phoneNumber: item.phoneNumber,
@@ -106,7 +128,13 @@ export const RelatedOrdersTable = ({ keyword, reloadKey }: Props) => {
       };
     });
   };
-
+  const handleOpenDetailPopup = (item: any) => {
+    setDetailPopup({
+      isOpen: true,
+      formCode: item.formCode,
+      formNumber: item.formNumber,
+    });
+  };
   const actionButtons = [
     {
       content: "In biên nhận",
@@ -130,22 +158,44 @@ export const RelatedOrdersTable = ({ keyword, reloadKey }: Props) => {
             {item.stt}
           </span>
         );
+      case "formCode":
+        return (
+          // <Link
+          //   as={NextLink}
+          //   className={`font-bold text-blue-600 hover:underline hover:text-blue-800 ${TitleDarkColor}`}
+          //   href="#"
+          // >
+          //   {item.formNumber}
+          // </Link>
+          <button
+            onClick={() => handleOpenDetailPopup(item)}
+            className="font-bold text-blue-600 hover:underline hover:text-blue-800 cursor-pointer"
+          >
+            {item.formCode}
+          </button>
+        );
       case "formNumber":
         return (
-          <Link
-            as={NextLink}
-            className={`font-bold text-blue-600 hover:underline hover:text-blue-800 ${TitleDarkColor}`}
-            href="#"
+          // <Link
+          //   as={NextLink}
+          //   className={`font-bold text-blue-600 hover:underline hover:text-blue-800 ${TitleDarkColor}`}
+          //   href="#"
+          // >
+          //   {item.formNumber}
+          // </Link>
+          <button
+            onClick={() => handleOpenDetailPopup(item)}
+            className="font-bold text-blue-600 hover:underline hover:text-blue-800 cursor-pointer"
           >
             {item.formNumber}
-          </Link>
+          </button>
         );
-      case "customerName":
-        return (
-          <span className="font-bold text-gray-900 dark:text-foreground">
-            {item.customerName}
-          </span>
-        );
+      // case "customerName":
+      //   return (
+      //     <span className="font-bold text-gray-900 dark:text-foreground">
+      //       {item.customerName}
+      //     </span>
+      //   );
       case "actions":
         return (
           <div className="flex items-center gap-2 justify-center">
@@ -174,20 +224,34 @@ export const RelatedOrdersTable = ({ keyword, reloadKey }: Props) => {
   };
 
   return (
-    <GenericDataTable
-      isCollapsible
-      columns={INSTALLATION_FORM_NEW_COLUMN}
-      data={data}
-      headerSummary={`${totalItems}`}
-      paginationProps={{
-        total: totalPages,
-        page: page,
-        onChange: setPage,
-        summary: `${data.length}`,
-      }}
-      renderCellAction={renderCell}
-      title="Danh sách đơn lắp đặt mới"
-      onSortChange={handleSortChange}
-    />
+    <>
+      <GenericDataTable
+        isCollapsible
+        columns={INSTALLATION_FORM_NEW_COLUMN}
+        data={data}
+        headerSummary={`${totalItems}`}
+        paginationProps={{
+          total: totalPages,
+          page: page,
+          onChange: setPage,
+          summary: `${data.length}`,
+        }}
+        renderCellAction={renderCell}
+        title="Danh sách đơn lắp đặt mới"
+        onSortChange={handleSortChange}
+      />
+      <InstallationFormDetailPopup
+        isOpen={detailPopup.isOpen}
+        onClose={() =>
+          setDetailPopup({
+            isOpen: false,
+            formCode: "",
+            formNumber: "",
+          })
+        }
+        formCode={detailPopup.formCode}
+        formNumber={detailPopup.formNumber}
+      />
+    </>
   );
 };
