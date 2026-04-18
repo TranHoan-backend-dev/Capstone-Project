@@ -139,4 +139,11 @@ public class CustomerController {
     log.info("REST request to get customer count: {}", id);
     return customerService.countCustomersOfRoadmap(id);
   }
+
+  @GetMapping("/free/{customerId}")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'METER_INSPECTION_STAFF')")
+  public boolean isFreeCustomer(@PathVariable String customerId) {
+    log.info("Is free customer: {}", customerId);
+    return customerService.isFree(customerId);
+  }
 }

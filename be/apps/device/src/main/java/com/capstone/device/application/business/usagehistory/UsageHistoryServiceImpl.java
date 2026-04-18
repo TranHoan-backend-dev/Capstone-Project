@@ -402,6 +402,7 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
 
   private UsageResponse mapToResponse(@NonNull UsageHistory entity, String customerId,
       @NonNull CustomerWaterPriceRefResponse customerInfo) {
+    var customer = customerService.isCustomerFree(customerId);
     var waterPrice = resolveWaterPrice(customerInfo.waterPriceId());
     log.info("Mapping usage response for price ID: {}", waterPrice != null ? waterPrice.getPriceId() : "null");
     List<PriceTypeResponse> priceTypeResponses = waterPrice != null && waterPrice.getPriceTypes() != null
@@ -426,11 +427,15 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
         }
 
         var calculatedPrice = BigDecimal.ZERO;
-        if (mass.compareTo(BigDecimal.ZERO) > 0 && waterChargeCalculator != null && waterPrice != null) {
-          try {
-            calculatedPrice = waterChargeCalculator.calculateProgressiveCharge(mass, waterPrice).totalAmount();
-          } catch (Exception e) {
-            log.warn("Lỗi tính tiền cho tháng {}: {}", u.getRecordingDate(), e.getMessage());
+
+        // neu khach hang thuoc dien duoc mien phi tien nuoc thi khong tinh tien nuoc nua
+        if (!customer) {
+          if (mass.compareTo(BigDecimal.ZERO) > 0 && waterChargeCalculator != null && waterPrice != null) {
+            try {
+              calculatedPrice = waterChargeCalculator.calculateProgressiveCharge(mass, waterPrice).totalAmount();
+            } catch (Exception e) {
+              log.warn("Lỗi tính tiền cho tháng {}: {}", u.getRecordingDate(), e.getMessage());
+            }
           }
         }
 

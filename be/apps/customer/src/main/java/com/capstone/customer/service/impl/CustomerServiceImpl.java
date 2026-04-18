@@ -284,6 +284,14 @@ public class CustomerServiceImpl implements CustomerService {
     return customerRepository.countByRoadmapId(roadmapId);
   }
 
+  @Override
+  public boolean isFree(String customerId) {
+    log.info("Checking if customers are free: {}", customerId);
+    return customerRepository.findById(customerId)
+      .orElseThrow(() -> new NotExistingException("Khach hang khong ton tai"))
+      .getIsFree();
+  }
+
   private @NonNull CustomerResponse mapToResponse(@NonNull Customer customer) {
     var waterPrice = resolveWaterPrice(customer.getWaterPriceId());
     var waterMeter = resolveWaterMeter(customer.getWaterMeterId());

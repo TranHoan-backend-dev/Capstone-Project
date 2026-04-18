@@ -31,4 +31,7 @@ public interface CustomerService {
 
   @GetMapping("/roadmap-customers/{roadmapId}")
   WrapperApiResponse getCustomersByRoadmapId(@PathVariable("roadmapId") @NonNull String roadmapId);
+
+  @GetMapping("/free/{customerId}")
+  Boolean isCustomerFree(@PathVariable String customerId);
 }

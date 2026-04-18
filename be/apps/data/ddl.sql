@@ -396,14 +396,14 @@ create table public.laterals
 DROP TABLE IF EXISTS public.receipt CASCADE;
 create table public.receipt
 (
-  address                       varchar(255) not null, -- Site or billing address
+--   address                       varchar(255) not null, -- Site or billing address
   attach                        varchar(255),          -- Link to supporting documents or scan of the physical receipt
   created_at                    timestamp(6) not null, -- Timestamp of receipt generation
-  customer_name                 varchar(255) not null, -- Subject who completed the payment
-  is_paid                       boolean      not null, -- Status: true if payment is confirmed
-  payment_date                  date         not null, -- Official transaction date
+--   customer_name                 varchar(255) not null, -- Subject who completed the payment
+--   is_paid                       boolean      not null, -- Status: true if payment is confirmed
+--   payment_date                  date         not null, -- Official transaction date
   payment_reason                varchar(255) not null, -- Category description of the payment
-  receipt_number                varchar(255) not null, -- Official sequence number from the receipt book
+--   receipt_number                varchar(255) not null, -- Official sequence number from the receipt book
   significance                  jsonb,                 -- Approval/Processing metadata in JSON
   total_money_in_characters     varchar(255),          -- Amount worded out in textual format
   total_money_in_digits         varchar(255) not null, -- Standardized numerical value of payment
@@ -568,20 +568,20 @@ create table public.materials_of_settlement
 DROP TABLE IF EXISTS public.water_meter_type CASCADE;
 create table public.water_meter_type
 (
-  type_id     varchar(255) not null  -- System ID for the water meter model (Primary Key)
+  type_id      varchar(255) not null  -- System ID for the water meter model (Primary Key)
     primary key,
-  created_at  timestamp(6) not null, -- Timestamp of record creation
-  diameter    real,                  -- Physical diameter of the aperture (mm)
-  max_index   varchar(255),          -- Maximum readable value on the register
-  meter_model varchar(255) not null, -- Manufacturer's model designation
-  name        varchar(255) not null, -- Human-readable model name
-  origin      varchar(255) not null, -- Country where the device was manufactured
-  qmin        varchar(255),          -- Detection limit threshold (Minimum)
-  qn          varchar(255),          -- Detection limit threshold (Nominal)
-  qt          varchar(255),          -- Detection limit threshold (Transitional)
-  size        integer,               -- Commercial size code
+  created_at   timestamp(6) not null, -- Timestamp of record creation
+  diameter     real,                  -- Physical diameter of the aperture (mm)
+  max_index    varchar(255),          -- Maximum readable value on the register
+  meter_model  varchar(255) not null, -- Manufacturer's model designation
+  name         varchar(255) not null, -- Human-readable model name
+  origin       varchar(255) not null, -- Country where the device was manufactured
+  qmin         varchar(255),          -- Detection limit threshold (Minimum)
+  qn           varchar(255),          -- Detection limit threshold (Nominal)
+  qt           varchar(255),          -- Detection limit threshold (Transitional)
+  size         integer,               -- Commercial size code
   index_length integer,               -- Number of integer digits (black characters)
-  updated_at  timestamp(6) not null  -- Timestamp of last update
+  updated_at   timestamp(6) not null  -- Timestamp of last update
 );
 
 DROP TABLE IF EXISTS public.water_meter CASCADE;
@@ -643,14 +643,16 @@ create table public.water_price_price_types
 DROP TABLE IF EXISTS public.business_page CASCADE;
 create table public.business_page
 (
-  page_id  varchar(255) not null  -- Code identifying a specific dashboard module/page (Primary Key)
+  page_id    varchar(255) not null  -- Code identifying a specific dashboard module/page (Primary Key)
     primary key,
-  activate boolean      not null, -- Global visibility toggle for the page
-  creator  varchar(255) not null, -- ID of the user who registered the page route
-  name     varchar(255) not null  -- Unique name label for the page
+  activate   boolean      not null, -- Global visibility toggle for the page
+  creator    varchar(255) not null, -- ID of the user who registered the page route
+  name       varchar(255) not null  -- Unique name label for the page
     constraint ukd95s8n40xd5gu8nf7k5beq3l0
       unique,
-  updator  varchar(255) not null  -- ID of the user who last changed the page config
+  updator    varchar(255) not null, -- ID of the user who last changed the page config
+  created_at timestamp(6) not null, -- Record creation timestamp
+  updated_at timestamp(6) not null  -- Record update timestamp
 );
 
 DROP TABLE IF EXISTS public.department CASCADE;
