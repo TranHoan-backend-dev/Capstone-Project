@@ -121,6 +121,7 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
 
     var serial = extractTheMeterSerial(response.results());
     var index = extractTheMeterIndex(response.results());
+    log.info("detectedIndex raw: {}", index);
 
     if (serial != null && index != null) {
       var meterOpt = waterMeterRepository.findById(serial);
