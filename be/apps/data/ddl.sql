@@ -370,6 +370,7 @@ create table public.cost_estimate
   vat_coefficient                    integer,               -- Multiplier for value-added tax
   water_meter_serial                 varchar(255),          -- Serial number of the water meter
   water_meter_type_id                varchar(255),          -- ID of the specific meter model used
+  total_amount                       decimal(10, 3),
   installation_form_code             varchar(255) not null, -- Referral installation form code
   installation_form_number           varchar(36)  not null, -- Referral installation form sequence number
   constraint ukamtlfn0i9qita6f19cpjnukbu
@@ -448,6 +449,7 @@ create table public.settlement
   registration_at          date           not null, -- Official registration date of the settlement
   significance             jsonb,                   -- JSON data for audit signatures
   updated_at               timestamp(6)   not null, -- Timestamp of last update
+  total_amount             decimal(10, 3),
   installation_form_code   varchar(255)   not null, -- Referral installation form code
   installation_form_number varchar(36)    not null, -- Referral installation form sequence number
   constraint ukoq0jl8wc17mev4yyc7k8c1tj9

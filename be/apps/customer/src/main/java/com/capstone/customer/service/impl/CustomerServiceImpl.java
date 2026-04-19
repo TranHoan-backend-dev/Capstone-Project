@@ -24,6 +24,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import com.capstone.customer.dto.request.customer.CustomerFilterRequest;
 import com.capstone.customer.repository.CustomerSpecification;
+import java.time.LocalDate;
+import java.util.Map;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,7 +77,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     setProperties2(
       customer, request.formCode(), request.formNumber(),
-      request.waterPriceId(), request.waterMeterId());
+      request.waterPriceId(), request.waterMeterId(), request.waterMeterType());
     setProperties(
       customer, request.isFree(), request.isSale(), request.m3Sale(),
       request.fixRate(), request.installationFee(), request.deductionPeriod(),
@@ -89,7 +91,7 @@ public class CustomerServiceImpl implements CustomerService {
     return mapToResponse(saved);
   }
 
-  private void setProperties2(Customer customer, String formCode, String formNumber, String waterPriceId, String waterMeterId) {
+  private void setProperties2(Customer customer, String formCode, String formNumber, String waterPriceId, String waterMeterId, String waterMeterType) {
     if (formCode != null && !formCode.isBlank() &&
       formNumber != null && !formNumber.isBlank()) {
       var status = constructionService.checkExistence(formCode, formNumber);
@@ -105,7 +107,18 @@ public class CustomerServiceImpl implements CustomerService {
       }
       customer.setWaterPriceId(waterPriceId);
     }
-    if (waterMeterId != null) {
+    if (waterMeterId != null && !waterMeterId.equals(customer.getWaterMeterId())) {
+      if (deviceService.checkExistenceOfWaterMeter(waterMeterId)) {
+        throw new IllegalArgumentException("Đồng hồ nước này đã được sử dụng");
+      }
+
+      deviceService.createWaterMeter(Map.of(
+        "meterId", waterMeterId,
+        "installationDate", LocalDate.now().toString(),
+        "size", 15,
+        "typeId", waterMeterType != null ? waterMeterType : customer.getWaterMeterType()
+      ));
+
       customer.setWaterMeterId(waterMeterId);
     }
   }
@@ -229,7 +242,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     setProperties2(
       customer, request.formCode(), request.formNumber(),
-      request.waterPriceId(), request.waterMeterId());
+      request.waterPriceId(), request.waterMeterId(), request.waterMeterType());
     var updated = customerRepository.save(customer);
     return mapToResponse(updated);
   }

@@ -5,8 +5,10 @@ import com.capstone.construction.infrastructure.utils.Message;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Schema(description = "Yêu cầu cập nhật dự toán")
@@ -83,7 +85,12 @@ public record UpdateRequest(
     String waterMeterType,
 
     @Schema(description = "ID đồng hồ nước tổng", example = "OWM-98765")
-    String overallWaterMeterId
+    String overallWaterMeterId,
+
+    @Schema(description = "Tổng số tiền của dự toán")
+    @NotNull
+    @Positive
+    BigDecimal totalAmount
   ) {
 
   }

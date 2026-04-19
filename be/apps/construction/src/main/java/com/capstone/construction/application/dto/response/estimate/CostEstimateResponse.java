@@ -4,6 +4,7 @@ import com.capstone.common.request.BaseMaterial;
 import com.capstone.construction.domain.model.utils.FormProcessingStatus;
 import com.capstone.construction.domain.model.utils.InstallationFormId;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -46,7 +47,8 @@ public record CostEstimateResponse(
     String meterTypeId,
     InstallationFormId installationFormId,
     FormProcessingStatus status,
-    Significance significance
+    Significance significance,
+    BigDecimal totalAmount
   ) {
 
   }

@@ -91,6 +91,7 @@ public class SettlementServiceImpl implements SettlementService {
       settlement.setNote(request.note());
     if (request.registrationAt() != null)
       settlement.setRegistrationAt(request.registrationAt());
+    settlement.setTotalAmount(request.totalAmount());
 
     var saved = settlementRepository.save(settlement);
 
