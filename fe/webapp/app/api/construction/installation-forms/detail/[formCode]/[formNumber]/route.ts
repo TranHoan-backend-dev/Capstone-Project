@@ -16,10 +16,16 @@ export async function GET(
     );
   }
 
-  const response = await getInstallationFormByCode(
-    accessToken,
-    formCode,
-    formNumber,
-  );
-  return NextResponse.json(response.data);
+  try {
+    const response = await getInstallationFormByCode(
+      accessToken,
+      formCode,
+      formNumber,
+    );
+    return NextResponse.json(response.data);
+  } catch (error: any) {
+    const status = error.response?.status || 500;
+    const data = error.response?.data || { message: "Internal Server Error" };
+    return NextResponse.json(data, { status });
+  }
 }

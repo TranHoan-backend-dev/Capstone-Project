@@ -211,7 +211,7 @@ public class InstallationFormController {
   }
 
   @GetMapping("/details/{formCode}/{formNumber}")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF', 'COMPANY_LEADERSHIP')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF', 'COMPANY_LEADERSHIP', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD')")
   public ResponseEntity<WrapperApiResponse> getDetails(
     @PathVariable String formCode,
     @PathVariable String formNumber

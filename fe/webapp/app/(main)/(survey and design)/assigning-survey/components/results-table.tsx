@@ -13,6 +13,7 @@ import { LookupModal } from "@/components/ui/modal/LookupModal";
 import { SURVEY_ASSIGNMENT_COLUMN } from "@/config/table-columns";
 import { CallToast } from "@/components/ui/CallToast";
 import { authFetch } from "@/utils/authFetch";
+import { InstallationFormDetailPopup } from "./installation-form-detail-popup";
 
 interface Props {
   data: SurveyAssignmentItem[];
@@ -40,7 +41,24 @@ export const SurveyAssignmentTable = ({
   >({});
   const [showEmployeeModal, setShowEmployeeModal] = useState(false);
   const [currentRow, setCurrentRow] = useState<string | null>(null);
+  const [detailPopup, setDetailPopup] = useState<{
+    isOpen: boolean;
+    formCode: string;
+    formNumber: string;
+  }>({
+    isOpen: false,
+    formCode: "",
+    formNumber: "",
+  });
   const pageSize = 10;
+
+  const handleOpenDetailPopup = (item: any) => {
+    setDetailPopup({
+      isOpen: true,
+      formCode: item.id,
+      formNumber: item.formNumber,
+    });
+  };
 
   const handleOpenModal = (rowId: string) => {
     setCurrentRow(rowId);
@@ -111,13 +129,12 @@ export const SurveyAssignmentTable = ({
 
       case "formNumber":
         return (
-          <Link
-            as={NextLink}
-            className={`font-bold text-blue-600 hover:underline hover:text-blue-800 ${TitleDarkColor}`}
-            href={`/survey/${item.id}`}
+          <button
+            onClick={() => handleOpenDetailPopup(item)}
+            className={`font-bold text-blue-600 hover:underline hover:text-blue-800 cursor-pointer ${TitleDarkColor}`}
           >
             {item.formNumber}
-          </Link>
+          </button>
         );
 
       case "surveyor":
@@ -163,6 +180,18 @@ export const SurveyAssignmentTable = ({
           summary: `${totalItem}`,
         }}
         renderCellAction={renderCell}
+      />
+      <InstallationFormDetailPopup
+        isOpen={detailPopup.isOpen}
+        onClose={() =>
+          setDetailPopup({
+            isOpen: false,
+            formCode: "",
+            formNumber: "",
+          })
+        }
+        formCode={detailPopup.formCode}
+        formNumber={detailPopup.formNumber}
       />
       <LookupModal
         enableSearch={false}
