@@ -49,6 +49,20 @@ public class UsageHistoryUseCase {
     var response = usageHistoryService.extractDataFromTheMeterImage(request.image());
     serial = serial != null ? serial : response.serial();
 
+    var index = response.index() == null ? "0" : response.index();
+    if (serial != null && response.index() != null) {
+      var meterOpt = waterMeterService.getWaterMeterById(serial);
+      System.out.println(meterOpt);
+      if (meterOpt != null) {
+        var indexLength = meterOpt.indexLength();
+        System.out.println("Type:  " + indexLength);
+
+        log.info("detected index length: {}", indexLength);
+        log.info("Trimming index from {} to {} based on meter indexLength length {}", index, index.substring(0, indexLength), indexLength);
+        index = index.substring(0, indexLength);
+      }
+    }
+
     // Nếu AI không nhận diện được Serial, thử lấy từ CustomerId cấp bởi Client
     if (serial == null && request.customerId() != null) {
       try {
@@ -66,15 +80,15 @@ public class UsageHistoryUseCase {
     String imageUrl = "https://images.unsplash.com/photo-1585702138250-afe07474776e"; // Mock URL for now
 
     usageHistoryService.addWaterIndexOfThisMonth(imageUrl, serial,
-        BigDecimal.valueOf(Long.parseLong(response.index())), request.recordingDate(), "PENDING");
+      BigDecimal.valueOf(Long.parseLong(index)), request.recordingDate(), "PENDING");
 
     String monthStr = request.recordingDate().format(java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
     return AnalysisResponse.builder()
-        .id(serial + "_" + monthStr)
-        .serial(serial)
-        .index(response.index())
-        .build();
+      .id(serial + "_" + monthStr)
+      .serial(serial)
+      .index(index)
+      .build();
   }
 
   public void updatePaymentStatus(String serial, String method) {

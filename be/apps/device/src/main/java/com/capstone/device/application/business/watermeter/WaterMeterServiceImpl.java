@@ -127,11 +127,14 @@ public class WaterMeterServiceImpl implements WaterMeterService {
   }
 
   private @NonNull WaterMeterResponse mapToResponse(@NonNull WaterMeter meter) {
+    var type = meter.getType();
     return new WaterMeterResponse(
       meter.getMeterId(),
       meter.getInstallationDate(),
       meter.getSize(),
-      meter.getType() != null ? meter.getType().getName() : null);
+      type != null ? type.getName() : null,
+      type.getIndexLength()
+    );
   }
 
   private @NonNull OverallWaterMeterResponse mapToOverallWaterMeterResponse(@NonNull OverallWaterMeter meter) {

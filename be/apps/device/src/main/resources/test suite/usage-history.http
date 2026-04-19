@@ -42,7 +42,7 @@ Content-Type: application/json
 }
 
 ### TC07 - Phân tích ảnh chụp đồng hồ với AI (Yêu cầu có Serial)
-POST {{uri}}/analyze/{{serial}}
+POST {{uri}}/analyze/2178583
 Authorization: Bearer {{access_token}}
 Content-Type: multipart/form-data; boundary=WebAppBoundary
 

@@ -6,5 +6,6 @@ public record WaterMeterResponse(
   String id,
   LocalDate installationDate,
   Integer size,
-  String typeName) {
+  String typeName,
+  int indexLength) {
 }
