@@ -17,7 +17,6 @@ import {
 import { EstimateItem, EstimateResponse, EstimateStatus } from "@/types";
 import { ESTIMATE_PREPARATION_COLUMN } from "@/config/table-columns";
 import { formatDate } from "@/utils/format";
-import { calculateTotalAmount } from "@/utils/calculateTotalAmount";
 import { authFetch } from "@/utils/authFetch";
 
 interface ResultsTableProps {
@@ -141,7 +140,7 @@ export const ResultsTable = ({ keyword, from, to }: ResultsTableProps) => {
             address: info.address,
             registerDate: new Date(info.createdAt).toLocaleDateString("vi-VN"),
             status: info.status.estimate,
-            totalPrice: calculateTotalAmount(item.material, info),
+            totalPrice: Number(info.totalAmount ?? item.totalAmount ?? 0),
             significance: info.significance,
           };
         });

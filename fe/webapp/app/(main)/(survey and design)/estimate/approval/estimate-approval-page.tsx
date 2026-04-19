@@ -22,7 +22,6 @@ import { authFetch } from "@/utils/authFetch";
 import { useProfile } from "@/hooks/useLogin";
 import CreateSignatureModal from "./components/create-signature-modal";
 import SignModal from "./components/sign-modal";
-import { calculateTotalAmount } from "@/utils/calculateTotalAmount";
 import { EstimateOrder } from "@/types";
 import CustomButton from "@/components/ui/custom/CustomButton";
 
@@ -197,12 +196,6 @@ const EstimateApprovalPage = () => {
           items.map(async (item: any, index: number) => {
             const info = item.generalInformation;
             const form = info.installationFormId;
-            const materialItems = Array.isArray(item.material)
-              ? item.material
-              : Array.isArray(item.materials)
-                ? item.materials
-                : [];
-            const calculatedTotal = calculateTotalAmount(materialItems, info);
             const fallbackTotal =
               info.totalAmount ?? info.totalPrice ?? item.totalAmount ?? 0;
             return {
@@ -212,10 +205,7 @@ const EstimateApprovalPage = () => {
               designProfileName: info.customerName,
               phone: item.phoneNumber,
               installationAddress: info.address,
-              totalAmount:
-                calculatedTotal !== "0"
-                  ? calculatedTotal
-                  : formatCurrency(fallbackTotal),
+              totalAmount: formatCurrency(fallbackTotal),
               createdDate: new Date(info.createdAt).toLocaleDateString("vi-VN"),
               status: info.status?.estimate?.toLowerCase() || "pending",
             };

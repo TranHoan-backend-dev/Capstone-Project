@@ -18,6 +18,7 @@ import { LookupModal } from "@/components/ui/modal/LookupModal";
 import { authFetch } from "@/utils/authFetch";
 import { CallToast } from "@/components/ui/CallToast";
 import { useIsPlanningTechnicalDepartmentHead } from "@/hooks/useHasRole";
+import { calculateTotalAmountRaw } from "@/utils/calculateTotalAmount";
 
 interface TechnicalInfoCardProps {
   estimateData: EstimateResponse | null;
@@ -560,6 +561,22 @@ export const TechnicalInfoCard = ({
           );
         });
       });
+
+      // Tính tổng tiền thô để gửi lên BE
+      const rawTotal = calculateTotalAmountRaw(materials, {
+        laborCoefficient: Number(laborCoefficient),
+        generalCostCoefficient: Number(generalCostCoefficient),
+        precalculatedTaxCoefficient: Number(precalculatedTaxCoefficient),
+        constructionMachineryCoefficient: Number(constructionMachineryCoefficient),
+        vatCoefficient: Number(vatCoefficient),
+        designCoefficient: Number(designCoefficient),
+        designFee: Number(designFee),
+        surveyEffort: Number(surveyEffort),
+        surveyFee: Number(surveyFee),
+        installationFee: Number(installationFee),
+        contractFee: Number(contractFee),
+      });
+      formData.append("generalInformation.totalAmount", String(rawTotal));
 
       // Thêm isFinished flag
       formData.append("isFinished", String(isFinished));
