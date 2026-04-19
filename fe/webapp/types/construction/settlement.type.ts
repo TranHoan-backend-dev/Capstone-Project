@@ -8,16 +8,35 @@ export interface SettlementStatus {
 export interface SettlementItem {
   stt: string;
   id: string;
+  settlementId?: string;
   formCode: string;
   formNumber: string;
+  customerName?: string;
   jobContent: string;
-  connectionFee: string;
+  connectionFee: string | number;
   address: string;
   registrationAt: string;
   status: SettlementStatus;
   note?: string;
   createdAt?: string;
   updatedAt?: string;
+}
+
+export type SettlementNumberish = string | number | null | undefined;
+
+export interface SettlementBaseMaterial {
+  materialCode: string;
+  jobContent: string;
+  unit: string;
+  mass: SettlementNumberish;
+  materialCost: SettlementNumberish;
+  laborPrice: SettlementNumberish;
+  laborPriceAtRuralCommune: SettlementNumberish;
+  totalLaborPrice: SettlementNumberish;
+  totalMaterialPrice: SettlementNumberish;
+  note?: string;
+  // một số backend có thể trả thêm field tương tự
+  [key: string]: any;
 }
 
 export interface SettlementDetail {
@@ -27,16 +46,20 @@ export interface SettlementDetail {
   jobContent: string;
   address: string;
   registrationAt: string;
-  connectionFee: number;
+  connectionFee: SettlementNumberish;
   note: string;
-  createdAt: string;
-  updatedAt: string;
-  significance: {
-    surveyStaff: string;
-    ptHead: string;
-    president: string;
-    constructionPresident: string;
+  createdAt?: string;
+  updatedAt?: string;
+  significance?: {
+    surveyStaff: any;
+    ptHead: any;
+    president: any;
+    constructionPresident?: any;
+    [key: string]: any;
   };
+  baseMaterials?: SettlementBaseMaterial[];
+  totalMaterialPrice?: SettlementNumberish;
+  totalLaborPrice?: SettlementNumberish;
   status: {
     registration: string;
     estimate: string;
@@ -93,28 +116,47 @@ export interface SettlementFilterRequest {
 }
 
 export interface SettlementRequest {
+  settlementId: string;
   formCode: string;
   formNumber: string;
+  customerName: string;
   jobContent: string;
   address: string;
   connectionFee: number;
   note?: string;
   registrationAt: string;
-  status: string[];
+  status?: string[];
 }
 
 export interface SettlementResponse {
   settlementId: string;
+  id?: string;
   jobContent: string;
   formNumber: string;
   address: string;
-  connectionFee: number;
-  createdAt: string;
+  connectionFee?: SettlementNumberish;
+  createdAt?: string;
   formCode: string;
-  note: string;
+  note?: string;
   registrationAt: string;
   // status: string[];
-  significance: any;
-  status: SettlementStatus;
-  updatedAt: string;
+  significance?: any;
+  status?: SettlementStatus | any;
+  updatedAt?: string;
+  baseMaterials?: SettlementBaseMaterial[];
+  generalInformation?: {
+    settlementId?: string;
+    formCode?: string;
+    formNumber?: string;
+    customerName?: string;
+    jobContent?: string;
+    address?: string;
+    registrationAt?: string;
+    connectionFee?: SettlementNumberish;
+    note?: string;
+    status?: SettlementStatus | any;
+    createdAt?: string;
+    updatedAt?: string;
+    [key: string]: any;
+  };
 }

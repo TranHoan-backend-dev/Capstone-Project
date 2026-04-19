@@ -278,7 +278,7 @@ export const ContractTable = ({
       case "contractId":
         return (
           <span
-            className="font-medium text-blue-600 cursor-pointer hover:underline"
+            className="font-medium text-black-600"
             // onClick={() => handleViewDetail(item.contractId)}
           >
             {item.contractId}

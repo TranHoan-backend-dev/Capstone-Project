@@ -17,6 +17,9 @@ export const AddressContactSection = ({
   formData,
   updateField,
 }: NewInstallationFormProps) => {
+  const normalizeBankAccountNumber = (value: string) =>
+    value.replace(/\D/g, "").slice(0, 16);
+
   const [showNetworkModal, setShowNetworkModal] = useState(false);
   const [selectedNetworkId, setSelectedNetworkId] = useState("");
   const [selectedNetworkName, setSelectedNetworkName] = useState("");
@@ -74,13 +77,16 @@ export const AddressContactSection = ({
           key={field.key}
           label={field.label}
           isRequired={field.required}
+          maxLength={field.key === "bankAccountNumber" ? 16 : undefined}
           value={String(
             formData[field.key as keyof NewInstallationFormPayload] ?? "",
           )}
           onChange={(e) =>
             updateField(
               field.key as keyof NewInstallationFormPayload,
-              e.target.value,
+              field.key === "bankAccountNumber"
+                ? normalizeBankAccountNumber(e.target.value)
+                : e.target.value,
             )
           }
         />

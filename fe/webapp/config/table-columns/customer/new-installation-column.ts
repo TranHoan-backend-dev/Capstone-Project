@@ -1,8 +1,14 @@
 export const INSTALLATION_FORM_NEW_COLUMN = [
   { key: "stt", label: "STT", width: "40px", align: "center" as const },
   {
-    key: "formNumber",
+    key: "formCode",
     label: "Mã đơn",
+    sortable: false,
+    align: "center" as const,
+  },
+  {
+    key: "formNumber",
+    label: "Số đơn",
     sortable: false,
     align: "center" as const,
   },
@@ -19,7 +25,13 @@ export const INSTALLATION_FORM_NEW_COLUMN = [
 
 export const NEW_INSTALLATION_LOOKUP_COLUMN = [
   { key: "stt", label: "STT", width: "40px" },
-  { key: "formNumber", label: "Mã đơn" },
+  {
+    key: "formCode",
+    label: "Mã đơn",
+    sortable: false,
+    align: "center" as const,
+  },
+  { key: "formNumber", label: "Số đơn" },
   { key: "customerName", label: "Tên khách hàng" },
   { key: "address", label: "Địa chỉ lắp đặt" },
   {

@@ -74,7 +74,6 @@ export const RelatedOrdersTable = ({
         const params = new URLSearchParams({
           page: String(page - 1),
           size: String(pageSize),
-          sort: `${sort.field},${sort.direction}`,
         });
         if (from) params.append("from", from);
         if (to) params.append("to", to);
@@ -246,6 +245,15 @@ export const RelatedOrdersTable = ({
           <span className="font-medium text-black dark:text-white">
             {item.stt}
           </span>
+        );
+      case "formCode":
+        return (
+          <button
+            onClick={() => handleOpenDetailPopup(item)}
+            className="font-bold text-blue-600 hover:underline hover:text-blue-800 cursor-pointer"
+          >
+            {item.formCode}
+          </button>
         );
       case "formNumber":
         return (

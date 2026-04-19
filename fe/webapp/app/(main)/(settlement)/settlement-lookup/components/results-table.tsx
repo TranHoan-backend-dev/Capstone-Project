@@ -57,6 +57,7 @@ export const ResultsTable = ({
   reloadKey,
   from,
   to,
+  status,
   onEdit,
   onDeleted,
   onFilterStatus,
@@ -72,7 +73,7 @@ export const ResultsTable = ({
     field: string;
     direction: "asc" | "desc";
   }>({
-    field: "createdAt",
+    field: "",
     direction: "desc",
   });
   const router = useRouter();
@@ -178,7 +179,7 @@ export const ResultsTable = ({
         const params = new URLSearchParams({
           page: String(page - 1),
           size: String(pageSize),
-          sort: `${sort.field},${sort.direction}`,
+          // sort: `${sort.field},${sort.direction}`,
         });
         if (keyword?.trim()) params.append("keyword", keyword.trim());
         if (from) params.append("fromDate", from);
@@ -203,18 +204,95 @@ export const ResultsTable = ({
           return;
         }
 
-        const mapped = items.map((item: SettlementResponse, index: number) => ({
-          id: item.settlementId,
-          stt: (page - 1) * pageSize + index + 1,
-          formCode: item.formCode,
-          formNumber: item.formNumber,
-          jobContent: item.jobContent,
-          address: item.address,
-          registrationAt: item.registrationAt,
-          connectionFee: item.connectionFee,
-          note: item.note,
-          status: item.status,
-        }));
+        const mapped = items.map((item: SettlementResponse, index: number) => {
+          const itemAny = item as any;
+          const general = itemAny?.generalInformation ?? itemAny;
+
+          const toNum = (v: any) => {
+            if (v === null || v === undefined) return 0;
+            if (typeof v === "number") return Number.isFinite(v) ? v : 0;
+            const str = String(v).trim();
+            if (!str) return 0;
+            const normalized = str.replace(/[^\d.-]/g, "");
+            const num = Number(normalized);
+            return Number.isFinite(num) ? num : 0;
+          };
+
+          const rawConnectionFee =
+            general?.connectionFee ??
+            general?.connection_fee ??
+            general?.connectionFeeAmount ??
+            itemAny?.connectionFee ??
+            itemAny?.connection_fee ??
+            itemAny?.connectionFeeAmount ??
+            itemAny?.fee;
+
+          const computedConnectionFee = Array.isArray(itemAny?.baseMaterials)
+            ? itemAny.baseMaterials.reduce((sum: number, row: any) => {
+                return (
+                  sum +
+                  toNum(row?.totalMaterialPrice) +
+                  toNum(row?.totalLaborPrice)
+                );
+              }, 0)
+            : 0;
+
+          return {
+            id:
+              general?.settlementId ??
+              itemAny?.settlementId ??
+              itemAny?.id ??
+              itemAny?.settlement_id ??
+              "",
+            settlementId:
+              general?.settlementId ??
+              itemAny?.settlementId ??
+              itemAny?.id ??
+              "",
+            stt: (page - 1) * pageSize + index + 1,
+            formCode:
+              general?.formCode ??
+              itemAny?.formCode ??
+              itemAny?.code ??
+              itemAny?.form_code ??
+              "",
+            formNumber:
+              general?.formNumber ??
+              itemAny?.formNumber ??
+              itemAny?.number ??
+              itemAny?.form_no ??
+              "",
+            customerName:
+              general?.customerName ?? itemAny?.customerName ?? "",
+            jobContent:
+              general?.jobContent ??
+              itemAny?.jobContent ??
+              itemAny?.content?.jobContent ??
+              itemAny?.baseMaterials?.[0]?.jobContent ??
+              "",
+            address:
+              general?.address ??
+              itemAny?.address ??
+              itemAny?.installationLocation ??
+              itemAny?.location ??
+              "",
+            registrationAt:
+              general?.registrationAt ??
+              itemAny?.registrationAt ??
+              itemAny?.registrationDate ??
+              general?.createdAt ??
+              itemAny?.createdAt ??
+              "",
+            connectionFee:
+              rawConnectionFee !== undefined &&
+              rawConnectionFee !== null &&
+              rawConnectionFee !== ""
+                ? rawConnectionFee
+                : computedConnectionFee,
+            note: general?.note ?? itemAny?.note ?? itemAny?.description ?? "",
+            status: general?.status ?? itemAny?.status ?? {},
+          };
+        });
         setData(mapped);
       } catch (error: any) {
         setData([]);
@@ -233,8 +311,9 @@ export const ResultsTable = ({
       );
       if (!res.ok) throw new Error("Failed to fetch");
       const json = await res.json();
-      const settlementData = json?.data?.data;
-      setSelectedSettlementDetail(settlementData);
+      // backend mới có thể trả { data: <payload> } hoặc { data: { data: <payload> } }
+      const settlementData = json?.data?.data ?? json?.data;
+      setSelectedSettlementDetail(settlementData ?? undefined);
 
       setIsDetailModalOpen(true);
     } catch (error: any) {
@@ -440,14 +519,14 @@ export const ResultsTable = ({
         },
       });
 
-      items.push({
-        content: "Xóa",
-        icon: TrashIcon,
-        className: "text-red-600 hover:bg-red-50",
-        onClick: (id: string) => {
-          setDeleteId(id);
-        },
-      });
+      // items.push({
+      //   content: "Xóa",
+      //   icon: TrashIcon,
+      //   className: "text-red-600 hover:bg-red-50",
+      //   onClick: (id: string) => {
+      //     setDeleteId(id);
+      //   },
+      // });
     }
 
     if (canSignSettlements) {
@@ -472,7 +551,7 @@ export const ResultsTable = ({
       case "formNumber":
         return (
           <Link
-            className="text-primary font-medium hover:underline p-0 h-auto min-w-0"
+            className="text-primary font-medium hover:underline p-0 h-auto min-w-0 cursor-pointer"
             onPress={() => fetchSettlementDetail(item.id)}
           >
             {item.formNumber}
@@ -533,7 +612,7 @@ export const ResultsTable = ({
           total: totalPages,
           page: page,
           onChange: setPage,
-          summary: `${data.length}`,
+          summary: `${totalItems}`,
         }}
         renderCellAction={renderCell}
         title="Danh sách quyết toán"

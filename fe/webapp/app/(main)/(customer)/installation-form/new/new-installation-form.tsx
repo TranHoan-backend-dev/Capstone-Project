@@ -11,11 +11,13 @@ import { RelatedOrdersTable } from "./components/related-orders-table";
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { NewInstallationFormPayload } from "@/types";
 import {
+  validateDigitsOnly,
   validateName,
   validateNotFutureDate,
   validateNotPastDate,
   validatePhone,
   validateRequiredFields,
+  validateText255,
 } from "@/utils/validation";
 import { CallToast } from "@/components/ui/CallToast";
 import { authFetch } from "@/utils/authFetch";
@@ -25,8 +27,8 @@ const validateCitizenId = (value: string): string | null => {
     return "Số CCCD không được để trống";
   }
   const cleanValue = value.replace(/\s/g, "");
-  if (!/^\d{12}$/.test(cleanValue)) {
-    return "Số CCCD phải gồm đúng 12 chữ số";
+  if (!/^\d{1,12}$/.test(cleanValue)) {
+    return "Số CCCD chỉ được chứa số và tối đa 12 chữ số";
   }
   return null;
 };
@@ -168,11 +170,48 @@ const NewInstallationForm = () => {
       const phoneError = validatePhone(formData.phoneNumber);
       if (phoneError) return showError(phoneError);
 
+      const bankAccountError = validateDigitsOnly(
+        formData.bankAccountNumber,
+        "Số tài khoản ngân hàng",
+        16,
+      );
+      if (bankAccountError) return showError(bankAccountError);
+
       const nameError = validateName(
         formData.customerName,
         "Họ tên khách hàng",
       );
       if (nameError) return showError(nameError);
+
+      const maxLengthFields: Array<{ value: string; fieldName: string }> = [
+        { value: formData.address, fieldName: "Địa chỉ" },
+        { value: formData.taxCode, fieldName: "Mã số thuế" },
+        { value: formData.formCode, fieldName: "Mã biểu mẫu" },
+        { value: formData.formNumber, fieldName: "Số hồ sơ" },
+        { value: formData.bankAccountNumber, fieldName: "Số tài khoản ngân hàng" },
+        {
+          value: formData.bankAccountProviderLocation,
+          fieldName: "Ngân hàng và chi nhánh",
+        },
+        {
+          value: formData.citizenIdentificationProvideLocation,
+          fieldName: "Nơi cấp CCCD",
+        },
+      ];
+
+      for (const field of maxLengthFields) {
+        const fieldError = validateText255(field.value || "", field.fieldName);
+        if (fieldError) return showError(fieldError);
+      }
+
+      const householdError =
+        formData.householdRegistrationNumber &&
+        validateDigitsOnly(
+          formData.householdRegistrationNumber,
+          "Số nhân khẩu",
+          12,
+        );
+      if (householdError) return showError(householdError);
 
       // const representativeError = validateName(
       //   formData.representative?.[0]?.name ?? "",
@@ -198,8 +237,22 @@ const NewInstallationForm = () => {
       );
       if (citizenDateError) return showError(citizenDateError);
 
+      const numberOfHousehold = Number(formData.numberOfHousehold);
+      const householdRegistrationNumber = Number(
+        formData.householdRegistrationNumber,
+      );
+
+      if (
+        Number.isNaN(numberOfHousehold) ||
+        Number.isNaN(householdRegistrationNumber)
+      ) {
+        return showError("Số hộ sử dụng và số nhân khẩu phải là số hợp lệ");
+      }
+
       const payload = {
         ...formData,
+        numberOfHousehold,
+        householdRegistrationNumber,
         receivedFormAt: formData.receivedFormAt
           ? new Date(formData.receivedFormAt).toISOString().split("T")[0]
           : "",
@@ -224,12 +277,32 @@ const NewInstallationForm = () => {
         let userFriendlyMsg = "Có lỗi xảy ra khi tạo đơn. Vui lòng thử lại.";
         try {
           const errJson = await res.json();
+          const validationData =
+            errJson?.data && typeof errJson.data === "object"
+              ? errJson.data
+              : errJson?.error?.data && typeof errJson.error.data === "object"
+                ? errJson.error.data
+                : null;
+          let hasValidationDetails = false;
+
+          if (validationData) {
+            const validationErrors = Object.entries(validationData)
+              .map(([field, message]) => `${field}: ${String(message)}`)
+              .join("\n");
+            if (validationErrors) {
+              userFriendlyMsg = validationErrors;
+              hasValidationDetails = true;
+            }
+          }
+
           if (errJson?.message?.includes("duplicate key")) {
             userFriendlyMsg = "Số hồ sơ đã tồn tại. Vui lòng nhập số khác.";
           } else if (
             errJson?.message?.includes("citizenIdentificationNumber")
           ) {
             userFriendlyMsg = "Số CCCD đã tồn tại trong hệ thống.";
+          } else if (!hasValidationDetails && errJson?.message) {
+            userFriendlyMsg = errJson.message;
           }
         } catch {}
 
@@ -280,7 +353,10 @@ const NewInstallationForm = () => {
         icon={<DocumentPlusIcon className="w-6 h-6" />}
         title="Đơn lắp đặt mới"
       >
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div
+          className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+          data-enter-navigation
+        >
           <OrderInfoSection formData={formData} updateField={updateField} />
           <CustomerInfoSection formData={formData} updateField={updateField} />
           <AddressContactSection

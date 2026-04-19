@@ -9,6 +9,7 @@ export const getRoleBasedRoute = (role: string): string => {
     CONSTRUCTION_DEPARTMENT_STAFF: "/pending-construction",
     FINANCE_DEPARTMENT: "/installation-fee-collection",
     METER_INSPECTION_STAFF: "/home",
+    BUSINESS_DEPARTMENT_HEAD: "/roadmap-assignment",
   };
   return roleRouteMap[role] || "/home";
 };

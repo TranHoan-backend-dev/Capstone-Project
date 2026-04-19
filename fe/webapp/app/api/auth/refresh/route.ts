@@ -20,9 +20,15 @@ export async function POST(req: NextRequest) {
     }
 
     const tokenRes = await refreshTokenService(refreshToken);
-    const tokenData = tokenRes.data?.data; // Extracting from WrapperApiResponse
+    const tokenData = tokenRes.data?.data;
 
-    if (!tokenData || !tokenData.access_token) {
+    const accessToken = tokenData?.access_token || tokenData?.accessToken;
+    const rotatedRefreshToken =
+      tokenData?.refresh_token || tokenData?.refreshToken;
+    const accessTokenMaxAge =
+      Number(tokenData?.expires_in ?? tokenData?.expiredTime) || 300;
+
+    if (!tokenData || !accessToken) {
       throw new Error("Invalid token data from backend");
     }
 
@@ -37,21 +43,23 @@ export async function POST(req: NextRequest) {
 
     res.cookies.set(
       IS_PRODUCTION ? "__Secure-access_token" : "access_token",
-      tokenData.access_token,
+      accessToken,
       {
         ...cookieOptions,
-        maxAge: tokenData.expires_in,
+        maxAge: accessTokenMaxAge,
       },
     );
 
-    res.cookies.set(
-      IS_PRODUCTION ? "__Secure-refresh_token" : "refresh_token",
-      tokenData.refresh_token,
-      {
-        ...cookieOptions,
-        maxAge: MAX_AGE_REFRESH_TOKEN,
-      },
-    );
+    if (rotatedRefreshToken) {
+      res.cookies.set(
+        IS_PRODUCTION ? "__Secure-refresh_token" : "refresh_token",
+        rotatedRefreshToken,
+        {
+          ...cookieOptions,
+          maxAge: MAX_AGE_REFRESH_TOKEN,
+        },
+      );
+    }
 
     return res;
   } catch (err) {

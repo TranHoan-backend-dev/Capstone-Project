@@ -30,6 +30,13 @@ export const SettlementDocumentModal = ({
   loading,
   selectedFormNumber,
 }: SettlementDocumentModalProps) => {
+  const tableRows = Array.isArray(data)
+    ? data.map((row: any, index: number) => ({
+        stt: row?.stt ?? index + 1,
+        ...row,
+      }))
+    : [];
+
   const handleSign = async () => {
     if (!settlementId) return;
 
@@ -70,7 +77,7 @@ export const SettlementDocumentModal = ({
         <Spinner />
       </div>
     ) : (
-      <DocumentTable data={data} columns={SETLEMENT_LOOKUP_COLUMN} />
+      <DocumentTable data={tableRows} columns={SETLEMENT_DOCUMENT_COLUMN} />
     );
   }
   return (
@@ -105,7 +112,7 @@ export const SettlementDocumentModal = ({
                 </h1>
 
                 <DocumentTable
-                  data={data}
+                  data={tableRows}
                   columns={SETLEMENT_DOCUMENT_COLUMN}
                 />
                 <div className="mt-10 flex justify-end">

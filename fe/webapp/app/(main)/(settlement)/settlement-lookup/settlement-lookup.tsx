@@ -36,9 +36,37 @@ const SettlementLookupPage = () => {
     setShowAddForm(true);
   };
 
-  const handleEdit = (item: SettlementItem) => {
-    setEditingItem(item);
-    setShowAddForm(true);
+  const handleEdit = async (item: SettlementItem) => {
+    try {
+      const res = await authFetch(`/api/construction/settlements/${item.id}`, {
+        cache: "no-store",
+      });
+      if (!res.ok) throw new Error("Không thể tải thông tin quyết toán");
+      const json = await res.json();
+      const settlementData = json?.data?.data ?? json?.data;
+      const normalized =
+        settlementData && typeof settlementData === "object"
+          ? {
+              ...settlementData,
+              // đảm bảo luôn có `id` để PUT/DELETE dùng được
+              id:
+                (settlementData as any)?.id ??
+                (settlementData as any)?.generalInformation?.settlementId ??
+                item.id,
+            }
+          : item;
+      setEditingItem(normalized);
+      setShowAddForm(true);
+    } catch (e: any) {
+      CallToast({
+        title: "Lỗi",
+        message: e?.message || "Không thể tải thông tin quyết toán",
+        color: "danger",
+      });
+      // fallback: vẫn mở modal với data hiện có
+      setEditingItem(item);
+      setShowAddForm(true);
+    }
   };
 
   const handleCloseForm = () => {
@@ -49,6 +77,18 @@ const SettlementLookupPage = () => {
   const handleSuccess = () => {
     handleReload();
     handleCloseForm();
+  };
+
+  const getErrorMessage = (errorData: any, fallback: string) => {
+    const fieldErrors = errorData?.error?.data ?? errorData?.data;
+    if (fieldErrors && typeof fieldErrors === "object") {
+      const details = Object.values(fieldErrors)
+        .filter((value) => typeof value === "string" && value.trim() !== "")
+        .join("; ");
+      if (details) return details;
+    }
+
+    return errorData?.message || errorData?.error?.message || fallback;
   };
   
   const handleCreate = async (payload: any) => {
@@ -63,8 +103,7 @@ const SettlementLookupPage = () => {
 
       if (!res.ok) {
         const errorData = await res.json();
-        const errorMessage =
-          errorData?.message || errorData?.error?.message || "Tạo thất bại";
+        const errorMessage = getErrorMessage(errorData, "Tạo thất bại");
         throw new Error(errorMessage);
       }
       CallToast({
@@ -84,11 +123,21 @@ const SettlementLookupPage = () => {
   };
 
   const handleUpdate = async (payload: any) => {
-    if (!editingItem?.id) return;
+    const settlementId =
+      (editingItem as any)?.id ??
+      (editingItem as any)?.generalInformation?.settlementId;
+    if (!settlementId) {
+      CallToast({
+        title: "Lỗi",
+        message: "Không tìm thấy mã quyết toán để cập nhật",
+        color: "danger",
+      });
+      return;
+    }
 
     try {
       const res = await authFetch(
-        `/api/construction/settlements/${editingItem.id}`,
+        `/api/construction/settlements/${settlementId}`,
         {
           method: "PUT",
           headers: {
@@ -100,10 +149,7 @@ const SettlementLookupPage = () => {
 
       if (!res.ok) {
         const errorData = await res.json();
-        const errorMessage =
-          errorData?.message ||
-          errorData?.error?.message ||
-          "Cập nhật thất bại";
+        const errorMessage = getErrorMessage(errorData, "Cập nhật thất bại");
         throw new Error(errorMessage);
       }
       CallToast({

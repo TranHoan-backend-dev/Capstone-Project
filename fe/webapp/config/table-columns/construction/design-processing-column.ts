@@ -1,6 +1,6 @@
 export const DESIGN_PROCESSING_COLUMN: any[] = [
   { key: "stt", label: "STT", align: "center", width: "40px" },
-  { key: "code", label: "Mã đơn" },
+  { key: "code", label: "Số đơn" },
   { key: "customerName", label: "Tên khách hàng" },
   { key: "phoneNumber", label: "Điện thoại" },
   { key: "address", label: "Địa chỉ lắp đặt", width: "300px" },
@@ -12,7 +12,7 @@ export const DESIGN_PROCESSING_COLUMN: any[] = [
 
 export const PROCESSED_DESIGN_COLUMN: any[] = [
   { key: "no", label: "STT", align: "center", width: "60px" },
-  { key: "code", label: "Mã đơn" },
+  { key: "code", label: "Số đơn" },
   { key: "customerName", label: "Tên khách hàng" },
   { key: "phoneNumber", label: "Điện thoại" },
   { key: "address", label: "Địa chỉ lắp đặt", width: "300px" },
@@ -24,7 +24,7 @@ export const PROCESSED_DESIGN_COLUMN: any[] = [
 
 export const REJECT_COLUMN: any[] = [
   { key: "stt", label: "STT", align: "center", width: "60px" },
-  { key: "code", label: "Mã đơn" },
+  { key: "code", label: "Số đơn" },
   { key: "customerName", label: "Tên khách hàng" },
   { key: "phoneNumber", label: "Điện thoại" },
   { key: "address", label: "Địa chỉ lắp đặt", width: "300px" },

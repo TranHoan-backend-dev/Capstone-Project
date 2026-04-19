@@ -174,7 +174,7 @@ export const AssignConstructionPopup = ({
               <div className="space-y-4">
                 {/* Thông tin đơn hàng */}
                 <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                  <p className="text-sm text-gray-500 mb-1">Mã đơn</p>
+                  <p className="text-sm text-gray-500 mb-1">Số đơn</p>
                   <p className="font-medium text-gray-900 dark:text-gray-100">
                     {formNumber || formCode}
                   </p>
