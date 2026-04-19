@@ -89,7 +89,7 @@ const NewInstallationForm = () => {
     representative: [],
     citizenIdentificationNumber: "",
     citizenIdentificationProvideDate: "",
-    citizenIdentificationProvideLocation: "Cục cảnh sát và trật tự xã hội",
+    citizenIdentificationProvideLocation: "Cục Cảnh sát quản lý hành chính về trật tự xã hội",
     phoneNumber: "",
     taxCode: "",
     address: "",

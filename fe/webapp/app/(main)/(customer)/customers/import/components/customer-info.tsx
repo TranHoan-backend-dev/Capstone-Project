@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Divider } from "@heroui/react";
 
 import CustomInput from "@/components/ui/custom/CustomInput";
+import CustomSelect from "@/components/ui/custom/CustomSelect";
 import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
 import { TitleDarkColor } from "@/config/chip-and-icon";
 import { CustomerInfoProps, usageTargetMap } from "@/types";
@@ -387,12 +388,31 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
             onUpdate("citizenIdentificationNumber", value)
           }
         />
-        <CustomInput
+        <CustomSelect
           label="Nơi cấp CCCD"
-          value={formData.citizenIdentificationProvideAt}
-          onValueChange={(value) =>
-            onUpdate("citizenIdentificationProvideAt", value)
+          options={[
+            {
+              label: "Cục Cảnh sát quản lý hành chính về trật tự xã hội",
+              value: "Cục Cảnh sát quản lý hành chính về trật tự xã hội",
+            },
+            {
+              label: "Phòng Cảnh sát quản lý hành chính về trật tự xã hội",
+              value: "Phòng Cảnh sát quản lý hành chính về trật tự xã hội",
+            },
+            {
+              label: "Đội Cảnh sát quản lý hành chính về trật tự xã hội",
+              value: "Đội Cảnh sát quản lý hành chính về trật tự xã hội",
+            },
+          ]}
+          selectedKeys={
+            formData.citizenIdentificationProvideAt
+              ? new Set([formData.citizenIdentificationProvideAt])
+              : new Set()
           }
+          onSelectionChange={(keys) => {
+            const selectedValue = Array.from(keys)[0] as string;
+            onUpdate("citizenIdentificationProvideAt", selectedValue || "");
+          }}
         />
         <CustomInput
           label="Mã số Quan hệ ngân sách"

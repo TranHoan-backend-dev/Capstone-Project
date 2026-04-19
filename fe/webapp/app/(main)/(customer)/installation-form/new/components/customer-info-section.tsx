@@ -41,10 +41,15 @@ export const CustomerInfoSection = ({
       required: true,
     },
     {
-      type: "input",
+      type: "select",
       key: "citizenIdentificationProvideLocation",
       label: "Nơi cấp CCCD/CMND",
       required: true,
+      options: [
+        { key: "Cục Cảnh sát quản lý hành chính về trật tự xã hội", label: "Cục Cảnh sát quản lý hành chính về trật tự xã hội" },
+        { key: "Phòng Cảnh sát quản lý hành chính về trật tự xã hội", label: "Phòng Cảnh sát quản lý hành chính về trật tự xã hội" },
+        { key: "Đội Cảnh sát quản lý hành chính về trật tự xã hội", label: "Đội Cảnh sát quản lý hành chính về trật tự xã hội" },
+      ],
     },
     {
       type: "input",

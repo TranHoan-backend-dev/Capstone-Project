@@ -14,7 +14,7 @@ const initialFormData: CreateCustomerPayload = {
   protectEnvironmentFee: 400000,
   waterMeterType: "MECHANICAL",
   citizenIdentificationNumber: "",
-  citizenIdentificationProvideAt: "",
+  citizenIdentificationProvideAt: "Cục Cảnh sát quản lý hành chính về trật tự xã hội",
   paymentMethod: "CASH",
   bankAccountNumber: "",
   bankAccountProviderLocation: "",
