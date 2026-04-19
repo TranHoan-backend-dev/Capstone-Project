@@ -1,24 +1,5 @@
-@keycloak=http://localhost:8080/realms/cmsn/protocol/openid-connect
-@client_secret=t2io8dzbyJ9qdVdR2uoL01L6vBfViILJ
 @baseUrl = http://localhost:9005/api/v1
 @customersUrl = {{baseUrl}}/customers
-
-### 0. Lấy token
-# @name login
-POST {{keycloak}}/token
-Content-Type: application/x-www-form-urlencoded
-Accept: application/json
-
-grant_type = password &
-client_id = cmsn &
-client_secret = {{client_secret}} &
-username =   test&
-password = 123456 &
-scope = openid
-
-> {%
-  client.global.set("access_token", response.body.access_token);
-%}
 
 ### TC01 - Create customer successfully
 POST {{customersUrl}}
@@ -36,7 +17,7 @@ Content-Type: application/json
   "numberOfHouseholds": 1,
   "householdRegistrationNumber": 123456,
   "protectEnvironmentFee": 1000,
-  "roadmapId":"R001",
+  "roadmapId": "5e6f7081-4000-4eee-9fff-eeee4eee0001",
   "isFree": false,
   "isSale": false,
   "m3Sale": "0",
@@ -44,7 +25,7 @@ Content-Type: application/json
   "installationFee": 1500000,
   "deductionPeriod": "2023-12",
   "monthlyRent": 20000,
-  "waterMeterType": "MECHANICAL",
+  "waterMeterType": "00000000-0000-0000-0000-900000000020",
   "citizenIdentificationNumber": "012345678901",
   "citizenIdentificationProvideAt": "Cục CSQLHC về TTXH",
   "paymentMethod": "CASH",
@@ -55,10 +36,11 @@ Content-Type: application/json
   "passportCode": "P001",
   "connectionPoint": "CP001",
   "isActive": true,
-  "formNumber": "FORM-2024-0001",
-  "formCode": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+  "formNumber": "20240047",
+  "formCode": "80000001047",
+  "contractId": "CONT-003",
   "waterPriceId": "00000000-0000-0000-0000-B00000000001",
-  "waterMeterId": "00000000-0000-0000-0000-A00000000001"
+  "waterMeterId": "240000392"
 }
 
 > {%
