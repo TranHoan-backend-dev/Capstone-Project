@@ -234,7 +234,12 @@ const EstimateApprovalPage = () => {
   }, [sort, refetch, keyword]);
 
   const pendingOrders = useMemo(
-    () => orders.filter((order) => order.status?.toUpperCase() !== "APPROVED"),
+    () =>
+      orders.filter(
+        (order) =>
+          order.status?.toUpperCase() !== "APPROVED" &&
+          order.status?.toUpperCase() !== "REJECTED",
+      ),
     [orders],
   );
 
@@ -269,7 +274,8 @@ const EstimateApprovalPage = () => {
     return approvedOrders.slice(start, start + pageSize);
   }, [approvedOrders, pageByTab.approved, pageSize]);
 
-  const tableData = activeTab === "pending" ? paginatedPendingOrders : paginatedApprovedOrders;
+  const tableData =
+    activeTab === "pending" ? paginatedPendingOrders : paginatedApprovedOrders;
 
   const handleSearch = (query: string) => {
     setKeyword(query);
