@@ -33,6 +33,9 @@ public record UpdateSettlementRequest(
   @Schema(description = "Ngày đăng ký quyết toán", example = "2023-10-27")
   LocalDate registrationAt,
 
-  List<BaseMaterial> materials
+  List<BaseMaterial> materials,
+
+  @Schema(description = "Tổng số tiền của quyết toán")
+  BigDecimal totalAmount
 ) {
 }

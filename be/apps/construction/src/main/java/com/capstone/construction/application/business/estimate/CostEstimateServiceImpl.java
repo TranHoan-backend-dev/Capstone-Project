@@ -177,6 +177,7 @@ public class CostEstimateServiceImpl implements CostEstimateService {
       }
       estimate.setOverallWaterMeterId(generalInformation.overallWaterMeterId());
     }
+    estimate.setTotalAmount(generalInformation.totalAmount());
     // </editor-fold>
 
     var saved = eRepo.save(estimate);
@@ -337,7 +338,8 @@ public class CostEstimateServiceImpl implements CostEstimateService {
         estimate.getSignificance() != null ? new CostEstimateResponse.Significance(
           estimate.getSignificance().getCompanyLeaderShip(),
           estimate.getSignificance().getSurveyStaff(),
-          estimate.getSignificance().getPlanningTechnicalHead()) : null
+          estimate.getSignificance().getPlanningTechnicalHead()) : null,
+        estimate.getTotalAmount()
       ),
       materials);
   }

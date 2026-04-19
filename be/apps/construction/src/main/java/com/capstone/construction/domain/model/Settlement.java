@@ -63,11 +63,16 @@ public class Settlement implements Serializable {
   })
   InstallationForm installationForm;
 
+  @Getter
+  @Setter
+  BigDecimal totalAmount;
+
   @PrePersist
   void onCreate() {
     this.createdAt = LocalDateTime.now();
     this.updatedAt = this.createdAt;
     this.significance = new SettlementSignificance();
+    this.totalAmount = BigDecimal.ZERO;
   }
 
   @PreUpdate

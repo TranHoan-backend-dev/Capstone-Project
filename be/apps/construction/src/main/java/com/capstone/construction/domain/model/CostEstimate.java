@@ -11,6 +11,7 @@ import org.hibernate.type.SqlTypes;
 import org.jspecify.annotations.NonNull;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -91,10 +92,16 @@ public class CostEstimate implements Serializable {
   @Column(columnDefinition = "jsonb")
   CostEstimateSignificance significance;
 
+  @Getter
+  @Setter
+  BigDecimal totalAmount;
+
   @PrePersist
   void onCreate() {
     this.createdAt = LocalDateTime.now();
     this.updatedAt = this.createdAt;
+    this.totalAmount = BigDecimal.ZERO;
+    this.significance = new CostEstimateSignificance();
   }
 
   @PreUpdate
