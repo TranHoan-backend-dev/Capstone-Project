@@ -659,6 +659,7 @@ const EstimateApprovalPage = () => {
                   }
                   onPress={handleConfirmAction}
                   isLoading={isProcessing}
+                  className="text-white"
                 >
                   {confirmAction?.type === "approve" ? "Duyệt" : "Từ chối"}
                 </CustomButton>

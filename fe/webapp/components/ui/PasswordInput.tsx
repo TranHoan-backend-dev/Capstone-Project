@@ -14,6 +14,7 @@ const PasswordInput = ({
   placeholder,
   label,
   onKeyDown,
+  errorMessage,
   ...props
 }: PasswordInputProps) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -25,6 +26,7 @@ const PasswordInput = ({
   return (
     <Input
       {...props}
+      errorMessage={errorMessage || undefined}
       endContent={
         <div className="flex items-center h-full">
           <button

@@ -16,6 +16,7 @@ const CustomInput = ({
   isRequired,
   className = "",
   onKeyDown,
+  errorMessage,
   ...props
 }: CustomInputProps) => {
   return (
@@ -28,6 +29,7 @@ const CustomInput = ({
       type={type}
       variant="bordered"
       className={`w-full ${className}`}
+      errorMessage={errorMessage || undefined}
       onKeyDown={(e) => {
         onKeyDown?.(e);
         if (!e.defaultPrevented) {

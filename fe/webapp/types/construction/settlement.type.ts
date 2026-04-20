@@ -35,7 +35,6 @@ export interface SettlementBaseMaterial {
   totalLaborPrice: SettlementNumberish;
   totalMaterialPrice: SettlementNumberish;
   note?: string;
-  // một số backend có thể trả thêm field tương tự
   [key: string]: any;
 }
 

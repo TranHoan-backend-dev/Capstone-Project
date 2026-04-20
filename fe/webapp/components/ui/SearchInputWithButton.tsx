@@ -17,6 +17,7 @@ export const SearchInputWithButton = ({
   placeholder = "Tìm kiếm...",
   onSearch,
   buttonClassName = "text-primary",
+  errorMessage,
   ...props
 }: SearchInputWithButtonProps) => {
   return (
@@ -26,6 +27,7 @@ export const SearchInputWithButton = ({
       size="md"
       variant="bordered"
       labelPlacement="inside"
+      errorMessage={errorMessage || undefined}
       {...props}
       endContent={
         <Button
