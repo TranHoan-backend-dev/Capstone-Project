@@ -16,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Slf4j
@@ -61,6 +63,7 @@ public class NotificationServiceImpl implements NotificationService {
           value.getCreatedAt()
         )));
       });
+      notificationResponses.sort(Comparator.comparing(NotificationResponse::createdAt).reversed());
       return new NotificationBatchResponse(
         notificationResponses,
         pageable.getPageSize(),
