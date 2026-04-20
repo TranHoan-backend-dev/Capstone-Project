@@ -81,16 +81,10 @@ public class SettlementServiceImpl implements SettlementService {
       .orElseThrow(() -> new IllegalArgumentException("Settlement not found with id: " + settlementId));
     if (request.jobContent() != null)
       settlement.setJobContent(request.jobContent());
-    if (request.customerName() != null)
-      settlement.setCustomerName(request.customerName());
-    if (request.address() != null)
-      settlement.setAddress(request.address());
     if (request.connectionFee() != null)
       settlement.setConnectionFee(request.connectionFee());
     if (request.note() != null)
       settlement.setNote(request.note());
-    if (request.registrationAt() != null)
-      settlement.setRegistrationAt(request.registrationAt());
     settlement.setTotalAmount(request.totalAmount());
 
     var saved = settlementRepository.save(settlement);
@@ -102,6 +96,7 @@ public class SettlementServiceImpl implements SettlementService {
       }
     }
 
+    // TODO: Cải thiện hiệu năng. Giờ là đang phải làm 2 query, đáng lẽ chỉ cần 1
     return mapToResponse(saved, getMaterials(saved.getSettlementId()));
   }
 
