@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Pattern;
 
 import java.util.List;
 
+// TODO: Phan keyword, to, from bi lap lai
 public record ContractFilterRequest(
   @Schema(description = "Từ khóa tìm kiếm trên tất cả các trường (mã hợp đồng, tên khách hàng, số form, số điện thoại...)", example = "HD001")
   String keyword,
