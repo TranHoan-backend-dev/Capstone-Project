@@ -6,7 +6,7 @@ import com.capstone.device.application.dto.response.material.MaterialsListRespon
 import java.util.List;
 
 public interface MaterialsOfSettlementService {
-  List<MaterialsListResponse> getByEstimateId(String id);
+  List<MaterialsListResponse> getBySettlementId(String id);
 
   void update(List<BaseMaterial> material, String settlementId);
 }

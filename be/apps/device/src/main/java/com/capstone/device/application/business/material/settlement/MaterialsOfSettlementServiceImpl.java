@@ -26,7 +26,7 @@ public class MaterialsOfSettlementServiceImpl implements MaterialsOfSettlementSe
   MaterialRepository materialRepository;
 
   @Override
-  public List<MaterialsListResponse> getByEstimateId(String id) {
+  public List<MaterialsListResponse> getBySettlementId(String id) {
     var result = repo.findById_SettlementId(id);
     log.info(result.toString());
     return result.stream().map(this::mapToResponse).collect(Collectors.toList());
