@@ -80,10 +80,6 @@ public class CostEstimateController {
   }
 
   @GetMapping("/{id}")
-  @Operation(summary = "", description = "", responses = {
-    @ApiResponse(responseCode = "200", description = "", content = @Content(schema = @Schema(implementation = CostEstimateResponse.class))),
-    @ApiResponse(responseCode = "404", description = "", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
-  })
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'SURVEY_STAFF', 'COMPANY_LEADERSHIP', 'CONSTRUCTION_DEPARTMENT_STAFF')")
   public ResponseEntity<WrapperApiResponse> getEstimateById(
     @PathVariable @Parameter(required = true) String id
@@ -94,9 +90,6 @@ public class CostEstimateController {
   }
 
   @GetMapping
-  @Operation(summary = "", description = "", responses = {
-    @ApiResponse(responseCode = "200", description = "", content = @Content(schema = @Schema(implementation = CostEstimateResponse.class)))
-  })
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'SURVEY_STAFF', 'COMPANY_LEADERSHIP')")
   public ResponseEntity<WrapperApiResponse> getAllEstimates(
     @PageableDefault @Parameter(description = "Pagination parameters") Pageable pageable,
@@ -155,5 +148,12 @@ public class CostEstimateController {
   public ResponseEntity<WrapperApiResponse> getMeterType(@PathVariable @Parameter(description = "Form code") String id) {
     log.info("REST request to get meter type by form code: {}", id);
     return Utils.returnOkResponse("", costEstimateService.getMeterTypeByFormCode(id));
+  }
+
+  @GetMapping("/form-code/{formCode}")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'CONSTRUCTION_DEPARTMENT_STAFF', 'SURVEY_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD')")
+  public ResponseEntity<WrapperApiResponse> getByFormCode(@PathVariable String formCode) {
+    log.info("REST request to get cost estimate by form code: {}", formCode);
+    return Utils.returnOkResponse("", costEstimateService.getByFormCode(formCode));
   }
 }
