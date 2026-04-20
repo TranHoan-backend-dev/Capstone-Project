@@ -3,6 +3,7 @@ package com.capstone.construction.adapter;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
+import com.capstone.construction.application.business.receipt.ReceiptService;
 import com.capstone.construction.application.dto.request.receipt.CreateRequest;
 import com.capstone.construction.application.dto.request.receipt.ReceiptFilterRequest;
 import com.capstone.construction.application.dto.request.receipt.UpdateRequest;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ReceiptController {
   ReceiptUseCase receiptUseCase;
+  ReceiptService service;
 
   @PostMapping
   @PreAuthorize("hasAnyAuthority('FINANCE_DEPARTMENT', 'IT_STAFF')")
@@ -98,5 +100,12 @@ public class ReceiptController {
     log.info("REST request to get receipts with filter: {}", filter);
     var response = receiptUseCase.getReceipts(filter, pageable);
     return Utils.returnOkResponse("Lấy danh sách biên lai thành công", response);
+  }
+
+  @GetMapping("/last")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF')")
+  public ResponseEntity<WrapperApiResponse> getLastReceiptId() {
+    log.info("REST request to getLastReceiptId");
+    return Utils.returnOkResponse("", service.getLastCode());
   }
 }

@@ -142,6 +142,12 @@ public class ReceiptServiceImpl implements ReceiptService {
   }
 
   @Override
+  public String getLastCode() {
+    log.info("Fetching last code for receipt");
+    return receiptRepo.findByOrderByCreatedAtDesc().getReceiptNumber();
+  }
+
+  @Override
   public ReceiptResponse getReceipt(String formCode, String formNumber) {
     log.info("Fetching receipt for form: {}/{}", formCode, formNumber);
     return receiptRepo.findById(new InstallationFormId(formCode, formNumber))

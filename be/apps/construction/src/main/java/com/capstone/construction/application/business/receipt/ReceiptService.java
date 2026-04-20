@@ -18,4 +18,6 @@ public interface ReceiptService {
   ReceiptResponse getReceipt(String formCode, String formNumber);
 
   Page<ReceiptListResponse> getReceipts(ReceiptFilterRequest filter, Pageable pageable);
+
+  String getLastCode();
 }
