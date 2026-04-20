@@ -49,7 +49,7 @@ public class SettlementController {
     log.info("REST request to create settlement for address: {}", request.address());
     var response = settlementUseCase.createSettlement(request);
     log.info(response.toString());
-    return Utils.returnCreatedResponse("Tạo quyết toán công trình thành công");
+    return Utils.returnOkResponse("Tạo quyết toán công trình thành công", response);
   }
 
   @PutMapping("/{settlementId}")
