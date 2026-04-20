@@ -24,4 +24,6 @@ public interface SettlementService {
   boolean isExistingSettlement(String id);
 
   boolean checkSettlementExists(String formCode, String formNumber);
+
+  String getLastId();
 }

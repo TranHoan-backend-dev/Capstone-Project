@@ -2,6 +2,7 @@ package com.capstone.construction.adapter;
 
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
+import com.capstone.construction.application.business.settlement.SettlementService;
 import com.capstone.construction.application.dto.request.settlement.AssignTheSignificanceRequest;
 import com.capstone.construction.application.dto.request.settlement.SignificanceRequest;
 import com.capstone.construction.application.dto.request.settlement.SettlementFilterRequest;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Quyết toán", description = "API quản lý và xử lý quyết toán công trình xây lắp")
 public class SettlementController {
   private final SettlementUseCase settlementUseCase;
+  private final SettlementService service;
 
   @PostMapping
   @Operation(summary = "Tạo mới một bản quyết toán công trình", description = """
@@ -142,5 +144,12 @@ public class SettlementController {
     log.info("REST request to sign cost estimate: {}", request);
     settlementUseCase.assignStaffForSignCostEstimate(request);
     return Utils.returnOkResponse("Yêu cầu ký duyệt quyết toán thành công", null);
+  }
+
+  @GetMapping("/latest")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'CONSTRUCTION_DEPARTMENT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> getLastId() {
+    log.info("REST request to get the last contract id");
+    return Utils.returnOkResponse("", service.getLastId());
   }
 }

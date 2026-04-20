@@ -50,18 +50,18 @@ public class SettlementServiceImpl implements SettlementService {
   public SettlementResponse createSettlement(@NonNull CreateSettlementRequest request) {
     log.info("Creating new settlement for address: {}", request.address());
     var form = formRepository.findById(new InstallationFormId(request.formCode(), request.formNumber()))
-        .orElseThrow(() -> new NotExistingException(Message.PT_38));
+      .orElseThrow(() -> new NotExistingException(Message.PT_38));
 
     var settlement = Settlement.builder()
-        .settlementId(request.settlementId())
-        .jobContent(request.jobContent())
-        .customerName(request.customerName())
-        .address(request.address())
-        .connectionFee(request.connectionFee())
-        .note(request.note())
-        .installationForm(form)
-        .registrationAt(request.registrationAt())
-        .build();
+      .settlementId(request.settlementId())
+      .jobContent(request.jobContent())
+      .customerName(request.customerName())
+      .address(request.address())
+      .connectionFee(request.connectionFee())
+      .note(request.note())
+      .installationForm(form)
+      .registrationAt(request.registrationAt())
+      .build();
 
     var saved = settlementRepository.save(settlement);
     var ce = costEstimateService.getByFormCode(request.formCode());
@@ -78,7 +78,7 @@ public class SettlementServiceImpl implements SettlementService {
   public SettlementResponse updateSettlement(String settlementId, @NonNull UpdateSettlementRequest request) {
     log.info("Updating settlement with id: {}", settlementId);
     var settlement = settlementRepository.findById(settlementId)
-        .orElseThrow(() -> new IllegalArgumentException("Settlement not found with id: " + settlementId));
+      .orElseThrow(() -> new IllegalArgumentException("Settlement not found with id: " + settlementId));
     if (request.jobContent() != null)
       settlement.setJobContent(request.jobContent());
     if (request.customerName() != null)
@@ -109,8 +109,8 @@ public class SettlementServiceImpl implements SettlementService {
   public SettlementResponse getSettlementById(String settlementId) {
     log.info("Fetching settlement with id: {}", settlementId);
     return settlementRepository.findByIdWithInstallationForm(settlementId)
-        .map(s -> mapToResponse(s, getMaterials(s.getSettlementId())))
-        .orElseThrow(() -> new IllegalArgumentException("Settlement not found with id: " + settlementId));
+      .map(s -> mapToResponse(s, getMaterials(s.getSettlementId())))
+      .orElseThrow(() -> new IllegalArgumentException("Settlement not found with id: " + settlementId));
   }
 
   @Override
@@ -145,14 +145,14 @@ public class SettlementServiceImpl implements SettlementService {
   @Override
   public boolean signSettlement(String userId, String id, SignificanceRequest request) {
     var settlement = settlementRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("Settlement not found with id: " + id));
+      .orElseThrow(() -> new IllegalArgumentException("Settlement not found with id: " + id));
     var significance = settlement.getSignificance();
 
     var response = empSrv.getRoleOfEmployeeById(userId);
     var role = response.data().toString();
     if (!role.equalsIgnoreCase(RoleName.SURVEY_STAFF.name()) &&
-        !role.equalsIgnoreCase(RoleName.COMPANY_LEADERSHIP.name()) &&
-        !role.equalsIgnoreCase(RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD.name())) {
+      !role.equalsIgnoreCase(RoleName.COMPANY_LEADERSHIP.name()) &&
+      !role.equalsIgnoreCase(RoleName.PLANNING_TECHNICAL_DEPARTMENT_HEAD.name())) {
       throw new ForbiddenException(SharedMessage.MES_23);
     }
     if (request.url() != null && !request.url().isBlank()) {
@@ -183,28 +183,34 @@ public class SettlementServiceImpl implements SettlementService {
   public boolean checkSettlementExists(String formCode, String formNumber) {
     log.info("Fetching settlement with formCode: {}, formNumber: {}", formCode, formNumber);
     var form = formRepository.findById(new InstallationFormId(formCode, formNumber))
-        .orElseThrow(() -> new NotExistingException(Message.PT_38));
+      .orElseThrow(() -> new NotExistingException(Message.PT_38));
     return settlementRepository.existsByInstallationForm(form);
+  }
+
+  @Override
+  public String getLastId() {
+    log.info("Fetching settlement last id");
+    return settlementRepository.findTopByOrderByCreatedAtDesc().getSettlementId();
   }
 
   private @NonNull SettlementResponse mapToResponse(@NonNull Settlement settlement, List<BaseMaterial> materials) {
     var installationForm = settlement.getInstallationForm();
     return new SettlementResponse(
-        new SettlementResponse.GeneralInformation(
-            settlement.getSettlementId(),
-            settlement.getJobContent(),
-            settlement.getCustomerName(),
-            settlement.getAddress(),
-            settlement.getConnectionFee(),
-            settlement.getNote(),
-            settlement.getCreatedAt(),
-            settlement.getUpdatedAt(),
-            settlement.getRegistrationAt(),
-            installationForm.getFormCode(),
-            installationForm.getFormNumber(),
-            settlement.getSignificance(),
-            installationForm.getStatus()),
-        materials);
+      new SettlementResponse.GeneralInformation(
+        settlement.getSettlementId(),
+        settlement.getJobContent(),
+        settlement.getCustomerName(),
+        settlement.getAddress(),
+        settlement.getConnectionFee(),
+        settlement.getNote(),
+        settlement.getCreatedAt(),
+        settlement.getUpdatedAt(),
+        settlement.getRegistrationAt(),
+        installationForm.getFormCode(),
+        installationForm.getFormNumber(),
+        settlement.getSignificance(),
+        installationForm.getStatus()),
+      materials);
   }
 
   private @NonNull List<BaseMaterial> getMaterials(@NonNull String id) {
@@ -212,16 +218,16 @@ public class SettlementServiceImpl implements SettlementService {
     var materials = new ArrayList<BaseMaterial>();
     defaultMaterials.forEach(defaultMaterial -> {
       var m = new BaseMaterial(
-          defaultMaterial.id(),
-          defaultMaterial.jobContent(),
-          defaultMaterial.note(),
-          defaultMaterial.unitName(),
-          defaultMaterial.mass() != null ? defaultMaterial.mass().toString() : "0",
-          defaultMaterial.materialCost(),
-          defaultMaterial.laborPrice(),
-          defaultMaterial.laborPriceAtRuralCommune(),
-          defaultMaterial.totalMaterialCost(),
-          defaultMaterial.totalLaborCost());
+        defaultMaterial.id(),
+        defaultMaterial.jobContent(),
+        defaultMaterial.note(),
+        defaultMaterial.unitName(),
+        defaultMaterial.mass() != null ? defaultMaterial.mass().toString() : "0",
+        defaultMaterial.materialCost(),
+        defaultMaterial.laborPrice(),
+        defaultMaterial.laborPriceAtRuralCommune(),
+        defaultMaterial.totalMaterialCost(),
+        defaultMaterial.totalLaborCost());
       materials.add(m);
     });
     return materials;
