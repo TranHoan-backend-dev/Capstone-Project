@@ -288,39 +288,85 @@ export const SettlementDetailModal = ({
                           </tr>
                         ))}
                       </tbody>
+                      <tfoot>
+                        <tr className="font-semibold">
+                          <td
+                            colSpan={7}
+                            className="border border-black px-1 py-1 text-right"
+                          >
+                            Phí kết nối:
+                          </td>
+                          <td
+                            colSpan={2}
+                            className="border border-black px-1 py-1 text-right"
+                          >
+                            {formatNumber(generalInformation?.connectionFee ?? 0, 0)}
+                          </td>
+                        </tr>
+                      </tfoot>
                     </table>
 
-                    <div className="mt-4 grid grid-cols-3 gap-3 text-xs">
-                      <div className="col-span-2 flex justify-end gap-6">
-                        <div>
-                          <div className="font-semibold">Tổng VL</div>
-                          <div>{formatNumber(sumVL, 3)}</div>
-                        </div>
-                        <div>
-                          <div className="font-semibold">Tổng NC</div>
-                          <div>{formatNumber(sumNC, 3)}</div>
-                        </div>
+                    {generalInformation?.note ? (
+                      <div className="mt-3">
+                        <span className="font-semibold">Ghi chú:</span>{" "}
+                        <span>{generalInformation?.note}</span>
                       </div>
-                      <div className="text-right">
-                        <div className="font-semibold">Tổng cộng (VL + NC)</div>
-                        <div>{formatNumber(sumVL + sumNC, 3)}</div>
+                    ) : null}
+
+                    {/* Phần chữ ký */}
+                    <div className="mt-8 grid grid-cols-3 gap-4 text-center text-xs">
+                      <div>
+                        <div className="font-semibold mb-1">Nhân viên khảo sát</div>
+                        {generalInformation?.significance?.surveyStaff ? (
+                          <div className="h-16 flex items-center justify-center font-medium">
+                            {generalInformation.significance.surveyStaff}
+                          </div>
+                        ) : (
+                          <div className="h-16 flex items-center justify-center text-gray-400 italic">
+                            Chưa ký
+                          </div>
+                        )}
+                      </div>
+
+                      <div>
+                        <div className="font-semibold mb-1">
+                          Trưởng phòng KH-KT
+                        </div>
+                        {generalInformation?.significance?.ptHead ? (
+                          <div className="h-16 flex items-center justify-center font-medium">
+                            {generalInformation.significance.ptHead}
+                          </div>
+                        ) : (
+                          <div className="h-16 flex items-center justify-center text-gray-400 italic">
+                            Chưa ký
+                          </div>
+                        )}
+                      </div>
+
+                      <div>
+                        <div className="font-semibold mb-1">Tổng giám đốc</div>
+                        {generalInformation?.significance?.president ? (
+                          <div className="h-16 flex items-center justify-center font-medium">
+                            {generalInformation.significance.president}
+                          </div>
+                        ) : (
+                          <div className="h-16 flex items-center justify-center text-gray-400 italic">
+                            Chưa ký
+                          </div>
+                        )}
                       </div>
                     </div>
 
-                    <div className="mt-4">
-                      <div className="flex gap-6 text-xs">
-                        <div className="flex-1">
-                          <span className="font-semibold">Phí kết nối:</span>{" "}
-                          {formatNumber(generalInformation?.connectionFee ?? 0, 3)}
+                    {generalInformation?.significance?.constructionPresident ? (
+                      <div className="mt-4 text-center text-xs">
+                        <div className="font-semibold mb-1">
+                          Giám đốc chi nhánh Xây lắp
+                        </div>
+                        <div className="flex items-center justify-center font-medium">
+                          {generalInformation.significance.constructionPresident}
                         </div>
                       </div>
-                      {generalInformation?.note ? (
-                        <div className="mt-2">
-                          <span className="font-semibold">Ghi chú:</span>{" "}
-                          <span>{generalInformation?.note}</span>
-                        </div>
-                      ) : null}
-                    </div>
+                    ) : null}
                   </div>
                 </DocumentPaper>
               </div>

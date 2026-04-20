@@ -118,19 +118,45 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
       }
       const json = await res.json();
       setEstimateData(json.data);
+
       const estGeneralInfo = json.data?.generalInformation ?? json.data;
       if (estGeneralInfo) {
         setForm((prev) => ({
           ...prev,
           customerName: estGeneralInfo.customerName ?? prev.customerName,
           address: estGeneralInfo.address ?? prev.address,
+          // Dùng totalAmount từ estimate làm chi phí đấu nối
           connectionFee:
-            estGeneralInfo.contractFee !== undefined &&
-            estGeneralInfo.contractFee !== null
-              ? String(estGeneralInfo.contractFee)
+            estGeneralInfo.totalAmount !== undefined &&
+            estGeneralInfo.totalAmount !== null
+              ? String(estGeneralInfo.totalAmount)
               : prev.connectionFee,
           jobContent: estGeneralInfo.jobContent ?? prev.jobContent,
         }));
+      }
+
+      // Load materials từ estimate vào bảng vật tư
+      const estimateMaterials = json.data?.materials;
+      if (Array.isArray(estimateMaterials) && estimateMaterials.length > 0) {
+        const mapped = estimateMaterials.map((item: any, index: number) => {
+          const quantity = parseFloat(item.mass) || 0;
+          const materialPrice = parseFloat(item.materialCost) || 0;
+          const laborPrice = parseFloat(item.laborPrice) || 0;
+          return {
+            id: item.materialCode || `mat-${index}`,
+            code: item.materialCode,
+            description: item.jobContent,
+            unit: item.unit,
+            quantity,
+            materialPrice,
+            laborPrice,
+            materialTotal: quantity * materialPrice,
+            laborTotal: laborPrice,
+            note: item.note || "",
+            stt: index + 1,
+          };
+        });
+        setMaterials(mapped);
       }
     } catch (e) {
       console.error("Failed to fetch estimate data:", e);
@@ -251,12 +277,12 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
         jobContent: form.jobContent,
         address: form.address,
         connectionFee: Number(form.connectionFee),
-        registrationAt: form.registrationAt + "T00:00:00",
+        registrationAt: form.registrationAt, // LocalDate format: yyyy-MM-dd
         note: form.note,
       };
 
-      // Build materials payload and calculate totalAmount for both create and update
-      {
+      // Only include materials for update mode
+      if (!isCreateMode) {
         const mappedMaterials = materials.map((m) => ({
           materialCode: m.code,
           jobContent: m.description,
@@ -269,63 +295,9 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
           note: m.note,
         }));
 
-        const materialCost = materials.reduce(
-          (sum, item) => sum + (item.materialTotal || 0),
-          0,
-        );
-        const laborCoefficient = estimateData?.generalInformation
-          ?.laborCoefficient
-          ? estimateData.generalInformation.laborCoefficient / 100
-          : 0;
-        const laborCost =
-          materials.reduce((sum, item) => sum + (item.laborTotal || 0), 0) *
-          (1 + laborCoefficient);
-        const directTotal = materialCost + laborCost;
-
-        const generalCostCoefficient = estimateData?.generalInformation
-          ?.generalCostCoefficient
-          ? estimateData.generalInformation.generalCostCoefficient / 100
-          : 0;
-        const generalCost = directTotal * generalCostCoefficient;
-
-        const precalculatedTaxCoefficient = estimateData?.generalInformation
-          ?.precalculatedTaxCoefficient
-          ? estimateData.generalInformation.precalculatedTaxCoefficient / 100
-          : 0;
-        const preTaxIncome =
-          (directTotal + generalCost) * precalculatedTaxCoefficient;
-
-        const constructionCostBeforeTax =
-          directTotal + generalCost + preTaxIncome;
-        const vatCoefficient = estimateData?.generalInformation?.vatCoefficient
-          ? estimateData.generalInformation.vatCoefficient / 100
-          : 0;
-        const vat = constructionCostBeforeTax * vatCoefficient;
-        const constructionCostAfterTax = constructionCostBeforeTax + vat;
-
-        const designAndEstimate =
-          (estimateData?.generalInformation?.designFee || 0) *
-          (1 +
-            (estimateData?.generalInformation?.designCoefficient || 0) / 100);
-        const surveyLaborCost =
-          (estimateData?.generalInformation?.surveyEffort || 0) *
-          (estimateData?.generalInformation?.surveyFee || 0);
-        const installationCost =
-          estimateData?.generalInformation?.installationFee || 0;
-        const consultingTotal =
-          designAndEstimate + surveyLaborCost + installationCost;
-
-        const printingCost = estimateData?.generalInformation?.contractFee || 0;
-        const otherTotal = printingCost;
-
-        const grandTotal =
-          constructionCostAfterTax + consultingTotal + otherTotal;
-        const totalAmount = Math.round(grandTotal / 100) * 100;
-
         payload = {
           ...payload,
           materials: mappedMaterials,
-          totalAmount: totalAmount,
         };
       }
 
@@ -439,7 +411,7 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
               isInvalid={!!errors.customerName}
               errorMessage={errors.customerName}
               variant="bordered"
-              isDisabled={!form.formNumber}
+              isDisabled
             />
 
             <CustomInput
@@ -461,7 +433,7 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
               isInvalid={!!errors.address}
               errorMessage={errors.address}
               variant="bordered"
-              isDisabled={!form.formNumber}
+              isDisabled
             />
 
             <CustomInput
@@ -523,7 +495,7 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
             ]}
             mapData={(item, index, page) => ({
               stt: (page - 1) * 10 + index + 1,
-              id: item.formCode,
+              id: item.formCode ?? item.id ?? "",
               formNumber: item.formNumber,
               customerName: item.customerName,
               address: item.address,
@@ -545,7 +517,7 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
       </Card>
 
       {/* Show material card and total cost in both create and update mode once a form is selected */}
-      {(isCreateMode ? !!form.formCode : true) && (
+      {(isCreateMode ? !!form.formNumber : true) && (
         <>
           <SettlementMaterialCard
             settlementId={id}

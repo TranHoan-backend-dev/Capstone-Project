@@ -9,7 +9,6 @@ import { DeleteIcon } from "@/config/chip-and-icon";
 import { MaterialEstimateItem, SettlementResponse } from "@/types";
 import { ESTIMATE_COLUMN } from "@/config/table-columns";
 import { LookupModal } from "@/components/ui/modal/LookupModal";
-import { useIsPlanningTechnicalDepartmentHead } from "@/hooks/useHasRole";
 
 interface SettlementMaterialCardProps {
   settlementId: string;
