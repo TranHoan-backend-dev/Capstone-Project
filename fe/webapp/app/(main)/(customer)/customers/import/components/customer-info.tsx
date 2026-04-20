@@ -18,9 +18,6 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
   const [showWaterPriceModal, setShowWaterPriceModal] = useState(false);
   const [displayWaterPrice, setDisplayWaterPrice] = useState("");
 
-  const [showWaterMeterModal, setShowWaterMeterModal] = useState(false);
-  const [displayWaterMeter, setDisplayWaterMeter] = useState("");
-
   const [showRoadmapModal, setShowRoadmapModal] = useState(false);
   const [displayRoadmap, setDisplayRoadmap] = useState("");
 
@@ -47,28 +44,6 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
   }, [formData.waterPriceId, displayWaterPrice]);
 
   useEffect(() => {
-    const fetchWaterMeterDetails = async () => {
-      if (formData.waterMeterId && !displayWaterMeter) {
-        try {
-          const response = await authFetch(
-            `/api/device/water-meter-type/${formData.waterMeterId}`,
-          );
-          const result = await response.json();
-          if (result.data) {
-            setDisplayWaterMeter(
-              `Tên: ${result.data.name} - Nguồn gốc: ${result.data.origin} - Loại: ${result.data.meterModel}`,
-            );
-          }
-        } catch (error) {
-          console.error("Failed to fetch water meter:", error);
-        }
-      }
-    };
-
-    fetchWaterMeterDetails();
-  }, [formData.waterMeterId, displayWaterMeter]);
-
-  useEffect(() => {
     const fetchRoadmapDetails = async () => {
       if (formData.roadmapId && !displayRoadmap) {
         try {
@@ -90,23 +65,6 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
     fetchRoadmapDetails();
   }, [formData.roadmapId, displayRoadmap]);
 
-  const fetchWaterMeterDetailsById = async (waterMeterId: string) => {
-    try {
-      const response = await authFetch(
-        `/api/device/water-meter-type/${waterMeterId}`,
-      );
-      const result = await response.json();
-      if (result.data) {
-        setDisplayWaterMeter(
-          `Tên: ${result.data.name} - Nguồn gốc: ${result.data.origin} - Loại: ${result.data.meterModel}`,
-        );
-      }
-    } catch (error) {
-      console.error("Failed to fetch water meter:", error);
-    }
-  };
-
-  /** formCode + formNumber: lấy contractId và (nếu có) waterMeterTypeId từ dự toán */
   const syncContractAndEstimateMeter = async (
     formCode: string,
     formNumber: string,
@@ -136,13 +94,12 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
       if (meterRes.ok) {
         const meterJson = await meterRes.json();
         const raw = meterJson?.data;
-        const meterTypeId =
+        const waterMeterType =
           raw !== undefined && raw !== null && String(raw).trim() !== ""
             ? String(raw)
             : null;
-        if (meterTypeId) {
-          onUpdate("waterMeterId", meterTypeId);
-          await fetchWaterMeterDetailsById(meterTypeId);
+        if (waterMeterType) {
+          onUpdate("waterMeterType", waterMeterType);
         }
       }
     } catch (error) {
@@ -233,6 +190,26 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
         );
       }
 
+      if (selectedForm.formCode) {
+        try {
+          const estimateRes = await authFetch(
+            `/api/construction/estimates/form-code/${encodeURIComponent(selectedForm.formCode)}`,
+          );
+          if (estimateRes.ok) {
+            const estimateJson = await estimateRes.json();
+            const serial = estimateJson?.data?.waterMeterId;
+            if (serial) {
+              onUpdate("waterMeterId", serial);
+            }
+          }
+        } catch (error) {
+          console.error(
+            "Failed to fetch waterMeterId from estimate:",
+            error,
+          );
+        }
+      }
+
       setShowFormModal(false);
     } catch (error) {
       console.error("Failed to process form data:", error);
@@ -244,14 +221,6 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
       `${item.usageTarget} - ${item.tax}% - ${item.environmentPrice}`,
     );
     setShowWaterPriceModal(false);
-  };
-
-  const handleSelectWaterMeter = (item: any) => {
-    onUpdate("waterMeterId", item.id);
-    setDisplayWaterMeter(
-      `Tên: ${item.name} - Nguồn gốc: ${item.origin} - Loại: ${item.meterModel}`,
-    );
-    setShowWaterMeterModal(false);
   };
 
   return (
@@ -436,6 +405,7 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
           onValueChange={() => {}}
           onSearch={() => setShowWaterPriceModal(true)}
         />
+
         <LookupModal
           enableSearch={false}
           dataKey="content"
@@ -460,34 +430,10 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
           })}
           onSelect={handleSelectWaterPrice}
         />
-        <SearchInputWithButton
-          label="Đồng hồ nước"
-          isRequired
-          value={displayWaterMeter}
-          onValueChange={() => {}}
-          onSearch={() => setShowWaterMeterModal(true)}
-        />
-        <LookupModal
-          enableSearch={false}
-          dataKey="content"
-          isOpen={showWaterMeterModal}
-          onClose={() => setShowWaterMeterModal(false)}
-          title="Chọn đồng hồ nước"
-          api="/api/device/water-meter-type"
-          columns={[
-            { key: "stt", label: "STT" },
-            { key: "name", label: "Tên" },
-            { key: "origin", label: "Nguồn gốc" },
-            { key: "meterModel", label: "Loại" },
-          ]}
-          mapData={(item: any, index: number) => ({
-            stt: index + 1,
-            id: item.typeId,
-            name: item.name,
-            origin: item.origin,
-            meterModel: item.meterModel,
-          })}
-          onSelect={handleSelectWaterMeter}
+        <CustomInput
+          label="Số serial đồng hồ"
+          value={formData.waterMeterId ?? ""}
+          onValueChange={(value) => onUpdate("waterMeterId", value)}
         />
         <SearchInputWithButton
           label="Lộ trình ghi"

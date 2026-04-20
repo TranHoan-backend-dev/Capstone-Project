@@ -300,7 +300,7 @@ export const SettlementDetailModal = ({
                             colSpan={7}
                             className="border border-black px-1 py-1 text-right"
                           >
-                            Phí kết nối:
+                            Tổng chi phí:
                           </td>
                           <td
                             colSpan={2}

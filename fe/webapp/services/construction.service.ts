@@ -820,6 +820,14 @@ export const getDetailReceipt = (
   );
 };
 
+export const getLastCodeReceipt = async (accessToken: string) => {
+  return axios.get(`${API_GATEWAY_URL}/construction/receipts/last`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
 export const getAllEstimates = (
   accessToken: string,
   page: number,

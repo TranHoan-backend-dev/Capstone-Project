@@ -1,23 +1,48 @@
 "use client";
 
 import { Checkbox, Divider } from "@heroui/react";
-import React from "react";
-import { parseDate } from "@internationalized/date";
+import React, { useEffect, useState } from "react";
 import CustomInput from "@/components/ui/custom/CustomInput";
-import CustomDatePicker from "@/components/ui/custom/CustomDatePicker";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
 import { TitleDarkColor } from "@/config/chip-and-icon";
 import { TechnicalInfoProps } from "@/types";
+import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
+import { LookupModal } from "@/components/ui/modal/LookupModal";
+import { authFetch } from "@/utils/authFetch";
 
 export const TechnicalInfo = ({ formData, onUpdate }: TechnicalInfoProps) => {
-  const parseDateString = (dateString: string) => {
-    if (!dateString) return null;
-    try {
-      return parseDate(dateString);
-    } catch {
-      return null;
-    }
+  const [showWaterMeterModal, setShowWaterMeterModal] = useState(false);
+  const [displayWaterMeter, setDisplayWaterMeter] = useState("");
+
+  useEffect(() => {
+    const fetchWaterMeterDetails = async () => {
+      if (formData.waterMeterType && !displayWaterMeter) {
+        try {
+          const response = await authFetch(
+            `/api/device/water-meter-type/${formData.waterMeterType}`,
+          );
+          const result = await response.json();
+          if (result.data) {
+            setDisplayWaterMeter(
+              `${result.data.name} - ${result.data.origin} - ${result.data.meterModel}`,
+            );
+          }
+        } catch (error) {
+          console.error("Failed to fetch water meter:", error);
+        }
+      }
+    };
+    fetchWaterMeterDetails();
+  }, [formData.waterMeterType]);
+
+  const handleSelectWaterMeterType = (item: any) => {
+    onUpdate("waterMeterType", item.id);
+    setDisplayWaterMeter(
+      `${item.name} - ${item.origin} - ${item.meterModel}`,
+    );
+    setShowWaterMeterModal(false);
   };
+
   return (
     <div>
       <div className="space-y-6 pb-6 border-b border-gray-100 dark:border-divider">
@@ -63,25 +88,35 @@ export const TechnicalInfo = ({ formData, onUpdate }: TechnicalInfoProps) => {
             onUpdate("usageTarget", value);
           }}
         />
-
-        <CustomSelect
-          label="Loại đồng hồ"
-          options={[
-            { value: "MECHANICAL", label: "Cơ khí" },
-            { value: "ELECTRONIC", label: "Điện tử" },
-            { value: "SMART", label: "Thông minh" },
-          ]}
-          selectedKeys={
-            formData.waterMeterType
-              ? new Set([formData.waterMeterType])
-              : new Set()
-          }
-          onSelectionChange={(keys) => {
-            const value = Array.from(keys)[0] as string;
-            onUpdate("waterMeterType", value);
-          }}
+        <SearchInputWithButton
+          label="Loại đồng hồ nước"
+          isRequired
+          value={displayWaterMeter}
+          onValueChange={() => {}}
+          onSearch={() => setShowWaterMeterModal(true)}
         />
-
+        <LookupModal
+          enableSearch={false}
+          dataKey="content"
+          isOpen={showWaterMeterModal}
+          onClose={() => setShowWaterMeterModal(false)}
+          title="Chọn loại đồng hồ nước"
+          api="/api/device/water-meter-type"
+          columns={[
+            { key: "stt", label: "STT" },
+            { key: "name", label: "Tên" },
+            { key: "origin", label: "Nguồn gốc" },
+            { key: "meterModel", label: "Loại" },
+          ]}
+          mapData={(item: any, index: number) => ({
+            stt: index + 1,
+            id: item.typeId,
+            name: item.name,
+            origin: item.origin,
+            meterModel: item.meterModel,
+          })}
+          onSelect={handleSelectWaterMeterType}
+        />
         <CustomInput
           label="Số hộ"
           type="number"
