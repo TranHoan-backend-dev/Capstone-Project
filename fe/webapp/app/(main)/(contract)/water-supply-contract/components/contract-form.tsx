@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardBody,
@@ -63,6 +63,28 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const fetchLastCode = async () => {
+      try {
+        const res = await authFetch("/api/customer/contracts/latest");
+        if (!res.ok) return;
+        const json = await res.json();
+        const lastCode: string = json.data;
+        if (lastCode) {
+          const numericPart = lastCode.replace(/\D/g, "");
+          const prefix = lastCode.replace(/\d+$/, "");
+          const nextNumber = (parseInt(numericPart || "0") + 1)
+            .toString()
+            .padStart(numericPart.length || 1, "0");
+          setFormData((prev) => ({ ...prev, contractId: prefix + nextNumber }));
+        }
+      } catch (e) {
+        console.error("Failed to fetch last contract code:", e);
+      }
+    };
+    fetchLastCode();
+  }, []);
 
   const handleSelectForm = (selected: any) => {
     setSelectedForm(selected);

@@ -738,6 +738,17 @@ export const deleteSettlement = (accessToken: string, settlementId: string) => {
   );
 };
 
+export const getLastCodeSettlement = async (accessToken: string) => {
+  return axios.get(
+    `${API_GATEWAY_URL}/construction/settlements/latest`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+};
+
 export const getAllReceipts = (
   accessToken: string,
   page: number,

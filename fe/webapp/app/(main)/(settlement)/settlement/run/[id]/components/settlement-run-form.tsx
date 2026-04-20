@@ -20,7 +20,7 @@ import { SettlementTotalCost } from "./settlement-total-cost";
 import { MaterialEstimateItem, SettlementResponse } from "@/types";
 
 interface SettlementRunFormProps {
-  id: string; // 'new' for create, or settlementId for update
+  id: string;
 }
 
 export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
@@ -29,7 +29,8 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
 
   const [showFormModal, setShowFormModal] = useState(false);
   const [materials, setMaterials] = useState<MaterialEstimateItem[]>([]);
-  const [settlementData, setSettlementData] = useState<SettlementResponse | null>(null);
+  const [settlementData, setSettlementData] =
+    useState<SettlementResponse | null>(null);
   const [estimateData, setEstimateData] = useState<any | null>(null);
   const [form, setForm] = useState({
     settlementId: "",
@@ -46,6 +47,14 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(!isCreateMode);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [lastCode, setLastCode] = useState("");
+  const [isFetchingCode, setIsFetchingCode] = useState(true);
+
+  useEffect(() => {
+    if (isCreateMode) {
+      getLastCode();
+    }
+  }, []);
 
   useEffect(() => {
     if (!isCreateMode) {
@@ -59,7 +68,7 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
           const data = json?.data?.data ?? json?.data;
           setSettlementData(data);
           const dataSource = data?.generalInformation ?? data;
-          
+
           setForm({
             settlementId: dataSource.settlementId ?? dataSource.id ?? "",
             formCode: dataSource.formCode ?? "",
@@ -73,12 +82,15 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
                 ? ""
                 : String(dataSource.connectionFee),
             note: dataSource.note ?? "",
-            registrationAt: (dataSource.registrationAt ?? new Date().toISOString()).split("T")[0],
+            registrationAt: (
+              dataSource.registrationAt ?? new Date().toISOString()
+            ).split("T")[0],
           });
 
-          // Fetch estimate data to get coefficients
           if (dataSource.formCode) {
-            const estRes = await authFetch(`/api/construction/estimates/${dataSource.formCode}`);
+            const estRes = await authFetch(
+              `/api/construction/estimates/${dataSource.formCode}`,
+            );
             if (estRes.ok) {
               const estJson = await estRes.json();
               setEstimateData(estJson.data);
@@ -100,23 +112,23 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
 
   const fetchEstimateData = async (formCode: string) => {
     try {
-      // Gọi API lấy dữ liệu estimate dựa vào formCode
-      // Mặc định backend có thể yêu cầu estimateId, nhưng hiện tại formCode có thể dùng tương tự
       const res = await authFetch(`/api/construction/estimates/${formCode}`);
       if (!res.ok) {
-         return;
+        return;
       }
       const json = await res.json();
       setEstimateData(json.data);
       const estGeneralInfo = json.data?.generalInformation ?? json.data;
       if (estGeneralInfo) {
-        setForm(prev => ({
+        setForm((prev) => ({
           ...prev,
           customerName: estGeneralInfo.customerName ?? prev.customerName,
           address: estGeneralInfo.address ?? prev.address,
-          connectionFee: estGeneralInfo.contractFee !== undefined && estGeneralInfo.contractFee !== null 
-            ? String(estGeneralInfo.contractFee) 
-            : prev.connectionFee,
+          connectionFee:
+            estGeneralInfo.contractFee !== undefined &&
+            estGeneralInfo.contractFee !== null
+              ? String(estGeneralInfo.contractFee)
+              : prev.connectionFee,
           jobContent: estGeneralInfo.jobContent ?? prev.jobContent,
         }));
       }
@@ -125,6 +137,45 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
     }
   };
 
+  const getLastCode = async () => {
+    try {
+      setIsFetchingCode(true);
+      const res = await authFetch("/api/construction/settlements/latest");
+      if (!res.ok) {
+        throw new Error("Failed to fetch last code");
+      }
+      const json = await res.json();
+      const lastCodeData: string = json.data;
+
+      setLastCode(lastCodeData);
+
+      if (lastCodeData) {
+        const numericPart = lastCodeData.replace(/\D/g, "");
+        const prefix = lastCodeData.replace(/\d+$/, "");
+        const nextNumber = (parseInt(numericPart || "0") + 1)
+          .toString()
+          .padStart(numericPart.length || 1, "0");
+        updateField("settlementId", prefix + nextNumber);
+      }
+    } catch (error) {
+      console.error("Error fetching last code:", error);
+      CallToast({
+        title: "Lỗi",
+        message: "Không thể lấy mã phiếu cuối cùng. Vui lòng thử lại sau.",
+        color: "danger",
+      });
+    } finally {
+      setIsFetchingCode(false);
+    }
+  };
+
+  const updateField = (field: keyof any, value: any) => {
+    setForm((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+  
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
@@ -186,12 +237,12 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
 
   const handleSubmit = async () => {
     if (!validateForm()) {
-       CallToast({
-          title: "Lỗi",
-          message: "Vui lòng kiểm tra lại thông tin trên form",
-          color: "danger",
-       });
-       return;
+      CallToast({
+        title: "Lỗi",
+        message: "Vui lòng kiểm tra lại thông tin trên form",
+        color: "danger",
+      });
+      return;
     }
 
     try {
@@ -210,7 +261,6 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
       };
 
       if (!isCreateMode) {
-        // Prepare materials for Update
         const mappedMaterials = materials.map((m) => ({
           materialCode: m.code,
           jobContent: m.description,
@@ -222,34 +272,58 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
           totalLaborPrice: m.laborTotal,
           note: m.note,
         }));
-        
-        const materialCost = materials.reduce((sum, item) => sum + (item.materialTotal || 0), 0);
-        const laborCoefficient = estimateData?.generalInformation?.laborCoefficient 
-          ? estimateData.generalInformation.laborCoefficient / 100 
+
+        const materialCost = materials.reduce(
+          (sum, item) => sum + (item.materialTotal || 0),
+          0,
+        );
+        const laborCoefficient = estimateData?.generalInformation
+          ?.laborCoefficient
+          ? estimateData.generalInformation.laborCoefficient / 100
           : 0;
-        const laborCost = materials.reduce((sum, item) => sum + (item.laborTotal || 0), 0) * (1 + laborCoefficient);
+        const laborCost =
+          materials.reduce((sum, item) => sum + (item.laborTotal || 0), 0) *
+          (1 + laborCoefficient);
         const directTotal = materialCost + laborCost;
 
-        const generalCostCoefficient = estimateData?.generalInformation?.generalCostCoefficient ? estimateData.generalInformation.generalCostCoefficient / 100 : 0;
+        const generalCostCoefficient = estimateData?.generalInformation
+          ?.generalCostCoefficient
+          ? estimateData.generalInformation.generalCostCoefficient / 100
+          : 0;
         const generalCost = directTotal * generalCostCoefficient;
 
-        const precalculatedTaxCoefficient = estimateData?.generalInformation?.precalculatedTaxCoefficient ? estimateData.generalInformation.precalculatedTaxCoefficient / 100 : 0;
-        const preTaxIncome = (directTotal + generalCost) * precalculatedTaxCoefficient;
+        const precalculatedTaxCoefficient = estimateData?.generalInformation
+          ?.precalculatedTaxCoefficient
+          ? estimateData.generalInformation.precalculatedTaxCoefficient / 100
+          : 0;
+        const preTaxIncome =
+          (directTotal + generalCost) * precalculatedTaxCoefficient;
 
-        const constructionCostBeforeTax = directTotal + generalCost + preTaxIncome;
-        const vatCoefficient = estimateData?.generalInformation?.vatCoefficient ? estimateData.generalInformation.vatCoefficient / 100 : 0;
+        const constructionCostBeforeTax =
+          directTotal + generalCost + preTaxIncome;
+        const vatCoefficient = estimateData?.generalInformation?.vatCoefficient
+          ? estimateData.generalInformation.vatCoefficient / 100
+          : 0;
         const vat = constructionCostBeforeTax * vatCoefficient;
         const constructionCostAfterTax = constructionCostBeforeTax + vat;
 
-        const designAndEstimate = (estimateData?.generalInformation?.designFee || 0) * (1 + (estimateData?.generalInformation?.designCoefficient || 0) / 100);
-        const surveyLaborCost = (estimateData?.generalInformation?.surveyEffort || 0) * (estimateData?.generalInformation?.surveyFee || 0);
-        const installationCost = estimateData?.generalInformation?.installationFee || 0;
-        const consultingTotal = designAndEstimate + surveyLaborCost + installationCost;
+        const designAndEstimate =
+          (estimateData?.generalInformation?.designFee || 0) *
+          (1 +
+            (estimateData?.generalInformation?.designCoefficient || 0) / 100);
+        const surveyLaborCost =
+          (estimateData?.generalInformation?.surveyEffort || 0) *
+          (estimateData?.generalInformation?.surveyFee || 0);
+        const installationCost =
+          estimateData?.generalInformation?.installationFee || 0;
+        const consultingTotal =
+          designAndEstimate + surveyLaborCost + installationCost;
 
         const printingCost = estimateData?.generalInformation?.contractFee || 0;
         const otherTotal = printingCost;
 
-        const grandTotal = constructionCostAfterTax + consultingTotal + otherTotal;
+        const grandTotal =
+          constructionCostAfterTax + consultingTotal + otherTotal;
         const totalAmount = Math.round(grandTotal / 100) * 100;
 
         payload = {
@@ -259,10 +333,10 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
         };
       }
 
-      const url = isCreateMode 
-        ? "/api/construction/settlements" 
+      const url = isCreateMode
+        ? "/api/construction/settlements"
         : `/api/construction/settlements/${id}`;
-        
+
       const method = isCreateMode ? "POST" : "PUT";
 
       const res = await authFetch(url, {
@@ -275,27 +349,34 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
 
       if (!res.ok) {
         const errorData = await res.json();
-        const errorMessage = getErrorMessage(errorData, isCreateMode ? "Tạo thất bại" : "Cập nhật thất bại");
+        const errorMessage = getErrorMessage(
+          errorData,
+          isCreateMode ? "Tạo thất bại" : "Cập nhật thất bại",
+        );
         throw new Error(errorMessage);
       }
-      
+
       CallToast({
         title: "Thành công",
-        message: isCreateMode ? "Tạo quyết toán thành công" : "Cập nhật quyết toán thành công",
+        message: isCreateMode
+          ? "Tạo quyết toán thành công"
+          : "Cập nhật quyết toán thành công",
         color: "success",
       });
-      
+
       if (isCreateMode && payload.settlementId) {
-        // Redirect to update mode to fill materials
         router.push(`/settlement/run/${payload.settlementId}`);
       } else {
         router.push("/settlement-lookup");
       }
-      
     } catch (err: any) {
       CallToast({
         title: "Lỗi",
-        message: err.message || (isCreateMode ? "Tạo quyết toán thất bại" : "Cập nhật quyết toán thất bại"),
+        message:
+          err.message ||
+          (isCreateMode
+            ? "Tạo quyết toán thất bại"
+            : "Cập nhật quyết toán thất bại"),
         color: "danger",
       });
     } finally {
@@ -311,181 +392,176 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
     <div className="space-y-8">
       <Card className="w-full">
         <CardHeader className="flex flex-col gap-1 items-start px-6 pt-6">
-        <h2 className="text-xl font-semibold">
-          {isCreateMode ? "Tạo quyết toán công trình" : "Cập nhật quyết toán"}
-        </h2>
-        <p className="text-sm text-gray-500">
-          Vui lòng điền đầy đủ các thông tin cần thiết để {isCreateMode ? "tạo mới" : "cập nhật"} quyết toán.
-        </p>
-      </CardHeader>
-      
-      <Divider />
+          <h2 className="text-xl font-semibold">
+            {isCreateMode ? "Tạo quyết toán công trình" : "Cập nhật quyết toán"}
+          </h2>
+          <p className="text-sm text-gray-500">
+            Vui lòng điền đầy đủ các thông tin cần thiết để{" "}
+            {isCreateMode ? "tạo mới" : "cập nhật"} quyết toán.
+          </p>
+        </CardHeader>
 
-      <CardBody className="gap-6 px-6 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <CustomInput
-            label="Mã quyết toán"
-            value={form.settlementId}
-            onChange={(e) => handleChange("settlementId", e.target.value)}
-            isRequired
-            isInvalid={!!errors.settlementId}
-            errorMessage={errors.settlementId}
+        <Divider />
+
+        <CardBody className="gap-6 px-6 py-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <CustomInput
+              label="Mã quyết toán"
+              value={form.settlementId}
+              onChange={(e) => handleChange("settlementId", e.target.value)}
+              isRequired
+              isInvalid={!!errors.settlementId}
+              errorMessage={errors.settlementId}
+              variant="bordered"
+              isDisabled={!isCreateMode}
+            />
+
+            <SearchInputWithButton
+              label="Số đơn"
+              value={form.formNumber}
+              onSearch={() => setShowFormModal(true)}
+              onChange={(e) => {
+                handleChange("formNumber", e.target.value);
+                if (!e.target.value) {
+                  handleChange("formCode", "");
+                  handleChange("customerName", "");
+                  handleChange("address", "");
+                  handleChange("jobContent", "");
+                }
+              }}
+              isInvalid={!!errors.formNumber}
+              errorMessage={errors.formNumber}
+              required
+              isDisabled={!isCreateMode}
+            />
+
+            <CustomInput
+              label="Tên khách hàng"
+              value={form.customerName}
+              onChange={(e) => handleChange("customerName", e.target.value)}
+              isRequired
+              isInvalid={!!errors.customerName}
+              errorMessage={errors.customerName}
+              variant="bordered"
+              isDisabled={!form.formNumber}
+            />
+
+            <CustomInput
+              label="Nội dung công việc"
+              value={form.jobContent}
+              onChange={(e) => handleChange("jobContent", e.target.value)}
+              isRequired
+              isInvalid={!!errors.jobContent}
+              errorMessage={errors.jobContent}
+              variant="bordered"
+              isDisabled={!form.formNumber}
+            />
+
+            <CustomInput
+              label="Địa chỉ lắp đặt"
+              value={form.address}
+              onChange={(e) => handleChange("address", e.target.value)}
+              isRequired
+              isInvalid={!!errors.address}
+              errorMessage={errors.address}
+              variant="bordered"
+              isDisabled={!form.formNumber}
+            />
+
+            <CustomInput
+              label="Chi phí đấu nối"
+              value={form.connectionFee}
+              onChange={(e) => handleChange("connectionFee", e.target.value)}
+              isRequired
+              isInvalid={!!errors.connectionFee}
+              errorMessage={errors.connectionFee}
+              variant="bordered"
+            />
+
+            <CustomInput
+              type="date"
+              label="Ngày đăng ký"
+              value={form.registrationAt}
+              onChange={(e) => handleChange("registrationAt", e.target.value)}
+              isRequired
+              isInvalid={!!errors.registrationAt}
+              errorMessage={errors.registrationAt}
+              variant="bordered"
+            />
+          </div>
+
+          <Textarea
+            label="Ghi chú"
+            placeholder="Nhập ghi chú (nếu có)"
+            value={form.note}
+            onChange={(e) => handleChange("note", e.target.value)}
             variant="bordered"
-            isDisabled={!isCreateMode} // Thường mã không cho sửa khi cập nhật
+            rows={3}
           />
 
-          <SearchInputWithButton
-            label="Số đơn"
-            value={form.formNumber}
-            onSearch={() => setShowFormModal(true)}
-            onChange={(e) => {
-              handleChange("formNumber", e.target.value);
-              if (!e.target.value) {
-                handleChange("formCode", "");
-                handleChange("customerName", "");
-                handleChange("address", "");
-                handleChange("jobContent", "");
+          <div className="flex justify-end gap-3 mt-4">
+            <Button
+              variant="light"
+              onPress={() => router.push("/settlement-lookup")}
+              disabled={loading}
+            >
+              Hủy
+            </Button>
+            <Button color="primary" onPress={handleSubmit} isLoading={loading}>
+              {isCreateMode ? "Tạo mới" : "Cập nhật"}
+            </Button>
+          </div>
+
+          <LookupModal
+            dataKey="content"
+            enableSearch={false}
+            isOpen={showFormModal}
+            onClose={() => setShowFormModal(false)}
+            title="Chọn đơn lắp đặt"
+            api="/api/construction/installation-forms"
+            columns={[
+              { key: "stt", label: "STT" },
+              { key: "formNumber", label: "Số đơn" },
+              { key: "customerName", label: "Tên khách hàng" },
+              { key: "address", label: "Địa chỉ" },
+            ]}
+            mapData={(item, index, page) => ({
+              stt: (page - 1) * 10 + index + 1,
+              id: item.formCode,
+              formNumber: item.formNumber,
+              customerName: item.customerName,
+              address: item.address,
+              jobContent: item.jobContent,
+            })}
+            onSelect={(item) => {
+              handleChange("formCode", item.id);
+              handleChange("formNumber", item.formNumber);
+              handleChange("customerName", item.customerName ?? "");
+              handleChange("address", item.address ?? "");
+              if (item.jobContent) {
+                handleChange("jobContent", item.jobContent);
               }
+              setShowFormModal(false);
+              fetchEstimateData(item.id);
             }}
-            isInvalid={!!errors.formNumber}
-            errorMessage={errors.formNumber}
-            required
-            isDisabled={!isCreateMode} // Thường không sửa số đơn khi cập nhật
           />
+        </CardBody>
+      </Card>
 
-          <CustomInput
-            label="Tên khách hàng"
-            value={form.customerName}
-            onChange={(e) => handleChange("customerName", e.target.value)}
-            isRequired
-            isInvalid={!!errors.customerName}
-            errorMessage={errors.customerName}
-            variant="bordered"
-            isDisabled={!form.formNumber}
+      {!isCreateMode && (
+        <>
+          <SettlementMaterialCard
+            settlementId={id}
+            settlementData={settlementData}
+            materials={materials}
+            setMaterials={setMaterials}
           />
-
-          <CustomInput
-            label="Nội dung công việc"
-            value={form.jobContent}
-            onChange={(e) => handleChange("jobContent", e.target.value)}
-            isRequired
-            isInvalid={!!errors.jobContent}
-            errorMessage={errors.jobContent}
-            variant="bordered"
-            isDisabled={!form.formNumber}
+          <SettlementTotalCost
+            estimateData={estimateData}
+            materials={materials}
           />
-
-          <CustomInput
-            label="Địa chỉ lắp đặt"
-            value={form.address}
-            onChange={(e) => handleChange("address", e.target.value)}
-            isRequired
-            isInvalid={!!errors.address}
-            errorMessage={errors.address}
-            variant="bordered"
-            isDisabled={!form.formNumber}
-          />
-
-          <CustomInput
-            label="Chi phí đấu nối"
-            value={form.connectionFee}
-            onChange={(e) => handleChange("connectionFee", e.target.value)}
-            isRequired
-            isInvalid={!!errors.connectionFee}
-            errorMessage={errors.connectionFee}
-            variant="bordered"
-          />
-
-          <CustomInput
-            type="date"
-            label="Ngày đăng ký"
-            value={form.registrationAt}
-            onChange={(e) => handleChange("registrationAt", e.target.value)}
-            isRequired
-            isInvalid={!!errors.registrationAt}
-            errorMessage={errors.registrationAt}
-            variant="bordered"
-          />
-        </div>
-
-        <Textarea
-          label="Ghi chú"
-          placeholder="Nhập ghi chú (nếu có)"
-          value={form.note}
-          onChange={(e) => handleChange("note", e.target.value)}
-          variant="bordered"
-          rows={3}
-        />
-
-        <div className="flex justify-end gap-3 mt-4">
-          <Button 
-            variant="light" 
-            onPress={() => router.push("/settlement-lookup")} 
-            disabled={loading}
-          >
-            Hủy
-          </Button>
-          <Button 
-            color="primary" 
-            onPress={handleSubmit} 
-            isLoading={loading}
-          >
-            {isCreateMode ? "Tạo mới" : "Cập nhật"}
-          </Button>
-        </div>
-
-        <LookupModal
-          dataKey="content"
-          enableSearch={false}
-          isOpen={showFormModal}
-          onClose={() => setShowFormModal(false)}
-          title="Chọn đơn lắp đặt"
-          api="/api/construction/installation-forms"
-          columns={[
-            { key: "stt", label: "STT" },
-            { key: "formNumber", label: "Số đơn" },
-            { key: "customerName", label: "Tên khách hàng" },
-            { key: "address", label: "Địa chỉ" },
-          ]}
-          mapData={(item, index, page) => ({
-            stt: (page - 1) * 10 + index + 1,
-            id: item.formCode,
-            formNumber: item.formNumber,
-            customerName: item.customerName,
-            address: item.address,
-            jobContent: item.jobContent,
-          })}
-          onSelect={(item) => {
-            handleChange("formCode", item.id);
-            handleChange("formNumber", item.formNumber);
-            handleChange("customerName", item.customerName ?? "");
-            handleChange("address", item.address ?? "");
-            if (item.jobContent) {
-              handleChange("jobContent", item.jobContent);
-            }
-            setShowFormModal(false);
-            
-            // Gọi API fetch dữ liệu estimate dựa vào formCode
-            fetchEstimateData(item.id);
-          }}
-        />
-      </CardBody>
-    </Card>
-
-    {!isCreateMode && (
-      <>
-        <SettlementMaterialCard
-          settlementId={id}
-          settlementData={settlementData}
-          materials={materials}
-          setMaterials={setMaterials}
-        />
-        <SettlementTotalCost
-          estimateData={estimateData}
-          materials={materials}
-        />
-      </>
-    )}
+        </>
+      )}
     </div>
   );
 };

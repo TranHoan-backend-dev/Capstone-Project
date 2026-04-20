@@ -167,3 +167,11 @@ export const getContractByFormCode = (
     },
   );
 };
+
+export const getLastCodeContract = async (accessToken: string) => {
+  return axios.get(`${API_GATEWAY_URL}/customer/contracts/latest`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
