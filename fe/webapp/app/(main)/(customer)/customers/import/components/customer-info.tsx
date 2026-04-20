@@ -10,6 +10,7 @@ import { TitleDarkColor } from "@/config/chip-and-icon";
 import { CustomerInfoProps, usageTargetMap } from "@/types";
 import { LookupModal } from "@/components/ui/modal/LookupModal";
 import { authFetch } from "@/utils/authFetch";
+import { toAccountName } from "@/utils/validation";
 
 export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
   const [showFormModal, setShowFormModal] = useState(false);
@@ -162,6 +163,7 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
 
       if (selectedForm.customerName) {
         onUpdate("name", selectedForm.customerName);
+        onUpdate("bankAccountName", toAccountName(selectedForm.customerName));
       }
 
       if (selectedForm.address) {
@@ -362,7 +364,10 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
           label="Tên khách hàng"
           isRequired
           value={formData.name}
-          onValueChange={(value) => onUpdate("name", value)}
+          onValueChange={(value) => {
+            onUpdate("name", value);
+            onUpdate("bankAccountName", toAccountName(value));
+          }}
         />
         <CustomInput
           label="Email"

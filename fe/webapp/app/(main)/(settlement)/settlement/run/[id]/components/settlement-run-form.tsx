@@ -47,8 +47,6 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(!isCreateMode);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [lastCode, setLastCode] = useState("");
-  const [isFetchingCode, setIsFetchingCode] = useState(true);
 
   useEffect(() => {
     if (isCreateMode) {
@@ -89,7 +87,7 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
 
           if (dataSource.formCode) {
             const estRes = await authFetch(
-              `/api/construction/estimates/${dataSource.formCode}`,
+              `/api/construction/estimates/form-code/${encodeURIComponent(dataSource.formCode)}`,
             );
             if (estRes.ok) {
               const estJson = await estRes.json();
@@ -112,7 +110,9 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
 
   const fetchEstimateData = async (formCode: string) => {
     try {
-      const res = await authFetch(`/api/construction/estimates/${formCode}`);
+      const res = await authFetch(
+        `/api/construction/estimates/form-code/${encodeURIComponent(formCode)}`,
+      );
       if (!res.ok) {
         return;
       }
@@ -139,15 +139,12 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
 
   const getLastCode = async () => {
     try {
-      setIsFetchingCode(true);
       const res = await authFetch("/api/construction/settlements/latest");
       if (!res.ok) {
         throw new Error("Failed to fetch last code");
       }
       const json = await res.json();
       const lastCodeData: string = json.data;
-
-      setLastCode(lastCodeData);
 
       if (lastCodeData) {
         const numericPart = lastCodeData.replace(/\D/g, "");
@@ -164,8 +161,6 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
         message: "Không thể lấy mã phiếu cuối cùng. Vui lòng thử lại sau.",
         color: "danger",
       });
-    } finally {
-      setIsFetchingCode(false);
     }
   };
 
@@ -260,7 +255,8 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
         note: form.note,
       };
 
-      if (!isCreateMode) {
+      // Build materials payload and calculate totalAmount for both create and update
+      {
         const mappedMaterials = materials.map((m) => ({
           materialCode: m.code,
           jobContent: m.description,
@@ -548,11 +544,12 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
         </CardBody>
       </Card>
 
-      {!isCreateMode && (
+      {/* Show material card and total cost in both create and update mode once a form is selected */}
+      {(isCreateMode ? !!form.formCode : true) && (
         <>
           <SettlementMaterialCard
             settlementId={id}
-            settlementData={settlementData}
+            settlementData={isCreateMode ? null : settlementData}
             materials={materials}
             setMaterials={setMaterials}
           />

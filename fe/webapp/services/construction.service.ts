@@ -860,6 +860,16 @@ export const getEstimateById = (accessToken: string, estimateId: string) =>
     },
   });
 
+export const getEstimateByFormCode = (accessToken: string, formCode: string) =>
+  axios.get(
+    `${API_GATEWAY_URL}/construction/estimates/form-code/${encodeURIComponent(formCode)}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+
 export const getEstimateMeterType = (accessToken: string, formCode: string) =>
   axios.get(
     `${API_GATEWAY_URL}/construction/estimates/meter-type/${formCode}`,
