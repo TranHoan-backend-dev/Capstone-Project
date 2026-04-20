@@ -1417,26 +1417,28 @@ VALUES ('SETTLE-2024-0022', '404 Võ Nguyên Giáp, Nam Định', 'Trần Văn T
 
 -- device
 INSERT INTO public.parameters (param_id, created_at, creator, name, updated_at, updator, value)
-VALUES ('00000000-0000-0000-0000-100000000001', NOW(), '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20', 'Phí tạo lập hợp đồng',
+VALUES ('00000000-0000-0000-0000-100000000001', NOW(), '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20', 'Phí hợp đồng',
         NOW(),
-        '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20', 101),
+        '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20', 150000),
        ('00000000-0000-0000-0000-100000000002', NOW(), '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20', 'Phí khảo sát', NOW(),
-        '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20', 102),
-       ('00000000-0000-0000-0000-100000000003', NOW(), '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20', 'Phí lập đơn lắp đặt',
+        '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20', 150000),
+       ('00000000-0000-0000-0000-100000000003', NOW(), '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20', 'Phí lắp đặt',
         NOW(),
-        '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20', 103),
+        '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20', 150000),
        ('00000000-0000-0000-0000-100000000004', NOW(), '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20', 'Hệ số chi phí chung',
         NOW(),
-        '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20', 104),
+        '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20', 1),
        ('00000000-0000-0000-0000-100000000005', NOW(), '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20', 'Hệ số thuế tính trước',
         NOW(),
-        '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20', 105),
-       ('00000000-0000-0000-0000-100000000006', NOW(), '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20', 'Hệ số VAT', NOW(),
-        '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20', 106),
+        '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20', 1),
+       ('00000000-0000-0000-0000-100000000006', NOW(), '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20', 'Hệ số thuế GTGT (VAT)', NOW(),
+        '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20', 1),
+       ('00000000-0000-0000-0000-100000000009', NOW(), '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20', 'Hệ số nhân công', NOW(),
+        '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20', 1),
        ('00000000-0000-0000-0000-100000000007', NOW(), '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20', 'Hệ số thiết kế', NOW(),
-        '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20', 107),
+        '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20', 1),
        ('00000000-0000-0000-0000-100000000008', NOW(), '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20', 'Phí thiết kế', NOW(),
-        '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20', 108);
+        '6e9f757b-6fa1-4aa6-b7cb-a4cf2290eb20', 150000);
 
 INSERT INTO public.materials_group (group_id, created_at, name, updated_at)
 VALUES ('00000000-0000-0000-0000-200000000001', NOW(), 'Bu', NOW()),

@@ -24,4 +24,6 @@ public interface ContractService {
   String getLatestContractIdByPrefix(String prefix);
 
   ContractResponse getByFormCode(String formCode);
+
+  String getLastId();
 }

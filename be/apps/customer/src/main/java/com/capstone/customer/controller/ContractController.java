@@ -137,4 +137,11 @@ public class ContractController {
     log.info("Response: {}", response);
     return Utils.returnOkResponse("", response);
   }
+
+  @GetMapping("/latest")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF')")
+  public ResponseEntity<WrapperApiResponse> getTheLastContractId() {
+    log.info("REST request to get the last contract id");
+    return Utils.returnOkResponse("", contractService.getLastId());
+  }
 }

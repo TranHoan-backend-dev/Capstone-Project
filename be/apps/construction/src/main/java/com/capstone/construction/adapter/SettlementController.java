@@ -2,6 +2,7 @@ package com.capstone.construction.adapter;
 
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
+import com.capstone.construction.application.business.settlement.SettlementService;
 import com.capstone.construction.application.dto.request.settlement.AssignTheSignificanceRequest;
 import com.capstone.construction.application.dto.request.settlement.SignificanceRequest;
 import com.capstone.construction.application.dto.request.settlement.SettlementFilterRequest;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Quyết toán", description = "API quản lý và xử lý quyết toán công trình xây lắp")
 public class SettlementController {
   private final SettlementUseCase settlementUseCase;
+  private final SettlementService service;
 
   @PostMapping
   @Operation(summary = "Tạo mới một bản quyết toán công trình", description = """
@@ -47,7 +49,7 @@ public class SettlementController {
     log.info("REST request to create settlement for address: {}", request.address());
     var response = settlementUseCase.createSettlement(request);
     log.info(response.toString());
-    return Utils.returnCreatedResponse("Tạo quyết toán công trình thành công");
+    return Utils.returnOkResponse("Tạo quyết toán công trình thành công", response);
   }
 
   @PutMapping("/{settlementId}")
@@ -70,7 +72,7 @@ public class SettlementController {
     @ApiResponse(responseCode = "200", description = "Tìm thấy bản quyết toán", content = @Content(schema = @Schema(implementation = SettlementResponse.class))),
     @ApiResponse(responseCode = "404", description = "Không tìm thấy bản quyết toán", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'CONSTRUCTION_DEPARTMENT_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'CONSTRUCTION_DEPARTMENT_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'SURVEY_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD')")
   public ResponseEntity<WrapperApiResponse> getSettlementById(
     @PathVariable @Parameter(description = "ID của bản quyết toán cần tra cứu", required = true) String settlementId) {
     log.info("REST request to get settlement with id: {}", settlementId);
@@ -142,5 +144,12 @@ public class SettlementController {
     log.info("REST request to sign cost estimate: {}", request);
     settlementUseCase.assignStaffForSignCostEstimate(request);
     return Utils.returnOkResponse("Yêu cầu ký duyệt quyết toán thành công", null);
+  }
+
+  @GetMapping("/latest")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'CONSTRUCTION_DEPARTMENT_STAFF')")
+  public ResponseEntity<WrapperApiResponse> getLastId() {
+    log.info("REST request to get the last contract id");
+    return Utils.returnOkResponse("", service.getLastId());
   }
 }

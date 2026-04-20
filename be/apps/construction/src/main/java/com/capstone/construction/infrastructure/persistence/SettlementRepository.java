@@ -80,4 +80,6 @@ public interface SettlementRepository extends JpaRepository<Settlement, String>,
   }
 
   boolean existsByInstallationForm(InstallationForm form);
+
+  Settlement findTopByOrderByCreatedAtDesc();
 }

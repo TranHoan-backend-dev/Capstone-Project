@@ -118,6 +118,13 @@ public class ContractServiceImpl implements ContractService {
     return mapToResponse(contractRepository.findByFormCode(formCode));
   }
 
+  @Override
+  public String getLastId() {
+    return contractRepository
+      .findTopByOrderByCreatedAtDesc()
+      .getContractId();
+  }
+
   private @NonNull ContractResponse mapToResponse(@NonNull WaterUsageContract contract) {
     return new ContractResponse(
       contract.getContractId(),
