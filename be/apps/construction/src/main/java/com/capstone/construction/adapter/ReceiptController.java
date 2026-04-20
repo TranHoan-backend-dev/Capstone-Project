@@ -103,7 +103,7 @@ public class ReceiptController {
   }
 
   @GetMapping("/last")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'ORDER_RECEIVING_STAFF', 'FINANCE_DEPARTMENT')")
   public ResponseEntity<WrapperApiResponse> getLastReceiptId() {
     log.info("REST request to getLastReceiptId");
     return Utils.returnOkResponse("", service.getLastCode());
