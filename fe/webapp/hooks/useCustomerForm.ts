@@ -12,7 +12,7 @@ const initialFormData: CreateCustomerPayload = {
   numberOfHouseholds: 1,
   householdRegistrationNumber: 0,
   protectEnvironmentFee: 400000,
-  waterMeterType: "MECHANICAL",
+  waterMeterType: "",
   citizenIdentificationNumber: "",
   citizenIdentificationProvideAt: "Cục Cảnh sát quản lý hành chính về trật tự xã hội",
   paymentMethod: "CASH",
