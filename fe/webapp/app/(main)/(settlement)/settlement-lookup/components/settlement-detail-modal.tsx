@@ -146,8 +146,8 @@ export const SettlementDetailModal = ({
                         </div>
                         {headerDate ? (
                           <div className="italic mt-6">
-                            Nam Định, Ngày {headerDate.day} tháng {headerDate.month}{" "}
-                            năm {headerDate.year}
+                            Nam Định, Ngày {headerDate.day} tháng{" "}
+                            {headerDate.month} năm {headerDate.year}
                           </div>
                         ) : (
                           <div className="italic mt-6">
@@ -181,7 +181,9 @@ export const SettlementDetailModal = ({
                           </span>
                         </div>
                         <div>
-                          <span className="font-semibold">Địa điểm lắp đặt:</span>{" "}
+                          <span className="font-semibold">
+                            Địa điểm lắp đặt:
+                          </span>{" "}
                           <span>{generalInformation?.address ?? "-"}</span>
                         </div>
                       </div>
@@ -277,7 +279,11 @@ export const SettlementDetailModal = ({
                               {formatNumber(row?.materialCost ?? 0)}
                             </td>
                             <td className="border border-black px-1 py-1 text-right">
-                              {formatNumber(row?.laborPriceAtRuralCommune ?? row?.laborPrice ?? 0)}
+                              {formatNumber(
+                                row?.laborPriceAtRuralCommune ??
+                                  row?.laborPrice ??
+                                  0,
+                              )}
                             </td>
                             <td className="border border-black px-1 py-1 text-right">
                               {formatNumber(row?.totalMaterialPrice ?? 0)}
@@ -300,7 +306,10 @@ export const SettlementDetailModal = ({
                             colSpan={2}
                             className="border border-black px-1 py-1 text-right"
                           >
-                            {formatNumber(generalInformation?.connectionFee ?? 0, 0)}
+                            {formatNumber(
+                              generalInformation?.connectionFee ?? 0,
+                              0,
+                            )}
                           </td>
                         </tr>
                       </tfoot>
@@ -314,9 +323,11 @@ export const SettlementDetailModal = ({
                     ) : null}
 
                     {/* Phần chữ ký */}
-                    <div className="mt-8 grid grid-cols-3 gap-4 text-center text-xs">
+                    <div className="mt-8 grid grid-cols-4 gap-4 text-center text-xs">
                       <div>
-                        <div className="font-semibold mb-1">Nhân viên khảo sát</div>
+                        <div className="font-semibold mb-1">
+                          Nhân viên khảo sát
+                        </div>
                         {generalInformation?.significance?.surveyStaff ? (
                           <div className="h-16 flex items-center justify-center font-medium">
                             {generalInformation.significance.surveyStaff}
@@ -344,6 +355,25 @@ export const SettlementDetailModal = ({
                       </div>
 
                       <div>
+                        <div className="font-semibold mb-1">
+                          Giám đốc xây lắp
+                        </div>
+                        {generalInformation?.significance
+                          ?.constructionPresident ? (
+                          <div className="h-16 flex items-center justify-center font-medium">
+                            {
+                              generalInformation.significance
+                                .constructionPresident
+                            }
+                          </div>
+                        ) : (
+                          <div className="h-16 flex items-center justify-center text-gray-400 italic">
+                            Chưa ký
+                          </div>
+                        )}
+                      </div>
+
+                      <div>
                         <div className="font-semibold mb-1">Tổng giám đốc</div>
                         {generalInformation?.significance?.president ? (
                           <div className="h-16 flex items-center justify-center font-medium">
@@ -356,17 +386,6 @@ export const SettlementDetailModal = ({
                         )}
                       </div>
                     </div>
-
-                    {generalInformation?.significance?.constructionPresident ? (
-                      <div className="mt-4 text-center text-xs">
-                        <div className="font-semibold mb-1">
-                          Giám đốc chi nhánh Xây lắp
-                        </div>
-                        <div className="flex items-center justify-center font-medium">
-                          {generalInformation.significance.constructionPresident}
-                        </div>
-                      </div>
-                    ) : null}
                   </div>
                 </DocumentPaper>
               </div>

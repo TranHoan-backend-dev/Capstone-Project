@@ -124,6 +124,7 @@ export const ResultsTable = ({
         fullname: profile.fullname,
         role: profile.role,
         significanceUrl: profile.significanceUrl || "",
+        departmentName: profile.departmentName || "",
       }
     : null;
 
@@ -311,7 +312,6 @@ export const ResultsTable = ({
       );
       if (!res.ok) throw new Error("Failed to fetch");
       const json = await res.json();
-      // backend mới có thể trả { data: <payload> } hoặc { data: { data: <payload> } }
       const settlementData = json?.data?.data ?? json?.data;
       setSelectedSettlementDetail(settlementData ?? undefined);
 
@@ -439,7 +439,7 @@ export const ResultsTable = ({
     setIsSignModalOpen(true);
   };
 
-  const handleConfirmSign = async () => {
+  const handleConfirmSign = async (asConstructionPresident = false) => {
     if (!selectedItemForSigning) return;
 
     if (!currentUser?.significanceUrl) {
@@ -452,6 +452,12 @@ export const ResultsTable = ({
       return;
     }
 
+    const isConstructionBranch =
+      currentUser.role === "company_leadership" &&
+      currentUser.departmentName?.toLowerCase().includes("xây lắp");
+
+    const statusPayload = isConstructionBranch ? true : null;
+
     setIsProcessing(true);
     try {
       const res = await authFetch(
@@ -459,7 +465,10 @@ export const ResultsTable = ({
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: currentUser.significanceUrl }),
+          body: JSON.stringify({
+            url: currentUser.significanceUrl,
+            status: statusPayload,
+          }),
         },
       );
 
@@ -863,6 +872,16 @@ export const ResultsTable = ({
                     Bằng cách nhấn "Xác nhận ký", bạn đồng ý ký duyệt quyết toán
                     này bằng chữ ký điện tử của mình.
                   </p>
+                  {currentUser?.role === "company_leadership" && (
+                    <p className="text-xs text-default-500 mt-1">
+                      Tư cách ký:{" "}
+                      <strong>
+                        {currentUser.departmentName?.toLowerCase().includes("xây lắp")
+                          ? "Giám đốc chi nhánh Xây lắp"
+                          : "Tổng giám đốc"}
+                      </strong>
+                    </p>
+                  )}
                 </div>
               </ModalBody>
               <ModalFooter>
@@ -871,7 +890,7 @@ export const ResultsTable = ({
                 </CustomButton>
                 <CustomButton
                   color="success"
-                  onPress={handleConfirmSign}
+                  onPress={() => handleConfirmSign()}
                   isLoading={isProcessing}
                   isDisabled={!currentUser?.significanceUrl}
                   className="text-white hover:bg-success-600 disabled:bg-success-300 disabled:text-white/50"
