@@ -22,6 +22,7 @@ import { authFetch } from "@/utils/authFetch";
 import { useProfile } from "@/hooks/useLogin";
 import CreateSignatureModal from "./components/create-signature-modal";
 import SignModal from "./components/sign-modal";
+import { EstimateDetailModal } from "./components/estimate-detail-modal";
 import { EstimateOrder } from "@/types";
 import CustomButton from "@/components/ui/custom/CustomButton";
 
@@ -74,6 +75,10 @@ const EstimateApprovalPage = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [orders, setOrders] = useState<EstimateOrder[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [detailData, setDetailData] = useState<any>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
   const [sort, setSort] = useState<{
     field: string;
     direction: "asc" | "desc";
@@ -469,8 +474,21 @@ const EstimateApprovalPage = () => {
     }
   };
 
-  const handleView = (item: EstimateOrder) => {
-    router.push(`/estimate/run/${item.id}`);
+  const handleView = async (item: EstimateOrder) => {
+    setIsDetailModalOpen(true);
+    setDetailData(null);
+    setDetailLoading(true);
+    try {
+      const res = await authFetch(`/api/construction/estimates/${item.id}`);
+      if (!res.ok) throw new Error("Không thể tải thông tin dự toán");
+      const json = await res.json();
+      setDetailData(json?.data ?? json);
+    } catch (err) {
+      console.error(err);
+      setDetailData(null);
+    } finally {
+      setDetailLoading(false);
+    }
   };
 
   const handleEstimate = (item: EstimateOrder) => {
@@ -591,6 +609,16 @@ const EstimateApprovalPage = () => {
           />
         </Tab>
       </Tabs>
+
+      <EstimateDetailModal
+        isOpen={isDetailModalOpen}
+        onClose={() => {
+          setIsDetailModalOpen(false);
+          setDetailData(null);
+        }}
+        data={detailData}
+        loading={detailLoading}
+      />
 
       <CreateSignatureModal
         isOpen={isCreateSignModalOpen}
