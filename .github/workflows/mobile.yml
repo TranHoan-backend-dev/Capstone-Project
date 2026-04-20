@@ -48,7 +48,7 @@ jobs:
 
       - name: Grant execute permission
         run: chmod +x gradlew
-        working-directory: ./fe/mobile
+        working-directory: ./fe/mobile/android
 
       - name: Build Android Debug (APK)
         run: ./gradlew assembleDebug
