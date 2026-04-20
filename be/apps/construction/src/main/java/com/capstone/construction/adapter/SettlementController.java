@@ -70,7 +70,7 @@ public class SettlementController {
     @ApiResponse(responseCode = "200", description = "Tìm thấy bản quyết toán", content = @Content(schema = @Schema(implementation = SettlementResponse.class))),
     @ApiResponse(responseCode = "404", description = "Không tìm thấy bản quyết toán", content = @Content(schema = @Schema(implementation = WrapperApiResponse.class)))
   })
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'CONSTRUCTION_DEPARTMENT_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'CONSTRUCTION_DEPARTMENT_STAFF', 'CONSTRUCTION_DEPARTMENT_HEAD', 'COMPANY_LEADERSHIP', 'SURVEY_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD')")
   public ResponseEntity<WrapperApiResponse> getSettlementById(
     @PathVariable @Parameter(description = "ID của bản quyết toán cần tra cứu", required = true) String settlementId) {
     log.info("REST request to get settlement with id: {}", settlementId);
