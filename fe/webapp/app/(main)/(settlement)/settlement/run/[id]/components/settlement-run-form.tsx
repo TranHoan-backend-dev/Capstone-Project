@@ -269,35 +269,58 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
     try {
       setLoading(true);
 
-      let payload: any = {
-        settlementId: form.settlementId.trim(),
-        formCode: form.formCode,
-        formNumber: form.formNumber,
-        customerName: form.customerName.trim(),
-        jobContent: form.jobContent,
-        address: form.address,
-        connectionFee: Number(form.connectionFee),
-        registrationAt: form.registrationAt, // LocalDate format: yyyy-MM-dd
-        note: form.note,
-      };
+      let payload: any;
 
-      // Only include materials for update mode
-      if (!isCreateMode) {
+      if (isCreateMode) {
+
+        payload = {
+          settlementId: form.settlementId.trim(),
+          formCode: form.formCode,
+          formNumber: form.formNumber,
+          customerName: form.customerName.trim(),
+          jobContent: form.jobContent,
+          address: form.address,
+          connectionFee: Number(form.connectionFee),
+          registrationAt: form.registrationAt, 
+          note: form.note,
+        };
+      } else {
+
         const mappedMaterials = materials.map((m) => ({
           materialCode: m.code,
           jobContent: m.description,
+          note: m.note ?? "",
           unit: m.unit,
-          mass: m.quantity,
-          materialCost: m.materialPrice,
-          laborPrice: m.laborPrice,
-          totalMaterialPrice: m.materialTotal,
-          totalLaborPrice: m.laborTotal,
-          note: m.note,
+          mass: String(m.quantity),
+          materialCost: String(m.materialPrice),
+          laborPrice: String(m.laborPrice),
+          laborPriceAtRuralCommune: "0",
+          totalMaterialPrice: String(m.materialTotal),
+          totalLaborPrice: String(m.laborTotal),
         }));
 
+        const materialCost = materials.reduce((sum, item) => sum + (item.materialTotal || 0), 0);
+        const laborCoefficient = (estimateData?.generalInformation?.laborCoefficient || 0) / 100;
+        const laborCost = materials.reduce((sum, item) => sum + (item.laborTotal || 0), 0) * (1 + laborCoefficient);
+        const directTotal = materialCost + laborCost;
+        const generalCost = directTotal * ((estimateData?.generalInformation?.generalCostCoefficient || 0) / 100);
+        const preTaxIncome = (directTotal + generalCost) * ((estimateData?.generalInformation?.precalculatedTaxCoefficient || 0) / 100);
+        const constructionCostBeforeTax = directTotal + generalCost + preTaxIncome;
+        const vat = constructionCostBeforeTax * ((estimateData?.generalInformation?.vatCoefficient || 0) / 100);
+        const constructionCostAfterTax = constructionCostBeforeTax + vat;
+        const designAndEstimate = (estimateData?.generalInformation?.designFee || 0) * (1 + (estimateData?.generalInformation?.designCoefficient || 0) / 100);
+        const surveyLaborCost = (estimateData?.generalInformation?.surveyEffort || 0) * (estimateData?.generalInformation?.surveyFee || 0);
+        const consultingTotal = designAndEstimate + surveyLaborCost + (estimateData?.generalInformation?.installationFee || 0);
+        const otherTotal = estimateData?.generalInformation?.contractFee || 0;
+        const totalAmount = Math.round((constructionCostAfterTax + consultingTotal + otherTotal) / 100) * 100;
+
         payload = {
-          ...payload,
+          settlementId: form.settlementId.trim(),
+          jobContent: form.jobContent,
+          connectionFee: Number(form.connectionFee),
+          note: form.note,
           materials: mappedMaterials,
+          totalAmount,
         };
       }
 
@@ -334,8 +357,6 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
 
       if (isCreateMode && payload.settlementId) {
         router.push(`/settlement/run/${payload.settlementId}`);
-      } else {
-        router.push("/settlement-lookup");
       }
     } catch (err: any) {
       CallToast({
@@ -516,7 +537,6 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
         </CardBody>
       </Card>
 
-      {/* Show material card and total cost in both create and update mode once a form is selected */}
       {(isCreateMode ? !!form.formNumber : true) && (
         <>
           <SettlementMaterialCard

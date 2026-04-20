@@ -45,19 +45,23 @@ const SettlementLookupPage = () => {
     return <p>Không thể tải danh sách quyết toán</p>;
   }
 
+  const canCreateSettlement = profile?.role === "construction_department_staff";
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-900">
           Quản lý quyết toán công trình
         </h1>
-        <Button
-          color="primary"
-          startContent={<PlusIcon className="w-5 h-5" />}
-          onPress={handleAddNew}
-        >
-          Tạo quyết toán mới
-        </Button>
+        {canCreateSettlement && (
+          <Button
+            color="primary"
+            startContent={<PlusIcon className="w-5 h-5" />}
+            onPress={handleAddNew}
+          >
+            Tạo quyết toán mới
+          </Button>
+        )}
       </div>
       <FilterSection
         from={from}
