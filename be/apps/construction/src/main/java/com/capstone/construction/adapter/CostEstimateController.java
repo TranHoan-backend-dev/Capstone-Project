@@ -151,7 +151,7 @@ public class CostEstimateController {
   }
 
   @GetMapping("/form-code/{formCode}")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'CONSTRUCTION_DEPARTMENT_STAFF', 'SURVEY_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'CONSTRUCTION_DEPARTMENT_STAFF', 'SURVEY_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'FINANCE_STAFF')")
   public ResponseEntity<WrapperApiResponse> getByFormCode(@PathVariable String formCode) {
     log.info("REST request to get cost estimate by form code: {}", formCode);
     return Utils.returnOkResponse("", costEstimateService.getByFormCode(formCode));
