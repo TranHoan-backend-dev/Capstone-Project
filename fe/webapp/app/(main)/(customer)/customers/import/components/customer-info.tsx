@@ -197,7 +197,7 @@ export const CustomerInfo = ({ formData, onUpdate }: CustomerInfoProps) => {
           );
           if (estimateRes.ok) {
             const estimateJson = await estimateRes.json();
-            const serial = estimateJson?.data?.waterMeterId;
+            const serial = estimateJson?.data?.generalInformation?.waterMeterSerial;
             if (serial) {
               onUpdate("waterMeterId", serial);
             }
