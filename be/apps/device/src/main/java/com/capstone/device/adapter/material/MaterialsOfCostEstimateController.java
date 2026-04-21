@@ -27,7 +27,7 @@ public class MaterialsOfCostEstimateController {
 
   @Operation(hidden = true)
   @GetMapping("/{id}")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'SURVEY_STAFF', 'COMPANY_LEADERSHIP', 'CONSTRUCTION_DEPARTMENT_STAFF')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'SURVEY_STAFF', 'COMPANY_LEADERSHIP', 'CONSTRUCTION_DEPARTMENT_STAFF', 'ORDER_RECEIVING_STAFF')")
   public List<MaterialsListResponse> getMaterialsOfCostEstimate(@PathVariable String id) {
     log.info("Get material of cost estimate with id: {}", id);
     return mOfCostEstimateService.getByEstimateId(id);
@@ -47,7 +47,7 @@ public class MaterialsOfCostEstimateController {
 
   @Operation(hidden = true)
   @GetMapping("/default")
-  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'SURVEY_STAFF', 'CONSTRUCTION_DEPARTMENT_STAFF')")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'PLANNING_TECHNICAL_DEPARTMENT_HEAD', 'SURVEY_STAFF', 'CONSTRUCTION_DEPARTMENT_STAFF', 'ORDER_RECEIVING_STAFF')")
   public List<MaterialsListResponse> getDefaultMaterial() {
     log.info("REST request to get default material");
     return mOfCostEstimateService.getDefaultMaterial();
