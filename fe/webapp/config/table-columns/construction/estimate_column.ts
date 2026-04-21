@@ -1,7 +1,7 @@
 export const ESTIMATE_COLUMN = [
   { key: "stt", label: "STT", width: "20px" },
   // { key: "code", label: "Mã vật tư", sortable: true },
-  { key: "description", label: "Nội dung công việc" },
+  { key: "description", label: "Tên vật tư" },
   { key: "note", label: "Ghi chú", width: "360px" },
   { key: "unit", label: "ĐVT" },
   { key: "quantity", label: "Khối lượng", align: "center" as const },

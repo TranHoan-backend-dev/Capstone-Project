@@ -98,9 +98,10 @@ export const MaterialCostCard = ({
         return (
           <Input
             value={String(item.quantity || "")}
-            onChange={(e) =>
-              handleChange(item.id, "quantity", Number(e.target.value))
-            }
+            onChange={(e) => {
+              const val = e.target.valueAsNumber;
+              if (!isNaN(val)) handleChange(item.id, "quantity", val);
+            }}
             size="sm"
             type="number"
             step="0.1"
@@ -111,9 +112,10 @@ export const MaterialCostCard = ({
         return (
           <Input
             value={String(item.materialPrice || "")}
-            onChange={(e) =>
-              handleChange(item.id, "materialPrice", Number(e.target.value))
-            }
+            onChange={(e) => {
+              const val = e.target.valueAsNumber;
+              if (!isNaN(val)) handleChange(item.id, "materialPrice", val);
+            }}
             size="sm"
             type="number"
             step="1000"
@@ -124,9 +126,10 @@ export const MaterialCostCard = ({
         return (
           <Input
             value={String(item.laborPrice || "")}
-            onChange={(e) =>
-              handleChange(item.id, "laborPrice", Number(e.target.value))
-            }
+            onChange={(e) => {
+              const val = e.target.valueAsNumber;
+              if (!isNaN(val)) handleChange(item.id, "laborPrice", val);
+            }}
             size="sm"
             type="number"
             step="1000"
