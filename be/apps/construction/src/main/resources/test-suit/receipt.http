@@ -229,3 +229,14 @@ client.test("Status is 200", function() {
   client.assert(response.status === 200);
 });
 %}
+
+
+### TC15 - Lọc kết hợp nhiều điều kiện
+GET http://localhost:9004/api/v1/receipts/last
+Authorization: Bearer {{access_token}}
+
+> {%
+  client.test("Status is 200", function() {
+    client.assert(response.status === 200);
+  });
+%}

@@ -202,6 +202,9 @@ public class CostEstimateServiceImpl implements CostEstimateService {
   public CostEstimateResponse getByFormCode(String formCode) {
     log.info("Fetching cost estimate with formCode: {}", formCode);
     var ce = eRepo.findByInstallationForm_Id_FormCode(formCode);
+    if (ce == null) {
+      return null;
+    }
     var materials = getMaterials(ce.getEstimationId());
     return mapToResponse(ce, materials);
   }
