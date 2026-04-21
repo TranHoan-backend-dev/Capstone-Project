@@ -160,17 +160,6 @@ public class UsageHistoryController {
     return Utils.returnOkResponse("Lấy danh sách chờ duyệt thành công", response);
   }
 
-//  @Operation(summary = "Xác nhận chỉ số sau khi đã kiểm tra", description = "Phê duyệt hoặc sửa đổi chỉ số AI gợi ý")
-//  @PostMapping("/confirm/{reviewId}")
-//  public ResponseEntity<WrapperApiResponse> confirmMeterReading(
-//    @PathVariable String reviewId,
-//    @RequestParam BigDecimal finalIndex,
-//    @RequestParam String status) {
-//    log.info("Confirming meter reading for id {}", reviewId);
-//    useCase.confirmMeterReading(reviewId, finalIndex, status);
-//    return Utils.returnOkResponse("Xác nhận chỉ số thành công", null);
-//  }
-
   @Operation(summary = "Lấy dữ liệu tiêu thụ gần nhất (3 tháng)", description = "Lấy hình ảnh mới nhất và chỉ số + số tiền của 3 tháng liền kề")
   @GetMapping("/recent/{customerId}")
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'METER_INSPECTION_STAFF')")

@@ -107,11 +107,6 @@ public class UsageHistoryUseCase {
     return usageHistoryService.getPendingReviews(roadmapId);
   }
 
-  // public void confirmMeterReading(String reviewId, BigDecimal finalIndex,
-  // String status) {
-  // usageHistoryService.confirmMeterReading(reviewId, finalIndex, status);
-  // }
-
   public UsageResponse getUsageHistoryByCustomerId(String customerId) {
     return usageHistoryService.getUsageHistoryByCustomerId(customerId);
   }
