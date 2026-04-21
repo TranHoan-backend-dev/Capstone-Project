@@ -144,7 +144,7 @@ public class ReceiptServiceImpl implements ReceiptService {
   @Override
   public String getLastCode() {
     log.info("Fetching last code for receipt");
-    return receiptRepo.findByOrderByCreatedAtDesc().getReceiptNumber();
+    return receiptRepo.findTopByOrderByCreatedAtDesc().getReceiptNumber();
   }
 
   @Override

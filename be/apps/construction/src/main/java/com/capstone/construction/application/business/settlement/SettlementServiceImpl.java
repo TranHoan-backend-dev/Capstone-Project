@@ -65,6 +65,9 @@ public class SettlementServiceImpl implements SettlementService {
 
     var saved = settlementRepository.save(settlement);
     var ce = costEstimateService.getByFormCode(request.formCode());
+    if (ce == null) {
+      throw new IllegalArgumentException("Công trình này chưa lập dự toán");
+    }
 
     var response = deviceSrv.updateMaterialsOfSettlement(saved.getSettlementId(), ce.materials());
     if (response.status() != 200) {

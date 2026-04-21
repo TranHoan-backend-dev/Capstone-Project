@@ -13,7 +13,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,5 +87,5 @@ public interface ReceiptRepository extends JpaRepository<Receipt, InstallationFo
     return orPredicates;
   }
 
-  Receipt findByOrderByCreatedAtDesc();
+  Receipt findTopByOrderByCreatedAtDesc();
 }
