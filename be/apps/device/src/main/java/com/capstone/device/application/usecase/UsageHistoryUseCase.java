@@ -51,7 +51,7 @@ public class UsageHistoryUseCase {
     serial = serial != null ? serial : response.serial();
 
     var index = response.index() == null ? "0" : response.index();
-    if (serial != null && response.index() != null) {
+    if (serial != null) {
       var meterOpt = waterMeterService.getWaterMeterById(serial);
       System.out.println(meterOpt);
       if (meterOpt != null) {
@@ -59,7 +59,7 @@ public class UsageHistoryUseCase {
         System.out.println("Type:  " + indexLength);
 
         log.info("detected index length: {}", indexLength);
-        if (indexLength < Integer.parseInt(index)) {
+        if (indexLength < index.length()) {
           log.info("Trimming index from {} to {} based on meter indexLength length {}", index, index.substring(0, indexLength), indexLength);
           index = index.substring(0, indexLength);
         }
