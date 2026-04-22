@@ -110,7 +110,7 @@ public class WaterPriceServiceImpl implements WaterPriceService {
     return waterPriceRepository.existsById(id);
   }
 
-  private WaterPriceResponse mapToResponse(WaterPrice wp) {
+  private @NonNull WaterPriceResponse mapToResponse(@NonNull WaterPrice wp) {
     return new WaterPriceResponse(
       wp.getPriceId(),
       wp.getUsageTarget() != null ? wp.getUsageTarget().name() : null,

@@ -1,10 +1,15 @@
 package com.capstone.common.utils;
 
+import com.capstone.common.exception.InternalServerException;
 import com.capstone.common.response.WrapperApiResponse;
 import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -50,6 +55,21 @@ public class Utils {
       endDate = LocalDate.parse(to, DateTimeFormatter.ISO_LOCAL_DATE).atTime(LocalTime.MAX);
     }
     return endDate;
+  }
+
+  public static @NonNull String saveFile(@NonNull MultipartFile file) {
+    var uploadDir = "uploads/images/";
+    var fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+    var path = Paths.get(uploadDir, fileName);
+
+    try {
+      Files.createDirectories(path.getParent());
+      Files.write(path, file.getBytes());
+    } catch (IOException e) {
+      throw new InternalServerException();
+    }
+
+    return fileName;
   }
 
   public static @NonNull ResponseEntity<WrapperApiResponse> returnOkResponse(String message, Object data) {

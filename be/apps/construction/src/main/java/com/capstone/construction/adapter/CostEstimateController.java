@@ -1,6 +1,7 @@
 package com.capstone.construction.adapter;
 
 import com.capstone.common.annotation.AppLog;
+import com.capstone.common.exception.InternalServerException;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
 import com.capstone.construction.application.business.estimate.CostEstimateService;
@@ -22,6 +23,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
@@ -30,6 +33,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.MalformedURLException;
+import java.nio.file.Paths;
 
 @AppLog
 @RestController
@@ -56,7 +62,6 @@ public class CostEstimateController {
     @PathVariable @Parameter(description = "ID của dự toán", required = true) String id,
     @ModelAttribute @Valid UpdateRequest request
   ) {
-
     log.info("REST request to update cost estimate with id: {}", id);
     log.info(request.generalInformation().designImage().getName());
     var response = estimateUseCase.updateEstimate(id, request);
@@ -155,5 +160,20 @@ public class CostEstimateController {
   public ResponseEntity<WrapperApiResponse> getByFormCode(@PathVariable String formCode) {
     log.info("REST request to get cost estimate by form code: {}", formCode);
     return Utils.returnOkResponse("", costEstimateService.getByFormCode(formCode));
+  }
+
+  @GetMapping("/image/{fileName}")
+  public ResponseEntity<Resource> getImage(@PathVariable String fileName) {
+    var path = Paths.get("uploads/images/", fileName);
+    UrlResource resource = null;
+    try {
+      resource = new UrlResource(path.toUri());
+    } catch (MalformedURLException e) {
+      throw new InternalServerException();
+    }
+
+    return ResponseEntity.ok()
+      .contentType(MediaType.IMAGE_JPEG)
+      .body(resource);
   }
 }

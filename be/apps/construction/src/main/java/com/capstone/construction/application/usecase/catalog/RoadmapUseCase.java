@@ -109,8 +109,4 @@ public class RoadmapUseCase {
     messageProducer.send(QUEUE_NAME + ROADMAP_PREFIX + UPDATE_ACTION, event);
     return saved;
   }
-
-  public boolean isExistingRoadmap(String id) {
-    return roadmapService.isExistingRoadmap(id);
-  }
 }

@@ -1,5 +1,6 @@
 package com.capstone.device.adapter;
 
+import com.capstone.common.exception.InternalServerException;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
 import com.capstone.device.application.dto.request.history.AnalysisRequest;
@@ -17,11 +18,16 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -180,5 +186,20 @@ public class UsageHistoryController {
     log.info("Fetching latest image for customer {}", customerId);
     var response = useCase.getLatestImage(customerId);
     return Utils.returnOkResponse("Lấy hình ảnh đồng hồ mới nhất thành công", response);
+  }
+
+  @GetMapping("/image/{fileName}")
+  public ResponseEntity<Resource> getImage(@PathVariable String fileName) {
+    var path = Paths.get("uploads/images/", fileName);
+    UrlResource resource = null;
+    try {
+      resource = new UrlResource(path.toUri());
+    } catch (MalformedURLException e) {
+      throw new InternalServerException();
+    }
+
+    return ResponseEntity.ok()
+      .contentType(MediaType.IMAGE_JPEG)
+      .body(resource);
   }
 }

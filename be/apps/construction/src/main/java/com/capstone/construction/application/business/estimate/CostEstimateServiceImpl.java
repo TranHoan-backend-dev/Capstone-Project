@@ -146,7 +146,8 @@ public class CostEstimateServiceImpl implements CostEstimateService {
       estimate.setDesignFee(generalInformation.designFee());
     }
     if (generalInformation.designImage() != null) {
-      var url = gcsService.upload(generalInformation.designImage());
+//      var url = gcsService.upload(generalInformation.designImage());
+      var url = Utils.saveFile(generalInformation.designImage());
       estimate.setDesignImageUrl(url);
     }
 

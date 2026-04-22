@@ -1,5 +1,6 @@
 package com.capstone.device.application.usecase;
 
+import com.capstone.common.utils.Utils;
 import com.capstone.device.application.business.usagehistory.UsageHistoryService;
 import com.capstone.device.application.business.watermeter.WaterMeterService;
 import com.capstone.device.application.dto.request.history.AnalysisRequest;
@@ -58,8 +59,10 @@ public class UsageHistoryUseCase {
         System.out.println("Type:  " + indexLength);
 
         log.info("detected index length: {}", indexLength);
-        log.info("Trimming index from {} to {} based on meter indexLength length {}", index, index.substring(0, indexLength), indexLength);
-        index = index.substring(0, indexLength);
+        if (indexLength < Integer.parseInt(index)) {
+          log.info("Trimming index from {} to {} based on meter indexLength length {}", index, index.substring(0, indexLength), indexLength);
+          index = index.substring(0, indexLength);
+        }
       }
     }
 
@@ -77,12 +80,12 @@ public class UsageHistoryUseCase {
 
     // Upload to GCS
     // var imageUrl = service.upload(request.image());
-    String imageUrl = "https://images.unsplash.com/photo-1585702138250-afe07474776e"; // Mock URL for now
+    var imageUrl = Utils.saveFile(request.image()); // Mock URL for now
 
     usageHistoryService.addWaterIndexOfThisMonth(imageUrl, serial,
       BigDecimal.valueOf(Long.parseLong(index)), request.recordingDate(), "PENDING");
 
-    String monthStr = request.recordingDate().format(java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+    var monthStr = request.recordingDate().format(java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
     return AnalysisResponse.builder()
       .id(serial + "_" + monthStr)

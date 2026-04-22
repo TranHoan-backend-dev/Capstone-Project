@@ -3,6 +3,7 @@ package com.capstone.construction.adapter.catalog;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
+import com.capstone.construction.application.business.roadmap.RoadmapService;
 import com.capstone.construction.application.dto.request.catalog.RoadmapRequest;
 import com.capstone.construction.application.dto.response.catalog.RoadmapResponse;
 import com.capstone.construction.application.usecase.catalog.RoadmapUseCase;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RoadmapController {
   final RoadmapUseCase roadmapUseCase;
+  final RoadmapService roadmapService;
   Logger log;
 
   @PostMapping
@@ -207,6 +209,7 @@ public class RoadmapController {
   @Operation(hidden = true)
   @GetMapping("/exist/{id}")
   public Boolean checkExistenceOfRoadmap(@PathVariable String id) {
-    return roadmapUseCase.isExistingRoadmap(id);
+    log.info("REST request to check existence of roadmap {}", id);
+    return roadmapService.isExistingRoadmap(id);
   }
 }
