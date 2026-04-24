@@ -6,65 +6,59 @@ import { Button, Input, Tooltip } from "@heroui/react";
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
 import { DeleteIcon } from "@/config/chip-and-icon";
-import { EstimateResponse, MaterialEstimateItem } from "@/types";
+import { MaterialEstimateItem, SettlementResponse } from "@/types";
 import { ESTIMATE_COLUMN } from "@/config/table-columns";
 import { LookupModal } from "@/components/ui/modal/LookupModal";
-import { useIsPlanningTechnicalDepartmentHead } from "@/hooks/useHasRole";
 
-interface MaterialCostCardProps {
-  estimateId: string;
-  estimateData: EstimateResponse | null;
-  setEstimateData: React.Dispatch<
-    React.SetStateAction<EstimateResponse | null>
-  >;
+interface SettlementMaterialCardProps {
+  settlementId: string;
+  settlementData: SettlementResponse | null;
   materials: MaterialEstimateItem[];
   setMaterials: React.Dispatch<React.SetStateAction<MaterialEstimateItem[]>>;
+  isReadOnly?: boolean;
 }
 
-export const MaterialCostCard = ({
-  estimateId,
-  estimateData,
-  setEstimateData,
+export const SettlementMaterialCard = ({
+  settlementId,
+  settlementData,
   materials,
   setMaterials,
-}: MaterialCostCardProps) => {
-  const { isPlanningTechnicalDepartmentHead } =
-    useIsPlanningTechnicalDepartmentHead();
+  isReadOnly = false,
+}: SettlementMaterialCardProps) => {
   const [showMaterialModal, setShowMaterialModal] = useState(false);
   const [loading, setLoading] = useState(true);
-  const isEstimateApproved =
-    estimateData?.generalInformation?.status?.estimate === "APPROVED";
-  const isReadOnly = isEstimateApproved || isPlanningTechnicalDepartmentHead;
 
   useEffect(() => {
-    const sourceMaterials = (estimateData as any)?.material ?? (estimateData as any)?.materials;
-    if (Array.isArray(sourceMaterials) && sourceMaterials.length > 0) {
-      const mappedMaterials = sourceMaterials.map(
-        (item: any, index: number) => {
-          const rawQuantity = parseFloat(item.mass) || 0;
-          const finalQuantity = rawQuantity || 1;
-          const materialPrice = parseFloat(item.materialCost) || 0;
-          const laborPrice = parseFloat(item.laborPrice) || 0;
+    // If we have settlementData and materials are empty (initial load)
+    if (settlementData && materials.length === 0) {
+      const sourceMaterials = settlementData.baseMaterials;
+      if (Array.isArray(sourceMaterials) && sourceMaterials.length > 0) {
+        const mappedMaterials = sourceMaterials.map(
+          (item: any, index: number) => {
+            const quantity = parseFloat(item.mass) || 0;
+            const materialPrice = parseFloat(item.materialCost) || 0;
+            const laborPrice = parseFloat(item.laborPrice) || 0;
 
-          return {
-            id: item.materialCode,
-            code: item.materialCode,
-            description: item.jobContent,
-            unit: item.unit,
-            quantity: finalQuantity,
-            materialPrice: materialPrice,
-            laborPrice: laborPrice,
-            materialTotal: finalQuantity * materialPrice,
-            laborTotal: laborPrice,
-            note: item.note || "",
-            stt: index + 1,
-          };
-        },
-      );
-      setMaterials(mappedMaterials);
+            return {
+              id: item.materialCode || `mat-${index}`,
+              code: item.materialCode,
+              description: item.jobContent,
+              unit: item.unit,
+              quantity: quantity || 1,
+              materialPrice: materialPrice,
+              laborPrice: laborPrice,
+              materialTotal: quantity * materialPrice,
+              laborTotal: laborPrice,
+              note: item.note || "",
+              stt: index + 1,
+            };
+          },
+        );
+        setMaterials(mappedMaterials);
+      }
     }
     setLoading(false);
-  }, [estimateData]);
+  }, [settlementData]);
 
   const handleChange = (
     id: string,
@@ -191,9 +185,9 @@ export const MaterialCostCard = ({
         unit: item.unit,
         quantity: 1,
         materialPrice: item.price,
-        laborPrice: item.laborPrice || 0,
+        laborPrice: 0,
         materialTotal: item.price,
-        laborTotal: item.laborPrice || 0,
+        laborTotal: 0,
         note: "",
         stt: prev.length + 1,
       };
@@ -213,7 +207,7 @@ export const MaterialCostCard = ({
         tableProps={{
           className: "pt-0",
         }}
-        title="Chi phí vật tư khách hàng thanh toán"
+        title="Vật tư quyết toán"
         topContent={
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
             <SearchInputWithButton
@@ -246,7 +240,6 @@ export const MaterialCostCard = ({
           name: item.jobContent,
           unit: item.unitName,
           price: item.price,
-          laborPrice: item.laborPrice,
         })}
         onSelect={handleSelectMaterial}
       />

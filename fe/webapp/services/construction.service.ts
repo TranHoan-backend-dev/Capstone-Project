@@ -738,6 +738,17 @@ export const deleteSettlement = (accessToken: string, settlementId: string) => {
   );
 };
 
+export const getLastCodeSettlement = async (accessToken: string) => {
+  return axios.get(
+    `${API_GATEWAY_URL}/construction/settlements/latest`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+};
+
 export const getAllReceipts = (
   accessToken: string,
   page: number,
@@ -809,6 +820,14 @@ export const getDetailReceipt = (
   );
 };
 
+export const getLastCodeReceipt = async (accessToken: string) => {
+  return axios.get(`${API_GATEWAY_URL}/construction/receipts/last`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
+
 export const getAllEstimates = (
   accessToken: string,
   page: number,
@@ -848,6 +867,16 @@ export const getEstimateById = (accessToken: string, estimateId: string) =>
       Authorization: `Bearer ${accessToken}`,
     },
   });
+
+export const getEstimateByFormCode = (accessToken: string, formCode: string) =>
+  axios.get(
+    `${API_GATEWAY_URL}/construction/estimates/form-code/${encodeURIComponent(formCode)}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
 
 export const getEstimateMeterType = (accessToken: string, formCode: string) =>
   axios.get(

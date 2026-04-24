@@ -22,7 +22,7 @@ import { authFetch } from "@/utils/authFetch";
 import { useProfile } from "@/hooks/useLogin";
 import CreateSignatureModal from "./components/create-signature-modal";
 import SignModal from "./components/sign-modal";
-import { calculateTotalAmount } from "@/utils/calculateTotalAmount";
+import { EstimateDetailModal } from "./components/estimate-detail-modal";
 import { EstimateOrder } from "@/types";
 import CustomButton from "@/components/ui/custom/CustomButton";
 
@@ -75,6 +75,10 @@ const EstimateApprovalPage = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [orders, setOrders] = useState<EstimateOrder[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [detailData, setDetailData] = useState<any>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
   const [sort, setSort] = useState<{
     field: string;
     direction: "asc" | "desc";
@@ -197,12 +201,6 @@ const EstimateApprovalPage = () => {
           items.map(async (item: any, index: number) => {
             const info = item.generalInformation;
             const form = info.installationFormId;
-            const materialItems = Array.isArray(item.material)
-              ? item.material
-              : Array.isArray(item.materials)
-                ? item.materials
-                : [];
-            const calculatedTotal = calculateTotalAmount(materialItems, info);
             const fallbackTotal =
               info.totalAmount ?? info.totalPrice ?? item.totalAmount ?? 0;
             return {
@@ -212,10 +210,7 @@ const EstimateApprovalPage = () => {
               designProfileName: info.customerName,
               phone: item.phoneNumber,
               installationAddress: info.address,
-              totalAmount:
-                calculatedTotal !== "0"
-                  ? calculatedTotal
-                  : formatCurrency(fallbackTotal),
+              totalAmount: formatCurrency(fallbackTotal),
               createdDate: new Date(info.createdAt).toLocaleDateString("vi-VN"),
               status: info.status?.estimate?.toLowerCase() || "pending",
             };
@@ -234,7 +229,12 @@ const EstimateApprovalPage = () => {
   }, [sort, refetch, keyword]);
 
   const pendingOrders = useMemo(
-    () => orders.filter((order) => order.status?.toUpperCase() !== "APPROVED"),
+    () =>
+      orders.filter(
+        (order) =>
+          order.status?.toUpperCase() !== "APPROVED" &&
+          order.status?.toUpperCase() !== "REJECTED",
+      ),
     [orders],
   );
 
@@ -269,7 +269,8 @@ const EstimateApprovalPage = () => {
     return approvedOrders.slice(start, start + pageSize);
   }, [approvedOrders, pageByTab.approved, pageSize]);
 
-  const tableData = activeTab === "pending" ? paginatedPendingOrders : paginatedApprovedOrders;
+  const tableData =
+    activeTab === "pending" ? paginatedPendingOrders : paginatedApprovedOrders;
 
   const handleSearch = (query: string) => {
     setKeyword(query);
@@ -473,8 +474,21 @@ const EstimateApprovalPage = () => {
     }
   };
 
-  const handleView = (item: EstimateOrder) => {
-    router.push(`/estimate/run/${item.id}`);
+  const handleView = async (item: EstimateOrder) => {
+    setIsDetailModalOpen(true);
+    setDetailData(null);
+    setDetailLoading(true);
+    try {
+      const res = await authFetch(`/api/construction/estimates/${item.id}`);
+      if (!res.ok) throw new Error("Không thể tải thông tin dự toán");
+      const json = await res.json();
+      setDetailData(json?.data ?? json);
+    } catch (err) {
+      console.error(err);
+      setDetailData(null);
+    } finally {
+      setDetailLoading(false);
+    }
   };
 
   const handleEstimate = (item: EstimateOrder) => {
@@ -596,6 +610,16 @@ const EstimateApprovalPage = () => {
         </Tab>
       </Tabs>
 
+      <EstimateDetailModal
+        isOpen={isDetailModalOpen}
+        onClose={() => {
+          setIsDetailModalOpen(false);
+          setDetailData(null);
+        }}
+        data={detailData}
+        loading={detailLoading}
+      />
+
       <CreateSignatureModal
         isOpen={isCreateSignModalOpen}
         onOpenChange={() => {
@@ -663,6 +687,7 @@ const EstimateApprovalPage = () => {
                   }
                   onPress={handleConfirmAction}
                   isLoading={isProcessing}
+                  className="text-white"
                 >
                   {confirmAction?.type === "approve" ? "Duyệt" : "Từ chối"}
                 </CustomButton>

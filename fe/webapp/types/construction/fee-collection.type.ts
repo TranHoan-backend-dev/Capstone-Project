@@ -55,8 +55,8 @@ export interface FeeCollectionFormProps {
     isPaid?: boolean;
     attach?: string;
     paymentReason?: string;
-    totalMoneyInDigits?: number; // Đổi thành optional
-    totalMoneyInCharacters?: string; // Đổi thành optional
+    totalMoneyInDigits?: number;
+    totalMoneyInCharacters?: string;
   };
   onSuccess: () => void;
   onClose: () => void;

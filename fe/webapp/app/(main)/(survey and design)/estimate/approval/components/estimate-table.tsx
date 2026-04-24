@@ -13,6 +13,8 @@ import {
   RedIconColor,
   TitleDarkColor,
   PencilIcon,
+  EditIcon,
+  AmberIconColor,
 } from "@/config/chip-and-icon";
 import { ESTIMATE_APPROVAL_COLUMN } from "@/config/table-columns";
 import { EstimateOrder, EstimateTableProps } from "@/types";
@@ -30,6 +32,7 @@ export const EstimateTable = ({
   onSignAction,
   onCreateSignatureRequest,
   currentUserRole,
+  activeTab,
 }: EstimateTableProps) => {
   const canApproveOrReject =
     (status?: string) =>
@@ -43,14 +46,8 @@ export const EstimateTable = ({
       case "code":
         return (
           <span
-            className={`font-bold text-blue-600 hover:underline hover:text-blue-800 cursor-pointer ${TitleDarkColor}`}
-            onClick={(e) => {
-              if (e.ctrlKey || e.metaKey) {
-                onEstimateAction?.(item);
-              } else {
-                onEstimateAction?.(item);
-              }
-            }}
+            className={`font-bold ${TitleDarkColor} text-blue-600 cursor-pointer`}
+            onClick={() => onViewAction(item)}
           >
             {item.code}
           </span>
@@ -70,6 +67,15 @@ export const EstimateTable = ({
       case "actions":
         return (
           <div className="flex items-center justify-center gap-2">
+            {onEstimateAction && currentUserRole === "survey_staff" && activeTab === "pending" && (
+              <Tooltip color="warning" content="Cập nhật dự toán">
+                <EditIcon
+                  className={AmberIconColor}
+                  onClick={() => onEstimateAction(item)}
+                />
+              </Tooltip>
+            )}
+
             {onApproveAction && canApproveOrReject(item.status) && currentUserRole === "planning_technical_department_head" && (
               <Tooltip color="success" content="Duyệt dự toán">
                 <ApprovalIcon

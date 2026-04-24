@@ -2,7 +2,7 @@ export interface EmployeeItem {
   id: string;
   stt: number;
   fullName: string;
-  name?: string; // để tương thích
+  name?: string;
   phoneNumber: string;
   email: string;
   role?: Role;

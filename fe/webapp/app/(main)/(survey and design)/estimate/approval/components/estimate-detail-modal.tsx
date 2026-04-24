@@ -5,24 +5,24 @@ import { Spinner } from "@heroui/react";
 
 import { ModalHeader } from "@/components/popup-status/modal-header";
 import { DocumentPaper } from "@/components/popup-settlement/document-paper";
-import { SettlementDetail } from "@/types";
 
-interface SettlementDetailModalProps {
+interface EstimateDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
-  data?: SettlementDetail;
+  data?: any;
   loading?: boolean;
 }
 
-export const SettlementDetailModal = ({
+export const EstimateDetailModal = ({
   isOpen,
   onClose,
   data,
   loading = false,
-}: SettlementDetailModalProps) => {
+}: EstimateDetailModalProps) => {
   if (!isOpen) return null;
 
-  const generalInformation = (data as any)?.generalInformation ?? {};
+  const generalInformation = data?.generalInformation ?? {};
+  const significance = generalInformation?.significance ?? {};
 
   const parseNumber = (value: unknown) => {
     if (value === null || value === undefined) return 0;
@@ -39,62 +39,32 @@ export const SettlementDetailModal = ({
     return num.toLocaleString("vi-VN", { maximumFractionDigits });
   };
 
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    if (Number.isNaN(date.getTime())) return "";
-    return date.toLocaleDateString("vi-VN");
-  };
-
   const formatHeaderDate = (dateString?: string) => {
-    if (!dateString) return "";
+    if (!dateString) return null;
     const date = new Date(dateString);
-    if (Number.isNaN(date.getTime())) return "";
+    if (Number.isNaN(date.getTime())) return null;
     const formattedDate = new Intl.DateTimeFormat("vi-VN", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
     }).format(date);
-
     const [day, month, year] = formattedDate.split("/");
-    if (!day || !month || !year) return "";
+    if (!day || !month || !year) return null;
     return { day, month, year };
   };
 
-  const baseMaterialsCandidate =
-    (data as any)?.baseMaterials ??
-    (data as any)?.data?.baseMaterials ??
-    (data as any)?.content ??
-    [];
-
-  const baseMaterials = Array.isArray(baseMaterialsCandidate)
-    ? baseMaterialsCandidate
-    : [];
-
-  const sumVL = baseMaterials.reduce((sum, row) => {
-    const v =
-      row?.totalMaterialPrice ??
-      row?.totalPriceVL ??
-      row?.totalMaterialCost ??
-      row?.totalVL;
-    return sum + parseNumber(v);
-  }, 0);
-
-  const sumNC = baseMaterials.reduce((sum, row) => {
-    const v =
-      row?.totalLaborPrice ??
-      row?.totalPriceNC ??
-      row?.totalLaborCost ??
-      row?.totalNC;
-    return sum + parseNumber(v);
-  }, 0);
+  const materialsCandidate = data?.materials ?? data?.baseMaterials ?? [];
+  const materials = Array.isArray(materialsCandidate) ? materialsCandidate : [];
 
   const headerDate = formatHeaderDate(
-    generalInformation?.createdAt ??
-      generalInformation?.registrationAt ??
-      (data as any)?.createdAt ??
-      (data as any)?.registrationAt,
+    generalInformation?.createdAt ?? generalInformation?.registrationAt,
   );
+
+  const formCode =
+    generalInformation?.installationFormId?.formNumber ??
+    generalInformation?.installationFormId?.formCode ??
+    generalInformation?.formCode ??
+    "-";
 
   return (
     <>
@@ -108,7 +78,7 @@ export const SettlementDetailModal = ({
           className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] flex flex-col"
           onClick={(e) => e.stopPropagation()}
         >
-          <ModalHeader title="Thông tin quyết toán" onClose={onClose} />
+          <ModalHeader title="Thông tin dự toán" onClose={onClose} />
 
           <div className="flex-1 overflow-y-auto px-6 py-6">
             {loading ? (
@@ -128,12 +98,8 @@ export const SettlementDetailModal = ({
                           CHI NHÁNH XÂY LẮP
                         </div>
                         <div className="mt-3">
-                          <span className="font-semibold">Mã quyết toán:</span>{" "}
-                          {generalInformation?.settlementId ??
-                            (data as any)?.settlementId ??
-                            generalInformation?.formCode ??
-                            generalInformation?.formNumber ??
-                            "-"}
+                          <span className="font-semibold">Số đơn:</span>{" "}
+                          {formCode}
                         </div>
                       </div>
 
@@ -149,36 +115,19 @@ export const SettlementDetailModal = ({
                             Nam Định, Ngày {headerDate.day} tháng{" "}
                             {headerDate.month} năm {headerDate.year}
                           </div>
-                        ) : (
-                          <div className="italic mt-6">
-                            {formatDate(
-                              (data as any)?.createdAt ??
-                                generalInformation?.createdAt ??
-                                (data as any)?.registrationAt,
-                            )}
-                          </div>
-                        )}
+                        ) : null}
                       </div>
                     </div>
 
                     <h1 className="text-center font-bold uppercase mt-2 mb-3">
-                      QUYẾT TOÁN XÂY DỰNG CÔNG TRÌNH
+                      DỰ TOÁN XÂY DỰNG CÔNG TRÌNH
                     </h1>
 
                     <div className="mb-3">
                       <div className="flex justify-between gap-4">
                         <div>
-                          <span className="font-semibold">Tên công trình:</span>{" "}
-                          <span>
-                            {generalInformation?.jobContent ??
-                              (data as any)?.jobContent ??
-                              "-"}{" "}
-                            {(generalInformation?.customerName as string) ? (
-                              <span className="font-normal">
-                                ({generalInformation?.customerName})
-                              </span>
-                            ) : null}
-                          </span>
+                          <span className="font-semibold">Khách hàng:</span>{" "}
+                          <span>{generalInformation?.customerName ?? "-"}</span>
                         </div>
                         <div>
                           <span className="font-semibold">
@@ -258,41 +207,52 @@ export const SettlementDetailModal = ({
                         </tr>
                       </thead>
                       <tbody>
-                        {baseMaterials.map((row: any, index: number) => (
-                          <tr key={row?.materialCode ?? row?.id ?? index}>
-                            <td className="border border-black px-1 py-1 text-center">
-                              {index + 1}
-                            </td>
-                            <td className="border border-black px-1 py-1 text-center">
-                              {row?.jobContent ?? "-"}
-                            </td>
-                            <td className="border border-black px-1 py-1 text-left">
-                              {row?.note ?? row?.note ?? "-"}
-                            </td>
-                            <td className="border border-black px-1 py-1 text-center">
-                              {row?.unit ?? row?.uom ?? "-"}
-                            </td>
-                            <td className="border border-black px-1 py-1 text-right">
-                              {formatNumber(row?.mass ?? row?.quantity ?? 0)}
-                            </td>
-                            <td className="border border-black px-1 py-1 text-right">
-                              {formatNumber(row?.materialCost ?? 0)}
-                            </td>
-                            <td className="border border-black px-1 py-1 text-right">
-                              {formatNumber(
-                                row?.laborPriceAtRuralCommune ??
-                                  row?.laborPrice ??
-                                  0,
-                              )}
-                            </td>
-                            <td className="border border-black px-1 py-1 text-right">
-                              {formatNumber(row?.totalMaterialPrice ?? 0)}
-                            </td>
-                            <td className="border border-black px-1 py-1 text-right">
-                              {formatNumber(row?.totalLaborPrice ?? 0)}
+                        {materials.length > 0 ? (
+                          materials.map((row: any, index: number) => (
+                            <tr key={row?.materialCode ?? index}>
+                              <td className="border border-black px-1 py-1 text-center">
+                                {index + 1}
+                              </td>
+                              <td className="border border-black px-1 py-1 text-center">
+                                {row?.jobContent ?? row?.materialName ?? "-"}
+                              </td>
+                              <td className="border border-black px-1 py-1 text-left">
+                                {row?.note || "-"}
+                              </td>
+                              <td className="border border-black px-1 py-1 text-center">
+                                {row?.unit ?? row?.uom ?? "-"}
+                              </td>
+                              <td className="border border-black px-1 py-1 text-right">
+                                {formatNumber(row?.mass ?? row?.quantity ?? 0)}
+                              </td>
+                              <td className="border border-black px-1 py-1 text-right">
+                                {formatNumber(row?.materialCost ?? 0)}
+                              </td>
+                              <td className="border border-black px-1 py-1 text-right">
+                                {formatNumber(
+                                  row?.laborPriceAtRuralCommune ??
+                                    row?.laborPrice ??
+                                    0,
+                                )}
+                              </td>
+                              <td className="border border-black px-1 py-1 text-right">
+                                {formatNumber(row?.totalMaterialPrice ?? 0)}
+                              </td>
+                              <td className="border border-black px-1 py-1 text-right">
+                                {formatNumber(row?.totalLaborPrice ?? 0)}
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td
+                              colSpan={9}
+                              className="border border-black px-1 py-3 text-center text-gray-400 italic"
+                            >
+                              Không có dữ liệu vật tư
                             </td>
                           </tr>
-                        ))}
+                        )}
                       </tbody>
                       <tfoot>
                         <tr className="font-semibold">
@@ -300,14 +260,16 @@ export const SettlementDetailModal = ({
                             colSpan={7}
                             className="border border-black px-1 py-1 text-right"
                           >
-                            Tổng chi phí:
+                            Tổng tiền:
                           </td>
                           <td
                             colSpan={2}
                             className="border border-black px-1 py-1 text-right"
                           >
                             {formatNumber(
-                              generalInformation?.connectionFee ?? 0,
+                              generalInformation?.totalAmount ??
+                                generalInformation?.totalPrice ??
+                                0,
                               0,
                             )}
                           </td>
@@ -318,19 +280,18 @@ export const SettlementDetailModal = ({
                     {generalInformation?.note ? (
                       <div className="mt-3">
                         <span className="font-semibold">Ghi chú:</span>{" "}
-                        <span>{generalInformation?.note}</span>
+                        <span>{generalInformation.note}</span>
                       </div>
                     ) : null}
 
-                    {/* Phần chữ ký */}
-                    <div className="mt-8 grid grid-cols-4 gap-4 text-center text-xs">
+                    <div className="mt-8 grid grid-cols-3 gap-4 text-center text-xs">
                       <div>
                         <div className="font-semibold mb-1">
                           Nhân viên khảo sát
                         </div>
-                        {generalInformation?.significance?.surveyStaff ? (
+                        {significance?.surveyStaff ? (
                           <div className="h-16 flex items-center justify-center font-medium">
-                            {generalInformation.significance.surveyStaff}
+                            {significance.surveyStaff}
                           </div>
                         ) : (
                           <div className="h-16 flex items-center justify-center text-gray-400 italic">
@@ -343,9 +304,9 @@ export const SettlementDetailModal = ({
                         <div className="font-semibold mb-1">
                           Trưởng phòng KH-KT
                         </div>
-                        {generalInformation?.significance?.ptHead ? (
+                        {significance?.planningTechnicalHead ?? significance?.ptHead ? (
                           <div className="h-16 flex items-center justify-center font-medium">
-                            {generalInformation.significance.ptHead}
+                            {significance.planningTechnicalHead ?? significance.ptHead}
                           </div>
                         ) : (
                           <div className="h-16 flex items-center justify-center text-gray-400 italic">
@@ -355,29 +316,10 @@ export const SettlementDetailModal = ({
                       </div>
 
                       <div>
-                        <div className="font-semibold mb-1">
-                          Giám đốc xây lắp
-                        </div>
-                        {generalInformation?.significance
-                          ?.constructionPresident ? (
+                        <div className="font-semibold mb-1">Giám đốc</div>
+                        {significance?.companyLeaderShip ?? significance?.constructionPresident ? (
                           <div className="h-16 flex items-center justify-center font-medium">
-                            {
-                              generalInformation.significance
-                                .constructionPresident
-                            }
-                          </div>
-                        ) : (
-                          <div className="h-16 flex items-center justify-center text-gray-400 italic">
-                            Chưa ký
-                          </div>
-                        )}
-                      </div>
-
-                      <div>
-                        <div className="font-semibold mb-1">Tổng giám đốc</div>
-                        {generalInformation?.significance?.president ? (
-                          <div className="h-16 flex items-center justify-center font-medium">
-                            {generalInformation.significance.president}
+                            {significance.companyLeaderShip ?? significance.constructionPresident}
                           </div>
                         ) : (
                           <div className="h-16 flex items-center justify-center text-gray-400 italic">

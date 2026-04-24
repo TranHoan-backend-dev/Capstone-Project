@@ -36,6 +36,7 @@ export interface EmployeeProfileData {
   avatarUrl: string;
   role: string;
   significanceUrl: string;
+  departmentName?: string;
 }
 
 export interface EmployeeProfileUpdatePayload {

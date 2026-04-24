@@ -5,7 +5,6 @@ import {
   DarkYellowChip,
 } from "@/config/chip-and-icon";
 
-export type WaterMeterType = "MECHANICAL" | "ELECTRONIC" | "SMART";
 export type PaymentMethod = "CASH" | "BANK_TRANSFER" | "QR_CODE";
 export const usageTargetMap: Record<string, string> = {
   DOMESTIC: "Sinh hoạt",
@@ -36,8 +35,7 @@ export const typeLabelMap: Record<string, string> = {
   PRODUCTION: "Sản xuất",
   BUSINESS: "Kinh doanh dịch vụ",
 };
-// types.ts
-// types.ts
+
 export interface CustomerFilter {
   name?: string;
   phoneNumber?: string;

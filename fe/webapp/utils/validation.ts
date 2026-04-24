@@ -168,3 +168,12 @@ export const validateRequiredFields = (
 
   return null;
 };
+
+export const toAccountName = (name: string): string => {
+  return name
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
+    .toUpperCase();
+};

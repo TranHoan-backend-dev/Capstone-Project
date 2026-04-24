@@ -1,4 +1,3 @@
-// types/index.ts
 export interface Representative {
   name: string;
   position: string;

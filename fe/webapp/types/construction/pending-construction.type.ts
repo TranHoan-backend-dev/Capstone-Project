@@ -1,4 +1,3 @@
-// Update your types file
 export interface PendingConstructionItem {
   stt: number;
   id: string;

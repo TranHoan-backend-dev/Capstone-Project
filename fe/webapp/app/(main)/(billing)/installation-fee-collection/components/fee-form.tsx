@@ -54,6 +54,30 @@ export const FeeForm = ({
     }
   }, [profile]);
 
+  // Tự động lấy số phiếu thu tiếp theo khi tạo mới
+  useEffect(() => {
+    if (isEdit) return;
+    const fetchLatestCode = async () => {
+      try {
+        const res = await authFetch("/api/construction/receipts/latest");
+        if (!res.ok) return;
+        const json = await res.json();
+        const lastCode: string = json.data;
+        if (lastCode) {
+          const numericPart = lastCode.replace(/\D/g, "");
+          const prefix = lastCode.replace(/\d+$/, "");
+          const nextNumber = (parseInt(numericPart || "0") + 1)
+            .toString()
+            .padStart(numericPart.length || 1, "0");
+          setReceiptNumber(prefix + nextNumber);
+        }
+      } catch {
+        // không bắt buộc, user vẫn nhập tay được
+      }
+    };
+    fetchLatestCode();
+  }, [isEdit]);
+
   // Fetch detail data when editing
   useEffect(() => {
     const fetchDetailData = async () => {
@@ -444,12 +468,28 @@ export const FeeForm = ({
           customerName: item.customerName,
           address: item.address,
         })}
-        onSelect={(item) => {
+        onSelect={async (item) => {
           setFormCode(item.id);
           setFormNumber(item.formNumber);
           setCustomerName(item.customerName);
           setAddress(item.address);
           setShowFormModal(false);
+          try {
+            const res = await authFetch(
+              `/api/construction/estimates/form-code/${encodeURIComponent(item.id)}`,
+            );
+            if (res.ok) {
+              const json = await res.json();
+              const total =
+                json?.data?.generalInformation?.totalAmount ??
+                json?.data?.totalAmount ??
+                0;
+              if (total > 0) {
+                handleTotalMoneyChange(String(total));
+              }
+            }
+          } catch {
+          }
         }}
       />
     </Card>

@@ -1,8 +1,8 @@
-export const calculateTotalAmount = (
+export const calculateTotalAmountRaw = (
   materials: any[],
   generalInfo?: any,
-): string => {
-  if (!materials || materials.length === 0) return "0";
+): number => {
+  if (!materials || materials.length === 0) return 0;
 
   // Tính VL và NC từ materials
   const materialCost = materials.reduce((sum, item) => {
@@ -73,5 +73,15 @@ export const calculateTotalAmount = (
   // Làm tròn đến hàng trăm
   const roundedGrandTotal = Math.round(grandTotal / 100) * 100;
 
+  return roundedGrandTotal;
+};
+
+export const calculateTotalAmount = (
+  materials: any[],
+  generalInfo?: any,
+): string => {
+  const roundedGrandTotal = calculateTotalAmountRaw(materials, generalInfo);
+  if (roundedGrandTotal === 0) return "0";
   return roundedGrandTotal.toLocaleString("vi-VN");
 };
+
