@@ -1,5 +1,6 @@
 package com.capstone.device.application.usecase;
 
+import com.capstone.common.utils.SharedConstant;
 import com.capstone.common.utils.Utils;
 import com.capstone.device.application.business.usagehistory.UsageHistoryService;
 import com.capstone.device.application.business.watermeter.WaterMeterService;
@@ -17,6 +18,7 @@ import com.capstone.device.infrastructure.service.GcsService;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
 
@@ -41,6 +43,7 @@ public class UsageHistoryUseCase {
     return null;
   }
 
+  // TODO: Dang bi lap lai qua trình fetch water meter by id
   public AnalysisResponse analysisTheMeterImageWithSerial(AnalysisRequest request, String serial) {
     if (serial != null) {
       if (!waterMeterService.isWaterMeterExisting(serial)) {
@@ -85,7 +88,7 @@ public class UsageHistoryUseCase {
     usageHistoryService.addWaterIndexOfThisMonth(imageUrl, serial,
       BigDecimal.valueOf(Long.parseLong(index)), request.recordingDate(), "PENDING");
 
-    var monthStr = request.recordingDate().format(java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+    var monthStr = request.recordingDate().format(DateTimeFormatter.ofPattern(SharedConstant.DATE_PATTERN));
 
     return AnalysisResponse.builder()
       .id(serial + "_" + monthStr)

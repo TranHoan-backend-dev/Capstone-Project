@@ -39,7 +39,8 @@ public class BillController {
   @PostMapping
   public ResponseEntity<WrapperApiResponse> createBill(@RequestBody @Valid BillRequest request) {
     log.info("REST request to create bill for customer: {}", request.customerId());
-    BillResponse response = billService.createBill(request);
+    var response = billService.createBill(request);
+    log.info("Bill: {}", response);
     return Utils.returnCreatedResponse("Tạo hóa đơn thành công");
   }
 
@@ -100,11 +101,11 @@ public class BillController {
   })
   @GetMapping("/roadmap/{customerId}")
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'SURVEY_STAFF', 'BUSINESS_DEPARTMENT_HEAD', 'METER_INSPECTION_STAFF')")
-  public ResponseEntity<WrapperApiResponse> getBillsByCtomer(
-    @PathVariable @Parameter(description = "ID của lộ trình khách hàng", example = "RM_001") String customerId,
+  public ResponseEntity<WrapperApiResponse> getBillsByCustomersInRoadmap(
+    @PathVariable @Parameter(description = "ID của khách hàng", example = "RM_001") String customerId,
     @ParameterObject Pageable pageable
   ) {
-    log.info("getBillsByRoadmap");
+    log.info("getBillsByCustomersOfRoadmap");
     Page<BillResponse> response = billService.getBillsByCustomer(customerId, pageable);
     return Utils.returnOkResponse("Lấy danh sách hóa đơn theo khách hàng thành công", response);
   }

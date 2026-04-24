@@ -3,6 +3,7 @@ package com.capstone.construction.application.dto.request.estimate;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Pattern;
 
+// TODO: keyword, from, to bi trung voi basefilterrequest
 public record EstimateFilterRequest(
   @Schema(description = "Từ khóa tìm kiếm (tên khách hàng, địa chỉ, ghi chú)", example = "Nguyễn Văn A")
   String keyword,

@@ -51,5 +51,5 @@ public interface BusinessPagesOfEmployeeRepository
     """, nativeQuery = true)
   void insertNewPagesForEmployee(@Param("userId") String employeeId);
 
-    void deleteByUsers(Users users);
+  void deleteByUsers(Users users);
 }

@@ -102,7 +102,7 @@ public class BillServiceImpl implements BillService {
   public Page<BillResponse> getBillsByCustomer(String customerId, Pageable pageable) {
     log.info("Fetching bills for roadmap: {} this month", customerId);
 
-    // 1. Get customers for this roadmap
+    // Get customers for this roadmap
     var filter = CustomerFilterRequest.fromRoadmapId(customerId, null);
 
     Specification<Customer> spec = CustomerSpecification.filter(filter);
@@ -117,7 +117,6 @@ public class BillServiceImpl implements BillService {
       .map(c -> mapToResponse(c.getTheClosestBill()))
       .toList();
 
-    // 3. Return as a page (preserving the pagination from customers)
     return new PageImpl<>(bills, pageable, result.getTotalElements());
   }
 

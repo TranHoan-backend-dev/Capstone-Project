@@ -287,9 +287,9 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
     log.info("[getPendingReviews] histories size: {}", histories.size());
 
     for (var history : histories) {
-      String serial = history.getUsageHistory();
-      String customerId = history.getCustomerId();
-      CustomerWaterPriceRefResponse customerInfo = customerMap.get(customerId);
+      var serial = history.getUsageHistory();
+      var customerId = history.getCustomerId();
+      var customerInfo = customerMap.get(customerId);
 
       // If customer info is not in map (e.g. roadmapId was null), fetch it
       // individually
