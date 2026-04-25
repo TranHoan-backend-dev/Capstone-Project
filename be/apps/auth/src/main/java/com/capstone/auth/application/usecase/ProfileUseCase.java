@@ -9,7 +9,6 @@ import com.capstone.auth.application.dto.response.UserProfileResponse;
 import com.capstone.auth.application.exception.InternalServerError;
 import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.infrastructure.service.OrganizationService;
-import com.capstone.auth.infrastructure.service.keycloak.KeycloakService;
 import com.capstone.auth.infrastructure.utils.Message;
 import com.capstone.auth.infrastructure.service.GcsService;
 import com.capstone.auth.infrastructure.utils.AuthUtils;
@@ -42,7 +41,6 @@ public class ProfileUseCase {
   ProfileService pSrv;
   OrganizationService oSrv;
   Keycloak keycloak;
-  KeycloakService keycloakService;
   GcsService gcsSrv;
   @NonFinal
   Logger log;
@@ -194,7 +192,6 @@ public class ProfileUseCase {
 
   public String getFullNameById(@NonNull String id) {
     log.info("getFullNameById is handling the request");
-//    return pSrv.getProfileById(id).fullname();
     return pSrv.getFullName(id);
   }
 

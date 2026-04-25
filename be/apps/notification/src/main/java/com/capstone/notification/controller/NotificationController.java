@@ -57,6 +57,11 @@ public class NotificationController {
     log.info("Create notification request comes to endpoint: {}", request);
     var response = notificationService.createNotification(request);
     log.info("Notification created: {}", response);
+
+    // gui toi tat ca cac phong ban muc tieu
+    var topic = Topic.getTopic(Topic.GENERAL);
+    messagingTemplate.convertAndSend(topic, response);
+
     return Utils.returnCreatedResponse("Tạo thông báo thành công");
   }
 

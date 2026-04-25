@@ -2,7 +2,7 @@ package com.capstone.notification.event.consumer.receipt.message;
 
 import java.time.LocalDate;
 
-public record CreateEventMessage(
+public record UpdateEventMessage(
   String pattern,
   ReceiptData data
 ) {

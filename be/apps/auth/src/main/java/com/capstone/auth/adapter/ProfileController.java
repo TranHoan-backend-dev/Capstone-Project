@@ -93,7 +93,8 @@ public class ProfileController {
     ", 'METER_INSPECTION_STAFF')")
   public ResponseEntity<WrapperApiResponse> updateProfile(
     @AuthenticationPrincipal Jwt jwt,
-    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Thông tin hồ sơ cập nhật", required = true, content = @Content(schema = @Schema(implementation = UpdateProfileRequest.class))) @NonNull @RequestBody UpdateProfileRequest request) {
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Thông tin hồ sơ cập nhật", required = true, content = @Content(schema = @Schema(implementation = UpdateProfileRequest.class)))
+    @NonNull @RequestBody UpdateProfileRequest request) {
     var id = jwt.getSubject();
     log.info("User's id: {}", id);
     var response = profileUC.updateProfile(id, request);
@@ -126,7 +127,8 @@ public class ProfileController {
     ", 'METER_INSPECTION_STAFF')")
   public ResponseEntity<WrapperApiResponse> updateAvatar(
     @AuthenticationPrincipal Jwt jwt,
-    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Tệp ảnh đại diện để tải lên. Các định dạng hỗ trợ: JPEG, PNG, GIF", required = true) @RequestParam(value = "avatar") MultipartFile file) {
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Tệp ảnh đại diện để tải lên. Các định dạng hỗ trợ: JPEG, PNG, GIF", required = true)
+    @RequestParam(value = "avatar") MultipartFile file) {
     log.info("Update avatar with file is {}", file == null ? "null" : "not null");
 
     var id = jwt.getSubject();

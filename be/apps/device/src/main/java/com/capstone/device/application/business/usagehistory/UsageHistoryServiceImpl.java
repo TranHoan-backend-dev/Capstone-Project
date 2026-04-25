@@ -159,8 +159,7 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
     log.info("WaterMeterId: {}", waterMeterId);
 
     var meter = findById(waterMeterId);
-    var history = repository.findByMeter(meter).orElseThrow(
-      () -> new NotExistingException("Không tìm thấy lịch sử sử dụng nước cho khách hàng: " + customerId));
+    var history = repository.findByMeter(meter).orElse(new UsageHistory());
 
     return mapToResponse(history, customerId, customerInfo);
   }
@@ -353,7 +352,7 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
 
   @Override
   @Transactional
-  public void confirmMeterReading(String reviewId, BigDecimal finalIndex, String status) {
+  public void confirmMeterReading(@NonNull String reviewId, BigDecimal finalIndex, String status) {
     String actualUsageId = reviewId;
     String targetSerial = null;
 

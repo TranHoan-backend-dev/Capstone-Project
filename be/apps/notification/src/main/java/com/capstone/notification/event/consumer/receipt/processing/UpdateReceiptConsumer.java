@@ -2,7 +2,7 @@ package com.capstone.notification.event.consumer.receipt.processing;
 
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.enumerate.RoleName;
-import com.capstone.notification.event.consumer.receipt.message.CreateEventMessage;
+import com.capstone.notification.event.consumer.receipt.message.UpdateEventMessage;
 import com.capstone.notification.event.producer.MessageProducer;
 import com.capstone.notification.event.consumer.GeneralEventConsumer;
 import com.capstone.notification.event.consumer.Topic;
@@ -15,15 +15,15 @@ import java.util.List;
 
 @AppLog
 @Component
-public class CreateReceiptConsumer extends GeneralEventConsumer<CreateEventMessage> {
+public class UpdateReceiptConsumer extends GeneralEventConsumer<UpdateEventMessage> {
   private Logger log;
 
-  public CreateReceiptConsumer(MessageProducer producer) {
+  public UpdateReceiptConsumer(MessageProducer producer) {
     super(producer);
   }
 
   @RabbitListener(queues = "${rabbit-mq-config.queue}.${rabbit-mq-config.entities[15]}.${rabbit-mq-config.actions[2]}")
-  public void handle(CreateEventMessage event) {
+  public void handle(UpdateEventMessage event) {
     // Notify ORDER_RECEIVING_STAFF topic
     var topic = Topic.getTopicOfPlanningTechnicalDepartment(RoleName.ORDER_RECEIVING_STAFF, "");
 
@@ -36,7 +36,7 @@ public class CreateReceiptConsumer extends GeneralEventConsumer<CreateEventMessa
   }
 
   @Override
-  protected String buildMessage(@NonNull CreateEventMessage event) {
+  protected String buildMessage(@NonNull UpdateEventMessage event) {
     var data = event.data();
     var message = """
         Có biên lai thu tiền mới vừa được tạo!
