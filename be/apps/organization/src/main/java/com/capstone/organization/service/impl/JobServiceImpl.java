@@ -58,6 +58,7 @@ public class JobServiceImpl implements JobService {
     var entity = jobRepository.findById(jobId)
       .orElseThrow(() -> new IllegalArgumentException(Message.ORG_03));
 
+    // trung ten nhung id khac nhau => job bi lap lai
     jobRepository.findByNameIgnoreCase(request.name())
       .ifPresent(existing -> {
         if (!existing.getId().equals(jobId)) {

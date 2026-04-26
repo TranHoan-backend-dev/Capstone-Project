@@ -2,7 +2,7 @@ package com.capstone.notification.event.consumer.roadmap.message;
 
 import lombok.Builder;
 
-public record RoadmapAssignmentMessage(
+public record RoadmapMessage(
   RoadmapAssignmentData data,
   String pattern
 ) {

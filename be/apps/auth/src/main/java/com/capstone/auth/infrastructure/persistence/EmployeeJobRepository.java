@@ -19,5 +19,6 @@ public interface EmployeeJobRepository extends JpaRepository<EmployeeJob, Employ
     VALUES (:user, :id)
     """)
   List<EmployeeJob> create(@Param("user") Users user, @Param("id") EmployeeJobId id);
+
   boolean existsByIdJobId(String jobId);
 }

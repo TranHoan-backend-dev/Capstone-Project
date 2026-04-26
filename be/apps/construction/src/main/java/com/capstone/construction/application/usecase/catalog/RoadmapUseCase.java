@@ -79,7 +79,7 @@ public class RoadmapUseCase {
   @Transactional(rollbackFor = Exception.class)
   public RoadmapResponse cancelAssignment(String id) {
     var oldResponse = roadmapService.getRoadmapById(id);
-    String oldStaffId = oldResponse.assignedStaffId();
+    var oldStaffId = oldResponse.assignedStaffId();
 
     var saved = roadmapService.cancelAssignment(id);
     var event = RoadmapAssignmentEvent.builder()
@@ -96,7 +96,7 @@ public class RoadmapUseCase {
   @Transactional(rollbackFor = Exception.class)
   public RoadmapResponse updateAssignment(String id, String staffId) {
     var oldResponse = roadmapService.getRoadmapById(id);
-    String oldStaffId = oldResponse.assignedStaffId();
+    var oldStaffId = oldResponse.assignedStaffId();
 
     var saved = roadmapService.updateAssignment(id, staffId);
     var event = RoadmapAssignmentEvent.builder()

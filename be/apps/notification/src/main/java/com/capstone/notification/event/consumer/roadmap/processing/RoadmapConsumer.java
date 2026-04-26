@@ -1,7 +1,7 @@
 package com.capstone.notification.event.consumer.roadmap.processing;
 
 import com.capstone.common.enumerate.RoleName;
-import com.capstone.notification.event.consumer.roadmap.message.RoadmapAssignmentMessage;
+import com.capstone.notification.event.consumer.roadmap.message.RoadmapMessage;
 import com.capstone.notification.event.producer.MessageProducer;
 import com.capstone.notification.event.consumer.GeneralEventConsumer;
 import com.capstone.notification.event.consumer.Topic;
@@ -15,28 +15,28 @@ import java.util.List;
 
 @Slf4j
 @Component
-public class RoadmapAssignmentConsumer extends GeneralEventConsumer<RoadmapAssignmentMessage> {
+public class RoadmapConsumer extends GeneralEventConsumer<RoadmapMessage> {
 
-  public RoadmapAssignmentConsumer(MessageProducer producer) {
+  public RoadmapConsumer(MessageProducer producer) {
     super(producer);
   }
 
   @RabbitListener(queues = "${rabbit-mq-config.queue}.${rabbit-mq-config.entities[19]}.${rabbit-mq-config.actions[4]}")
-  public void handleAssign(@NonNull RoadmapAssignmentMessage event) {
+  public void handleAssign(@NonNull RoadmapMessage event) {
     var data = event.data();
     List<String> topics = List.of(Topic.getTopicOfBusinessDepartment(RoleName.METER_INSPECTION_STAFF, "/" + data.assignedStaffId()));
     super.handle(event, topics, "Phân công lộ trình ghi chỉ số", null);
   }
 
   @RabbitListener(queues = "${rabbit-mq-config.queue}.${rabbit-mq-config.entities[19]}.${rabbit-mq-config.actions[1]}")
-  public void handleCancel(@NonNull RoadmapAssignmentMessage event) {
+  public void handleCancel(@NonNull RoadmapMessage event) {
     var data = event.data();
     List<String> topics = List.of(Topic.getTopicOfBusinessDepartment(RoleName.METER_INSPECTION_STAFF, "/" + data.oldStaffId()));
     super.handle(event, topics, "Hủy phân công lộ trình ghi chỉ số", null);
   }
 
   @RabbitListener(queues = "${rabbit-mq-config.queue}.${rabbit-mq-config.entities[19]}.${rabbit-mq-config.actions[0]}")
-  public void handleUpdate(@NonNull RoadmapAssignmentMessage event) {
+  public void handleUpdate(@NonNull RoadmapMessage event) {
     var data = event.data();
     List<String> topics = new ArrayList<>();
     if (data.oldStaffId() != null) {
@@ -49,7 +49,7 @@ public class RoadmapAssignmentConsumer extends GeneralEventConsumer<RoadmapAssig
   }
 
   @Override
-  protected String buildMessage(@NonNull RoadmapAssignmentMessage event) {
+  protected String buildMessage(@NonNull RoadmapMessage event) {
     var data = event.data();
     return switch (data.action()) {
       case "ASSIGN" -> "Bạn đã được phân công ghi chỉ số cho lộ trình: " + data.roadmapName();
