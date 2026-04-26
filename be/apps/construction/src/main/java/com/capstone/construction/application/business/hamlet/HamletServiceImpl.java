@@ -86,9 +86,6 @@ public class HamletServiceImpl implements HamletService {
   @Transactional(rollbackFor = Exception.class)
   public void deleteHamlet(String id) {
     log.info("Deleting hamlet with id: {}", id);
-    if (!hamletRepository.existsById(id)) {
-      throw new IllegalArgumentException(String.format(Message.PT_62, id));
-    }
     hamletRepository.deleteById(id);
   }
 
@@ -101,21 +98,14 @@ public class HamletServiceImpl implements HamletService {
   }
 
   @Override
-  public PageResponse<HamletResponse> getAllHamlets(Pageable pageable) {
-    log.info("Fetching all hamlets with pageable: {}", pageable);
-    var page = hamletRepository.findAll(pageable);
-    return PageResponse.fromPage(page, this::mapToResponse);
-  }
-
-  @Override
   public PageResponse<HamletResponse> searchHamlets(String keyword, String communeId, String type, Pageable pageable) {
     String finalKeyword = (keyword == null || keyword.isBlank()) ? null : keyword;
     String finalCommuneId = (communeId == null || communeId.isBlank()) ? null : communeId;
     String finalType = (type == null || type.isBlank()) ? null : type;
 
-    log.info("Searching hamlets, keyword='{}', communeId='{}', type='{}', pageable={}", 
+    log.info("Searching hamlets, keyword='{}', communeId='{}', type='{}', pageable={}",
              finalKeyword, finalCommuneId, finalType, pageable);
-             
+
     var page = hamletRepository.searchHamlets(
       finalKeyword,
       finalCommuneId,

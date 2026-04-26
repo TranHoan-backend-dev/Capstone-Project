@@ -8,7 +8,6 @@ import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.application.event.producer.MessageProducer;
 import com.capstone.construction.application.event.producer.hamlet.DeleteHamletEvent;
 import com.capstone.construction.application.event.producer.hamlet.UpdateHamletEvent;
-import com.capstone.construction.domain.enumerate.CommuneType;
 import com.capstone.construction.domain.enumerate.HamletType;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -65,10 +64,6 @@ public class HamletUseCase {
 
   public HamletResponse getHamletById(String id) {
     return hamletService.getHamletById(id);
-  }
-
-  public PageResponse<HamletResponse> getAllHamlets(Pageable pageable) {
-    return hamletService.getAllHamlets(pageable);
   }
 
   public PageResponse<HamletResponse> searchHamlets(String keyword, String communeId, String type, Pageable pageable) {

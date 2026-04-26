@@ -83,7 +83,6 @@ public class LateralServiceImpl implements LateralService {
     if (!lateralRepository.existsById(id)) {
       throw new IllegalArgumentException("Lateral not found with id: " + id);
     }
-//    metersService.deleteWaterMeter(id);
     lateralRepository.deleteById(id);
   }
 

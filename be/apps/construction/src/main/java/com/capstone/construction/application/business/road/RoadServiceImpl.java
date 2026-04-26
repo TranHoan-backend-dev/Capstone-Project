@@ -67,9 +67,6 @@ public class RoadServiceImpl implements RoadService {
   @Transactional(rollbackFor = Exception.class)
   public void deleteRoad(String id) {
     log.info("Deleting road with id: {}", id);
-    if (!roadRepository.existsById(id)) {
-      throw new IllegalArgumentException("Road not found with id: " + id);
-    }
     roadRepository.deleteById(id);
   }
 
