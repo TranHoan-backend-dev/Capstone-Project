@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -135,7 +136,61 @@ class NotificationServiceImplTest {
     // Then
     assertThat(response).isNotNull();
     assertThat(response.items()).isEmpty();
-    assertThat(response.totalFound()).isEqualTo(1); // totalFound is based on individualList size
+    assertThat(response.totalFound()).isEqualTo(1);
     verify(notificationRepo, times(1)).findById(notificationId);
+  }
+
+  @Test
+  @DisplayName("Get notifications should sort by createdAt descending")
+  void should_SortNotificationsByCreatedAtDescending() {
+    // Given
+    var userId = "userSort";
+    var pageable = PageRequest.of(0, 10);
+
+    var n1 = Notification.builder().title("Old").build();
+    ReflectionTestUtils.setField(n1, "notificationId", "id1");
+    ReflectionTestUtils.setField(n1, "createdAt", java.time.LocalDateTime.now().minusDays(1));
+
+    var n2 = Notification.builder().title("New").build();
+    ReflectionTestUtils.setField(n2, "notificationId", "id2");
+    ReflectionTestUtils.setField(n2, "createdAt", java.time.LocalDateTime.now());
+
+    var indList = List.of(
+      new IndividualNotificationResponse("id1", false),
+      new IndividualNotificationResponse("id2", false)
+    );
+
+    when(authService.getIndividualNotificationsOfAnEmployee(pageable, userId)).thenReturn(indList);
+    when(notificationRepo.findById("id1")).thenReturn(Optional.of(n1));
+    when(notificationRepo.findById("id2")).thenReturn(Optional.of(n2));
+
+    // When
+    var response = notificationService.getNotificationsOfAnEmployee(pageable, userId);
+
+    // Then
+    assertThat(response.items()).hasSize(2);
+    assertThat(response.items().get(0).title()).isEqualTo("New");
+    assertThat(response.items().get(1).title()).isEqualTo("Old");
+  }
+
+  @Test
+  @DisplayName("Get unread count successfully")
+  void should_GetUnreadCount() {
+    when(authService.getUnreadCount("u1")).thenReturn(5L);
+    assertThat(notificationService.getUnreadCount("u1")).isEqualTo(5L);
+  }
+
+  @Test
+  @DisplayName("Mark as read successfully")
+  void should_MarkAsRead() {
+    notificationService.markAsRead("u1", "n1");
+    verify(authService).markAsRead("u1", "n1");
+  }
+
+  @Test
+  @DisplayName("Delete notification successfully")
+  void should_DeleteNotification() {
+    notificationService.deleteNotification("u1", "n1");
+    verify(authService).deleteNotification("u1", "n1");
   }
 }
