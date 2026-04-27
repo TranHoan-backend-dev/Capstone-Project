@@ -6,6 +6,7 @@ import com.capstone.auth.application.business.profile.ProfileService;
 import com.capstone.auth.application.business.users.UserService;
 import com.capstone.common.exception.NotExistingException;
 import com.capstone.auth.infrastructure.utils.Message;
+import com.capstone.auth.infrastructure.service.OrganizationService;
 
 import java.time.LocalDate;
 
@@ -21,6 +22,7 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,6 +33,9 @@ class ProfileUseCaseGetMeTest {
 
   @Mock
   ProfileService profileService;
+
+  @Mock
+  OrganizationService organizationService;
 
   @InjectMocks
   ProfileUseCase profileUseCase;
@@ -57,6 +62,7 @@ class ProfileUseCaseGetMeTest {
 
     when(userService.getUserById(id)).thenReturn(userDTO);
     when(profileService.getProfileById(id)).thenReturn(profileDTO);
+    when(organizationService.getDepartmentName(any())).thenReturn("IT Dept");
 
     var response = profileUseCase.getMe(id, email, username);
 
@@ -75,7 +81,7 @@ class ProfileUseCaseGetMeTest {
 
     when(userService.getUserById(id)).thenReturn(userDTO);
 
-    DisabledException ex = assertThrows(DisabledException.class,
+    var ex = assertThrows(DisabledException.class,
       () -> profileUseCase.getMe(id, "user@example.com", "user1"));
     assertEquals(Message.SE_07, ex.getMessage());
   }
@@ -88,7 +94,7 @@ class ProfileUseCaseGetMeTest {
 
     when(userService.getUserById(id)).thenReturn(userDTO);
 
-    IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+    var ex = assertThrows(IllegalArgumentException.class,
       () -> profileUseCase.getMe(id, "wrong@example.com", "user1"));
     assertEquals("Email does not match", ex.getMessage());
   }
@@ -101,7 +107,7 @@ class ProfileUseCaseGetMeTest {
 
     when(userService.getUserById(id)).thenReturn(userDTO);
 
-    IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+    var ex = assertThrows(IllegalArgumentException.class,
       () -> profileUseCase.getMe(id, "user@example.com", "wronguser"));
     assertEquals("Username does not match", ex.getMessage());
   }

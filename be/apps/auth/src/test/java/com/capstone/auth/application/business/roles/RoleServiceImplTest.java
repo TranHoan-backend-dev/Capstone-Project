@@ -46,7 +46,7 @@ class RoleServiceImplTest {
     when(repo.existsById(id)).thenReturn(true);
     when(repo.findNameById(id)).thenReturn(RoleName.IT_STAFF);
 
-    String result = roleService.getRoleNameById(id);
+    var result = roleService.getRoleNameById(id);
 
     assertEquals("IT_STAFF", result);
   }
@@ -57,7 +57,7 @@ class RoleServiceImplTest {
     var id = "role-id";
     when(repo.existsById(id)).thenReturn(false);
 
-    NotExistingException ex = assertThrows(NotExistingException.class, () -> roleService.getRoleNameById(id));
+    var ex = assertThrows(NotExistingException.class, () -> roleService.getRoleNameById(id));
     assertEquals(Message.SE_07, ex.getMessage());
   }
 
@@ -80,7 +80,7 @@ class RoleServiceImplTest {
     var id = "role-id";
     when(repo.findById(id)).thenReturn(Optional.empty());
 
-    NotExistingException ex = assertThrows(NotExistingException.class, () -> roleService.getRoleById(id));
+    var ex = assertThrows(NotExistingException.class, () -> roleService.getRoleById(id));
     assertEquals(Message.SE_07, ex.getMessage());
   }
 

@@ -8,10 +8,8 @@ import com.capstone.auth.domain.model.EmployeeJob;
 import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.domain.model.Roles;
 import com.capstone.auth.domain.model.Users;
-import com.capstone.auth.infrastructure.persistence.BusinessPagesOfEmployeeRepository;
-import com.capstone.auth.infrastructure.persistence.EmployeeJobRepository;
-import com.capstone.auth.infrastructure.persistence.ProfileRepository;
-import com.capstone.auth.infrastructure.persistence.UserRepository;
+import com.capstone.auth.infrastructure.persistence.*;
+import com.capstone.auth.application.business.profile.ProfileService;
 import com.capstone.auth.infrastructure.service.NetworkService;
 import com.capstone.auth.infrastructure.service.OrganizationService;
 import com.capstone.auth.application.business.pages.BusinessPageService;
@@ -57,6 +55,15 @@ class UserServiceImplTest {
 
   @Mock
   private OrganizationService organizationService;
+
+  @Mock
+  private IndividualNotificationRepository indRepo;
+
+  @Mock
+  private RoleRepository roleRepo;
+
+  @Mock
+  private ProfileService pSrv;
 
   @Mock
   private Logger log;
@@ -285,7 +292,13 @@ class UserServiceImplTest {
 
     Page<Users> page = new PageImpl<>(List.of(user));
     when(repo.findAll(pageable)).thenReturn(page);
-    when(profileRepo.findById("uid")).thenReturn(Optional.of(new Profile("pid", user, "Full Name", null, null, null, null, null)));
+    // when(profileRepo.findById("uid")).thenReturn(Optional.of(new Profile("pid", user, "Full Name", null, null, null, null, null)));
+    
+    // mapToEmployeeResponse mocks
+    when(pSrv.getFullName("uid")).thenReturn("Full Name");
+    when(organizationService.getDepartmentName("dept1")).thenReturn("Dept 1");
+    when(netWorkService.getNameById("wsn1")).thenReturn("Net 1");
+    when(bpService.getPagesByEmployeeId("uid")).thenReturn(Collections.emptyList());
 
     Page<EmployeeResponse> result = userService.getAllEmployeesWithStatus(pageable, request);
 
@@ -409,5 +422,62 @@ class UserServiceImplTest {
 
     assertNotNull(result);
     verify(repo).findByIsEnabledTrueAndIsLockedFalseOrUsernameContainingIgnoreCase("user1", pageable);
+  }
+
+  @Test
+  @DisplayName("should_DeleteEmployee_Success")
+  void should_DeleteEmployee_Success() {
+    var id = "user-id";
+    var user = new Users();
+    user.setUserId(id);
+    user.setIsEnabled(true);
+    user.setUsername("u");
+    user.setDepartmentId("d");
+    user.setWaterSupplyNetworkId("n");
+
+    when(repo.findById(id)).thenReturn(Optional.of(user));
+    when(roleRepo.findByUsers(anySet())).thenReturn(Collections.emptyList());
+    when(pSrv.getFullName(id)).thenReturn("Full Name");
+    when(organizationService.getDepartmentName(any())).thenReturn("Dept");
+    when(netWorkService.getNameById(any())).thenReturn("Net");
+    when(bpService.getPagesByEmployeeId(id)).thenReturn(Collections.emptyList());
+
+    var result = userService.deleteEmployee(id);
+
+    assertFalse(user.getIsEnabled());
+    verify(indRepo).deleteByUserId(id);
+    verify(bpRepo).deleteByUsers(user);
+    verify(repo).save(user);
+    assertNotNull(result);
+  }
+
+  @Test
+  @DisplayName("should_ThrowIllegalArgumentException_When_DeleteAlreadyDisabledEmployee")
+  void should_DeleteEmployee_Fails_WhenDisabled() {
+    var id = "user-id";
+    var user = new Users();
+    user.setUserId(id);
+    user.setIsEnabled(false);
+
+    when(repo.findById(id)).thenReturn(Optional.of(user));
+
+    assertThrows(IllegalArgumentException.class, () -> userService.deleteEmployee(id));
+  }
+
+  @Test
+  @DisplayName("should_GetRoleOfEmployee_Success")
+  void should_GetRoleOfEmployee_Success() {
+    var id = "user-id";
+    var user = new Users();
+    user.setUserId(id);
+    var role = new Roles();
+    role.setName(RoleName.IT_STAFF);
+
+    when(repo.findById(id)).thenReturn(Optional.of(user));
+    when(roleRepo.findByUsers(anySet())).thenReturn(List.of(role));
+
+    var result = userService.getRoleOfEmployee(id);
+
+    assertEquals("IT_STAFF", result);
   }
 }

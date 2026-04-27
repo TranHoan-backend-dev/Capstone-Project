@@ -1,14 +1,18 @@
 package com.capstone.auth.application.business.profile;
 
+import com.capstone.auth.application.dto.response.FullNamesResponse;
 import com.capstone.common.exception.NotExistingException;
 import com.capstone.auth.domain.model.Profile;
 import com.capstone.auth.infrastructure.persistence.ProfileRepository;
+import com.capstone.auth.infrastructure.service.keycloak.KeycloakService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -22,15 +26,18 @@ class ProfileServiceImplUpdateAvatarTest {
   @Mock
   ProfileRepository profileRepository;
 
+  @Mock
+  KeycloakService keycloakService;
+
   @InjectMocks
   ProfileServiceImpl profileService;
 
   @Mock
   private Logger log;
 
-  @org.junit.jupiter.api.BeforeEach
+  @BeforeEach
   void setUp() {
-    org.springframework.test.util.ReflectionTestUtils.setField(profileService, "log", log);
+    ReflectionTestUtils.setField(profileService, "log", log);
   }
 
   @Test
@@ -49,6 +56,7 @@ class ProfileServiceImplUpdateAvatarTest {
 
     doNothing().when(profileRepository).updateAvatarByProfileId(id, avatarUrl);
     when(profileRepository.findById(id)).thenReturn(Optional.of(profile));
+    when(keycloakService.getFullName(id)).thenReturn(new FullNamesResponse("Nguyen Van A", ""));
 
     var dto = profileService.updateAvatar(id, avatarUrl);
 
@@ -96,6 +104,7 @@ class ProfileServiceImplUpdateAvatarTest {
 
     doNothing().when(profileRepository).updateAvatarByProfileId(id, avatarUrl);
     when(profileRepository.findById(id)).thenReturn(Optional.of(profile));
+    when(keycloakService.getFullName(id)).thenReturn(new FullNamesResponse("Nguyen Van A", ""));
 
     var dto = profileService.updateAvatar(id, avatarUrl);
 
@@ -121,6 +130,7 @@ class ProfileServiceImplUpdateAvatarTest {
 
     doNothing().when(profileRepository).updateAvatarByProfileId(id, avatarUrl);
     when(profileRepository.findById(id)).thenReturn(Optional.of(profile));
+    when(keycloakService.getFullName(id)).thenReturn(new FullNamesResponse("Nguyen Van A", ""));
 
     var dto = profileService.updateAvatar(id, avatarUrl);
 
@@ -136,6 +146,7 @@ class ProfileServiceImplUpdateAvatarTest {
 
     doNothing().when(profileRepository).updateAvatarByProfileId(id, avatarUrl);
     when(profileRepository.findById(id)).thenReturn(Optional.of(profile));
+    when(keycloakService.getFullName(id)).thenReturn(new FullNamesResponse("Name", ""));
 
     profileService.updateAvatar(id, avatarUrl);
 
@@ -152,6 +163,7 @@ class ProfileServiceImplUpdateAvatarTest {
 
     doNothing().when(profileRepository).updateAvatarByProfileId(id, avatarUrl);
     when(profileRepository.findById(id)).thenReturn(Optional.of(profile));
+    when(keycloakService.getFullName(id)).thenReturn(new FullNamesResponse("Name", ""));
 
     var dto = profileService.updateAvatar(id, avatarUrl);
 
@@ -170,6 +182,7 @@ class ProfileServiceImplUpdateAvatarTest {
 
     doNothing().when(profileRepository).updateAvatarByProfileId(id, avatarUrl);
     when(profileRepository.findById(id)).thenReturn(Optional.of(profile));
+    when(keycloakService.getFullName(id)).thenReturn(new FullNamesResponse("Name", ""));
 
     var dto = profileService.updateAvatar(id, avatarUrl);
 
@@ -185,6 +198,7 @@ class ProfileServiceImplUpdateAvatarTest {
 
     doNothing().when(profileRepository).updateAvatarByProfileId(id, avatarUrl);
     when(profileRepository.findById(id)).thenReturn(Optional.of(profile));
+    when(keycloakService.getFullName(id)).thenReturn(new FullNamesResponse("Name", ""));
 
     var dto = profileService.updateAvatar(id, avatarUrl);
 
@@ -200,6 +214,7 @@ class ProfileServiceImplUpdateAvatarTest {
 
     doNothing().when(profileRepository).updateAvatarByProfileId(rawId, avatarUrl);
     when(profileRepository.findById(rawId)).thenReturn(Optional.of(profile));
+    when(keycloakService.getFullName(rawId)).thenReturn(new FullNamesResponse("Name", ""));
 
     var dto = profileService.updateAvatar(rawId, avatarUrl);
 
@@ -223,6 +238,7 @@ class ProfileServiceImplUpdateAvatarTest {
 
     doNothing().when(profileRepository).updateAvatarByProfileId(id, avatarUrl);
     when(profileRepository.findById(id)).thenReturn(Optional.of(profile));
+    when(keycloakService.getFullName(id)).thenReturn(new FullNamesResponse("Complete User", ""));
 
     var dto = profileService.updateAvatar(id, avatarUrl);
 
@@ -247,6 +263,7 @@ class ProfileServiceImplUpdateAvatarTest {
 
     doNothing().when(profileRepository).updateAvatarByProfileId(id, jpegUrl);
     when(profileRepository.findById(id)).thenReturn(Optional.of(profile));
+    when(keycloakService.getFullName(id)).thenReturn(new FullNamesResponse("Name", ""));
 
     var dto = profileService.updateAvatar(id, jpegUrl);
     assertEquals(jpegUrl, dto.avatarUrl());
@@ -260,6 +277,7 @@ class ProfileServiceImplUpdateAvatarTest {
 
     doNothing().when(profileRepository).updateAvatarByProfileId(id, avatarUrl);
     when(profileRepository.findById(id)).thenReturn(Optional.of(profile));
+    when(keycloakService.getFullName(id)).thenReturn(new FullNamesResponse("Name", ""));
 
     profileService.updateAvatar(id, avatarUrl);
 

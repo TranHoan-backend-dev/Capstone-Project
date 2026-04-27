@@ -7,9 +7,15 @@ import com.capstone.auth.application.business.users.UserService;
 import com.capstone.auth.application.dto.request.keycloakparam.TokenParam;
 import com.capstone.auth.application.dto.response.TokenExchangeResponse;
 import com.capstone.auth.application.exception.AccountBlockedException;
+import com.capstone.auth.infrastructure.service.OrganizationService;
 import com.capstone.auth.infrastructure.service.keycloak.KeycloakFeignClient;
 import com.capstone.auth.infrastructure.utils.Message;
 import com.capstone.common.exception.NotExistingException;
+import org.mockito.Mockito;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,6 +28,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,6 +42,15 @@ class AuthUseCaseLoginTest {
 
   @Mock
   KeycloakFeignClient keycloakFeignClient;
+
+  @Mock
+  OrganizationService organizationService;
+
+  @Mock
+  JwtDecoder jwtDecoder;
+
+  @Mock
+  JwtAuthenticationConverter jwtAuthenticationConverter;
 
   @InjectMocks
   AuthUseCase authUseCase;
@@ -59,6 +76,12 @@ class AuthUseCaseLoginTest {
     when(uSrv.getByUserNameOrEmail(username)).thenReturn(user);
     when(pSrv.getProfileById(userId)).thenReturn(profile);
     when(keycloakFeignClient.token(any(TokenParam.class))).thenReturn(tokenExchangeResponse);
+
+    // Mock for JWT and Security Context
+    Jwt mockJwt = mock(Jwt.class);
+    when(jwtDecoder.decode(anyString())).thenReturn(mockJwt);
+    when(jwtAuthenticationConverter.convert(any(Jwt.class))).thenReturn(new UsernamePasswordAuthenticationToken("principal", "credentials"));
+    when(organizationService.getDepartmentName(any())).thenReturn("IT Department");
 
     var response = authUseCase.login(username, password, null, null, null);
 
@@ -101,7 +124,7 @@ class AuthUseCaseLoginTest {
     when(uSrv.checkExistence(username)).thenReturn(true);
     when(uSrv.getByUserNameOrEmail(username)).thenReturn(user);
 
-    AccountBlockedException ex = assertThrows(
+    var ex = assertThrows(
       AccountBlockedException.class,
       () -> authUseCase.login(username, password, null, null, null));
 
@@ -120,11 +143,33 @@ class AuthUseCaseLoginTest {
     when(uSrv.getByUserNameOrEmail(username)).thenReturn(user);
     when(pSrv.getProfileById(userId)).thenReturn(null);
 
-    NullPointerException ex = assertThrows(
+    var ex = assertThrows(
       NullPointerException.class,
       () -> authUseCase.login(username, password, null, null, null));
 
     assertEquals(Message.SE_05, ex.getMessage());
+  }
+
+  @Test
+  void refreshToken_returns_token_response_when_valid() {
+    var refreshToken = "old-refresh-token";
+    var tokenExchangeResponse = new TokenExchangeResponse("new-access-token", 3600L, 3600L, "new-refresh-token", "Bearer", 0, "session", "scope");
+
+    when(keycloakFeignClient.token(any(TokenParam.class))).thenReturn(tokenExchangeResponse);
+
+    var response = authUseCase.refreshToken(refreshToken);
+
+    assertNotNull(response);
+    assertEquals("new-access-token", response.accessToken());
+  }
+
+  @Test
+  void logout_calls_keycloak_logout() {
+    var refreshToken = "refresh-token";
+
+    authUseCase.logout(refreshToken);
+
+    Mockito.verify(keycloakFeignClient).logout(any(TokenParam.class));
   }
 }
 

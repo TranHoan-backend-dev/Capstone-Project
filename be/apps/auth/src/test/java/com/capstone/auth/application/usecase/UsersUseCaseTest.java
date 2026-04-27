@@ -5,6 +5,7 @@ import com.capstone.auth.application.business.users.UserService;
 import com.capstone.auth.application.dto.request.users.FilterUsersRequest;
 import com.capstone.auth.application.dto.request.UpdateBusinessPageNamesRequest;
 import com.capstone.auth.application.dto.response.EmployeeResponse;
+import com.capstone.auth.application.dto.response.NameAndIdResponse;
 import com.capstone.auth.application.event.producer.MessageProducer;
 
 import com.capstone.auth.application.event.producer.message.AccountDeleteEvent;
@@ -36,7 +37,7 @@ class UsersUseCaseTest {
   private BusinessPageService bpService;
 
   @Mock
-  private MessageProducer messageProducer;
+  private MessageProducer template;
 
   @InjectMocks
   private UsersUseCase usersUseCase;
@@ -212,7 +213,7 @@ class UsersUseCaseTest {
     // Assert
     assertEquals(response, result);
     verify(userService).updateEmployee(id, request);
-    verify(messageProducer).sendMessage(eq(UPDATE_ROUTING_KEY), any(com.capstone.auth.application.event.producer.message.AccountUpdateEvent.class));
+    verify(template).sendMessage(eq(UPDATE_ROUTING_KEY), any(com.capstone.auth.application.event.producer.message.AccountUpdateEvent.class));
   }
 
   @Test
@@ -229,7 +230,7 @@ class UsersUseCaseTest {
 
     // Assert
     verify(userService).deleteEmployee(id);
-    verify(messageProducer).sendMessage(eq(DELETE_ROUTING_KEY), any(AccountDeleteEvent.class));
+    verify(template).sendMessage(eq(DELETE_ROUTING_KEY), any(AccountDeleteEvent.class));
   }
 
   @Test
@@ -242,6 +243,66 @@ class UsersUseCaseTest {
     // Act & Assert
     assertThrows(RuntimeException.class, () -> usersUseCase.deleteEmployee(id));
     verify(userService).deleteEmployee(id);
-    verifyNoInteractions(messageProducer);
+    verifyNoInteractions(template);
   }
+
+  @Test
+  @DisplayName("Should return list of PT heads")
+  void getListOfPtHeads_Success() {
+    var expected = List.of(new NameAndIdResponse("1", "A"), new NameAndIdResponse("2", "B"));
+    when(userService.getAllPtHeads()).thenReturn(expected);
+
+    var result = usersUseCase.getListOfPtHeads();
+
+    assertEquals(expected, result);
+    verify(userService).getAllPtHeads();
+  }
+
+  @Test
+  @DisplayName("Should return list of Construction heads")
+  void getListOfConstructionHeads_Success() {
+    var expected = List.of(new NameAndIdResponse("3", "C"));
+    when(userService.getAllConstructionHeads()).thenReturn(expected);
+
+    var result = usersUseCase.getListOfConstructionHeads();
+
+    assertEquals(expected, result);
+    verify(userService).getAllConstructionHeads();
+  }
+
+  @Test
+  @DisplayName("Should return list of Company Leadership")
+  void getListOfCompanyLeaderShips_Success() {
+    var expected = List.of(new NameAndIdResponse("4", "D"));
+    when(userService.getAllLeaderShips()).thenReturn(expected);
+
+    var result = usersUseCase.getListOfCompanyLeaderShips();
+
+    assertEquals(expected, result);
+    verify(userService).getAllLeaderShips();
+  }
+
+  @Test
+  @DisplayName("Should return list of Construction staffs")
+  void getListOfConstructionStaffs_Success() {
+    var expected = List.of(new NameAndIdResponse("5", "E"));
+    when(userService.getAllConstructionStaffs()).thenReturn(expected);
+
+    var result = usersUseCase.getListOfConstructionStaffs();
+
+    assertEquals(expected, result);
+    verify(userService).getAllConstructionStaffs();
+  }
+
+//  @Test
+//  @DisplayName("Should return list of Meter Inspection staffs")
+//  void getListOfMeterInspectionStaffs_Success() {
+//    var expected = List.of(new NameAndIdResponse("6", "F"));
+//    when(userService.getAllMeterInspectionStaffs()).thenReturn(expected);
+//
+//    var result = usersUseCase.getListOfMeterInspectionStaffs();
+//
+//    assertEquals(expected, result);
+//    verify(userService).getAllMeterInspectionStaffs();
+//  }
 }

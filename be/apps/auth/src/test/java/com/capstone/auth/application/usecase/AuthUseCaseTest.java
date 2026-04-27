@@ -27,7 +27,6 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.slf4j.Logger;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -76,18 +75,15 @@ class AuthUseCaseTest {
   @Mock
   private OrganizationService organizationService;
 
-  @Mock
-  private Logger log;
-
   @InjectMocks
   private AuthUseCase authUseCase;
 
   private static final String REALM = "test-realm";
   private static final String CLIENT_ID = "test-client-id";
   private static final String CLIENT_SECRET = "test-client-secret";
-  private static final String SUBJECT = "Welcome Subject";
-  private static final String TEMPLATE = "welcome-template";
-  private static final String ROUTING_KEY = "test-routing-key";
+  private static final String CREATION_SUBJECT = "Welcome Subject";
+  private static final String CREATION_TEMPLATE = "welcome-template";
+  private static final String CREATED_ROUTING_KEY = "test-routing-key";
 
   private NewUserRequest validRequest;
 
@@ -96,9 +92,9 @@ class AuthUseCaseTest {
     ReflectionTestUtils.setField(authUseCase, "realm", REALM);
     ReflectionTestUtils.setField(authUseCase, "adminClientId", CLIENT_ID);
     ReflectionTestUtils.setField(authUseCase, "adminClientSecret", CLIENT_SECRET);
-    ReflectionTestUtils.setField(authUseCase, "SUBJECT", SUBJECT);
-    ReflectionTestUtils.setField(authUseCase, "TEMPLATE", TEMPLATE);
-    ReflectionTestUtils.setField(authUseCase, "ROUTING_KEY", ROUTING_KEY);
+    ReflectionTestUtils.setField(authUseCase, "CREATION_SUBJECT", CREATION_SUBJECT);
+    ReflectionTestUtils.setField(authUseCase, "CREATION_TEMPLATE", CREATION_TEMPLATE);
+    ReflectionTestUtils.setField(authUseCase, "CREATED_ROUTING_KEY", CREATED_ROUTING_KEY);
 
     validRequest = new NewUserRequest(
       "testuser",
@@ -173,7 +169,7 @@ class AuthUseCaseTest {
 
     verify(keycloakFeignClient).assignRealmRole(eq("Bearer access-token"), eq(expectedUserId), anyList());
 
-    verify(template).sendMessage(eq(ROUTING_KEY), any(AccountCreationEvent.class));
+    verify(template).sendMessage(eq(CREATED_ROUTING_KEY), any(AccountCreationEvent.class));
   }
 
   @Test
@@ -182,7 +178,7 @@ class AuthUseCaseTest {
     var invalidRequest = new NewUserRequest(
       null, "pass", "First", "Last", "email", "phone", "ROLE", List.of(), "dept", "wsn");
 
-    NullPointerException exception = assertThrows(NullPointerException.class,
+    var exception = assertThrows(NullPointerException.class,
       () -> authUseCase.register(invalidRequest));
     assertEquals(SharedMessage.MES_18, exception.getMessage());
   }
@@ -193,7 +189,7 @@ class AuthUseCaseTest {
     var invalidRequest = new NewUserRequest(
       "user", "pass", "First", "Last", null, "phone", "ROLE", List.of(), "dept", "wsn");
 
-    NullPointerException exception = assertThrows(NullPointerException.class,
+    var exception = assertThrows(NullPointerException.class,
       () -> authUseCase.register(invalidRequest));
     assertEquals(SharedMessage.MES_02, exception.getMessage());
   }
@@ -204,7 +200,7 @@ class AuthUseCaseTest {
     var invalidRequest = new NewUserRequest(
       "user", "pass", "First", "Last", "email", "phone", null, List.of(), "dept", "wsn");
 
-    NullPointerException exception = assertThrows(NullPointerException.class,
+    var exception = assertThrows(NullPointerException.class,
       () -> authUseCase.register(invalidRequest));
     assertEquals(Message.PT_13, exception.getMessage());
   }
@@ -215,7 +211,7 @@ class AuthUseCaseTest {
     var invalidRequest = new NewUserRequest(
       "user", "pass", "First", "Last", "email", "phone", "ROLE", null, "dept", "wsn");
 
-    NullPointerException exception = assertThrows(NullPointerException.class,
+    var exception = assertThrows(NullPointerException.class,
       () -> authUseCase.register(invalidRequest));
     assertEquals(Message.PT_12, exception.getMessage());
   }
@@ -226,7 +222,7 @@ class AuthUseCaseTest {
     var invalidRequest = new NewUserRequest(
       "user", "pass", "First", "Last", "email", "phone", "ROLE", List.of(), null, "wsn");
 
-    NullPointerException exception = assertThrows(NullPointerException.class,
+    var exception = assertThrows(NullPointerException.class,
       () -> authUseCase.register(invalidRequest));
     assertEquals(Message.PT_11, exception.getMessage());
   }
@@ -237,7 +233,7 @@ class AuthUseCaseTest {
     var invalidRequest = new NewUserRequest(
       "user", "pass", "First", "Last", "email", "phone", "ROLE", List.of(), "dept", null);
 
-    NullPointerException exception = assertThrows(NullPointerException.class,
+    var exception = assertThrows(NullPointerException.class,
       () -> authUseCase.register(invalidRequest));
     assertEquals(Message.PT_10, exception.getMessage());
   }
@@ -247,7 +243,7 @@ class AuthUseCaseTest {
   void should_ThrowException_When_RoleIsNotFound() {
     when(rSrv.getRoleByName(any())).thenReturn(null);
 
-    NullPointerException exception = assertThrows(NullPointerException.class,
+    var exception = assertThrows(NullPointerException.class,
       () -> authUseCase.register(validRequest));
     assertEquals(Message.SE_07, exception.getMessage());
   }
@@ -278,7 +274,7 @@ class AuthUseCaseTest {
     when(realmResource.users()).thenReturn(usersResource);
     when(usersResource.search(validRequest.username(), true)).thenReturn(List.of(new UserRepresentation()));
 
-    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+    var exception = assertThrows(IllegalArgumentException.class,
       () -> authUseCase.register(validRequest));
     assertEquals("Username already exists", exception.getMessage());
   }
@@ -312,8 +308,74 @@ class AuthUseCaseTest {
     when(keycloakFeignClient.createUser(anyString(), any(UserCreationParam.class))).thenReturn(responseEntity);
 
     // Act & Assert
-    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+    var exception = assertThrows(IllegalArgumentException.class,
       () -> authUseCase.register(validRequest));
     assertEquals("No location header found", exception.getMessage());
+  }
+
+  @Test
+  @DisplayName("should_ThrowExistingException_When_EmailAlreadyExists")
+  void should_ThrowExistingException_When_EmailAlreadyExists() {
+    var mockRole = new Roles();
+    mockRole.setName(RoleName.IT_STAFF);
+    when(rSrv.getRoleByName(RoleName.IT_STAFF)).thenReturn(mockRole);
+
+    // email đã tồn tại
+    when(uSrv.checkExistence(validRequest.email())).thenReturn(true);
+
+    var exception = assertThrows(com.capstone.common.exception.ExistingException.class,
+      () -> authUseCase.register(validRequest));
+    assertEquals(Message.SE_01, exception.getMessage());
+  }
+
+  @Test
+  @DisplayName("should_ThrowIllegalArgumentException_When_PhoneAlreadyExists")
+  void should_ThrowIllegalArgumentException_When_PhoneAlreadyExists() {
+    var mockRole = new Roles();
+    mockRole.setName(RoleName.IT_STAFF);
+    when(rSrv.getRoleByName(RoleName.IT_STAFF)).thenReturn(mockRole);
+
+    when(uSrv.checkExistence(validRequest.email())).thenReturn(false);
+    // số điện thoại đã tồn tại
+    when(pSrv.existsByPhone(validRequest.phoneNumber())).thenReturn(true);
+
+    var exception = assertThrows(IllegalArgumentException.class,
+      () -> authUseCase.register(validRequest));
+    assertEquals(Message.SE_08, exception.getMessage());
+  }
+
+  @Test
+  @DisplayName("should_ThrowNotExistingException_When_NetworkNotExists")
+  void should_ThrowNotExistingException_When_NetworkNotExists() {
+    var mockRole = new Roles();
+    mockRole.setName(RoleName.IT_STAFF);
+    when(rSrv.getRoleByName(RoleName.IT_STAFF)).thenReturn(mockRole);
+
+    when(uSrv.checkExistence(validRequest.email())).thenReturn(false);
+    when(pSrv.existsByPhone(anyString())).thenReturn(false);
+    // network không tồn tại
+    when(netWorkService.checkExistence(validRequest.waterSupplyNetworkId())).thenReturn(false);
+
+    var exception = assertThrows(com.capstone.common.exception.NotExistingException.class,
+      () -> authUseCase.register(validRequest));
+    assertEquals(Message.SE_09, exception.getMessage());
+  }
+
+  @Test
+  @DisplayName("should_ThrowNotExistingException_When_DepartmentNotExists")
+  void should_ThrowNotExistingException_When_DepartmentNotExists() {
+    var mockRole = new Roles();
+    mockRole.setName(RoleName.IT_STAFF);
+    when(rSrv.getRoleByName(RoleName.IT_STAFF)).thenReturn(mockRole);
+
+    when(uSrv.checkExistence(validRequest.email())).thenReturn(false);
+    when(pSrv.existsByPhone(anyString())).thenReturn(false);
+    when(netWorkService.checkExistence(anyString())).thenReturn(true);
+    // department không tồn tại
+    when(organizationService.checkDepartmentExistence(validRequest.departmentId())).thenReturn(false);
+
+    var exception = assertThrows(com.capstone.common.exception.NotExistingException.class,
+      () -> authUseCase.register(validRequest));
+    assertEquals(Message.SE_10, exception.getMessage());
   }
 }
