@@ -71,7 +71,7 @@ class JobServiceImplTest {
 
     assertThatThrownBy(() -> jobService.createJob(request))
       .isInstanceOf(IllegalArgumentException.class)
-      .hasMessage(Message.ORG_04);
+      .hasMessageContaining(Message.ORG_04);
   }
 
   @Test

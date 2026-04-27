@@ -1,11 +1,11 @@
 package com.capstone.organization.service.impl;
 
 import com.capstone.common.exception.ExistingException;
+import com.capstone.common.utils.SharedMessage;
 import com.capstone.organization.dto.request.department.CreateDepartmentRequest;
 import com.capstone.organization.dto.request.department.UpdateDepartmentRequest;
 import com.capstone.organization.model.Department;
 import com.capstone.organization.repository.DepartmentRepository;
-import com.capstone.organization.utils.Message;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -111,7 +111,7 @@ class DepartmentServiceImplTest {
 
       // When & Then
       assertThatThrownBy(() -> departmentService.createDepartment(request)).isInstanceOf(IllegalArgumentException.class)
-          .hasMessage(Message.ORG_10); // "Phone number must be 10 digits"
+          .hasMessage(SharedMessage.MES_04);
     }
 
     @Test
@@ -325,6 +325,16 @@ class DepartmentServiceImplTest {
           .isInstanceOf(IllegalArgumentException.class).hasMessage("Department not found");
 
       verify(departmentRepo, never()).deleteById(anyString());
+    }
+  }
+  @Nested
+  @DisplayName("Get Name Tests")
+  class GetNameTests {
+    @Test
+    @DisplayName("Should return name when id exists")
+    void should_ReturnName_When_IdExists() {
+      when(departmentRepo.findNameByDepartmentId("dep-123")).thenReturn("Engineering");
+      assertThat(departmentService.getName("dep-123")).isEqualTo("Engineering");
     }
   }
 }

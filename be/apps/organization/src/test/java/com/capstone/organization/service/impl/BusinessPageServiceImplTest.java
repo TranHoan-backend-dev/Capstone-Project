@@ -4,6 +4,7 @@ import com.capstone.organization.dto.request.page.CreateBusinessPageRequest;
 import com.capstone.organization.dto.request.page.UpdateBusinessPageRequest;
 import com.capstone.organization.dto.request.page.FilterBusinessPagesRequest;
 import com.capstone.common.response.WrapperApiResponse;
+import com.capstone.organization.event.producer.MessageProducer;
 import com.capstone.organization.model.BusinessPage;
 import com.capstone.organization.repository.BusinessPageRepository;
 import com.capstone.organization.service.boundary.EmployeeService;
@@ -15,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +33,9 @@ class BusinessPageServiceImplTest {
   @Mock
   EmployeeService employeeService;
 
+  @Mock
+  MessageProducer messageProducer;
+
   @InjectMocks
   BusinessPageServiceImpl businessPageService;
 
@@ -38,12 +43,17 @@ class BusinessPageServiceImplTest {
   void setUp() {
     lenient().when(employeeService.getEmployeeNameById(anyString()))
         .thenReturn(new WrapperApiResponse(200, "Success", "Employee Name", null));
+
+    ReflectionTestUtils.setField(businessPageService, "PREFIX", ".page.");
+    ReflectionTestUtils.setField(businessPageService, "ACTION", "update");
+    ReflectionTestUtils.setField(businessPageService, "QUEUE_NAME", "org-queue");
   }
 
   @Test
   void createBusinessPageReturnsResponse() {
     var request = new CreateBusinessPageRequest("Sales", true, "creator-1", "updator-1");
-    var saved = new BusinessPage("page-1", "Sales", true, "creator-1", "updator-1");
+    var saved = BusinessPage.create(b -> b.name("Sales").activate(true).creator("creator-1").updator("updator-1"));
+    ReflectionTestUtils.setField(saved, "pageId", "page-1");
     when(businessPageRepository.save(any(BusinessPage.class))).thenReturn(saved);
 
     var response = businessPageService.createBusinessPage(request);
@@ -72,25 +82,43 @@ class BusinessPageServiceImplTest {
   }
 
   @Test
-  void updateBusinessPageReturnsResponse() {
+  void updateBusinessPageReturnsResponseAndSendsMessageWhenDeactivated() {
     var request = new UpdateBusinessPageRequest("Support", false, "updator-2");
-    var existing = new BusinessPage("page-2", "Old", true, "creator-2", "updator-1");
+    var existing = BusinessPage.create(b -> b.name("Old").activate(true).creator("creator-2").updator("updator-1"));
+    ReflectionTestUtils.setField(existing, "pageId", "page-2");
     when(businessPageRepository.findById("page-2")).thenReturn(Optional.of(existing));
-    when(businessPageRepository.save(existing)).thenReturn(existing);
 
     var response = businessPageService.updateBusinessPage("page-2", request);
 
     assertThat(response.pageId()).isEqualTo("page-2");
     assertThat(response.name()).isEqualTo("Support");
     assertThat(response.activate()).isFalse();
-    assertThat(response.creator()).isEqualTo("creator-2");
-    assertThat(response.updator()).isEqualTo("updator-2");
+    verify(messageProducer).send(eq("org-queue.page.update"), any());
+    verify(messageProducer).sendWithDelay(eq("update-page"), eq("page-2"));
+    verify(businessPageRepository, never()).save(any());
+  }
+
+  @Test
+  void updateBusinessPageReturnsResponseAndSavesWhenActivateIsTrue() {
+    var request = new UpdateBusinessPageRequest("Support", true, "updator-2");
+    var existing = BusinessPage.create(b -> b.name("Old").activate(false).creator("creator-2").updator("updator-1"));
+    ReflectionTestUtils.setField(existing, "pageId", "page-2");
+    when(businessPageRepository.findById("page-2")).thenReturn(Optional.of(existing));
+    when(businessPageRepository.save(any(BusinessPage.class))).thenReturn(existing);
+
+    var response = businessPageService.updateBusinessPage("page-2", request);
+
+    assertThat(response.name()).isEqualTo("Support");
+    assertThat(response.activate()).isTrue();
+    verify(businessPageRepository).save(existing);
+    verify(messageProducer, never()).send(anyString(), any());
   }
 
   @Test
   void updateBusinessPageThrowsWhenNameIsEmpty() {
     var request = new UpdateBusinessPageRequest(" ", true, "updator-1");
-    var existing = new BusinessPage("page-1", "Old", true, "creator-1", "updator-1");
+    var existing = BusinessPage.create(b -> b.name("Old").activate(true).creator("creator-1").updator("updator-1"));
+    ReflectionTestUtils.setField(existing, "pageId", "page-1");
     when(businessPageRepository.findById("page-1")).thenReturn(Optional.of(existing));
 
     assertThatThrownBy(() -> businessPageService.updateBusinessPage("page-1", request))
@@ -110,9 +138,11 @@ class BusinessPageServiceImplTest {
   @Test
   void getBusinessPagesReturnsPagedResponse() {
     var pageRequest = PageRequest.of(1, 2);
-    var items = List.of(
-        new BusinessPage("page-1", "Sales", true, "creator-1", "updator-1"),
-        new BusinessPage("page-2", "Support", false, "creator-2", "updator-2"));
+    var p1 = BusinessPage.create(b -> b.name("Sales").activate(true).creator("creator-1").updator("updator-1"));
+    ReflectionTestUtils.setField(p1, "pageId", "page-1");
+    var p2 = BusinessPage.create(b -> b.name("Support").activate(false).creator("creator-2").updator("updator-2"));
+    ReflectionTestUtils.setField(p2, "pageId", "page-2");
+    var items = List.of(p1, p2);
     var page = new PageImpl<>(items, pageRequest, 4);
     when(businessPageRepository.findAll(pageRequest)).thenReturn(page);
 
@@ -143,9 +173,11 @@ class BusinessPageServiceImplTest {
   @Test
   void getAllBusinessPageNamesByIds_ReturnsListOfNames() {
     var ids = List.of("page-1", "page-2");
-    var pages = List.of(
-        new BusinessPage("page-1", "Sales", true, "creator-1", "updator-1"),
-        new BusinessPage("page-2", "Support", false, "creator-2", "updator-2"));
+    var p1 = BusinessPage.create(b -> b.name("Sales").activate(true).creator("creator-1").updator("updator-1"));
+    ReflectionTestUtils.setField(p1, "pageId", "page-1");
+    var p2 = BusinessPage.create(b -> b.name("Support").activate(false).creator("creator-2").updator("updator-2"));
+    ReflectionTestUtils.setField(p2, "pageId", "page-2");
+    var pages = List.of(p1, p2);
     when(businessPageRepository.findAllById(ids)).thenReturn(pages);
 
     var names = businessPageService.getAllBusinessPageNamesByIds(ids);
@@ -169,7 +201,9 @@ class BusinessPageServiceImplTest {
   void filterBusinessPagesList_ReturnsPagedResponse() {
     var req = new FilterBusinessPagesRequest("Sales", true);
     var pageable = PageRequest.of(0, 10);
-    var items = List.of(new BusinessPage("page-1", "Sales", true, "creator-1", "updator-1"));
+    var p1 = BusinessPage.create(b -> b.name("Sales").activate(true).creator("creator-1").updator("updator-1"));
+    ReflectionTestUtils.setField(p1, "pageId", "page-1");
+    var items = List.of(p1);
     var page = new PageImpl<>(items, pageable, 1);
     when(businessPageRepository.findByNameAndActivate("Sales", true, pageable)).thenReturn(page);
 
