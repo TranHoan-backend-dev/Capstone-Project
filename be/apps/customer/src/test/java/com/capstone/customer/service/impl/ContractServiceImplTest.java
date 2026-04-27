@@ -6,6 +6,7 @@ import com.capstone.customer.dto.response.ContractResponse;
 import com.capstone.customer.model.Customer;
 import com.capstone.customer.model.WaterUsageContract;
 import com.capstone.customer.repository.ContractRepository;
+import com.capstone.customer.service.boundary.ConstructionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,9 @@ class ContractServiceImplTest {
   @Mock
   private ContractRepository contractRepository;
 
+  @Mock
+  private ConstructionService cSrv;
+
   @InjectMocks
   private ContractServiceImpl contractService;
 
@@ -67,6 +71,7 @@ class ContractServiceImplTest {
     // Given
     // CreateRequest: contractId, formCode, formNumber, representatives, appendix
     var request = new CreateRequest("CON001", "INST001", "NUM001", Collections.emptyList(), Collections.emptyList());
+    when(cSrv.checkExistence("INST001", "NUM001")).thenReturn(true);
     when(contractRepository.save(any(WaterUsageContract.class))).thenReturn(contract);
 
     // When
@@ -76,6 +81,7 @@ class ContractServiceImplTest {
     assertThat(result).isNotNull();
     assertThat(result.contractId()).isEqualTo("CON001");
     verify(contractRepository).save(any(WaterUsageContract.class));
+    verify(cSrv).updateContractStatus("INST001", "NUM001");
   }
 
   @Test

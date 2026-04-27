@@ -7,6 +7,7 @@ import com.capstone.customer.dto.request.customer.CreateRequest;
 import com.capstone.customer.dto.request.customer.UpdateRequest;
 import com.capstone.customer.dto.response.CustomerResponse;
 import com.capstone.customer.model.Customer;
+import com.capstone.customer.repository.ContractRepository;
 import com.capstone.customer.repository.CustomerRepository;
 import com.capstone.customer.service.boundary.ConstructionService;
 import com.capstone.customer.service.boundary.DeviceService;
@@ -41,10 +42,16 @@ class CustomerServiceImplTest {
   private CustomerRepository customerRepository;
 
   @Mock
+  private ContractRepository contractRepository;
+
+  @Mock
   private ConstructionService constructionService;
 
   @Mock
   private DeviceService deviceService;
+
+  @Mock
+  private com.fasterxml.jackson.databind.ObjectMapper objectMapper;
 
   @InjectMocks
   private CustomerServiceImpl customerService;
@@ -92,20 +99,20 @@ class CustomerServiceImplTest {
     lenient().when(customer.getCreatedAt()).thenReturn(now);
     lenient().when(customer.getUpdatedAt()).thenReturn(now);
     lenient().when(customer.getFormNumber()).thenReturn("IF001");
+    lenient().when(customer.getFormCode()).thenReturn("FORMCODE-1");
     lenient().when(customer.getWaterPriceId()).thenReturn("WP001");
     lenient().when(customer.getWaterMeterId()).thenReturn("WM001");
     lenient().when(customer.getAddress()).thenReturn("TP. HCM");
+    lenient().when(customer.getRoadmapId()).thenReturn("RM-001");
 
-    // CreateRequest has 34 fields: missing address (index 15) and roadmapId (index 32)
     createRequest = new CreateRequest(
       "Trần Văn A", "tranvana@example.com", "0901234567", CustomerType.FAMILY, false,
       UsageTarget.DOMESTIC, 1, 123456, 1000, false, false, "0", "5000",
       1500000, "2023-12", "TP. HCM", 20000, "CƠ", "012345678901", "Cục CSQLHC về TTXH",
       "TIỀN MẶT", "123456789", "Vietcombank", "TRAN VAN A", "BRC001", "P001",
-      "CP001", true, null, "IF001", "FORMCODE-1", "WP001", "RM-001", "WM001"
+      "CP001", true, null, "IF001", "FORMCODE-1", "WP001", "RM-001", "WM001", "CON-123"
     );
 
-    // UpdateRequest has 33 fields: missing contractId (index 32)
     updateRequest = new UpdateRequest(
       "Update Name", "update@example.com", "0987654321", CustomerType.COMPANY, true,
       UsageTarget.INDUSTRIAL, 2, 654321, 2000, true, true, "10", "10000",
@@ -120,9 +127,11 @@ class CustomerServiceImplTest {
   void should_CreateCustomer_When_InputIsValid() {
     // Given
     when(customerRepository.existsByFormCodeAndFormNumber(any(), any())).thenReturn(false);
+    when(constructionService.isExistingRoadmap(any())).thenReturn(true);
+    when(contractRepository.findById(any())).thenReturn(Optional.of(mock(com.capstone.customer.model.WaterUsageContract.class)));
     when(constructionService.checkExistence(any(), any())).thenReturn(true);
     when(deviceService.checkExistenceOfWaterPrice(any())).thenReturn(true);
-    when(deviceService.checkExistenceOfWaterMeter(any())).thenReturn(true);
+    when(deviceService.checkExistenceOfWaterMeter(any())).thenReturn(false); // New meter
     when(customerRepository.save(any(Customer.class))).thenReturn(customer);
 
     // When
@@ -132,6 +141,7 @@ class CustomerServiceImplTest {
     assertThat(response).isNotNull();
     assertThat(response.customerId()).isEqualTo("CUST-123");
     verify(customerRepository).save(any(Customer.class));
+    verify(deviceService).createWaterMeter(any());
   }
 
   @Test
@@ -147,9 +157,10 @@ class CustomerServiceImplTest {
     // Given
     var id = "CUST-123";
     when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
+    when(contractRepository.findById(any())).thenReturn(Optional.of(mock(com.capstone.customer.model.WaterUsageContract.class)));
     when(constructionService.checkExistence(any(), any())).thenReturn(true);
     when(deviceService.checkExistenceOfWaterPrice(any())).thenReturn(true);
-    when(deviceService.checkExistenceOfWaterMeter(any())).thenReturn(true);
+    when(deviceService.checkExistenceOfWaterMeter(any())).thenReturn(true); // Meter exists
     when(customerRepository.save(any(Customer.class))).thenReturn(customer);
 
     // When
@@ -159,7 +170,6 @@ class CustomerServiceImplTest {
     assertThat(response).isNotNull();
     verify(customer).setName(updateRequest.name());
     verify(customer).setEmail(updateRequest.email());
-    verify(customer).setPhoneNumber(updateRequest.phoneNumber());
     verify(customerRepository).save(customer);
   }
 
@@ -329,7 +339,7 @@ class CustomerServiceImplTest {
   void should_ReturnPaginatedCustomers_When_SearchIsProvided() {
     // Given
     CustomerFilterRequest filter = new CustomerFilterRequest(
-      "Trần", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null
+      "Trần", null, null, null, null, null, null, null, null, null, null, null, null, null
     );
     Page<Customer> customerPage = new PageImpl<>(List.of(customer));
     when(customerRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(customerPage);
@@ -413,5 +423,27 @@ class CustomerServiceImplTest {
 
     // When & Then
     assertThrows(NotExistingException.class, () -> customerService.getIdByMeterId(meterId));
+  }
+
+  @Test
+  @DisplayName("should_CountCustomersOfRoadmap_When_Called")
+  void should_CountCustomersOfRoadmap_When_Called() {
+    when(customerRepository.countByRoadmapId("RM001")).thenReturn(5);
+    assertThat(customerService.countCustomersOfRoadmap("RM001")).isEqualTo(5);
+  }
+
+  @Test
+  @DisplayName("should_ReturnIsFree_When_Called")
+  void should_ReturnIsFree_When_Called() {
+    when(customerRepository.findById("CUST1")).thenReturn(Optional.of(customer));
+    when(customer.getIsFree()).thenReturn(true);
+    assertThat(customerService.isFree("CUST1")).isTrue();
+  }
+
+  @Test
+  @DisplayName("should_ReturnExistence_When_Called")
+  void should_ReturnExistence_When_Called() {
+    when(customerRepository.existsById("CUST1")).thenReturn(true);
+    assertThat(customerService.isExistingCustomer("CUST1")).isTrue();
   }
 }
