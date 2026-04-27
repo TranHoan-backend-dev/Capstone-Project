@@ -1,5 +1,4 @@
 import { apiFetch } from './api';
-import { TokenManager } from './token';
 
 export interface MeterRoute {
   id: string;
@@ -18,9 +17,6 @@ export const roadmapService = {
    * Lấy danh sách tuyến ghi chỉ số (Roadmaps) cho nhân viên hiện tại
    */
   getMyRoadmaps: async (_period: string, _year: string, _dot: string): Promise<MeterRoute[]> => {
-    const accessToken = await TokenManager.getAccessToken();
-    const isMockToken = !!accessToken?.startsWith('mock-');
-
     try {
       // Gọi API thực từ backend (Thông qua Gateway - Construction Service)
       const response = await apiFetch(`/construction/roadmaps?page=0&size=100`, {

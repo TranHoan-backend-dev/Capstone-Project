@@ -32,42 +32,6 @@ interface CollectionItem {
   tienTonConLai?: number;
 }
 
-// Mock data matching the image
-/*
-const MOCK_COLLECTIONS: CollectionItem[] = [
-  {
-    id: '5e6f7081-4000-4eee-9fff-eeeeeeee0001',
-    meterId: '93Vc',
-    soHD: '389',
-    daZhu: '317',
-    conLai: '72',
-    tongTien: 43405485,
-    tienThu: 33141505,
-    tienConLai: 10263980,
-    soHDTon: '3',
-    daZhuThuTon: '0',
-    tienThuThuTon: 0,
-    tongTienTon: 280945,
-    tienTonConLai: 280945,
-  },
-  {
-    id: '01C223',
-    meterId: '115.1',
-    soHD: '389',
-    daZhu: '216',
-    conLai: '173',
-    tongTien: 43764735,
-    tienThu: 22938195,
-    tienConLai: 20826540,
-    soHDTon: '21',
-    daZhuThuTon: '0',
-    tienThuThuTon: 0,
-    tongTienTon: 1783110,
-    tienTonConLai: 1783110,
-  },
-];
-*/
-
 type TabType = 'number' | 'customer';
 
 export default function CollectionScreen({ navigation }: CollectionScreenProps) {

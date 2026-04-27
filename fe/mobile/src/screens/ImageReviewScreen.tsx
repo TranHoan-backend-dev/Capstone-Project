@@ -347,7 +347,6 @@ export default function ImageReviewScreen() {
         // Nếu là server record nhưng có ảnh local đi kèm, cũng xóa local audit sau khi duyệt xong
         await localCapturedService.removeAuditRecord(current.localId);
       }
-      // showToast.success('Đã duyệt chỉ số (Mock)');
       popFront();
     } catch (e) {
       console.error('[ImageReview] confirm', e);
