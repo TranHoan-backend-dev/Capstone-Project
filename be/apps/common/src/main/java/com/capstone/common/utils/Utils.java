@@ -58,13 +58,15 @@ public class Utils {
   }
 
   public static @NonNull String saveFile(@NonNull MultipartFile file) {
-    var uploadDir = "uploads/images/";
+    // Dùng absolute path thay vì relative để tránh sự khác biệt giữa
+    // Windows (working dir = apps/) và Linux (working dir = apps/device/)
+    var uploadDir = Paths.get(System.getProperty("user.dir"), "uploads", "images");
     var fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-    var path = Paths.get(uploadDir, fileName);
+    var filePath = uploadDir.resolve(fileName);
 
     try {
-      Files.createDirectories(path.getParent());
-      Files.write(path, file.getBytes());
+      Files.createDirectories(uploadDir);
+      Files.write(filePath, file.getBytes());
     } catch (IOException e) {
       throw new InternalServerException();
     }

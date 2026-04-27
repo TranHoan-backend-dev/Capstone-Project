@@ -189,7 +189,8 @@ public class UsageHistoryController {
 
   @GetMapping("/image/{fileName}")
   public ResponseEntity<Resource> getImage(@PathVariable String fileName) {
-    var path = Paths.get("uploads/images/", fileName);
+    // Dùng absolute path nhất quán với Utils.saveFile()
+    var path = Paths.get(System.getProperty("user.dir"), "uploads", "images", fileName);
     UrlResource resource = null;
     try {
       resource = new UrlResource(path.toUri());

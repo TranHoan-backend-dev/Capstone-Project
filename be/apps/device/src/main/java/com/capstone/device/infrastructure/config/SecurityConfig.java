@@ -43,6 +43,7 @@ public class SecurityConfig {
     "/v3/api-docs/**",
     "/swagger-ui/**",
     "/health",
+    "/usage/image/**",  // Cho phép mobile load ảnh đồng hồ mà không cần Bearer token
   };
 
   @Bean
