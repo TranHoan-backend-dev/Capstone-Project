@@ -75,15 +75,21 @@ class UsageHistoryUseCaseTest {
   }
 
   @Test
-  void should_analysisTheMeterImage_WithSerial_When_Called() {
+  void should_analysisTheMeterImage_WithSerial_AndTrimIndex_When_Called() {
     // Given
     var serial = "WM-001";
     var file = mock(MultipartFile.class);
     var request = new AnalysisRequest(file, LocalDate.now(), null);
-    var expected = AnalysisResponse.builder().serial(serial).index("100").build();
+    var aiResult = AnalysisResponse.builder().serial(serial).index("123456").build();
 
     when(waterMeterService.isWaterMeterExisting(serial)).thenReturn(true);
-    when(usageHistoryService.extractDataFromTheMeterImage(file)).thenReturn(expected);
+    when(usageHistoryService.extractDataFromTheMeterImage(file)).thenReturn(aiResult);
+
+    // Mock meter with indexLength = 4
+    var meter = mock(com.capstone.device.application.dto.response.water.WaterMeterResponse.class);
+    when(meter.indexLength()).thenReturn(4);
+    when(waterMeterService.getWaterMeterById(serial)).thenReturn(meter);
+
     when(usageHistoryService.addWaterIndexOfThisMonth(any(), eq(serial), any(), any(), eq("PENDING"))).thenReturn(null);
 
     // When
@@ -91,9 +97,8 @@ class UsageHistoryUseCaseTest {
 
     // Then
     assertNotNull(result);
-    assertEquals(serial, result.serial());
-    verify(waterMeterService).isWaterMeterExisting(serial);
-    verify(usageHistoryService).addWaterIndexOfThisMonth(any(), eq(serial), any(), any(), eq("PENDING"));
+    assertEquals("1234", result.index()); // Trimmed from 123456 to 1234
+    verify(usageHistoryService).addWaterIndexOfThisMonth(any(), eq(serial), eq(new BigDecimal("1234")), any(), eq("PENDING"));
   }
 
   @Test
@@ -133,8 +138,49 @@ class UsageHistoryUseCaseTest {
 
     // Then
     assertNotNull(result);
-    // The AnalysisResponse returned still has serial=null (from AI), but the method was called with resolved serial
     verify(usageHistoryService).addWaterIndexOfThisMonth(any(), eq(serial), any(), any(), eq("PENDING"));
+  }
+
+  @Test
+  void should_HandleFallbackError_When_GettingSerialByCustomerIdFails() {
+    // Given
+    var customerId = "CUST-FAIL";
+    var file = mock(MultipartFile.class);
+    var request = new AnalysisRequest(file, LocalDate.now(), customerId);
+
+    var aiExpected = AnalysisResponse.builder().serial(null).index("100").build();
+    when(usageHistoryService.extractDataFromTheMeterImage(file)).thenReturn(aiExpected);
+    when(usageHistoryService.getUsageHistoryByCustomerId(customerId)).thenThrow(new RuntimeException("DB Error"));
+
+    // When
+    var result = usageHistoryUseCase.analysisTheMeterImageWithSerial(request, null);
+
+    // Then
+    assertNotNull(result);
+    assertNull(result.serial());
+    verify(usageHistoryService).addWaterIndexOfThisMonth(any(), isNull(), any(), any(), eq("PENDING"));
+  }
+
+  @Test
+  void should_GetUsageByCustomerIds() {
+    var ids = List.of("C1", "C2");
+    usageHistoryUseCase.getUsageByCustomerIds(ids);
+    verify(usageHistoryService).getUsageByCustomerIds(ids);
+  }
+
+  @Test
+  void should_UpdateUsage() {
+    var serial = "S1";
+    var date = LocalDate.now();
+    var index = BigDecimal.TEN;
+    usageHistoryUseCase.updateUsage(serial, date, index, "url");
+    verify(usageHistoryService).updateUsageDetails(serial, date, index);
+  }
+
+  @Test
+  void should_GetRecentUsage() {
+    usageHistoryUseCase.getRecentUsage("C1");
+    verify(usageHistoryService).getRecentUsage("C1");
   }
 }
 

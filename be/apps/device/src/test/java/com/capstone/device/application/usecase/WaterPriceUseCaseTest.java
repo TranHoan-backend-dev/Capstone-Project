@@ -47,22 +47,24 @@ class WaterPriceUseCaseTest {
   WaterPriceUseCase waterPriceUseCase;
 
   private final String UPDATE_KEY = "update-key";
+  private final String DELETE_KEY = "delete-key";
 
   @BeforeEach
   void setUp() {
     ReflectionTestUtils.setField(waterPriceUseCase, "UPDATE_ROUTING_KEY", UPDATE_KEY);
+    ReflectionTestUtils.setField(waterPriceUseCase, "DELETE_ROUTING_KEY", DELETE_KEY);
   }
 
   @Test
   void should_getPricesList_When_ValidParams() {
     // Given
-    Pageable pageable = mock(Pageable.class);
-    LocalDate filter = LocalDate.now();
+    var pageable = mock(Pageable.class);
+    var filter = LocalDate.now();
     Page<WaterPriceResponse> expectedPage = new PageImpl<>(List.of());
     when(waterPriceService.getAllWaterPrices(pageable, filter)).thenReturn(expectedPage);
 
     // When
-    Page<WaterPriceResponse> result = waterPriceUseCase.getPricesList(pageable, filter);
+    var result = waterPriceUseCase.getPricesList(pageable, filter);
 
     // Then
     assertThat(result).isEqualTo(expectedPage);
@@ -72,13 +74,13 @@ class WaterPriceUseCaseTest {
   @Test
   void should_createWaterPrice_When_ValidRequest() {
     // Given
-    CreateRequest request = new CreateRequest(null, BigDecimal.TEN, BigDecimal.ONE, LocalDate.now(),
+    var request = new CreateRequest(null, BigDecimal.TEN, BigDecimal.ONE, LocalDate.now(),
       LocalDate.now().plusDays(1), "Desc");
-    WaterPriceResponse expectedResponse = mock(WaterPriceResponse.class);
+    var expectedResponse = mock(WaterPriceResponse.class);
     when(waterPriceService.createWaterPrice(request)).thenReturn(expectedResponse);
 
     // When
-    WaterPriceResponse result = waterPriceUseCase.createWaterPrice(request);
+    var result = waterPriceUseCase.createWaterPrice(request);
 
     // Then
     assertThat(result).isEqualTo(expectedResponse);
@@ -88,21 +90,21 @@ class WaterPriceUseCaseTest {
   @Test
   void should_updateWaterPrice_When_ValidRequest() {
     // Given
-    String id = "some-id";
-    UpdateRequest request = new UpdateRequest(null, BigDecimal.TEN, BigDecimal.ONE, LocalDate.now(),
+    var id = "some-id";
+    var request = new UpdateRequest(null, BigDecimal.TEN, BigDecimal.ONE, LocalDate.now(),
       LocalDate.now().plusDays(1), "New Desc");
 
-    WaterPriceResponse oldPrice = new WaterPriceResponse(id, "DOMESTIC", BigDecimal.valueOf(5), BigDecimal.ZERO,
+    var oldPrice = new WaterPriceResponse(id, "DOMESTIC", BigDecimal.valueOf(5), BigDecimal.ZERO,
       LocalDate.now().minusDays(10), LocalDate.now().plusDays(10), "Old Desc", LocalDateTime.now(),
       LocalDateTime.now());
-    WaterPriceResponse newPrice = new WaterPriceResponse(id, "DOMESTIC", BigDecimal.TEN, BigDecimal.ONE,
+    var newPrice = new WaterPriceResponse(id, "DOMESTIC", BigDecimal.TEN, BigDecimal.ONE,
       LocalDate.now(), LocalDate.now().plusDays(1), "New Desc", LocalDateTime.now(), LocalDateTime.now());
 
     when(waterPriceService.getWaterPriceById(id)).thenReturn(oldPrice);
     when(waterPriceService.updateWaterPrice(id, request)).thenReturn(newPrice);
 
     // When
-    WaterPriceResponse result = waterPriceUseCase.updateWaterPrice(id, request);
+    var result = waterPriceUseCase.updateWaterPrice(id, request);
 
     // Then
     assertThat(result).isEqualTo(newPrice);
@@ -114,9 +116,14 @@ class WaterPriceUseCaseTest {
   @Test
   void should_deleteWaterPrice_When_NotAppliedToCustomers() {
     // Given
-    String id = "some-id";
-    WrapperApiResponse apiResponse = new WrapperApiResponse(200, "Success", "false", OffsetDateTime.now());
+    var id = "some-id";
+    var apiResponse = new WrapperApiResponse(200, "Success", "false", OffsetDateTime.now());
+    var oldPrice = new WaterPriceResponse(id, "DOMESTIC", BigDecimal.valueOf(5), BigDecimal.ZERO,
+      LocalDate.now().minusDays(10), LocalDate.now().plusDays(10), "Old Desc", LocalDateTime.now(),
+      LocalDateTime.now());
+
     when(customerService.checkWhetherCustomersAreApplied(id)).thenReturn(apiResponse);
+    when(waterPriceService.getWaterPriceById(id)).thenReturn(oldPrice);
 
     // When
     waterPriceUseCase.deleteWaterPrice(id);
@@ -124,13 +131,14 @@ class WaterPriceUseCaseTest {
     // Then
     verify(customerService).checkWhetherCustomersAreApplied(id);
     verify(waterPriceService).deleteWaterPrice(id);
+    verify(producer).send(eq(DELETE_KEY), any());
   }
 
   @Test
   void should_throwException_When_deleteWaterPrice_AndAppliedToCustomers() {
     // Given
-    String id = "some-id";
-    WrapperApiResponse apiResponse = new WrapperApiResponse(200, "Success", "true", OffsetDateTime.now());
+    var id = "some-id";
+    var apiResponse = new WrapperApiResponse(200, "Success", "true", OffsetDateTime.now());
     when(customerService.checkWhetherCustomersAreApplied(id)).thenReturn(apiResponse);
 
     // When & Then
@@ -145,12 +153,12 @@ class WaterPriceUseCaseTest {
   @Test
   void should_getWaterPriceById_When_IdExists() {
     // Given
-    String id = "some-id";
-    WaterPriceResponse expectedResponse = mock(WaterPriceResponse.class);
+    var id = "some-id";
+    var expectedResponse = mock(WaterPriceResponse.class);
     when(waterPriceService.getWaterPriceById(id)).thenReturn(expectedResponse);
 
     // When
-    WaterPriceResponse result = waterPriceUseCase.getWaterPriceById(id);
+    var result = waterPriceUseCase.getWaterPriceById(id);
 
     // Then
     assertThat(result).isEqualTo(expectedResponse);
