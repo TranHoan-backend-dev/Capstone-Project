@@ -1,39 +1,43 @@
 import { showToast } from '../utils/toast';
+import { CONFIG } from '../config';
 
 /**
- * Service để tương tác với Google Cloud Storage
- * Hỗ trợ lấy ảnh từ các URL được trả về bởi API
+ * Service để tương tác với ảnh đồng hồ nước
+ * Hỗ trợ lấy ảnh từ GCS URL, tên file upload local, hoặc URL trực tiếp
  */
 export const storageService = {
   /**
-   * Chuyển đổi một GCS path hoặc URL thành URL có thể hiển thị được
-   * @param path Đường dẫn ảnh từ API (ví dụ: gs://bucket/img.jpg hoặc https://...)
+   * Chuyển đổi path/URL ảnh thành URL có thể hiển thị được
+   * - Nếu là URL đầy đủ (https://): trả về nguyên
+   * - Nếu là GCS path (gs://): chuyển sang https://storage.googleapis.com/...
+   * - Nếu là tên file thuần (vd: "abc123.jpg"): gọi endpoint /d/usage/image/{fileName}
+   * @param path Đường dẫn ảnh từ API
    */
   getImageUrl: async (path: string | null): Promise<string | null> => {
     if (!path) return null;
 
     try {
-      // Giả lập xử lý URL Google Cloud Storage
-      // Nếu là đường dẫn gs://, chúng ta có thể cần gọi API Backend 
-      // để lấy Signed URL hoặc fetch blob từ GCS nếu bucket là public.
-      
-      /* Logic thực tế sẽ gọi đến GCS SDK hoặc REST API ở đây:
-      const response = await fetch(`https://storage.googleapis.com/v1/b/${BUCKET}/o/${encodeURIComponent(path)}?alt=media`, {
-        headers: { Authorization: `Bearer ${GCS_TOKEN}` }
-      });
-      return response.url;
-      */
-
-      // Tạm thời trả về chính nó nếu đã là URL hợp lệ
+      // 1. URL đầy đủ (https hoặc http): trả về nguyên, ảnh GCS Signed URL cũng nằm đây
       if (path.startsWith('http')) {
         return path;
       }
-      
-      // Mock chuyển đổi đường dẫn gs:// đơn giản
-      return path.replace('gs://', 'https://storage.googleapis.com/');
+
+      // 2. GCS path (gs://bucket/filename): chuyển sang HTTPS public URL
+      if (path.startsWith('gs://')) {
+        return path.replace('gs://', 'https://storage.googleapis.com/');
+      }
+
+      // 3. Tên file thuần (vd: "abc123.jpg" hoặc "uploads/images/abc.jpg"):
+      //    Gọi đến endpoint backend GET /d/usage/image/{fileName} để phục vụ ảnh local
+      const fileName = path.includes('/') ? path.split('/').pop() : path;
+      if (fileName) {
+        return `${CONFIG.API_BASE_URL}/d/usage/image/${encodeURIComponent(fileName)}`;
+      }
+
+      return path;
     } catch (error) {
-      console.error('Error fetching image from GCS:', error);
-      showToast.error('Không thể tải hình ảnh từ Cloud Storage');
+      console.error('Error resolving image URL:', error);
+      showToast.error('Không thể tải hình ảnh');
       return null;
     }
   }

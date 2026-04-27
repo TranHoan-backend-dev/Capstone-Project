@@ -294,11 +294,11 @@ export default function ImageReviewScreen() {
     (async () => {
       if (current.source === 'local' && current.photoUri) {
         if (!cancelled) setDisplayUri(current.photoUri);
-        return;
+      } else {
+        const raw = current.imageUrl || '';
+        const resolved = await storageService.getImageUrl(raw);
+        if (!cancelled) setDisplayUri(resolved || raw || null);
       }
-      const raw = current.imageUrl || '';
-      const resolved = await storageService.getImageUrl(raw);
-      if (!cancelled) setDisplayUri(resolved || raw || null);
     })();
     return () => {
       cancelled = true;
@@ -618,6 +618,7 @@ export default function ImageReviewScreen() {
                 </Animated.View>
               </View>
 
+
               <View style={styles.formPadding}>
                 <Text style={styles.customerTitle} numberOfLines={2}>
                   {current.customerName || 'Chưa gán khách hàng'}
@@ -796,13 +797,17 @@ const styles = StyleSheet.create({
   roadmapChip: { marginBottom: 8, alignSelf: 'flex-start' },
   hintSwipe: { fontSize: 12, color: '#64748b', marginBottom: 8 },
   card: {
-    flex: 1,
     backgroundColor: '#fff',
     borderRadius: 16,
+    marginBottom: 20,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
     overflow: 'hidden',
-    elevation: 3,
-    marginBottom: 8,
   },
+
   swipeImageArea: {
     height: IMAGE_AREA_HEIGHT,
     backgroundColor: '#0f172a',
