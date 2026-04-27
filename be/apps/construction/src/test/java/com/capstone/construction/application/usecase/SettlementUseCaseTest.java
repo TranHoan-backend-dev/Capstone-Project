@@ -12,9 +12,7 @@ import com.capstone.construction.application.dto.response.PageResponse;
 import com.capstone.construction.application.dto.response.construction.ConstructionResponse;
 import com.capstone.construction.application.dto.response.settlement.SettlementResponse;
 import com.capstone.construction.application.event.producer.MessageProducer;
-import com.capstone.construction.domain.model.InstallationForm;
-import com.capstone.construction.domain.model.utils.InstallationFormId;
-import com.capstone.construction.infrastructure.persistence.InstallationFormRepository;
+import com.capstone.construction.domain.model.utils.significance.SettlementSignificance;
 import com.capstone.construction.infrastructure.service.EmployeeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,7 +28,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -51,9 +48,6 @@ class SettlementUseCaseTest {
   EmployeeService employeeService;
 
   @Mock
-  InstallationFormRepository installationFormRepository;
-
-  @Mock
   ConstructionRequestService constructionRequestService;
 
   @InjectMocks
@@ -72,12 +66,12 @@ class SettlementUseCaseTest {
   void createSettlement_ShouldReturnResponse() {
     var request = new CreateSettlementRequest("SETTLE-001", "1001", "1", "Job", "Customer A", "Addr", BigDecimal.ZERO, "Note", LocalDate.now());
     var response1 = new SettlementResponse(new SettlementResponse.GeneralInformation("id", "Job", "Customer A", "Addr", BigDecimal.ZERO, "Note", null, null, LocalDate.now(), "1001", "1", null, null), null);
-    var installationForm = mock(InstallationForm.class);
     var constructionRequest = mock(ConstructionResponse.class);
 
-    when(installationFormRepository.findById(any(InstallationFormId.class))).thenReturn(Optional.of(installationForm));
-    when(constructionRequestService.getByInstallationForm("1", "1001")).thenReturn(constructionRequest);
+    when(settlementService.isExistingSettlement(anyString())).thenReturn(false);
+    when(constructionRequestService.getByInstallationForm("1001", "1")).thenReturn(constructionRequest);
     when(constructionRequest.isApproved()).thenReturn("true");
+    when(settlementService.checkSettlementExists("1001", "1")).thenReturn(false);
     when(settlementService.createSettlement(request)).thenReturn(response1);
 
     var result1 = settlementUseCase.createSettlement(request);
@@ -89,7 +83,7 @@ class SettlementUseCaseTest {
   @DisplayName("Update settlement successfully")
   void updateSettlement_ShouldReturnResponse() {
     var id = "SETTLE-001";
-    var request = new UpdateSettlementRequest(id, "Job", "Customer A", "Addr", BigDecimal.ZERO, "Note", LocalDate.now(), null);
+    var request = new UpdateSettlementRequest(id, "Job", BigDecimal.ZERO, "Note", List.of(), BigDecimal.ZERO);
     var response2 = new SettlementResponse(new SettlementResponse.GeneralInformation(id, "Job", "Customer A", "Addr", BigDecimal.ZERO, "Note", null, null, LocalDate.now(), "1001", "1", null, null), null);
     when(settlementService.updateSettlement(id, request)).thenReturn(response2);
     var result2 = settlementUseCase.updateSettlement(id, request);
@@ -127,7 +121,15 @@ class SettlementUseCaseTest {
   void significance_ShouldSendMessage_WhenFullySigned() {
     var id = "id123";
     var userId = "User1";
-    var request = new SignificanceRequest("URL", null);
+    var request = new SignificanceRequest("URL", true);
+
+    var settlement = mock(SettlementResponse.class);
+    var gen = mock(SettlementResponse.GeneralInformation.class);
+    var sig = mock(SettlementSignificance.class);
+    when(settlementService.getSettlementById(id)).thenReturn(settlement);
+    when(settlement.generalInformation()).thenReturn(gen);
+    when(gen.significance()).thenReturn(sig);
+    when(sig.isSettlementFullySigned()).thenReturn(false);
 
     when(settlementService.signSettlement(userId, id, request)).thenReturn(true);
 
@@ -141,10 +143,18 @@ class SettlementUseCaseTest {
   void significance_ShouldNotSendMessage_WhenNotFullySigned() {
     var id = "id123";
     var userId = "User1";
-    var request = new SignificanceRequest("URL", null);
+    var request = new SignificanceRequest("URL", true);
+ 
+    var settlement = mock(SettlementResponse.class);
+    var gen = mock(SettlementResponse.GeneralInformation.class);
+    var sig = mock(com.capstone.construction.domain.model.utils.significance.SettlementSignificance.class);
+    when(settlementService.getSettlementById(id)).thenReturn(settlement);
+    when(settlement.generalInformation()).thenReturn(gen);
+    when(gen.significance()).thenReturn(sig);
+    when(sig.isSettlementFullySigned()).thenReturn(false);
 
     when(settlementService.signSettlement(userId, id, request)).thenReturn(false);
-
+ 
     settlementUseCase.significance(userId, id, request);
 
     verify(messageProducer, never()).send(anyString(), any());
@@ -188,6 +198,49 @@ class SettlementUseCaseTest {
       .isInstanceOf(NotExistingException.class);
 
     verify(messageProducer, never()).send(anyString(), any());
+  }
+
+  @Test
+  @DisplayName("Create settlement should throw exception when already exists")
+  void createSettlement_ShouldThrow_WhenExists() {
+    var request = new CreateSettlementRequest("SETTLE-001", "1001", "1", "Job", "Customer A", "Addr", BigDecimal.ZERO, "Note", LocalDate.now());
+    when(settlementService.isExistingSettlement("SETTLE-001")).thenReturn(true);
+
+    assertThatThrownBy(() -> settlementUseCase.createSettlement(request))
+      .isInstanceOf(IllegalStateException.class)
+      .hasMessage("Quyết toán đã tồn tại");
+  }
+
+  @Test
+  @DisplayName("Create settlement should throw exception when construction not approved")
+  void createSettlement_ShouldThrow_WhenNotApproved() {
+    var request = new CreateSettlementRequest("SETTLE-001", "1001", "1", "Job", "Customer A", "Addr", BigDecimal.ZERO, "Note", LocalDate.now());
+    var constructionRequest = mock(ConstructionResponse.class);
+
+    when(settlementService.isExistingSettlement(anyString())).thenReturn(false);
+    when(constructionRequestService.getByInstallationForm(anyString(), anyString())).thenReturn(constructionRequest);
+    when(constructionRequest.isApproved()).thenReturn("false");
+
+    assertThatThrownBy(() -> settlementUseCase.createSettlement(request))
+      .isInstanceOf(IllegalStateException.class)
+      .hasMessage("Công trình chưa được phê duyệt, chưa thể lập quyết toán");
+  }
+
+  @Test
+  @DisplayName("Significance should throw exception when already fully signed")
+  void significance_ShouldThrow_WhenAlreadyFullySigned() {
+    var id = "id123";
+    var settlement = mock(SettlementResponse.class);
+    var gen = mock(SettlementResponse.GeneralInformation.class);
+    var sig = mock(SettlementSignificance.class);
+    when(settlementService.getSettlementById(id)).thenReturn(settlement);
+    when(settlement.generalInformation()).thenReturn(gen);
+    when(gen.significance()).thenReturn(sig);
+    when(sig.isSettlementFullySigned()).thenReturn(true);
+
+    assertThatThrownBy(() -> settlementUseCase.significance("u", id, new SignificanceRequest("url", true)))
+      .isInstanceOf(IllegalArgumentException.class)
+      .hasMessage("Tài liệu đã được ký đầy đủ");
   }
 }
 

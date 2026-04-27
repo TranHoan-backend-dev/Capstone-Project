@@ -4,8 +4,10 @@ import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.construction.application.business.installationform.InstallationFormService;
 import com.capstone.construction.application.dto.request.installationform.*;
 import com.capstone.construction.application.dto.response.installationform.*;
+import com.capstone.construction.application.event.producer.order.AssignEvent;
 import com.capstone.construction.application.event.producer.MessageProducer;
 import com.capstone.construction.application.exception.ExistingItemException;
+import com.capstone.construction.domain.model.utils.InstallationFormId;
 import com.capstone.construction.infrastructure.utils.Message;
 import com.capstone.construction.infrastructure.service.EmployeeService;
 import org.jspecify.annotations.NonNull;
@@ -189,8 +191,45 @@ class InstallationFormHandlingUseCaseTest {
 
   private @NonNull NewOrderRequest createValidNewOrderRequest() {
     return new NewOrderRequest(
-      "1", "1001", "Customer", "Address", "123456789012", "2020-01-01", "Loc", "0901234567",
+      "1", "1001", "Customer", "Address", "123456789012", java.time.LocalDate.parse("2020-01-01"), "Loc", "0901234567",
       "TAX01", "BANK01", "LOC", com.capstone.common.enumerate.UsageTarget.INSTITUTIONAL, com.capstone.common.enumerate.CustomerType.FAMILY,
-      "2024-01-01", "2024-01-05", 1, 1, new ArrayList<>(), "net1", "meter1");
+      java.time.LocalDate.parse("2024-01-01"), java.time.LocalDate.parse("2024-01-05"), 1, 1, new ArrayList<>(), "net1", "meter1");
+  }
+
+  @Test
+  @DisplayName("Should assign form to survey staff successfully")
+  void assignToSurveyStaff_Success() {
+    var id = new InstallationFormId("C1", "N1");
+    var empId = "SURVEY-01";
+    when(empSrv.getRoleOfEmployeeById(empId)).thenReturn(new WrapperApiResponse(200, "OK", "SURVEY_STAFF", null));
+    var form = mock(InstallationFormListResponse.class);
+    when(form.formCode()).thenReturn("C1");
+    when(form.formNumber()).thenReturn("N1");
+    when(ifSrv.getByFormCodeAndFormNumber("C1", "N1")).thenReturn(form);
+
+    useCase.assignInstallationFormToSurveyStaff(id, empId);
+
+    verify(ifSrv).assignInstallationForm(empId, id, true);
+    verify(messageProducer).send(eq("construction_queue.order.assign"), any(AssignEvent.class));
+  }
+
+  @Test
+  @DisplayName("Should throw exception when assigning to non-survey staff")
+  void assignToSurveyStaff_Fails_WrongRole() {
+    var id = new InstallationFormId("C1", "N1");
+    var empId = "IT-01";
+    when(empSrv.getRoleOfEmployeeById(empId)).thenReturn(new WrapperApiResponse(200, "OK", "IT_STAFF", null));
+
+    assertThatThrownBy(() -> useCase.assignInstallationFormToSurveyStaff(id, empId))
+      .isInstanceOf(IllegalArgumentException.class)
+      .hasMessageContaining("nhân viên khảo sát");
+  }
+
+  @Test
+  @DisplayName("Should review installation form successfully")
+  void reviewInstallationForm_Success() {
+    var request = new ApproveRequest("C1", "N1", true);
+    useCase.reviewInstallationForm(USER_ID, request);
+    verify(ifSrv).reviewInstallationForm(USER_ID, request);
   }
 }

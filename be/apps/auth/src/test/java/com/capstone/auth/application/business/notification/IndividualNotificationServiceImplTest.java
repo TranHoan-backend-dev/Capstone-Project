@@ -33,7 +33,7 @@ class IndividualNotificationServiceImplTest {
     // Given
     var userId = "user-123";
     var pageable = PageRequest.of(0, 10);
-    IndividualNotification notification = new IndividualNotification("noti-1", userId, false);
+    var notification = new IndividualNotification("noti-1", userId, false);
 
     when(repo.findAllByUserId(eq(userId), eq(pageable)))
       .thenReturn(List.of(notification));

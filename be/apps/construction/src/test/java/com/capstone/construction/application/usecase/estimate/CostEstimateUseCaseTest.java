@@ -15,7 +15,9 @@ import com.capstone.common.exception.ForbiddenException;
 import com.capstone.common.exception.NotExistingException;
 import com.capstone.construction.application.dto.request.estimate.AssignTheSignificanceRequest;
 import com.capstone.construction.application.dto.request.estimate.SignRequest;
+import java.math.BigDecimal;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -47,7 +49,6 @@ class CostEstimateUseCaseTest {
   @InjectMocks
   private CostEstimateUseCase costEstimateUseCase;
 
-  private CreateRequest createRequest;
   private UpdateRequest updateRequest;
   private CostEstimateResponse mockResponse;
 
@@ -63,12 +64,12 @@ class CostEstimateUseCaseTest {
 
     var formCode = "1001";
     var formNumber = "1";
-    createRequest = new CreateRequest(
+    var createRequest = new CreateRequest(
       "Customer Name", "Address", LocalDateTime.now(), "user-123", formCode, formNumber, "OWM-123");
 
     updateRequest = new UpdateRequest(
       new UpdateRequest.GeneralInformation(
-        "Name", "Addr", "Note", 100, 100, 1, 100, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 100, null, "SN", "METER", null),
+        "Name", "Addr", "Note", 100, 100, 1, 100, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 100, null, "SN", "METER", null, BigDecimal.ZERO),
       Collections.emptyList(),
       true);
 
@@ -82,7 +83,7 @@ class CostEstimateUseCaseTest {
           com.capstone.common.enumerate.ProcessingStatus.APPROVED,
           com.capstone.common.enumerate.ProcessingStatus.PROCESSING,
           com.capstone.common.enumerate.ProcessingStatus.PROCESSING,
-          com.capstone.common.enumerate.ProcessingStatus.PROCESSING), null),
+          com.capstone.common.enumerate.ProcessingStatus.PROCESSING), null, BigDecimal.ZERO),
       Collections.emptyList());
   }
 
@@ -102,6 +103,21 @@ class CostEstimateUseCaseTest {
     assertNotNull(response);
     verify(estSrv).updateEstimate("id-123", updateRequest);
     verify(messageProducer).send(anyString(), any());
+  }
+
+  @Test
+  @DisplayName("Should update estimate but NOT send event when not finished")
+  void should_UpdateEstimate_NotSendEvent_WhenNotFinished() {
+    // Arrange
+    var unfinishedRequest = new UpdateRequest(updateRequest.generalInformation(), Collections.emptyList(), false);
+    when(estSrv.updateEstimate(anyString(), any(UpdateRequest.class))).thenReturn(mockResponse);
+
+    // Act
+    costEstimateUseCase.updateEstimate("id-123", unfinishedRequest);
+
+    // Assert
+    verify(estSrv).updateEstimate("id-123", unfinishedRequest);
+    verifyNoInteractions(messageProducer);
   }
 
   @Test
