@@ -173,12 +173,7 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
       const lastCodeData: string = json.data;
 
       if (lastCodeData) {
-        const numericPart = lastCodeData.replace(/\D/g, "");
-        const prefix = lastCodeData.replace(/\d+$/, "");
-        const nextNumber = (parseInt(numericPart || "0") + 1)
-          .toString()
-          .padStart(numericPart.length || 1, "0");
-        updateField("settlementId", prefix + nextNumber);
+        updateField("settlementId", lastCodeData);
       }
     } catch (error) {
       console.error("Error fetching last code:", error);

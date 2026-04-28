@@ -17,6 +17,7 @@ import {
   validateNotPastDate,
   validatePhone,
   validateRequiredFields,
+  validateTaxCode,
   validateText255,
 } from "@/utils/validation";
 import { CallToast } from "@/components/ui/CallToast";
@@ -56,15 +57,8 @@ const NewInstallationForm = () => {
       setLastCode(lastCodeData);
 
       if (lastCodeData) {
-        const nextFormCode = (
-          parseInt(lastCodeData.formCode || "0") + 1
-        ).toString();
-        const nextFormNumber = (
-          parseInt(lastCodeData.formNumber || "0") + 1
-        ).toString();
-
-        updateField("formCode", nextFormCode);
-        updateField("formNumber", nextFormNumber);
+        updateField("formCode", lastCodeData.formCode || "");
+        updateField("formNumber", lastCodeData.formNumber || "");
       }
     } catch (error) {
       console.error("Error fetching last code:", error);
@@ -185,7 +179,6 @@ const NewInstallationForm = () => {
 
       const maxLengthFields: Array<{ value: string; fieldName: string }> = [
         { value: formData.address, fieldName: "Địa chỉ" },
-        { value: formData.taxCode, fieldName: "Mã số thuế" },
         { value: formData.formCode, fieldName: "Mã biểu mẫu" },
         { value: formData.formNumber, fieldName: "Số hồ sơ" },
         { value: formData.bankAccountNumber, fieldName: "Số tài khoản ngân hàng" },
@@ -203,6 +196,9 @@ const NewInstallationForm = () => {
         const fieldError = validateText255(field.value || "", field.fieldName);
         if (fieldError) return showError(fieldError);
       }
+
+      const taxCodeError = validateTaxCode(formData.taxCode, "Mã số thuế");
+      if (taxCodeError) return showError(taxCodeError);
 
       const householdError =
         formData.householdRegistrationNumber &&

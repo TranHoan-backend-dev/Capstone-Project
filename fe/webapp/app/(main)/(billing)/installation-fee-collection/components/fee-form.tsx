@@ -64,12 +64,7 @@ export const FeeForm = ({
         const json = await res.json();
         const lastCode: string = json.data;
         if (lastCode) {
-          const numericPart = lastCode.replace(/\D/g, "");
-          const prefix = lastCode.replace(/\d+$/, "");
-          const nextNumber = (parseInt(numericPart || "0") + 1)
-            .toString()
-            .padStart(numericPart.length || 1, "0");
-          setReceiptNumber(prefix + nextNumber);
+          setReceiptNumber(lastCode);
         }
       } catch {
         // không bắt buộc, user vẫn nhập tay được
