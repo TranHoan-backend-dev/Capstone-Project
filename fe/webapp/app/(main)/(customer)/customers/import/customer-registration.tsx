@@ -19,6 +19,7 @@ import {
   validateDigitsOnly,
   validateMoneyInput,
   validatePhone,
+  validateTaxCode,
   validateText255,
 } from "@/utils/validation";
 
@@ -55,7 +56,6 @@ const CustomerRegistration = ({
         { value: formData.budgetRelationshipCode, name: "Mã số quan hệ ngân sách" },
         { value: formData.passportCode, name: "Mã hộ chiếu" },
         { value: formData.connectionPoint, name: "Điểm đấu nối" },
-        { value: formData.taxCode, name: "Mã số thuế" },
       ];
 
       for (const field of text255Fields) {
@@ -68,6 +68,12 @@ const CustomerRegistration = ({
           });
           return;
         }
+      }
+
+      const taxCodeError = validateTaxCode(formData.taxCode, "Mã số thuế");
+      if (taxCodeError) {
+        CallToast({ title: "Lỗi validation", message: taxCodeError, color: "warning" });
+        return;
       }
 
       if (formData.phoneNumber) {

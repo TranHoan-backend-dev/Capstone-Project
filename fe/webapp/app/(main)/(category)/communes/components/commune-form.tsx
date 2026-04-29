@@ -9,7 +9,7 @@ import CustomSelect from "@/components/ui/custom/CustomSelect";
 import { CommuneFormProps } from "@/types";
 import { CallToast } from "@/components/ui/CallToast";
 import { authFetch } from "@/utils/authFetch";
-import { validateMaxLength, validateRequired } from "@/utils/validation";
+import { validateMaxLength, validateRequired, validateGeneralText } from "@/utils/validation";
 
 const typeOptions = [
   { label: "Phường", value: "URBAN_WARD" },
@@ -36,7 +36,7 @@ export const CommuneForm = ({
     try {
       const nameError =
         validateRequired(name, "Tên Phường/xã") ||
-        validateMaxLength(name, 255, "Tên Phường/xã");
+        validateGeneralText(name, "Tên Phường/xã");
 
       if (nameError) {
         CallToast({

@@ -25,6 +25,16 @@ export const validateProfile = (data: {
     }
   }
 
+  if (data.address) {
+    const addressRegex = /^[a-zA-ZÀ-ỹ0-9\s,.\-/()]+$/;
+    if (!addressRegex.test(data.address.trim())) {
+      return "Địa chỉ không được chứa ký tự đặc biệt";
+    }
+    if (data.address.length > 255) {
+      return "Địa chỉ quá dài";
+    }
+  }
+
   if (data.birthdate) {
     const birth = new Date(data.birthdate);
     const now = new Date();

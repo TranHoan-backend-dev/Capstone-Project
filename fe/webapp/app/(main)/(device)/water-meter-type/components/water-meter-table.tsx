@@ -50,7 +50,8 @@ export const WaterMeterTable = ({
 
         Object.entries(filter || {}).forEach(([key, value]) => {
           if (value?.toString().trim()) {
-            params.append(key, value.toString().trim());
+            const paramKey = key === "size" ? "meterSize" : key;
+            params.append(paramKey, value.toString().trim());
           }
         });
 

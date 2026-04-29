@@ -49,10 +49,8 @@ export const WaterPriceTable = ({
           sort: `${sort.field},${sort.direction}`,
         });
 
-        const trimmedFilter = filter.usageTarget?.trim() || "";
-
-        if (trimmedFilter) {
-          params.append("keyword", trimmedFilter);
+        if (filter.applicationPeriod) {
+          params.append("applicationPeriod", filter.applicationPeriod);
         }
 
         const res = await authFetch(

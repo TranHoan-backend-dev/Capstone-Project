@@ -78,6 +78,50 @@ export const validateName = (value: string, fieldName: string) => {
   return null;
 };
 
+// Address (chữ cái, số, dấu phẩy, dấu chấm, dấu gạch ngang, dấu gạch chéo)
+export const validateAddress = (value: string, fieldName: string = "Địa chỉ") => {
+  if (!value || !value.trim()) return null; // address thường không bắt buộc
+
+  const maxError = validateMaxLength(value, 255, fieldName);
+  if (maxError) return maxError;
+
+  const addressRegex = /^[a-zA-ZÀ-ỹ0-9\s,.\-/()]+$/;
+  if (!addressRegex.test(value.trim())) {
+    return `${fieldName} không được chứa ký tự đặc biệt`;
+  }
+
+  return null;
+};
+
+export const validateGeneralText = (value: string, fieldName: string) => {
+  if (!value || !value.trim()) return null;
+
+  const maxError = validateMaxLength(value, 255, fieldName);
+  if (maxError) return maxError;
+
+  const generalTextRegex = /^[a-zA-ZÀ-ỹ0-9\s,.\-/()']+$/;
+  if (!generalTextRegex.test(value.trim())) {
+    return `${fieldName} không được chứa ký tự đặc biệt`;
+  }
+
+  return null;
+};
+
+// Tax code (chỉ chữ số và chữ cái, tối đa 14 ký tự)
+export const validateTaxCode = (value: string, fieldName: string = "Mã số thuế") => {
+  if (!value || !value.trim()) return null; // không bắt buộc
+
+  if (value.trim().length > 14) {
+    return `${fieldName} không được vượt quá 14 ký tự`;
+  }
+
+  if (!/^[a-zA-Z0-9\-]+$/.test(value.trim())) {
+    return `${fieldName} chỉ được chứa chữ số, chữ cái và dấu gạch ngang`;
+  }
+
+  return null;
+};
+
 // Branch name (cho chi nhánh)
 export const validateBranchName = (value: string, fieldName: string) => {
   const requiredError = validateRequired(value, fieldName);

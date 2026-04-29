@@ -42,6 +42,7 @@ export interface WaterMeterFormProps {
     qn?: string;
     qt?: string;
     qmin?: string;
+    indexLength?: string;
   };
   onSuccess: () => void;
   onClose: () => void;
