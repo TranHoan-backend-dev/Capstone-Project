@@ -589,9 +589,17 @@ export const TechnicalInfoCard = ({
 
       const getErrorMessageFromResponse = (body: any) => {
         const fieldErrors = body?.data ?? body?.error?.data;
-        if (fieldErrors && typeof fieldErrors === "object") {
-          const details = Object.values(fieldErrors)
-            .filter((v) => typeof v === "string" && v.trim() !== "")
+        if (fieldErrors && typeof fieldErrors === "object" && !Array.isArray(fieldErrors)) {
+          const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/;
+          const EXCLUDED_KEYS = new Set(["timestamp", "status", "path", "error"]);
+          const details = Object.entries(fieldErrors)
+            .filter(([k, v]) =>
+              !EXCLUDED_KEYS.has(k) &&
+              typeof v === "string" &&
+              v.trim() !== "" &&
+              !ISO_DATE_REGEX.test(v),
+            )
+            .map(([, v]) => v)
             .join("; ");
           if (details) return details;
         }
