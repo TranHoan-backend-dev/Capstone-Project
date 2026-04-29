@@ -91,21 +91,18 @@ const EmployeeProfile = ({ data }: EmployeeProfileProps) => {
 
   const handleSave = async () => {
     try {
-      // Kiểm tra nếu birthday không phải null khi lưu
-      if (!formData.birthday || formData.birthday.trim() === "") {
-        CallToast({
-          title: "Lỗi",
-          message: "Vui lòng nhập ngày sinh",
-          color: "danger",
-        });
-        return;
-      }
+      const genderValue =
+        formData.gender === "true"
+          ? true
+          : formData.gender === "false"
+            ? false
+            : undefined;
 
       const payload = {
         fullName: formData.fullname,
         phoneNumber: formData.phoneNumber,
-        gender: formData.gender === "true",
-        birthdate: formatDateProfile(formData.birthday),
+        gender: genderValue,
+        birthdate: formData.birthday ? formatDateProfile(formData.birthday) : null,
         address: formData.address,
       };
 
