@@ -80,17 +80,11 @@ const ChangePasswordForm = () => {
       }
       CallToast({
         title: "Thành công",
-        message: "Đổi mật khẩu thành công",
+        message: "Đổi mật khẩu thành công. Vui lòng đăng nhập lại.",
         color: "success",
       });
 
-      setFormData({
-        oldPassword: "",
-        newPassword: "",
-        confirmPassword: "",
-      });
-
-      setTimeout(() => router.back(), TOAST_DURATION);
+      setTimeout(() => router.push("/login"), TOAST_DURATION);
     } catch (err: any) {
       CallToast({
         title: "Thất bại",
