@@ -868,6 +868,14 @@ export const getEstimateById = (accessToken: string, estimateId: string) =>
     },
   });
 
+export const getEstimateImage = (accessToken: string, fileName: string) =>
+  axios.get(`${API_GATEWAY_URL}/construction/estimates/image/${encodeURIComponent(fileName)}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    responseType: "arraybuffer",
+  });
+
 export const getEstimateByFormCode = (accessToken: string, formCode: string) =>
   axios.get(
     `${API_GATEWAY_URL}/construction/estimates/form-code/${encodeURIComponent(formCode)}`,

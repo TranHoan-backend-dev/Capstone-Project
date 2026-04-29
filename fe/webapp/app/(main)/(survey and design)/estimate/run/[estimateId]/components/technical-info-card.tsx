@@ -19,6 +19,7 @@ import { authFetch } from "@/utils/authFetch";
 import { CallToast } from "@/components/ui/CallToast";
 import { useIsPlanningTechnicalDepartmentHead } from "@/hooks/useHasRole";
 import { calculateTotalAmountRaw } from "@/utils/calculateTotalAmount";
+import { ImageLightbox } from "@/components/ui/ImageLightbox";
 
 interface TechnicalInfoCardProps {
   estimateData: EstimateResponse | null;
@@ -84,8 +85,18 @@ export const TechnicalInfoCard = ({
   const [designFee, setDesignFee] = useState("");
 
   const [designImageFile, setDesignImageFile] = useState<File | null>(null);
-  const [designImageUrl, setDesignImageUrl] = useState("");
+  const [designImageUrl, setDesignImageUrl] = useState(""); // tên file gốc từ backend
   const [isImageDeleted, setIsImageDeleted] = useState(false);
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+
+  // Tạo URL proxy để hiển thị ảnh từ backend
+  const getImageProxyUrl = (fileName: string) => {
+    if (!fileName) return "";
+    // Nếu đã là URL đầy đủ thì dùng luôn
+    if (fileName.startsWith("http")) return fileName;
+    const name = fileName.split("/").pop() || fileName;
+    return `/api/construction/estimates/image/${encodeURIComponent(name)}`;
+  };
 
   const [showWaterMeterModal, setShowWaterMeterModal] = useState(false);
 
@@ -708,6 +719,7 @@ export const TechnicalInfoCard = ({
   };
 
   return (
+    <>
     <GenericSearchFilter
       actions={
         <div className="pt-6 border-t border-divider">
@@ -766,17 +778,17 @@ export const TechnicalInfoCard = ({
                   </CustomButton>
                 </div>
 
-                {/* Preview ảnh */}
                 {(previewImageUrl || designImageUrl) && (
-                  <div>
+                  <div className="flex flex-col items-center">
                     <img
-                      src={previewImageUrl || designImageUrl}
+                      src={previewImageUrl || getImageProxyUrl(designImageUrl)}
                       alt="Preview ảnh cụm đồng hồ"
-                      className="max-w-full md:max-w-xs max-h-48 object-cover rounded-lg border shadow-sm"
+                      className="max-w-full max-h-48 object-contain rounded-lg border shadow-sm cursor-zoom-in hover:opacity-90 transition-opacity"
+                      onClick={() =>
+                        setLightboxSrc(previewImageUrl || getImageProxyUrl(designImageUrl))
+                      }
+                      title="Nhấn để phóng to"
                     />
-                    <p className="text-xs text-gray-500 mt-1">
-                      {previewImageUrl ? "Ảnh mới (chưa lưu)" : "Ảnh hiện tại"}
-                    </p>
                   </div>
                 )}
               </div>
@@ -1056,5 +1068,15 @@ export const TechnicalInfoCard = ({
         </div>
       </div>
     </GenericSearchFilter>
+
+    {/* Lightbox phóng to ảnh */}
+    {lightboxSrc && (
+      <ImageLightbox
+        src={lightboxSrc}
+        alt="Ảnh cụm đồng hồ"
+        onClose={() => setLightboxSrc(null)}
+      />
+    )}
+    </>
   );
 };
