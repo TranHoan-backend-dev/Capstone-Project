@@ -6,6 +6,16 @@ import {
   MAX_AGE_REFRESH_TOKEN,
 } from "@/constants/auth.constants";
 
+const ERROR_TRANSLATIONS: Record<string, string> = {
+  "Invalid email or password": "Sai tên đăng nhập hoặc mật khẩu",
+  "Bad credentials": "Sai tên đăng nhập hoặc mật khẩu",
+};
+
+const translateError = (message?: string, fallback?: string): string => {
+  if (!message) return fallback ?? "Có lỗi xảy ra";
+  return ERROR_TRANSLATIONS[message] ?? message;
+};
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -49,9 +59,10 @@ export async function POST(req: NextRequest) {
         if (status === 403) {
           return NextResponse.json(
             {
-              message:
-                responseData?.message ||
+              message: translateError(
+                responseData?.message,
                 "Tài khoản đã bị khóa hoặc vô hiệu hóa",
+              ),
             },
             { status: 403 },
           );
@@ -60,8 +71,10 @@ export async function POST(req: NextRequest) {
         if (status === 400) {
           return NextResponse.json(
             {
-              message:
-                responseData?.message || "Sai tên đăng nhập hoặc mật khẩu",
+              message: translateError(
+                responseData?.message,
+                "Sai tên đăng nhập hoặc mật khẩu",
+              ),
             },
             { status: 400 },
           );
@@ -70,8 +83,10 @@ export async function POST(req: NextRequest) {
         if (status === 401) {
           return NextResponse.json(
             {
-              message:
-                responseData?.message || "Sai tên đăng nhập hoặc mật khẩu",
+              message: translateError(
+                responseData?.message,
+                "Sai tên đăng nhập hoặc mật khẩu",
+              ),
               needVerification: responseData?.needVerification || false,
               sessionId: responseData?.sessionId || null,
             },
@@ -82,7 +97,10 @@ export async function POST(req: NextRequest) {
         // Fallback cho các status khác (bao gồm 500 từ BE)
         return NextResponse.json(
           {
-            message: responseData?.message || "Sai tên đăng nhập hoặc mật khẩu",
+            message: translateError(
+              responseData?.message,
+              "Sai tên đăng nhập hoặc mật khẩu",
+            ),
           },
           { status: status || 400 },
         );
@@ -138,7 +156,7 @@ export async function POST(req: NextRequest) {
     if (axios.isAxiosError(error)) {
       const beMessage = error.response?.data?.message;
       console.log("[Login] Outer catch - status:", error.response?.status, "message:", beMessage);
-      message = beMessage || "Sai tên đăng nhập hoặc mật khẩu";
+      message = translateError(beMessage, "Sai tên đăng nhập hoặc mật khẩu");
       status = error.response?.status === 403 ? 403 : 400;
     }
 
