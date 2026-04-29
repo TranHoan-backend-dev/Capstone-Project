@@ -110,7 +110,23 @@ export const WaterMeterTable = ({
         method: "DELETE",
       });
 
-      if (!res.ok) throw new Error("Delete failed");
+      if (!res.ok) {
+        const errorJson = await res.json().catch(() => null);
+        const serverMessage: string = errorJson?.message ?? "";
+        let displayMessage = "Có lỗi xảy ra khi xóa loại đồng hồ nước";
+
+        if (serverMessage.includes("has water meters that are in use")) {
+          displayMessage =
+            "Không thể xóa loại đồng hồ nước này vì đang có đồng hồ nước đang sử dụng";
+        }
+
+        CallToast({
+          title: "Lỗi",
+          message: displayMessage,
+          color: "danger",
+        });
+        return;
+      }
 
       CallToast({
         title: "Thành công",
@@ -123,7 +139,7 @@ export const WaterMeterTable = ({
     } catch (e: any) {
       CallToast({
         title: "Lỗi",
-        message: e.message || "Có lỗi xảy ra",
+        message: "Có lỗi xảy ra khi xóa loại đồng hồ nước",
         color: "danger",
       });
     } finally {

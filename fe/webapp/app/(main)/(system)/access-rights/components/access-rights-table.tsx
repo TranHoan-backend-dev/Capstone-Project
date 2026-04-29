@@ -220,12 +220,12 @@ export const AccessRightsTable = ({ username }: Props) => {
         data={data}
         isCollapsible
         renderCellAction={renderCell}
-        headerSummary={`${data.length}`}
+        headerSummary={`${totalItems}`}
         paginationProps={{
           total: totalPages,
           page: page,
           onChange: setPage,
-          summary: `${totalItems}`,
+          summary: `${data.length}`,
         }}
       />
       <Modal
