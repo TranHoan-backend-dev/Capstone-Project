@@ -10,6 +10,7 @@ export interface WaterMeterItem {
   qn: string;
   qt:string;
   qmin: string;
+  indexLength: string;
 }
 
 export interface WaterMeterFilter {
@@ -67,4 +68,5 @@ export interface WaterMeterResponse {
   qn: string;
   qt:string;
   qmin: string;
+  indexLength: string;
 }

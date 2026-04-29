@@ -86,6 +86,7 @@ export const WaterMeterTable = ({
           qn: item.qn,
           qt: item.qt,
           qmin: item.qmin,
+          indexLength: item.indexLength,
         }));
         setData(mapped);
       } catch (e) {
