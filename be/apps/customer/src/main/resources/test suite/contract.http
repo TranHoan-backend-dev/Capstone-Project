@@ -1,24 +1,5 @@
 @baseUrl = http://localhost:9005/api/v1
 @contractsUrl = {{baseUrl}}/contracts
-@keycloak = http://localhost:8080/realms//protocol/openid-connect
-@client_secret =
-
-### 0. Lấy Access Token (Keycloak)
-# @name login
-POST {{keycloak}}/token
-Content-Type: application/x-www-form-urlencoded
-
-grant_type=password&
-client_id= &
-client_secret={{client_secret}}&
-username=&
-password=&
-scope=openid
-
-> {%
- client.global.set("access_token", response.body.access_token);
-%}
-
 ### 1. Tạo mới hợp đồng (Thành công - 201)
 POST {{contractsUrl}}
 Authorization: Bearer {{access_token}}

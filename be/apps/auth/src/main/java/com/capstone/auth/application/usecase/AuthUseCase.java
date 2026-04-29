@@ -127,7 +127,7 @@ public class AuthUseCase {
     var profile = pSrv.getProfileById(user.userId());
     Objects.requireNonNull(profile, Message.SE_05);
 
-    TokenExchangeResponse token = null;
+    TokenExchangeResponse token;
     try {
 //      var token = keycloakFeignClient.token(TokenParam.builder()
       token = keycloakFeignClient.token(TokenParam.builder()

@@ -9,6 +9,7 @@ import com.capstone.customer.repository.ContractRepository;
 import com.capstone.customer.service.boundary.ConstructionService;
 import com.capstone.customer.service.boundary.ContractService;
 import com.capstone.customer.utils.Message;
+import com.capstone.customer.utils.Utility;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -82,10 +83,11 @@ public class ContractServiceImpl implements ContractService {
   @Override
   public Page<ContractResponse> getAllContracts(Pageable pageable, ContractFilterRequest request) {
     log.info("Fetching all contracts with pagination: {}", pageable);
+    var sortedPageable = Utility.sortByAttributeDesc(pageable, "createdAt");
 
     var result = contractRepository.findAll(
       ContractRepository.filter(request),
-      pageable
+      sortedPageable
     );
     log.info(result.toString());
 
