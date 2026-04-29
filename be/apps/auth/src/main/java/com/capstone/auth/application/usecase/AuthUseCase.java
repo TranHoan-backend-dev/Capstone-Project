@@ -31,6 +31,7 @@ import feign.FeignException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
@@ -138,7 +139,7 @@ public class AuthUseCase {
         .scope("openid")
         .build());
     } catch (FeignException.Unauthorized e) {
-      throw new IllegalArgumentException("Sai username hoac mat khau");
+      throw new BadCredentialsException("Sai username hoac mat khau");
     }
 
     if (token != null) {

@@ -21,6 +21,14 @@ import java.util.concurrent.ExecutionException;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+  @ExceptionHandler(HttpMessageNotReadableException.class)
+  public ResponseEntity<?> handleInvalidFormat(@NonNull HttpMessageNotReadableException ex) {
+    log.error(ex.getMessage());
+    return Utils.returnBadRequestResponse(
+      "Ngày tháng năm phải đúng định dạng yyyy-MM-dd và là ngày hợp lệ",
+      null
+    );
+  }
 
   @ExceptionHandler(DateTimeParseException.class)
   public ResponseEntity<WrapperApiResponse> handleDateTimeParseException(@NonNull DateTimeParseException ex) {
@@ -35,12 +43,6 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(ExistingException.class)
   public ResponseEntity<WrapperApiResponse> handleExistingException(@NonNull ExistingException ex) {
     return Utils.returnBadRequestResponse(ex.getMessage(), null);
-  }
-
-  @ExceptionHandler(HttpMessageNotReadableException.class)
-  public ResponseEntity<WrapperApiResponse> handleHttpMessageNotReadableException(@NonNull HttpMessageNotReadableException ex) {
-    log.info(ex.getMessage());
-    return Utils.returnBadRequestResponse("Đầu vào dữ liệu không hợp lệ", null);
   }
 
   @ExceptionHandler(BadCredentialsException.class)

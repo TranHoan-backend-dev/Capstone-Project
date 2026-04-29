@@ -15,7 +15,6 @@ import com.capstone.auth.infrastructure.utils.AuthUtils;
 import com.capstone.common.annotation.AppLog;
 import com.capstone.common.utils.SharedConstant;
 import com.capstone.common.utils.SharedMessage;
-import com.capstone.common.utils.Utils;
 import jakarta.ws.rs.BadRequestException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -28,9 +27,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 @AppLog
 @Component
@@ -106,14 +102,8 @@ public class ProfileUseCase {
       newProfile.setPhoneNumber(profile.phoneNumber());
     }
 
-    if (request.birthdate() != null &&
-      !request.birthdate().isEmpty() &&
-      !request.birthdate().isBlank()) {
-      if (Utils.isLocalDate(request.birthdate(), DateTimeFormatter.ISO_LOCAL_DATE)) {
-        throw new IllegalArgumentException(Message.PT_15);
-      }
-      newProfile.setBirthday(
-        LocalDate.parse(request.birthdate(), DateTimeFormatter.ISO_LOCAL_DATE));
+    if (request.birthdate() != null) {
+      newProfile.setBirthday(request.birthdate());
     } else {
       newProfile.setBirthday(profile.birthday());
     }
