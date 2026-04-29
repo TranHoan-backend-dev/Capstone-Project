@@ -1676,7 +1676,7 @@ VALUES ('00000000-0000-0000-0000-900000000001', NOW(), 100.0, '999999', 'WPD-DN1
         'Malaysia', '0.015', '1.5', '0.0225', 15, 5, NOW()),
        ('00000000-0000-0000-0000-900000000011', NOW(), 15.0, '999999', 'Multimag S', 'Itron Multimag S - Cấp C', 'Pháp',
         '0.05',
-        '2.5', '0.2', 15, 5, NOW()),
+        '2.5', '0.2', 15, 4, NOW()),
        ('00000000-0000-0000-0000-900000000012', NOW(), 32.0, '999999', 'Multimag 32', 'Itron Multimag DN32',
         'Indonesia', '0.06',
         '6.0', '0.09', 32, 5, NOW()),
@@ -1885,15 +1885,15 @@ INSERT INTO public.customer (customer_id, address, bank_account_name, bank_accou
 VALUES ('CUST-001', '123 Đường ABC, Hà Nội', 'NGUYEN VAN A', '123456789', 'Hà Nội', NOW(), 'customer1@example.com',
         'FORM-TEST-001', 'FN-001', 1, true, false, 'Nguyễn Văn A', 1, 'CASH', '0987654321', 10,
         '5e6f7081-4000-4eee-9fff-eeee4eee0001', 'FAMILY', NOW(), 'DOMESTIC', '2178583',
-        'Sensus', '00000000-0000-0000-0000-B00000000001', '123456789', 'Hà Nội', 'CONT-001', false),
+        '00000000-0000-0000-0000-900000000001', '00000000-0000-0000-0000-B00000000001', '123456789', 'Hà Nội', 'CONT-001', false),
        ('CUST-002', '456 Đường XYZ, TP.HCM', 'TRAN THI B', '987654321', 'TP.HCM', NOW(), 'customer2@example.com',
         'FORM-TEST-002', 'FN-002', 2, true, false, 'Trần Thị B', 1, 'CASH', '0123456789', 10,
         '5e6f7081-4000-4eee-9fff-eeee4eee0001', 'FAMILY', NOW(), 'DOMESTIC', '126445',
-        'Woltek', '00000000-0000-0000-0000-B00000000001', '987654321', 'TP.HCM', 'CONT-002', true),
+        '00000000-0000-0000-0000-900000000002', '00000000-0000-0000-0000-B00000000001', '987654321', 'TP.HCM', 'CONT-002', true),
        ('CUST-003', '789 Đường LMN, Đà Nẵng', 'LE VAN C', '456789123', 'Đà Nẵng', NOW(), 'customer3@example.com',
         'FORM-TEST-003', 'FN-003', 3, true, false, 'Lê Văn C', 1, 'CASH', '0900000000', 10,
         '5e6f7081-4000-4eee-9fff-eeee4eee0001', 'FAMILY', NOW(), 'DOMESTIC', '113705',
-        'Multimag-S', '00000000-0000-0000-0000-B00000000001', '456789123', 'Đà Nẵng', 'CONT-003', false);
+        '00000000-0000-0000-0000-900000000011', '00000000-0000-0000-0000-B00000000001', '456789123', 'Đà Nẵng', 'CONT-003', false);
 
 -- usage_history
 INSERT INTO public.usage_history (customer_id, meter_code, usages)
