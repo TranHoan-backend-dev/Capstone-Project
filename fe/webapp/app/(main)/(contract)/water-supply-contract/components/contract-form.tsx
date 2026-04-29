@@ -28,6 +28,7 @@ import { RefreshIcon } from "@/components/ui/Icons";
 import CustomButton from "@/components/ui/custom/CustomButton";
 import CustomInput from "@/components/ui/custom/CustomInput";
 import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
+import { validateCodeField } from "@/utils/validation";
 
 interface ContractFormProps {
   onSuccess?: () => void;
@@ -160,12 +161,23 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
 
     if (!formData.contractId?.trim()) {
       newErrors.contractId = "Vui lòng nhập mã hợp đồng";
+    } else {
+      const contractIdError = validateCodeField(formData.contractId, "Mã hợp đồng");
+      if (contractIdError) newErrors.contractId = contractIdError;
     }
+
     if (!formData.formCode?.trim()) {
       newErrors.formCode = "Vui lòng chọn mã đơn";
+    } else {
+      const formCodeError = validateCodeField(formData.formCode, "Mã đơn");
+      if (formCodeError) newErrors.formCode = formCodeError;
     }
+
     if (!formData.formNumber?.trim()) {
       newErrors.formNumber = "Vui lòng chọn số đơn";
+    } else {
+      const formNumberError = validateCodeField(formData.formNumber, "Số đơn");
+      if (formNumberError) newErrors.formNumber = formNumberError;
     }
 
     setErrors(newErrors);

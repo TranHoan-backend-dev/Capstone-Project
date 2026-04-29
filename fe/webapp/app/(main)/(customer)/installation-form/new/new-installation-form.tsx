@@ -11,6 +11,7 @@ import { RelatedOrdersTable } from "./components/related-orders-table";
 import { GenericSearchFilter } from "@/components/ui/GenericSearchFilter";
 import { NewInstallationFormPayload } from "@/types";
 import {
+  validateCodeField,
   validateDigitsOnly,
   validateName,
   validateNotFutureDate,
@@ -196,6 +197,12 @@ const NewInstallationForm = () => {
         const fieldError = validateText255(field.value || "", field.fieldName);
         if (fieldError) return showError(fieldError);
       }
+
+      const formCodeError = validateCodeField(formData.formCode, "Mã biểu mẫu");
+      if (formCodeError) return showError(formCodeError);
+
+      const formNumberError = validateCodeField(formData.formNumber, "Số hồ sơ");
+      if (formNumberError) return showError(formNumberError);
 
       const taxCodeError = validateTaxCode(formData.taxCode, "Mã số thuế");
       if (taxCodeError) return showError(taxCodeError);

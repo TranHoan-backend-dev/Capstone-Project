@@ -18,6 +18,7 @@ import { CallToast } from "@/components/ui/CallToast";
 import { SettlementMaterialCard } from "./settlement-material-card";
 import { SettlementTotalCost } from "./settlement-total-cost";
 import { MaterialEstimateItem, SettlementResponse } from "@/types";
+import { validateCodeField } from "@/utils/validation";
 
 interface SettlementRunFormProps {
   id: string;
@@ -197,10 +198,16 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
 
     if (!form.formNumber) {
       newErrors.formNumber = "Vui lòng chọn số đơn";
+    } else {
+      const formNumberError = validateCodeField(form.formNumber, "Số đơn");
+      if (formNumberError) newErrors.formNumber = formNumberError;
     }
 
     if (!form.settlementId.trim()) {
       newErrors.settlementId = "Vui lòng nhập mã quyết toán";
+    } else {
+      const settlementIdError = validateCodeField(form.settlementId, "Mã quyết toán");
+      if (settlementIdError) newErrors.settlementId = settlementIdError;
     }
 
     if (!form.customerName.trim()) {

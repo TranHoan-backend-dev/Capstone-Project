@@ -213,6 +213,24 @@ export const validateRequiredFields = (
   return null;
 };
 
+// Code / FormCode / FormNumber / ContractId / SettlementId / ReceiptNumber
+// Chỉ cho phép chữ cái, chữ số, dấu gạch ngang và dấu gạch chéo
+export const validateCodeField = (value: string, fieldName: string) => {
+  if (!value || !value.trim()) {
+    return `${fieldName} không được để trống`;
+  }
+
+  const maxError = validateMaxLength(value, 50, fieldName);
+  if (maxError) return maxError;
+
+  const codeRegex = /^[a-zA-Z0-9\-/]+$/;
+  if (!codeRegex.test(value.trim())) {
+    return `${fieldName} không được chứa ký tự đặc biệt`;
+  }
+
+  return null;
+};
+
 export const toAccountName = (name: string): string => {
   return name
     .normalize("NFD")
