@@ -112,8 +112,6 @@ export const TechnicalInfoCard = ({
   const [waterMeterType, setWaterMeterType] = useState("");
   const [waterMeterSerial, setWaterMeterSerial] = useState("");
   const [displayWaterMeter, setDisplayWaterMeter] = useState("");
-  /** Số chữ số chỉ số đồng hồ (indexLength) từ loại đồng hồ đã chọn */
-  const [waterMeterIndexLength, setWaterMeterIndexLength] = useState<number | null>(null);
 
   const [defaultParameters, setDefaultParameters] = useState<Parameter[]>([]);
   const [isLoadingDefaults, setIsLoadingDefaults] = useState(false);
@@ -138,9 +136,6 @@ export const TechnicalInfoCard = ({
     const specialCharRegex = /[^a-zA-Z0-9\-_]/;
     if (specialCharRegex.test(value)) {
       return "Số sê-ri đồng hồ không được chứa ký tự đặc biệt";
-    }
-    if (waterMeterIndexLength !== null && value.trim().length !== waterMeterIndexLength) {
-      return `Số sê-ri đồng hồ phải có đúng ${waterMeterIndexLength} ký tự`;
     }
     return null;
   };
@@ -330,11 +325,6 @@ export const TechnicalInfoCard = ({
         setDisplayWaterMeter(
           `Tên: ${d.name} - Nguồn gốc: ${d.origin} - Loại: ${d.meterModel}`,
         );
-        if (d.indexLength !== undefined && d.indexLength !== null) {
-          setWaterMeterIndexLength(Number(d.indexLength));
-        } else {
-          setWaterMeterIndexLength(null);
-        }
       } catch (error) {
         console.error("Failed to fetch water meter type:", error);
       }
@@ -690,11 +680,6 @@ export const TechnicalInfoCard = ({
     setDisplayWaterMeter(
       `Tên: ${item.name} - Nguồn gốc: ${item.origin} - Loại: ${item.meterModel}`,
     );
-    if (item.indexLength !== undefined && item.indexLength !== null) {
-      setWaterMeterIndexLength(Number(item.indexLength));
-    } else {
-      setWaterMeterIndexLength(null);
-    }
     setShowWaterMeterModal(false);
     clearFieldError("waterMeterType");
     // Re-validate serial nếu đã nhập
@@ -1031,11 +1016,6 @@ export const TechnicalInfoCard = ({
             isRequired
             label="Số sê-ri đồng hồ"
             value={waterMeterSerial}
-            description={
-              waterMeterIndexLength !== null
-                ? `Yêu cầu đúng ${waterMeterIndexLength} ký tự (hiện tại: ${waterMeterSerial.length})`
-                : undefined
-            }
             onChange={(e) => {
               const value = e.target.value;
               // Chỉ cho phép chữ cái, số, dấu gạch ngang và gạch dưới
