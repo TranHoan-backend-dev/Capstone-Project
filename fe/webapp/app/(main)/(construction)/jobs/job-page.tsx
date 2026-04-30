@@ -12,11 +12,7 @@ import { JobForm } from "./components/job-form";
 import { JobsTable } from "./components/job-table";
 import { useProfile } from "@/hooks/useLogin";
 
-
 const JobPage = () => {
-  const { profile, loading: profileLoading } = useProfile();
-  const { isITStaff, loading: roleLoading } = useIsITStaff();
-  const loading = profileLoading || roleLoading;
   const [keyword, setKeyword] = useState<JobFilter>({
     name: "",
   });
@@ -45,7 +41,11 @@ const JobPage = () => {
     handleCloseForm();
   };
 
-  if (loading) {
+  const { profile, loading: profileLoading, hasRole } = useProfile();
+  const isITStaff = hasRole("it_staff");
+
+  const canView = isITStaff;
+  if (profileLoading) {
     return (
       <div className="flex items-center gap-2 text-sm text-default-500">
         <Spinner size="sm" />
@@ -55,21 +55,18 @@ const JobPage = () => {
   }
 
   if (!profile) {
-    return <p>Không thể tải danh sách công việc</p>;
+    return <p>Không thể tải thông tin người dùng</p>;
   }
 
-  if (!isITStaff) {
+  if (!canView) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex justify-center items-center min-h-screen">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-danger mb-4">
-            Truy cập bị từ chối
-          </h1>
-          <p className="text-default-500">
-            Tính năng quản lý công việc chỉ dành cho nhân viên IT.
-          </p>
-          <p className="text-sm text-default-400 mt-2">
-            Nếu bạn là nhân viên IT, vui lòng liên hệ quản trị viên hệ thống.
+          <h2 className="text-2xl font-bold text-red-500 mb-2">
+            Không có quyền truy cập
+          </h2>
+          <p className="text-gray-600">
+            Bạn không có quyền xem trang này. Vui lòng liên hệ quản trị viên.
           </p>
         </div>
       </div>

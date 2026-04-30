@@ -327,14 +327,22 @@ const RoadmapAssignmentPage = () => {
       </div>
     );
   }
-
-  // if (!isBusinessDepartmentHead || !ifITStaff) {
-  //   return (
-  //     <div className="text-center text-red-500 py-10">
-  //       Bạn không có quyền truy cập chức năng này.
-  //     </div>
-  //   );
-  // }
+  
+    const canView = isBusinessDepartmentHead;
+    if (!canView) {
+      return (
+        <div className="flex justify-center items-center min-h-screen">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-red-500 mb-2">
+              Không có quyền truy cập
+            </h2>
+            <p className="text-gray-600">
+              Bạn không có quyền xem trang này. Vui lòng liên hệ quản trị viên.
+            </p>
+          </div>
+        </div>
+      );
+    }
 
   return (
     <>

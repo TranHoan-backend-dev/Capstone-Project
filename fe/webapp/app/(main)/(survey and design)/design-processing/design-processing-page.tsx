@@ -5,15 +5,10 @@ import { Spinner, DateValue } from "@heroui/react";
 import { OrdersToDesignTable } from "./components/orders-to-design-table";
 import { ProcessedDesignsTable } from "./components/processed-designs-table";
 import { FilterSection } from "./components/filter-section";
-import {
-  DesignProcessingItem,
-  NewInstallationLookupResponse,
-} from "@/types";
+import { DesignProcessingItem, NewInstallationLookupResponse } from "@/types";
 import { authFetch } from "@/utils/authFetch";
-import {
-  formatDate1,
-  formatDateValueToString,
-} from "@/utils/format";
+import { formatDate1, formatDateValueToString } from "@/utils/format";
+import { useProfile } from "@/hooks/useLogin";
 
 const DesignProcessingPage = () => {
   const [from, setFrom] = useState<DateValue | null | undefined>(null);
@@ -37,6 +32,17 @@ const DesignProcessingPage = () => {
 
   const [keyword, setKeyword] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+
+  const { profile, loading: profileLoading, hasRole } = useProfile();
+  const isITStaff = hasRole("it_staff");
+  const isCompanyLeader = hasRole("company_leadership");
+  const isPlanningTechnicalHead = hasRole("planning_technical_department_head");
+  const isOrderReceivingStaff = hasRole("order_receiving_staff");
+  const isSurveyStaff = hasRole("survey_staff");
+  const isConstructionHead = hasRole("construction_department_head");
+  const isConstructionStaff = hasRole("construction_department_staff");
+  const isFinanceStaff = hasRole("finance_department");
+  const canView = isITStaff || isSurveyStaff;
 
   const fetchInstallationForms = async (params: URLSearchParams) => {
     const res = await authFetch(
@@ -113,7 +119,9 @@ const DesignProcessingPage = () => {
       setOrdersToDesign(orders);
       setTotalPagesOrders(result?.page?.totalPages ?? 1);
       setTotalElementsOrders(
-        params.has("status") ? result?.page?.totalElements ?? 0 : orders.length,
+        params.has("status")
+          ? (result?.page?.totalElements ?? 0)
+          : orders.length,
       );
     } catch (error) {
       console.error(error);
@@ -180,7 +188,9 @@ const DesignProcessingPage = () => {
       setProcessedDesigns(processed);
       setTotalPagesProcessed(result?.page?.totalPages ?? 1);
       setTotalElementsProcessed(
-        params.has("status") ? result?.page?.totalElements ?? 0 : processed.length,
+        params.has("status")
+          ? (result?.page?.totalElements ?? 0)
+          : processed.length,
       );
     } catch (error) {
       console.error(error);
@@ -230,7 +240,20 @@ const DesignProcessingPage = () => {
       </div>
     );
   }
-
+  if (!canView) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-500 mb-2">
+            Không có quyền truy cập
+          </h2>
+          <p className="text-gray-600">
+            Bạn không có quyền xem trang này. Vui lòng liên hệ quản trị viên.
+          </p>
+        </div>
+      </div>
+    );
+  }
   return (
     <>
       <FilterSection

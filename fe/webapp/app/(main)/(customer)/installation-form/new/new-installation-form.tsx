@@ -23,6 +23,7 @@ import {
 } from "@/utils/validation";
 import { CallToast } from "@/components/ui/CallToast";
 import { authFetch } from "@/utils/authFetch";
+import { useProfile } from "@/hooks/useLogin";
 
 const validateCitizenId = (value: string): string | null => {
   if (!value || !value.trim()) {
@@ -42,7 +43,16 @@ const NewInstallationForm = () => {
   const [loading, setLoading] = useState(true);
   const [lastCode, setLastCode] = useState("");
   const [isFetchingCode, setIsFetchingCode] = useState(true);
-
+  const { profile, loading: profileLoading, hasRole } = useProfile();
+  const isITStaff = hasRole("it_staff");
+  const isCompanyLeader = hasRole("company_leadership");
+  const isPlanningTechnicalHead = hasRole("planning_technical_department_head");
+  const isOrderReceivingStaff = hasRole("order_receiving_staff");
+  const isSurveyStaff = hasRole("survey_staff");
+  const isConstructionHead = hasRole("construction_department_head");
+  const isConstructionStaff = hasRole("construction_department_staff");
+  const isFinanceStaff = hasRole("finance_department");
+  const canView = isITStaff || isOrderReceivingStaff;
   const getLastCode = async () => {
     try {
       setIsFetchingCode(true);
@@ -84,7 +94,8 @@ const NewInstallationForm = () => {
     representative: [],
     citizenIdentificationNumber: "",
     citizenIdentificationProvideDate: "",
-    citizenIdentificationProvideLocation: "Cục Cảnh sát quản lý hành chính về trật tự xã hội",
+    citizenIdentificationProvideLocation:
+      "Cục Cảnh sát quản lý hành chính về trật tự xã hội",
     phoneNumber: "",
     taxCode: "",
     address: "",
@@ -182,7 +193,10 @@ const NewInstallationForm = () => {
         { value: formData.address, fieldName: "Địa chỉ" },
         { value: formData.formCode, fieldName: "Mã biểu mẫu" },
         { value: formData.formNumber, fieldName: "Số hồ sơ" },
-        { value: formData.bankAccountNumber, fieldName: "Số tài khoản ngân hàng" },
+        {
+          value: formData.bankAccountNumber,
+          fieldName: "Số tài khoản ngân hàng",
+        },
         {
           value: formData.bankAccountProviderLocation,
           fieldName: "Ngân hàng và chi nhánh",
@@ -201,7 +215,10 @@ const NewInstallationForm = () => {
       const formCodeError = validateCodeField(formData.formCode, "Mã biểu mẫu");
       if (formCodeError) return showError(formCodeError);
 
-      const formNumberError = validateCodeField(formData.formNumber, "Số hồ sơ");
+      const formNumberError = validateCodeField(
+        formData.formNumber,
+        "Số hồ sơ",
+      );
       if (formNumberError) return showError(formNumberError);
 
       const taxCodeError = validateTaxCode(formData.taxCode, "Mã số thuế");
@@ -346,7 +363,20 @@ const NewInstallationForm = () => {
       </div>
     );
   }
-
+  if (!canView) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-500 mb-2">
+            Không có quyền truy cập
+          </h2>
+          <p className="text-gray-600">
+            Bạn không có quyền xem trang này. Vui lòng liên hệ quản trị viên.
+          </p>
+        </div>
+      </div>
+    );
+  }
   return (
     <>
       <GenericSearchFilter

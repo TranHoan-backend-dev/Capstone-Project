@@ -12,6 +12,7 @@ import { CustomBreadcrumb } from "@/components/ui/custom/CustomBreadcrumb";
 import { siteConfig } from "@/config/site";
 import { columnsReviewedBudget } from "@/config/table-columns/report/report-column";
 import { formatDate4 } from "@/utils/format";
+import { useProfile } from "@/hooks/useLogin";
 
 // Format date: 2024-01-10T10:00 -> 10/01/2024
 const formatDate = (dateString: string) => {
@@ -88,9 +89,7 @@ const formatDataList = (rawData: any[]) => {
   return rawData.map((item, index) => ({
     ...item,
     stt: index + 1,
-    registrationAt: item.registrationAt
-      ? formatDate4(item.registrationAt)
-      : "",
+    registrationAt: item.registrationAt ? formatDate4(item.registrationAt) : "",
     scheduleSurveyAt: item.scheduleSurveyAt
       ? formatDate(item.scheduleSurveyAt)
       : "",
@@ -114,7 +113,16 @@ const ReviewedBudgetListContent = () => {
     rejected: [],
   });
   const [loading, setLoading] = useState(true);
-
+  const { profile, loading: profileLoading, hasRole } = useProfile();
+  const isITStaff = hasRole("it_staff");
+  const isCompanyLeader = hasRole("company_leadership");
+  const isPlanningTechnicalHead = hasRole("planning_technical_department_head");
+  const isOrderReceivingStaff = hasRole("order_receiving_staff");
+  const isSurveyStaff = hasRole("survey_staff");
+  const isConstructionHead = hasRole("construction_department_head");
+  const isConstructionStaff = hasRole("construction_department_staff");
+  const isFinanceStaff = hasRole("finance_department");
+  const canView = isITStaff || isCompanyLeader;
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -140,7 +148,6 @@ const ReviewedBudgetListContent = () => {
     };
   }, [rawData]);
 
-
   const breadcrumbs = [
     { label: "Trang chủ", href: "/home" },
     { label: "Khảo sát thiết kế", href: "#" },
@@ -155,7 +162,20 @@ const ReviewedBudgetListContent = () => {
       </div>
     );
   }
-
+  if (!canView) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-500 mb-2">
+            Không có quyền truy cập
+          </h2>
+          <p className="text-gray-600">
+            Bạn không có quyền xem trang này. Vui lòng liên hệ quản trị viên.
+          </p>
+        </div>
+      </div>
+    );
+  }
   return (
     <>
       <CustomBreadcrumb items={breadcrumbs} />

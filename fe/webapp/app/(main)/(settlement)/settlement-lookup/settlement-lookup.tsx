@@ -58,7 +58,7 @@ const SettlementLookupPage = () => {
   };
 
   if (!profile) {
-    return <p>Không thể tải danh sách quyết toán</p>;
+    return <p>Không thể tải thông tin người dùng</p>;
   }
   if (!canView) {
     return (
