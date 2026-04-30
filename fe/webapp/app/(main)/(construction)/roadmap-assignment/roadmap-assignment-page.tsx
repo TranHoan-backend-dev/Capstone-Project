@@ -58,7 +58,6 @@ const columns = [
 ];
 
 const RoadmapAssignmentPage = () => {
-  const { profile, loading: profileLoading } = useProfile();
   const { networkOptions } = useNetwork();
   const { lateralOptions } = useLateral();
 
@@ -96,10 +95,12 @@ const RoadmapAssignmentPage = () => {
   const [selectedStaffName, setSelectedStaffName] = useState("");
   const [submitLoading, setSubmitLoading] = useState(false);
   const [staffLookupOpen, setStaffLookupOpen] = useState(false);
-
+  const { profile, loading: profileLoading, hasRole } = useProfile();
   const role = profile?.role?.toLowerCase();
   const isBusinessDepartmentHead = role === "business_department_head";
+  const isITStaff = hasRole("it_staff");
 
+  const canView = isITStaff || isBusinessDepartmentHead;
   const fetchRoadmaps = async () => {
     try {
       setLoading(true);
@@ -328,7 +329,6 @@ const RoadmapAssignmentPage = () => {
     );
   }
   
-    const canView = isBusinessDepartmentHead;
     if (!canView) {
       return (
         <div className="flex justify-center items-center min-h-screen">
