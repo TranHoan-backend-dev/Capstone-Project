@@ -8,6 +8,7 @@ import { CheckApprovalIcon } from "@/config/chip-and-icon";
 import { Card, CardBody } from "@heroui/react";
 import { RoadFormProps } from "@/types";
 import { authFetch } from "@/utils/authFetch";
+import { validateGeneralText, validateRequired } from "@/utils/validation";
 
 export const RoadForm = ({
   initialData,
@@ -25,6 +26,11 @@ export const RoadForm = ({
 
   const handleSubmit = async () => {
     if (submitLoading) return;
+    const nameError = validateRequired(name, "Tên đường phố") || validateGeneralText(name, "Tên đường phố");
+    if (nameError) {
+      CallToast({ title: "Lỗi", message: nameError, color: "danger" });
+      return;
+    }
     try {
       setSubmitLoading(true);
       const url = isEdit

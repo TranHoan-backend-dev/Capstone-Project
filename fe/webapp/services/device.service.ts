@@ -299,6 +299,20 @@ export const getAllTypes = (
     },
   });
 
+export const searchMeterTypes = (
+  accessToken: string,
+  body: Record<string, string | number | undefined>,
+  page: number,
+  size: number,
+  sort: string,
+) =>
+  axios.post(`${API_GATEWAY_URL}/d/meter-types/search`, body, {
+    params: { page, size, sort },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
 export const getMeterTypeById = (accessToken: string, id: string) =>
   axios.get(`${API_GATEWAY_URL}/d/meter-types/${id}`, {
     headers: {
@@ -311,16 +325,17 @@ export const createType = (
   name: string,
   origin: string,
   meterModel: string,
-  size: string,
+  size: number | null,
   maxIndex: string,
-  diameter: string,
+  diameter: number | null,
   qn: string,
   qt: string,
   qmin: string,
+  indexLength: number | null,
 ) => {
   return axios.post(
     `${API_GATEWAY_URL}/d/meter-types`,
-    { name, origin, meterModel, size, maxIndex, diameter, qn, qt, qmin },
+    { name, origin, meterModel, size, maxIndex, diameter, qn, qt, qmin, indexLength },
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -335,16 +350,17 @@ export const updateType = (
   name: string,
   origin: string,
   meterModel: string,
-  size: string,
+  size: number | null,
   maxIndex: string,
-  diameter: string,
+  diameter: number | null,
   qn: string,
   qt: string,
   qmin: string,
+  indexLength?: number | null,
 ) => {
   return axios.put(
     `${API_GATEWAY_URL}/d/meter-types/${id}`,
-    { name, origin, meterModel, size, maxIndex, diameter, qn, qt, qmin },
+    { name, origin, meterModel, size, maxIndex, diameter, qn, qt, qmin, indexLength },
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -366,14 +382,14 @@ export const getAllWaterPrices = (
   page: number,
   size: number,
   sort: string,
-  keyword?: string | null,
+  applicationPeriod?: string | null,
 ) =>
   axios.get(`${API_GATEWAY_URL}/d/water-prices`, {
     params: {
       page,
       size,
       sort,
-      keyword,
+      applicationPeriod,
     },
     headers: {
       Authorization: `Bearer ${accessToken}`,

@@ -58,7 +58,6 @@ const columns = [
 ];
 
 const RoadmapAssignmentPage = () => {
-  const { profile, loading: profileLoading } = useProfile();
   const { networkOptions } = useNetwork();
   const { lateralOptions } = useLateral();
 
@@ -96,10 +95,12 @@ const RoadmapAssignmentPage = () => {
   const [selectedStaffName, setSelectedStaffName] = useState("");
   const [submitLoading, setSubmitLoading] = useState(false);
   const [staffLookupOpen, setStaffLookupOpen] = useState(false);
-
+  const { profile, loading: profileLoading, hasRole } = useProfile();
   const role = profile?.role?.toLowerCase();
   const isBusinessDepartmentHead = role === "business_department_head";
+  const isITStaff = hasRole("it_staff");
 
+  const canView = isITStaff || isBusinessDepartmentHead;
   const fetchRoadmaps = async () => {
     try {
       setLoading(true);
@@ -327,14 +328,21 @@ const RoadmapAssignmentPage = () => {
       </div>
     );
   }
-
-  // if (!isBusinessDepartmentHead || !ifITStaff) {
-  //   return (
-  //     <div className="text-center text-red-500 py-10">
-  //       Bạn không có quyền truy cập chức năng này.
-  //     </div>
-  //   );
-  // }
+  
+    if (!canView) {
+      return (
+        <div className="flex justify-center items-center min-h-screen">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-red-500 mb-2">
+              Không có quyền truy cập
+            </h2>
+            <p className="text-gray-600">
+              Bạn không có quyền xem trang này. Vui lòng liên hệ quản trị viên.
+            </p>
+          </div>
+        </div>
+      );
+    }
 
   return (
     <>

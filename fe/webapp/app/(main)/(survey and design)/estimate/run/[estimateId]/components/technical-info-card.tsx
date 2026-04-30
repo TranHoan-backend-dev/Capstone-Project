@@ -19,6 +19,7 @@ import { authFetch } from "@/utils/authFetch";
 import { CallToast } from "@/components/ui/CallToast";
 import { useIsPlanningTechnicalDepartmentHead } from "@/hooks/useHasRole";
 import { calculateTotalAmountRaw } from "@/utils/calculateTotalAmount";
+import { ImageLightbox } from "@/components/ui/ImageLightbox";
 
 interface TechnicalInfoCardProps {
   estimateData: EstimateResponse | null;
@@ -69,7 +70,7 @@ export const TechnicalInfoCard = ({
   const [note, setNote] = useState("");
   const [contractFee, setContractFee] = useState("");
   const [surveyFee, setSurveyFee] = useState("");
-  const [surveyEffort, setSurveyEffort] = useState("");
+  const [surveyEffort, setSurveyEffort] = useState("1");
   const [installationFee, setInstallationFee] = useState("");
   const [laborCoefficient, setLaborCoefficient] = useState("");
   const [generalCostCoefficient, setGeneralCostCoefficient] = useState("");
@@ -84,8 +85,18 @@ export const TechnicalInfoCard = ({
   const [designFee, setDesignFee] = useState("");
 
   const [designImageFile, setDesignImageFile] = useState<File | null>(null);
-  const [designImageUrl, setDesignImageUrl] = useState("");
+  const [designImageUrl, setDesignImageUrl] = useState(""); // tên file gốc từ backend
   const [isImageDeleted, setIsImageDeleted] = useState(false);
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+
+  // Tạo URL proxy để hiển thị ảnh từ backend
+  const getImageProxyUrl = (fileName: string) => {
+    if (!fileName) return "";
+    // Nếu đã là URL đầy đủ thì dùng luôn
+    if (fileName.startsWith("http")) return fileName;
+    const name = fileName.split("/").pop() || fileName;
+    return `/api/construction/estimates/image/${encodeURIComponent(name)}`;
+  };
 
   const [showWaterMeterModal, setShowWaterMeterModal] = useState(false);
 
@@ -120,6 +131,15 @@ export const TechnicalInfoCard = ({
     return null;
   };
 
+  const validateSerialNumber = (value: string) => {
+    if (!value || !value.trim()) return null; // handled by validateRequired
+    const specialCharRegex = /[^a-zA-Z0-9\-_]/;
+    if (specialCharRegex.test(value)) {
+      return "Số sê-ri đồng hồ không được chứa ký tự đặc biệt";
+    }
+    return null;
+  };
+
   const validateImage = () => {
     // Check if there's no image and image hasn't been deleted
     if (!designImageUrl && !designImageFile && !isImageDeleted) {
@@ -147,6 +167,10 @@ export const TechnicalInfoCard = ({
     );
     if (waterMeterSerialError)
       newErrors.waterMeterSerial = waterMeterSerialError;
+
+    const waterMeterSerialSpecialCharError = validateSerialNumber(waterMeterSerial);
+    if (waterMeterSerialSpecialCharError)
+      newErrors.waterMeterSerial = waterMeterSerialSpecialCharError;
 
     // Image validation
     const imageError = validateImage();
@@ -415,7 +439,7 @@ export const TechnicalInfoCard = ({
     // Validate before saving
     if (!validateForm()) {
       CallToast({
-        title: "Validation Error",
+        title: "Thất bại",
         message: "Vui lòng điền đầy đủ thông tin bắt buộc",
         color: "warning",
       });
@@ -425,7 +449,7 @@ export const TechnicalInfoCard = ({
     // Check if materials exist
     if (materials.length === 0) {
       CallToast({
-        title: "Validation Error",
+        title: "Thất bại",
         message: "Vui lòng thêm ít nhất một vật tư",
         color: "warning",
       });
@@ -589,9 +613,17 @@ export const TechnicalInfoCard = ({
 
       const getErrorMessageFromResponse = (body: any) => {
         const fieldErrors = body?.data ?? body?.error?.data;
-        if (fieldErrors && typeof fieldErrors === "object") {
-          const details = Object.values(fieldErrors)
-            .filter((v) => typeof v === "string" && v.trim() !== "")
+        if (fieldErrors && typeof fieldErrors === "object" && !Array.isArray(fieldErrors)) {
+          const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/;
+          const EXCLUDED_KEYS = new Set(["timestamp", "status", "path", "error"]);
+          const details = Object.entries(fieldErrors)
+            .filter(([k, v]) =>
+              !EXCLUDED_KEYS.has(k) &&
+              typeof v === "string" &&
+              v.trim() !== "" &&
+              !ISO_DATE_REGEX.test(v),
+            )
+            .map(([, v]) => v)
             .join("; ");
           if (details) return details;
         }
@@ -650,6 +682,10 @@ export const TechnicalInfoCard = ({
     );
     setShowWaterMeterModal(false);
     clearFieldError("waterMeterType");
+    // Re-validate serial nếu đã nhập
+    if (waterMeterSerial) {
+      clearFieldError("waterMeterSerial");
+    }
   };
 
   const handleSelectOverallMeter = (item: any) => {
@@ -700,6 +736,7 @@ export const TechnicalInfoCard = ({
   };
 
   return (
+    <>
     <GenericSearchFilter
       actions={
         <div className="pt-6 border-t border-divider">
@@ -758,17 +795,17 @@ export const TechnicalInfoCard = ({
                   </CustomButton>
                 </div>
 
-                {/* Preview ảnh */}
                 {(previewImageUrl || designImageUrl) && (
-                  <div>
+                  <div className="flex flex-col items-center">
                     <img
-                      src={previewImageUrl || designImageUrl}
+                      src={previewImageUrl || getImageProxyUrl(designImageUrl)}
                       alt="Preview ảnh cụm đồng hồ"
-                      className="max-w-full md:max-w-xs max-h-48 object-cover rounded-lg border shadow-sm"
+                      className="max-w-full max-h-48 object-contain rounded-lg border shadow-sm cursor-zoom-in hover:opacity-90 transition-opacity"
+                      onClick={() =>
+                        setLightboxSrc(previewImageUrl || getImageProxyUrl(designImageUrl))
+                      }
+                      title="Nhấn để phóng to"
                     />
-                    <p className="text-xs text-gray-500 mt-1">
-                      {previewImageUrl ? "Ảnh mới (chưa lưu)" : "Ảnh hiện tại"}
-                    </p>
                   </div>
                 )}
               </div>
@@ -979,13 +1016,22 @@ export const TechnicalInfoCard = ({
             isRequired
             label="Số sê-ri đồng hồ"
             value={waterMeterSerial}
-            onChange={(e) =>
+            onChange={(e) => {
+              const value = e.target.value;
+              // Chỉ cho phép chữ cái, số, dấu gạch ngang và gạch dưới
+              const sanitized = value.replace(/[^a-zA-Z0-9\-_]/g, "");
               handleFieldChange(
                 setWaterMeterSerial,
                 "waterMeterSerial",
-                e.target.value,
-              )
-            }
+                sanitized,
+              );
+            }}
+            onBlur={() => {
+              const err = validateSerialNumber(waterMeterSerial);
+              if (err) {
+                setErrors((prev) => ({ ...prev, waterMeterSerial: err }));
+              }
+            }}
             isInvalid={!!errors.waterMeterSerial}
             errorMessage={errors.waterMeterSerial}
             isDisabled={isReadOnly}
@@ -1010,6 +1056,7 @@ export const TechnicalInfoCard = ({
               name: item.name,
               origin: item.origin,
               meterModel: item.meterModel,
+              indexLength: item.indexLength,
             })}
             onSelect={handleSelectWaterMeter}
           />
@@ -1048,5 +1095,15 @@ export const TechnicalInfoCard = ({
         </div>
       </div>
     </GenericSearchFilter>
+
+    {/* Lightbox phóng to ảnh */}
+    {lightboxSrc && (
+      <ImageLightbox
+        src={lightboxSrc}
+        alt="Ảnh cụm đồng hồ"
+        onClose={() => setLightboxSrc(null)}
+      />
+    )}
+    </>
   );
 };

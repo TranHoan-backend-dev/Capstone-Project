@@ -78,6 +78,50 @@ export const validateName = (value: string, fieldName: string) => {
   return null;
 };
 
+// Address (chữ cái, số, dấu phẩy, dấu chấm, dấu gạch ngang, dấu gạch chéo)
+export const validateAddress = (value: string, fieldName: string = "Địa chỉ") => {
+  if (!value || !value.trim()) return null; // address thường không bắt buộc
+
+  const maxError = validateMaxLength(value, 255, fieldName);
+  if (maxError) return maxError;
+
+  const addressRegex = /^[a-zA-ZÀ-ỹ0-9\s,.\-/()]+$/;
+  if (!addressRegex.test(value.trim())) {
+    return `${fieldName} không được chứa ký tự đặc biệt`;
+  }
+
+  return null;
+};
+
+export const validateGeneralText = (value: string, fieldName: string) => {
+  if (!value || !value.trim()) return null;
+
+  const maxError = validateMaxLength(value, 255, fieldName);
+  if (maxError) return maxError;
+
+  const generalTextRegex = /^[a-zA-ZÀ-ỹ0-9\s,.\-/()']+$/;
+  if (!generalTextRegex.test(value.trim())) {
+    return `${fieldName} không được chứa ký tự đặc biệt`;
+  }
+
+  return null;
+};
+
+// Tax code (chỉ chữ số và chữ cái, tối đa 14 ký tự)
+export const validateTaxCode = (value: string, fieldName: string = "Mã số thuế") => {
+  if (!value || !value.trim()) return null; // không bắt buộc
+
+  if (value.trim().length > 14) {
+    return `${fieldName} không được vượt quá 14 ký tự`;
+  }
+
+  if (!/^[a-zA-Z0-9\-]+$/.test(value.trim())) {
+    return `${fieldName} chỉ được chứa chữ số, chữ cái và dấu gạch ngang`;
+  }
+
+  return null;
+};
+
 // Branch name (cho chi nhánh)
 export const validateBranchName = (value: string, fieldName: string) => {
   const requiredError = validateRequired(value, fieldName);
@@ -167,6 +211,44 @@ export const validateRequiredFields = (
   }
 
   return null;
+};
+
+// Code / FormCode / FormNumber / ContractId / SettlementId / ReceiptNumber
+// Chỉ cho phép chữ cái, chữ số, dấu gạch ngang và dấu gạch chéo
+export const validateCodeField = (value: string, fieldName: string) => {
+  if (!value || !value.trim()) {
+    return `${fieldName} không được để trống`;
+  }
+
+  const maxError = validateMaxLength(value, 50, fieldName);
+  if (maxError) return maxError;
+
+  const codeRegex = /^[a-zA-Z0-9\-/]+$/;
+  if (!codeRegex.test(value.trim())) {
+    return `${fieldName} không được chứa ký tự đặc biệt`;
+  }
+
+  return null;
+};
+
+// Bank text fields (Ngân hàng, Tên tài khoản) - chỉ chữ cái, không số, không ký tự đặc biệt
+export const validateBankTextField = (value: string, fieldName: string) => {
+  if (!value || !value.trim()) return null; // không bắt buộc
+
+  const maxError = validateMaxLength(value, 255, fieldName);
+  if (maxError) return maxError;
+
+  const bankTextRegex = /^[a-zA-ZÀ-ỹ\s]+$/;
+  if (!bankTextRegex.test(value.trim())) {
+    return `${fieldName} chỉ được chứa chữ cái, không được nhập số hoặc ký tự đặc biệt`;
+  }
+
+  return null;
+};
+
+// Lọc ký tự không hợp lệ cho trường text ngân hàng (chỉ giữ chữ cái và khoảng trắng)
+export const normalizeBankTextField = (value: string): string => {
+  return value.replace(/[^a-zA-ZÀ-ỹ\s]/g, "");
 };
 
 export const toAccountName = (name: string): string => {

@@ -8,6 +8,7 @@ import { EmployeeFilter, EmployeeItem } from "@/types";
 import { Modal, ModalContent } from "@heroui/react";
 import { EmployeeForm } from "./components/employee-form";
 import { EmployeeTable } from "./components/employee-table";
+import { useProfile } from "@/hooks/useLogin";
 
 const EmployeePage = () => {
   const [filter, setFilter] = useState<EmployeeFilter>({
@@ -36,7 +37,37 @@ const EmployeePage = () => {
     handleReload();
     handleCloseForm();
   };
+  const { profile, loading: profileLoading, hasRole } = useProfile();
+  const isITStaff = hasRole("it_staff");
 
+  const canView = isITStaff;
+  if (profileLoading) {
+    return (
+      <div className="flex items-center gap-2 text-sm text-default-500">
+        <Spinner size="sm" />
+        <span>Đang tải thông tin...</span>
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return <p>Không thể tải thông tin người dùng</p>;
+  }
+
+  if (!canView) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-500 mb-2">
+            Không có quyền truy cập
+          </h2>
+          <p className="text-gray-600">
+            Bạn không có quyền xem trang này. Vui lòng liên hệ quản trị viên.
+          </p>
+        </div>
+      </div>
+    );
+  }
   return (
     <>
       <FilterSection

@@ -9,6 +9,7 @@ import {
   Textarea,
   Divider,
   Tooltip,
+  Chip,
 } from "@heroui/react";
 import {
   PlusIcon,
@@ -28,6 +29,7 @@ import { RefreshIcon } from "@/components/ui/Icons";
 import CustomButton from "@/components/ui/custom/CustomButton";
 import CustomInput from "@/components/ui/custom/CustomInput";
 import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
+import { validateCodeField } from "@/utils/validation";
 
 interface ContractFormProps {
   onSuccess?: () => void;
@@ -44,6 +46,8 @@ interface InstallationForm {
   citizenIdentificationNumber?: string;
   overallWaterMeterId?: string;
   representatives?: Array<{ name: string; position: string | null }>;
+  isPaid?: boolean;
+  receiptNumber?: string;
 }
 
 export const ContractForm = ({ onSuccess }: ContractFormProps) => {
@@ -72,12 +76,7 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
         const json = await res.json();
         const lastCode: string = json.data;
         if (lastCode) {
-          const numericPart = lastCode.replace(/\D/g, "");
-          const prefix = lastCode.replace(/\d+$/, "");
-          const nextNumber = (parseInt(numericPart || "0") + 1)
-            .toString()
-            .padStart(numericPart.length || 1, "0");
-          setFormData((prev) => ({ ...prev, contractId: prefix + nextNumber }));
+          setFormData((prev) => ({ ...prev, contractId: lastCode }));
         }
       } catch (e) {
         console.error("Failed to fetch last contract code:", e);
@@ -87,6 +86,15 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
   }, []);
 
   const handleSelectForm = (selected: any) => {
+    if (selected.isPaid === false) {
+      CallToast({
+        title: "Không thể chọn",
+        message:
+          "Phiếu thu của đơn này chưa được thanh toán. Vui lòng chọn đơn đã thanh toán.",
+        color: "warning",
+      });
+      return;
+    }
     setSelectedForm(selected);
     setFormData((prev) => ({
       ...prev,
@@ -165,12 +173,26 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
 
     if (!formData.contractId?.trim()) {
       newErrors.contractId = "Vui lòng nhập mã hợp đồng";
+    } else {
+      const contractIdError = validateCodeField(
+        formData.contractId,
+        "Mã hợp đồng",
+      );
+      if (contractIdError) newErrors.contractId = contractIdError;
     }
+
     if (!formData.formCode?.trim()) {
       newErrors.formCode = "Vui lòng chọn mã đơn";
+    } else {
+      const formCodeError = validateCodeField(formData.formCode, "Mã đơn");
+      if (formCodeError) newErrors.formCode = formCodeError;
     }
+
     if (!formData.formNumber?.trim()) {
       newErrors.formNumber = "Vui lòng chọn số đơn";
+    } else {
+      const formNumberError = validateCodeField(formData.formNumber, "Số đơn");
+      if (formNumberError) newErrors.formNumber = formNumberError;
     }
 
     setErrors(newErrors);
@@ -489,19 +511,21 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
         isOpen={showFormModal}
         onClose={() => setShowFormModal(false)}
         title="Chọn đơn cấp nước"
-        api="/api/construction/installation-forms"
+        api="/api/construction/receipts"
         columns={[
           { key: "stt", label: "STT" },
-          { key: "formNumber", label: "Mã đơn" },
+          { key: "formNumber", label: "Số đơn" },
+          { key: "receiptNumber", label: "Số phiếu thu" },
           { key: "customerName", label: "Tên khách hàng" },
           { key: "address", label: "Địa chỉ" },
-          { key: "phoneNumber", label: "Số điện thoại" },
+          { key: "paidStatus", label: "Trạng thái" },
         ]}
         mapData={(item: any, index: number) => ({
           stt: index + 1,
           id: item.formCode,
           formNumber: item.formNumber,
           formCode: item.formCode,
+          receiptNumber: item.receiptNumber,
           customerId: item.customerId,
           customerName: item.customerName,
           address: item.address,
@@ -510,7 +534,16 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
           citizenIdentificationNumber: item.citizenIdentificationNumber,
           overallWaterMeterId: item.overallWaterMeterId,
           representatives: item.representatives,
+          isPaid: item.isPaid,
+
+          paidStatus: (
+            <Chip color={item.isPaid ? "success" : "danger"} variant="flat">
+              {item.isPaid ? "Đã thanh toán" : "Chưa thanh toán"}
+            </Chip>
+          ),
         })}
+        isRowDisabled={(item: any) => item.isPaid === false}
+        disabledRowTooltip="Phiếu thu chưa được thanh toán, không thể chọn"
         onSelect={handleSelectForm}
       />
     </>

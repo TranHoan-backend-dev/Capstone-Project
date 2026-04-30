@@ -14,15 +14,17 @@ export const FilterSection = ({
   onSearch,
   onAddNew,
 }: FilterSectionWaterPriceProps) => {
-  const [keyword, setKeyword] = useState(filter.usageTarget ?? "");
+  const [applicationPeriod, setApplicationPeriod] = useState(
+    filter.applicationPeriod ?? "",
+  );
 
   useEffect(() => {
-    setKeyword(filter.usageTarget ?? "");
-  }, [filter.usageTarget]);
+    setApplicationPeriod(filter.applicationPeriod ?? "");
+  }, [filter.applicationPeriod]);
 
   const handleSearch = () => {
     onSearch({
-      usageTarget: keyword.trim(),
+      applicationPeriod: applicationPeriod || undefined,
     });
   };
 
@@ -47,12 +49,12 @@ export const FilterSection = ({
     >
       <section className="space-y-4">
         <CustomInput
-          label="Từ khóa"
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") handleSearch();
-          }}
+          label="Kỳ áp dụng"
+          type="date"
+          value={applicationPeriod}
+          onChange={(e) => setApplicationPeriod(e.target.value)}
+          isInvalid={false}
+          validationBehavior="aria"
         />
       </section>
     </GenericSearchFilter>

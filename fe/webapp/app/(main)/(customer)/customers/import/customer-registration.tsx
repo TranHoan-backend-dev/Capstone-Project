@@ -19,8 +19,10 @@ import {
   validateDigitsOnly,
   validateMoneyInput,
   validatePhone,
+  validateTaxCode,
   validateText255,
 } from "@/utils/validation";
+import { useProfile } from "@/hooks/useLogin";
 
 const CustomerRegistration = ({
   initialData,
@@ -29,7 +31,16 @@ const CustomerRegistration = ({
   const { formData, updateField, resetForm } = useCustomerForm(initialData);
   const [submitLoading, setSubmitLoading] = useState(false);
   const isEdit = !!initialData?.customerId;
-
+  const { profile, loading: profileLoading, hasRole } = useProfile();
+  const isITStaff = hasRole("it_staff");
+  const isCompanyLeader = hasRole("company_leadership");
+  const isPlanningTechnicalHead = hasRole("planning_technical_department_head");
+  const isOrderReceivingStaff = hasRole("order_receiving_staff");
+  const isSurveyStaff = hasRole("survey_staff");
+  const isConstructionHead = hasRole("construction_department_head");
+  const isConstructionStaff = hasRole("construction_department_staff");
+  const isFinanceStaff = hasRole("finance_department");
+  const canView = isITStaff || isOrderReceivingStaff;
   const handleSubmit = async () => {
     try {
       setSubmitLoading(true);
@@ -46,16 +57,21 @@ const CustomerRegistration = ({
       const text255Fields: Array<{ value: string; name: string }> = [
         { value: formData.name, name: "Tên khách hàng" },
         { value: formData.address, name: "Địa chỉ" },
-        { value: formData.citizenIdentificationProvideAt, name: "Nơi cấp CCCD" },
+        {
+          value: formData.citizenIdentificationProvideAt,
+          name: "Nơi cấp CCCD",
+        },
         {
           value: formData.bankAccountProviderLocation,
           name: "Ngân hàng và chi nhánh",
         },
         { value: formData.bankAccountName, name: "Tên tài khoản" },
-        { value: formData.budgetRelationshipCode, name: "Mã số quan hệ ngân sách" },
+        {
+          value: formData.budgetRelationshipCode,
+          name: "Mã số quan hệ ngân sách",
+        },
         { value: formData.passportCode, name: "Mã hộ chiếu" },
         { value: formData.connectionPoint, name: "Điểm đấu nối" },
-        { value: formData.taxCode, name: "Mã số thuế" },
       ];
 
       for (const field of text255Fields) {
@@ -68,6 +84,16 @@ const CustomerRegistration = ({
           });
           return;
         }
+      }
+
+      const taxCodeError = validateTaxCode(formData.taxCode, "Mã số thuế");
+      if (taxCodeError) {
+        CallToast({
+          title: "Lỗi validation",
+          message: taxCodeError,
+          color: "warning",
+        });
+        return;
       }
 
       if (formData.phoneNumber) {
@@ -99,7 +125,10 @@ const CustomerRegistration = ({
       }
 
       const moneyFields: Array<{ value: string | number; name: string }> = [
-        { value: formData.protectEnvironmentFee, name: "Phí bảo vệ môi trường" },
+        {
+          value: formData.protectEnvironmentFee,
+          name: "Phí bảo vệ môi trường",
+        },
         { value: formData.fixRate, name: "Giá cố định" },
         { value: formData.installationFee, name: "Phí lắp đặt" },
         { value: formData.monthlyRent, name: "Tiền thuê hàng tháng" },
@@ -156,7 +185,7 @@ const CustomerRegistration = ({
 
       if (!response.ok) {
         let errorMessage = data.message || "Lưu thất bại";
-        
+
         try {
           let errorData = data;
           if (typeof data.message === "string" && data.message.includes("{")) {
@@ -167,7 +196,7 @@ const CustomerRegistration = ({
               errorData = parsed;
             }
           }
-          
+
           if (errorData?.details?.data) {
             const errors = errorData.details.data;
             const errorMsgs = Object.entries(errors).map(([key, value]) => {
@@ -180,12 +209,16 @@ const CustomerRegistration = ({
                 address: "Địa chỉ",
                 formCode: "Mã đơn",
                 formNumber: "Số đơn",
-                customerCode: "Mã khách hàng"
+                customerCode: "Mã khách hàng",
               };
               if (keyMap[key]) translatedKey = keyMap[key];
 
               let translatedValue = String(value);
-              if (translatedValue === "must not be blank" || translatedValue === "must not be null" || translatedValue === "must not be empty") {
+              if (
+                translatedValue === "must not be blank" ||
+                translatedValue === "must not be null" ||
+                translatedValue === "must not be empty"
+              ) {
                 translatedValue = "không được để trống";
               } else if (translatedValue.includes("size must be between")) {
                 translatedValue = "độ dài không hợp lệ";
@@ -226,6 +259,20 @@ const CustomerRegistration = ({
     }
   };
 
+  if (!canView) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-500 mb-2">
+            Không có quyền truy cập
+          </h2>
+          <p className="text-gray-600">
+            Bạn không có quyền xem trang này. Vui lòng liên hệ quản trị viên.
+          </p>
+        </div>
+      </div>
+    );
+  }
   return (
     <Card
       className="border-none rounded-xl bg-content1 overflow-hidden transition-all duration-300"

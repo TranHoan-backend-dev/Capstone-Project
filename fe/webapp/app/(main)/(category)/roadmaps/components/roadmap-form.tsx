@@ -11,6 +11,7 @@ import { useNetwork } from "@/hooks/useNetworks";
 import { useLateral } from "@/hooks/useLaterals";
 import { RoadmapFormProps } from "@/types";
 import { authFetch } from "@/utils/authFetch";
+import { validateGeneralText, validateRequired } from "@/utils/validation";
 
 export const RoadmapForm = ({
   initialData,
@@ -52,6 +53,11 @@ export const RoadmapForm = ({
 
   const handleSubmit = async () => {
     if (submitLoading) return;
+    const nameError = validateRequired(name, "Tên lộ trình ghi") || validateGeneralText(name, "Tên lộ trình ghi");
+    if (nameError) {
+      CallToast({ title: "Lỗi", message: nameError, color: "danger" });
+      return;
+    }
     try {
       setSubmitLoading(true);
       const url = isEdit

@@ -29,10 +29,39 @@ export async function POST(req: NextRequest) {
       confirmPassword,
     );
 
-    return NextResponse.json(
+    // Xóa tất cả token trong cookie sau khi đổi mật khẩu thành công
+    const res = NextResponse.json(
       { message: "Đổi mật khẩu thành công" },
       { status: 200 },
     );
+
+    const isProduction = process.env.NODE_ENV === "production";
+    const domain = isProduction ? process.env.NEXT_PUBLIC_DOMAIN : undefined;
+
+    const cookieOptions = {
+      maxAge: 0,
+      path: "/",
+      domain: domain,
+      secure: isProduction,
+      sameSite: "lax" as const,
+      httpOnly: true,
+    };
+
+    res.cookies.set("access_token", "", cookieOptions);
+    res.cookies.set("refresh_token", "", cookieOptions);
+
+    if (isProduction) {
+      res.cookies.set("__Secure-access_token", "", {
+        ...cookieOptions,
+        secure: true,
+      });
+      res.cookies.set("__Secure-refresh_token", "", {
+        ...cookieOptions,
+        secure: true,
+      });
+    }
+
+    return res;
   } catch (error: any) {
     if (error.response) {
       return NextResponse.json(

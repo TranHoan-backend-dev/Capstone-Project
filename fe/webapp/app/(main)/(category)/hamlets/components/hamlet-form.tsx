@@ -10,6 +10,7 @@ import { Card, CardBody } from "@heroui/react";
 import { useCommune } from "@/hooks/useCommunes";
 import { HamletFormProps } from "@/types";
 import { authFetch } from "@/utils/authFetch";
+import { validateGeneralText, validateRequired } from "@/utils/validation";
 
 const typeOptions = [
   { label: "Thôn", value: "HAMLET" },
@@ -47,12 +48,9 @@ export const HamletForm = ({
 
   const handleSubmit = async () => {
     if (submitLoading) return;
-    if (name.trim().length > 255) {
-      CallToast({
-        title: "Lỗi",
-        message: "Tên thôn/làng không được vượt quá 255 ký tự",
-        color: "danger",
-      });
+    const nameError = validateRequired(name, "Tên thôn/làng") || validateGeneralText(name, "Tên thôn/làng");
+    if (nameError) {
+      CallToast({ title: "Lỗi", message: nameError, color: "danger" });
       return;
     }
     try {

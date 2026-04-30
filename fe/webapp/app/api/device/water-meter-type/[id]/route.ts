@@ -43,7 +43,7 @@ export async function PUT(
     }
 
     const { id } = await params;
-    const { name, origin, meterModel, size, maxIndex, diameter, qn, qt, qmin } =
+    const { name, origin, meterModel, size, maxIndex, diameter, qn, qt, qmin, indexLength } =
       await req.json();
 
     const response = await updateType(
@@ -58,6 +58,7 @@ export async function PUT(
       qn,
       qt,
       qmin,
+      indexLength,
     );
 
     return NextResponse.json(response.data, { status: 200 });

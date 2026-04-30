@@ -8,6 +8,7 @@ import { WaterPriceFilter, WaterPriceItem } from "@/types";
 import { Modal, ModalContent } from "@heroui/react";
 import { WaterPriceForm } from "./components/water-price-form";
 import { WaterPriceTable } from "./components/water-price-table";
+import { useProfile } from "@/hooks/useLogin";
 
 const WaterPricePage = () => {
   const [filter, setFilter] = useState<WaterPriceFilter>({});
@@ -34,7 +35,37 @@ const WaterPricePage = () => {
     handleReload();
     handleCloseForm();
   };
+  const { profile, loading: profileLoading, hasRole } = useProfile();
+  const isITStaff = hasRole("it_staff");
 
+  const canView = isITStaff;
+  if (profileLoading) {
+    return (
+      <div className="flex items-center gap-2 text-sm text-default-500">
+        <Spinner size="sm" />
+        <span>Đang tải thông tin...</span>
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return <p>Không thể tải thông tin người dùng</p>;
+  }
+
+  if (!canView) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-500 mb-2">
+            Không có quyền truy cập
+          </h2>
+          <p className="text-gray-600">
+            Bạn không có quyền xem trang này. Vui lòng liên hệ quản trị viên.
+          </p>
+        </div>
+      </div>
+    );
+  }
   return (
     <>
       <FilterSection

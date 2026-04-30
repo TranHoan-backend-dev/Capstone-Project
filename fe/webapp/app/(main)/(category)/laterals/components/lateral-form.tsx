@@ -10,6 +10,7 @@ import { Card, CardBody } from "@heroui/react";
 import { useNetwork } from "@/hooks/useNetworks";
 import { LateralFormProps } from "@/types";
 import { authFetch } from "@/utils/authFetch";
+import { validateGeneralText, validateRequired } from "@/utils/validation";
 
 export const LateralForm = ({
   initialData,
@@ -41,7 +42,11 @@ export const LateralForm = ({
 
   const handleSubmit = async () => {
     if (submitLoading) return;
-
+    const nameError = validateRequired(name, "Tên nhánh tổng") || validateGeneralText(name, "Tên nhánh tổng");
+    if (nameError) {
+      CallToast({ title: "Lỗi", message: nameError, color: "danger" });
+      return;
+    }
     try {
       setSubmitLoading(true);
 

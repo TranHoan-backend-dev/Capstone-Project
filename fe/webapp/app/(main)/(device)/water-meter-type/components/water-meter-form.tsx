@@ -18,6 +18,7 @@ const fieldLabelMap: Record<string, string> = {
   qn: "Qn",
   qt: "Qt",
   qmin: "Qmin",
+  indexLength: "Số ký tự phần nguyên",
 };
 export const WaterMeterForm = ({
   initialData,
@@ -35,6 +36,7 @@ export const WaterMeterForm = ({
     qn: initialData?.qn || "",
     qt: initialData?.qt || "",
     qmin: initialData?.qmin || "",
+    indexLength: initialData?.indexLength || "",
   });
   const [submitLoading, setSubmitLoading] = useState(false);
 
@@ -49,6 +51,7 @@ export const WaterMeterForm = ({
       qn: initialData?.qn ?? "",
       qt: initialData?.qt ?? "",
       qmin: initialData?.qmin ?? "",
+      indexLength: initialData?.indexLength ?? "",
     });
   }, [initialData]);
 
@@ -90,12 +93,13 @@ export const WaterMeterForm = ({
         name: formData.name,
         origin: formData.origin,
         meterModel: formData.meterModel,
-        size: formData.size,
+        size: formData.size ? parseInt(formData.size, 10) : null,
         maxIndex: formData.maxIndex,
-        diameter: formData.diameter,
+        diameter: formData.diameter ? parseFloat(formData.diameter) : null,
         qn: formData.qn,
         qt: formData.qt,
         qmin: formData.qmin,
+        indexLength: formData.indexLength ? parseInt(formData.indexLength, 10) : null,
       };
 
       const response = await authFetch(url, {
@@ -155,6 +159,25 @@ export const WaterMeterForm = ({
               ? "Cập nhật Loại đồng hồ nước"
               : "Thêm mới Loại đồng hồ nước"}
           </h2>
+          <button
+            onClick={onClose}
+            className="text-default-400 hover:text-default-600 transition-colors"
+            aria-label="Đóng"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-5 h-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
         </div>
 
         <div className="px-6 py-5 space-y-5">
@@ -203,6 +226,11 @@ export const WaterMeterForm = ({
               label="Qmin"
               value={formData.qmin}
               onChange={(e) => handleChange("qmin", e.target.value)}
+            />
+            <CustomInput
+              label="Số ký tự phần nguyên"
+              value={formData.indexLength}
+              onChange={(e) => handleChange("indexLength", e.target.value)}
             />
           </div>
           <div className="flex justify-end gap-4">

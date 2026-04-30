@@ -86,6 +86,8 @@ export const FilterSection = ({
             }}
           />
           <LookupModal
+            dataKey="content"
+            searchKey="filter"
             isOpen={showGroupModal}
             onClose={() => setShowGroupModal(false)}
             title="Chọn nhóm vật tư"

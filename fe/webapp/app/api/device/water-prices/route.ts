@@ -19,14 +19,14 @@ export async function GET(req: NextRequest) {
     const page = Number(searchParams.get("page") ?? 0);
     const size = Number(searchParams.get("size") ?? 10);
     const sort = searchParams.get("sort") || ",desc";
-    const keyword = searchParams.get("keyword") || undefined;
+    const applicationPeriod = searchParams.get("applicationPeriod") || undefined;
 
     const response = await getAllWaterPrices(
       accessToken,
       page,
       size,
       sort,
-      keyword,
+      applicationPeriod,
     );
 
     return NextResponse.json(
