@@ -9,6 +9,7 @@ import {
   Button,
   Textarea,
   Divider,
+  Chip,
 } from "@heroui/react";
 import CustomInput from "@/components/ui/custom/CustomInput";
 import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
@@ -192,7 +193,7 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
       [field]: value,
     }));
   };
-  
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
@@ -206,7 +207,10 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
     if (!form.settlementId.trim()) {
       newErrors.settlementId = "Vui lòng nhập mã quyết toán";
     } else {
-      const settlementIdError = validateCodeField(form.settlementId, "Mã quyết toán");
+      const settlementIdError = validateCodeField(
+        form.settlementId,
+        "Mã quyết toán",
+      );
       if (settlementIdError) newErrors.settlementId = settlementIdError;
     }
 
@@ -274,7 +278,6 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
       let payload: any;
 
       if (isCreateMode) {
-
         payload = {
           settlementId: form.settlementId.trim(),
           formCode: form.formCode,
@@ -283,11 +286,10 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
           jobContent: form.jobContent,
           address: form.address,
           connectionFee: Number(form.connectionFee),
-          registrationAt: form.registrationAt, 
+          registrationAt: form.registrationAt,
           note: form.note,
         };
       } else {
-
         const mappedMaterials = materials.map((m) => ({
           materialCode: m.code,
           jobContent: m.description,
@@ -301,20 +303,47 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
           totalLaborPrice: String(m.laborTotal),
         }));
 
-        const materialCost = materials.reduce((sum, item) => sum + (item.materialTotal || 0), 0);
-        const laborCoefficient = (estimateData?.generalInformation?.laborCoefficient || 0) / 100;
-        const laborCost = materials.reduce((sum, item) => sum + (item.laborTotal || 0), 0) * (1 + laborCoefficient);
+        const materialCost = materials.reduce(
+          (sum, item) => sum + (item.materialTotal || 0),
+          0,
+        );
+        const laborCoefficient =
+          (estimateData?.generalInformation?.laborCoefficient || 0) / 100;
+        const laborCost =
+          materials.reduce((sum, item) => sum + (item.laborTotal || 0), 0) *
+          (1 + laborCoefficient);
         const directTotal = materialCost + laborCost;
-        const generalCost = directTotal * ((estimateData?.generalInformation?.generalCostCoefficient || 0) / 100);
-        const preTaxIncome = (directTotal + generalCost) * ((estimateData?.generalInformation?.precalculatedTaxCoefficient || 0) / 100);
-        const constructionCostBeforeTax = directTotal + generalCost + preTaxIncome;
-        const vat = constructionCostBeforeTax * ((estimateData?.generalInformation?.vatCoefficient || 0) / 100);
+        const generalCost =
+          directTotal *
+          ((estimateData?.generalInformation?.generalCostCoefficient || 0) /
+            100);
+        const preTaxIncome =
+          (directTotal + generalCost) *
+          ((estimateData?.generalInformation?.precalculatedTaxCoefficient ||
+            0) /
+            100);
+        const constructionCostBeforeTax =
+          directTotal + generalCost + preTaxIncome;
+        const vat =
+          constructionCostBeforeTax *
+          ((estimateData?.generalInformation?.vatCoefficient || 0) / 100);
         const constructionCostAfterTax = constructionCostBeforeTax + vat;
-        const designAndEstimate = (estimateData?.generalInformation?.designFee || 0) * (1 + (estimateData?.generalInformation?.designCoefficient || 0) / 100);
-        const surveyLaborCost = (estimateData?.generalInformation?.surveyEffort || 0) * (estimateData?.generalInformation?.surveyFee || 0);
-        const consultingTotal = designAndEstimate + surveyLaborCost + (estimateData?.generalInformation?.installationFee || 0);
+        const designAndEstimate =
+          (estimateData?.generalInformation?.designFee || 0) *
+          (1 +
+            (estimateData?.generalInformation?.designCoefficient || 0) / 100);
+        const surveyLaborCost =
+          (estimateData?.generalInformation?.surveyEffort || 0) *
+          (estimateData?.generalInformation?.surveyFee || 0);
+        const consultingTotal =
+          designAndEstimate +
+          surveyLaborCost +
+          (estimateData?.generalInformation?.installationFee || 0);
         const otherTotal = estimateData?.generalInformation?.contractFee || 0;
-        const totalAmount = Math.round((constructionCostAfterTax + consultingTotal + otherTotal) / 100) * 100;
+        const totalAmount =
+          Math.round(
+            (constructionCostAfterTax + consultingTotal + otherTotal) / 100,
+          ) * 100;
 
         payload = {
           settlementId: form.settlementId.trim(),
@@ -515,6 +544,7 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
               { key: "formNumber", label: "Số đơn" },
               { key: "customerName", label: "Tên khách hàng" },
               { key: "address", label: "Địa chỉ" },
+              { key: "contractStatus", label: "Hợp đồng" },
             ]}
             mapData={(item, index, page) => ({
               stt: (page - 1) * 10 + index + 1,
@@ -523,7 +553,24 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
               customerName: item.customerName,
               address: item.address,
               jobContent: item.jobContent,
+
+              contractStatus: (
+                <Chip
+                  color={
+                    item.status?.contract === "APPROVED" ? "success" : "warning"
+                  }
+                  variant="flat"
+                >
+                  {item.status?.contract === "APPROVED"
+                    ? "Đã duyệt"
+                    : "Chưa duyệt"}
+                </Chip>
+              ),
+
+              _contractApproved: item.status?.contract === "APPROVED",
             })}
+            isRowDisabled={(item: any) => !item._contractApproved}
+            disabledRowTooltip="Hợp đồng chưa được duyệt, không thể tạo quyết toán"
             onSelect={(item) => {
               handleChange("formCode", item.id);
               handleChange("formNumber", item.formNumber);

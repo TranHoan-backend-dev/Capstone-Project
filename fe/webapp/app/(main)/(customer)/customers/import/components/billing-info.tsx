@@ -8,6 +8,7 @@ import CustomDatePicker from "@/components/ui/custom/CustomDatePicker";
 import { TitleDarkColor } from "@/config/chip-and-icon";
 import { BillingInfoProps } from "@/types";
 import CustomSelect from "@/components/ui/custom/CustomSelect";
+import { normalizeBankTextField } from "@/utils/validation";
 
 export const BillingInfo = ({ formData, onUpdate }: BillingInfoProps) => {
   const normalizeBankAccountNumber = (value: string) =>
@@ -63,14 +64,14 @@ export const BillingInfo = ({ formData, onUpdate }: BillingInfoProps) => {
             label="Ngân hàng"
             value={formData.bankAccountProviderLocation}
             onValueChange={(value) =>
-              onUpdate("bankAccountProviderLocation", value)
+              onUpdate("bankAccountProviderLocation", normalizeBankTextField(value))
             }
           />
 
           <CustomInput
             label="Tên tài khoản"
             value={formData.bankAccountName}
-            onValueChange={(value) => onUpdate("bankAccountName", value)}
+            onValueChange={(value) => onUpdate("bankAccountName", normalizeBankTextField(value))}
           />
         </div>
       </div>

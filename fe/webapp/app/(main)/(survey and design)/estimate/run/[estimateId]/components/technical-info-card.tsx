@@ -112,6 +112,8 @@ export const TechnicalInfoCard = ({
   const [waterMeterType, setWaterMeterType] = useState("");
   const [waterMeterSerial, setWaterMeterSerial] = useState("");
   const [displayWaterMeter, setDisplayWaterMeter] = useState("");
+  /** Số chữ số chỉ số đồng hồ (indexLength) từ loại đồng hồ đã chọn */
+  const [waterMeterIndexLength, setWaterMeterIndexLength] = useState<number | null>(null);
 
   const [defaultParameters, setDefaultParameters] = useState<Parameter[]>([]);
   const [isLoadingDefaults, setIsLoadingDefaults] = useState(false);
@@ -127,6 +129,18 @@ export const TechnicalInfoCard = ({
   const validateRequired = (value: string, fieldName: string) => {
     if (!value || !value.trim()) {
       return `${fieldName} không được để trống`;
+    }
+    return null;
+  };
+
+  const validateSerialNumber = (value: string) => {
+    if (!value || !value.trim()) return null; // handled by validateRequired
+    const specialCharRegex = /[^a-zA-Z0-9\-_]/;
+    if (specialCharRegex.test(value)) {
+      return "Số sê-ri đồng hồ không được chứa ký tự đặc biệt";
+    }
+    if (waterMeterIndexLength !== null && value.trim().length !== waterMeterIndexLength) {
+      return `Số sê-ri đồng hồ phải có đúng ${waterMeterIndexLength} ký tự`;
     }
     return null;
   };
@@ -158,6 +172,10 @@ export const TechnicalInfoCard = ({
     );
     if (waterMeterSerialError)
       newErrors.waterMeterSerial = waterMeterSerialError;
+
+    const waterMeterSerialSpecialCharError = validateSerialNumber(waterMeterSerial);
+    if (waterMeterSerialSpecialCharError)
+      newErrors.waterMeterSerial = waterMeterSerialSpecialCharError;
 
     // Image validation
     const imageError = validateImage();
@@ -312,6 +330,11 @@ export const TechnicalInfoCard = ({
         setDisplayWaterMeter(
           `Tên: ${d.name} - Nguồn gốc: ${d.origin} - Loại: ${d.meterModel}`,
         );
+        if (d.indexLength !== undefined && d.indexLength !== null) {
+          setWaterMeterIndexLength(Number(d.indexLength));
+        } else {
+          setWaterMeterIndexLength(null);
+        }
       } catch (error) {
         console.error("Failed to fetch water meter type:", error);
       }
@@ -426,7 +449,7 @@ export const TechnicalInfoCard = ({
     // Validate before saving
     if (!validateForm()) {
       CallToast({
-        title: "Validation Error",
+        title: "Thất bại",
         message: "Vui lòng điền đầy đủ thông tin bắt buộc",
         color: "warning",
       });
@@ -436,7 +459,7 @@ export const TechnicalInfoCard = ({
     // Check if materials exist
     if (materials.length === 0) {
       CallToast({
-        title: "Validation Error",
+        title: "Thất bại",
         message: "Vui lòng thêm ít nhất một vật tư",
         color: "warning",
       });
@@ -667,8 +690,17 @@ export const TechnicalInfoCard = ({
     setDisplayWaterMeter(
       `Tên: ${item.name} - Nguồn gốc: ${item.origin} - Loại: ${item.meterModel}`,
     );
+    if (item.indexLength !== undefined && item.indexLength !== null) {
+      setWaterMeterIndexLength(Number(item.indexLength));
+    } else {
+      setWaterMeterIndexLength(null);
+    }
     setShowWaterMeterModal(false);
     clearFieldError("waterMeterType");
+    // Re-validate serial nếu đã nhập
+    if (waterMeterSerial) {
+      clearFieldError("waterMeterSerial");
+    }
   };
 
   const handleSelectOverallMeter = (item: any) => {
@@ -999,13 +1031,27 @@ export const TechnicalInfoCard = ({
             isRequired
             label="Số sê-ri đồng hồ"
             value={waterMeterSerial}
-            onChange={(e) =>
+            description={
+              waterMeterIndexLength !== null
+                ? `Yêu cầu đúng ${waterMeterIndexLength} ký tự (hiện tại: ${waterMeterSerial.length})`
+                : undefined
+            }
+            onChange={(e) => {
+              const value = e.target.value;
+              // Chỉ cho phép chữ cái, số, dấu gạch ngang và gạch dưới
+              const sanitized = value.replace(/[^a-zA-Z0-9\-_]/g, "");
               handleFieldChange(
                 setWaterMeterSerial,
                 "waterMeterSerial",
-                e.target.value,
-              )
-            }
+                sanitized,
+              );
+            }}
+            onBlur={() => {
+              const err = validateSerialNumber(waterMeterSerial);
+              if (err) {
+                setErrors((prev) => ({ ...prev, waterMeterSerial: err }));
+              }
+            }}
             isInvalid={!!errors.waterMeterSerial}
             errorMessage={errors.waterMeterSerial}
             isDisabled={isReadOnly}
@@ -1030,6 +1076,7 @@ export const TechnicalInfoCard = ({
               name: item.name,
               origin: item.origin,
               meterModel: item.meterModel,
+              indexLength: item.indexLength,
             })}
             onSelect={handleSelectWaterMeter}
           />

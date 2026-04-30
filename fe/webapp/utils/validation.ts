@@ -231,6 +231,26 @@ export const validateCodeField = (value: string, fieldName: string) => {
   return null;
 };
 
+// Bank text fields (Ngân hàng, Tên tài khoản) - chỉ chữ cái, không số, không ký tự đặc biệt
+export const validateBankTextField = (value: string, fieldName: string) => {
+  if (!value || !value.trim()) return null; // không bắt buộc
+
+  const maxError = validateMaxLength(value, 255, fieldName);
+  if (maxError) return maxError;
+
+  const bankTextRegex = /^[a-zA-ZÀ-ỹ\s]+$/;
+  if (!bankTextRegex.test(value.trim())) {
+    return `${fieldName} chỉ được chứa chữ cái, không được nhập số hoặc ký tự đặc biệt`;
+  }
+
+  return null;
+};
+
+// Lọc ký tự không hợp lệ cho trường text ngân hàng (chỉ giữ chữ cái và khoảng trắng)
+export const normalizeBankTextField = (value: string): string => {
+  return value.replace(/[^a-zA-ZÀ-ỹ\s]/g, "");
+};
+
 export const toAccountName = (name: string): string => {
   return name
     .normalize("NFD")

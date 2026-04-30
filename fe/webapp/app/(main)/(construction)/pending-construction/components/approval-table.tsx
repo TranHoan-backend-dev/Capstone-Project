@@ -303,7 +303,7 @@ export const ApprovedTable = ({
               </Button>
             </Tooltip>
 
-            <Tooltip content="Từ chối" closeDelay={0}>
+            {/* <Tooltip content="Từ chối" closeDelay={0}>
               <Button
                 isIconOnly
                 variant="light"
@@ -315,7 +315,7 @@ export const ApprovedTable = ({
               >
                 <RejectIcon className="w-5 h-5" />
               </Button>
-            </Tooltip>
+            </Tooltip> */}
           </div>
         );
 
