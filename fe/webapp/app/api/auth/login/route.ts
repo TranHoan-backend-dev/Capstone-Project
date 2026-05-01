@@ -6,6 +6,16 @@ import {
   MAX_AGE_REFRESH_TOKEN,
 } from "@/constants/auth.constants";
 
+const ERROR_TRANSLATIONS: Record<string, string> = {
+  "Invalid email or password": "Sai tên đăng nhập hoặc mật khẩu",
+  "Bad credentials": "Sai tên đăng nhập hoặc mật khẩu",
+};
+
+const translateError = (message?: string, fallback?: string): string => {
+  if (!message) return fallback ?? "Có lỗi xảy ra";
+  return ERROR_TRANSLATIONS[message] ?? message;
+};
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -43,14 +53,16 @@ export async function POST(req: NextRequest) {
         const status = backendError.response?.status;
         const responseData = backendError.response?.data;
 
-        console.log("Backend response:", responseData);
+        console.log("[Login] Backend response status:", status);
+        console.log("[Login] Backend response data:", JSON.stringify(responseData, null, 2));
 
         if (status === 403) {
           return NextResponse.json(
             {
-              message:
-                responseData?.message ||
+              message: translateError(
+                responseData?.message,
                 "Tài khoản đã bị khóa hoặc vô hiệu hóa",
+              ),
             },
             { status: 403 },
           );
@@ -59,25 +71,39 @@ export async function POST(req: NextRequest) {
         if (status === 400) {
           return NextResponse.json(
             {
-              message:
-                responseData?.message || "Thông tin tài khoản không hợp lệ",
+              message: translateError(
+                responseData?.message,
+                "Sai tên đăng nhập hoặc mật khẩu",
+              ),
             },
             { status: 400 },
           );
         }
 
         if (status === 401) {
-          // Trả về message chi tiết từ backend
           return NextResponse.json(
             {
-              message:
-                responseData?.message || "Sai tên đăng nhập hoặc mật khẩu",
+              message: translateError(
+                responseData?.message,
+                "Sai tên đăng nhập hoặc mật khẩu",
+              ),
               needVerification: responseData?.needVerification || false,
               sessionId: responseData?.sessionId || null,
             },
             { status: 401 },
           );
         }
+
+        // Fallback cho các status khác (bao gồm 500 từ BE)
+        return NextResponse.json(
+          {
+            message: translateError(
+              responseData?.message,
+              "Sai tên đăng nhập hoặc mật khẩu",
+            ),
+          },
+          { status: status || 400 },
+        );
       }
 
       throw backendError;
@@ -128,18 +154,10 @@ export async function POST(req: NextRequest) {
     let status = 401;
 
     if (axios.isAxiosError(error)) {
-      if (error.response?.status === 401) {
-        message =
-          error.response?.data?.message || "Sai tên đăng nhập hoặc mật khẩu";
-      } else if (error.response?.status === 500) {
-        message = "Lỗi hệ thống, vui lòng thử lại sau";
-        status = 500;
-      } else {
-        message =
-          error.response?.data?.message ||
-          "Không thể kết nối hệ thống xác thực";
-        status = error.response?.status || 500;
-      }
+      const beMessage = error.response?.data?.message;
+      console.log("[Login] Outer catch - status:", error.response?.status, "message:", beMessage);
+      message = translateError(beMessage, "Sai tên đăng nhập hoặc mật khẩu");
+      status = error.response?.status === 403 ? 403 : 400;
     }
 
     return NextResponse.json({ message }, { status });

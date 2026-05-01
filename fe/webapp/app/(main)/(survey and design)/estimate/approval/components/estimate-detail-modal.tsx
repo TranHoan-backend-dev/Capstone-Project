@@ -1,10 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Spinner } from "@heroui/react";
 
 import { ModalHeader } from "@/components/popup-status/modal-header";
 import { DocumentPaper } from "@/components/popup-settlement/document-paper";
+import { ImageLightbox } from "@/components/ui/ImageLightbox";
 
 interface EstimateDetailModalProps {
   isOpen: boolean;
@@ -19,6 +20,8 @@ export const EstimateDetailModal = ({
   data,
   loading = false,
 }: EstimateDetailModalProps) => {
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+
   if (!isOpen) return null;
 
   const generalInformation = data?.generalInformation ?? {};
@@ -284,6 +287,30 @@ export const EstimateDetailModal = ({
                       </div>
                     ) : null}
 
+                    {generalInformation?.designImageUrl ? (
+                      <div className="mt-4 flex flex-col items-center">
+                        <div className="font-semibold mb-2">Ảnh bản thiết kế:</div>
+                        <img
+                          src={(() => {
+                            const url = generalInformation.designImageUrl as string;
+                            if (url.startsWith("http")) return url;
+                            const name = url.split("/").pop() || url;
+                            return `/api/construction/estimates/image/${encodeURIComponent(name)}`;
+                          })()}
+                          alt="Ảnh bản thiết kế"
+                          className="max-w-full max-h-64 object-contain rounded-lg border shadow-sm cursor-zoom-in hover:opacity-90 transition-opacity"
+                          onClick={() => {
+                            const url = generalInformation.designImageUrl as string;
+                            const src = url.startsWith("http")
+                              ? url
+                              : `/api/construction/estimates/image/${encodeURIComponent(url.split("/").pop() || url)}`;
+                            setLightboxSrc(src);
+                          }}
+                          title=""
+                        />
+                      </div>
+                    ) : null}
+
                     <div className="mt-8 grid grid-cols-3 gap-4 text-center text-xs">
                       <div>
                         <div className="font-semibold mb-1">
@@ -339,6 +366,15 @@ export const EstimateDetailModal = ({
           </div>
         </div>
       </div>
+
+      {/* Lightbox phóng to ảnh */}
+      {lightboxSrc && (
+        <ImageLightbox
+          src={lightboxSrc}
+          alt="Ảnh bản thiết kế"
+          onClose={() => setLightboxSrc(null)}
+        />
+      )}
     </>
   );
 };

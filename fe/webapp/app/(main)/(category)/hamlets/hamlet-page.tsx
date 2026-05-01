@@ -16,7 +16,6 @@ const HamletPage = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
   const [editingItem, setEditingItem] = useState<HamletItem | null>(null);
-  const { profile, loading } = useProfile();
 
   const handleReload = () => setReloadKey((prev) => prev + 1);
   const handleAddNew = () => {
@@ -39,17 +38,34 @@ const HamletPage = () => {
     handleCloseForm();
   };
 
-  if (loading) {
+  const { profile, loading: profileLoading, hasRole } = useProfile();
+  const isITStaff = hasRole("it_staff");
+
+  const canView = isITStaff;
+  if (profileLoading) {
     return (
-      <div className="flex justify-center items-center min-h-[300px]">
-        <Spinner size="lg" />
+      <div className="flex items-center gap-2 text-sm text-default-500">
+        <Spinner size="sm" />
+        <span>Đang tải thông tin...</span>
       </div>
     );
   }
+
   if (!profile) {
+    return <p>Không thể tải thông tin người dùng</p>;
+  }
+
+  if (!canView) {
     return (
-      <div className="text-center py-10 text-red-500">
-        Không lấy được thông tin người dùng
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-500 mb-2">
+            Không có quyền truy cập
+          </h2>
+          <p className="text-gray-600">
+            Bạn không có quyền xem trang này. Vui lòng liên hệ quản trị viên.
+          </p>
+        </div>
       </div>
     );
   }

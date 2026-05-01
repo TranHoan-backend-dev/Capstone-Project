@@ -12,6 +12,7 @@ import {
   validateMaxLength,
   validatePhone,
   validateRequired,
+  validateGeneralText,
 } from "@/utils/validation";
 
 export const DepartmentForm = ({
@@ -37,7 +38,7 @@ export const DepartmentForm = ({
 
     const nameError =
       validateRequired(name, "Tên phòng ban") ||
-      validateMaxLength(name, 255, "Tên phòng ban");
+      validateGeneralText(name, "Tên phòng ban");
 
     if (nameError) {
       CallToast({

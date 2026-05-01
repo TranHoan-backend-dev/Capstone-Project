@@ -9,7 +9,7 @@ import { Card, CardBody } from "@heroui/react";
 import { EmployeeFormProps, Role, ROLE_META } from "@/types";
 import { authFetch } from "@/utils/authFetch";
 import { RoleSelect } from "./role-select";
-import { validatePhone, validateText255 } from "@/utils/validation";
+import { validatePhone, validateText255, validateName } from "@/utils/validation";
 
 export const EmployeeForm = ({
   initialData,
@@ -63,7 +63,7 @@ export const EmployeeForm = ({
         return;
       }
 
-      const fullNameMaxError = validateText255(fullName, "Tên nhân viên");
+      const fullNameMaxError = validateName(fullName, "Tên nhân viên");
       if (fullNameMaxError) {
         CallToast({
           title: "Lỗi",

@@ -47,14 +47,10 @@ export const ParameterForm = ({
         return;
       }
 
-      const payload: any = {};
-
-      if (!isEdit || name !== initialData?.name) {
-        payload.name = name;
-      }
-      if (!isEdit || value !== String(initialData?.value)) {
-        payload.value = numericValue;
-      }
+      const payload = {
+        name: name,
+        value: numericValue,
+      };
 
       const response = await authFetch(url, {
         method,

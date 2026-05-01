@@ -71,7 +71,9 @@ export const MaterialPriceForm = ({
       setInitLoading(true);
       try {
         if (initialData?.groupName) {
-          authFetch(`/api/device/materials-group?filter=${initialData.groupName}`)
+          authFetch(
+            `/api/device/materials-group?filter=${initialData.groupName}`,
+          )
             .then((res) => res.json())
             .then((data) => {
               setSelectedGroupId(data?.data?.content?.[0]?.groupId || "");
@@ -195,6 +197,8 @@ export const MaterialPriceForm = ({
               }}
             />
             <LookupModal
+              dataKey="content"
+              searchKey="filter"
               isOpen={showGroupModal}
               onClose={() => setShowGroupModal(false)}
               title="Chọn nhóm vật tư"
@@ -233,6 +237,8 @@ export const MaterialPriceForm = ({
               onSearch={() => setShowUnitModal(true)}
             />
             <LookupModal
+              dataKey="content"
+              searchKey="filter"
               isOpen={showUnitModal}
               onClose={() => setShowUnitModal(false)}
               title="Chọn đơn vị"

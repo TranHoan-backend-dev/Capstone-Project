@@ -66,10 +66,10 @@ export async function PATCH(req: NextRequest) {
       message: "Cập nhật thành công",
       data: updateProfile,
     });
-  } catch (error) {
-    return NextResponse.json(
-      { message: "Không thể cập nhật thông tin người dùng" },
-      { status: 500 },
-    );
+  } catch (error: any) {
+    console.error("[PATCH /api/auth/me] Error:", error);
+    const message = error?.response?.data?.message || error?.message || "Không thể cập nhật thông tin người dùng";
+    const status = error?.response?.status || 500;
+    return NextResponse.json({ message }, { status });
   }
 }

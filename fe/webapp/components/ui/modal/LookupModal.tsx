@@ -18,6 +18,10 @@ interface LookupModalProps<T> {
   mapData: (item: any, index: number, page: number) => T;
   searchKey?: string;
   enableSearch?: boolean;
+  /** Trả về true nếu row bị disable (không cho chọn) */
+  isRowDisabled?: (item: T) => boolean;
+  /** Tooltip hiển thị khi hover vào row bị disable */
+  disabledRowTooltip?: string;
 }
 
 export function LookupModal<T extends { id: string }>({
@@ -31,6 +35,8 @@ export function LookupModal<T extends { id: string }>({
   mapData,
   searchKey = "name",
   enableSearch = true,
+  isRowDisabled,
+  disabledRowTooltip = "Không thể chọn mục này",
 }: LookupModalProps<T>) {
   const [data, setData] = useState<T[]>([]);
   const [page, setPage] = useState(1);
@@ -40,39 +46,56 @@ export function LookupModal<T extends { id: string }>({
 
   const pageSize = 10;
 
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-
-      const params = new URLSearchParams({
-        page: String(page - 1),
-        size: String(pageSize),
-      });
-
-      if (enableSearch && search) {
-        params.append(searchKey, search);
-      }
-      const res = await authFetch(`${api}?${params.toString()}`);
-      const json = await res.json();
-
-      const items = dataKey
-        ? (json?.data?.[dataKey] ?? [])
-        : (json?.data ?? []);
-      const pageInfo = json?.data?.page;
-
-      const mapped = items.map((item: any, index: number) =>
-        mapData(item, index, page),
-      );
-
-      setData(mapped);
-      setTotalPages(pageInfo?.totalPages ?? 1);
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (!isOpen) {
+      setPage(1);
+      setSearch("");
+      setData([]);
     }
-  };
+  }, [isOpen]);
 
   useEffect(() => {
-    if (isOpen) fetchData();
+    if (!isOpen) return;
+
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        const params = new URLSearchParams({
+          page: String(page - 1),
+          size: String(pageSize),
+        });
+
+        if (enableSearch && search) {
+          params.append(searchKey, search);
+        }
+
+        const res = await authFetch(`${api}?${params.toString()}`);
+        const json = await res.json();
+
+        const items: any[] = dataKey
+          ? (json?.data?.[dataKey] ?? [])
+          : (json?.data ?? []);
+
+        const pageInfo = json?.data?.page ?? json?.data;
+
+        const mapped = items.map((item: any, index: number) =>
+          mapData(item, index, page),
+        );
+
+        setData(mapped);
+
+        const computedTotalPages =
+          pageInfo?.totalPages != null
+            ? pageInfo.totalPages
+            : Math.ceil((pageInfo?.totalElements ?? 0) / pageSize);
+        setTotalPages(computedTotalPages || 1);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, [page, search, isOpen]);
 
   return (
@@ -103,10 +126,16 @@ export function LookupModal<T extends { id: string }>({
             summary: `${data.length}`,
           }}
           renderCellAction={(item, columnKey) => {
-            return (
+            const disabled = isRowDisabled ? isRowDisabled(item) : false;
+            const cell = (
               <span
-                className="cursor-pointer text-black-600"
+                className={
+                  disabled
+                    ? "cursor-not-allowed text-gray-400 select-none"
+                    : "cursor-pointer text-black-600"
+                }
                 onClick={() => {
+                  if (disabled) return;
                   onSelect(item);
                   onClose();
                 }}
@@ -114,6 +143,16 @@ export function LookupModal<T extends { id: string }>({
                 {item[columnKey as keyof T] as React.ReactNode}
               </span>
             );
+
+            if (disabled) {
+              return (
+                <span title={disabledRowTooltip} className="block">
+                  {cell}
+                </span>
+              );
+            }
+
+            return cell;
           }}
         />
       </ModalContent>

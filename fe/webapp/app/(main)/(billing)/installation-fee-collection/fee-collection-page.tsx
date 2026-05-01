@@ -14,16 +14,22 @@ import { useSearchParams } from "next/navigation";
 import { useProfile } from "@/hooks/useLogin";
 
 const FeeCollectionPage = () => {
-  const { profile } = useProfile();
-  const { isITStaff, loading: roleLoading } = useIsITStaff();
-  const loading = roleLoading;
   const [filter, setFilter] = useState<FeeCollectionFilter>({});
   const [showAddForm, setShowAddForm] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
   const searchParams = useSearchParams();
   const formCodeParam = searchParams.get("formCode") || "";
   const formNumberParam = searchParams.get("formNumber") || "";
-
+  const { profile, loading: profileLoading, hasRole } = useProfile();
+  const isITStaff = hasRole("it_staff");
+  const isCompanyLeader = hasRole("company_leadership");
+  const isPlanningTechnicalHead = hasRole("planning_technical_department_head");
+  const isOrderReceivingStaff = hasRole("order_receiving_staff");
+  const isSurveyStaff = hasRole("survey_staff");
+  const isConstructionHead = hasRole("construction_department_head");
+  const isConstructionStaff = hasRole("construction_department_staff");
+  const isFinanceStaff = hasRole("finance_department");
+  const canView = isITStaff || isFinanceStaff || isOrderReceivingStaff;
   const [editingItem, setEditingItem] = useState<FeeCollectionItem | null>(
     null,
   );
@@ -66,7 +72,7 @@ const FeeCollectionPage = () => {
     setFilter(searchFilters);
   };
 
-  if (loading) {
+  if (profileLoading) {
     return (
       <div className="flex items-center gap-2 text-sm text-default-500">
         <Spinner size="sm" />
@@ -76,9 +82,22 @@ const FeeCollectionPage = () => {
   }
 
   if (!profile) {
-    return <p>Không thể tải danh sách công việc</p>;
+    return <p>Không thể tải thông tin người dùng</p>;
   }
-
+  if (!canView) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-500 mb-2">
+            Không có quyền truy cập
+          </h2>
+          <p className="text-gray-600">
+            Bạn không có quyền xem trang này. Vui lòng liên hệ quản trị viên.
+          </p>
+        </div>
+      </div>
+    );
+  }
   return (
     <>
       <FilterSection

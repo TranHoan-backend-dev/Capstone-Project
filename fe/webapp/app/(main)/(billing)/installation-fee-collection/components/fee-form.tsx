@@ -12,6 +12,7 @@ import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
 import { LookupModal } from "@/components/ui/modal/LookupModal";
 import { numberToVietnamese } from "@/utils/numberToVietnamese";
 import { useProfile } from "@/hooks/useLogin";
+import { validateCodeField } from "@/utils/validation";
 
 export const FeeForm = ({
   initialData,
@@ -64,12 +65,7 @@ export const FeeForm = ({
         const json = await res.json();
         const lastCode: string = json.data;
         if (lastCode) {
-          const numericPart = lastCode.replace(/\D/g, "");
-          const prefix = lastCode.replace(/\d+$/, "");
-          const nextNumber = (parseInt(numericPart || "0") + 1)
-            .toString()
-            .padStart(numericPart.length || 1, "0");
-          setReceiptNumber(prefix + nextNumber);
+          setReceiptNumber(lastCode);
         }
       } catch {
         // không bắt buộc, user vẫn nhập tay được
@@ -204,6 +200,17 @@ export const FeeForm = ({
       });
       return;
     }
+
+    const receiptNumberError = validateCodeField(receiptNumber, "Số phiếu thu");
+    if (receiptNumberError) {
+      CallToast({
+        title: "Lỗi",
+        message: receiptNumberError,
+        color: "danger",
+      });
+      return;
+    }
+    
 
     if (!paymentReason) {
       CallToast({

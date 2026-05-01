@@ -11,7 +11,7 @@ const ProfilePage = () => {
    const { profile } = useProfile();
 
   if (!profile) {
-    return <p>Không thể tải hồ sơ người dùng</p>;
+    return <p>Không thể tải thông tin người dùng</p>;
   }
 
   return (
