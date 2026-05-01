@@ -213,7 +213,7 @@ public class AuthorizationController {
   @PreAuthorize("hasAnyAuthority('IT_STAFF', 'BUSINESS_DEPARTMENT_HEAD')")
   public ResponseEntity<?> getMeterInspectionStaffs() {
     log.info("Get meter inspection staffs");
-    return Utils.returnOkResponse("", usersUseCase.getListOfConstructionStaffs());
+    return Utils.returnOkResponse("", usersUseCase.getListOfMeterInspectionStaffs());
   }
 
   @GetMapping("/department")
