@@ -398,15 +398,6 @@ export const TotalCostDisplay = ({
                 {formatCurrency(costBreakdown.roundedGrandTotal)}
               </td>
             </tr>
-
-            <tr>
-              <td
-                className="px-4 py-2 pl-8 text-default-500 italic"
-                colSpan={3}
-              >
-                Kinh phí đầu nối (có quyết toán riêng): 0
-              </td>
-            </tr>
           </tbody>
         </table>
       )}
