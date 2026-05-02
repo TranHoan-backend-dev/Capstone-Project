@@ -52,7 +52,7 @@ const LoginForm = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ...formData,
+          ...result.data,
           deviceId,
           deviceInfo: navigator.userAgent,
         }),
