@@ -66,7 +66,6 @@ public class UnitController {
   public ResponseEntity<?> createUnit(@RequestBody @Valid CreateUnitRequest request) {
     log.info("REST request to create unit: {}", request);
     var response = unitUseCase.createUnit(request);
-    log.info("New unit: {}", response);
     return Utils.returnCreatedResponse("Tạo đơn vị đo thành công");
   }
 

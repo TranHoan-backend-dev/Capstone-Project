@@ -116,7 +116,6 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
 
   @Override
   public AnalysisResponse extractDataFromTheMeterImage(@NonNull MultipartFile file) {
-    log.info("Sending image to AI: {} ({} bytes)", file.getOriginalFilename(), file.getSize());
     var response = aiService.sendWaterMeterImage(file);
 
     var serial = extractTheMeterSerial(response.results());
@@ -176,7 +175,7 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
       }
       var lastUsage = history.get().getLastUsage();
       var customerInfo = getCustomerInfo(customerId);
-      var response = UsageResponse.builder()
+      return UsageResponse.builder()
         .serial(serial)
         .customerId(customerId)
         .customerName(customerInfo.name())
@@ -185,8 +184,6 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
         .tax(null)
         .environmentPrice(null)
         .build();
-      log.info("[getTheLatestUsageHistoryBySerial] response: {}", response);
-      return response;
     }
     return null;
   }

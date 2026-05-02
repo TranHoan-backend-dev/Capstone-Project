@@ -8,6 +8,7 @@ import com.capstone.auth.application.dto.response.EmployeeResponse;
 import com.capstone.auth.application.usecase.ProfileUseCase;
 import com.capstone.auth.application.usecase.UsersUseCase;
 import com.capstone.common.annotation.AppLog;
+import com.capstone.common.exception.InternalServerException;
 import com.capstone.common.response.WrapperApiResponse;
 import com.capstone.common.utils.Utils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,11 +27,16 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.slf4j.Logger;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.MalformedURLException;
+import java.nio.file.Paths;
 import java.util.List;
 
 @AppLog
@@ -291,4 +297,19 @@ public class AuthorizationController {
     return Utils.returnOkResponse("Kiểm tra gán việc thành công", usersUseCase.isJobAssigned(jobId));
   }
 // </editor-fold>
+
+  @GetMapping("/signature/{fileName}")
+  public ResponseEntity<Resource> getImage(@PathVariable String fileName) {
+    var path = Paths.get("uploads/images/", fileName);
+    UrlResource resource = null;
+    try {
+      resource = new UrlResource(path.toUri());
+    } catch (MalformedURLException e) {
+      throw new InternalServerException();
+    }
+
+    return ResponseEntity.ok()
+      .contentType(MediaType.IMAGE_JPEG)
+      .body(resource);
+  }
 }
