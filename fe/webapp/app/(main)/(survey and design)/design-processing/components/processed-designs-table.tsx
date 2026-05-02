@@ -109,12 +109,15 @@ export const ProcessedDesignsTable = ({
     switch (columnKey) {
       case "code":
         return (
-          <button
-            onClick={() => handleOpenDetailPopup(item)}
-            className={`font-bold text-blue-600 hover:underline hover:text-blue-800 cursor-pointer ${TitleDarkColor}`}
-          >
+          // <button
+          //   onClick={() => handleOpenDetailPopup(item)}
+          //   className={`font-bold text-blue-600 hover:underline hover:text-blue-800 cursor-pointer ${TitleDarkColor}`}
+          // >
+          //   {item.formNumber}
+          // </button>
+          <span className="font-medium text-black dark:text-white">
             {item.formNumber}
-          </button>
+          </span>
         );
       case "customerName":
         return (
