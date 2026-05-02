@@ -541,15 +541,8 @@ export const TechnicalInfoCard = ({
           new Blob([]),
           "empty",
         );
-      } else {
-        // Workaround: backend crashes when designImage is null in multipart binding
-        // Send an empty file part so Spring binds MultipartFile instead of null.
-        formData.append(
-          "generalInformation.designImage",
-          new Blob([]),
-          "empty",
-        );
       }
+      // else: giữ nguyên ảnh cũ → không gửi designImage, backend sẽ giữ nguyên URL hiện tại
 
       // Gửi materials - mỗi item là một object riêng
       const safeNumber = (v: any) => (isNaN(Number(v)) ? 0 : Number(v));
