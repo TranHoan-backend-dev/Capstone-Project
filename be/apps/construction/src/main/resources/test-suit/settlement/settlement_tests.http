@@ -118,7 +118,7 @@ Authorization: Bearer {{it_staff_token}}
 # Thay userId bằng ID của người ký tương ứng
 POST {{baseUrl}}/sign/SETTLE-2024-0022
 Content-Type: application/json
-Authorization: Bearer {{it_staff_token}}
+Authorization: Bearer {{access_token}}
 
 {
   "url": "https://signature-storage.com/sig123.png",
