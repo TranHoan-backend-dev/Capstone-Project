@@ -105,13 +105,13 @@ public class CustomerServiceImpl implements CustomerService {
       customer.setFormNumber(formNumber);
       customer.setFormCode(formCode);
     }
-    if (waterPriceId != null) {
+    if (waterPriceId != null && !waterPriceId.isBlank()) {
       if (!deviceService.checkExistenceOfWaterPrice(waterPriceId)) {
         throw new IllegalArgumentException(Message.ENT_28);
       }
       customer.setWaterPriceId(waterPriceId);
     }
-    if (waterMeterId != null && !waterMeterId.equals(customer.getWaterMeterId())) {
+    if (waterMeterId != null && !waterMeterId.isBlank() && !waterMeterId.equals(customer.getWaterMeterId())) {
       if (deviceService.checkExistenceOfWaterMeter(waterMeterId)) {
         throw new IllegalArgumentException("Đồng hồ nước này đã được sử dụng");
       }
@@ -146,7 +146,7 @@ public class CustomerServiceImpl implements CustomerService {
     if (installationFee != null) {
       customer.setInstallationFee(installationFee);
     }
-    if (deductionPeriod != null) {
+    if (deductionPeriod != null && !deductionPeriod.isBlank()) {
       customer.setDeductionPeriod(deductionPeriod);
     }
     if (monthlyRent != null) {
@@ -158,13 +158,13 @@ public class CustomerServiceImpl implements CustomerService {
     Customer customer, String budgetRelationshipCode,
     String passportCode, String connectionPoint
   ) {
-    if (budgetRelationshipCode != null) {
+    if (budgetRelationshipCode != null && !budgetRelationshipCode.isBlank()) {
       customer.setBudgetRelationshipCode(budgetRelationshipCode);
     }
-    if (passportCode != null) {
+    if (passportCode != null && !passportCode.isBlank()) {
       customer.setPassportCode(passportCode);
     }
-    if (connectionPoint != null) {
+    if (connectionPoint != null && !connectionPoint.isBlank()) {
       customer.setConnectionPoint(connectionPoint);
     }
   }
