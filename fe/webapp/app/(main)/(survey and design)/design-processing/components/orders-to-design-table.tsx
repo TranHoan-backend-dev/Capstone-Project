@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import { Chip, Link, Tooltip } from "@heroui/react";
-import NextLink from "next/link";
+import { Chip, Tooltip } from "@heroui/react";
 
 import { DesignProcessingModal } from "./design-processing-modal";
+import { InstallationFormDetailPopup } from "../../assigning-survey/components/installation-form-detail-popup";
 
 import { GenericDataTable } from "@/components/ui/GenericDataTable";
 import {
@@ -84,6 +84,11 @@ export const OrdersToDesignTable = ({
     useState<DesignProcessingItem | null>(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [detailPopup, setDetailPopup] = useState<{
+    isOpen: boolean;
+    formCode: string;
+    formNumber: string;
+  }>({ isOpen: false, formCode: "", formNumber: "" });
   const [approveItem, setApproveItem] = useState<DesignProcessingItem | null>(
     null,
   );
@@ -111,6 +116,14 @@ export const OrdersToDesignTable = ({
   const handleStatusClick = (item: DesignProcessingItem) => {
     setSelectedDesign(item);
     setIsModalOpen(true);
+  };
+
+  const handleOpenDetailPopup = (item: DesignProcessingItem) => {
+    setDetailPopup({
+      isOpen: true,
+      formCode: item.id,
+      formNumber: item.formNumber,
+    });
   };
 
   const handleApproveConfirm = async () => {
@@ -218,13 +231,15 @@ export const OrdersToDesignTable = ({
         if (!item.formNumber) {
         }
         return (
-          <Link
-            as={NextLink}
-            className={`font-bold text-blue-600 hover:underline hover:text-blue-800 ${TitleDarkColor}`}
-            href="#"
-          >
+          // <button
+          //   onClick={() => handleOpenDetailPopup(item)}
+          //   className={`font-bold text-blue-600 hover:underline hover:text-blue-800 cursor-pointer ${TitleDarkColor}`}
+          // >
+          //   {item.formNumber}
+          // </button>
+          <span className="font-medium text-black dark:text-white">
             {item.formNumber}
-          </Link>
+          </span>
         );
 
       case "customerName":
@@ -308,6 +323,12 @@ export const OrdersToDesignTable = ({
         data={selectedDesign ? mapDesignToModalData(selectedDesign) : undefined}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+      />
+      <InstallationFormDetailPopup
+        isOpen={detailPopup.isOpen}
+        onClose={() => setDetailPopup({ isOpen: false, formCode: "", formNumber: "" })}
+        formCode={detailPopup.formCode}
+        formNumber={detailPopup.formNumber}
       />
       <Modal
         isOpen={isApproveModalOpen}

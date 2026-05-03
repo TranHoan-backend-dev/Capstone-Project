@@ -93,6 +93,11 @@ export const validateAddress = (value: string, fieldName: string = "Địa chỉ
   return null;
 };
 
+// Lọc ký tự không hợp lệ cho trường địa chỉ (chỉ giữ chữ cái, số, khoảng trắng và , . - / ( ))
+export const normalizeAddress = (value: string): string => {
+  return value.replace(/[^a-zA-ZÀ-ỹ0-9\s,.\-/()]/g, "");
+};
+
 export const validateGeneralText = (value: string, fieldName: string) => {
   if (!value || !value.trim()) return null;
 

@@ -24,7 +24,10 @@ export const FeeForm = ({
   const [receiptNumber, setReceiptNumber] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [address, setAddress] = useState("");
-  const [paymentDate, setPaymentDate] = useState("");
+  const today = new Date().toISOString().split("T")[0];
+  const [paymentDate, setPaymentDate] = useState(
+    !!initialData?.receiptNumber ? "" : today,
+  );
   const [isPaid, setIsPaid] = useState(false);
   const [attach, setAttach] = useState("");
   const [paymentReason, setPaymentReason] = useState("");
@@ -152,7 +155,9 @@ export const FeeForm = ({
   }, [initialData]);
 
   const handleTotalMoneyChange = (value: string) => {
-    const numValue = Number(value);
+    // Chỉ cho phép nhập số nguyên dương
+    const sanitized = value.replace(/[^0-9]/g, "");
+    const numValue = sanitized === "" ? 0 : parseInt(sanitized, 10);
     setTotalMoneyInDigits(numValue);
 
     if (numValue > 0) {
@@ -182,7 +187,6 @@ export const FeeForm = ({
   const handleSubmit = async () => {
     if (submitLoading) return;
 
-    // Validate required fields
     if (!formCode || !formNumber) {
       CallToast({
         title: "Lỗi",
@@ -211,6 +215,15 @@ export const FeeForm = ({
       return;
     }
     
+
+    if (!paymentDate) {
+      CallToast({
+        title: "Lỗi",
+        message: "Vui lòng chọn ngày thanh toán",
+        color: "danger",
+      });
+      return;
+    }
 
     if (!paymentReason) {
       CallToast({
@@ -275,12 +288,15 @@ export const FeeForm = ({
       const data = await response.json();
 
       if (!response.ok) {
-        // HIỂN THỊ LỖI CHI TIẾT TỪ BACKEND
-        let errorMessage = data.message || "Save failed";
+        const errorMessageMap: Record<string, string> = {
+          "Receipt already exists for this form":
+            "Phiếu thu cho đơn lắp đặt này đã tồn tại",
+        };
 
-        // Nếu có validation errors từ backend (data chứa chi tiết lỗi)
+        let errorMessage =
+          errorMessageMap[data.message] ?? data.message ?? "Lưu thất bại";
+
         if (data.data && typeof data.data === "object") {
-          // Lấy tất cả lỗi validation và gộp lại
           const validationErrors = Object.entries(data.data)
             .map(([field, message]) => `${field}: ${message}`)
             .join(", ");
@@ -405,7 +421,7 @@ export const FeeForm = ({
 
               <CustomInput
                 label="Tổng tiền (số)"
-                value={totalMoneyInDigits.toString()}
+                value={totalMoneyInDigits > 0 ? totalMoneyInDigits.toString() : ""}
                 onChange={(e) => handleTotalMoneyChange(e.target.value)}
                 required
               />

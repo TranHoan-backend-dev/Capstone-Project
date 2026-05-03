@@ -1094,11 +1094,13 @@ export const signSettlement = (
   accessToken: string,
   setlementId: string,
   url?: string,
+  status?: boolean | null,
 ) => {
   return axios.post(
     `${API_GATEWAY_URL}/construction/settlements/sign/${setlementId}`,
     {
       url,
+      status,
     },
     {
       headers: {

@@ -17,7 +17,7 @@ export async function POST(
     const body = await req.json();
     const { setlementId } = await params;
 
-    const { url } = body;
+    const { url, status } = body;
     if (!setlementId) {
       return NextResponse.json(
         { message: "settlementId is required" },
@@ -25,7 +25,7 @@ export async function POST(
       );
     }
 
-    const response = await signSettlement(accessToken, setlementId, url);
+    const response = await signSettlement(accessToken, setlementId, url, status);
 
     return NextResponse.json(response.data);
   } catch (error: any) {

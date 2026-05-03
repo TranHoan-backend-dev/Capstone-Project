@@ -12,7 +12,7 @@ import {
 } from "@/types";
 import { SearchInputWithButton } from "@/components/ui/SearchInputWithButton";
 import { LookupModal } from "@/components/ui/modal/LookupModal";
-import { normalizeBankTextField } from "@/utils/validation";
+import { normalizeBankTextField, normalizeAddress } from "@/utils/validation";
 
 export const AddressContactSection = ({
   formData,
@@ -89,7 +89,9 @@ export const AddressContactSection = ({
                 ? normalizeBankAccountNumber(e.target.value)
                 : field.key === "bankAccountProviderLocation"
                   ? normalizeBankTextField(e.target.value)
-                  : e.target.value,
+                  : field.key === "address"
+                    ? normalizeAddress(e.target.value)
+                    : e.target.value,
             )
           }
         />
