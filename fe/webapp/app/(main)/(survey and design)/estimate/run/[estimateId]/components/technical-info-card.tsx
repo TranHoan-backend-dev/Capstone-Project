@@ -541,8 +541,30 @@ export const TechnicalInfoCard = ({
           new Blob([]),
           "empty",
         );
+      } else {
+        // Giữ nguyên ảnh cũ: fetch lại ảnh từ proxy rồi gửi lên để tránh NullPointerException ở backend
+        // (backend gọi .getName() trên designImage trước khi kiểm tra null)
+        if (designImageUrl) {
+          try {
+            const proxyUrl = getImageProxyUrl(designImageUrl);
+            const imgRes = await fetch(proxyUrl);
+            if (imgRes.ok) {
+              const blob = await imgRes.blob();
+              const fileName = designImageUrl.split("/").pop() || "image";
+              const existingFile = new File([blob], fileName, { type: blob.type || "image/jpeg" });
+              formData.append("generalInformation.designImage", existingFile);
+              console.log("Re-sending existing image:", fileName);
+            } else {
+              // Fallback: gửi empty blob nếu không fetch được
+              formData.append("generalInformation.designImage", new Blob([]), "empty");
+            }
+          } catch {
+            formData.append("generalInformation.designImage", new Blob([]), "empty");
+          }
+        } else {
+          formData.append("generalInformation.designImage", new Blob([]), "empty");
+        }
       }
-      // else: giữ nguyên ảnh cũ → không gửi designImage, backend sẽ giữ nguyên URL hiện tại
 
       // Gửi materials - mỗi item là một object riêng
       const safeNumber = (v: any) => (isNaN(Number(v)) ? 0 : Number(v));
