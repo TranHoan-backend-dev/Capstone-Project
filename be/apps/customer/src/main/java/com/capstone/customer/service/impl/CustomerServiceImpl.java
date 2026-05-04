@@ -123,6 +123,8 @@ public class CustomerServiceImpl implements CustomerService {
         "typeId", waterMeterType != null ? waterMeterType : customer.getWaterMeterType()
       ));
 
+      deviceService.createEmptyUsageHistory(waterMeterId);
+
       customer.setWaterMeterId(waterMeterId);
     }
   }

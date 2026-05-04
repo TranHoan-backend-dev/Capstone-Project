@@ -30,4 +30,7 @@ public interface DeviceService {
 
   @PostMapping("/water-meters")
   WrapperApiResponse createWaterMeter(@RequestBody Object request);
+
+  @PostMapping("/usage/empty/{serial}")
+  WrapperApiResponse createEmptyUsageHistory(@PathVariable("serial") String serial);
 }

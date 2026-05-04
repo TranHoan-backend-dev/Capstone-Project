@@ -34,4 +34,6 @@ public interface UsageHistoryService {
   UsageResponse getRecentUsage(String customerId);
 
   String getLatestImage(String customerId);
+
+  void createEmptyUsageHistory(String serial);
 }

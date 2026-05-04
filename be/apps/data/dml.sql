@@ -1703,7 +1703,7 @@ VALUES ('00000000-0000-0000-0000-900000000001', NOW(), 100.0, '999999', 'WPD-DN1
         '0.015', '1.5', '0.0225', 15, 5, NOW());
 
 INSERT INTO public.water_meter (meter_id, installation_date, size, water_meter_type_id)
-VALUES ('2178583', '2023-01-01', 21, '00000000-0000-0000-0000-900000000001'),
+VALUES ('2178584', '2023-01-01', 21, '00000000-0000-0000-0000-900000000001'),
        ('126445', '2023-01-01', 22, '00000000-0000-0000-0000-900000000002'),
        ('113705', '2023-01-01', 15, '00000000-0000-0000-0000-900000000011'),
        ('20000004', '2023-01-01', 24, '00000000-0000-0000-0000-900000000004'),
@@ -1884,7 +1884,7 @@ INSERT INTO public.customer (customer_id, address, bank_account_name, bank_accou
                              is_free)
 VALUES ('CUST-001', '123 Đường ABC, Hà Nội', 'NGUYEN VAN A', '123456789', 'Hà Nội', NOW(), 'customer1@example.com',
         'FORM-TEST-001', 'FN-001', 1, true, false, 'Nguyễn Văn A', 1, 'CASH', '0987654321', 10,
-        '5e6f7081-4000-4eee-9fff-eeee4eee0001', 'FAMILY', NOW(), 'DOMESTIC', '2178583',
+        '5e6f7081-4000-4eee-9fff-eeee4eee0001', 'FAMILY', NOW(), 'DOMESTIC', '2178584',
         '00000000-0000-0000-0000-900000000001', '00000000-0000-0000-0000-B00000000001', '123456789', 'Hà Nội', 'CONT-001', false),
        ('CUST-002', '456 Đường XYZ, TP.HCM', 'TRAN THI B', '987654321', 'TP.HCM', NOW(), 'customer2@example.com',
         'FORM-TEST-002', 'FN-002', 2, true, false, 'Trần Thị B', 1, 'CASH', '0123456789', 10,
@@ -1901,7 +1901,7 @@ VALUES ('CUST-002', '126445', '[
   {
     "id": "usage-test-002",
     "recordingDate": "2024-04-01",
-    "index": 2210,
+    "index": 221,
     "mass": 0,
     "price": 0,
     "status": "PENDING",
@@ -1914,7 +1914,7 @@ VALUES ('CUST-002', '126445', '[
          {
            "id": "usage-test-003",
            "recordingDate": "2024-04-01",
-           "index": 3345,
+           "index": 335,
            "mass": 0,
            "price": 0,
            "status": "PENDING",

@@ -124,4 +124,8 @@ public class UsageHistoryUseCase {
   public String getLatestImage(String customerId) {
     return usageHistoryService.getLatestImage(customerId);
   }
+
+  public void createEmptyUsageHistory(String serial) {
+    usageHistoryService.createEmptyUsageHistory(serial);
+  }
 }

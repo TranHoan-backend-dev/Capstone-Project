@@ -198,4 +198,13 @@ public class UsageHistoryController {
       .contentType(MediaType.IMAGE_JPEG)
       .body(resource);
   }
+
+  @Operation(summary = "Tạo lịch sử sử dụng nước trống", description = "Tạo một bản ghi lịch sử sử dụng nước trống cho thiết bị mới")
+  @PostMapping("/empty/{serial}")
+  @PreAuthorize("hasAnyAuthority('IT_STAFF', 'BUSINESS_DEPARTMENT_HEAD', 'METER_INSPECTION_STAFF', 'ORDER_RECEIVING_STAFF')")
+  public ResponseEntity<WrapperApiResponse> createEmptyUsageHistory(@PathVariable String serial) {
+    log.info("Creating empty usage history for serial {}", serial);
+    useCase.createEmptyUsageHistory(serial);
+    return Utils.returnOkResponse("Tạo lịch sử sử dụng nước trống thành công", null);
+  }
 }

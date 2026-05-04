@@ -530,6 +530,30 @@ public class UsageHistoryServiceImpl implements UsageHistoryService {
       .orElse(null);
   }
 
+  @Override
+  @Transactional
+  public void createEmptyUsageHistory(String serial) {
+    log.info("Creating empty usage history for serial {}", serial);
+    var meter = findById(serial);
+    var history = UsageHistory.builder()
+      .usageHistory(serial)
+      .meter(meter)
+      .usages(new ArrayList<>())
+      .build();
+
+    // Resolve customerId if possible
+    try {
+      var customerId = customerService.getCustomerIdByMeterId(serial);
+      if (customerId != null) {
+        history.setCustomerId(customerId);
+      }
+    } catch (Exception e) {
+      log.warn("Could not auto-resolve customerId for serial {}: {}", serial, e.getMessage());
+    }
+
+    repository.save(history);
+  }
+
   private WaterMeter findById(String serial) {
     return waterMeterRepository.findById(serial)
       .orElseThrow(() -> new NotExistingException("Không tìm thấy đồng hồ nước mang serial: " + serial));
