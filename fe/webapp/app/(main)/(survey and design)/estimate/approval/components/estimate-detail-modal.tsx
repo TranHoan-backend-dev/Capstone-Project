@@ -7,6 +7,45 @@ import { ModalHeader } from "@/components/popup-status/modal-header";
 import { DocumentPaper } from "@/components/popup-settlement/document-paper";
 import { ImageLightbox } from "@/components/ui/ImageLightbox";
 
+/** Chuyển URL/path chữ ký thành src có thể dùng trong <img> */
+function resolveSignatureUrl(url: string): string {
+  if (!url) return "";
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  const fileName = url.split("/").pop() || url;
+  return `/api/auth/signature/${encodeURIComponent(fileName)}`;
+}
+
+/** Hiển thị ảnh chữ ký hoặc trạng thái "Chưa ký" */
+function SignatureImage({
+  url,
+  onZoom,
+}: {
+  url?: string | null;
+  onZoom: (src: string) => void;
+}) {
+  if (!url) {
+    return (
+      <div className="h-16 flex items-center justify-center text-gray-400 italic">
+        Chưa ký
+      </div>
+    );
+  }
+
+  const src = resolveSignatureUrl(url);
+
+  return (
+    <div className="h-16 flex items-center justify-center">
+      <img
+        src={src}
+        alt="Chữ ký"
+        className="max-h-16 max-w-full object-contain cursor-zoom-in hover:opacity-80 transition-opacity"
+        onClick={() => onZoom(src)}
+        title="Nhấn để phóng to"
+      />
+    </div>
+  );
+}
+
 interface EstimateDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -316,43 +355,28 @@ export const EstimateDetailModal = ({
                         <div className="font-semibold mb-1">
                           Nhân viên khảo sát
                         </div>
-                        {significance?.surveyStaff ? (
-                          <div className="h-16 flex items-center justify-center font-medium">
-                            {significance.surveyStaff}
-                          </div>
-                        ) : (
-                          <div className="h-16 flex items-center justify-center text-gray-400 italic">
-                            Chưa ký
-                          </div>
-                        )}
+                        <SignatureImage
+                          url={significance?.surveyStaff}
+                          onZoom={setLightboxSrc}
+                        />
                       </div>
 
                       <div>
                         <div className="font-semibold mb-1">
                           Trưởng phòng KH-KT
                         </div>
-                        {significance?.planningTechnicalHead ?? significance?.ptHead ? (
-                          <div className="h-16 flex items-center justify-center font-medium">
-                            {significance.planningTechnicalHead ?? significance.ptHead}
-                          </div>
-                        ) : (
-                          <div className="h-16 flex items-center justify-center text-gray-400 italic">
-                            Chưa ký
-                          </div>
-                        )}
+                        <SignatureImage
+                          url={significance?.planningTechnicalHead ?? significance?.ptHead}
+                          onZoom={setLightboxSrc}
+                        />
                       </div>
 
                       <div>
                         <div className="font-semibold mb-1">Giám đốc</div>
-                        {significance?.companyLeaderShip ?? significance?.constructionPresident ? (
-                          <div className="h-16 flex items-center justify-center font-medium">
-                            {significance.companyLeaderShip ?? significance.constructionPresident}
-                          </div>
-                        ) : (
-                          <div className="h-16 flex items-center justify-center text-gray-400 italic">
-                            Chưa ký
-                          </div>
-                        )}
+                        <SignatureImage
+                          url={significance?.companyLeaderShip ?? significance?.constructionPresident}
+                          onZoom={setLightboxSrc}
+                        />
                       </div>
                     </div>
                   </div>

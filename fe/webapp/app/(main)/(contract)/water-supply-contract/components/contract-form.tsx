@@ -322,7 +322,7 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
             {selectedForm && (
               <>
                 <div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <CustomInput
                       label="Tên khách hàng"
                       value={selectedForm?.customerName || ""}
@@ -339,14 +339,14 @@ export const ContractForm = ({ onSuccess }: ContractFormProps) => {
                         <HomeIcon className="w-4 h-4 text-gray-400" />
                       }
                     />
-                    <CustomInput
+                    {/* <CustomInput
                       label="Số điện thoại"
                       value={selectedForm?.phoneNumber || ""}
                       isReadOnly
                       startContent={
                         <PhoneIcon className="w-4 h-4 text-gray-400" />
                       }
-                    />
+                    /> */}
                     {/* {selectedForm?.email && (
                       <CustomInput
                         label="Email"

@@ -212,3 +212,14 @@ export const logoutService = (refreshToken: string) => {
     },
   );
 };
+
+export const getSignatureImage = (accessToken: string, fileName: string) =>
+  axios.get(
+    `${API_GATEWAY_URL}/auth/authorization/signature/${encodeURIComponent(fileName)}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      responseType: "arraybuffer",
+    },
+  );

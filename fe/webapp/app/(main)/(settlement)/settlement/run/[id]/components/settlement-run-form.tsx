@@ -597,6 +597,7 @@ export const SettlementRunForm = ({ id }: SettlementRunFormProps) => {
           <SettlementTotalCost
             estimateData={estimateData}
             materials={materials}
+            onTotalChange={(total) => handleChange("connectionFee", String(total))}
           />
         </>
       )}

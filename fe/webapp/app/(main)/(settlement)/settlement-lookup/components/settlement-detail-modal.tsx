@@ -7,6 +7,32 @@ import { ModalHeader } from "@/components/popup-status/modal-header";
 import { DocumentPaper } from "@/components/popup-settlement/document-paper";
 import { SettlementDetail } from "@/types";
 
+function resolveSignatureUrl(url: string): string {
+  if (!url) return "";
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  const fileName = url.split("/").pop() || url;
+  return `/api/auth/signature/${encodeURIComponent(fileName)}`;
+}
+
+function SignatureImage({ url }: { url?: string | null }) {
+  if (!url) {
+    return (
+      <div className="h-16 flex items-center justify-center text-gray-400 italic">
+        Chưa ký
+      </div>
+    );
+  }
+  return (
+    <div className="h-16 flex items-center justify-center">
+      <img
+        src={resolveSignatureUrl(url)}
+        alt="Chữ ký"
+        className="max-h-16 max-w-full object-contain"
+      />
+    </div>
+  );
+}
+
 interface SettlementDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -328,62 +354,24 @@ export const SettlementDetailModal = ({
                         <div className="font-semibold mb-1">
                           Nhân viên khảo sát
                         </div>
-                        {generalInformation?.significance?.surveyStaff ? (
-                          <div className="h-16 flex items-center justify-center font-medium">
-                            {generalInformation.significance.surveyStaff}
-                          </div>
-                        ) : (
-                          <div className="h-16 flex items-center justify-center text-gray-400 italic">
-                            Chưa ký
-                          </div>
-                        )}
+                        <SignatureImage url={generalInformation?.significance?.surveyStaff} />
                       </div>
 
                       <div>
                         <div className="font-semibold mb-1">
                           Trưởng phòng KH-KT
                         </div>
-                        {generalInformation?.significance?.ptHead ? (
-                          <div className="h-16 flex items-center justify-center font-medium">
-                            {generalInformation.significance.ptHead}
-                          </div>
-                        ) : (
-                          <div className="h-16 flex items-center justify-center text-gray-400 italic">
-                            Chưa ký
-                          </div>
-                        )}
+                        <SignatureImage url={generalInformation?.significance?.ptHead} />
                       </div>
 
                       <div>
-                        <div className="font-semibold mb-1">
-                          Giám đốc xây lắp
-                        </div>
-                        {generalInformation?.significance
-                          ?.constructionPresident ? (
-                          <div className="h-16 flex items-center justify-center font-medium">
-                            {
-                              generalInformation.significance
-                                .constructionPresident
-                            }
-                          </div>
-                        ) : (
-                          <div className="h-16 flex items-center justify-center text-gray-400 italic">
-                            Chưa ký
-                          </div>
-                        )}
+                        <div className="font-semibold mb-1">Giám đốc xây lắp</div>
+                        <SignatureImage url={generalInformation?.significance?.constructionPresident} />
                       </div>
 
                       <div>
                         <div className="font-semibold mb-1">Tổng giám đốc</div>
-                        {generalInformation?.significance?.president ? (
-                          <div className="h-16 flex items-center justify-center font-medium">
-                            {generalInformation.significance.president}
-                          </div>
-                        ) : (
-                          <div className="h-16 flex items-center justify-center text-gray-400 italic">
-                            Chưa ký
-                          </div>
-                        )}
+                        <SignatureImage url={generalInformation?.significance?.president} />
                       </div>
                     </div>
                   </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { EstimateResponse, MaterialEstimateItem } from "@/types";
 import { ChevronUpIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 import CustomButton from "@/components/ui/custom/CustomButton";
@@ -33,11 +33,13 @@ interface CostBreakdown {
 interface SettlementTotalCostProps {
   estimateData: any | null; // Use any to bypass TS issues if needed, or EstimateResponse
   materials: MaterialEstimateItem[];
+  onTotalChange?: (roundedTotal: number) => void;
 }
 
 export const SettlementTotalCost = ({
   estimateData,
   materials,
+  onTotalChange,
 }: SettlementTotalCostProps) => {
   const [isExpanded, setIsExpanded] = useState(true);
 
@@ -108,6 +110,12 @@ export const SettlementTotalCost = ({
       roundedGrandTotal,
     };
   }, [estimateData, materials]);
+
+  useEffect(() => {
+    if (costBreakdown && onTotalChange) {
+      onTotalChange(costBreakdown.roundedGrandTotal);
+    }
+  }, [costBreakdown?.roundedGrandTotal]);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("vi-VN", {
@@ -268,11 +276,6 @@ export const SettlementTotalCost = ({
               <td className="px-4 py-2 pl-8 font-medium">Làm tròn</td>
               <td className="px-4 py-2 text-right"></td>
               <td className="px-4 py-2 text-right font-mono font-medium">{formatCurrency(costBreakdown.roundedGrandTotal)}</td>
-            </tr>
-            <tr>
-              <td className="px-4 py-2 pl-8 text-default-500 italic" colSpan={3}>
-                Kinh phí đầu nối (có quyết toán riêng): 0
-              </td>
             </tr>
           </tbody>
         </table>

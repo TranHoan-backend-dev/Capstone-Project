@@ -542,13 +542,28 @@ export const TechnicalInfoCard = ({
           "empty",
         );
       } else {
-        // Workaround: backend crashes when designImage is null in multipart binding
-        // Send an empty file part so Spring binds MultipartFile instead of null.
-        formData.append(
-          "generalInformation.designImage",
-          new Blob([]),
-          "empty",
-        );
+        // Giữ nguyên ảnh cũ: fetch lại ảnh từ proxy rồi gửi lên để tránh NullPointerException ở backend
+        // (backend gọi .getName() trên designImage trước khi kiểm tra null)
+        if (designImageUrl) {
+          try {
+            const proxyUrl = getImageProxyUrl(designImageUrl);
+            const imgRes = await fetch(proxyUrl);
+            if (imgRes.ok) {
+              const blob = await imgRes.blob();
+              const fileName = designImageUrl.split("/").pop() || "image";
+              const existingFile = new File([blob], fileName, { type: blob.type || "image/jpeg" });
+              formData.append("generalInformation.designImage", existingFile);
+              console.log("Re-sending existing image:", fileName);
+            } else {
+              // Fallback: gửi empty blob nếu không fetch được
+              formData.append("generalInformation.designImage", new Blob([]), "empty");
+            }
+          } catch {
+            formData.append("generalInformation.designImage", new Blob([]), "empty");
+          }
+        } else {
+          formData.append("generalInformation.designImage", new Blob([]), "empty");
+        }
       }
 
       // Gửi materials - mỗi item là một object riêng
